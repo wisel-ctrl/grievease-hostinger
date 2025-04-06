@@ -252,6 +252,7 @@
          <h1 class="font-alexbrush text-5xl sm:text-6xl lg:text-7xl leading-tight text-white text-shadow-lg mb-6">
             Mula noon, hanggang ngayon.<br>
             <span class="text-yellow-600">A funeral service with a Heart...</span>
+            <span class="text-yellow-600">A funeral service with a Heart...</span>
         </h1>
     </div>
     </div>
