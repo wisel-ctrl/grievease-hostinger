@@ -139,8 +139,6 @@
     </style>
 </head>
 <body class="font-hedvig bg-cream">
-
-<h1> TESTING TO </h1>
 <div class="bg-cream overflow-x-hidden w-full max-w-full m-0 p-0 font-hedvig">
     <!-- Notification Toast (Hidden by default) -->
     <div id="notification" class="fixed top-0 right-0 m-4 p-4 bg-black text-white rounded shadow-lg z-50 hidden notification">
@@ -253,7 +251,7 @@
     <div class="absolute top-1/2 left-1/4 transform -translate-x-1/2 -translate-y-1/2 max-w-lg transition-all duration-1000 ease-out" 
          data-aos="fade-up" data-aos-delay="300" data-aos-duration="1000">
          <h1 class="font-alexbrush text-5xl sm:text-6xl lg:text-7xl leading-tight text-white text-shadow-lg mb-6">
-            Mula noon, hanggang ngayon.<br>
+            Mula noon, hanggang ngayon. TESTING TO<br>
             <span class="text-yellow-600">A funeral service with a Heart...</span>
         </h1>
     </div>
