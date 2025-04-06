@@ -244,7 +244,7 @@
         <div class="absolute inset-0 bg-gradient-to-b from-black/70 via-black/40 to-black/80"></div>
     </div>
 
-    <h1 style="font-size: 500px;">TEST TEST TEST</h1>
+    <h1 style="font-size: 100px;">TEST TEST TEST</h1>
     
     <!-- Content Container -->
 <div class="relative h-full flex flex-col items-start justify-start px-6 md:px-12 z-10">
