@@ -10,6 +10,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Hedvig+Letters+Serif:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="tailwind.js"></script>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#B68D40">
     <style>
         .modal {
             transition: opacity 0.3s ease-in-out;
@@ -183,6 +185,10 @@
         
         <!-- Right side: Login/Register links (visible on medium and larger screens) -->
         <div class="hidden md:flex items-center space-x-3">
+            <!-- Desktop Install Button (hidden by default) -->
+<button id="installButton" class="hidden bg-green-600 text-white px-4 py-1.5 rounded-lg hover:bg-green-700 transition">
+    Install App
+</button>
             <a href="Landing_Page/login.php" class="text-white hover:text-gray-300 relative group">
                 Login
                 <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-yellow-600 group-hover:w-full transition-all duration-300"></span>
@@ -222,6 +228,10 @@
             FAQs
             <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-yellow-600 group-hover:w-full transition-all duration-300"></span>
         </a>
+        <!-- Mobile Install Button (for hamburger menu) -->
+<button id="installButtonMobile" class="hidden w-full text-left bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition mt-2">
+    Install App
+</button>
         <!-- Login & Register Section (FIXED) -->
     <div class="mt-3 pt-3 border-t border-gray-700">
         <a href="Landing_Page/login.php" class="block text-white py-2 hover:text-gray-300 relative group pl-4">
@@ -628,5 +638,54 @@
     mobileMenu.classList.toggle('hidden');
 }
 </script>
+
+<script>
+    // Check if PWA is installable & show button
+let deferredPrompt;
+
+window.addEventListener('beforeinstallprompt', (e) => {
+    // Prevent automatic prompt (we want manual control)
+    e.preventDefault();
+    deferredPrompt = e;
+    
+    // Show install buttons
+    document.getElementById('installButton').classList.remove('hidden');
+    document.getElementById('installButtonMobile').classList.remove('hidden');
+});
+
+// Trigger installation when button is clicked
+function installPWA() {
+    if (deferredPrompt) {
+        deferredPrompt.prompt(); // Show install dialog
+        
+        deferredPrompt.userChoice.then((choiceResult) => {
+            if (choiceResult.outcome === 'accepted') {
+                console.log('User accepted install');
+            } else {
+                console.log('User dismissed install');
+            }
+            deferredPrompt = null; // Reset for next time
+        });
+    }
+}
+
+// Add click listeners
+document.getElementById('installButton').addEventListener('click', installPWA);
+document.getElementById('installButtonMobile').addEventListener('click', installPWA);
+
+// Hide buttons after installation
+window.addEventListener('appinstalled', () => {
+    document.getElementById('installButton').classList.add('hidden');
+    document.getElementById('installButtonMobile').classList.add('hidden');
+});
+</script>
+<script>
+  if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/GrievEase/grievease-hostinger/sw.js')
+    .then(registration => console.log('SW registered'))
+    .catch(err => console.log('SW registration failed:', err));
+}
+</script>
+
 </body>
 </html>
