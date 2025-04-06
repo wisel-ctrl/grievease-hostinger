@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ghost Dodge Game</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Gloock&display=swap" rel="stylesheet">
+    <audio id="backgroundMusic" loop>
+        <source src="background.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="hitSound">
+        <source src="hit.mp3" type="audio/mpeg">
+    </audio>
+    <script>
+        let ghostX = 125;
+        let obstacles = [];
+        let gameOver = false;
+        let score = 0;
+        let interval;
+        const ghostSize = 50;
+        const ghostHitbox = 30;
+        const gameWidth = 250;
+        let moveLeft = false, moveRight = false;
+        
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "ArrowLeft") moveLeft = true;
+            if (e.key === "ArrowRight") moveRight = true;
+        });
+        
+        document.addEventListener("keyup", (e) => {
+            if (e.key === "ArrowLeft") moveLeft = false;
+            if (e.key === "ArrowRight") moveRight = false;
+        });
+        
+        function moveGhost() {
+            if (moveLeft && ghostX > 0) ghostX -= 5;
+            if (moveRight && ghostX < gameWidth - ghostSize) ghostX += 5;
+            updateGhostPosition();
+            requestAnimationFrame(moveGhost);
+        }
+        
+        function updateGhostPosition() {
+            document.getElementById("ghost").style.left = `${ghostX}px`;
+        }
+        
+        function updateScore() {
+            if (!gameOver) {
+                score++;
+                document.getElementById("score").innerText = `Score: ${score}`;
+            }
+        }
+        
+        function resetGame() {
+            gameOver = false;
+            score = 0;
+            document.getElementById("score").innerText = `Score: ${score}`;
+            document.getElementById("gameOverMessage").style.display = "none";
+            obstacles = [];
+            ghostX = 125;
+            updateGhostPosition();
+            gameLoop();
+            interval = setInterval(updateScore, 1000);
+            document.getElementById("backgroundMusic").play();
+        }
+        
+        function gameLoop() {
+            if (gameOver) return;
+            
+            obstacles = obstacles.map(obs => ({ ...obs, y: obs.y + 4 }))
+                .filter(obs => obs.y < window.innerHeight);
+            
+            if (Math.random() < 0.05) {
+                obstacles.push({ x: Math.random() * (gameWidth - ghostSize), y: 0 });
+            }
+            
+            const gameArea = document.getElementById("gameArea");
+            gameArea.innerHTML = "";
+            obstacles.forEach(obs => {
+                const obstacleDiv = document.createElement("div");
+                obstacleDiv.className = "absolute w-12 h-12 flex items-center justify-center text-white text-2xl bg-red-600 border-2 border-white rounded-full transition-all duration-75 ease-linear";
+                obstacleDiv.style.left = `${obs.x}px`;
+                obstacleDiv.style.top = `${obs.y}px`;
+                obstacleDiv.innerHTML = "💀";
+                gameArea.appendChild(obstacleDiv);
+                
+                if (
+                    obs.y + ghostHitbox > window.innerHeight - 100 && obs.y < window.innerHeight - 50 &&
+                    obs.x < ghostX + ghostHitbox && obs.x + ghostHitbox > ghostX
+                ) {
+                    gameOver = true;
+                    document.getElementById("gameOverMessage").style.display = "flex";
+                    clearInterval(interval);
+                    document.getElementById("hitSound").play();
+                }
+            });
+        
+            if (!gameOver) {
+                requestAnimationFrame(gameLoop);
+            }
+        }
+        
+        window.onload = () => {
+            updateGhostPosition();
+            gameLoop();
+            moveGhost();
+            interval = setInterval(updateScore, 1000);
+            document.getElementById("backgroundMusic").play();
+        };
+    </script>
+    <style>
+        body { margin: 0; overflow: hidden; background-color: #1a1a1a; color: white; font-family: 'Gloock', serif; display: flex; justify-content: center; }
+        .game-container { position: relative; width: 250px; height: 100vh; display: flex; align-items: center; justify-content: center; border: 4px solid white; background: rgba(255,255,255,0.1); box-shadow: 0px 0px 20px white; }
+        .ghost { position: absolute; bottom: 10px; width: 50px; height: 50px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; transition: left 0.05s linear; }
+        .game-over { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); display: none; text-align: center; background: rgba(0, 0, 0, 0.8); padding: 20px; border-radius: 10px; border: 2px solid white; box-shadow: 0px 0px 15px white; }
+        .score { position: absolute; top: 10px; right: 10px; font-size: 20px; }
+        .restart-btn { margin-top: 10px; padding: 10px 20px; background: white; color: black; font-size: 16px; border: none; cursor: pointer; border-radius: 8px; }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div id="gameArea" class="relative w-[250px] h-full overflow-hidden"></div>
+        <div id="ghost" class="ghost">👻</div>
+        <div id="score" class="score">Score: 0</div>
+        <div id="gameOverMessage" class="game-over">
+            <p class="text-white text-lg">Game Over!</p>
+            <button class="restart-btn" onclick="resetGame()">Restart</button>
+        </div>
+    </div>
+</body>
+</html>

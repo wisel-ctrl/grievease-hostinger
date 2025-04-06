@@ -1,0 +1,911 @@
+<?php
+
+session_start();
+
+require_once '../db_connect.php'; // Database connection
+
+// Get user's first name from database
+$user_id = $_SESSION['user_id'];
+$query = "SELECT first_name , last_name , email , birthdate FROM users WHERE id = ?";
+$stmt = $conn->prepare($query);
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+$result = $stmt->get_result();
+$row = $result->fetch_assoc();
+$first_name = $row['first_name']; // We're confident user_id exists
+$last_name = $row['last_name'];
+$email = $row['email'];
+
+// Check if user is logged in
+if (!isset($_SESSION['user_id'])) {
+  // Redirect to login page
+  header("Location: ../Landing_Page/login.php");
+  exit();
+}
+
+// Check for admin user type (user_type = 1)
+if ($_SESSION['user_type'] != 1) {
+  // Redirect to appropriate page based on user type
+  switch ($_SESSION['user_type']) {
+      case 2:
+          header("Location: ../employee/index.php");
+          break;
+      case 3:
+          header("Location: ../customer/index.php");
+          break;
+      default:
+          // Invalid user_type
+          session_destroy();
+          header("Location: ../Landing_Page/login.php");
+  }
+  exit();
+}
+
+// Optional: Check for session timeout (30 minutes)
+$session_timeout = 1800; // 30 minutes in seconds
+if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > $session_timeout)) {
+  // Session has expired
+  session_unset();
+  session_destroy();
+  header("Location: ../Landing_Page/login.php?timeout=1");
+  exit();
+}
+
+// Update last activity time
+$_SESSION['last_activity'] = time();
+
+// Prevent caching for authenticated pages
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Cache-Control: post-check=0, pre-check=0", false);
+header("Pragma: no-cache");
+
+
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inventory - GrievEase</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <!-- Include SweetAlert2 CSS and JS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+
+
+  
+</head>
+<body class="flex bg-gray-50">
+
+<?php include 'admin_sidebar.php'; ?>
+
+
+<!-- Main Content -->
+<div id="main-content" class="p-6 bg-gray-50 min-h-screen transition-all duration-300 ml-64 w-[calc(100%-16rem)] main-content">
+  <!-- Header -->
+  <div class="flex justify-between items-center mb-6 bg-white p-5 rounded-lg shadow-sidebar">
+    <div>
+      <h1 class="text-2xl font-bold text-sidebar-text">Inventory Management</h1>
+      <p class="text-sm text-gray-500">Manage your inventory efficiently</p>
+    </div>
+    <div class="flex space-x-3">
+      <button class="p-2 bg-white border border-sidebar-border rounded-lg shadow-input text-sidebar-text hover:bg-sidebar-hover transition-all duration-300">
+        <i class="fas fa-bell"></i>
+      </button>
+      <button class="p-2 bg-white border border-sidebar-border rounded-lg shadow-input text-sidebar-text hover:bg-sidebar-hover transition-all duration-300">
+        <i class="fas fa-cog"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Inventory Overview Cards -->
+  <!-- Inventory Overview Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+    <?php
+    // Get total items count
+    $totalItemsQuery = "SELECT COUNT(*) as total_items FROM inventory_tb WHERE status = 1";
+    $totalItemsResult = $conn->query($totalItemsQuery);
+    $totalItems = $totalItemsResult->fetch_assoc()['total_items'];
+    
+    // Get total inventory value
+    $totalValueQuery = "SELECT SUM(quantity * price) as total_value FROM inventory_tb WHERE status = 1";
+    $totalValueResult = $conn->query($totalValueQuery);
+    $totalValue = $totalValueResult->fetch_assoc()['total_value'];
+    
+    // Get low stock items (let's define low stock as quantity < 5)
+    $lowStockQuery = "SELECT COUNT(*) as low_stock FROM inventory_tb WHERE quantity < 5 AND status = 1";
+    $lowStockResult = $conn->query($lowStockQuery);
+    $lowStock = $lowStockResult->fetch_assoc()['low_stock'];
+    
+    // Calculate turnover rate (simplified - could be based on historical data)
+    // This is a placeholder - you might want to calculate this differently
+    $turnoverQuery = "SELECT 
+                        (SUM(CASE WHEN quantity < 10 THEN 1 ELSE 0 END) / COUNT(*)) * 100 as turnover_rate 
+                      FROM inventory_tb 
+                      WHERE status = 1";
+    $turnoverResult = $conn->query($turnoverQuery);
+    $turnoverRate = $turnoverResult->fetch_assoc()['turnover_rate'];
+    $turnoverRate = number_format($turnoverRate, 1);
+    
+    // Get comparison data from last month (simplified)
+    $lastMonthQuery = "SELECT 
+                        COUNT(*) as last_month_items,
+                        SUM(quantity * price) as last_month_value,
+                        SUM(CASE WHEN quantity < 5 THEN 1 ELSE 0 END) as last_month_low_stock
+                      FROM inventory_tb 
+                      WHERE status = 1 
+                      AND updated_at >= DATE_SUB(CURRENT_DATE(), INTERVAL 2 MONTH) 
+                      AND updated_at < DATE_SUB(CURRENT_DATE(), INTERVAL 1 MONTH)";
+    $lastMonthResult = $conn->query($lastMonthQuery);
+    $lastMonthData = $lastMonthResult->fetch_assoc();
+    
+    // Calculate percentage changes
+    $itemsChange = $lastMonthData['last_month_items'] > 0 ? 
+                  (($totalItems - $lastMonthData['last_month_items']) / $lastMonthData['last_month_items']) * 100 : 0;
+    $valueChange = $lastMonthData['last_month_value'] > 0 ? 
+                  (($totalValue - $lastMonthData['last_month_value']) / $lastMonthData['last_month_value']) * 100 : 0;
+    $lowStockChange = $lastMonthData['last_month_low_stock'] > 0 ? 
+                     (($lowStock - $lastMonthData['last_month_low_stock']) / $lastMonthData['last_month_low_stock']) * 100 : 0;
+    ?>
+    
+    <!-- Total Items Card -->
+    <div class="bg-white rounded-lg shadow-sidebar p-5 border border-sidebar-border hover:shadow-card transition-all duration-300">
+        <div class="flex items-center mb-3">
+            <div class="w-12 h-12 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center mr-3">
+                <i class="fas fa-boxes text-lg"></i>
+            </div>
+            <span class="text-sidebar-text font-medium">Total Items</span>
+        </div>
+        <div class="text-3xl font-bold mb-2 text-sidebar-text"><?php echo $totalItems; ?></div>
+        <div class="text-sm <?php echo $itemsChange >= 0 ? 'text-green-600' : 'text-red-600'; ?> flex items-center">
+            <i class="fas fa-arrow-<?php echo $itemsChange >= 0 ? 'up' : 'down'; ?> mr-1"></i> 
+            <?php echo abs(round($itemsChange)) ?>% from last month
+        </div>
+    </div>
+
+    <!-- Total Value Card -->
+    <div class="bg-white rounded-lg shadow-sidebar p-5 border border-sidebar-border hover:shadow-card transition-all duration-300">
+        <div class="flex items-center mb-3">
+            <div class="w-12 h-12 rounded-lg bg-green-100 text-green-600 flex items-center justify-center mr-3">
+                <i class="fas fa-dollar-sign text-lg"></i>
+            </div>
+            <span class="text-sidebar-text font-medium">Total Value</span>
+        </div>
+        <div class="text-3xl font-bold mb-2 text-sidebar-text">₱<?php echo number_format($totalValue, 2); ?></div>
+        <div class="text-sm <?php echo $valueChange >= 0 ? 'text-green-600' : 'text-red-600'; ?> flex items-center">
+            <i class="fas fa-arrow-<?php echo $valueChange >= 0 ? 'up' : 'down'; ?> mr-1"></i> 
+            <?php echo abs(round($valueChange)) ?>% from last month
+        </div>
+    </div>
+
+    <!-- Low Stock Items Card -->
+    <div class="bg-white rounded-lg shadow-sidebar p-5 border border-sidebar-border hover:shadow-card transition-all duration-300">
+        <div class="flex items-center mb-3">
+            <div class="w-12 h-12 rounded-lg bg-orange-100 text-orange-600 flex items-center justify-center mr-3">
+                <i class="fas fa-exclamation-triangle text-lg"></i>
+            </div>
+            <span class="text-sidebar-text font-medium">Low Stock Items</span>
+        </div>
+        <div class="text-3xl font-bold mb-2 text-sidebar-text"><?php echo $lowStock; ?></div>
+        <div class="text-sm <?php echo $lowStockChange >= 0 ? 'text-red-600' : 'text-green-600'; ?> flex items-center">
+            <i class="fas fa-arrow-<?php echo $lowStockChange >= 0 ? 'up' : 'down'; ?> mr-1"></i> 
+            <?php echo abs(round($lowStockChange)) ?>% from last month
+        </div>
+    </div>
+
+    <!-- Turnover Rate Card -->
+    <div class="bg-white rounded-lg shadow-sidebar p-5 border border-sidebar-border hover:shadow-card transition-all duration-300">
+        <div class="flex items-center mb-3">
+            <div class="w-12 h-12 rounded-lg bg-purple-100 text-purple-600 flex items-center justify-center mr-3">
+                <i class="fas fa-sync-alt text-lg"></i>
+            </div>
+            <span class="text-sidebar-text font-medium">Turnover Rate</span>
+        </div>
+        <div class="text-3xl font-bold mb-2 text-sidebar-text"><?php echo $turnoverRate; ?>%</div>
+        <div class="text-sm text-green-600 flex items-center">
+            <i class="fas fa-arrow-up mr-1"></i> 3% from last month
+        </div>
+    </div>
+</div>
+  
+
+  <!-- Inventory Charts -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+  <?php
+// Fetch inventory data by category
+$categoryQuery = "SELECT 
+                    c.category_name, 
+                    COUNT(i.inventory_id) as item_count
+                  FROM inventory_category c
+                  LEFT JOIN inventory_tb i ON c.category_id = i.category_id AND i.status = 1
+                  GROUP BY c.category_name
+                  ORDER BY item_count DESC";
+$categoryResult = $conn->query($categoryQuery);
+
+$categoryLabels = [];
+$categoryCounts = [];
+$categoryColors = ['#008080', '#E76F51', '#4caf50', '#ff9800', '#9c27b0', '#607d8b']; // Add more colors if needed
+
+while ($row = $categoryResult->fetch_assoc()) {
+    $categoryLabels[] = $row['category_name'];
+    $categoryCounts[] = $row['item_count'];
+    // You could also use $row['total_quantity'] or $row['total_value'] depending on what you want to show
+}
+?>
+    <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300">
+      <div class="flex justify-between items-center p-5 border-b border-sidebar-border">
+        <h3 class="font-medium text-sidebar-text">Inventory by Category</h3>
+        <button class="px-3 py-2 border border-sidebar-border rounded-md text-sm flex items-center text-sidebar-text hover:bg-sidebar-hover transition-all duration-300">
+          <i class="fas fa-download mr-2"></i> Export
+        </button>
+      </div>
+      <div class="p-5">
+        <canvas id="inventoryCategoryChart" class="h-64"></canvas>
+      </div>
+    </div>
+
+    <?php
+// Fetch inventory value trends data
+$currentDate = new DateTime();
+$monthLabels = [];
+$monthValues = [];
+
+// Generate labels for the last 6 months
+for ($i = 5; $i >= 0; $i--) {
+    $date = clone $currentDate;
+    $date->modify("-$i months");
+    $monthLabels[] = $date->format('M'); // Short month name (Jan, Feb, etc.)
+    $monthKeys[] = $date->format('Y-m'); // For database comparison
+}
+
+// Get data from database
+$trendQuery = "SELECT 
+                DATE_FORMAT(updated_at, '%Y-%m') as month,
+                SUM(quantity * price) as monthly_value
+              FROM inventory_tb
+              WHERE status = 1
+              AND updated_at >= DATE_SUB(CURRENT_DATE(), INTERVAL 6 MONTH)
+              GROUP BY DATE_FORMAT(updated_at, '%Y-%m')";
+$trendResult = $conn->query($trendQuery);
+
+// Initialize all values to 0
+$monthValues = array_fill(0, 6, 0);
+
+// Fill in actual values where data exists
+if ($trendResult) {
+    $dbData = [];
+    while ($row = $trendResult->fetch_assoc()) {
+        $dbData[$row['month']] = $row['monthly_value'];
+    }
+    
+    // Match database data with our month labels
+    foreach ($monthKeys as $index => $monthKey) {
+        if (isset($dbData[$monthKey])) {
+            $monthValues[$index] = $dbData[$monthKey];
+        }
+    }
+}
+?>
+    <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300">
+      <div class="flex justify-between items-center p-5 border-b border-sidebar-border">
+        <h3 class="font-medium text-sidebar-text">Inventory Value Trends</h3>
+        <select id="valueTrendPeriod" class="p-2 border border-sidebar-border rounded-md text-sm text-sidebar-text focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
+          <option value="month">Last 12 Months</option>
+          <option value="year">Last 5 Years</option>
+        </select>
+      </div>
+      <div class="p-5">
+        <canvas id="inventoryValueChart" class="h-64"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Additional Charts -->
+  
+
+  <?php
+include '../db_connect.php';
+// Check connection
+if ($conn->connect_error) {
+  die("Connection failed: " . $conn->connect_error);
+}
+
+// First, get all branches
+$branchQuery = "SELECT branch_id, branch_name FROM branch_tb";
+$branchResult = $conn->query($branchQuery);
+
+// Check if we have branches
+if ($branchResult->num_rows > 0) {
+  // Loop through each branch
+  while($branch = $branchResult->fetch_assoc()) {
+    $branchId = $branch["branch_id"];
+    $branchName = $branch["branch_name"];
+    
+    // Modified SQL query with status filter
+      $sql = "SELECT 
+      i.inventory_id, 
+      i.item_name, 
+      c.category_name, 
+      i.quantity, 
+      i.price, 
+      (i.quantity * i.price) AS total_value
+      FROM inventory_tb i
+      JOIN inventory_category c ON i.category_id = c.category_id
+      WHERE i.branch_id = $branchId AND i.status = 1";
+
+    $result = $conn->query($sql);
+
+    // Calculate pagination for this branch
+    $itemsPerPage = 5;
+    $totalItems = $result->num_rows;
+    $totalPages = ceil($totalItems / $itemsPerPage);
+    $currentPage = isset($_GET['page_'.$branchId]) ? (int)$_GET['page_'.$branchId] : 1;
+    $startItem = ($currentPage - 1) * $itemsPerPage;
+
+    // Modify query to include pagination
+    $paginatedSql = $sql . " LIMIT $startItem, $itemsPerPage";
+    $paginatedResult = $conn->query($paginatedSql);
+    ?>
+    
+    <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 mb-8">
+        <div class="flex justify-between items-center p-5 border-b border-sidebar-border">
+            <h3 id="branchTitle_<?php echo $branchId; ?>" class="font-medium text-sidebar-text">
+                <?php echo htmlspecialchars(ucwords($branchName)); ?> - Inventory Items
+            </h3>
+            <div class="flex items-center space-x-4">
+                <!-- Search Box with Filter Icon -->
+                <div class="relative flex items-center">
+                    <input type="text" id="searchBox_<?php echo $branchId; ?>" class="p-2 pl-10 border border-sidebar-border rounded-md text-sm text-sidebar-text focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent" placeholder="Search items...">
+                    <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                    <div class="relative">
+                        <button id="filterButton_<?php echo $branchId; ?>" class="ml-2 p-2 text-gray-500 hover:text-sidebar-accent">
+                            <i class="fas fa-filter"></i>
+                        </button>
+                        <!-- Filter Dropdown -->
+                        <div id="filterDropdown_<?php echo $branchId; ?>" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 border border-gray-200">
+                            <div class="py-1">
+                                <a href="#" class="filter-option block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-sort="default" data-branch="<?php echo $branchId; ?>">Default (Unsorted)</a>
+                                <a href="#" class="filter-option block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-sort="price_asc" data-branch="<?php echo $branchId; ?>">Price: Low to High</a>
+                                <a href="#" class="filter-option block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-sort="price_desc" data-branch="<?php echo $branchId; ?>">Price: High to Low</a>
+                                <a href="#" class="filter-option block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-sort="quantity_asc" data-branch="<?php echo $branchId; ?>">Quantity: Low to High</a>
+                                <a href="#" class="filter-option block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-sort="quantity_desc" data-branch="<?php echo $branchId; ?>">Quantity: High to Low</a>
+                                <a href="#" class="filter-option block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-sort="name_asc" data-branch="<?php echo $branchId; ?>">Name: A to Z</a>
+                                <a href="#" class="filter-option block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-sort="name_desc" data-branch="<?php echo $branchId; ?>">Name: Z to A</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Archived Button -->
+                <button class="px-4 py-2 bg-gray-200 text-gray-700 rounded-md text-sm flex items-center hover:bg-gray-300 transition-all duration-300" onclick="showArchivedItems(<?php echo $branchId; ?>)">
+                    <i class="fas fa-archive mr-2"></i> Archived
+                </button>
+                
+                <!-- Add Item Button -->
+                <button class="px-4 py-2 bg-sidebar-accent text-white rounded-md text-sm flex items-center hover:bg-darkgold transition-all duration-300" onclick="openAddInventoryModal(<?php echo $branchId; ?>)">
+                    <i class="fas fa-plus mr-2"></i> Add Item
+                </button>
+            </div>
+        </div>
+        <div class="overflow-x-auto scrollbar-thin">
+            <table class="w-full">
+                <thead>
+                    <tr class="bg-sidebar-hover">
+                        <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(<?php echo $branchId; ?>, 0)">ID</th>
+                        <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(<?php echo $branchId; ?>, 1)">Item Name</th>
+                        <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(<?php echo $branchId; ?>, 2)">Category</th>
+                        <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(<?php echo $branchId; ?>, 3)">Quantity</th>
+                        <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(<?php echo $branchId; ?>, 4)">Unit Price</th>
+                        <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(<?php echo $branchId; ?>, 5)">Total Value</th>
+                        <th class="p-4 text-left text-sm font-medium text-sidebar-text">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="inventoryTable_<?php echo $branchId; ?>">
+                    <?php
+                    if ($paginatedResult->num_rows > 0) {
+                        // Output data of each row
+                        while($row = $paginatedResult->fetch_assoc()) {
+                            echo '<tr class="border-b border-sidebar-border hover:bg-sidebar-hover">';
+                            echo '<td class="p-4 text-sm text-sidebar-text font-medium">#INV-' . str_pad($row["inventory_id"], 3, '0', STR_PAD_LEFT) . '</td>';
+                            echo '<td class="p-4 text-sm text-sidebar-text">' . htmlspecialchars($row["item_name"]) . '</td>';
+                            echo '<td class="p-4 text-sm text-sidebar-text">' . htmlspecialchars($row["category_name"]) . '</td>';
+                            echo '<td class="p-4 text-sm text-sidebar-text" data-sort-value="' . $row["quantity"] . '">' . $row["quantity"] . '</td>';
+                            echo '<td class="p-4 text-sm text-sidebar-text" data-sort-value="' . $row["price"] . '">₱' . number_format($row["price"], 2) . '</td>';
+                            echo '<td class="p-4 text-sm text-sidebar-text" data-sort-value="' . $row["total_value"] . '">₱' . number_format($row["total_value"], 2) . '</td>';
+                            echo '<td class="p-4 text-sm">';
+                            echo '<div class="flex space-x-2">';
+                            echo '<button class="p-1.5 bg-blue-100 text-green-600 rounded hover:bg-green-200 transition-all" onclick="openViewItemModal(' . $row["inventory_id"] . ')">';
+                            echo '<i class="fas fa-edit"></i>';
+                            echo '</button>';
+                            echo '<form method="POST" action="inventory/delete_inventory_item.php" onsubmit="return false;" style="display:inline;" class="delete-form">';
+                            echo '<input type="hidden" name="inventory_id" value="' . $row["inventory_id"] . '">';
+                            echo '<button type="submit" class="p-1.5 bg-red-100 text-red-600 rounded hover:bg-red-200 transition-all">';
+                            echo '<i class="fas fa-archive"></i>';
+                            echo '</button>';
+                            echo '</form>';
+                            echo '</div>';
+                            echo '</td>';
+                            echo '</tr>';
+                        }
+                    } else {
+                        echo '<tr class="border-b border-sidebar-border"><td colspan="7" class="p-4 text-center text-sm text-sidebar-text">No inventory items found for this branch</td></tr>';
+                    }
+                    ?>
+                </tbody>
+            </table>
+        </div>
+        <!-- Pagination -->
+        <div class="p-4 border-t border-sidebar-border flex justify-between items-center">
+            <div class="text-sm text-gray-500">Showing <?php echo min($itemsPerPage, $totalItems) ?> of <?php echo $totalItems ?> items</div>
+            <div class="flex space-x-1">
+                <?php if ($currentPage > 1): ?>
+                    <a href="?page_<?php echo $branchId; ?>=<?php echo $currentPage - 1 ?>" class="px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">&laquo;</a>
+                <?php else: ?>
+                    <button disabled class="px-3 py-1 border border-sidebar-border rounded text-sm text-gray-400">&laquo;</button>
+                <?php endif; ?>
+                
+                <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                    <?php if ($i == $currentPage): ?>
+                        <button class="px-3 py-1 bg-sidebar-accent text-white rounded text-sm"><?php echo $i ?></button>
+                    <?php else: ?>
+                        <a href="?page_<?php echo $branchId; ?>=<?php echo $i ?>" class="px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover"><?php echo $i ?></a>
+                    <?php endif; ?>
+                <?php endfor; ?>
+                
+                <?php if ($currentPage < $totalPages): ?>
+                    <a href="?page_<?php echo $branchId; ?>=<?php echo $currentPage + 1 ?>" class="px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">&raquo;</a>
+                <?php else: ?>
+                    <button disabled class="px-3 py-1 border border-sidebar-border rounded text-sm text-gray-400">&raquo;</button>
+                <?php endif; ?>
+            </div>
+        </div>
+    </div>
+    
+    <?php
+        }
+    } else {
+        echo '<div class="p-4 bg-red-100 text-red-700 rounded-lg">No branches found in the database.</div>';
+    }
+
+    // Close connection
+    $conn->close();
+    ?>
+
+
+
+
+
+
+
+</div>
+<!-- Add this modal HTML at the end of your file, before the closing PHP tag -->
+<div id="viewItemModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center">
+  <div class="bg-white rounded-lg shadow-lg max-w-2xl w-full">
+    <div class="p-5 border-b border-sidebar-border flex justify-between items-center">
+    <h3 class="text-xl font-bold text-sidebar-accent"><i class="fas fa-box"></i> Inventory Item Details</h3>
+      <button onclick="closeViewItemModal()" class="text-gray-500 hover:text-gray-700">
+        <i class="fas fa-times"></i>
+
+    </div>
+    <div class="p-5" id="itemDetailsContent">
+      <!-- Item details will be loaded here via AJAX -->
+      <div class="flex justify-center">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-sidebar-accent"></div>
+      </div>
+    </div>
+    <div class="p-6 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
+      <button class="px-5 py-3 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-semibold hover:bg-navy transition-colors" onclick="closeViewItemModal()">
+        Cancel
+      </button>
+      <button type="button" class="px-6 py-3 bg-sidebar-accent text-white rounded-lg font-semibold hover:bg-darkgold transition-colors flex items-center" onclick="saveItemChanges()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
+          <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+          <polyline points="17 21 17 13 7 13 7 21"></polyline>
+          <polyline points="7 3 7 8 15 8"></polyline>
+        </svg>
+        Save Changes
+      </button>
+    </div>
+  </div>
+</div>
+
+
+<!-- Add Inventory Modal -->
+<div id="addInventoryModal" class="fixed top-0 left-0 w-full h-full bg-black bg-opacity-60 flex items-center justify-center z-50 hidden">
+  <div class="bg-white rounded-xl w-full max-w-md max-h-[90vh] overflow-y-auto shadow-xl">
+    <!-- Modal Header -->
+    <div class="bg-gradient-to-r from-sidebar-accent to-white flex justify-between items-center p-6 flex-shrink-0">
+      <h3 class="text-xl font-bold text-white"><i class="fas fa-box"></i> Add New Inventory Item</h3>
+      <button class="bg-black bg-opacity-20 hover:bg-opacity-30 rounded-full p-2 text-white hover:text-white transition-all duration-200" onclick="closeAddInventoryModal()">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+        </svg>
+      </button>
+    </div>
+    
+    <!-- Modal Body -->
+    <div class="p-6">
+      <form id="addInventoryForm" class="space-y-4">
+        <div class="space-y-4">
+          <div>
+            <label for="itemName" class="block text-sm font-medium text-gray-700 mb-1">Item Name</label>
+            <input type="text" id="itemName" name="itemName" required class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent" placeholder="Item Name">
+          </div>
+          
+          <?php
+          
+            // Include database connection
+            include '../db_connect.php';
+
+            // Fetch categories from the database
+            $sql = "SELECT category_id, category_name FROM inventory_category";
+            $result = $conn->query($sql);
+            ?>
+
+            <div>
+                <label for="category" class="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                <select id="category" name="category" required class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
+                    <option value="" disabled selected>Select a Category</option>
+                    <?php
+                    if ($result->num_rows > 0) {
+                        while ($row = $result->fetch_assoc()) {
+                            echo '<option value="' . $row['category_id'] . '">' . htmlspecialchars($row['category_name']) . '</option>';
+                        }
+                    } else {
+                        echo '<option value="" disabled>No Categories Available</option>';
+                    }
+                    ?>
+                </select>
+            </div>
+
+          <?php
+            // Include database connection
+            include '../db_connect.php';
+
+            // Fetch branches from the database
+            $sql = "SELECT branch_id, branch_name FROM branch_tb";
+            $result = $conn->query($sql);
+            ?>
+
+            <div class="bg-gray-50 p-4 rounded-lg border-l-4 border-gold">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Branch</label>
+                <div class="flex gap-4">
+                    <?php
+                    if ($result->num_rows > 0) {
+                        while ($row = $result->fetch_assoc()) {
+                            echo '<label class="flex items-center space-x-2 cursor-pointer">';
+                            echo '<input type="radio" name="branch" value="' . $row['branch_id'] . '" required class="hidden peer">';
+                            echo '<div class="w-5 h-5 rounded-full border-2 border-gold flex items-center justify-center peer-checked:bg-gold peer-checked:border-darkgold transition-colors"></div>';
+                            echo '<span class="text-gray-700 font-medium">' . htmlspecialchars($row['branch_name']) . '</span>';
+                            echo '</label>';
+                        }
+                    } else {
+                        echo '<p class="text-gray-500">No branches available.</p>';
+                    }
+                    ?>
+                </div>
+            </div>
+
+          
+          <div>
+            <label for="quantity" class="block text-sm font-medium text-gray-700 mb-1">Quantity</label>
+            <input type="number" id="quantity" name="quantity" min="1" required class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent" placeholder="Quantity">
+          </div>
+          
+          <div>
+            <label for="unitPrice" class="block text-sm font-medium text-gray-700 mb-1">Unit Price</label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <span class="text-gray-500">₱</span>
+              </div>
+              <input type="number" id="unitPrice" name="unitPrice" step="0.01" required class="w-full pl-8 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent" placeholder="0.00">
+            </div>
+          </div>
+          
+          <!-- File Upload -->
+          <div class="bg-gray-50 p-5 rounded-xl">
+            <label for="itemImage" class="block text-sm font-medium text-gray-700 mb-3">Upload Item Image</label>
+            <div class="relative">
+              <input type="file" id="itemImage" name="itemImage" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20">
+              <div class="w-full p-3 border border-dashed border-gray-300 rounded-lg bg-gray-50 text-gray-500 text-sm flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 text-sidebar-accent">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="17 8 12 3 7 8"></polyline>
+                  <line x1="12" y1="3" x2="12" y2="15"></line>
+                </svg>
+                Choose file or drag here
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+    
+    <!-- Modal Footer -->
+    <div class="p-6 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
+      <button class="px-5 py-3 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-semibold hover:bg-navy transition-colors" onclick="closeAddInventoryModal()">
+        Cancel
+      </button>
+      <button type="submit" form="addInventoryForm" class="px-6 py-3 bg-sidebar-accent text-white rounded-lg font-semibold hover:bg-darkgold transition-colors flex items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+        Add Item
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Inventory Modal -->
+
+<div id="editInventoryModal" class="fixed hidden top-0 left-0 w-full h-full bg-black bg-opacity-60 flex items-center justify-center z-50">
+  <div class="bg-white rounded-xl w-full max-w-md max-h-[90vh] overflow-y-auto shadow-xl">
+    <!-- Modal Header -->
+    <div class="bg-gradient-to-r from-sidebar-accent to-white flex justify-between items-center p-6 flex-shrink-0">
+      <h3 class="text-xl font-bold text-white"><i class="fas fa-edit"></i> Edit Inventory Item</h3>
+      <button class="bg-black bg-opacity-20 hover:bg-opacity-30 rounded-full p-2 text-white hover:text-white transition-all duration-200" onclick="closeEditInventoryModal()">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+        </svg>
+      </button>
+    </div>
+    
+    <!-- Modal Body -->
+    <div class="p-6">
+      <form id="editInventoryForm" class="space-y-4">
+        <div class="space-y-4">
+          <div>
+            <label for="editItemId" class="block text-sm font-medium text-gray-700 mb-1">Item ID</label>
+            <input type="text" id="editItemId" name="editItemId" value="<?php echo $item_id; ?>" class="w-full p-3 border border-gray-300 rounded-lg bg-gray-100 cursor-not-allowed" readonly>
+          </div>
+
+          <div>
+            <label for="editItemName" class="block text-sm font-medium text-gray-700 mb-1">Item Name</label>
+            <input type="text" id="editItemName" name="editItemName" value="<?php echo $item_name; ?>" required class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent" placeholder="Item Name">
+          </div>
+
+          <!-- Category Dropdown -->
+          <div>
+            <label for="category" class="block text-sm font-medium text-gray-700 mb-1">Category</label>
+            <select id="category" name="category" required class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
+              <option value="" disabled>Select a Category</option>
+              <?php
+              // Fetch categories again
+              include '../db_connect.php';
+              $sql = "SELECT category_id, category_name FROM inventory_category";
+              $result = $conn->query($sql);
+              if ($result->num_rows > 0) {
+                  while ($row = $result->fetch_assoc()) {
+                      $selected = ($row['category_id'] == $category_id) ? 'selected' : '';
+                      echo '<option value="' . $row['category_id'] . '" ' . $selected . '>' . htmlspecialchars($row['category_name']) . '</option>';
+                  }
+              } else {
+                  echo '<option value="" disabled>No Categories Available</option>';
+              }
+              ?>
+            </select>
+          </div>
+
+          <div>
+            <label for="editQuantity" class="block text-sm font-medium text-gray-700 mb-1">Quantity</label>
+            <input type="number" id="editQuantity" name="editQuantity" value="<?php echo $quantity; ?>" min="1" required class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent" placeholder="Quantity">
+          </div>
+
+          <div>
+            <label for="editUnitPrice" class="block text-sm font-medium text-gray-700 mb-1">Unit Price</label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <span class="text-gray-500">₱</span>
+              </div>
+              <input type="number" id="editUnitPrice" name="editUnitPrice" value="<?php echo $unit_price; ?>" step="0.01" required class="w-full pl-8 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent" placeholder="0.00">
+            </div>
+          </div>
+
+          <!-- Current Image Preview -->
+          <div class="bg-navy p-5 rounded-xl">
+            <div class="flex flex-col items-center space-y-3">
+              <div class="w-full h-32 bg-center bg-cover rounded-lg shadow-md" style="background-image: url('<?php echo $inventory_img; ?>');"></div>
+              <span class="text-sm text-gray-600">Current Image</span>
+            </div>
+          </div>
+
+          <!-- File Upload -->
+          <div class="bg-gray-50 p-5 rounded-xl">
+            <label for="editItemImage" class="block text-sm font-medium text-gray-700 mb-3">Upload New Image</label>
+            <div class="relative">
+              <input type="file" id="editItemImage" name="editItemImage" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20">
+              <div class="w-full p-3 border border-dashed border-gray-300 rounded-lg bg-gray-50 text-gray-500 text-sm flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 text-sidebar-accent">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="17 8 12 3 7 8"></polyline>
+                  <line x1="12" y1="3" x2="12" y2="15"></line>
+                </svg>
+                Choose file or drag here
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  
+    <!-- Modal Footer -->
+    <div class="p-6 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
+      <button class="px-5 py-3 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-semibold hover:bg-navy transition-colors" onclick="closeEditInventoryModal()">
+        Cancel
+      </button>
+      <button type="submit" form="editInventoryForm" class="px-6 py-3 bg-sidebar-accent text-white rounded-lg font-semibold hover:bg-darkgold transition-colors flex items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
+          <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+          <polyline points="17 21 17 13 7 13 7 21"></polyline>
+          <polyline points="7 3 7 8 15 8"></polyline>
+        </svg>
+        Save Changes
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Archived Items Modal -->
+<div id="archivedItemsModal" class="fixed inset-0 z-50 overflow-auto bg-black bg-opacity-50 flex justify-center items-center hidden">
+    <div class="bg-white rounded-lg shadow-lg max-w-3xl w-full mx-4">
+        <div class="flex justify-between items-center p-5 border-b border-sidebar-border">
+            <h3 id="archivedItemsTitle" class="font-medium text-lg text-sidebar-text">Archived Items</h3>
+            <button onclick="closeArchivedModal()" class="text-gray-500 hover:text-gray-700">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <!-- Add search bar here -->
+        <div class="p-4 border-b border-sidebar-border">
+            <div class="relative">
+                <input type="text" id="archivedItemsSearch" placeholder="Search archived items..." 
+                    class="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <div class="absolute left-3 top-2.5 text-gray-400">
+                    <i class="fas fa-search"></i>
+                </div>
+            </div>
+        </div>
+        <div id="archivedItemsContent" class="p-5 max-h-[70vh] overflow-y-auto w-full">
+            <!-- Content will be loaded here via AJAX -->
+        </div>
+    </div>
+</div>
+
+<style>
+  .border-gold { border-color: #d4af37; } /* Gold Border */
+  .focus\:ring-gold:focus { box-shadow: 0 0 0 2px #d4af37; }
+  .bg-gold { background-color: #d4af37; }
+  .hover\:bg-darkgold:hover { background-color: #b8860b; }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Get the data from PHP
+    const categoryLabels = <?php echo json_encode($categoryLabels); ?>;
+    const categoryData = <?php echo json_encode($categoryCounts); ?>;
+    const categoryColors = <?php echo json_encode(array_slice($categoryColors, 0, count($categoryLabels))); ?>;
+
+    // Create the chart
+    const inventoryCategoryChart = new Chart(document.getElementById('inventoryCategoryChart'), {
+        type: 'doughnut',
+        data: {
+            labels: categoryLabels,
+            datasets: [{
+                label: 'Inventory by Category',
+                data: categoryData,
+                backgroundColor: categoryColors,
+                borderWidth: 0,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            let label = context.label || '';
+                            if (label) {
+                                label += ': ';
+                            }
+                            label += context.raw + ' items';
+                            return label;
+                        }
+                    }
+                }
+            }
+        }
+    });
+});
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Get the data from PHP
+    const monthLabels = <?php echo json_encode($monthLabels); ?>;
+    const monthValues = <?php echo json_encode($monthValues); ?>;
+    
+    // Create the chart
+    const inventoryValueChart = new Chart(document.getElementById('inventoryValueChart'), {
+        type: 'line',
+        data: {
+            labels: monthLabels,
+            datasets: [{
+                label: 'Inventory Value',
+                data: monthValues,
+                borderColor: '#008080',
+                backgroundColor: 'rgba(0, 128, 128, 0.1)',
+                fill: true,
+                tension: 0.4,
+                pointBackgroundColor: '#008080',
+                pointRadius: 4,
+                pointHoverRadius: 6
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return '₱' + context.raw.toLocaleString('en-PH', {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2
+                            });
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: false,
+                    ticks: {
+                        callback: function(value) {
+                            return '₱' + value.toLocaleString('en-PH');
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    // Add event listener for period selector
+    document.getElementById('valueTrendPeriod').addEventListener('change', function() {
+        const period = this.value;
+        fetchInventoryTrendData(period);
+    });
+
+    // Function to fetch data based on selected period
+    function fetchInventoryTrendData(period) {
+    fetch(`inventory/get_trend_data.php?period=${period}`)
+        .then(response => response.json())
+        .then(data => {
+            // For quarters, you might want to format the labels differently
+            if (period === 'quarter') {
+                data.labels = data.labels.map(label => {
+                    // Format as "Q1 2023" instead of "2023 Q1" if preferred
+                    return label.replace(/(\d{4}) Q(\d)/, 'Q$2 $1');
+                });
+            }
+            
+            inventoryValueChart.data.labels = data.labels;
+            inventoryValueChart.data.datasets[0].data = data.values;
+            inventoryValueChart.update();
+        })
+        .catch(error => console.error('Error:', error));
+}
+});
+</script>
+  <script src="inventory_functions.js"></script>
+  <script src="script.js"></script>
+  <script src="tailwind.js"></script>
+</body>
+</html>

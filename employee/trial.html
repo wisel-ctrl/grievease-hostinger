@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Expense Tracking - FSMS</title>
+  <link rel="stylesheet" href="employee_styles.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
+  <style>
+    /* Additional modal styles to ensure proper display */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .modal-content {
+      background-color: #fff;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 500px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+      margin: 20px;
+    }
+    
+    .modal-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid #eee;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .modal-header h3 {
+      margin: 0;
+      font-size: 20px;
+      color: #333;
+    }
+    
+    .modal-body {
+      padding: 24px;
+      max-height: 70vh;
+      overflow-y: auto;
+    }
+    
+    .modal-footer {
+      padding: 16px 24px;
+      border-top: 1px solid #eee;
+      text-align: right;
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+    }
+    
+    /* Close button styling */
+    .close-modal {
+      background: none;
+      border: none;
+      font-size: 24px;
+      line-height: 1;
+      cursor: pointer;
+      color: #666;
+      transition: color 0.2s;
+    }
+    
+    .close-modal:hover {
+      color: #333;
+    }
+    
+    /* Improve form usability */
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: #444;
+    }
+    
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 14px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      border-color: #4a90e2;
+      box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
+      outline: none;
+    }
+    
+    /* Enhanced search styling */
+    .search-container {
+      position: relative;
+      margin-right: 16px;
+      min-width: 280px;
+    }
+    
+    .search-input {
+      width: 100%;
+      padding: 10px 16px 10px 40px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: all 0.2s ease;
+      background-color: #f9f9f9;
+    }
+    
+    .search-input:focus {
+      background-color: #fff;
+      border-color: #4a90e2;
+      box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.15);
+      outline: none;
+    }
+    
+    .search-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #888;
+      font-size: 14px;
+      pointer-events: none;
+    }
+    
+    /* Table actions layout */
+    .table-actions {
+      display: flex;
+      align-items: center;
+      margin-top: 16px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    
+    /* Button styling */
+    .btn {
+      padding: 10px 16px;
+      border-radius: 6px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: none;
+      font-size: 14px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .btn-primary {
+      background-color: #4a90e2;
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background-color: #3a7bc8;
+      transform: translateY(-1px);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    
+    .btn-outlined {
+      background-color: transparent;
+      border: 1px solid #ddd;
+      color: #666;
+    }
+    
+    .btn-outlined:hover {
+      border-color: #aaa;
+      color: #333;
+      background-color: #f5f5f5;
+    }
+    
+    .btn-danger {
+      background-color: #f44336;
+      color: white;
+    }
+    
+    .btn-danger:hover {
+      background-color: #d32f2f;
+    }
+    
+    /* Improved status badges */
+    .status {
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      display: inline-block;
+    }
+    
+    .status-completed {
+      background-color: #e6f7ee;
+      color: #0d8a4a;
+    }
+    
+    .status-pending {
+      background-color: #fff4e5;
+      color: #e07c00;
+    }
+    
+    /* Expense category badges */
+    .category-badge {
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      display: inline-block;
+    }
+    
+    .category-supplies {
+      background-color: #e3f2fd;
+      color: #1565c0;
+    }
+    
+    .category-utilities {
+      background-color: #e8f5e9;
+      color: #2e7d32;
+    }
+    
+    .category-salaries {
+      background-color: #f3e5f5;
+      color: #7b1fa2;
+    }
+    
+    .category-maintenance {
+      background-color: #fff3e0;
+      color: #ef6c00;
+    }
+    
+    .category-other {
+      background-color: #f5f5f5;
+      color: #616161;
+    }
+    
+    /* Table improvements */
+    .table-card {
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      margin-bottom: 24px;
+      overflow: hidden;
+    }
+    
+    .table-header {
+      padding: 20px;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .table-title {
+      margin: 0;
+      font-size: 18px;
+      color: #333;
+    }
+    
+    .table-responsive {
+      padding: 0 20px 20px;
+      overflow-x: auto;
+    }
+    
+    .table-sortable {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    .table-sortable th {
+      padding: 12px 16px;
+      text-align: left;
+      color: #555;
+      font-weight: 600;
+      border-bottom: 2px solid #eee;
+    }
+    
+    .table-sortable td {
+      padding: 12px 16px;
+      vertical-align: middle;
+      border-bottom: 1px solid #eee;
+    }
+    
+    /* Hover effects for better UX */
+    .table-sortable tbody tr:hover {
+      background-color: #f9f9f9;
+    }
+    
+    /* Filter dropdown */
+    .filter-dropdown {
+      position: relative;
+      display: inline-block;
+      margin-right: 10px;
+    }
+    
+    .filter-btn {
+      background-color: #f5f5f5;
+      border: 1px solid #ddd;
+      padding: 10px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 500;
+      color: #555;
+    }
+    
+    .filter-btn:hover {
+      background-color: #eee;
+      border-color: #ccc;
+    }
+    
+    .filter-content {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      background-color: #fff;
+      min-width: 280px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+      z-index: 1;
+      border-radius: 8px;
+      padding: 16px;
+      margin-top: 8px;
+    }
+    
+    .filter-content.show {
+      display: block;
+    }
+    
+    .filter-section {
+      margin-bottom: 16px;
+    }
+    
+    .filter-section h4 {
+      margin-top: 0;
+      margin-bottom: 10px;
+      font-size: 14px;
+      color: #555;
+    }
+    
+    .filter-item {
+      padding: 6px 0;
+    }
+    
+    .filter-item label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    
+    /* Date range inputs */
+    .date-range {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 15px;
+    }
+    
+    .date-range input {
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 14px;
+      flex: 1;
+    }
+    
+    /* Stats cards improvements */
+    .stats-container {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    
+    .stat-card {
+      background-color: white;
+      border-radius: 8px;
+      padding: 20px;
+      flex: 1;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    
+    .stat-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    
+    .stat-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 12px;
+    }
+    
+    .icon-blue {
+      background-color: rgba(74, 144, 226, 0.1);
+      color: #4a90e2;
+    }
+    
+    .icon-green {
+      background-color: rgba(46, 125, 50, 0.1);
+      color: #2e7d32;
+    }
+    
+    .icon-orange {
+      background-color: rgba(255, 152, 0, 0.1);
+      color: #ff9800;
+    }
+    
+    .stat-title {
+      font-size: 14px;
+      color: #666;
+    }
+    
+    .stat-value {
+      font-size: 24px;
+      font-weight: 600;
+      color: #333;
+    }
+    
+    /* Responsive improvements */
+    @media (max-width: 768px) {
+      .stats-container {
+        flex-direction: column;
+      }
+      
+      .stat-card {
+        width: 100%;
+        margin-bottom: 10px;
+      }
+      
+      .table-actions {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      
+      .search-container, .filter-dropdown, .table-actions button {
+        margin-bottom: 10px;
+        width: 100%;
+      }
+      
+      .notification {
+        min-width: auto;
+        width: calc(100% - 40px);
+      }
+      
+      .modal-content {
+        width: 95%;
+        margin: 10px;
+      }
+      
+      .modal-body {
+        padding: 16px;
+        max-height: 60vh;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="logo-container">
+      <div class="logo">FSMS</div>
+      <button class="close-modal" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+    </div>
+    <ul class="nav-list">
+      <li class="nav-item">
+        <a href="employee-index.html" class="nav-link">
+          <i class="fas fa-tachometer-alt"></i>
+          <span>Dashboard</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="employee_customer_account_creation.html.html" class="nav-link">
+          <i class="fas fa-user-circle"></i>
+          <span>Customer Accounts</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="employee_inventory.html" class="nav-link">
+          <i class="fas fa-boxes"></i>
+          <span>View Inventory</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="employee_pos.html" class="nav-link">
+          <i class="fas fa-cash-register"></i>
+          <span>POS</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="employee_expenses.html" class="nav-link active">
+          <i class="fas fa-money-bill-wave"></i>
+          <span>Expense Tracking</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="employee-history.html" class="nav-link">
+          <i class="fas fa-history"></i>
+          <span>Service History</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="employee-communication.html" class="nav-link">
+          <i class="fas fa-comments"></i>
+          <span>Communication</span>
+        </a>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <div class="header">
+      <h1 class="page-title">Expense Tracking</h1>
+      <div class="user-profile">
+        <div class="user-avatar">JD</div>
+        <span>John Doe</span>
+      </div>
+    </div>
+
+    <!-- Expense Overview Cards -->
+    <div class="stats-container">
+      <div class="stat-card">
+        <div class="stat-header">
+          <div class="stat-icon icon-blue">
+            <i class="fas fa-dollar-sign"></i>
+          </div>
+          <span class="stat-title">Total Expenses</span>
+        </div>
+        <div class="stat-value">$12,340</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-header">
+          <div class="stat-icon icon-green">
+            <i class="fas fa-chart-line"></i>
+          </div>
+          <span class="stat-title">This Month</span>
+        </div>
+        <div class="stat-value">$1,700</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-header">
+          <div class="stat-icon icon-orange">
+            <i class="fas fa-exclamation-triangle"></i>
+          </div>
+          <span class="stat-title">Pending Payments</span>
+        </div>
+        <div class="stat-value">2</div>
+      </div>
+    </div>
+
+    <!-- Expenses Table Card -->
+    <div class="table-card">
+      <div class="table-header">
+        <h3 class="table-title">Expenses</h3>
+      </div>
+      
+      <!-- Search and Filter Section -->
+      <div style="padding: 0 20px 20px;">
+        <div class="table-actions">
+          <div class="search-container">
+            <input type="text" id="searchExpenses" class="search-input" placeholder="Search expenses...">
+            <i class="fas fa-search search-icon"></i>
+          </div>
+          
+          <div class="filter-dropdown">
+            <button class="filter-btn" onclick="toggleFilter()">
+              <i class="fas fa-filter"></i> Filter
+            </button>
+            <div class="filter-content" id="filterDropdown">
+              <div class="filter-section">
+                <h4>Date Range</h4>
+                <div class="date-range">
+                  <input type="date" id="startDate" placeholder="Start Date">
+                  <input type="date" id="endDate" placeholder="End Date">
+                </div>
+              </div>
+              <div class="filter-section">
+                <h4>Categories</h4>
+                <div class="filter-item">
+                  <label>
+                    <input type="checkbox" value="Supplies"> Supplies
+                  </label>
+                </div>
+                <div class="filter-item">
+                  <label>
+                    <input type="checkbox" value="Utilities"> Utilities
+                  </label>
+                </div>
+                <div class="filter-item">
+                  <label>
+                    <input type="checkbox" value="Salaries"> Salaries
+                  </label>
+                </div>
+                <div class="filter-item">
+                  <label>
+                    <input type="checkbox" value="Maintenance"> Maintenance
+                  </label>
+                </div>
+              </div>
+              <div class="filter-section">
+                <h4>Status</h4>
+                <div class="filter-item">
+                  <label>
+                    <input type="checkbox" value="Paid"> Paid
+                  </label>
+                </div>
+                <div class="filter-item">
+                  <label>
+                    <input type="checkbox" value="Pending"> Pending
+                  </label>
+                </div>
+              </div>
+              <button class="btn btn-primary" onclick="applyFilters()">Apply Filters</button>
+            </div>
+          </div>
+          
+          <button class="btn btn-primary" onclick="openAddExpenseModal()">
+            <i class="fas fa-plus"></i> Add Expense
+          </button>
+        </div>
+      </div>
+      
+      <!-- Expense Table -->
+      <div class="table-responsive">
+        <table class="table-sortable">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Description</th>
+              <th>Category</th>
+              <th>Amount</th>
+              <th>Date</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>#EXP-001</td>
+              <td>Office Supplies</td>
+              <td><span class="category-badge category-supplies">Supplies</span></td>
+              <td>$500</td>
+              <td>2023-10-01</td>
+              <td><span class="status status-completed">Paid</span></td>
+              <td>
+                <button class="btn btn-outlined" onclick="openEditExpenseModal('EXP-001', 'Office Supplies', 'Supplies', '500', '2023-10-01')">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="btn btn-outlined btn-danger" onclick="confirmDelete('EXP-001')">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </td>
+            </tr>
+            <tr>
+              <td>#EXP-002</td>
+              <td>Utility Bills</td>
+              <td><span class="category-badge category-utilities">Utilities</span></td>
+              <td>$1,200</td>
+              <td>2023-10-05</td>
+              <td><span class="status status-pending">Pending</span></td>
+              <td>
+                <button class="btn btn-outlined" onclick="openEditExpenseModal('EXP-002', 'Utility Bills', 'Utilities', '1200', '2023-10-05')">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="btn btn-outlined btn-danger" onclick="confirmDelete('EXP-002')">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Expense Modal -->
+  <div class="modal" id="addExpenseModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Add New Expense</h3>
+        <button class="close-modal" onclick="closeAddExpenseModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="expenseForm">
+          <div class="form-group">
+            <label for="expenseDescription">Description</label>
+            <input type="text" id="expenseDescription" name="expenseDescription" placeholder="Enter expense description" required>
+          </div>
+          <div class="form-group">
+            <label for="expenseCategory">Category</label>
+            <select id="expenseCategory" name="expenseCategory" required>
+              <option value="">Select a category</option>
+              <option value="Supplies">Supplies</option>
+              <option value="Utilities">Utilities</option>
+              <option value="Salaries">Salaries</option>
+              <option value="Maintenance">Maintenance</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="expenseAmount">Amount ($)</label>
+            <input type="number" id="expenseAmount" name="expenseAmount" placeholder="0.00" step="0.01" min="0" required>
+          </div>
+          <div class="form-group">
+            <label for="expenseDate">Date</label>
+            <input type="date" id="expenseDate" name="expenseDate" required>
+          </div>
+          <div class="form-group">
+            <label for="expenseStatus">Status</label>
+            <select id="expenseStatus" name="expenseStatus" required>
+              <option value="Paid">Paid</option>
+              <option value="Pending">Pending</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="expenseNotes">Notes (Optional)</label>
+            <textarea id="expenseNotes" name="expenseNotes" rows="3" placeholder="Add any additional details here"></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outlined" onclick="closeAddExpenseModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="addExpense()">Add Expense</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Expense Modal -->
+  <div class="modal" id="editExpenseModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Edit Expense</h3>
+        <button class="close-modal" onclick="closeEditExpenseModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="editExpenseForm">
+          <input type="hidden" id="editExpenseId" name="editExpenseId">
+          <div class="form-group">
+            <label for="editExpenseDescription">Description</label>
+            <input type="text" id="editExpenseDescription" name="editExpenseDescription" placeholder="Enter expense description" required>
+          </div>
+          <div class="form-group">
+            <label for="editExpenseCategory">Category</label>
+            <select id="editExpenseCategory" name="editExpenseCategory" required>
+              <option value="Supplies">Supplies</option>
+              <option value="Utilities">Utilities</option>
+              <option value="Salaries">Salaries</option>
+              <option value="Maintenance">Maintenance</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="editExpenseAmount">Amount ($)</label>
+            <input type="number" id="editExpenseAmount" name="editExpenseAmount" placeholder="0.00" step="0.01" min="0" required>
+          </div>
+          <div class="form-group">
+            <label for="editExpenseDate">Date</label>
+            <input type="date" id="editExpenseDate" name="editExpenseDate" required>
+          </div>
+          <div class="form-group">
+            <label for="editExpenseStatus">Status</label>
+            <select id="editExpenseStatus" name="editExpenseStatus" required>
+              <option value="Paid">Paid</option>
+              <option value="Pending">Pending</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="editExpenseNotes">Notes (Optional)</label>
+            <textarea id="editExpenseNotes" name="editExpenseNotes" rows="3" placeholder="Add any additional details here"></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outlined" onclick="closeEditExpenseModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="saveExpenseChanges()">Save Changes</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Delete Confirmation Modal -->
+  <div class="modal" id="deleteConfirmModal">
+    <div class="modal-content" style="max-width: 400px;">
+      <div class="modal-header">
+        <h3>Confirm Deletion</h3>
+        <button class="close-modal" onclick="closeDeleteConfirmModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to delete expense <span id="deleteExpenseId"></span>?</p>
+        <p>This action cannot be undone.</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outlined" onclick="closeDeleteConfirmModal()">Cancel</button>
+        <button class="btn btn-danger" onclick="deleteExpense()">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="employee_script.js"></script>
+  <script>
+    // Initialize current date for date inputs
+    document.addEventListener('DOMContentLoaded', function() {
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('expenseDate').value = today;
+      
+      // Set default filter dates (last 30 days)
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+      document.getElementById('startDate').value = thirtyDaysAgo.toISOString().split('T')[0];
+      document.getElementById('endDate').value = today;
+    });
+    
+    // Function to toggle sidebar
+    function toggleSidebar() {
+      const sidebar = document.querySelector('.sidebar');
+      sidebar.classList.toggle('collapsed');
+    }
+    
+    // Function to toggle filter dropdown
+    function toggleFilter() {
+      document.getElementById('filterDropdown').classList.toggle('show');
+    }
+    
+    // Close filter dropdown when clicking outside
+    window.onclick = function(event) {
+      if (!event.target.matches('.filter-btn') && !event.target.closest('.filter-content')) {
+        const dropdowns = document.getElementsByClassName('filter-content');
+        for (let i = 0; i < dropdowns.length; i++) {
+          const openDropdown = dropdowns[i];
+          if (openDropdown.classList.contains('show')) {
+            openDropdown.classList.remove('show');
+          }
+        }
+      }
+    }
+    
+    // Function to apply filters
+    function applyFilters() {
+      // Implementation would go here
+      alert('Filters applied!');
+      document.getElementById('filterDropdown').classList.remove('show');
+    }
+
+    // Function to open the Add Expense Modal
+    function openAddExpenseModal() {
+      document.getElementById('addExpenseModal').style.display = 'flex';
+      document.getElementById('expenseDescription').focus();
+    }
+
+    // Function to close the Add Expense Modal
+    function closeAddExpenseModal() {
+      document.getElementById('addExpenseModal').style.display = 'none';
+      document.getElementById('expenseForm').reset();
+    }
+
+    // Function to add an expense
+    function addExpense() {
+      const form = document.getElementById('expenseForm');
+      if (form.checkValidity()) {
+        // Implementation would go here to save the expense
+        
+        // Show success notification
+        showNotification('Expense added successfully!', 'success');
+        closeAddExpenseModal();
+        
+        // Reset form for next use
+        form.reset();
+        
+        // Set current date for next expense
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('expenseDate').value = today;
+      } else {
+        form.reportValidity();
+      }
+    }
+
+    // Function to open the Edit Expense Modal
+    function openEditExpenseModal(id, description, category, amount, date) {
+      document.getElementById('editExpenseId').value = id;
+      document.getElementById('editExpenseDescription').value = description;
+      document.getElementById('editExpenseCategory').value = category;
+      document.getElementById('editExpenseAmount').value = amount;
+      document.getElementById('editExpenseDate').value = date;
+      document.getElementById('editExpenseStatus').value = id === 'EXP-001' ? 'Paid' : 'Pending';
+      
+      document.getElementById('editExpenseModal').style.display = 'flex';
+      document.getElementById('editExpenseDescription').focus();
+    }
+
+    // Function to close the Edit Expense Modal
+    function closeEditExpenseModal() {
+      document.getElementById('editExpenseModal').style.display = 'none';
+    }
+
+    // Function to save changes to an expense
+    function saveExpenseChanges() {
+      const form = document.getElementById('editExpenseForm');
+      if (form.checkValidity()) {
+        // Implementation would go here to update the expense
+        
+        // Show success notification
+        const expenseId = document.getElementById('editExpenseId').value;
+        showNotification(`Expense ${expenseId} updated successfully!`, 'success');
+        closeEditExpenseModal();
+      } else {
+        form.reportValidity();
+      }
+    }
+    
+    // Function to confirm delete
+    function confirmDelete(id) {
+      document.getElementById('deleteExpenseId').textContent = id;
+      document.getElementById('deleteConfirmModal').style.display = 'flex';
+    }
+    
+    // Function to close delete confirmation modal
+    function closeDeleteConfirmModal() {
+      document.getElementById('deleteConfirmModal').style.display = 'none';
+    }
+
+    // Function to delete an expense
+    function deleteExpense() {
+      const expenseId = document.getElementById('deleteExpenseId').textContent;
+      
+      // Implementation would go here to delete the expense
+      
+      // Show success notification
+      showNotification(`Expense ${expenseId} deleted successfully!`, 'success');
+      closeDeleteConfirmModal();
+    }
+    
+    // Function to show notification
+    function showNotification(message, type = 'info') {
+      // Create notification element
+      const notification = document.createElement('div');
+      notification.className = `notification ${type}`;
+      notification.innerHTML = `
+        <div class="notification-content">
+          <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-info-circle'}"></i>
+          <span>${message}</span>
+        </div>
+        <button onclick="this.parentElement.remove()">
+          <i class="fas fa-times"></i>
+        </button>
+      `;
+      
+      // Add notification to page
+      document.body.appendChild(notification);
+      
+      // Remove after 3 seconds
+      setTimeout(() => {
+        notification.classList.add('fade-out');
+        setTimeout(() => {
+          notification.remove();
+        }, 300);
+      }, 3000);
+    }
+    
+    // Add notification styles dynamically
+    const style = document.createElement('style');
+    style.textContent = `
+      .notification {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        min-width: 300px;
+        padding: 15px;
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        z-index: 9999;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        animation: slide-in 0.3s ease;
+      }
+      
+      .notification-content {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      
+      .notification.success i {
+        color: #4caf50;
+      }
+      
+      .notification.info i {
+        color: #2196f3;
+      }
+      
+      .notification button {
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: #757575;
+      }
+      
+      .fade-out {
+        animation: fade-out 0.3s ease forwards;
+      }
+      
+      @keyframes slide-in {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+      }
+      
+      @keyframes fade-out {
+        from { transform: translateX(0); opacity: 1; }
+        to { transform: translateX(100%); opacity: 0; }
+      }
+      
+      /* Responsive improvements */
+      @media (max-width: 768px) {
+        .stats-container {
+          flex-direction: column;
+        }
+        
+        .stat-card {
+          width: 100%;
+          margin-bottom: 10px;
+        }
+        
+        .table-actions {
+          flex-direction: column;
+          align-items: stretch;
+        }
+        
+        .search-container, .filter-dropdown, .table-actions button {
+          margin-bottom: 10px;
+          width: 100%;
+        }
+        
+        .notification {
+          min-width: auto;
+          width: calc(100% - 40px);
+        }
+      }
+    `;
+    document.head.appendChild(style);
+  </script>
+</body>
+</html>

@@ -1,0 +1,1502 @@
+<?php
+
+session_start();
+
+require_once '../db_connect.php'; // Database connection
+
+// Get user's first name from database
+$user_id = $_SESSION['user_id'];
+$query = "SELECT first_name , last_name , email , birthdate FROM users WHERE id = ?";
+$stmt = $conn->prepare($query);
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+$result = $stmt->get_result();
+$row = $result->fetch_assoc();
+$first_name = $row['first_name']; // We're confident user_id exists
+$last_name = $row['last_name'];
+$email = $row['email'];
+
+// Check if user is logged in
+if (!isset($_SESSION['user_id'])) {
+  // Redirect to login page
+  header("Location: ../Landing_Page/login.php");
+  exit();
+}
+
+// Check for admin user type (user_type = 1)
+if ($_SESSION['user_type'] != 1) {
+  // Redirect to appropriate page based on user type
+  switch ($_SESSION['user_type']) {
+      case 2:
+          header("Location: ../employee/index.php");
+          break;
+      case 3:
+          header("Location: ../customer/index.php");
+          break;
+      default:
+          // Invalid user_type
+          session_destroy();
+          header("Location: ../Landing_Page/login.php");
+  }
+  exit();
+}
+
+// Optional: Check for session timeout (30 minutes)
+$session_timeout = 1800; // 30 minutes in seconds
+if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > $session_timeout)) {
+  // Session has expired
+  session_unset();
+  session_destroy();
+  header("Location: ../Landing_Page/login.php?timeout=1");
+  exit();
+}
+
+// Update last activity time
+$_SESSION['last_activity'] = time();
+
+// Prevent caching for authenticated pages
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Cache-Control: post-check=0, pre-check=0", false);
+header("Pragma: no-cache");
+
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Services - GrievEase</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+</head>
+<body class="flex bg-gray-50">
+
+<?php include 'admin_sidebar.php'; ?>
+
+  <!-- Main Content -->
+<div id="main-content" class="p-6 bg-gray-50 min-h-screen transition-all duration-300 ml-64 w-[calc(100%-16rem)] main-content">
+  <!-- Header with breadcrumb and welcome message -->
+  <div class="flex justify-between items-center mb-6 bg-white p-5 rounded-lg shadow-sidebar">
+    <div>
+      <h1 class="text-2xl font-bold text-sidebar-text">Service Management</h1>
+    </div>
+    <div class="flex space-x-3">
+      <button class="p-2 bg-white border border-sidebar-border rounded-lg shadow-input text-sidebar-text hover:bg-sidebar-hover transition-all duration-300">
+        <i class="fas fa-bell"></i>
+      </button>
+      <button class="p-2 bg-white border border-sidebar-border rounded-lg shadow-input text-sidebar-text hover:bg-sidebar-hover transition-all duration-300">
+        <i class="fas fa-cog"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Add New Service Button -->
+  <?php
+// Database connection settings
+include '../db_connect.php';
+
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+// Get all branches to display separate tables
+$branchSql = "SELECT branch_id, branch_name FROM Branch_tb";
+$branchResult = $conn->query($branchSql);
+
+// Function to format price
+function formatPrice($price) {
+    return '$' . number_format($price, 2);
+}
+?>
+<div class="bg-gradient-to-b from-gray-50 to-white p-6 rounded-xl">
+
+
+  <!-- Summary statistics row -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+    <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm flex items-center">
+      <div class="p-3 bg-blue-100 text-blue-600 rounded-full mr-3">
+        <i class="fas fa-tags"></i>
+      </div>
+      <div>
+        <p class="text-xs text-gray-500">Total Services</p>
+        <p class="text-lg font-semibold"><?php 
+          $totalSql = "SELECT COUNT(*) as total FROM Services_tb";
+          $totalResult = $conn->query($totalSql);
+          $total = $totalResult->fetch_assoc()['total'];
+          echo $total;
+        ?></p>
+      </div>
+    </div>
+    <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm flex items-center">
+      <div class="p-3 bg-green-100 text-green-600 rounded-full mr-3">
+        <i class="fas fa-check-circle"></i>
+      </div>
+      <div>
+        <p class="text-xs text-gray-500">Active Services</p>
+        <p class="text-lg font-semibold"><?php 
+          $activeSql = "SELECT COUNT(*) as total FROM Services_tb WHERE status = 'Active'";
+          $activeResult = $conn->query($activeSql);
+          $active = $activeResult->fetch_assoc()['total'];
+          echo $active;
+        ?></p>
+      </div>
+    </div>
+    <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm flex items-center">
+      <div class="p-3 bg-orange-100 text-orange-600 rounded-full mr-3">
+        <i class="fas fa-pause-circle"></i>
+      </div>
+      <div>
+        <p class="text-xs text-gray-500">Inactive Services</p>
+        <p class="text-lg font-semibold"><?php 
+          $inactiveSql = "SELECT COUNT(*) as total FROM Services_tb WHERE status = 'Inactive'";
+          $inactiveResult = $conn->query($inactiveSql);
+          $inactive = $inactiveResult->fetch_assoc()['total'];
+          echo $inactive;
+        ?></p>
+      </div>
+    </div>
+  </div>
+
+  <?php
+// Pagination and Search/Filter Logic
+$recordsPerPage = 5;
+$page = isset($_GET['page']) ? intval($_GET['page']) : 1;
+$searchQuery = isset($_GET['search']) ? $conn->real_escape_string($_GET['search']) : '';
+$categoryFilter = isset($_GET['category']) ? $conn->real_escape_string($_GET['category']) : '';
+$statusFilter = isset($_GET['status']) ? $conn->real_escape_string($_GET['status']) : '';
+
+// Loop through each branch and create a separate table
+if ($branchResult->num_rows > 0) {
+    while($branch = $branchResult->fetch_assoc()) {
+        $branchId = $branch['branch_id'];
+        $branchName = $branch['branch_name'];
+        
+        // SQL query for this branch with search and filter
+        $sql = "SELECT 
+            s.service_id, 
+            s.service_name, 
+            sc.service_category_name, 
+            s.selling_price, 
+            s.status,
+            b.branch_name
+        FROM Services_tb s
+        JOIN service_category sc ON s.service_categoryID = sc.service_categoryID
+        JOIN branch_tb b ON s.branch_id = b.branch_id
+        WHERE s.branch_id = $branchId
+        " . 
+        ($searchQuery ? "AND (s.service_name LIKE '%$searchQuery%' OR sc.service_category_name LIKE '%$searchQuery%') " : '') .
+        ($categoryFilter ? "AND sc.service_category_name = '$categoryFilter' " : '') .
+        ($statusFilter ? "AND s.status = '$statusFilter' " : '');
+
+        // Get total count for pagination
+        $countSql = "SELECT COUNT(*) as count FROM Services_tb s
+        JOIN service_category sc ON s.service_categoryID = sc.service_categoryID
+        WHERE s.branch_id = $branchId
+        " . 
+        ($searchQuery ? "AND (s.service_name LIKE '%$searchQuery%' OR sc.service_category_name LIKE '%$searchQuery%') " : '') .
+        ($categoryFilter ? "AND sc.service_category_name = '$categoryFilter' " : '') .
+        ($statusFilter ? "AND s.status = '$statusFilter' " : '');
+        
+        $countResult = $conn->query($countSql);
+        $totalServices = $countResult->fetch_assoc()['count'];
+        $totalPages = ceil($totalServices / $recordsPerPage);
+
+        // Add LIMIT for pagination
+        $offset = ($page - 1) * $recordsPerPage;
+        $sql .= " LIMIT $offset, $recordsPerPage";
+
+        $result = $conn->query($sql);
+
+        // Get unique categories and statuses for filters
+        $categoriesSql = "SELECT DISTINCT service_category_name FROM service_category sc
+        JOIN Services_tb s ON s.service_categoryID = sc.service_categoryID
+        WHERE s.branch_id = $branchId";
+        $categoriesResult = $conn->query($categoriesSql);
+
+        $statusesSql = "SELECT DISTINCT status FROM Services_tb WHERE branch_id = $branchId";
+        $statusesResult = $conn->query($statusesSql);
+?>
+
+<!-- Branch Card -->
+<div class="bg-white rounded-lg shadow-md mb-8 border border-sidebar-border overflow-hidden branch-container" data-branch-id="<?php echo $branchId; ?>">
+    <!-- Branch Header with Search and Filters -->
+    <div class="bg-sidebar-hover p-4 border-b border-sidebar-border flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div class="flex items-center">
+            <i class="fas fa-building text-sidebar-accent mr-2"></i>
+            <h4 class="text-lg font-bold text-sidebar-text">Branch: <?php echo $branchName; ?></h4>
+        </div>
+
+        <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
+                <i class="fas fa-clipboard-list"></i>
+                <?php echo $totalServices . " Service" . ($totalServices != 1 ? "s" : ""); ?>
+            </span>
+        
+        <!-- Search and Filter Section -->
+        <div class="flex flex-col md:flex-row items-start md:items-center gap-3 w-full md:w-auto">
+            <!-- Search Input -->
+            <div class="relative w-full md:w-64">
+                <input type="text" id="searchInput<?php echo $branchId; ?>" 
+                       placeholder="Search services..." 
+                       value="<?php echo htmlspecialchars($searchQuery); ?>"
+                       class="pl-8 pr-3 py-2 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent"
+                       oninput="debouncedFilter(<?php echo $branchId; ?>)">
+                <i class="fas fa-search absolute left-2.5 top-3 text-gray-400"></i>
+            </div>
+
+            <!-- Filter Dropdown -->
+            <div class="relative filter-dropdown">
+                <button class="px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover"
+                        onclick="toggleFilterWindow(<?php echo $branchId; ?>)">
+                    <i class="fas fa-filter text-sidebar-accent"></i>
+                    <span>Filters</span>
+                    <?php if($categoryFilter || $statusFilter): ?>
+                        <span class="h-2 w-2 bg-sidebar-accent rounded-full"></span>
+                    <?php endif; ?>
+                </button>
+                
+                <!-- Filter Window -->
+                <div id="filterWindow<?php echo $branchId; ?>" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-4">
+                    <div class="space-y-4">
+                        <!-- Category Filter -->
+                        <div>
+                            <h5 class="text-sm font-medium text-sidebar-text mb-2">Category</h5>
+                            <div class="space-y-1">
+                                <div class="flex items-center cursor-pointer" onclick="setFilter(<?php echo $branchId; ?>, 'category', '')">
+                                    <span class="filter-option <?php echo !$categoryFilter ? 'bg-sidebar-accent text-white' : 'hover:bg-sidebar-hover'; ?> px-2 py-1 rounded text-sm w-full">
+                                        All Categories
+                                    </span>
+                                </div>
+                                <?php 
+                                $categoriesResult->data_seek(0);
+                                while($category = $categoriesResult->fetch_assoc()): 
+                                    $isActive = $categoryFilter === $category['service_category_name'];
+                                ?>
+                                    <div class="flex items-center cursor-pointer" onclick="setFilter(<?php echo $branchId; ?>, 'category', '<?php echo urlencode($category['service_category_name']); ?>')">
+                                        <span class="filter-option <?php echo $isActive ? 'bg-sidebar-accent text-white' : 'hover:bg-sidebar-hover'; ?> px-2 py-1 rounded text-sm w-full">
+                                            <?php echo htmlspecialchars($category['service_category_name']); ?>
+                                        </span>
+                                    </div>
+                                <?php endwhile; ?>
+                            </div>
+                        </div>
+                        
+                        <!-- Status Filter -->
+                        <div>
+                            <h5 class="text-sm font-medium text-sidebar-text mb-2">Status</h5>
+                            <div class="space-y-1">
+                                <div class="flex items-center cursor-pointer" onclick="setFilter(<?php echo $branchId; ?>, 'status', '')">
+                                    <span class="filter-option <?php echo !$statusFilter ? 'bg-sidebar-accent text-white' : 'hover:bg-sidebar-hover'; ?> px-2 py-1 rounded text-sm w-full">
+                                        All Statuses
+                                    </span>
+                                </div>
+                                <?php 
+                                $statusesResult->data_seek(0);
+                                while($status = $statusesResult->fetch_assoc()): 
+                                    $isActive = $statusFilter === $status['status'];
+                                ?>
+                                    <div class="flex items-center cursor-pointer" onclick="setFilter(<?php echo $branchId; ?>, 'status', '<?php echo urlencode($status['status']); ?>')">
+                                        <span class="filter-option <?php echo $isActive ? 'bg-sidebar-accent text-white' : 'hover:bg-sidebar-hover'; ?> px-2 py-1 rounded text-sm w-full">
+                                            <?php echo htmlspecialchars($status['status']); ?>
+                                        </span>
+                                    </div>
+                                <?php endwhile; ?>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            
+
+            <button class="px-4 py-2.5 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm whitespace-nowrap" 
+                    onclick="openAddServiceModal(<?php echo $branchId; ?>)">
+                <i class="fas fa-plus-circle"></i> Add New Service
+            </button>
+        </div>
+    </div>
+    
+    <!-- Services Table for this branch -->
+    <div class="overflow-x-auto scrollbar-thin" id="tableContainer<?php echo $branchId; ?>">
+        <div id="loadingIndicator<?php echo $branchId; ?>" class="hidden absolute inset-0 bg-white bg-opacity-50 flex items-center justify-center">
+            <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-sidebar-accent"></div>
+        </div>
+        
+        <table class="w-full">
+            <thead>
+                <tr class="bg-gray-50 border-b border-sidebar-border">
+                    <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(<?php echo $branchId; ?>, 0)">
+                        <div class="flex items-center">
+                            <i class="fas fa-hashtag mr-1.5 text-sidebar-accent"></i> ID 
+                            <i class="fas fa-sort ml-1 text-gray-400"></i>
+                        </div>
+                    </th>
+                    <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(<?php echo $branchId; ?>, 1)">
+                        <div class="flex items-center">
+                            <i class="fas fa-tag mr-1.5 text-sidebar-accent"></i> Service Name 
+                            <i class="fas fa-sort ml-1 text-gray-400"></i>
+                        </div>
+                    </th>
+                    <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(<?php echo $branchId; ?>, 2)">
+                        <div class="flex items-center">
+                            <i class="fas fa-th-list mr-1.5 text-sidebar-accent"></i> Category 
+                            <i class="fas fa-sort ml-1 text-gray-400"></i>
+                        </div>
+                    </th>
+                    <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(<?php echo $branchId; ?>, 3)">
+                        <div class="flex items-center">
+                            <i class="fas fa-dollar-sign mr-1.5 text-sidebar-accent"></i> Price 
+                            <i class="fas fa-sort ml-1 text-gray-400"></i>
+                        </div>
+                    </th>
+                    <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(<?php echo $branchId; ?>, 4)">
+                        <div class="flex items-center">
+                            <i class="fas fa-toggle-on mr-1.5 text-sidebar-accent"></i> Status 
+                            <i class="fas fa-sort ml-1 text-gray-400"></i>
+                        </div>
+                    </th>
+                    <th class="p-4 text-left text-sm font-medium text-sidebar-text">
+                        <div class="flex items-center">
+                            <i class="fas fa-cogs mr-1.5 text-sidebar-accent"></i> Actions
+                        </div>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php if ($result->num_rows > 0): ?>
+                    <?php while($row = $result->fetch_assoc()): ?>
+                        <?php
+                        $statusClass = $row["status"] == "Active" 
+                            ? "bg-green-100 text-green-600 border border-green-200" 
+                            : "bg-orange-100 text-orange-500 border border-orange-200";
+                        $statusIcon = $row["status"] == "Active" ? "fa-check-circle" : "fa-pause-circle";
+                        ?>
+                        <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
+                            <td class="p-4 text-sm text-sidebar-text font-medium">#SVC-<?php echo str_pad($row['service_id'], 3, "0", STR_PAD_LEFT); ?></td>
+                            <td class="p-4 text-sm text-sidebar-text"><?php echo htmlspecialchars($row["service_name"]); ?></td>
+                            <td class="p-4 text-sm text-sidebar-text">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">
+                                    <i class="fas fa-folder-open mr-1"></i> <?php echo htmlspecialchars($row["service_category_name"]); ?>
+                                </span>
+                            </td>
+                            <td class="p-4 text-sm font-medium text-sidebar-text"><?php echo formatPrice($row["selling_price"]); ?></td>
+                            <td class="p-4 text-sm">
+                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium <?php echo $statusClass; ?>">
+                                    <i class="fas <?php echo $statusIcon; ?> mr-1"></i> <?php echo htmlspecialchars($row["status"]); ?>
+                                </span>
+                            </td>
+                            <td class="p-4 text-sm">
+                                <div class="flex space-x-2">
+                                    <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="Edit Service" onclick="openEditServiceModal('<?php echo $row["service_id"]; ?>', '<?php echo $branchId; ?>')">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-all tooltip" title="Delete Service" onclick="deleteService('<?php echo $row["service_id"]; ?>', '<?php echo $branchId; ?>')">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    <?php endwhile; ?>
+                <?php else: ?>
+                    <tr>
+                        <td colspan="6" class="p-6 text-sm text-center">
+                            <div class="flex flex-col items-center">
+                                <i class="fas fa-inbox text-gray-300 text-4xl mb-3"></i>
+                                <p class="text-gray-500">No services found for this branch</p>
+                            </div>
+                        </td>
+                    </tr>
+                <?php endif; ?>
+            </tbody>
+        </table>
+        
+        <!-- Pagination -->
+        <div class="p-4 border-t border-sidebar-border flex justify-between items-center">
+            <div class="text-sm text-gray-500">
+                Showing <?php echo ($offset + 1) . ' - ' . min($offset + $recordsPerPage, $totalServices); ?> 
+                of <?php echo $totalServices; ?> services
+            </div>
+            <div class="flex space-x-1">
+                <button class="px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo $page <= 1 ? 'opacity-50 cursor-not-allowed' : ''; ?>" 
+                        onclick="changePage(<?php echo $branchId; ?>, <?php echo $page - 1; ?>)" 
+                        <?php echo $page <= 1 ? 'disabled' : ''; ?>>&laquo;</button>
+                
+                <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                    <button class="px-3 py-1 border border-sidebar-border rounded text-sm <?php echo $i == $page ? 'bg-sidebar-accent text-white' : 'hover:bg-sidebar-hover'; ?>" 
+                            onclick="changePage(<?php echo $branchId; ?>, <?php echo $i; ?>)"><?php echo $i; ?></button>
+                <?php endfor; ?>
+                
+                <button class="px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo $page >= $totalPages ? 'opacity-50 cursor-not-allowed' : ''; ?>" 
+                        onclick="changePage(<?php echo $branchId; ?>, <?php echo $page + 1; ?>)" 
+                        <?php echo $page >= $totalPages ? 'disabled' : ''; ?>>&raquo;</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<?php
+    } // End branch while loop
+} else {
+    echo "<div class='p-8 text-center bg-white rounded-lg shadow-md'>";
+    echo "<i class='fas fa-store-slash text-gray-300 text-5xl mb-4'></i>";
+    echo "<p class='text-gray-500 text-lg'>No branches found in the system</p>";
+    echo "<button class='mt-4 px-4 py-2 bg-sidebar-accent text-white rounded-md text-sm hover:bg-darkgold transition-all'>";
+    echo "<i class='fas fa-plus-circle mr-2'></i> Add Branch</button>";
+    echo "</div>";
+}
+?>
+
+<script>
+// Global variable to track active filters
+const activeFilters = {};
+
+// Debounce function to limit how often a function is called
+function debounce(func, wait) {
+    let timeout;
+    return function(...args) {
+        const context = this;
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(context, args), wait);
+    };
+}
+
+// Toggle filter window visibility
+function toggleFilterWindow(branchId) {
+    const filterWindow = document.getElementById(`filterWindow${branchId}`);
+    filterWindow.classList.toggle('hidden');
+    
+    // Close other open filter windows
+    document.querySelectorAll('.filter-dropdown .absolute').forEach(window => {
+        if (window.id !== `filterWindow${branchId}`) {
+            window.classList.add('hidden');
+        }
+    });
+}
+
+// Close filter windows when clicking outside
+document.addEventListener('click', function(event) {
+    if (!event.target.closest('.filter-dropdown')) {
+        document.querySelectorAll('.filter-dropdown .absolute').forEach(window => {
+            window.classList.add('hidden');
+        });
+    }
+});
+
+// Set filter and apply immediately
+function setFilter(branchId, type, value) {
+    // Update the active filter
+    if (!activeFilters[branchId]) {
+        activeFilters[branchId] = { search: '', category: '', status: '', page: 1 };
+    }
+    
+    if (type === 'category') {
+        activeFilters[branchId].category = decodeURIComponent(value);
+    } else if (type === 'status') {
+        activeFilters[branchId].status = decodeURIComponent(value);
+    }
+    
+    // Close the filter window
+    document.getElementById(`filterWindow${branchId}`).classList.add('hidden');
+    
+    // Apply the filter
+    applyFilters(branchId);
+}
+
+// Apply all filters for a branch
+function applyFilters(branchId) {
+    activeFilters[branchId].page = 1; // Reset to first page when filters change
+    loadBranchTable(branchId);
+}
+
+// Debounced filter for search input
+const debouncedFilter = debounce(function(branchId) {
+    if (!activeFilters[branchId]) {
+        activeFilters[branchId] = { search: '', category: '', status: '', page: 1 };
+    }
+    activeFilters[branchId].search = document.getElementById(`searchInput${branchId}`).value;
+    applyFilters(branchId);
+}, 300);
+
+// Change page
+function changePage(branchId, page) {
+    if (!activeFilters[branchId]) {
+        activeFilters[branchId] = { search: '', category: '', status: '', page: 1 };
+    }
+    activeFilters[branchId].page = page;
+    loadBranchTable(branchId);
+}
+
+// Load branch table via AJAX
+function loadBranchTable(branchId) {
+    const container = document.querySelector(`.branch-container[data-branch-id="${branchId}"] .overflow-x-auto`);
+    const loadingIndicator = document.getElementById(`loadingIndicator${branchId}`);
+    
+    if (!container) return;
+    
+    // Show loading indicator
+    if (loadingIndicator) loadingIndicator.classList.remove('hidden');
+    
+    // Prepare query parameters
+    const params = new URLSearchParams();
+      params.append('branch_id', branchId);
+      params.append('page', activeFilters[branchId]?.page || 1);
+      if (activeFilters[branchId]?.search) params.append('search', activeFilters[branchId].search);
+      if (activeFilters[branchId]?.category) params.append('category', activeFilters[branchId].category);
+      if (activeFilters[branchId]?.status) params.append('status', activeFilters[branchId].status);
+
+// Make AJAX request
+    fetch(`loadServices/load_service_table.php?${params.toString()}`)
+        .then(response => {
+            if (!response.ok) throw new Error('Network response was not ok');
+            return response.text();
+        })
+        .then(html => {
+            container.innerHTML = html;
+            if (loadingIndicator) loadingIndicator.classList.add('hidden');
+        })
+        .catch(error => {
+            console.error('Error loading table:', error);
+            if (loadingIndicator) loadingIndicator.classList.add('hidden');
+        });
+}
+
+// Initialize active filters when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    // Initialize active filters from current values for each branch
+    document.querySelectorAll('.branch-container').forEach(container => {
+        const branchId = container.dataset.branchId;
+        activeFilters[branchId] = {
+            search: document.getElementById(`searchInput${branchId}`)?.value || '',
+            category: '<?php echo $categoryFilter; ?>',
+            status: '<?php echo $statusFilter; ?>',
+            page: <?php echo $page; ?>
+        };
+    });
+});
+</script>
+
+<!-- ADD SERVICE MODAL -->
+<div class="fixed top-0 left-0 w-full h-full bg-black bg-opacity-60 flex items-center justify-center z-50 hidden" id="addServiceModal">
+  <div class="bg-white rounded-xl w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-xl">
+    <!-- Modal Header - Keeping original gradient but reducing padding -->
+    <div class="bg-gradient-to-r from-sidebar-accent to-white flex justify-between items-center p-4 flex-shrink-0">
+      <h3 class="text-xl font-bold text-white flex items-center">
+        <i class="fas fa-plus-circle mr-2"></i>
+        Add New Service
+      </h3>
+      <button class="bg-black bg-opacity-20 hover:bg-opacity-30 rounded-full p-2 text-white hover:text-white transition-all duration-200" onclick="closeAddServiceModal()">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+        </svg>
+      </button>
+    </div>
+    
+    <!-- Modal Body - Reduced padding -->
+    <div class="p-4">
+      <form id="serviceForm" class="space-y-4">
+        <div>
+          <label for="serviceName" class="block text-sm font-medium text-gray-700 mb-1 flex items-center">
+            <i class="fas fa-tag mr-2 text-sidebar-accent"></i>
+            Service Name
+          </label>
+          <input type="text" id="serviceName" name="serviceName" class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent" required>
+        </div>
+
+        <!-- Add this after the service name input -->
+        <div>
+          <label for="serviceDescription" class="block text-sm font-medium text-gray-700 mb-1 flex items-center">
+            <i class="fas fa-align-left mr-2 text-sidebar-accent"></i>
+            Description
+          </label>
+          <textarea id="serviceDescription" name="serviceDescription" rows="3" class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent"></textarea>
+        </div>
+        
+        <!-- Price Section -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div>
+            <label for="capitalPrice" class="block text-sm font-medium text-gray-700 mb-1 flex items-center">
+              <i class="fas fa-coins mr-2 text-sidebar-accent"></i>
+              Capital Price
+            </label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <span class="text-gray-500">₱</span>
+              </div>
+              <input type="number" id="capitalPrice" name="capitalPrice" placeholder="0.00" min="0" step="0.01" class="w-full pl-8 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent" required>
+            </div>
+          </div>
+          <div>
+            <label for="sellingPrice" class="block text-sm font-medium text-gray-700 mb-1 flex items-center">
+              <i class="fas fa-tags mr-2 text-sidebar-accent"></i>
+              Selling Price
+            </label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <span class="text-gray-500">₱</span>
+              </div>
+              <input type="number" id="sellingPrice" name="sellingPrice" placeholder="0.00" min="0" step="0.01" class="w-full pl-8 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent" required>
+            </div>
+          </div>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <div>
+            <label for="serviceCategory" class="block text-sm font-medium text-gray-700 mb-1 flex items-center">
+              <i class="fas fa-th-list mr-2 text-sidebar-accent"></i>
+              Category
+            </label>
+            <select id="serviceCategory" name="serviceCategory" class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent" required>
+                <option value="">Select a Category</option>
+                <?php
+                include '../db_connect.php';
+                // Fetch service categories
+                $sql = "SELECT service_categoryID, service_category_name FROM service_category";
+                $result = $conn->query($sql);
+
+                if ($result->num_rows > 0) {
+                    while ($row = $result->fetch_assoc()) {
+                        echo '<option value="' . $row["service_categoryID"] . '">' . htmlspecialchars($row["service_category_name"]) . '</option>';
+                    }
+                } else {
+                    echo '<option value="">No categories found</option>';
+                }
+               
+                ?>
+            </select>
+          </div>
+          <div>
+            <label for="casketType" class="block text-sm font-medium text-gray-700 mb-1 flex items-center">
+              <i class="fas fa-box mr-2 text-sidebar-accent"></i>
+              Casket Type
+            </label>
+            <select id="casketType" name="casketType" class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent" required>
+                <option value="">Select a Casket</option>
+                <?php
+                // Fetch inventory items where category_id = 1 and status = 1
+                // $sql = "SELECT inventory_id, item_name FROM inventory_tb WHERE category_id = 1 AND status = 1";
+                // $result = $conn->query($sql);
+
+                // if ($result->num_rows > 0) {
+                //     while ($row = $result->fetch_assoc()) {
+                //         echo '<option value="' . $row["inventory_id"] . '">' . htmlspecialchars($row["item_name"]) . '</option>';
+                //     }
+                // } else {
+                //     echo '<option value="">No caskets available</option>';
+                // }
+                ?>
+            </select>
+          </div>
+          <div>
+            <label for="urnType" class="block text-sm font-medium text-gray-700 mb-1 flex items-center">
+              <i class="fas fa-urn mr-2 text-sidebar-accent"></i>
+              Urn Type
+            </label>
+            <select id="urnType" name="urnType" class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
+              <option value="">Select a Urn</option>
+                <?php
+                // Fetch inventory items where category_id = 1 and status = 1
+                // $sql = "SELECT inventory_id, item_name FROM inventory_tb WHERE category_id = 3 AND status = 1";
+                // $result = $conn->query($sql);
+
+                // if ($result->num_rows > 0) {
+                //     while ($row = $result->fetch_assoc()) {
+                //         echo '<option value="' . $row["inventory_id"] . '">' . htmlspecialchars($row["item_name"]) . '</option>';
+                //     }
+                // } else {
+                //     echo '<option value="">No urn available</option>';
+                // }
+                ?>
+            </select>
+          </div>
+        </div>
+
+        <?php
+            // Include database connection
+            include '../db_connect.php';
+
+            // Fetch branches from the database
+            $sql = "SELECT branch_id, branch_name FROM branch_tb";
+            $result = $conn->query($sql);
+            ?>
+
+            <div class="bg-gray-50 p-4 rounded-lg border-l-4 border-gold">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Branch</label>
+                <div class="flex gap-4">
+                    <?php
+                    if ($result->num_rows > 0) {
+                        while ($row = $result->fetch_assoc()) {
+                            echo '<label class="flex items-center space-x-2 cursor-pointer">';
+                            echo '<input type="radio" name="branch_id" value="' . $row['branch_id'] . '" required class="hidden peer">';
+                            echo '<div class="w-5 h-5 rounded-full border-2 border-gold flex items-center justify-center peer-checked:bg-gold peer-checked:border-darkgold transition-colors"></div>';
+                            echo '<span class="text-gray-700 font-medium">' . htmlspecialchars($row['branch_name']) . '</span>';
+                            echo '</label>';
+                        }
+                    } else {
+                        echo '<p class="text-gray-500">No branches available.</p>';
+                    }
+                    ?>
+                </div>
+            </div>
+        
+        <div>
+          <label for="serviceImage" class="block text-sm font-medium text-gray-700 mb-1 flex items-center">
+            <i class="fas fa-image mr-2 text-sidebar-accent"></i>
+            Upload Image
+          </label>
+          <div class="flex items-center border border-gray-300 rounded-lg p-2 focus-within:ring-2 focus-within:ring-sidebar-accent focus-within:border-transparent">
+            <i class="fas fa-upload text-gray-400 mr-2"></i>
+            <input type="file" id="serviceImage" name="serviceImage" class="w-full focus:outline-none">
+          </div>
+        </div>
+        
+        <!-- Flower Design Section -->
+        <div class="bg-gray-50 p-3 rounded-lg border border-gray-200">
+          <p class="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+            <i class="fas fa-flower mr-2 text-sidebar-accent"></i>
+            Flower Arrangement Sets
+          </p>
+          <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+            <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
+              <input type="checkbox" name="flowerDesign" value="3 Floral Replacement" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
+              <i class="fas fa-leaf mr-1 text-sidebar-accent"></i>
+              3 Floral Replacement
+            </label>
+            <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
+              <input type="checkbox" name="flowerDesign" value="2 Floral Replacement" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
+              <i class="fas fa-leaf mr-1 text-sidebar-accent"></i>
+              2 Floral Replacement
+            </label>
+            <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
+              <input type="checkbox" name="flowerDesign" value="1 Floral Replacement" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
+              <i class="fas fa-leaf mr-1 text-sidebar-accent"></i>
+              1 Floral Replacement
+            </label>
+            <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
+              <input type="checkbox" name="flowerDesign" value="3 Premium Floral Replacement" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
+              <i class="fas fa-crown mr-1 text-sidebar-accent"></i>
+              3 Premium Floral Replacement
+            </label>
+            <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
+              <input type="checkbox" name="flowerDesign" value="2 Premium Floral Replacement" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
+              <i class="fas fa-crown mr-1 text-sidebar-accent"></i>
+              2 Premium Floral Replacement
+            </label>
+            <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
+              <input type="checkbox" name="flowerDesign" value="1 Premium Floral Replacement" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
+              <i class="fas fa-crown mr-1 text-sidebar-accent"></i>
+              1 Premium Floral Replacement
+            </label>
+          </div>
+        </div>
+        
+        <!-- Enhanced Essential Services Section -->
+        <div class="bg-gray-50 p-3 rounded-lg border border-gray-200">
+          <p class="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+            <i class="fas fa-concierge-bell mr-2 text-sidebar-accent"></i>
+            Other Essential Services
+          </p>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+            <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
+              <input type="checkbox" name="essentialServices" value="Transportation" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
+              <i class="fas fa-car mr-2 text-sidebar-accent"></i>
+              Transportation Service
+            </label>
+            <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
+              <input type="checkbox" name="essentialServices" value="Embalming" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
+              <i class="fas fa-procedures mr-2 text-sidebar-accent"></i>
+              Embalming and Preparation
+            </label>
+            <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
+              <input type="checkbox" name="essentialServices" value="MemorialPrograms" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
+              <i class="fas fa-book-open mr-2 text-sidebar-accent"></i>
+              Memorial Programs
+            </label>
+            <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
+              <input type="checkbox" name="essentialServices" value="Videography" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
+              <i class="fas fa-video mr-2 text-sidebar-accent"></i>
+              Videography & Photography
+            </label>
+            <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
+              <input type="checkbox" name="essentialServices" value="LiveStreaming" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
+              <i class="fas fa-broadcast-tower mr-2 text-sidebar-accent"></i>
+              Live Streaming Service
+            </label>
+            <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
+              <input type="checkbox" name="essentialServices" value="GriefCounseling" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
+              <i class="fas fa-hands-helping mr-2 text-sidebar-accent"></i>
+              Grief Counseling
+            </label>
+            <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
+              <input type="checkbox" name="essentialServices" value="Catering" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
+              <i class="fas fa-utensils mr-2 text-sidebar-accent"></i>
+              Catering Service
+            </label>
+            <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
+              <input type="checkbox" name="essentialServices" value="MusicService" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
+              <i class="fas fa-music mr-2 text-sidebar-accent"></i>
+              Music Service
+            </label>
+          </div>
+        </div>
+        
+        <input type="hidden" id="serviceStatus" name="serviceStatus" value="true">
+      </form>
+    </div>
+    
+    <!-- Modal Footer --> 
+    <div class="p-4 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
+      <button class="px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-semibold hover:bg-gray-100 transition-colors flex items-center" onclick="closeAddServiceModal()">
+        <i class="fas fa-times mr-2"></i>
+        Cancel
+      </button>
+      <button class="px-6 py-2 bg-sidebar-accent text-white rounded-lg font-semibold hover:bg-darkgold transition-colors flex items-center" onclick="addService()">
+        <i class="fas fa-plus mr-2"></i>
+        Add Service
+      </button>
+    </div>
+  </div>
+</div>
+<!-- Edit service modal -->
+<div class="fixed top-0 left-0 w-full h-full bg-black bg-opacity-60 flex items-center justify-center z-50 hidden" id="editServiceModal">
+  <div class="bg-white rounded-xl w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-xl">
+    <!-- Modal Header -->
+    <div class="bg-gradient-to-r from-sidebar-accent to-white flex justify-between items-center p-4 flex-shrink-0">
+      <h3 class="text-xl font-bold text-white flex items-center">
+        <i class="fas fa-edit mr-2"></i>
+        Edit Service
+      </h3>
+      <button class="bg-black bg-opacity-20 hover:bg-opacity-30 rounded-full p-2 text-white hover:text-white transition-all duration-200" onclick="closeEditServiceModal()">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+        </svg>
+      </button>
+    </div>
+    
+    <!-- Modal Body -->
+    <div class="p-4">
+      <form id="editServiceForm" class="space-y-4">
+        <input type="hidden" id="editServiceId" name="serviceId">
+        <div>
+          <label for="editServiceName" class="block text-sm font-medium text-gray-700 mb-1 flex items-center">
+            <i class="fas fa-tag mr-2 text-sidebar-accent"></i>
+            Service Name
+          </label>
+          <input type="text" id="editServiceName" name="serviceName" class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent" required>
+        </div>
+        
+        <div>
+          <label for="editServiceDescription" class="block text-sm font-medium text-gray-700 mb-1 flex items-center">
+            <i class="fas fa-align-left mr-2 text-sidebar-accent"></i>
+            Description
+          </label>
+          <textarea id="editServiceDescription" name="serviceDescription" rows="3" class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent"></textarea>
+        </div>
+
+        <!-- Price Section -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div>
+            <label for="editCapitalPrice" class="block text-sm font-medium text-gray-700 mb-1 flex items-center">
+              <i class="fas fa-coins mr-2 text-sidebar-accent"></i>
+              Capital Price
+            </label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <span class="text-gray-500">₱</span>
+              </div>
+              <input type="number" id="editCapitalPrice" name="capitalPrice" placeholder="0.00" min="0" step="0.01" class="w-full pl-8 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent" required>
+            </div>
+          </div>
+          <div>
+            <label for="editSellingPrice" class="block text-sm font-medium text-gray-700 mb-1 flex items-center">
+              <i class="fas fa-tags mr-2 text-sidebar-accent"></i>
+              Selling Price
+            </label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <span class="text-gray-500">₱</span>
+              </div>
+              <input type="number" id="editSellingPrice" name="sellingPrice" placeholder="0.00" min="0" step="0.01" class="w-full pl-8 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent" required>
+            </div>
+          </div>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <div>
+            <label for="editServiceCategory" class="block text-sm font-medium text-gray-700 mb-1 flex items-center">
+              <i class="fas fa-th-list mr-2 text-sidebar-accent"></i>
+              Category
+            </label>
+            <select id="editServiceCategory" name="serviceCategory" class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent" required>
+                <option value="">Select a Category</option>
+                <?php
+                include '../db_connect.php';
+                // Fetch service categories
+                $sql = "SELECT service_categoryID, service_category_name FROM service_category";
+                $result = $conn->query($sql);
+
+                if ($result->num_rows > 0) {
+                    while ($row = $result->fetch_assoc()) {
+                        echo '<option value="' . $row["service_categoryID"] . '">' . htmlspecialchars($row["service_category_name"]) . '</option>';
+                    }
+                } else {
+                    echo '<option value="">No categories found</option>';
+                }
+                ?>
+            </select>
+          </div>
+          <div>
+            <label for="editCasketType" class="block text-sm font-medium text-gray-700 mb-1 flex items-center">
+              <i class="fas fa-box mr-2 text-sidebar-accent"></i>
+              Casket Type
+            </label>
+            <select id="editCasketType" name="casketType" class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
+                <option value="">Select a Casket</option>
+                <?php
+                // Fetch inventory items where category_id = 1 (caskets) and status = 1
+                $sql = "SELECT inventory_id, item_name FROM inventory_tb WHERE category_id = 1 AND status = 1";
+                $result = $conn->query($sql);
+
+                if ($result->num_rows > 0) {
+                    while ($row = $result->fetch_assoc()) {
+                        echo '<option value="' . $row["inventory_id"] . '">' . htmlspecialchars($row["item_name"]) . '</option>';
+                    }
+                } else {
+                    echo '<option value="">No caskets available</option>';
+                }
+                ?>
+            </select>
+          </div>
+          <div>
+            <label for="editUrnType" class="block text-sm font-medium text-gray-700 mb-1 flex items-center">
+              <i class="fas fa-urn mr-2 text-sidebar-accent"></i>
+              Urn Type
+            </label>
+            <select id="editUrnType" name="urnType" class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
+              <option value="">Select a Urn</option>
+                <?php
+                // Fetch inventory items where category_id = 3 (urns) and status = 1
+                $sql = "SELECT inventory_id, item_name FROM inventory_tb WHERE category_id = 3 AND status = 1";
+                $result = $conn->query($sql);
+
+                if ($result->num_rows > 0) {
+                    while ($row = $result->fetch_assoc()) {
+                        echo '<option value="' . $row["inventory_id"] . '">' . htmlspecialchars($row["item_name"]) . '</option>';
+                    }
+                } else {
+                    echo '<option value="">No urn available</option>';
+                }
+                ?>
+            </select>
+          </div>
+        </div>
+
+        <div class="bg-gray-50 p-4 rounded-lg border-l-4 border-gold">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Branch</label>
+            <div class="flex gap-4 flex-wrap">
+                <?php
+                // Include database connection
+                include '../db_connect.php';
+
+                // Fetch branches from the database
+                $sql = "SELECT branch_id, branch_name FROM branch_tb";
+                $result = $conn->query($sql);
+                
+                if ($result->num_rows > 0) {
+                    while ($row = $result->fetch_assoc()) {
+                        echo '<label class="flex items-center space-x-2 cursor-pointer">';
+                        echo '<input type="radio" name="branch_id" value="' . $row['branch_id'] . '" required class="hidden peer">';
+                        echo '<div class="w-5 h-5 rounded-full border-2 border-gold flex items-center justify-center peer-checked:bg-gold peer-checked:border-darkgold transition-colors"></div>';
+                        echo '<span class="text-gray-700 font-medium">' . htmlspecialchars($row['branch_name']) . '</span>';
+                        echo '</label>';
+                    }
+                } else {
+                    echo '<p class="text-gray-500">No branches available.</p>';
+                }
+                ?>
+            </div>
+        </div>
+        
+        <div>
+          <label for="editServiceImage" class="block text-sm font-medium text-gray-700 mb-1 flex items-center">
+            <i class="fas fa-image mr-2 text-sidebar-accent"></i>
+            Update Image
+          </label>
+          <div class="flex items-center border border-gray-300 rounded-lg p-2 focus-within:ring-2 focus-within:ring-sidebar-accent focus-within:border-transparent">
+            <i class="fas fa-upload text-gray-400 mr-2"></i>
+            <input type="file" id="editServiceImage" name="serviceImage" class="w-full focus:outline-none">
+          </div>
+          <input type="hidden" id="currentImagePath" name="currentImagePath">
+          <div id="currentImagePreview" class="mt-2 h-24 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center">
+            <img id="currentServiceImage" src="" alt="Current service image" class="h-full object-cover">
+            <p class="text-gray-500 text-sm p-2" id="noImageText">No image currently set</p>
+          </div>
+        </div>
+        
+        <!-- Flower Design Section -->
+        <div class="bg-gray-50 p-3 rounded-lg border border-gray-200">
+          <p class="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+            <i class="fas fa-flower mr-2 text-sidebar-accent"></i>
+            Flower Arrangement Sets
+          </p>
+          <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+            <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
+              <input type="checkbox" name="flowerDesign" value="3 Floral Replacement" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
+              <i class="fas fa-leaf mr-1 text-sidebar-accent"></i>
+              3 Floral Replacement
+            </label>
+            <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
+              <input type="checkbox" name="flowerDesign" value="2 Floral Replacement" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
+              <i class="fas fa-leaf mr-1 text-sidebar-accent"></i>
+              2 Floral Replacement
+            </label>
+            <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
+              <input type="checkbox" name="flowerDesign" value="1 Floral Replacement" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
+              <i class="fas fa-leaf mr-1 text-sidebar-accent"></i>
+              1 Floral Replacement
+            </label>
+            <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
+              <input type="checkbox" name="flowerDesign" value="3 Premium Floral Replacement" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
+              <i class="fas fa-crown mr-1 text-sidebar-accent"></i>
+              3 Premium Floral Replacement
+            </label>
+            <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
+              <input type="checkbox" name="flowerDesign" value="2 Premium Floral Replacement" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
+              <i class="fas fa-crown mr-1 text-sidebar-accent"></i>
+              2 Premium Floral Replacement
+            </label>
+            <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
+              <input type="checkbox" name="flowerDesign" value="1 Premium Floral Replacement" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
+              <i class="fas fa-crown mr-1 text-sidebar-accent"></i>
+              1 Premium Floral Replacement
+            </label>
+          </div>
+        </div>
+        
+        <!-- Essential Services Section -->
+        <div class="bg-gray-50 p-3 rounded-lg border border-gray-200">
+          <p class="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+            <i class="fas fa-concierge-bell mr-2 text-sidebar-accent"></i>
+            Other Essential Services
+          </p>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-2" id="inclusionsContainer">
+            <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
+              <input type="checkbox" name="inclusions" value="Transportation" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
+              <i class="fas fa-car mr-2 text-sidebar-accent"></i>
+              Transportation Service
+            </label>
+            <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
+              <input type="checkbox" name="inclusions" value="Embalming" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
+              <i class="fas fa-procedures mr-2 text-sidebar-accent"></i>
+              Embalming and Preparation
+            </label>
+            <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
+              <input type="checkbox" name="inclusions" value="MemorialPrograms" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
+              <i class="fas fa-book-open mr-2 text-sidebar-accent"></i>
+              Memorial Programs
+            </label>
+            <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
+              <input type="checkbox" name="inclusions" value="Videography" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
+              <i class="fas fa-video mr-2 text-sidebar-accent"></i>
+              Videography & Photography
+            </label>
+            <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
+              <input type="checkbox" name="inclusions" value="LiveStreaming" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
+              <i class="fas fa-broadcast-tower mr-2 text-sidebar-accent"></i>
+              Live Streaming Service
+            </label>
+            <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
+              <input type="checkbox" name="inclusions" value="GriefCounseling" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
+              <i class="fas fa-hands-helping mr-2 text-sidebar-accent"></i>
+              Grief Counseling
+            </label>
+            <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
+              <input type="checkbox" name="inclusions" value="Catering" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
+              <i class="fas fa-utensils mr-2 text-sidebar-accent"></i>
+              Catering Service
+            </label>
+            <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
+              <input type="checkbox" name="inclusions" value="MusicService" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
+              <i class="fas fa-music mr-2 text-sidebar-accent"></i>
+              Music Service
+            </label>
+          </div>
+        </div>
+        
+        <div class="bg-gray-50 p-3 rounded-lg border border-gray-200">
+          <p class="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+            <i class="fas fa-toggle-on mr-2 text-sidebar-accent"></i>
+            Service Status
+          </p>
+          <div class="flex items-center space-x-4">
+            <label class="flex items-center space-x-2 cursor-pointer">
+              <input type="radio" name="status" value="1" class="hidden peer">
+              <div class="w-5 h-5 rounded-full border-2 border-green-500 flex items-center justify-center peer-checked:bg-green-500 transition-colors"></div>
+              <span class="text-gray-700 font-medium">Active</span>
+            </label>
+            <label class="flex items-center space-x-2 cursor-pointer">
+              <input type="radio" name="status" value="0" class="hidden peer">
+              <div class="w-5 h-5 rounded-full border-2 border-red-500 flex items-center justify-center peer-checked:bg-red-500 transition-colors"></div>
+              <span class="text-gray-700 font-medium">Inactive</span>
+            </label>
+          </div>
+        </div>
+      </form>
+    </div>
+    
+    <!-- Modal Footer --> 
+    <div class="p-4 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
+      <button class="px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-semibold hover:bg-gray-100 transition-colors flex items-center" onclick="closeEditServiceModal()">
+        <i class="fas fa-times mr-2"></i>
+        Cancel
+      </button>
+      <button class="px-6 py-2 bg-sidebar-accent text-white rounded-lg font-semibold hover:bg-darkgold transition-colors flex items-center" onclick="updateService()">
+        <i class="fas fa-save mr-2"></i>
+        Update Service
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- JavaScript to handle fetching and displaying service data -->
+<script>
+// Function to open the edit service modal and load data
+function openEditServiceModal(serviceId) {
+    // Show the modal
+    document.getElementById('editServiceModal').classList.remove('hidden');
+    
+    // Fetch service data
+    fetch(`get_service.php?service_id=${serviceId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                populateEditForm(data.service);
+            } else {
+                alert('Error loading service data');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error loading service data');
+        });
+}
+
+// Function to populate the edit form with service data
+// Function to populate the edit form with service data
+function populateEditForm(service) {
+    // Set basic fields
+    document.getElementById('editServiceId').value = service.service_id;
+    document.getElementById('editServiceName').value = service.service_name;
+    document.getElementById('editCapitalPrice').value = service.capital_price;
+    document.getElementById('editSellingPrice').value = service.selling_price;
+    document.getElementById('editServiceCategory').value = service.service_categoryID;
+    // Add this with the other field settings
+    document.getElementById('editServiceDescription').value = service.description || '';
+    
+    // Set casket and urn if available
+    if (service.casket_id) {
+        document.getElementById('editCasketType').value = service.casket_id;
+    }
+    if (service.urn_id) {
+        document.getElementById('editUrnType').value = service.urn_id;
+    }
+    
+    // Set branch - Loop through all branch radio buttons and check the matching one
+    const branchRadios = document.querySelectorAll('input[name="branch_id"]');
+    branchRadios.forEach(radio => {
+        if (radio.value == service.branch_id) {
+            radio.checked = true;
+        } else {
+            radio.checked = false;
+        }
+    });
+    
+    // Set image if available
+    if (service.image_url) {
+        document.getElementById('currentImagePath').value = service.image_url;
+        document.getElementById('currentServiceImage').src = service.image_url;
+        document.getElementById('currentServiceImage').classList.remove('hidden');
+        document.getElementById('noImageText').classList.add('hidden');
+    } else {
+        document.getElementById('currentServiceImage').classList.add('hidden');
+        document.getElementById('noImageText').classList.remove('hidden');
+    }
+    
+    // Set flower designs - Reset all checkboxes first
+    const flowerCheckboxes = document.getElementsByName('flowerDesign');
+    for (let checkbox of flowerCheckboxes) {
+        checkbox.checked = false;
+    }
+    
+    if (service.flower_design) {
+        const flowerDesigns = service.flower_design.split(',');
+        for (let checkbox of flowerCheckboxes) {
+            if (flowerDesigns.includes(checkbox.value.trim())) {
+                checkbox.checked = true;
+            }
+        }
+    }
+    
+    // Set inclusions - Reset all checkboxes first then properly check matching ones
+    const inclusionCheckboxes = document.getElementsByName('inclusions');
+    for (let checkbox of inclusionCheckboxes) {
+        checkbox.checked = false;
+    }
+    
+    if (service.inclusions) {
+        const inclusions = service.inclusions.split(',');
+        for (let checkbox of inclusionCheckboxes) {
+            // Trim values to handle any spaces in the data
+            if (inclusions.some(inclusion => inclusion.trim() === checkbox.value.trim())) {
+                checkbox.checked = true;
+            }
+        }
+    }
+    
+    // Set status - Loop through all status radio buttons and check the matching one
+    const statusRadios = document.getElementsByName('status');
+    const statusValue = service.status.toString();
+    
+    // Handle status as either a numeric value or 'Active'/'Inactive' string
+    let numericStatus;
+    if (statusValue === 'Active') {
+        numericStatus = '1';
+    } else if (statusValue === 'Inactive') {
+        numericStatus = '0';
+    } else {
+        numericStatus = statusValue;
+    }
+    
+    statusRadios.forEach(radio => {
+        radio.checked = (radio.value === numericStatus);
+    });
+    
+    console.log('Branch ID:', service.branch_id);
+    console.log('Status:', service.status, 'Numeric Status:', numericStatus);
+}
+
+// Function to close the edit service modal
+function closeEditServiceModal() {
+    document.getElementById('editServiceModal').classList.add('hidden');
+    document.getElementById('editServiceForm').reset();
+}
+
+// Function to update service
+function updateService() {
+    const form = document.getElementById('editServiceForm');
+    const formData = new FormData(form);
+
+    // Log the FormData to the console
+    console.log('FormData being sent:');
+    for (let [key, value] of formData.entries()) {
+        console.log(`${key}:`, value);
+    }
+
+    // Convert status to "Active" or "Inactive"
+    const status = formData.get('status') === '1' ? 'Active' : 'Inactive';
+    formData.set('status', status);
+
+    // Combine inclusions into a single string
+    const inclusions = formData.getAll('inclusions').join(', ');
+    formData.set('inclusions', inclusions);
+
+    // Log the updated FormData
+    console.log('Updated FormData being sent:');
+    for (let [key, value] of formData.entries()) {
+        console.log(`${key}:`, value);
+    }
+
+    fetch('update_service.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            console.log('Service updated successfully:', data);
+            alert('Service updated successfully');
+            location.reload();
+            closeEditServiceModal();
+            // Optionally, refresh the service list or perform other actions
+        } else {
+            console.error('Error updating service:', data.message);
+            alert('Error updating service: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error updating service');
+    });
+}
+</script>
+
+  <script>
+    // Function to open the Add Service Modal
+    function openAddServiceModal(branchId) {
+  // Display the modal
+  document.getElementById('addServiceModal').style.display = 'flex';
+  
+  // If a branchId was provided, select the corresponding radio button
+  if (branchId) {
+    // Find the radio button with the matching branch ID
+    const radioButton = document.querySelector(`input[name="branch_id"][value="${branchId}"]`);
+    
+    // If found, select it
+    if (radioButton) {
+      radioButton.checked = true;
+      // Load caskets and urns for this branch
+      fetchItemsByBranch(branchId);
+    }
+  }
+  
+  // Add event listeners to all branch radio buttons
+  const branchRadios = document.querySelectorAll('input[name="branch_id"]');
+  branchRadios.forEach(radio => {
+    radio.addEventListener('change', function() {
+      if (this.checked) {
+        fetchItemsByBranch(this.value);
+      }
+    });
+  });
+}
+
+function fetchItemsByBranch(branchId) {
+  // Create AJAX request to fetch items for this branch
+  const xhr = new XMLHttpRequest();
+  xhr.open('POST', 'fetch_branch_items.php', true);
+  xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+  
+  xhr.onload = function() {
+    if (this.status === 200) {
+      const response = JSON.parse(this.responseText);
+      
+      // Update casket dropdown
+      const casketSelect = document.getElementById('casketType');
+      casketSelect.innerHTML = '<option value="">Select a Casket</option>';
+      
+      if (response.caskets && response.caskets.length > 0) {
+        response.caskets.forEach(casket => {
+          const option = document.createElement('option');
+          option.value = casket.inventory_id;
+          option.textContent = casket.item_name;
+          casketSelect.appendChild(option);
+        });
+      } else {
+        const option = document.createElement('option');
+        option.value = "";
+        option.textContent = "No caskets available for this branch";
+        casketSelect.appendChild(option);
+      }
+      
+      // Update urn dropdown
+      const urnSelect = document.getElementById('urnType');
+      urnSelect.innerHTML = '<option value="">Select a Urn</option>';
+      
+      if (response.urns && response.urns.length > 0) {
+        response.urns.forEach(urn => {
+          const option = document.createElement('option');
+          option.value = urn.inventory_id;
+          option.textContent = urn.item_name;
+          urnSelect.appendChild(option);
+        });
+      } else {
+        const option = document.createElement('option');
+        option.value = "";
+        option.textContent = "No urns available for this branch";
+        urnSelect.appendChild(option);
+      }
+    }
+  };
+  
+  xhr.send('branch_id=' + branchId);
+}
+
+    // Function to close the Add Service Modal
+    function closeAddServiceModal() {
+      document.getElementById('addServiceModal').style.display = 'none';
+    }
+
+    // Function to add a new service
+    function addService() {
+    // Create a FormData object
+    const form = document.getElementById('serviceForm');
+    const formData = new FormData(form);
+    
+    // Get selected branch (assuming it's a radio button with name="branch_id")
+    const selectedBranch = document.querySelector('input[name="branch_id"]:checked');
+    if (selectedBranch) {
+        formData.append('branch_id', selectedBranch.value);
+    }
+
+    // Get all checked flower designs
+    document.querySelectorAll('input[name="flowerDesign"]:checked').forEach(checkbox => {
+        formData.append('flowerDesign[]', checkbox.value);
+    });
+    
+    // Get all checked essential services
+    document.querySelectorAll('input[name="essentialServices"]:checked').forEach(checkbox => {
+        formData.append('essentialServices[]', checkbox.value);
+    });
+    
+    // Debug: Log form data
+    console.log("Submitting form data:");
+    for (let pair of formData.entries()) {
+        console.log(pair[0] + ': ' + pair[1]);
+    }
+    
+    // Send the form data
+    fetch('add_service_handler.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => {
+        console.log("Response status:", response.status);
+        return response.json();
+    })
+    .then(data => {
+        console.log("Response data:", data);
+        
+        if (data.status === 'success') {
+            // Show simple alert
+            alert('Service added successfully');
+            // Reload the page
+            location.reload();
+        } else {
+            // Show error alert
+            alert('Error: ' + (data.message || 'Something went wrong'));
+        }
+    })
+    .catch(error => {
+        console.error('Fetch error:', error);
+        alert('Error: Failed to communicate with the server');
+    });
+    
+    // Close the modal
+    closeAddServiceModal();
+}
+    // Function to save changes to a service
+    function saveServiceChanges() {
+      const form = document.getElementById('editServiceForm');
+      if (form.checkValidity()) {
+        // Save changes logic here
+        alert('Service updated successfully!');
+        closeEditServiceModal();
+      } else {
+        form.reportValidity();
+      }
+    }
+
+    // Function to delete a service
+    function deleteService() {
+      if (confirm('Are you sure you want to delete this service?')) {
+        // Delete service logic here
+        alert('Service deleted successfully!');
+      }
+    }
+  </script>
+  <script src="script.js"></script>
+  <script src="tailwind.js"></script>
+</body>
+</html>

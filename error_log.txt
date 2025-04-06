@@ -1,0 +1,3217 @@
+[2025-03-22 13:23:26] Received POST data: Array
+(
+    [serviceName] => cremate
+    [capitalPrice] => 45000
+    [sellingPrice] => 10000
+    [serviceCategory] => 2
+    [casketType] => 9
+    [urnType] => 15
+    [flowerDesign] => Array
+        (
+            [0] => Custom
+        )
+
+    [essentialServices] => Array
+        (
+            [0] => Transportation
+            [1] => MemorialPrograms
+            [2] => LiveStreaming
+        )
+
+    [serviceStatus] => true
+)
+
+[2025-03-22 13:23:26] Received FILES data: Array
+(
+    [serviceImage] => Array
+        (
+            [name] => 
+            [full_path] => 
+            [type] => 
+            [tmp_name] => 
+            [error] => 4
+            [size] => 0
+        )
+
+)
+
+[2025-03-22 13:23:26] SQL Query: INSERT INTO Services_tb (
+                service_name, 
+                service_categoryID, 
+                casket_id, 
+                urn_id, 
+                flower_design, 
+                inclusions, 
+                capital_price, 
+                selling_price, 
+                image_url, 
+                status
+            ) VALUES (
+                'cremate', 
+                2, 
+                9, 
+                15, 
+                'Custom', 
+                'Transportation, MemorialPrograms, LiveStreaming', 
+                45000, 
+                10000, 
+                NULL, 
+                'Active'
+            )
+[2025-03-22 13:23:26] Service added successfully with ID: 10
+[2025-03-22 13:47:29] Received POST data: Array
+(
+    [serviceName] => Essential Service
+    [capitalPrice] => 10000
+    [sellingPrice] => 35000
+    [serviceCategory] => 1
+    [casketType] => 16
+    [urnType] => 
+    [flowerDesign] => Array
+        (
+            [0] => Normal
+        )
+
+    [essentialServices] => Array
+        (
+            [0] => Transportation
+            [1] => Embalming
+        )
+
+    [serviceStatus] => true
+)
+
+[2025-03-22 13:47:29] Received FILES data: Array
+(
+    [serviceImage] => Array
+        (
+            [name] => 
+            [full_path] => 
+            [type] => 
+            [tmp_name] => 
+            [error] => 4
+            [size] => 0
+        )
+
+)
+
+[2025-03-22 13:47:29] SQL Query: INSERT INTO Services_tb (
+                service_name, 
+                service_categoryID, 
+                casket_id, 
+                urn_id, 
+                flower_design, 
+                inclusions, 
+                capital_price, 
+                selling_price, 
+                image_url, 
+                status
+            ) VALUES (
+                'Essential Service', 
+                1, 
+                16, 
+                NULL, 
+                'Normal', 
+                'Transportation, Embalming', 
+                10000, 
+                35000, 
+                NULL, 
+                'Active'
+            )
+[2025-03-22 13:47:29] Service added successfully with ID: 11
+[2025-03-22 13:48:28] Received POST data: Array
+(
+    [serviceName] => Ordinary Service
+    [capitalPrice] => 15000
+    [sellingPrice] => 50000
+    [serviceCategory] => 1
+    [casketType] => 17
+    [urnType] => 
+    [flowerDesign] => Array
+        (
+            [0] => Deluxe
+        )
+
+    [essentialServices] => Array
+        (
+            [0] => Transportation
+            [1] => Embalming
+            [2] => MusicService
+        )
+
+    [serviceStatus] => true
+)
+
+[2025-03-22 13:48:28] Received FILES data: Array
+(
+    [serviceImage] => Array
+        (
+            [name] => 
+            [full_path] => 
+            [type] => 
+            [tmp_name] => 
+            [error] => 4
+            [size] => 0
+        )
+
+)
+
+[2025-03-22 13:48:28] SQL Query: INSERT INTO Services_tb (
+                service_name, 
+                service_categoryID, 
+                casket_id, 
+                urn_id, 
+                flower_design, 
+                inclusions, 
+                capital_price, 
+                selling_price, 
+                image_url, 
+                status
+            ) VALUES (
+                'Ordinary Service', 
+                1, 
+                17, 
+                NULL, 
+                'Deluxe', 
+                'Transportation, Embalming, MusicService', 
+                15000, 
+                50000, 
+                NULL, 
+                'Active'
+            )
+[2025-03-22 13:48:28] Service added successfully with ID: 12
+<<<<<<< Updated upstream
+[2025-03-23 07:09:29] Received POST data: Array
+(
+    [serviceName] => Deluxe Service
+    [capitalPrice] => 100000
+    [sellingPrice] => 500000
+    [serviceCategory] => 1
+    [casketType] => 17
+    [urnType] => 
+    [flowerDesign] => Array
+        (
+            [0] => Deluxe
+        )
+
+    [essentialServices] => Array
+        (
+            [0] => Transportation
+            [1] => Embalming
+            [2] => MemorialPrograms
+            [3] => Videography
+            [4] => Catering
+            [5] => MusicService
+        )
+
+    [serviceStatus] => true
+)
+
+[2025-03-23 07:09:29] Received FILES data: Array
+(
+    [serviceImage] => Array
+        (
+            [name] => 
+            [full_path] => 
+            [type] => 
+            [tmp_name] => 
+            [error] => 4
+            [size] => 0
+        )
+
+)
+
+[2025-03-23 07:09:29] SQL Query: INSERT INTO Services_tb (
+                service_name, 
+                service_categoryID, 
+                casket_id, 
+                urn_id, 
+                flower_design, 
+                inclusions, 
+                capital_price, 
+                selling_price, 
+                image_url, 
+                status
+            ) VALUES (
+                'Deluxe Service', 
+                1, 
+                17, 
+                NULL, 
+                'Deluxe', 
+                'Transportation, Embalming, MemorialPrograms, Videography, Catering, MusicService', 
+                100000, 
+                500000, 
+                NULL, 
+                'Active'
+            )
+[2025-03-23 07:09:29] Error: Field 'branch_id' doesn't have a default value
+[2025-03-23 07:39:04] Received POST data: Array
+(
+    [serviceName] => Deluxe Service
+    [capitalPrice] => 100000
+    [sellingPrice] => 500000
+    [serviceCategory] => 1
+    [casketType] => 17
+    [urnType] => 
+    [branch] => 1
+    [flowerDesign] => Array
+        (
+            [0] => Deluxe
+        )
+
+    [essentialServices] => Array
+        (
+            [0] => Transportation
+            [1] => Embalming
+            [2] => MemorialPrograms
+            [3] => Videography
+            [4] => LiveStreaming
+            [5] => GriefCounseling
+            [6] => Catering
+            [7] => MusicService
+        )
+
+    [serviceStatus] => true
+)
+
+[2025-03-23 07:39:04] Received FILES data: Array
+(
+    [serviceImage] => Array
+        (
+            [name] => 
+            [full_path] => 
+            [type] => 
+            [tmp_name] => 
+            [error] => 4
+            [size] => 0
+        )
+
+)
+
+[2025-03-23 07:39:04] SQL Query: INSERT INTO Services_tb (
+                service_name, 
+                service_categoryID, 
+                casket_id, 
+                urn_id, 
+                flower_design, 
+                inclusions, 
+                capital_price, 
+                selling_price, 
+                image_url, 
+                branch_id,
+                status
+            ) VALUES (
+                'Deluxe Service', 
+                1, 
+                17, 
+                NULL, 
+                'Deluxe', 
+                'Transportation, Embalming, MemorialPrograms, Videography, LiveStreaming, GriefCounseling, Catering, MusicService', 
+                100000, 
+                500000, 
+                NULL, 
+                NULL,
+                'Active'
+            )
+[2025-03-23 07:39:04] Error: Column 'branch_id' cannot be null
+[2025-03-23 07:49:20] Received POST data: Array
+(
+    [serviceName] => Deluxe Service
+    [capitalPrice] => 100000
+    [sellingPrice] => 500000
+    [serviceCategory] => 3
+    [casketType] => 17
+    [urnType] => 
+    [branch] => 1
+    [flowerDesign] => Array
+        (
+            [0] => Deluxe
+        )
+
+    [essentialServices] => Array
+        (
+            [0] => Transportation
+            [1] => Embalming
+            [2] => MemorialPrograms
+            [3] => Videography
+            [4] => LiveStreaming
+            [5] => GriefCounseling
+            [6] => Catering
+            [7] => MusicService
+        )
+
+    [serviceStatus] => true
+)
+
+[2025-03-23 07:49:20] Received FILES data: Array
+(
+    [serviceImage] => Array
+        (
+            [name] => 
+            [full_path] => 
+            [type] => 
+            [tmp_name] => 
+            [error] => 4
+            [size] => 0
+        )
+
+)
+
+[2025-03-23 07:49:20] SQL Query: INSERT INTO Services_tb (
+                service_name, 
+                service_categoryID, 
+                casket_id, 
+                urn_id, 
+                flower_design, 
+                inclusions, 
+                capital_price, 
+                selling_price, 
+                image_url, 
+                branch_id,
+                status
+            ) VALUES (
+                'Deluxe Service', 
+                3, 
+                17, 
+                NULL, 
+                'Deluxe', 
+                'Transportation, Embalming, MemorialPrograms, Videography, LiveStreaming, GriefCounseling, Catering, MusicService', 
+                100000, 
+                500000, 
+                NULL, 
+                NULL,
+                'Active'
+            )
+[2025-03-23 07:49:20] Error: Column 'branch_id' cannot be null
+[2025-03-23 07:53:55] Received POST data: Array
+(
+    [serviceName] => Deluxe Service
+    [capitalPrice] => 100000
+    [sellingPrice] => 500000
+    [serviceCategory] => 3
+    [casketType] => 17
+    [urnType] => 
+    [branch] => 1
+    [flowerDesign] => Array
+        (
+            [0] => Deluxe
+        )
+
+    [essentialServices] => Array
+        (
+            [0] => Transportation
+            [1] => Embalming
+            [2] => MemorialPrograms
+            [3] => Videography
+            [4] => LiveStreaming
+            [5] => GriefCounseling
+            [6] => Catering
+            [7] => MusicService
+        )
+
+    [serviceStatus] => true
+)
+
+[2025-03-23 07:53:55] Received FILES data: Array
+(
+    [serviceImage] => Array
+        (
+            [name] => 
+            [full_path] => 
+            [type] => 
+            [tmp_name] => 
+            [error] => 4
+            [size] => 0
+        )
+
+)
+
+[2025-03-23 07:53:55] SQL Query: INSERT INTO Services_tb (
+                service_name, 
+                service_categoryID, 
+                casket_id, 
+                urn_id, 
+                flower_design, 
+                inclusions, 
+                capital_price, 
+                selling_price, 
+                image_url, 
+                branch_id,
+                status
+            ) VALUES (
+                'Deluxe Service', 
+                3, 
+                17, 
+                NULL, 
+                'Deluxe', 
+                'Transportation, Embalming, MemorialPrograms, Videography, LiveStreaming, GriefCounseling, Catering, MusicService', 
+                100000, 
+                500000, 
+                NULL, 
+                NULL,
+                'Active'
+            )
+[2025-03-23 07:53:55] Error: Column 'branch_id' cannot be null
+[2025-03-23 07:56:28] Received POST data: Array
+(
+    [serviceName] => Deluxe Service
+    [capitalPrice] => 100000
+    [sellingPrice] => 500000
+    [serviceCategory] => 3
+    [casketType] => 17
+    [urnType] => 
+    [branch_id] => 1
+    [flowerDesign] => Array
+        (
+            [0] => Deluxe
+        )
+
+    [essentialServices] => Array
+        (
+            [0] => Transportation
+            [1] => Embalming
+            [2] => MemorialPrograms
+            [3] => Videography
+            [4] => LiveStreaming
+            [5] => GriefCounseling
+            [6] => Catering
+            [7] => MusicService
+        )
+
+    [serviceStatus] => true
+)
+
+[2025-03-23 07:56:28] Received FILES data: Array
+(
+    [serviceImage] => Array
+        (
+            [name] => 
+            [full_path] => 
+            [type] => 
+            [tmp_name] => 
+            [error] => 4
+            [size] => 0
+        )
+
+)
+
+[2025-03-23 07:56:28] SQL Query: INSERT INTO Services_tb (
+                service_name, 
+                service_categoryID, 
+                casket_id, 
+                urn_id, 
+                flower_design, 
+                inclusions, 
+                capital_price, 
+                selling_price, 
+                image_url, 
+                branch_id,
+                status
+            ) VALUES (
+                'Deluxe Service', 
+                3, 
+                17, 
+                NULL, 
+                'Deluxe', 
+                'Transportation, Embalming, MemorialPrograms, Videography, LiveStreaming, GriefCounseling, Catering, MusicService', 
+                100000, 
+                500000, 
+                NULL, 
+                1,
+                'Active'
+            )
+[2025-03-23 07:56:28] Service added successfully with ID: 13
+[2025-03-23 08:39:12] Received POST data: Array
+(
+    [serviceName] => Ordinary Service
+    [capitalPrice] => 7000
+    [sellingPrice] => 25000
+    [serviceCategory] => 1
+    [casketType] => 16
+    [urnType] => 
+    [branch_id] => 1
+    [flowerDesign] => Array
+        (
+            [0] => Normal
+=======
+[2025-03-23 04:43:29] Received POST data: Array
+(
+    [serviceName] => PANG MAHIRAP
+    [capitalPrice] => 45679
+    [sellingPrice] => 100000
+    [serviceCategory] => 
+    [casketType] => 
+    [urnType] => 
+    [flowerDesign] => Array
+        (
+            [0] => Normal
+            [1] => Deluxe
+            [2] => Premium
+>>>>>>> Stashed changes
+        )
+
+    [essentialServices] => Array
+        (
+            [0] => Transportation
+<<<<<<< Updated upstream
+            [1] => Embalming
+            [2] => MemorialPrograms
+=======
+            [1] => MemorialPrograms
+            [2] => GriefCounseling
+>>>>>>> Stashed changes
+            [3] => MusicService
+        )
+
+    [serviceStatus] => true
+)
+
+<<<<<<< Updated upstream
+[2025-03-23 08:39:12] Received FILES data: Array
+=======
+[2025-03-23 04:43:29] Received FILES data: Array
+>>>>>>> Stashed changes
+(
+    [serviceImage] => Array
+        (
+            [name] => 
+            [full_path] => 
+            [type] => 
+            [tmp_name] => 
+            [error] => 4
+            [size] => 0
+        )
+
+)
+
+<<<<<<< Updated upstream
+[2025-03-23 08:39:12] SQL Query: INSERT INTO Services_tb (
+=======
+[2025-03-23 04:43:29] SQL Query: INSERT INTO Services_tb (
+>>>>>>> Stashed changes
+                service_name, 
+                service_categoryID, 
+                casket_id, 
+                urn_id, 
+                flower_design, 
+                inclusions, 
+                capital_price, 
+                selling_price, 
+                image_url, 
+<<<<<<< Updated upstream
+                branch_id,
+                status
+            ) VALUES (
+                'Ordinary Service', 
+                1, 
+                16, 
+                NULL, 
+                'Normal', 
+                'Transportation, Embalming, MemorialPrograms, MusicService', 
+                7000, 
+                25000, 
+                NULL, 
+                1,
+                'Active'
+            )
+[2025-03-23 08:39:12] Service added successfully with ID: 14
+[2025-03-23 08:54:20] Received POST data: Array
+(
+    [serviceName] => PANG MAHIRAP
+    [capitalPrice] => 672355
+    [sellingPrice] => 574433
+    [serviceCategory] => 1
+    [casketType] => 9
+    [urnType] => 
+    [branch_id] => 1
+    [flowerDesign] => Array
+        (
+            [0] => Normal
+            [1] => Deluxe
+            [2] => Custom
+=======
+                status
+            ) VALUES (
+                'PANG MAHIRAP', 
+                0, 
+                NULL, 
+                NULL, 
+                'Normal, Deluxe, Premium', 
+                'Transportation, MemorialPrograms, GriefCounseling, MusicService', 
+                45679, 
+                100000, 
+                NULL, 
+                'Active'
+            )
+[2025-03-23 04:43:29] Service added successfully with ID: 1
+[2025-03-23 04:44:42] Received POST data: Array
+(
+    [serviceName] => da
+    [capitalPrice] => 234
+    [sellingPrice] => 6443
+    [serviceCategory] => 1
+    [casketType] => 2
+    [urnType] => 
+    [flowerDesign] => Array
+        (
+            [0] => Normal
+            [1] => Custom
+>>>>>>> Stashed changes
+        )
+
+    [essentialServices] => Array
+        (
+            [0] => Transportation
+<<<<<<< Updated upstream
+            [1] => Embalming
+            [2] => MemorialPrograms
+            [3] => Videography
+=======
+            [1] => MemorialPrograms
+            [2] => GriefCounseling
+            [3] => MusicService
+>>>>>>> Stashed changes
+        )
+
+    [serviceStatus] => true
+)
+
+<<<<<<< Updated upstream
+[2025-03-23 08:54:20] Received FILES data: Array
+=======
+[2025-03-23 04:44:42] Received FILES data: Array
+>>>>>>> Stashed changes
+(
+    [serviceImage] => Array
+        (
+            [name] => 
+            [full_path] => 
+            [type] => 
+            [tmp_name] => 
+            [error] => 4
+            [size] => 0
+        )
+
+)
+
+<<<<<<< Updated upstream
+[2025-03-23 08:54:20] SQL Query: INSERT INTO Services_tb (
+=======
+[2025-03-23 04:44:42] SQL Query: INSERT INTO Services_tb (
+>>>>>>> Stashed changes
+                service_name, 
+                service_categoryID, 
+                casket_id, 
+                urn_id, 
+                flower_design, 
+                inclusions, 
+                capital_price, 
+                selling_price, 
+                image_url, 
+<<<<<<< Updated upstream
+                branch_id,
+                status
+            ) VALUES (
+                'PANG MAHIRAP', 
+                1, 
+                9, 
+                NULL, 
+                'Normal, Deluxe, Custom', 
+                'Transportation, Embalming, MemorialPrograms, Videography', 
+                672355, 
+                574433, 
+                NULL, 
+                1,
+                'Active'
+            )
+[2025-03-23 08:54:20] Service added successfully with ID: 3
+=======
+                status
+            ) VALUES (
+                'da', 
+                1, 
+                2, 
+                NULL, 
+                'Normal, Custom', 
+                'Transportation, MemorialPrograms, GriefCounseling, MusicService', 
+                234, 
+                6443, 
+                NULL, 
+                'Active'
+            )
+[2025-03-23 04:44:42] Service added successfully with ID: 2
+>>>>>>> Stashed changes
+[2025-03-23 14:26:13] Received POST data: Array
+(
+    [serviceName] => Ordinary Cremation
+    [capitalPrice] => 15000
+    [sellingPrice] => 60000
+    [serviceCategory] => 2
+    [casketType] => 
+    [urnType] => 19
+    [branch_id] => 2
+    [flowerDesign] => Array
+        (
+            [0] => Normal
+        )
+
+    [essentialServices] => Array
+        (
+            [0] => Embalming
+            [1] => GriefCounseling
+            [2] => MusicService
+        )
+
+    [serviceStatus] => true
+)
+
+[2025-03-23 14:26:13] Received FILES data: Array
+(
+    [serviceImage] => Array
+        (
+            [name] => 
+            [full_path] => 
+            [type] => 
+            [tmp_name] => 
+            [error] => 4
+            [size] => 0
+        )
+
+)
+
+[2025-03-23 14:26:13] SQL Query: INSERT INTO Services_tb (
+                service_name, 
+                service_categoryID, 
+                casket_id, 
+                urn_id, 
+                flower_design, 
+                inclusions, 
+                capital_price, 
+                selling_price, 
+                image_url, 
+                branch_id,
+                status
+            ) VALUES (
+                'Ordinary Cremation', 
+                2, 
+                NULL, 
+                19, 
+                'Normal', 
+                'Embalming, GriefCounseling, MusicService', 
+                15000, 
+                60000, 
+                NULL, 
+                2,
+                'Active'
+            )
+[2025-03-23 14:26:13] Service added successfully with ID: 15
+[2025-03-25 14:07:11] Received POST data: Array
+(
+    [serviceName] => Ordinary Cremating w/ Funeral
+    [capitalPrice] => 15000
+    [sellingPrice] => 60000
+    [serviceCategory] => 2
+    [casketType] => 20
+    [urnType] => 19
+    [branch_id] => 2
+    [flowerDesign] => Array
+        (
+            [0] => 1SetClassic
+        )
+
+    [essentialServices] => Array
+        (
+            [0] => Transportation
+            [1] => Embalming
+            [2] => MusicService
+        )
+
+    [serviceStatus] => true
+)
+
+[2025-03-25 14:07:11] Received FILES data: Array
+(
+    [serviceImage] => Array
+        (
+            [name] => 
+            [full_path] => 
+            [type] => 
+            [tmp_name] => 
+            [error] => 4
+            [size] => 0
+        )
+
+)
+
+[2025-03-25 14:07:11] SQL Query: INSERT INTO Services_tb (
+                service_name, 
+                service_categoryID, 
+                casket_id, 
+                urn_id, 
+                flower_design, 
+                inclusions, 
+                capital_price, 
+                selling_price, 
+                image_url, 
+                branch_id,
+                status
+            ) VALUES (
+                'Ordinary Cremating w/ Funeral', 
+                2, 
+                20, 
+                19, 
+                '1SetClassic', 
+                'Transportation, Embalming, MusicService', 
+                15000, 
+                60000, 
+                NULL, 
+                2,
+                'Active'
+            )
+[2025-03-25 14:07:11] Service added successfully with ID: 16
+[2025-03-27 14:29:18] Received POST data: Array
+(
+    [serviceName] => test3
+    [serviceDescription] => test3
+    [capitalPrice] => 52
+    [sellingPrice] => 520
+    [serviceCategory] => 1
+    [casketType] => 8
+    [urnType] => 3
+    [branch_id] => 2
+    [flowerDesign] => Array
+        (
+            [0] => 2 Floral Replacement
+            [1] => 2 Premium Floral Replacement
+        )
+
+    [essentialServices] => Array
+        (
+            [0] => Transportation
+            [1] => MemorialPrograms
+        )
+
+    [serviceStatus] => true
+)
+
+[2025-03-27 14:29:18] Received FILES data: Array
+(
+    [serviceImage] => Array
+        (
+            [name] => flower2.jpg
+            [full_path] => flower2.jpg
+            [type] => image/jpeg
+            [tmp_name] => C:\xampp\tmp\php18D9.tmp
+            [error] => 0
+            [size] => 2044190
+        )
+
+)
+
+[2025-03-27 14:29:18] Image uploaded successfully to: uploads/services/service_17430821589018.jpg
+[2025-03-27 14:29:18] SQL Query: INSERT INTO Services_tb (
+                service_name, 
+                description,
+                service_categoryID, 
+                casket_id, 
+                urn_id, 
+                flower_design, 
+                inclusions, 
+                capital_price, 
+                selling_price, 
+                image_url, 
+                branch_id,
+                status
+            ) VALUES (
+                'test3', 
+                'test3',
+                1, 
+                8, 
+                3, 
+                '2 Floral Replacement, 2 Premium Floral Replacement', 
+                'Transportation, MemorialPrograms', 
+                52, 
+                520, 
+                'uploads/services/service_17430821589018.jpg', 
+                2,
+                'Active'
+            )
+[2025-03-27 14:29:18] Service added successfully with ID: 9
+[2025-03-27 14:30:03] Received POST data: Array
+(
+    [serviceName] => test4
+    [serviceDescription] => test4
+    [capitalPrice] => 253
+    [sellingPrice] => 52364
+    [serviceCategory] => 2
+    [casketType] => 8
+    [urnType] => 
+    [branch_id] => 2
+    [flowerDesign] => Array
+        (
+            [0] => 2 Floral Replacement
+            [1] => 2 Premium Floral Replacement
+        )
+
+    [essentialServices] => Array
+        (
+            [0] => Transportation
+            [1] => Embalming
+            [2] => MemorialPrograms
+        )
+
+    [serviceStatus] => true
+)
+
+[2025-03-27 14:30:03] Received FILES data: Array
+(
+    [serviceImage] => Array
+        (
+            [name] => flower2.jpg
+            [full_path] => flower2.jpg
+            [type] => image/jpeg
+            [tmp_name] => C:\xampp\tmp\phpC8E0.tmp
+            [error] => 0
+            [size] => 2044190
+        )
+
+)
+
+[2025-03-27 14:30:03] Image uploaded successfully to: uploads/services/service_17430822036112.jpg
+[2025-03-27 14:30:03] SQL Query: INSERT INTO Services_tb (
+                service_name, 
+                description,
+                service_categoryID, 
+                casket_id, 
+                urn_id, 
+                flower_design, 
+                inclusions, 
+                capital_price, 
+                selling_price, 
+                image_url, 
+                branch_id,
+                status
+            ) VALUES (
+                'test4', 
+                'test4',
+                2, 
+                8, 
+                NULL, 
+                '2 Floral Replacement, 2 Premium Floral Replacement', 
+                'Transportation, Embalming, MemorialPrograms', 
+                253, 
+                52364, 
+                'uploads/services/service_17430822036112.jpg', 
+                2,
+                'Active'
+            )
+[2025-03-27 14:30:03] Service added successfully with ID: 10
+[2025-03-27 14:30:47] Received POST data: Array
+(
+    [serviceName] => test5
+    [serviceDescription] => test5
+    [capitalPrice] => 25
+    [sellingPrice] => 25123
+    [serviceCategory] => 1
+    [casketType] => 8
+    [urnType] => 3
+    [branch_id] => 2
+    [flowerDesign] => Array
+        (
+            [0] => 3 Floral Replacement
+            [1] => 2 Floral Replacement
+        )
+
+    [essentialServices] => Array
+        (
+            [0] => Videography
+        )
+
+    [serviceStatus] => true
+)
+
+[2025-03-27 14:30:47] Received FILES data: Array
+(
+    [serviceImage] => Array
+        (
+            [name] => 2.png
+            [full_path] => 2.png
+            [type] => image/png
+            [tmp_name] => C:\xampp\tmp\php7742.tmp
+            [error] => 0
+            [size] => 153686
+        )
+
+)
+
+[2025-03-27 14:30:47] Image uploaded successfully to: uploads/services/service_17430822473175.png
+[2025-03-27 14:30:47] SQL Query: INSERT INTO Services_tb (
+                service_name, 
+                description,
+                service_categoryID, 
+                casket_id, 
+                urn_id, 
+                flower_design, 
+                inclusions, 
+                capital_price, 
+                selling_price, 
+                image_url, 
+                branch_id,
+                status
+            ) VALUES (
+                'test5', 
+                'test5',
+                1, 
+                8, 
+                3, 
+                '3 Floral Replacement, 2 Floral Replacement', 
+                'Videography', 
+                25, 
+                25123, 
+                'uploads/services/service_17430822473175.png', 
+                2,
+                'Active'
+            )
+[2025-03-27 14:30:47] Service added successfully with ID: 11
+[2025-03-27 14:31:03] Received POST data: Array
+(
+    [serviceName] => test6
+    [serviceDescription] => test6
+    [capitalPrice] => 52
+    [sellingPrice] => 52
+    [serviceCategory] => 
+    [casketType] => 
+    [urnType] => 
+    [branch_id] => 2
+    [serviceStatus] => true
+)
+
+[2025-03-27 14:31:03] Received FILES data: Array
+(
+    [serviceImage] => Array
+        (
+            [name] => 
+            [full_path] => 
+            [type] => 
+            [tmp_name] => 
+            [error] => 4
+            [size] => 0
+        )
+
+)
+
+[2025-03-27 14:31:03] SQL Query: INSERT INTO Services_tb (
+                service_name, 
+                description,
+                service_categoryID, 
+                casket_id, 
+                urn_id, 
+                flower_design, 
+                inclusions, 
+                capital_price, 
+                selling_price, 
+                image_url, 
+                branch_id,
+                status
+            ) VALUES (
+                'test6', 
+                'test6',
+                0, 
+                NULL, 
+                NULL, 
+                NULL, 
+                NULL, 
+                52, 
+                52, 
+                NULL, 
+                2,
+                'Active'
+            )
+[2025-03-27 14:31:03] Service added successfully with ID: 12
+[2025-03-27 14:48:51] Received POST data: Array
+(
+    [serviceName] => test7
+    [serviceDescription] => test7
+    [capitalPrice] => 58
+    [sellingPrice] => 5821
+    [serviceCategory] => 2
+    [casketType] => 11
+    [urnType] => 3
+    [branch_id] => 2
+    [flowerDesign] => Array
+        (
+            [0] => 3 Floral Replacement
+            [1] => 2 Floral Replacement
+            [2] => 2 Premium Floral Replacement
+        )
+
+    [essentialServices] => Array
+        (
+            [0] => Transportation
+            [1] => MemorialPrograms
+            [2] => LiveStreaming
+        )
+
+    [serviceStatus] => true
+)
+
+[2025-03-27 14:48:51] Received FILES data: Array
+(
+    [serviceImage] => Array
+        (
+            [name] => 
+            [full_path] => 
+            [type] => 
+            [tmp_name] => 
+            [error] => 4
+            [size] => 0
+        )
+
+)
+
+[2025-03-27 14:48:51] SQL Query: INSERT INTO Services_tb (
+                service_name, 
+                description,
+                service_categoryID, 
+                casket_id, 
+                urn_id, 
+                flower_design, 
+                inclusions, 
+                capital_price, 
+                selling_price, 
+                image_url, 
+                branch_id,
+                status
+            ) VALUES (
+                'test7', 
+                'test7',
+                2, 
+                11, 
+                3, 
+                '3 Floral Replacement, 2 Floral Replacement, 2 Premium Floral Replacement', 
+                'Transportation, MemorialPrograms, LiveStreaming', 
+                58, 
+                5821, 
+                NULL, 
+                2,
+                'Active'
+            )
+[2025-03-27 14:48:51] Service added successfully with ID: 13
+[2025-03-27 16:38:21] Received POST data: Array
+(
+    [serviceName] => Standard Funeral Service
+    [serviceDescription] => A traditional funeral service including wake, embalming, transportation, and floral arrangements.
+    [capitalPrice] => 50000
+    [sellingPrice] => 75000
+    [serviceCategory] => 1
+    [casketType] => 37
+    [urnType] => 
+    [branch_id] => 1
+    [flowerDesign] => Array
+        (
+            [0] => 3 Floral Replacement
+            [1] => 2 Floral Replacement
+            [2] => 1 Floral Replacement
+        )
+
+    [essentialServices] => Array
+        (
+            [0] => Transportation
+            [1] => Embalming
+            [2] => MemorialPrograms
+            [3] => Videography
+            [4] => LiveStreaming
+        )
+
+    [serviceStatus] => true
+)
+
+[2025-03-27 16:38:21] Received FILES data: Array
+(
+    [serviceImage] => Array
+        (
+            [name] => Traditional Burial Service.jpg
+            [full_path] => Traditional Burial Service.jpg
+            [type] => image/jpeg
+            [tmp_name] => C:\xampp\tmp\php428C.tmp
+            [error] => 0
+            [size] => 12852
+        )
+
+)
+
+[2025-03-27 16:38:21] Image uploaded successfully to: uploads/services/service_17430899019859.jpg
+[2025-03-27 16:38:21] SQL Query: INSERT INTO Services_tb (
+                service_name, 
+                description,
+                service_categoryID, 
+                casket_id, 
+                urn_id, 
+                flower_design, 
+                inclusions, 
+                capital_price, 
+                selling_price, 
+                image_url, 
+                branch_id,
+                status
+            ) VALUES (
+                'Standard Funeral Service', 
+                'A traditional funeral service including wake, embalming, transportation, and floral arrangements.',
+                1, 
+                37, 
+                NULL, 
+                '3 Floral Replacement, 2 Floral Replacement, 1 Floral Replacement', 
+                'Transportation, Embalming, MemorialPrograms, Videography, LiveStreaming', 
+                50000, 
+                75000, 
+                'uploads/services/service_17430899019859.jpg', 
+                1,
+                'Active'
+            )
+[2025-03-27 16:38:21] Service added successfully with ID: 14
+[2025-03-27 16:40:18] Received POST data: Array
+(
+    [serviceName] => Cremation Package (Basic)
+    [serviceDescription] => Direct cremation service with minimal setup and a basic urn.
+    [capitalPrice] => 30000
+    [sellingPrice] => 40000
+    [serviceCategory] => 2
+    [casketType] => 
+    [urnType] => 40
+    [branch_id] => 2
+    [flowerDesign] => Array
+        (
+            [0] => 3 Floral Replacement
+            [1] => 2 Floral Replacement
+        )
+
+    [essentialServices] => Array
+        (
+            [0] => Transportation
+            [1] => Embalming
+            [2] => MemorialPrograms
+            [3] => Videography
+        )
+
+    [serviceStatus] => true
+)
+
+[2025-03-27 16:40:18] Received FILES data: Array
+(
+    [serviceImage] => Array
+        (
+            [name] => Cremation Package (Basic).jpg
+            [full_path] => Cremation Package (Basic).jpg
+            [type] => image/jpeg
+            [tmp_name] => C:\xampp\tmp\phpAAB.tmp
+            [error] => 0
+            [size] => 13573
+        )
+
+)
+
+[2025-03-27 16:40:18] Image uploaded successfully to: uploads/services/service_17430900186778.jpg
+[2025-03-27 16:40:18] SQL Query: INSERT INTO Services_tb (
+                service_name, 
+                description,
+                service_categoryID, 
+                casket_id, 
+                urn_id, 
+                flower_design, 
+                inclusions, 
+                capital_price, 
+                selling_price, 
+                image_url, 
+                branch_id,
+                status
+            ) VALUES (
+                'Cremation Package (Basic)', 
+                'Direct cremation service with minimal setup and a basic urn.',
+                2, 
+                NULL, 
+                40, 
+                '3 Floral Replacement, 2 Floral Replacement', 
+                'Transportation, Embalming, MemorialPrograms, Videography', 
+                30000, 
+                40000, 
+                'uploads/services/service_17430900186778.jpg', 
+                2,
+                'Active'
+            )
+[2025-03-27 16:40:18] Service added successfully with ID: 15
+[2025-03-27 16:41:52] Received POST data: Array
+(
+    [serviceName] =>  Premium Memorial Service
+    [serviceDescription] => 
+    [capitalPrice] => 80000
+    [sellingPrice] => 120000
+    [serviceCategory] => 1
+    [casketType] => 47
+    [urnType] => 
+    [branch_id] => 1
+    [flowerDesign] => Array
+        (
+            [0] => 3 Premium Floral Replacement
+            [1] => 2 Premium Floral Replacement
+            [2] => 1 Premium Floral Replacement
+        )
+
+    [essentialServices] => Array
+        (
+            [0] => Transportation
+            [1] => Embalming
+            [2] => MemorialPrograms
+            [3] => Videography
+            [4] => LiveStreaming
+            [5] => GriefCounseling
+            [6] => Catering
+            [7] => MusicService
+        )
+
+    [serviceStatus] => true
+)
+
+[2025-03-27 16:41:52] Received FILES data: Array
+(
+    [serviceImage] => Array
+        (
+            [name] => Premium Memorial Service.jpg
+            [full_path] => Premium Memorial Service.jpg
+            [type] => image/jpeg
+            [tmp_name] => C:\xampp\tmp\php7817.tmp
+            [error] => 0
+            [size] => 12371
+        )
+
+)
+
+[2025-03-27 16:41:52] Image uploaded successfully to: uploads/services/service_17430901127823.jpg
+[2025-03-27 16:41:52] SQL Query: INSERT INTO Services_tb (
+                service_name, 
+                description,
+                service_categoryID, 
+                casket_id, 
+                urn_id, 
+                flower_design, 
+                inclusions, 
+                capital_price, 
+                selling_price, 
+                image_url, 
+                branch_id,
+                status
+            ) VALUES (
+                ' Premium Memorial Service', 
+                NULL,
+                1, 
+                47, 
+                NULL, 
+                '3 Premium Floral Replacement, 2 Premium Floral Replacement, 1 Premium Floral Replacement', 
+                'Transportation, Embalming, MemorialPrograms, Videography, LiveStreaming, GriefCounseling, Catering, MusicService', 
+                80000, 
+                120000, 
+                'uploads/services/service_17430901127823.jpg', 
+                1,
+                'Active'
+            )
+[2025-03-27 16:41:52] Service added successfully with ID: 16
+[2025-03-27 16:44:06] Received POST data: Array
+(
+    [serviceName] => Life-Plan Package (Pre-Need Funeral Service)
+    [serviceDescription] => A prepaid funeral plan covering all essential services for future use.
+    [capitalPrice] => 60000
+    [sellingPrice] => 90000
+    [serviceCategory] => 3
+    [casketType] => 38
+    [urnType] => 50
+    [branch_id] => 2
+    [flowerDesign] => Array
+        (
+            [0] => 2 Floral Replacement
+            [1] => 1 Floral Replacement
+        )
+
+    [essentialServices] => Array
+        (
+            [0] => Transportation
+            [1] => Embalming
+            [2] => MemorialPrograms
+            [3] => Videography
+            [4] => LiveStreaming
+            [5] => GriefCounseling
+            [6] => Catering
+        )
+
+    [serviceStatus] => true
+)
+
+[2025-03-27 16:44:06] Received FILES data: Array
+(
+    [serviceImage] => Array
+        (
+            [name] => Life-Plan Package (Pre-Need Funeral Service).jpg
+            [full_path] => Life-Plan Package (Pre-Need Funeral Service).jpg
+            [type] => image/jpeg
+            [tmp_name] => C:\xampp\tmp\php858B.tmp
+            [error] => 0
+            [size] => 8272
+        )
+
+)
+
+[2025-03-27 16:44:06] Image uploaded successfully to: uploads/services/service_17430902461836.jpg
+[2025-03-27 16:44:06] SQL Query: INSERT INTO Services_tb (
+                service_name, 
+                description,
+                service_categoryID, 
+                casket_id, 
+                urn_id, 
+                flower_design, 
+                inclusions, 
+                capital_price, 
+                selling_price, 
+                image_url, 
+                branch_id,
+                status
+            ) VALUES (
+                'Life-Plan Package (Pre-Need Funeral Service)', 
+                'A prepaid funeral plan covering all essential services for future use.',
+                3, 
+                38, 
+                50, 
+                '2 Floral Replacement, 1 Floral Replacement', 
+                'Transportation, Embalming, MemorialPrograms, Videography, LiveStreaming, GriefCounseling, Catering', 
+                60000, 
+                90000, 
+                'uploads/services/service_17430902461836.jpg', 
+                2,
+                'Active'
+            )
+[2025-03-27 16:44:06] Service added successfully with ID: 17
+[2025-03-27 16:46:39] Received POST data: Array
+(
+    [serviceName] => Affordable Burial Package
+    [serviceDescription] => Prepaid funeral plan with all essential services.
+    [capitalPrice] => 25000
+    [sellingPrice] => 40000
+    [serviceCategory] => 1
+    [casketType] => 37
+    [urnType] => 
+    [branch_id] => 1
+    [flowerDesign] => Array
+        (
+            [0] => 3 Floral Replacement
+            [1] => 1 Premium Floral Replacement
+        )
+
+    [essentialServices] => Array
+        (
+            [0] => Transportation
+            [1] => MemorialPrograms
+        )
+
+    [serviceStatus] => true
+)
+
+[2025-03-27 16:46:39] Received FILES data: Array
+(
+    [serviceImage] => Array
+        (
+            [name] => Affordable Burial Package.jpg
+            [full_path] => Affordable Burial Package.jpg
+            [type] => image/jpeg
+            [tmp_name] => C:\xampp\tmp\phpD9BD.tmp
+            [error] => 0
+            [size] => 10916
+        )
+
+)
+
+[2025-03-27 16:46:39] Image uploaded successfully to: uploads/services/service_17430903994948.jpg
+[2025-03-27 16:46:39] SQL Query: INSERT INTO Services_tb (
+                service_name, 
+                description,
+                service_categoryID, 
+                casket_id, 
+                urn_id, 
+                flower_design, 
+                inclusions, 
+                capital_price, 
+                selling_price, 
+                image_url, 
+                branch_id,
+                status
+            ) VALUES (
+                'Affordable Burial Package', 
+                'Prepaid funeral plan with all essential services.',
+                1, 
+                37, 
+                NULL, 
+                '3 Floral Replacement, 1 Premium Floral Replacement', 
+                'Transportation, MemorialPrograms', 
+                25000, 
+                40000, 
+                'uploads/services/service_17430903994948.jpg', 
+                1,
+                'Active'
+            )
+[2025-03-27 16:46:39] Service added successfully with ID: 18
+[2025-03-27 16:48:41] Received POST data: Array
+(
+    [serviceName] => Direct Burial Package
+    [serviceDescription] => Quick burial service without viewing, with simple arrangements.
+    [capitalPrice] => 20000
+    [sellingPrice] => 35000
+    [serviceCategory] => 1
+    [casketType] => 48
+    [urnType] => 
+    [branch_id] => 2
+    [flowerDesign] => Array
+        (
+            [0] => 3 Floral Replacement
+            [1] => 2 Floral Replacement
+        )
+
+    [essentialServices] => Array
+        (
+            [0] => Transportation
+            [1] => MemorialPrograms
+            [2] => LiveStreaming
+        )
+
+    [serviceStatus] => true
+)
+
+[2025-03-27 16:48:41] Received FILES data: Array
+(
+    [serviceImage] => Array
+        (
+            [name] => Direct Burial Package.jpg
+            [full_path] => Direct Burial Package.jpg
+            [type] => image/jpeg
+            [tmp_name] => C:\xampp\tmp\phpB8BF.tmp
+            [error] => 0
+            [size] => 11341
+        )
+
+)
+
+[2025-03-27 16:48:41] Image uploaded successfully to: uploads/services/service_17430905213780.jpg
+[2025-03-27 16:48:41] SQL Query: INSERT INTO Services_tb (
+                service_name, 
+                description,
+                service_categoryID, 
+                casket_id, 
+                urn_id, 
+                flower_design, 
+                inclusions, 
+                capital_price, 
+                selling_price, 
+                image_url, 
+                branch_id,
+                status
+            ) VALUES (
+                'Direct Burial Package', 
+                'Quick burial service without viewing, with simple arrangements.',
+                1, 
+                48, 
+                NULL, 
+                '3 Floral Replacement, 2 Floral Replacement', 
+                'Transportation, MemorialPrograms, LiveStreaming', 
+                20000, 
+                35000, 
+                'uploads/services/service_17430905213780.jpg', 
+                2,
+                'Active'
+            )
+[2025-03-27 16:48:41] Service added successfully with ID: 19
+[2025-03-27 16:50:21] Received POST data: Array
+(
+    [serviceName] => Memorial Wake Package
+    [serviceDescription] => Wake service with embalming, flowers, and memorial program.
+    [capitalPrice] => 55000
+    [sellingPrice] => 85000
+    [serviceCategory] => 1
+    [casketType] => 47
+    [urnType] => 
+    [branch_id] => 1
+    [flowerDesign] => Array
+        (
+            [0] => 3 Floral Replacement
+            [1] => 2 Floral Replacement
+        )
+
+    [essentialServices] => Array
+        (
+            [0] => Transportation
+            [1] => MemorialPrograms
+        )
+
+    [serviceStatus] => true
+)
+
+[2025-03-27 16:50:21] Received FILES data: Array
+(
+    [serviceImage] => Array
+        (
+            [name] => Memorial Wake Package.jpg
+            [full_path] => Memorial Wake Package.jpg
+            [type] => image/jpeg
+            [tmp_name] => C:\xampp\tmp\php3D4D.tmp
+            [error] => 0
+            [size] => 8965
+        )
+
+)
+
+[2025-03-27 16:50:21] Image uploaded successfully to: uploads/services/service_17430906216445.jpg
+[2025-03-27 16:50:21] SQL Query: INSERT INTO Services_tb (
+                service_name, 
+                description,
+                service_categoryID, 
+                casket_id, 
+                urn_id, 
+                flower_design, 
+                inclusions, 
+                capital_price, 
+                selling_price, 
+                image_url, 
+                branch_id,
+                status
+            ) VALUES (
+                'Memorial Wake Package', 
+                'Wake service with embalming, flowers, and memorial program.',
+                1, 
+                47, 
+                NULL, 
+                '3 Floral Replacement, 2 Floral Replacement', 
+                'Transportation, MemorialPrograms', 
+                55000, 
+                85000, 
+                'uploads/services/service_17430906216445.jpg', 
+                1,
+                'Active'
+            )
+[2025-03-27 16:50:21] Service added successfully with ID: 20
+[2025-03-27 16:52:03] Received POST data: Array
+(
+    [serviceName] => VIP Cremation Service
+    [serviceDescription] => Luxury cremation package with a premium urn and full ceremony.
+    [capitalPrice] => 70000
+    [sellingPrice] => 100000
+    [serviceCategory] => 2
+    [casketType] => 
+    [urnType] => 40
+    [branch_id] => 2
+    [flowerDesign] => Array
+        (
+            [0] => 2 Floral Replacement
+            [1] => 2 Premium Floral Replacement
+        )
+
+    [essentialServices] => Array
+        (
+            [0] => Transportation
+            [1] => Embalming
+            [2] => MemorialPrograms
+            [3] => LiveStreaming
+        )
+
+    [serviceStatus] => true
+)
+
+[2025-03-27 16:52:03] Received FILES data: Array
+(
+    [serviceImage] => Array
+        (
+            [name] => VIP Cremation Service.jpg
+            [full_path] => VIP Cremation Service.jpg
+            [type] => image/jpeg
+            [tmp_name] => C:\xampp\tmp\phpCBBE.tmp
+            [error] => 0
+            [size] => 11427
+        )
+
+)
+
+[2025-03-27 16:52:03] Image uploaded successfully to: uploads/services/service_17430907234859.jpg
+[2025-03-27 16:52:03] SQL Query: INSERT INTO Services_tb (
+                service_name, 
+                description,
+                service_categoryID, 
+                casket_id, 
+                urn_id, 
+                flower_design, 
+                inclusions, 
+                capital_price, 
+                selling_price, 
+                image_url, 
+                branch_id,
+                status
+            ) VALUES (
+                'VIP Cremation Service', 
+                'Luxury cremation package with a premium urn and full ceremony.',
+                2, 
+                NULL, 
+                40, 
+                '2 Floral Replacement, 2 Premium Floral Replacement', 
+                'Transportation, Embalming, MemorialPrograms, LiveStreaming', 
+                70000, 
+                100000, 
+                'uploads/services/service_17430907234859.jpg', 
+                2,
+                'Active'
+            )
+[2025-03-27 16:52:03] Service added successfully with ID: 21
+[2025-03-27 16:53:43] Received POST data: Array
+(
+    [serviceName] => Chapel Funeral Service
+    [serviceDescription] => Includes chapel rental, embalming, and transport services.
+    [capitalPrice] => 65000
+    [sellingPrice] => 95000
+    [serviceCategory] => 1
+    [casketType] => 47
+    [urnType] => 
+    [branch_id] => 1
+    [flowerDesign] => Array
+        (
+            [0] => 3 Floral Replacement
+            [1] => 3 Premium Floral Replacement
+        )
+
+    [essentialServices] => Array
+        (
+            [0] => Transportation
+            [1] => MemorialPrograms
+        )
+
+    [serviceStatus] => true
+)
+
+[2025-03-27 16:53:43] Received FILES data: Array
+(
+    [serviceImage] => Array
+        (
+            [name] => Chapel Funeral Service.jpg
+            [full_path] => Chapel Funeral Service.jpg
+            [type] => image/jpeg
+            [tmp_name] => C:\xampp\tmp\php52DC.tmp
+            [error] => 0
+            [size] => 10993
+        )
+
+)
+
+[2025-03-27 16:53:43] Image uploaded successfully to: uploads/services/service_17430908236418.jpg
+[2025-03-27 16:53:43] SQL Query: INSERT INTO Services_tb (
+                service_name, 
+                description,
+                service_categoryID, 
+                casket_id, 
+                urn_id, 
+                flower_design, 
+                inclusions, 
+                capital_price, 
+                selling_price, 
+                image_url, 
+                branch_id,
+                status
+            ) VALUES (
+                'Chapel Funeral Service', 
+                'Includes chapel rental, embalming, and transport services.',
+                1, 
+                47, 
+                NULL, 
+                '3 Floral Replacement, 3 Premium Floral Replacement', 
+                'Transportation, MemorialPrograms', 
+                65000, 
+                95000, 
+                'uploads/services/service_17430908236418.jpg', 
+                1,
+                'Active'
+            )
+[2025-03-27 16:53:43] Service added successfully with ID: 22
+[2025-03-27 16:55:22] Received POST data: Array
+(
+    [serviceName] => Sea Burial Package
+    [serviceDescription] => Cremation service with urn and ocean scattering ceremony.
+    [capitalPrice] => 50000
+    [sellingPrice] => 75000
+    [serviceCategory] => 2
+    [casketType] => 
+    [urnType] => 50
+    [branch_id] => 2
+    [flowerDesign] => Array
+        (
+            [0] => 3 Floral Replacement
+            [1] => 3 Premium Floral Replacement
+        )
+
+    [essentialServices] => Array
+        (
+            [0] => Transportation
+            [1] => MemorialPrograms
+        )
+
+    [serviceStatus] => true
+)
+
+[2025-03-27 16:55:22] Received FILES data: Array
+(
+    [serviceImage] => Array
+        (
+            [name] => Sea Burial Package.jpg
+            [full_path] => Sea Burial Package.jpg
+            [type] => image/jpeg
+            [tmp_name] => C:\xampp\tmp\phpD585.tmp
+            [error] => 0
+            [size] => 11767
+        )
+
+)
+
+[2025-03-27 16:55:22] Image uploaded successfully to: uploads/services/service_17430909226053.jpg
+[2025-03-27 16:55:22] SQL Query: INSERT INTO Services_tb (
+                service_name, 
+                description,
+                service_categoryID, 
+                casket_id, 
+                urn_id, 
+                flower_design, 
+                inclusions, 
+                capital_price, 
+                selling_price, 
+                image_url, 
+                branch_id,
+                status
+            ) VALUES (
+                'Sea Burial Package', 
+                'Cremation service with urn and ocean scattering ceremony.',
+                2, 
+                NULL, 
+                50, 
+                '3 Floral Replacement, 3 Premium Floral Replacement', 
+                'Transportation, MemorialPrograms', 
+                50000, 
+                75000, 
+                'uploads/services/service_17430909226053.jpg', 
+                2,
+                'Active'
+            )
+[2025-03-27 16:55:22] Service added successfully with ID: 23
+[2025-03-27 16:57:28] Received POST data: Array
+(
+    [serviceName] => Military Honors Funeral
+    [serviceDescription] => Formal military-style funeral with honor guards.
+    [capitalPrice] => 80000
+    [sellingPrice] => 120000
+    [serviceCategory] => 1
+    [casketType] => 37
+    [urnType] => 
+    [branch_id] => 1
+    [flowerDesign] => Array
+        (
+            [0] => 3 Floral Replacement
+            [1] => 2 Floral Replacement
+        )
+
+    [essentialServices] => Array
+        (
+            [0] => Transportation
+            [1] => MemorialPrograms
+            [2] => LiveStreaming
+        )
+
+    [serviceStatus] => true
+)
+
+[2025-03-27 16:57:28] Received FILES data: Array
+(
+    [serviceImage] => Array
+        (
+            [name] => Military Honors Funeral.jpg
+            [full_path] => Military Honors Funeral.jpg
+            [type] => image/jpeg
+            [tmp_name] => C:\xampp\tmp\phpC2B0.tmp
+            [error] => 0
+            [size] => 11144
+        )
+
+)
+
+[2025-03-27 16:57:28] Image uploaded successfully to: uploads/services/service_17430910487459.jpg
+[2025-03-27 16:57:28] SQL Query: INSERT INTO Services_tb (
+                service_name, 
+                description,
+                service_categoryID, 
+                casket_id, 
+                urn_id, 
+                flower_design, 
+                inclusions, 
+                capital_price, 
+                selling_price, 
+                image_url, 
+                branch_id,
+                status
+            ) VALUES (
+                'Military Honors Funeral', 
+                'Formal military-style funeral with honor guards.',
+                1, 
+                37, 
+                NULL, 
+                '3 Floral Replacement, 2 Floral Replacement', 
+                'Transportation, MemorialPrograms, LiveStreaming', 
+                80000, 
+                120000, 
+                'uploads/services/service_17430910487459.jpg', 
+                1,
+                'Active'
+            )
+[2025-03-27 16:57:28] Service added successfully with ID: 24
+[2025-03-27 16:58:53] Received POST data: Array
+(
+    [serviceName] => Child Memorial Service
+    [serviceDescription] => Funeral service specially designed for infants and young children.
+    [capitalPrice] => 35000
+    [sellingPrice] => 55000
+    [serviceCategory] => 1
+    [casketType] => 38
+    [urnType] => 
+    [branch_id] => 2
+    [flowerDesign] => Array
+        (
+            [0] => 3 Floral Replacement
+            [1] => 2 Floral Replacement
+        )
+
+    [essentialServices] => Array
+        (
+            [0] => Transportation
+            [1] => MemorialPrograms
+            [2] => LiveStreaming
+        )
+
+    [serviceStatus] => true
+)
+
+[2025-03-27 16:58:53] Received FILES data: Array
+(
+    [serviceImage] => Array
+        (
+            [name] => Child Memorial Service.jpg
+            [full_path] => Child Memorial Service.jpg
+            [type] => image/jpeg
+            [tmp_name] => C:\xampp\tmp\phpF75.tmp
+            [error] => 0
+            [size] => 10528
+        )
+
+)
+
+[2025-03-27 16:58:53] Image uploaded successfully to: uploads/services/service_17430911339484.jpg
+[2025-03-27 16:58:53] SQL Query: INSERT INTO Services_tb (
+                service_name, 
+                description,
+                service_categoryID, 
+                casket_id, 
+                urn_id, 
+                flower_design, 
+                inclusions, 
+                capital_price, 
+                selling_price, 
+                image_url, 
+                branch_id,
+                status
+            ) VALUES (
+                'Child Memorial Service', 
+                'Funeral service specially designed for infants and young children.',
+                1, 
+                38, 
+                NULL, 
+                '3 Floral Replacement, 2 Floral Replacement', 
+                'Transportation, MemorialPrograms, LiveStreaming', 
+                35000, 
+                55000, 
+                'uploads/services/service_17430911339484.jpg', 
+                2,
+                'Active'
+            )
+[2025-03-27 16:58:54] Service added successfully with ID: 25
+[2025-03-27 17:00:38] Received POST data: Array
+(
+    [serviceName] => Family Life-Plan Package
+    [serviceDescription] => Group funeral plan for families with flexible terms.
+    [capitalPrice] => 90000
+    [sellingPrice] => 130000
+    [serviceCategory] => 3
+    [casketType] => 47
+    [urnType] => 39
+    [branch_id] => 1
+    [flowerDesign] => Array
+        (
+            [0] => 3 Floral Replacement
+            [1] => 2 Floral Replacement
+            [2] => 1 Floral Replacement
+            [3] => 3 Premium Floral Replacement
+            [4] => 2 Premium Floral Replacement
+            [5] => 1 Premium Floral Replacement
+        )
+
+    [essentialServices] => Array
+        (
+            [0] => Transportation
+            [1] => Embalming
+            [2] => MemorialPrograms
+            [3] => LiveStreaming
+            [4] => GriefCounseling
+            [5] => Catering
+            [6] => MusicService
+        )
+
+    [serviceStatus] => true
+)
+
+[2025-03-27 17:00:38] Received FILES data: Array
+(
+    [serviceImage] => Array
+        (
+            [name] => Family Life-Plan Package.jpg
+            [full_path] => Family Life-Plan Package.jpg
+            [type] => image/jpeg
+            [tmp_name] => C:\xampp\tmp\phpA911.tmp
+            [error] => 0
+            [size] => 15661
+        )
+
+)
+
+[2025-03-27 17:00:38] Image uploaded successfully to: uploads/services/service_17430912385885.jpg
+[2025-03-27 17:00:38] SQL Query: INSERT INTO Services_tb (
+                service_name, 
+                description,
+                service_categoryID, 
+                casket_id, 
+                urn_id, 
+                flower_design, 
+                inclusions, 
+                capital_price, 
+                selling_price, 
+                image_url, 
+                branch_id,
+                status
+            ) VALUES (
+                'Family Life-Plan Package', 
+                'Group funeral plan for families with flexible terms.',
+                3, 
+                47, 
+                39, 
+                '3 Floral Replacement, 2 Floral Replacement, 1 Floral Replacement, 3 Premium Floral Replacement, 2 Premium Floral Replacement, 1 Premium Floral Replacement', 
+                'Transportation, Embalming, MemorialPrograms, LiveStreaming, GriefCounseling, Catering, MusicService', 
+                90000, 
+                130000, 
+                'uploads/services/service_17430912385885.jpg', 
+                1,
+                'Active'
+            )
+[2025-03-27 17:00:38] Service added successfully with ID: 26
+[2025-03-27 17:02:25] Received POST data: Array
+(
+    [serviceName] => Royal Burial Package
+    [serviceDescription] => High-class funeral service with full memorial arrangements.
+    [capitalPrice] => 150000
+    [sellingPrice] => 200000
+    [serviceCategory] => 1
+    [casketType] => 38
+    [urnType] => 
+    [branch_id] => 2
+    [flowerDesign] => Array
+        (
+            [0] => 3 Floral Replacement
+            [1] => 2 Floral Replacement
+            [2] => 3 Premium Floral Replacement
+            [3] => 2 Premium Floral Replacement
+            [4] => 1 Premium Floral Replacement
+        )
+
+    [essentialServices] => Array
+        (
+            [0] => Transportation
+            [1] => MemorialPrograms
+            [2] => LiveStreaming
+            [3] => Catering
+        )
+
+    [serviceStatus] => true
+)
+
+[2025-03-27 17:02:25] Received FILES data: Array
+(
+    [serviceImage] => Array
+        (
+            [name] => Royal Burial Package.jpg
+            [full_path] => Royal Burial Package.jpg
+            [type] => image/jpeg
+            [tmp_name] => C:\xampp\tmp\php4BA7.tmp
+            [error] => 0
+            [size] => 11365
+        )
+
+)
+
+[2025-03-27 17:02:26] Image uploaded successfully to: uploads/services/service_17430913453810.jpg
+[2025-03-27 17:02:26] SQL Query: INSERT INTO Services_tb (
+                service_name, 
+                description,
+                service_categoryID, 
+                casket_id, 
+                urn_id, 
+                flower_design, 
+                inclusions, 
+                capital_price, 
+                selling_price, 
+                image_url, 
+                branch_id,
+                status
+            ) VALUES (
+                'Royal Burial Package', 
+                'High-class funeral service with full memorial arrangements.',
+                1, 
+                38, 
+                NULL, 
+                '3 Floral Replacement, 2 Floral Replacement, 3 Premium Floral Replacement, 2 Premium Floral Replacement, 1 Premium Floral Replacement', 
+                'Transportation, MemorialPrograms, LiveStreaming, Catering', 
+                150000, 
+                200000, 
+                'uploads/services/service_17430913453810.jpg', 
+                2,
+                'Active'
+            )
+[2025-03-27 17:02:26] Service added successfully with ID: 27
+[2025-03-28 01:04:05] Received POST data: Array
+(
+    [serviceName] => test
+    [serviceDescription] => test
+    [capitalPrice] => 25
+    [sellingPrice] => 250
+    [serviceCategory] => 1
+    [casketType] => 37
+    [urnType] => 
+    [branch_id] => 1
+    [flowerDesign] => Array
+        (
+            [0] => 3 Floral Replacement
+            [1] => 2 Premium Floral Replacement
+        )
+
+    [essentialServices] => Array
+        (
+            [0] => Transportation
+            [1] => MemorialPrograms
+        )
+
+    [serviceStatus] => true
+)
+
+[2025-03-28 01:04:05] Received FILES data: Array
+(
+    [serviceImage] => Array
+        (
+            [name] => Royal Burial Package.jpg
+            [full_path] => Royal Burial Package.jpg
+            [type] => image/jpeg
+            [tmp_name] => C:\xampp\tmp\php45E7.tmp
+            [error] => 0
+            [size] => 11365
+        )
+
+)
+
+[2025-03-28 01:04:05] Image uploaded successfully to: uploads/services/service_17431202451259.jpg
+[2025-03-28 01:04:05] SQL Query: INSERT INTO Services_tb (
+                service_name, 
+                description,
+                service_categoryID, 
+                casket_id, 
+                urn_id, 
+                flower_design, 
+                inclusions, 
+                capital_price, 
+                selling_price, 
+                image_url, 
+                branch_id,
+                status
+            ) VALUES (
+                'test', 
+                'test',
+                1, 
+                37, 
+                NULL, 
+                '3 Floral Replacement, 2 Premium Floral Replacement', 
+                'Transportation, MemorialPrograms', 
+                25, 
+                250, 
+                'uploads/services/service_17431202451259.jpg', 
+                1,
+                'Active'
+            )
+[2025-03-28 01:04:05] Service added successfully with ID: 28
+[2025-03-28 01:08:43] Received POST data: Array
+(
+    [serviceName] => test2
+    [serviceDescription] => test2
+    [capitalPrice] => 220
+    [sellingPrice] => 2500
+    [serviceCategory] => 1
+    [casketType] => 47
+    [urnType] => 
+    [branch_id] => 1
+    [flowerDesign] => Array
+        (
+            [0] => 2 Floral Replacement
+            [1] => 2 Premium Floral Replacement
+        )
+
+    [essentialServices] => Array
+        (
+            [0] => Transportation
+            [1] => MemorialPrograms
+        )
+
+    [serviceStatus] => true
+)
+
+[2025-03-28 01:08:43] Received FILES data: Array
+(
+    [serviceImage] => Array
+        (
+            [name] => Family Life-Plan Package.jpg
+            [full_path] => Family Life-Plan Package.jpg
+            [type] => image/jpeg
+            [tmp_name] => C:\xampp\tmp\php8407.tmp
+            [error] => 0
+            [size] => 15661
+        )
+
+)
+
+[2025-03-28 01:08:43] Image uploaded successfully to: admin/uploads/services/service_17431205233534.jpg
+[2025-03-28 01:08:43] SQL Query: INSERT INTO Services_tb (
+                service_name, 
+                description,
+                service_categoryID, 
+                casket_id, 
+                urn_id, 
+                flower_design, 
+                inclusions, 
+                capital_price, 
+                selling_price, 
+                image_url, 
+                branch_id,
+                status
+            ) VALUES (
+                'test2', 
+                'test2',
+                1, 
+                47, 
+                NULL, 
+                '2 Floral Replacement, 2 Premium Floral Replacement', 
+                'Transportation, MemorialPrograms', 
+                220, 
+                2500, 
+                'admin/uploads/services/service_17431205233534.jpg', 
+                1,
+                'Active'
+            )
+[2025-03-28 01:08:43] Service added successfully with ID: 29
+[2025-03-28 01:10:02] Received POST data: Array
+(
+    [serviceName] => test3
+    [serviceDescription] => test4
+    [capitalPrice] => 2
+    [sellingPrice] => 2500
+    [serviceCategory] => 2
+    [casketType] => 37
+    [urnType] => 
+    [branch_id] => 1
+    [flowerDesign] => Array
+        (
+            [0] => 3 Floral Replacement
+            [1] => 2 Floral Replacement
+        )
+
+    [essentialServices] => Array
+        (
+            [0] => Transportation
+            [1] => MemorialPrograms
+            [2] => LiveStreaming
+        )
+
+    [serviceStatus] => true
+)
+
+[2025-03-28 01:10:02] Received FILES data: Array
+(
+    [serviceImage] => Array
+        (
+            [name] => Chapel Funeral Service.jpg
+            [full_path] => Chapel Funeral Service.jpg
+            [type] => image/jpeg
+            [tmp_name] => C:\xampp\tmp\phpB861.tmp
+            [error] => 0
+            [size] => 10993
+        )
+
+)
+
+[2025-03-28 01:10:02] Image uploaded successfully to: uploads/services/service_17431206022777.jpg
+[2025-03-28 01:10:02] SQL Query: INSERT INTO Services_tb (
+                service_name, 
+                description,
+                service_categoryID, 
+                casket_id, 
+                urn_id, 
+                flower_design, 
+                inclusions, 
+                capital_price, 
+                selling_price, 
+                image_url, 
+                branch_id,
+                status
+            ) VALUES (
+                'test3', 
+                'test4',
+                2, 
+                37, 
+                NULL, 
+                '3 Floral Replacement, 2 Floral Replacement', 
+                'Transportation, MemorialPrograms, LiveStreaming', 
+                2, 
+                2500, 
+                'uploads/services/service_17431206022777.jpg', 
+                1,
+                'Active'
+            )
+[2025-03-28 01:10:02] Service added successfully with ID: 30
+[2025-03-28 04:53:25] Received POST data: Array
+(
+    [serviceName] => test
+    [serviceDescription] => test
+    [capitalPrice] => 5
+    [sellingPrice] => 5254
+    [serviceCategory] => 2
+    [casketType] => 37
+    [urnType] => 
+    [branch_id] => 1
+    [flowerDesign] => Array
+        (
+            [0] => 3 Floral Replacement
+            [1] => 2 Premium Floral Replacement
+        )
+
+    [essentialServices] => Array
+        (
+            [0] => Transportation
+            [1] => MemorialPrograms
+        )
+
+    [serviceStatus] => true
+)
+
+[2025-03-28 04:53:25] Received FILES data: Array
+(
+    [serviceImage] => Array
+        (
+            [name] => Sea Burial Package.jpg
+            [full_path] => Sea Burial Package.jpg
+            [type] => image/jpeg
+            [tmp_name] => C:\xampp\tmp\php3B89.tmp
+            [error] => 0
+            [size] => 11767
+        )
+
+)
+
+[2025-03-28 04:53:25] Image uploaded successfully to: uploads/services/service_17431340058567.jpg
+[2025-03-28 04:53:25] SQL Query: INSERT INTO Services_tb (
+                service_name, 
+                description,
+                service_categoryID, 
+                casket_id, 
+                urn_id, 
+                flower_design, 
+                inclusions, 
+                capital_price, 
+                selling_price, 
+                image_url, 
+                branch_id,
+                status
+            ) VALUES (
+                'test', 
+                'test',
+                2, 
+                37, 
+                NULL, 
+                '3 Floral Replacement, 2 Premium Floral Replacement', 
+                'Transportation, MemorialPrograms', 
+                5, 
+                5254, 
+                'uploads/services/service_17431340058567.jpg', 
+                1,
+                'Active'
+            )
+[2025-03-28 04:53:25] Service added successfully with ID: 31
+[2025-03-28 04:57:43] Received POST data: Array
+(
+    [serviceName] => test
+    [serviceDescription] => test
+    [capitalPrice] => 2
+    [sellingPrice] => 250
+    [serviceCategory] => 2
+    [casketType] => 37
+    [urnType] => 
+    [branch_id] => 1
+    [flowerDesign] => Array
+        (
+            [0] => 3 Floral Replacement
+        )
+
+    [essentialServices] => Array
+        (
+            [0] => Transportation
+            [1] => MemorialPrograms
+            [2] => LiveStreaming
+        )
+
+    [serviceStatus] => true
+)
+
+[2025-03-28 04:57:43] Received FILES data: Array
+(
+    [serviceImage] => Array
+        (
+            [name] => Funeral Flowers.jpg
+            [full_path] => Funeral Flowers.jpg
+            [type] => image/jpeg
+            [tmp_name] => C:\xampp\tmp\php2BE8.tmp
+            [error] => 0
+            [size] => 5485
+        )
+
+)
+
+[2025-03-28 04:57:43] Image uploaded successfully to: uploads/services/service_17431342633740.jpg
+[2025-03-28 04:57:43] SQL Query: INSERT INTO Services_tb (
+                service_name, 
+                description,
+                service_categoryID, 
+                casket_id, 
+                urn_id, 
+                flower_design, 
+                inclusions, 
+                capital_price, 
+                selling_price, 
+                image_url, 
+                branch_id,
+                status
+            ) VALUES (
+                'test', 
+                'test',
+                2, 
+                37, 
+                NULL, 
+                '3 Floral Replacement', 
+                'Transportation, MemorialPrograms, LiveStreaming', 
+                2, 
+                250, 
+                'uploads/services/service_17431342633740.jpg', 
+                1,
+                'Active'
+            )
+[2025-03-28 04:57:43] Service added successfully with ID: 32
+[2025-03-29 03:46:27] Received POST data: Array
+(
+    [serviceName] => test9
+    [serviceDescription] => test9
+    [capitalPrice] => 250
+    [sellingPrice] => 2500
+    [serviceCategory] => 1
+    [casketType] => 37
+    [urnType] => 
+    [branch_id] => 1
+    [flowerDesign] => Array
+        (
+            [0] => 3 Floral Replacement
+        )
+
+    [essentialServices] => Array
+        (
+            [0] => Transportation
+            [1] => MemorialPrograms
+        )
+
+    [serviceStatus] => true
+)
+
+[2025-03-29 03:46:27] Received FILES data: Array
+(
+    [serviceImage] => Array
+        (
+            [name] => Child Memorial Service.jpg
+            [full_path] => Child Memorial Service.jpg
+            [type] => image/jpeg
+            [tmp_name] => C:\xampp\tmp\php45A9.tmp
+            [error] => 0
+            [size] => 10528
+        )
+
+)
+
+[2025-03-29 03:46:27] Image uploaded successfully to: uploads/services/service_17432163879101.jpg
+[2025-03-29 03:46:27] SQL Query: INSERT INTO Services_tb (
+                service_name, 
+                description,
+                service_categoryID, 
+                casket_id, 
+                urn_id, 
+                flower_design, 
+                inclusions, 
+                capital_price, 
+                selling_price, 
+                image_url, 
+                branch_id,
+                status
+            ) VALUES (
+                'test9', 
+                'test9',
+                1, 
+                37, 
+                NULL, 
+                '3 Floral Replacement', 
+                'Transportation, MemorialPrograms', 
+                250, 
+                2500, 
+                'uploads/services/service_17432163879101.jpg', 
+                1,
+                'Active'
+            )
+[2025-03-29 03:46:27] Service added successfully with ID: 33
+[2025-03-29 03:49:36] Received POST data: Array
+(
+    [serviceName] => test9
+    [serviceDescription] => test9
+    [capitalPrice] => 25
+    [sellingPrice] => 250
+    [serviceCategory] => 1
+    [casketType] => 37
+    [urnType] => 
+    [branch_id] => 1
+    [flowerDesign] => Array
+        (
+            [0] => 3 Floral Replacement
+            [1] => 3 Premium Floral Replacement
+        )
+
+    [essentialServices] => Array
+        (
+            [0] => Transportation
+            [1] => MemorialPrograms
+            [2] => LiveStreaming
+        )
+
+    [serviceStatus] => true
+)
+
+[2025-03-29 03:49:36] Received FILES data: Array
+(
+    [serviceImage] => Array
+        (
+            [name] => Military Honors Funeral.jpg
+            [full_path] => Military Honors Funeral.jpg
+            [type] => image/jpeg
+            [tmp_name] => C:\xampp\tmp\php29A8.tmp
+            [error] => 0
+            [size] => 11144
+        )
+
+)
+
+[2025-03-29 03:49:36] Image uploaded successfully to: uploads/services/service_17432165766216.jpg
+[2025-03-29 03:49:36] SQL Query: INSERT INTO Services_tb (
+                service_name, 
+                description,
+                service_categoryID, 
+                casket_id, 
+                urn_id, 
+                flower_design, 
+                inclusions, 
+                capital_price, 
+                selling_price, 
+                image_url, 
+                branch_id,
+                status
+            ) VALUES (
+                'test9', 
+                'test9',
+                1, 
+                37, 
+                NULL, 
+                '3 Floral Replacement, 3 Premium Floral Replacement', 
+                'Transportation, MemorialPrograms, LiveStreaming', 
+                25, 
+                250, 
+                'uploads/services/service_17432165766216.jpg', 
+                1,
+                'Active'
+            )
+[2025-03-29 03:49:36] Service added successfully with ID: 34
+[2025-03-31 06:26:41] Received POST data: Array
+(
+    [serviceName] => test9
+    [serviceDescription] => test
+    [capitalPrice] => 250
+    [sellingPrice] => 2500
+    [serviceCategory] => 2
+    [casketType] => 47
+    [urnType] => 
+    [branch_id] => 1
+    [flowerDesign] => Array
+        (
+            [0] => 3 Floral Replacement
+            [1] => 3 Premium Floral Replacement
+        )
+
+    [essentialServices] => Array
+        (
+            [0] => Transportation
+            [1] => MemorialPrograms
+        )
+
+    [serviceStatus] => true
+)
+
+[2025-03-31 06:26:41] Received FILES data: Array
+(
+    [serviceImage] => Array
+        (
+            [name] => Glass Casket.jpg
+            [full_path] => Glass Casket.jpg
+            [type] => image/jpeg
+            [tmp_name] => C:\xampp\tmp\phpBD93.tmp
+            [error] => 0
+            [size] => 5798
+        )
+
+)
+
+[2025-03-31 06:26:41] Image uploaded successfully to: uploads/services/service_17433952013258.jpg
+[2025-03-31 06:26:41] SQL Query: INSERT INTO Services_tb (
+                service_name, 
+                description,
+                service_categoryID, 
+                casket_id, 
+                urn_id, 
+                flower_design, 
+                inclusions, 
+                capital_price, 
+                selling_price, 
+                image_url, 
+                branch_id,
+                status
+            ) VALUES (
+                'test9', 
+                'test',
+                2, 
+                47, 
+                NULL, 
+                '3 Floral Replacement, 3 Premium Floral Replacement', 
+                'Transportation, MemorialPrograms', 
+                250, 
+                2500, 
+                'uploads/services/service_17433952013258.jpg', 
+                1,
+                'Active'
+            )
+[2025-03-31 06:26:41] Service added successfully with ID: 35
+[2025-04-03 08:43:16] Received POST data: Array
+(
+    [serviceName] =>  Eternal Rest Package
+    [serviceDescription] =>  A traditional funeral service with a high-quality wooden casket, complete floral arrangements, and professional embalming.
+    [capitalPrice] => 40000
+    [sellingPrice] => 70000
+    [serviceCategory] => 1
+    [casketType] => 38
+    [urnType] => 
+    [branch_id] => 2
+    [flowerDesign] => Array
+        (
+            [0] => 3 Floral Replacement
+        )
+
+    [essentialServices] => Array
+        (
+            [0] => Transportation
+            [1] => Embalming
+            [2] => MemorialPrograms
+            [3] => LiveStreaming
+        )
+
+    [serviceStatus] => true
+)
+
+[2025-04-03 08:43:16] Received FILES data: Array
+(
+    [serviceImage] => Array
+        (
+            [name] => Memorial Wake Package.jpg
+            [full_path] => Memorial Wake Package.jpg
+            [type] => image/jpeg
+            [tmp_name] => C:\xampp\tmp\php3DD5.tmp
+            [error] => 0
+            [size] => 8965
+        )
+
+)
+
+[2025-04-03 08:43:16] Image uploaded successfully to: uploads/services/service_17436625966246.jpg
+[2025-04-03 08:43:16] SQL Query: INSERT INTO Services_tb (
+                service_name, 
+                description,
+                service_categoryID, 
+                casket_id, 
+                urn_id, 
+                flower_design, 
+                inclusions, 
+                capital_price, 
+                selling_price, 
+                image_url, 
+                branch_id,
+                status
+            ) VALUES (
+                ' Eternal Rest Package', 
+                ' A traditional funeral service with a high-quality wooden casket, complete floral arrangements, and professional embalming.',
+                1, 
+                38, 
+                NULL, 
+                '3 Floral Replacement', 
+                'Transportation, Embalming, MemorialPrograms, LiveStreaming', 
+                40000, 
+                70000, 
+                'uploads/services/service_17436625966246.jpg', 
+                2,
+                'Active'
+            )
+[2025-04-03 08:43:16] Service added successfully with ID: 36
+[2025-04-03 08:44:59] Received POST data: Array
+(
+    [serviceName] => Serenity Cremation Plan
+    [serviceDescription] => A dignified cremation service with a premium marble urn and personalized memorial programs.
+    [capitalPrice] => 30000
+    [sellingPrice] => 55000
+    [serviceCategory] => 2
+    [casketType] => 
+    [urnType] => 49
+    [branch_id] => 1
+    [flowerDesign] => Array
+        (
+            [0] => 2 Premium Floral Replacement
+        )
+
+    [essentialServices] => Array
+        (
+            [0] => Transportation
+            [1] => MemorialPrograms
+            [2] => GriefCounseling
+            [3] => MusicService
+        )
+
+    [serviceStatus] => true
+)
+
+[2025-04-03 08:44:59] Received FILES data: Array
+(
+    [serviceImage] => Array
+        (
+            [name] => Affordable Burial Package.jpg
+            [full_path] => Affordable Burial Package.jpg
+            [type] => image/jpeg
+            [tmp_name] => C:\xampp\tmp\phpD176.tmp
+            [error] => 0
+            [size] => 10916
+        )
+
+)
+
+[2025-04-03 08:44:59] Image uploaded successfully to: uploads/services/service_17436626996190.jpg
+[2025-04-03 08:44:59] SQL Query: INSERT INTO Services_tb (
+                service_name, 
+                description,
+                service_categoryID, 
+                casket_id, 
+                urn_id, 
+                flower_design, 
+                inclusions, 
+                capital_price, 
+                selling_price, 
+                image_url, 
+                branch_id,
+                status
+            ) VALUES (
+                'Serenity Cremation Plan', 
+                'A dignified cremation service with a premium marble urn and personalized memorial programs.',
+                2, 
+                NULL, 
+                49, 
+                '2 Premium Floral Replacement', 
+                'Transportation, MemorialPrograms, GriefCounseling, MusicService', 
+                30000, 
+                55000, 
+                'uploads/services/service_17436626996190.jpg', 
+                1,
+                'Active'
+            )
+[2025-04-03 08:44:59] Service added successfully with ID: 37
+[2025-04-03 08:46:28] Received POST data: Array
+(
+    [serviceName] => Everlasting Life Plan
+    [serviceDescription] => A complete life plan with either a funeral or cremation option, pre-paid for future use.
+
+
+    [capitalPrice] => 25000
+    [sellingPrice] => 50000
+    [serviceCategory] => 3
+    [casketType] => 38
+    [urnType] => 40
+    [branch_id] => 2
+    [flowerDesign] => Array
+        (
+            [0] => 3 Floral Replacement
+            [1] => 3 Premium Floral Replacement
+            [2] => 2 Premium Floral Replacement
+        )
+
+    [essentialServices] => Array
+        (
+            [0] => Embalming
+            [1] => Videography
+            [2] => LiveStreaming
+            [3] => Catering
+        )
+
+    [serviceStatus] => true
+)
+
+[2025-04-03 08:46:28] Received FILES data: Array
+(
+    [serviceImage] => Array
+        (
+            [name] => Military Honors Funeral.jpg
+            [full_path] => Military Honors Funeral.jpg
+            [type] => image/jpeg
+            [tmp_name] => C:\xampp\tmp\php2F13.tmp
+            [error] => 0
+            [size] => 11144
+        )
+
+)
+
+[2025-04-03 08:46:28] Image uploaded successfully to: uploads/services/service_17436627888802.jpg
+[2025-04-03 08:46:28] SQL Query: INSERT INTO Services_tb (
+                service_name, 
+                description,
+                service_categoryID, 
+                casket_id, 
+                urn_id, 
+                flower_design, 
+                inclusions, 
+                capital_price, 
+                selling_price, 
+                image_url, 
+                branch_id,
+                status
+            ) VALUES (
+                'Everlasting Life Plan', 
+                'A complete life plan with either a funeral or cremation option, pre-paid for future use.
+
+',
+                3, 
+                38, 
+                40, 
+                '3 Floral Replacement, 3 Premium Floral Replacement, 2 Premium Floral Replacement', 
+                'Embalming, Videography, LiveStreaming, Catering', 
+                25000, 
+                50000, 
+                'uploads/services/service_17436627888802.jpg', 
+                2,
+                'Active'
+            )
+[2025-04-03 08:46:28] Service added successfully with ID: 38
+[2025-04-03 08:47:18] Received POST data: Array
+(
+    [serviceName] => Tranquil Departure Service
+    [serviceDescription] => A peaceful funeral package with a beautifully designed glass casket and elegant floral arrangements.
+    [capitalPrice] => 50000
+    [sellingPrice] => 85000
+    [serviceCategory] => 1
+    [casketType] => 47
+    [urnType] => 
+    [branch_id] => 1
+    [flowerDesign] => Array
+        (
+            [0] => 3 Premium Floral Replacement
+        )
+
+    [essentialServices] => Array
+        (
+            [0] => Transportation
+            [1] => Embalming
+            [2] => MemorialPrograms
+            [3] => MusicService
+        )
+
+    [serviceStatus] => true
+)
+
+[2025-04-03 08:47:18] Received FILES data: Array
+(
+    [serviceImage] => Array
+        (
+            [name] => 
+            [full_path] => 
+            [type] => 
+            [tmp_name] => 
+            [error] => 4
+            [size] => 0
+        )
+
+)
+
+[2025-04-03 08:47:18] SQL Query: INSERT INTO Services_tb (
+                service_name, 
+                description,
+                service_categoryID, 
+                casket_id, 
+                urn_id, 
+                flower_design, 
+                inclusions, 
+                capital_price, 
+                selling_price, 
+                image_url, 
+                branch_id,
+                status
+            ) VALUES (
+                'Tranquil Departure Service', 
+                'A peaceful funeral package with a beautifully designed glass casket and elegant floral arrangements.',
+                1, 
+                47, 
+                NULL, 
+                '3 Premium Floral Replacement', 
+                'Transportation, Embalming, MemorialPrograms, MusicService', 
+                50000, 
+                85000, 
+                NULL, 
+                1,
+                'Active'
+            )
+[2025-04-03 08:47:18] Service added successfully with ID: 39
+[2025-04-03 08:47:56] Received POST data: Array
+(
+    [serviceName] => Graceful Cremation Plan
+    [serviceDescription] => A simple yet elegant cremation service with a high-quality ceramic urn.
+    [capitalPrice] => 28000
+    [sellingPrice] => 50000
+    [serviceCategory] => 2
+    [casketType] => 
+    [urnType] => 40
+    [branch_id] => 2
+    [flowerDesign] => Array
+        (
+            [0] => 3 Floral Replacement
+        )
+
+    [essentialServices] => Array
+        (
+            [0] => Transportation
+            [1] => Embalming
+            [2] => Videography
+            [3] => GriefCounseling
+        )
+
+    [serviceStatus] => true
+)
+
+[2025-04-03 08:47:56] Received FILES data: Array
+(
+    [serviceImage] => Array
+        (
+            [name] => 
+            [full_path] => 
+            [type] => 
+            [tmp_name] => 
+            [error] => 4
+            [size] => 0
+        )
+
+)
+
+[2025-04-03 08:47:56] SQL Query: INSERT INTO Services_tb (
+                service_name, 
+                description,
+                service_categoryID, 
+                casket_id, 
+                urn_id, 
+                flower_design, 
+                inclusions, 
+                capital_price, 
+                selling_price, 
+                image_url, 
+                branch_id,
+                status
+            ) VALUES (
+                'Graceful Cremation Plan', 
+                'A simple yet elegant cremation service with a high-quality ceramic urn.',
+                2, 
+                NULL, 
+                40, 
+                '3 Floral Replacement', 
+                'Transportation, Embalming, Videography, GriefCounseling', 
+                28000, 
+                50000, 
+                NULL, 
+                2,
+                'Active'
+            )
+[2025-04-03 08:47:56] Service added successfully with ID: 40
+[2025-04-03 08:48:59] Received POST data: Array
+(
+    [serviceName] => Eco-Peace Funeral Plan
+    [serviceDescription] =>  A sustainable and eco-friendly funeral option featuring a biodegradable casket and environmentally conscious services.
+    [capitalPrice] => 35000
+    [sellingPrice] => 60000
+    [serviceCategory] => 1
+    [casketType] => 37
+    [urnType] => 
+    [branch_id] => 1
+    [flowerDesign] => Array
+        (
+            [0] => 2 Floral Replacement
+        )
+
+    [essentialServices] => Array
+        (
+            [0] => Transportation
+            [1] => MemorialPrograms
+            [2] => LiveStreaming
+            [3] => Catering
+        )
+
+    [serviceStatus] => true
+)
+
+[2025-04-03 08:48:59] Received FILES data: Array
+(
+    [serviceImage] => Array
+        (
+            [name] => Military Honors Funeral.jpg
+            [full_path] => Military Honors Funeral.jpg
+            [type] => image/jpeg
+            [tmp_name] => C:\xampp\tmp\php7C21.tmp
+            [error] => 0
+            [size] => 11144
+        )
+
+)
+
+[2025-04-03 08:48:59] Image uploaded successfully to: uploads/services/service_17436629393665.jpg
+[2025-04-03 08:48:59] SQL Query: INSERT INTO Services_tb (
+                service_name, 
+                description,
+                service_categoryID, 
+                casket_id, 
+                urn_id, 
+                flower_design, 
+                inclusions, 
+                capital_price, 
+                selling_price, 
+                image_url, 
+                branch_id,
+                status
+            ) VALUES (
+                'Eco-Peace Funeral Plan', 
+                ' A sustainable and eco-friendly funeral option featuring a biodegradable casket and environmentally conscious services.',
+                1, 
+                37, 
+                NULL, 
+                '2 Floral Replacement', 
+                'Transportation, MemorialPrograms, LiveStreaming, Catering', 
+                35000, 
+                60000, 
+                'uploads/services/service_17436629393665.jpg', 
+                1,
+                'Active'
+            )
+[2025-04-03 08:48:59] Service added successfully with ID: 41
+[2025-04-03 10:33:38] Received POST data: Array
+(
+    [serviceName] => service ni paula
+    [serviceDescription] => merong kubo tyaka halaman
+    [capitalPrice] => 25000
+    [sellingPrice] => 100000
+    [serviceCategory] => 2
+    [casketType] => 16
+    [urnType] => 15
+    [branch_id] => 1
+    [flowerDesign] => Array
+        (
+            [0] => 2 Floral Replacement
+        )
+
+    [essentialServices] => Array
+        (
+            [0] => Transportation
+            [1] => Embalming
+        )
+
+    [serviceStatus] => true
+)
+
+[2025-04-03 10:33:38] Received FILES data: Array
+(
+    [serviceImage] => Array
+        (
+            [name] => 
+            [full_path] => 
+            [type] => 
+            [tmp_name] => 
+            [error] => 4
+            [size] => 0
+        )
+
+)
+
+[2025-04-03 10:33:38] SQL Query: INSERT INTO Services_tb (
+                service_name, 
+                description,
+                service_categoryID, 
+                casket_id, 
+                urn_id, 
+                flower_design, 
+                inclusions, 
+                capital_price, 
+                selling_price, 
+                image_url, 
+                branch_id,
+                status
+            ) VALUES (
+                'service ni paula', 
+                'merong kubo tyaka halaman',
+                2, 
+                16, 
+                15, 
+                '2 Floral Replacement', 
+                'Transportation, Embalming', 
+                25000, 
+                100000, 
+                NULL, 
+                1,
+                'Active'
+            )
+[2025-04-03 10:33:38] Service added successfully with ID: 18
