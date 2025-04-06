@@ -244,6 +244,7 @@
         <div class="absolute inset-0 bg-gradient-to-b from-black/70 via-black/40 to-black/80"></div>
     </div>
 
+    <h1>TEST TEST TEST</h1>
     
     <!-- Content Container -->
 <div class="relative h-full flex flex-col items-start justify-start px-6 md:px-12 z-10">
@@ -251,7 +252,7 @@
     <div class="absolute top-1/2 left-1/4 transform -translate-x-1/2 -translate-y-1/2 max-w-lg transition-all duration-1000 ease-out" 
          data-aos="fade-up" data-aos-delay="300" data-aos-duration="1000">
          <h1 class="font-alexbrush text-5xl sm:text-6xl lg:text-7xl leading-tight text-white text-shadow-lg mb-6">
-            Mula noon, hanggang ngayon. TESTING TO<br>
+            Mula noon, hanggang ngayon.<br>
             <span class="text-yellow-600">A funeral service with a Heart...</span>
         </h1>
     </div>
