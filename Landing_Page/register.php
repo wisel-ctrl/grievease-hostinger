@@ -51,7 +51,6 @@
             <div class="bg-white bg-opacity-95 backdrop-blur-sm rounded-xl p-6 shadow-card">
                 <div class="text-center mb-4">
                     <h2 class="text-xl font-hedvig font-bold text-navy">Create Account</h2>
-                    <h2 class="text-xl font-hedvig font-bold text-navy">Register</h2>
                 </div>
                 
                 <form id="registrationForm" class="space-y-3">
