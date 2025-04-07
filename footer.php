@@ -28,7 +28,7 @@
                 <div>
                     <h3 class="text-lg mb-4">Quick Links</h3>
                     <ul class="space-y-2">
-                        <li><a href="index.php#home" class="text-gray-300 hover:text-white transition">Home</a></li>
+                        <li><a href="index.php" class="text-gray-300 hover:text-white transition">Home</a></li>
                         <li><a href="about.php" class="text-gray-300 hover:text-white transition">About</a></li>
                         <li><a href="memorial.php" class="text-gray-300 hover:text-white transition">Memorials</a></li>
                         <li><a href="services.php" class="text-gray-300 hover:text-white transition">Services & Packages</a></li>
