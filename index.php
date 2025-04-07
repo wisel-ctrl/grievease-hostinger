@@ -427,37 +427,39 @@
     <!-- Footer -->
 <footer class="bg-black font-playfair text-white py-8 md:py-12">
     <div class="container mx-auto px-4 md:px-6">
-        <!-- Mobile Accordion Style for Small Screens -->
-        <div class="md:hidden">
-            <!-- Company Info - Always Visible -->
-            <div class="mb-6">
+        <!-- Mobile Layout -->
+        <div class="block md:hidden">
+            <!-- Company Info -->
+            <div class="mb-6 text-center">
                 <h3 class="text-yellow-600 text-xl mb-3">GrievEase</h3>
                 <p class="text-gray-300 text-sm mb-3">Providing dignified funeral services with compassion and respect since 1980.</p>
             </div>
             
-            <!-- Collapsible Sections -->
-            <details class="border-t border-gray-800 py-3">
-                <summary class="text-lg font-medium cursor-pointer focus:outline-none">Quick Links</summary>
-                <ul class="mt-3 pl-2 space-y-2">
+            <!-- Quick Links -->
+            <div class="mb-6 pb-4 border-b border-gray-800">
+                <h3 class="text-lg font-medium mb-3 text-center">Quick Links</h3>
+                <ul class="flex flex-wrap justify-center gap-x-4 gap-y-2">
                     <li><a href="#home" class="text-gray-300 hover:text-white transition text-sm">Home</a></li>
                     <li><a href="about.php" class="text-gray-300 hover:text-white transition text-sm">About</a></li>
                     <li><a href="memorial.php" class="text-gray-300 hover:text-white transition text-sm">Memorials</a></li>
-                    <li><a href="services.php" class="text-gray-300 hover:text-white transition text-sm">Services & Packages</a></li>
+                    <li><a href="services.php" class="text-gray-300 hover:text-white transition text-sm">Services</a></li>
                     <li><a href="faqs.php" class="text-gray-300 hover:text-white transition text-sm">FAQs</a></li>
                 </ul>
-            </details>
+            </div>
             
-            <details class="border-t border-gray-800 py-3">
-                <summary class="text-lg font-medium cursor-pointer focus:outline-none">Our Services</summary>
-                <ul class="mt-3 pl-2 space-y-2">
+            <!-- Services -->
+            <div class="mb-6 pb-4 border-b border-gray-800">
+                <h3 class="text-lg font-medium mb-3 text-center">Our Services</h3>
+                <ul class="flex flex-wrap justify-center gap-x-4 gap-y-2">
                     <li><a href="traditional_funeral.php" class="text-gray-300 hover:text-white transition text-sm">Traditional Funeral</a></li>
                     <li><a href="lifeplan.php" class="text-gray-300 hover:text-white transition text-sm">Life Plan</a></li>
                 </ul>
-            </details>
+            </div>
             
-            <details class="border-t border-gray-800 py-3">
-                <summary class="text-lg font-medium cursor-pointer focus:outline-none">Contact Us</summary>
-                <ul class="mt-3 pl-2 space-y-3">
+            <!-- Contact Us -->
+            <div class="mb-6">
+                <h3 class="text-lg font-medium mb-3 text-center">Contact Us</h3>
+                <ul class="space-y-3 max-w-xs mx-auto">
                     <li class="flex items-start">
                         <i class="fas fa-map-marker-alt mt-1 mr-2 text-yellow-600"></i>
                         <span class="text-sm">#6 J.P Rizal St. Brgy. Sta Clara Sur, (Pob) Pila, Laguna</span>
@@ -481,7 +483,7 @@
                         <span class="text-sm">Available 24/7</span>
                     </li>
                 </ul>
-            </details>
+            </div>
         </div>
         
         <!-- Desktop Layout - Unchanged for Larger Screens -->
