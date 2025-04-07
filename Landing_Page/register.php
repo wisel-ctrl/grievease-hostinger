@@ -48,16 +48,16 @@
         
         <!-- Right Side (Registration Form) - Full width on mobile -->
         <div class="w-full md:w-1/2 max-w-md mx-auto">
-            <div class="bg-white bg-opacity-95 backdrop-blur-sm rounded-xl p-6 shadow-card">
+        <div class="bg-black bg-opacity-25 backdrop-blur-md rounded-xl p-6 shadow-card">
                 <div class="text-center mb-4">
-                    <h2 class="text-xl font-hedvig font-bold text-navy">Create Account</h2>
+                    <h2 class="text-xl font-hedvig text-white">Create Account</h2>
                 </div>
                 
                 <form id="registrationForm" class="space-y-3">
                     <!-- Name fields -->
                     <div class="grid grid-cols-2 gap-3">
                         <div class="col-span-1">
-                            <label for="firstName" class="block text-xs font-medium text-gray-700 mb-1">First Name</label>
+                            <label for="firstName" class="block text-xs font-medium text-white mb-1">First Name</label>
                             <input 
                                 type="text" 
                                 id="firstName" 
@@ -68,7 +68,7 @@
                         </div>
                         
                         <div class="col-span-1">
-                            <label for="lastName" class="block text-xs font-medium text-gray-700 mb-1">Last Name</label>
+                            <label for="lastName" class="block text-xs font-medium text-white mb-1">Last Name</label>
                             <input 
                                 type="text" 
                                 id="lastName" 
@@ -82,7 +82,7 @@
                     <!-- Middle Name & Birthdate combined -->
                     <div class="grid grid-cols-2 gap-3">
                         <div class="col-span-1">
-                            <label for="middleName" class="block text-xs font-medium text-gray-700 mb-1">Middle Name</label>
+                            <label for="middleName" class="block text-xs font-medium text-white mb-1">Middle Name</label>
                             <input 
                                 type="text" 
                                 id="middleName" 
@@ -92,7 +92,7 @@
                         </div>
                         
                         <div class="col-span-1">
-                            <label for="birthdate" class="block text-xs font-medium text-gray-700 mb-1">Birthdate</label>
+                            <label for="birthdate" class="block text-xs font-medium text-white mb-1">Birthdate</label>
                             <div class="relative">
                                 <input 
                                     type="text" 
@@ -116,7 +116,7 @@
                     
                     <!-- Email -->
                     <div>
-                        <label for="email" class="block text-xs font-medium text-gray-700 mb-1">Email Address</label>
+                        <label for="email" class="block text-xs font-medium text-white mb-1">Email Address</label>
                         <div class="relative">
                             <input 
                                 type="email" 
@@ -133,7 +133,7 @@
                     
                     <!-- Password -->
                     <div>
-                        <label for="password" class="block text-xs font-medium text-gray-700 mb-1">Password</label>
+                        <label for="password" class="block text-xs font-medium text-white mb-1">Password</label>
                         <div class="relative">
                             <input 
                                 type="password" 
@@ -153,7 +153,7 @@
 
                     <!-- Confirm Password -->
                     <div>
-                        <label for="confirmPassword" class="block text-xs font-medium text-gray-700 mb-1">Confirm Password</label>
+                        <label for="confirmPassword" class="block text-xs font-medium text-white mb-1">Confirm Password</label>
                         <div class="relative">
                             <input 
                                 type="password" 
@@ -174,7 +174,7 @@
                     <!-- Password requirements (collapsed by default) -->
                     <div class="hidden" id="passwordRequirements">
                         <div class="bg-gray-50 p-3 rounded-lg border border-gray-100">
-                            <h4 class="text-xs font-semibold text-gray-700 mb-1">Password Requirements:</h4>
+                            <h4 class="text-xs text-gray-700 mb-1">Password Requirements:</h4>
                             <div class="grid grid-cols-2 gap-1 text-xs">
                                 <div class="flex items-center text-gray-500" id="length">
                                     <i class="fas fa-times-circle mr-1 text-error"></i>
@@ -207,8 +207,8 @@
                 </form>
                 
                 <div class="text-center mt-4">
-                    <p class="text-xs font-medium">
-                        Already have an account? <a href="login.php" class="text-yellow-600 font-semibold hover:underline">Sign in</a>
+                    <p class="text-xs text-white font-medium">
+                        Already have an account? <a href="login.php" class="text-yellow-600 hover:underline">Sign in</a>
                     </p>
                 </div>
             </div>
