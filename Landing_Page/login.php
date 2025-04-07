@@ -133,70 +133,52 @@ header("Pragma: no-cache");
 </main>
 
 <!-- Forgot Password Modal -->
-<div id="forgotPasswordModal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
-    <!-- Modal Backdrop -->
-    <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm" id="modalBackdrop"></div>
-    
-    <!-- Modal Content -->
-    <div class="relative bg-white rounded-xl shadow-card w-full max-w-md mx-4 z-10 transform transition-all duration-300 scale-95 opacity-0" id="modalContent">
-        <!-- Close Button -->
-        <button type="button" class="absolute top-4 right-4 text-gray-500 hover:text-navy transition-colors" id="closeModal">
-            <i class="fas fa-times"></i>
-        </button>
-        
-        <!-- Modal Header -->
-        <div class="px-6 py-5 border-b border-gray-200">
-            <h3 class="text-xl font-hedvig font-bold text-navy">Reset Your Password</h3>
+<div id="forgotPasswordModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-white rounded-xl p-6 shadow-lg max-w-md w-full mx-4">
+        <div class="text-center mb-4">
+            <h3 class="text-xl font-bold font-hedvig">Reset Your Password</h3>
+            <p class="text-gray-600 mt-1">Enter your email address and we'll send you a link to reset your password.</p>
         </div>
         
-        <!-- Modal Body -->
-        <div class="px-6 py-5">
-            <div id="resetStep1" class="space-y-4">
-                <p class="text-sm text-gray-600">Enter your email address and we'll send you a link to reset your password.</p>
-                
-                <div>
-                    <label for="resetEmail" class="block text-xs font-medium text-gray-700 mb-1">Email Address</label>
-                    <div class="relative">
-                        <input 
-                            type="email" 
-                            id="resetEmail" 
-                            name="resetEmail" 
-                            required 
-                            class="w-full px-3 py-2 bg-white border border-input-border rounded-lg focus:ring-1 focus:ring-yellow-600 focus:border-yellow-600 outline-none transition-all duration-200 pr-8"
-                        >
-                        <span class="absolute right-2 top-1/2 transform -translate-y-1/2 text-yellow-600 text-sm">
-                            <i class="fas fa-envelope"></i>
-                        </span>
-                    </div>
-                </div>
-                
-                <button 
-                    type="button" 
-                    id="sendResetLink"
-                    class="w-full bg-gradient-to-r from-yellow-600 to-darkgold text-white py-2 px-4 rounded-lg text-sm font-medium shadow-lg hover:shadow-xl transition-all duration-300 mt-4 flex items-center justify-center"
+        <div id="resetStep1" class="space-y-4">
+            <div>
+                <label for="resetEmail" class="font-bold block mb-1 text-sm font-hedvig">Email Address</label>
+                <input 
+                    type="email" 
+                    id="resetEmail" 
+                    name="resetEmail" 
+                    placeholder="Enter your email address" 
+                    class="w-full py-2 px-3 border border-border rounded-radius transition-colors duration-300 h-10 font-hedvig"
+                    required
                 >
-                    Send Reset Link
-                </button>
             </div>
             
-            <!-- Success Message (initially hidden) -->
-            <div id="resetStep2" class="hidden text-center py-4 space-y-4">
-                <div class="mx-auto w-16 h-16 bg-success bg-opacity-20 rounded-full flex items-center justify-center mb-4">
-                    <i class="fas fa-check text-success text-2xl"></i>
-                </div>
-                
-                <h4 class="text-lg font-hedvig font-bold text-navy">Check Your Email</h4>
-                <p class="text-sm text-gray-600">We've sent a password reset link to your email address. Please check your inbox and follow the instructions.</p>
-                
-                <div class="mt-4">
-                    <button 
-                        type="button" 
-                        id="backToLogin"
-                        class="px-4 py-2 border border-yellow-600 text-yellow-600 rounded-lg text-sm font-medium hover:bg-yellow-600 hover:text-white transition-colors duration-300"
-                    >
-                        Back to Login
-                    </button>
-                </div>
+            <button 
+                type="button" 
+                id="sendResetLink"
+                class="font-hedvig bg-primary text-white py-2 px-4 border-none rounded-lg text-base font-semibold cursor-pointer shadow-md transition-all duration-300 hover:bg-gray-800 w-full"
+            >
+                Send Reset Link
+            </button>
+        </div>
+        
+        <!-- Success Message (initially hidden) -->
+        <div id="resetStep2" class="hidden text-center py-4 space-y-4">
+            <div class="mx-auto w-16 h-16 bg-success bg-opacity-20 rounded-full flex items-center justify-center mb-4">
+                <i class="fas fa-check text-success text-2xl"></i>
+            </div>
+            
+            <h4 class="text-lg font-hedvig font-bold">Check Your Email</h4>
+            <p class="text-sm text-gray-600">We've sent a password reset link to your email address. Please check your inbox and follow the instructions.</p>
+            
+            <div class="mt-4">
+                <button 
+                    type="button" 
+                    id="backToLogin"
+                    class="font-hedvig bg-primary text-white py-2 px-4 border-none rounded-lg text-base font-semibold cursor-pointer shadow-md transition-all duration-300 hover:bg-gray-800 w-full"
+                >
+                    Back to Login
+                </button>
             </div>
         </div>
     </div>
