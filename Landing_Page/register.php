@@ -250,42 +250,69 @@
 </style>
 
     <!-- Add this modal HTML before the closing </body> tag -->
-    <div id="otpModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
-        <div class="bg-white rounded-xl p-6 shadow-lg max-w-md w-full mx-4">
-            <div class="text-center mb-4">
-                <h3 class="text-xl font-bold font-hedvig">Email Verification</h3>
-                <p class="text-gray-600 mt-1">We've sent an OTP to your email.</p>
-                <p class="text-gray-600" id="otpEmail"></p>
-            </div>
-            
-            <form id="otpForm" class="mt-4">
-                <div class="mb-4">
-                    <label for="otp" class="font-bold block mb-1 text-sm font-hedvig">Enter OTP</label>
-                    <input type="text" id="otp" name="otp" placeholder="Enter 6-digit OTP" 
-                        class="w-full py-2 px-3 border border-border rounded-radius transition-colors duration-300 h-10 font-hedvig"
-                        required maxlength="6" minlength="6" pattern="[0-9]{6}">
-                    <input type="hidden" id="otpFormEmail" name="email">
-                    <div class="text-xs text-gray-500 mt-1">
-                        <span id="otpTimer">Expires in 10:00</span>
-                    </div>
-                </div>
+    <!-- OTP Verification Modal -->
+<div id="otpModal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
+    <!-- Modal Backdrop -->
+    <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm" id="otpModalBackdrop"></div>
+    
+    <!-- Modal Content -->
+    <div class="relative bg-white rounded-xl shadow-card w-full max-w-md mx-4 z-10 transform transition-all duration-300 scale-95 opacity-0" id="otpModalContent">
+        <!-- Close Button -->
+        <button type="button" class="absolute top-4 right-4 text-gray-500 hover:text-navy transition-colors" id="closeOtpModal">
+            <i class="fas fa-times"></i>
+        </button>
+        
+        <!-- Modal Header -->
+        <div class="px-6 py-5 border-b border-gray-200">
+            <h3 class="text-xl font-hedvig font-bold text-navy">Email Verification</h3>
+        </div>
+        
+        <!-- Modal Body -->
+        <div class="px-6 py-5">
+            <div class="space-y-4">
+                <p class="text-sm text-gray-600">We've sent an OTP to your email.</p>
+                <p class="text-sm text-gray-600" id="otpEmail"></p>
                 
-                <div class="flex items-center justify-between">
+                <form id="otpForm">
+                    <div>
+                        <label for="otp" class="block text-xs font-medium text-gray-700 mb-1">Enter OTP</label>
+                        <div class="relative">
+                            <input 
+                                type="text" 
+                                id="otp" 
+                                name="otp" 
+                                placeholder="Enter 6-digit OTP" 
+                                required 
+                                maxlength="6" 
+                                minlength="6" 
+                                pattern="[0-9]{6}"
+                                class="w-full px-3 py-2 bg-white border border-input-border rounded-lg focus:ring-1 focus:ring-yellow-600 focus:border-yellow-600 outline-none transition-all duration-200 pr-8"
+                            >
+                            <span class="absolute right-2 top-1/2 transform -translate-y-1/2 text-yellow-600 text-sm">
+                                <i class="fas fa-lock"></i>
+                            </span>
+                        </div>
+                        <input type="hidden" id="otpFormEmail" name="email">
+                        <div class="text-xs text-gray-500 mt-1">
+                            <span id="otpTimer">Expires in 10:00</span>
+                        </div>
+                    </div>
+                    
                     <button 
                         type="submit" 
-                        class="font-hedvig bg-primary text-white py-2 px-4 border-none rounded-lg text-base font-semibold cursor-pointer shadow-md transition-all duration-300 hover:bg-gray-800 w-full"
+                        class="w-full bg-gradient-to-r from-yellow-600 to-darkgold text-white py-2 px-4 rounded-lg text-sm font-medium shadow-lg hover:shadow-xl transition-all duration-300 mt-4 flex items-center justify-center"
                     >
                         Verify OTP
                     </button>
-                </div>
+                </form>
                 
                 <div class="text-center mt-4">
-                    <p class="text-sm text-gray-600 font-hedvig">Didn't receive the code? <a href="#" id="resendOtp" class="text-primary font-bold no-underline hover:underline">Resend OTP</a></p>
+                    <p class="text-sm text-gray-600">Didn't receive the code? <a href="#" id="resendOtp" class="text-yellow-600 font-medium hover:underline">Resend OTP</a></p>
                 </div>
-            </form>
+            </div>
         </div>
     </div>
-
+</div>
     <!-- CALENDAR UI -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
