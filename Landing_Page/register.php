@@ -256,7 +256,7 @@
     <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm" id="otpModalBackdrop"></div>
     
     <!-- Modal Content -->
-    <div class="relative bg-white rounded-xl shadow-card w-full max-w-md mx-4 z-10 transform transition-all duration-300 scale-95 opacity-0" id="otpModalContent">
+    <div class="relative bg-white rounded-xl shadow-card w-full max-w-md mx-4 z-10 transform transition-all duration-300" id="otpModalContent">
         <!-- Close Button -->
         <button type="button" class="absolute top-4 right-4 text-gray-500 hover:text-navy transition-colors" id="closeOtpModal">
             <i class="fas fa-times"></i>
@@ -271,7 +271,7 @@
         <div class="px-6 py-5">
             <div class="space-y-4">
                 <p class="text-sm text-gray-600">We've sent an OTP to your email.</p>
-                <p class="text-sm text-gray-600" id="otpEmail"></p>
+                <p class="text-sm text-gray-600 font-medium" id="otpEmail"></p>
                 
                 <form id="otpForm">
                     <div>
@@ -286,7 +286,7 @@
                                 maxlength="6" 
                                 minlength="6" 
                                 pattern="[0-9]{6}"
-                                class="w-full px-3 py-2 bg-white border border-input-border rounded-lg focus:ring-1 focus:ring-yellow-600 focus:border-yellow-600 outline-none transition-all duration-200 pr-8"
+                                class="w-full px-3 py-2 bg-white border border-input-border rounded-lg focus:ring-1 focus:ring-yellow-600 focus:border-yellow-600 outline-none transition-all duration-200"
                             >
                             <span class="absolute right-2 top-1/2 transform -translate-y-1/2 text-yellow-600 text-sm">
                                 <i class="fas fa-lock"></i>
