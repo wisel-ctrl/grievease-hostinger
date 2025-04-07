@@ -251,7 +251,7 @@
 
     <!-- Add this modal HTML before the closing </body> tag -->
     <div id="otpModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
-        <div class="bg-white rounded-radius p-6 shadow-lg max-w-md w-full mx-4">
+    <div class="bg-white bg-opacity-25 backdrop-blur-md rounded-xl p-6 shadow-card">
             <div class="text-center mb-4">
                 <h3 class="text-xl font-bold font-hedvig">Email Verification</h3>
                 <p class="text-gray-600 mt-1">We've sent an OTP to your email.</p>
