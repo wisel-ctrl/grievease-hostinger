@@ -41,17 +41,18 @@
         }
 </style>
 <body>
-<nav class="bg-black text-white shadow-md w-full fixed top-0 left-0 z-50 px-4 sm:px-6 lg:px-8">
+<!-- Navigation Bar - Improved & Smaller -->
+<nav class="bg-black text-white shadow-md w-full fixed top-0 left-0 z-50 px-4 sm:px-6 lg:px-8" style="height: var(--navbar-height);">
     <div class="flex justify-between items-center h-16">
         <!-- Left side: Logo and Text with Link -->
-        <a href="index.php" class="flex items-center space-x-2">
+        <a href="index.html" class="flex items-center space-x-2">
             <img src="Landing_Page/Landing_images/logo.png" alt="Logo" class="h-[42px] w-[38px]">
             <span class="text-yellow-600 text-3xl">GrievEase</span>
         </a>
         
         <!-- Center: Navigation Links (Hidden on small screens) -->
         <div class="hidden md:flex space-x-6">
-            <a href="index.php" class="text-white hover:text-gray-300 transition relative group">
+            <a href="index.html" class="text-white hover:text-gray-300 transition relative group">
                 Home
                 <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-yellow-600 group-hover:w-full transition-all duration-300"></span>
             </a>
@@ -75,6 +76,10 @@
         
         <!-- Right side: Login/Register links (visible on medium and larger screens) -->
         <div class="hidden md:flex items-center space-x-3">
+            <!-- Desktop Install Button (hidden by default) -->
+            <button id="installButton" class="hidden bg-green-600 text-white px-4 py-1.5 rounded-lg hover:bg-green-700 transition">
+                Install App
+            </button>
             <a href="Landing_Page/login.php" class="text-white hover:text-gray-300 relative group">
                 Login
                 <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-yellow-600 group-hover:w-full transition-all duration-300"></span>
@@ -84,45 +89,73 @@
             </a>
         </div>
         
-        <!-- Hamburger Menu Button (only visible on small screens) -->
-        <button onclick="toggleMenu()" class="md:hidden focus:outline-none text-white">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
-            </svg>
-        </button>
+        <!-- mobile menu header -->
+        <div class="md:hidden flex justify-between items-center">
+            <div class="flex items-center space-x-4">
+                <button onclick="toggleMenu()" class="focus:outline-none text-white">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
     </div>
     
     <!-- Mobile Menu -->
-    <div id="mobile-menu" class="hidden md:hidden bg-black p-4 rounded-lg shadow-lg absolute left-0 right-0 mt-1 border-t border-gray-700">
-        <a href="index.php" class="block text-white py-2 hover:text-gray-300 relative group">
-            Home
-            <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-yellow-600 group-hover:w-full transition-all duration-300"></span>
-        </a>
-        <a href="about.php" class="block text-white py-2 hover:text-gray-300 relative group">
-            About
-            <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-yellow-600 group-hover:w-full transition-all duration-300"></span>
-        </a>
-        <a href="memorial.php" class="block text-white py-2 hover:text-gray-300 relative group">
-            Memorials
-            <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-yellow-600 group-hover:w-full transition-all duration-300"></span>
-        </a>
-        <a href="services.php" class="block text-white py-2 hover:text-gray-300 relative group">
-            Services & Packages
-            <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-yellow-600 group-hover:w-full transition-all duration-300"></span>
-        </a>
-        <a href="faqs.php" class="block text-white py-2 hover:text-gray-300 relative group">
-            FAQs
-            <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-yellow-600 group-hover:w-full transition-all duration-300"></span>
-        </a>
-        <!-- Login & Register Section (FIXED) -->
-    <div class="mt-3 pt-3 border-t border-gray-700">
-        <a href="Landing_Page/login.php" class="block text-white py-2 hover:text-gray-300 relative group pl-4">
-            Login
-            <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-yellow-600 group-hover:w-full transition-all duration-300"></span>
-        </a>
-        <a href="Landing_Page/register.php" class="block text-white py-2 hover:text-gray-300 relative group pl-4">
-            Register
-        </a>
+    <div id="mobile-menu" class="hidden md:hidden fixed left-0 right-0 top-[--navbar-height] bg-black/90 backdrop-blur-md p-4 z-40 max-h-[calc(100vh-var(--navbar-height))] overflow-y-auto">
+        <div class="space-y-2">
+            <a href="index.html" class="block text-white py-3 px-4 hover:bg-gray-800 rounded-lg transition-colors duration-300 relative group">
+                <div class="flex justify-between items-center">
+                    <span>Home</span>
+                    <i class="fas fa-home text-yellow-600 opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                </div>
+                <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-yellow-600 group-hover:w-full transition-all duration-300"></span>
+            </a>
+            <a href="about.php" class="block text-white py-3 px-4 hover:bg-gray-800 rounded-lg transition-colors duration-300 relative group">
+                <div class="flex justify-between items-center">
+                    <span>About</span>
+                    <i class="fas fa-info-circle text-yellow-600 opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                </div>
+                <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-yellow-600 group-hover:w-full transition-all duration-300"></span>
+            </a>
+            <a href="memorial.php" class="block text-white py-3 px-4 hover:bg-gray-800 rounded-lg transition-colors duration-300 relative group">
+                <div class="flex justify-between items-center">
+                    <span>Memorials</span>
+                    <i class="fas fa-monument text-yellow-600 opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                </div>
+                <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-yellow-600 group-hover:w-full transition-all duration-300"></span>
+            </a>
+            <a href="services.php" class="block text-white py-3 px-4 hover:bg-gray-800 rounded-lg transition-colors duration-300 relative group">
+                <div class="flex justify-between items-center">
+                    <span>Services & Packages</span>
+                    <i class="fas fa-briefcase text-yellow-600 opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                </div>
+                <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-yellow-600 group-hover:w-full transition-all duration-300"></span>
+            </a>
+            <a href="faqs.php" class="block text-white py-3 px-4 hover:bg-gray-800 rounded-lg transition-colors duration-300 relative group">
+                <div class="flex justify-between items-center">
+                    <span>FAQs</span>
+                    <i class="fas fa-question-circle text-yellow-600 opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                </div>
+                <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-yellow-600 group-hover:w-full transition-all duration-300"></span>
+            </a>
+        </div>
+
+        <div class="mt-6 border-t border-gray-700 pt-4">
+            <!-- Mobile Install Button -->
+            <button id="installButtonMobile" class="hidden w-full text-left bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition mb-2">
+                Install App
+            </button>
+            <div class="space-y-2">
+                <a href="Landing_Page/login.php" class="flex items-center justify-between text-white py-3 px-4 hover:bg-gray-800 rounded-lg transition-colors duration-300">
+                    <span>Login</span>
+                    <i class="fas fa-sign-in-alt text-yellow-600"></i>
+                </a>
+                <a href="Landing_Page/register.php" class="flex items-center justify-between text-white py-3 px-4 hover:bg-gray-800 rounded-lg transition-colors duration-300">
+                    <span>Register</span>
+                    <i class="fas fa-user-plus text-yellow-600"></i>
+                </a>
+            </div>
         </div>
     </div>
 </nav>
