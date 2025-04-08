@@ -1498,5 +1498,6 @@ function fetchItemsByBranch(branchId) {
   </script>
   <script src="script.js"></script>
   <script src="tailwind.js"></script>
+  <script src="sidebar.js"></script>
 </body>
 </html>
