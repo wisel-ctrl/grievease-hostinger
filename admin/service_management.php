@@ -89,7 +89,7 @@ header("Pragma: no-cache");
   <!-- Add New Service Button -->
   <?php
 // Database connection settings
-include '../db_connect.php';
+require_once '../db_connect.php';
 
 // Check connection
 if ($conn->connect_error) {
@@ -105,7 +105,6 @@ function formatPrice($price) {
     return '$' . number_format($price, 2);
 }
 ?>
-asdsafg
 <div class="bg-gradient-to-b from-gray-50 to-white p-6 rounded-xl">
 
 
@@ -645,7 +644,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <select id="serviceCategory" name="serviceCategory" class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent" required>
                 <option value="">Select a Category</option>
                 <?php
-                include '../db_connect.php';
+                require_once '../db_connect.php';
                 // Fetch service categories
                 $sql = "SELECT service_categoryID, service_category_name FROM service_category";
                 $result = $conn->query($sql);
@@ -709,7 +708,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         <?php
             // Include database connection
-            include '../db_connect.php';
+            require_once '../db_connect.php';
 
             // Fetch branches from the database
             $sql = "SELECT branch_id, branch_name FROM branch_tb";
@@ -926,7 +925,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <select id="editServiceCategory" name="serviceCategory" class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent" required>
                 <option value="">Select a Category</option>
                 <?php
-                include '../db_connect.php';
+                require_once '../db_connect.php';
                 // Fetch service categories
                 $sql = "SELECT service_categoryID, service_category_name FROM service_category";
                 $result = $conn->query($sql);
@@ -992,7 +991,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="flex gap-4 flex-wrap">
                 <?php
                 // Include database connection
-                include '../db_connect.php';
+                require_once '../db_connect.php';
 
                 // Fetch branches from the database
                 $sql = "SELECT branch_id, branch_name FROM branch_tb";
