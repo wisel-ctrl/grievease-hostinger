@@ -1,7 +1,7 @@
 <?php
 // update_employee.php
 session_start();
-include '../db_connect.php';
+include '../../db_connect.php';
 
 // Response array
 $response = [

@@ -1,7 +1,7 @@
 <?php
 header('Content-Type: application/json');
 
-include '../db_connect.php';
+include '../../db_connect.php';
 
 // Check connection
 if ($conn->connect_error) {
@@ -20,7 +20,7 @@ if (empty($employeeId)) {
 $employeeId = $conn->real_escape_string($employeeId);
 
 // Update query
-$sql = "UPDATE employee_tb SET status = 'active' WHERE employeeID = '$employeeId'";
+$sql = "UPDATE employee_tb SET status = 'fired' WHERE employeeID = '$employeeId'";
 
 if ($conn->query($sql) === TRUE) {
     if ($conn->affected_rows > 0) {

@@ -653,7 +653,7 @@ if ($branch_result->num_rows > 0) {
               const formData = new FormData(addEmployeeAccountForm);
               
               // Send data to server using fetch
-              fetch('add_employee.php', {
+              fetch('employeeManagement/add_employee.php', {
                   method: 'POST',
                   body: formData
               })
@@ -716,7 +716,7 @@ if ($branch_result->num_rows > 0) {
     const formData = new FormData(this);
 
     // Send AJAX request to update employee
-    fetch('update_employee.php', {
+    fetch('employeeManagement/update_employee.php', {
         method: 'POST',
         body: formData
     })
@@ -745,7 +745,7 @@ if ($branch_result->num_rows > 0) {
 
     function fetchEmployeeData(employeeId) {
   // Send AJAX request to get employee data
-  fetch('get_employee.php?id=' + employeeId)
+  fetch('employeeManagement/get_employee.php?id=' + employeeId)
     .then(response => response.json())
     .then(data => {
       if (data) {
@@ -801,7 +801,7 @@ if ($branch_result->num_rows > 0) {
     if (confirm('Are you sure you want to terminate this employee?')) {
         // Create AJAX request
         var xhr = new XMLHttpRequest();
-        xhr.open("POST", "terminate_employee.php", true);
+        xhr.open("POST", "employeeManagement/terminate_employee.php", true);
         xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
         
         xhr.onreadystatechange = function() {
@@ -831,7 +831,7 @@ if ($branch_result->num_rows > 0) {
       if (confirm('Are you sure you want to rehire this employee?')) {
         // Create AJAX request
         var xhr = new XMLHttpRequest();
-        xhr.open("POST", "rehire_employee.php", true);
+        xhr.open("POST", "employeeManagement/rehire_employee.php", true);
         xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
         
         xhr.onreadystatechange = function() {
