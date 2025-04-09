@@ -97,7 +97,7 @@ if ($conn->connect_error) {
 }
 
 // Get all branches to display separate tables
-$branchSql = "SELECT branch_id, branch_name FROM Branch_tb";
+$branchSql = "SELECT branch_id, branch_name FROM branch_tb";
 $branchResult = $conn->query($branchSql);
 
 // Function to format price
@@ -117,7 +117,7 @@ function formatPrice($price) {
       <div>
         <p class="text-xs text-gray-500">Total Services</p>
         <p class="text-lg font-semibold"><?php 
-          $totalSql = "SELECT COUNT(*) as total FROM Services_tb";
+          $totalSql = "SELECT COUNT(*) as total FROM services_tb";
           $totalResult = $conn->query($totalSql);
           $total = $totalResult->fetch_assoc()['total'];
           echo $total;
@@ -131,7 +131,7 @@ function formatPrice($price) {
       <div>
         <p class="text-xs text-gray-500">Active Services</p>
         <p class="text-lg font-semibold"><?php 
-          $activeSql = "SELECT COUNT(*) as total FROM Services_tb WHERE status = 'Active'";
+          $activeSql = "SELECT COUNT(*) as total FROM services_tb WHERE status = 'Active'";
           $activeResult = $conn->query($activeSql);
           $active = $activeResult->fetch_assoc()['total'];
           echo $active;
@@ -145,7 +145,7 @@ function formatPrice($price) {
       <div>
         <p class="text-xs text-gray-500">Inactive Services</p>
         <p class="text-lg font-semibold"><?php 
-          $inactiveSql = "SELECT COUNT(*) as total FROM Services_tb WHERE status = 'Inactive'";
+          $inactiveSql = "SELECT COUNT(*) as total FROM services_tb WHERE status = 'Inactive'";
           $inactiveResult = $conn->query($inactiveSql);
           $inactive = $inactiveResult->fetch_assoc()['total'];
           echo $inactive;
@@ -176,7 +176,7 @@ if ($branchResult->num_rows > 0) {
             s.selling_price, 
             s.status,
             b.branch_name
-        FROM Services_tb s
+        FROM services_tb s
         JOIN service_category sc ON s.service_categoryID = sc.service_categoryID
         JOIN branch_tb b ON s.branch_id = b.branch_id
         WHERE s.branch_id = $branchId
@@ -186,7 +186,7 @@ if ($branchResult->num_rows > 0) {
         ($statusFilter ? "AND s.status = '$statusFilter' " : '');
 
         // Get total count for pagination
-        $countSql = "SELECT COUNT(*) as count FROM Services_tb s
+        $countSql = "SELECT COUNT(*) as count FROM services_tb s
         JOIN service_category sc ON s.service_categoryID = sc.service_categoryID
         WHERE s.branch_id = $branchId
         " . 
@@ -206,11 +206,11 @@ if ($branchResult->num_rows > 0) {
 
         // Get unique categories and statuses for filters
         $categoriesSql = "SELECT DISTINCT service_category_name FROM service_category sc
-        JOIN Services_tb s ON s.service_categoryID = sc.service_categoryID
+        JOIN services_tb s ON s.service_categoryID = sc.service_categoryID
         WHERE s.branch_id = $branchId";
         $categoriesResult = $conn->query($categoriesSql);
 
-        $statusesSql = "SELECT DISTINCT status FROM Services_tb WHERE branch_id = $branchId";
+        $statusesSql = "SELECT DISTINCT status FROM services_tb WHERE branch_id = $branchId";
         $statusesResult = $conn->query($statusesSql);
 ?>
 

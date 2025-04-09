@@ -99,7 +99,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         
         // Build SQL query - use null for empty values
-        $sql = "INSERT INTO Services_tb (
+        $sql = "INSERT INTO services_tb (
                 service_name, 
                 description,
                 service_categoryID, 
