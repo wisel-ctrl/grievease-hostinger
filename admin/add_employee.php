@@ -1,21 +1,6 @@
 <?php
-// Database connection
-function connectDatabase() {
-    $servername = "localhost";
-    $username = "root";
-    $password = "123456789";
-    $dbname = "grievease";
-
-    // Create connection
-    $conn = new mysqli($servername, $username, $password, $dbname);
-
-    // Check connection
-    if ($conn->connect_error) {
-        die("Connection failed: " . $conn->connect_error);
-    }
-
-    return $conn;
-}
+// Include database connection
+require_once '../db_connect.php';
 
 // Handle form submission
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -58,7 +43,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // If no errors, proceed with database insertion
     if (empty($errors)) {
         try {
-            $conn = connectDatabase();
+            // Use the connection from the included file
+            // The $conn variable should be available from db_connect.php
 
             // Prepare SQL statement
             $sql = "INSERT INTO employee_tb (
@@ -103,9 +89,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 echo json_encode($response);
             }
 
-            // Close statement and connection
+            // Close statement
             $stmt->close();
-            $conn->close();
 
         } catch (Exception $e) {
             // Handle any unexpected errors

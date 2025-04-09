@@ -147,7 +147,7 @@ if ($branch_result->num_rows > 0) {
                     e.phone_number,
                     e.email,
                     e.date_created
-                FROM Employee_tb e
+                FROM employee_tb e
                 JOIN branch_tb b ON e.branch_id = b.branch_id";
 
                 $result = $conn->query($sql);
