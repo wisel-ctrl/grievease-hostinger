@@ -105,6 +105,7 @@ function formatPrice($price) {
     return '$' . number_format($price, 2);
 }
 ?>
+asdsafg
 <div class="bg-gradient-to-b from-gray-50 to-white p-6 rounded-xl">
 
 
