@@ -1161,7 +1161,7 @@ function openEditServiceModal(serviceId) {
     document.getElementById('editServiceModal').classList.remove('hidden');
     
     // Fetch service data
-    fetch(`get_service.php?service_id=${serviceId}`)
+    fetch(`servicesManagement/get_service.php?service_id=${serviceId}`)
         .then(response => response.json())
         .then(data => {
             if (data.status === 'success') {
@@ -1301,7 +1301,7 @@ function updateService() {
         console.log(`${key}:`, value);
     }
 
-    fetch('update_service.php', {
+    fetch('servicesManagement/update_service.php', {
         method: 'POST',
         body: formData
     })
@@ -1440,7 +1440,7 @@ function fetchItemsByBranch(branchId) {
     }
     
     // Send the form data
-    fetch('add_service_handler.php', {
+    fetch('servicesManagement/add_service_handler.php', {
         method: 'POST',
         body: formData
     })
