@@ -5,7 +5,25 @@
     const supportAgent = 'support_agent'; // Support agent ID
     let selectedBranch = null; // To store the selected branch
 
-    // Function to save branch selection to database (updated)
+    // Function to fetch branches from database
+    async function fetchBranches() {
+        try {
+            const response = await fetch('customService/get_branches.php');
+            const data = await response.json();
+            
+            if (data.success) {
+                return data.branches;
+            } else {
+                console.error('Error fetching branches:', data.message);
+                return [];
+            }
+        } catch (error) {
+            console.error('Error fetching branches:', error);
+            return [];
+        }
+    }
+
+    // Function to save branch selection to database
     async function saveBranchSelection(branch) {
         try {
             // Make sure we have the current user ID from the hidden input
@@ -20,7 +38,7 @@
                 },
                 body: JSON.stringify({
                     branch: branch,
-                    user_id: userId // Explicitly include user_id in the request
+                    user_id: userId
                 })
             });
             
@@ -109,7 +127,7 @@
                     messageType,
                     attachmentUrl,
                     automated: automated,
-                    branch: selectedBranch // Include the selected branch with each message
+                    branch: selectedBranch
                 })
             });
             
@@ -143,6 +161,53 @@
         }
     }
 
+    // Function to show branch selection modal
+    async function showBranchModal() {
+        const branchModal = document.getElementById('branch-modal');
+        const branchOptions = document.getElementById('branch-options');
+        
+        // Show loading state
+        branchOptions.innerHTML = '<div class="text-center py-4"><i class="fas fa-spinner fa-spin"></i> Loading branches...</div>';
+        branchModal.classList.remove('hidden');
+        
+        // Fetch branches from database
+        const branches = await fetchBranches();
+        
+        if (branches.length > 0) {
+            // Clear loading state and add branch buttons
+            branchOptions.innerHTML = '';
+            
+            branches.forEach(branch => {
+                const button = document.createElement('button');
+                button.className = 'w-full py-2 px-4 bg-gold text-black rounded hover:bg-yellow-600 transition branch-button';
+                button.dataset.branchId = branch.id;
+                button.textContent = branch.name;
+                
+                button.addEventListener('click', async () => {
+                    selectedBranch = branch.id;
+                    localStorage.setItem('selectedBranch_' + currentUser, selectedBranch);
+                    hideBranchModal();
+                    
+                    // Save branch selection to database
+                    await saveBranchSelection(selectedBranch);
+                    
+                    // Initialize chat after branch selection
+                    initChat();
+                });
+                
+                branchOptions.appendChild(button);
+            });
+        } else {
+            // Show error if no branches loaded
+            branchOptions.innerHTML = '<div class="text-red-500 text-sm py-2">Failed to load branches. Please try again later.</div>';
+        }
+    }
+
+    // Function to hide branch selection modal
+    function hideBranchModal() {
+        document.getElementById('branch-modal').classList.add('hidden');
+    }
+
     // Enhanced sendChatMessage function
     async function sendChatMessage() {
         const chatInput = document.getElementById('chat-input');
@@ -167,7 +232,7 @@
         chatInput.value = '';
         chatMessages.scrollTop = chatMessages.scrollHeight;
         
-        // Save user message to database (you need to add this line)
+        // Save user message to database
         await saveMessage(
             currentUser,          // sender
             'support_agent',      // receiver
@@ -215,19 +280,9 @@
                 currentChatRoomId,    // chatRoomId
                 'text',               // messageType
                 null,                 // attachmentUrl
-                true                  // automated - this flag ensures it will be saved as 'bot' in DB
+                true                  // automated
             );
         }, 1000);
-    }
-
-    // Function to show branch selection modal
-    function showBranchModal() {
-        document.getElementById('branch-modal').classList.remove('hidden');
-    }
-
-    // Function to hide branch selection modal
-    function hideBranchModal() {
-        document.getElementById('branch-modal').classList.add('hidden');
     }
 
     // Initialize chat
@@ -260,8 +315,20 @@
             currentChatRoomId = 'room_' + currentUser + '_' + Math.random().toString(36).substr(2, 9);
             localStorage.setItem('chatRoomId_' + currentUser, currentChatRoomId);
             
+            // Get branch name for welcome message
+            let branchName = 'your selected branch';
+            try {
+                const response = await fetch(`customService/get_branch_name.php?branch_id=${selectedBranch}`);
+                const data = await response.json();
+                if (data.success) {
+                    branchName = data.branch_name;
+                }
+            } catch (error) {
+                console.error('Error fetching branch name:', error);
+            }
+            
             // Only show chatbot type indicator in the initial welcome message
-            const welcomeMessage = `Hello, welcome to GrievEase ${selectedBranch} branch customer support. How can I assist you today?`;
+            const welcomeMessage = `Hello, welcome to GrievEase ${branchName} customer support. How can I assist you today?`;
             
             // Add welcome message to UI with chatbot type indicator
             const currentTime = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
@@ -289,6 +356,26 @@
         }
     }
 
+    // Function to open chat
+    function openChat() {
+        document.getElementById('overlay').classList.remove('hidden');
+        document.getElementById('chat-window').classList.remove('hidden');
+        document.getElementById('chat-window').classList.add('block');
+        document.body.style.overflow = 'hidden';
+        document.getElementById('chat-input').focus();
+        
+        // Initialize chat when opened - this will check branch first
+        initChat();
+    }
+
+    // Function to close chat
+    function closeChatWindow() {
+        document.getElementById('overlay').classList.add('hidden');
+        document.getElementById('chat-window').classList.add('hidden');
+        document.getElementById('chat-window').classList.remove('block');
+        document.body.style.overflow = 'auto';
+    }
+
     // Event listeners for DOM Content Loaded
     document.addEventListener('DOMContentLoaded', () => {
         // Get elements
@@ -299,53 +386,6 @@
         const closeChatButton = document.getElementById('close-chat');
         const chatInput = document.getElementById('chat-input');
         const sendMessage = document.getElementById('send-message');
-        const branchPaete = document.getElementById('branch-paete');
-        const branchPila = document.getElementById('branch-pila');
-
-        // Branch selection event listeners
-        branchPaete.addEventListener('click', async () => {
-            selectedBranch = 'paete';
-            localStorage.setItem('selectedBranch_' + currentUser, selectedBranch);
-            hideBranchModal();
-            
-            // Save branch selection to database - no need to pass user_id
-            await saveBranchSelection(selectedBranch);
-            
-            // Initialize chat after branch selection
-            initChat();
-        });
-
-        branchPila.addEventListener('click', async () => {
-            selectedBranch = 'pila';
-            localStorage.setItem('selectedBranch_' + currentUser, selectedBranch);
-            hideBranchModal();
-            
-            // Save branch selection to database - no need to pass user_id
-            await saveBranchSelection(selectedBranch);
-            
-            // Initialize chat after branch selection
-            initChat();
-        });
-
-        // Function to open chat
-        function openChat() {
-            overlay.classList.remove('hidden');
-            chatWindow.classList.remove('hidden');
-            chatWindow.classList.add('block');
-            document.body.style.overflow = 'hidden';
-            chatInput.focus();
-            
-            // Initialize chat when opened - this will check branch first
-            initChat();
-        }
-
-        // Function to close chat
-        function closeChatWindow() {
-            overlay.classList.add('hidden');
-            chatWindow.classList.add('hidden');
-            chatWindow.classList.remove('block');
-            document.body.style.overflow = 'auto';
-        }
 
         // Toggle chat window on button click
         csButton.addEventListener('click', () => {

@@ -59,14 +59,12 @@
     <div class="bg-white rounded-lg shadow-xl w-80 z-10 p-5">
         <h3 class="text-lg font-semibold mb-4">Select Branch Location</h3>
         <p class="text-sm text-gray-600 mb-4">Please select which branch you'd like to contact:</p>
-        
-        <div class="space-y-3">
-            <button id="branch-paete" class="w-full py-2 px-4 bg-gold text-black rounded hover:bg-yellow-600 transition">
-                Paete Branch
-            </button>
-            <button id="branch-pila" class="w-full py-2 px-4 bg-gold text-black rounded hover:bg-yellow-600 transition">
-                Pila Branch
-            </button>
+
+        <div id="branch-options" class="space-y-3">
+            <!-- Branch options will be dynamically inserted here -->
+            <div class="text-center py-4">
+                <i class="fas fa-spinner fa-spin"></i> Loading branches...
+            </div>
         </div>
     </div>
 </div>
