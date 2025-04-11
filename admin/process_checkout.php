@@ -30,10 +30,13 @@ try {
     $service_id = $_POST['service_id'] ?? 0;
     $payment_method = $_POST['paymentMethod'] ?? '';
     $initial_price = $_POST['service_price'] ?? 0;
-    $discounted_price = $_POST['totalPrice'] ?? 0; // Same as initial for now
+    $discounted_price = $_POST['totalPrice'] ?? 0;
     $amount_paid = $_POST['amountPaid'] ?? 0;
     $balance = $_POST['balance'] ?? 0;
     $payment_status = $_POST['payment_status'] ?? 'With Balance';
+    
+    // Get the cremation checkbox value
+    $with_cremate = isset($_POST['withCremation']) && $_POST['withCremation'] === 'on' ? 'yes' : 'no';
     
     $sold_by = $_POST['sold_by'] ?? 1; // Default to admin ID 1
     $status = $_POST['status'] ?? 'Pending';
@@ -44,23 +47,25 @@ try {
         $death_cert_image = file_get_contents($_FILES['deathCertificate']['tmp_name']);
     }
 
-    // Prepare SQL statement - NOW INCLUDING deceased_address
+    // Prepare SQL statement - including with_cremate
     $stmt = $conn->prepare("INSERT INTO sales_tb (
         fname, mname, lname, suffix, phone, email,
         fname_deceased, mname_deceased, lname_deceased, suffix_deceased,
         date_of_birth, date_of_death, date_of_burial, deceased_address,
         branch_id, service_id, payment_method, initial_price, discounted_price, 
-        amount_paid, balance, status, payment_status, death_cert_image, sold_by
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        amount_paid, balance, status, payment_status, death_cert_image, sold_by,
+        with_cremate
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
-    // Bind parameters - added deceased_address
+    // Bind parameters - added with_cremate
     $stmt->bind_param(
-        "ssssssssssssssiisddddsssi",
+        "ssssssssssssssiisddddsssis",
         $fname, $mname, $lname, $suffix, $phone, $email,
         $fname_deceased, $mname_deceased, $lname_deceased, $suffix_deceased,
         $date_of_birth, $date_of_death, $date_of_burial, $deceased_address,
         $branch_id, $service_id, $payment_method, $initial_price, $discounted_price, 
-        $amount_paid, $balance, $status, $payment_status, $death_cert_image, $sold_by
+        $amount_paid, $balance, $status, $payment_status, $death_cert_image, $sold_by,
+        $with_cremate
     );
 
     // Execute the statement
