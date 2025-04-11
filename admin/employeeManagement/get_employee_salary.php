@@ -15,40 +15,23 @@ if (!$employeeId || !$startDate || !$endDate) {
 
 // Validate and format dates
 try {
-    // Create DateTime objects to validate the dates
     $startDateTime = new DateTime($startDate);
     $endDateTime = new DateTime($endDate);
-    
-    // Format dates for MySQL (Y-m-d H:i:s)
-    // $formattedStartDate = $startDateTime->format('Y-m-d H:i:s');
-    // $formattedEndDate = $endDateTime->format('Y-m-d H:i:s');
-    
-    // Optional: If you only want to compare dates without time
-     $formattedStartDate = $startDateTime->format('Y-m-d') . ' 00:00:00';
-     $formattedEndDate = $endDateTime->format('Y-m-d') . ' 23:59:59';
-    
+    $formattedStartDate = $startDateTime->format('Y-m-d') . ' 00:00:00';
+    $formattedEndDate = $endDateTime->format('Y-m-d') . ' 23:59:59';
 } catch (Exception $e) {
-    echo json_encode(['success' => false, 'message' => 'Invalid date format. Please use YYYY-MM-DD or YYYY-MM-DD HH:MM:SS']);
+    echo json_encode(['success' => false, 'message' => 'Invalid date format']);
     exit;
 }
 
 try {
-    // Get base salary first
-    $baseSalaryQuery = "SELECT base_salary FROM employee_tb WHERE EmployeeID = ?";
-    $stmt = $conn->prepare($baseSalaryQuery);
-    $stmt->bind_param("i", $employeeId);
-    $stmt->execute();
-    $baseSalaryResult = $stmt->get_result();
-    $baseSalaryRow = $baseSalaryResult->fetch_assoc();
-    $baseSalary = $baseSalaryRow ? floatval($baseSalaryRow['base_salary']) : 0;
-    
     // Query to get service payments and service details
     $query = "
         SELECT 
             esp.payment_date,
             s.service_name,
             esp.income AS service_income,
-            esp.income * (e.base_salary / 100) AS employee_share
+            esp.income AS employee_share  // Using income directly as share
         FROM 
             employee_service_payments esp
         JOIN 
@@ -78,15 +61,14 @@ try {
             'payment_date' => $row['payment_date'],
             'service_name' => $row['service_name'],
             'service_income' => $row['service_income'],
-            'employee_share' => $row['employee_share']
+            'employee_share' => $row['service_income'] // Same as income
         ];
         $totalServices++;
-        $totalEarnings += $row['employee_share'];
+        $totalEarnings += $row['service_income']; // Summing the income directly
     }
     
     echo json_encode([
         'success' => true,
-        'base_salary' => $baseSalary,
         'total_services' => $totalServices,
         'total_earnings' => $totalEarnings,
         'services' => $services
@@ -95,7 +77,7 @@ try {
 } catch (Exception $e) {
     echo json_encode([
         'success' => false,
-        'message' => 'Error fetching salary data: ' . $e->getMessage()
+        'message' => 'Error fetching data: ' . $e->getMessage()
     ]);
 }
 ?>
