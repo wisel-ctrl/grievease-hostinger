@@ -20,12 +20,12 @@ try {
     $endDateTime = new DateTime($endDate);
     
     // Format dates for MySQL (Y-m-d H:i:s)
-    $formattedStartDate = $startDateTime->format('Y-m-d H:i:s');
-    $formattedEndDate = $endDateTime->format('Y-m-d H:i:s');
+    // $formattedStartDate = $startDateTime->format('Y-m-d H:i:s');
+    // $formattedEndDate = $endDateTime->format('Y-m-d H:i:s');
     
     // Optional: If you only want to compare dates without time
-    // $formattedStartDate = $startDateTime->format('Y-m-d') . ' 00:00:00';
-    // $formattedEndDate = $endDateTime->format('Y-m-d') . ' 23:59:59';
+     $formattedStartDate = $startDateTime->format('Y-m-d') . ' 00:00:00';
+     $formattedEndDate = $endDateTime->format('Y-m-d') . ' 23:59:59';
     
 } catch (Exception $e) {
     echo json_encode(['success' => false, 'message' => 'Invalid date format. Please use YYYY-MM-DD or YYYY-MM-DD HH:MM:SS']);
