@@ -954,7 +954,7 @@ if ($branch_result->num_rows > 0) {
     }
 
   </script>
-  
+
   <script>
 // Global variable to store current employee ID
 let currentEmployeeId = null;
@@ -1041,7 +1041,7 @@ function fetchEmployeeSalary() {
             const row = document.createElement('tr');
             row.className = 'border-b border-gray-200 hover:bg-gray-50';
             row.innerHTML = `
-              <td class="p-3 text-sm text-gray-700">${service.date}</td>
+              <td class="p-3 text-sm text-gray-700">${service.payment_date}</td>
               <td class="p-3 text-sm text-gray-700">${service.service_name}</td>
               <td class="p-3 text-sm text-gray-700">₱${parseFloat(service.service_income).toFixed(2)}</td>
               <td class="p-3 text-sm text-gray-700">₱${parseFloat(service.employee_share).toFixed(2)}</td>
