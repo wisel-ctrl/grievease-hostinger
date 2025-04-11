@@ -62,11 +62,12 @@ header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Cache-Control: post-check=0, pre-check=0", false);
 header("Pragma: no-cache");
 
+                require_once '../addressDB.php';
                 require_once '../db_connect.php'; // Database connection
 
                 // Get user's first name from database
                 $user_id = $_SESSION['user_id'];
-                $query = "SELECT first_name , last_name , email , birthdate FROM users WHERE id = ?";
+                $query = "SELECT first_name, middle_name, last_name, suffix, email, phone_number, birthdate FROM users WHERE id = ?";
                 $stmt = $conn->prepare($query);
                 $stmt->bind_param("i", $user_id);
                 $stmt->execute();
@@ -74,10 +75,23 @@ header("Pragma: no-cache");
                 $row = $result->fetch_assoc();
                 $first_name = $row['first_name']; // We're confident user_id exists
                 $last_name = $row['last_name'];
+                $middle_name = $row['middle_name'];
+                $suffix = $row['suffix'];
                 $email = $row['email'];
+                $phone_number = $row['phone_number'];
                 $birthdate = $row['birthdate'];
                 $stmt->close();
+
+                // Get regions for dropdown
+                $regions = [];
+                $region_query = "SELECT region_id, region_name FROM table_region";
+                $region_result = $addressDB->query($region_query);
+                while ($row = $region_result->fetch_assoc()) {
+                    $regions[] = $row;
+                }
+
                 $conn->close();
+                $addressDB->close();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -90,6 +104,7 @@ header("Pragma: no-cache");
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="tailwind.js"></script>
     <script src="profile.js"></script>    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         .modal {
             transition: opacity 0.3s ease-in-out;
@@ -874,7 +889,7 @@ header("Pragma: no-cache");
     <!-- Modal Backdrop -->
     <div class="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm"></div>
     
-    <!-- Modal Content - Responsive width and max-height -->
+    <!-- Modal Content -->
     <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-4xl mx-4 z-10 transform transition-all duration-300 scale-95 opacity-0 max-h-[90vh] overflow-y-auto">
         <!-- Modal Header -->
         <div class="bg-gradient-to-r from-yellow-600 to-white flex justify-between items-center p-4 sm:p-6 md:p-8 flex-shrink-0 rounded-t-2xl">
@@ -886,20 +901,39 @@ header("Pragma: no-cache");
             </button>
         </div>
         
-        <!-- Modal Body - More spacious layout, responsive padding -->
+        <!-- Modal Body -->
         <div class="p-4 sm:p-6 md:p-8 space-y-4 sm:space-y-6">
             <p class="text-gray-600 text-base sm:text-lg mb-4 sm:mb-6">Update your personal information below. Fields marked with * are required.</p>
             
-            <form class="space-y-4 sm:space-y-6">
+            <form class="space-y-4 sm:space-y-6" id="profile-form" method="POST" action="profile/update_profile.php" enctype="multipart/form-data">
                 <div class="grid sm:grid-cols-2 gap-4 sm:gap-6">
                     <div>
                         <label for="firstName" class="block text-sm font-medium text-gray-700 mb-1 sm:mb-2">First Name*</label>
-                        <input type="text" id="firstName" name="firstName" value="John" required class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base">
+                        <input type="text" id="firstName" name="firstName" value="<?php echo htmlspecialchars($first_name); ?>" required class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base">
                     </div>
                     
                     <div>
                         <label for="lastName" class="block text-sm font-medium text-gray-700 mb-1 sm:mb-2">Last Name*</label>
-                        <input type="text" id="lastName" name="lastName" value="Doe" required class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base">
+                        <input type="text" id="lastName" name="lastName" value="<?php echo htmlspecialchars($last_name); ?>" required class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base">
+                    </div>
+                </div>
+                
+                <div class="grid sm:grid-cols-2 gap-4 sm:gap-6">
+                    <div>
+                        <label for="middleName" class="block text-sm font-medium text-gray-700 mb-1 sm:mb-2">Middle Name</label>
+                        <input type="text" id="middleName" name="middleName" value="<?php echo htmlspecialchars($middle_name); ?>" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base">
+                    </div>
+                    
+                    <div>
+                        <label for="suffix" class="block text-sm font-medium text-gray-700 mb-1 sm:mb-2">Suffix</label>
+                        <select id="suffix" name="suffix" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base">
+                            <option value=""></option>
+                            <option value="Jr" <?php echo (isset($user['suffix']) && $user['suffix'] == 'Jr' ? 'selected' : ''); ?>>Jr</option>
+                            <option value="Sr" <?php echo (isset($user['suffix']) && $user['suffix'] == 'Sr' ? 'selected' : ''); ?>>Sr</option>
+                            <option value="II" <?php echo (isset($user['suffix']) && $user['suffix'] == 'II' ? 'selected' : ''); ?>>II</option>
+                            <option value="III" <?php echo (isset($user['suffix']) && $user['suffix'] == 'III' ? 'selected' : ''); ?>>III</option>
+                            <option value="IV" <?php echo (isset($user['suffix']) && $user['suffix'] == 'IV' ? 'selected' : ''); ?>>IV</option>
+                        </select>
                     </div>
                 </div>
                 
@@ -907,7 +941,7 @@ header("Pragma: no-cache");
                     <div>
                         <label for="email" class="block text-sm font-medium text-gray-700 mb-1 sm:mb-2">Email Address*</label>
                         <div class="relative">
-                            <input type="email" id="email" name="email" value="john.doe@example.com" required class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent pr-10 text-sm sm:text-base">
+                            <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($email); ?>" required class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent pr-10 text-sm sm:text-base">
                             <span class="absolute right-3 sm:right-4 top-1/2 transform -translate-y-1/2 text-yellow-600">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
@@ -920,7 +954,7 @@ header("Pragma: no-cache");
                     <div>
                         <label for="phone" class="block text-sm font-medium text-gray-700 mb-1 sm:mb-2">Phone Number*</label>
                         <div class="relative">
-                            <input type="tel" id="phone" name="phone" value="(555) 123-4567" required class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent pr-10 text-sm sm:text-base">
+                            <input type="tel" id="phone" name="phone" value="<?php echo htmlspecialchars($phone_number); ?>" required class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent pr-10 text-sm sm:text-base">
                             <span class="absolute right-3 sm:right-4 top-1/2 transform -translate-y-1/2 text-yellow-600">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
@@ -932,7 +966,7 @@ header("Pragma: no-cache");
                 
                 <div>
                     <label for="dob" class="block text-sm font-medium text-gray-700 mb-1 sm:mb-2">Date of Birth</label>
-                    <input type="date" id="dob" name="dob" value="1980-01-15" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base">
+                    <input type="date" id="dob" name="dob" value="<?php echo htmlspecialchars($birthdate); ?>" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base">
                 </div>
                 
                 <!-- Address Information Section -->
@@ -950,7 +984,9 @@ header("Pragma: no-cache");
                         <div class="relative">
                             <select id="region" name="region" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent appearance-none text-sm sm:text-base" onchange="updateProvinces()">
                                 <option value="" selected disabled>Select Region</option>
-                                <!-- Regions will be populated via JS or server-side -->
+                                <?php foreach ($regions as $region): ?>
+                                    <option value="<?php echo $region['region_id']; ?>"><?php echo htmlspecialchars($region['region_name']); ?></option>
+                                <?php endforeach; ?>
                             </select>
                             <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 sm:px-3 text-gray-700">
                                 <svg class="h-4 w-4 sm:h-5 sm:w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -963,7 +999,6 @@ header("Pragma: no-cache");
                         <div class="relative">
                             <select id="province" name="province" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent appearance-none text-sm sm:text-base" onchange="updateCities()" disabled>
                                 <option value="" selected disabled>Select Province</option>
-                                <!-- Provinces will be populated based on selected region -->
                             </select>
                             <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 sm:px-3 text-gray-700">
                                 <svg class="h-4 w-4 sm:h-5 sm:w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -976,7 +1011,6 @@ header("Pragma: no-cache");
                         <div class="relative">
                             <select id="city" name="city" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent appearance-none text-sm sm:text-base" onchange="updateBarangays()" disabled>
                                 <option value="" selected disabled>Select City/Municipality</option>
-                                <!-- Cities will be populated based on selected province -->
                             </select>
                             <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 sm:px-3 text-gray-700">
                                 <svg class="h-4 w-4 sm:h-5 sm:w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -989,7 +1023,6 @@ header("Pragma: no-cache");
                         <div class="relative">
                             <select id="barangay" name="barangay" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent appearance-none text-sm sm:text-base" disabled>
                                 <option value="" selected disabled>Select Barangay</option>
-                                <!-- Barangays will be populated based on selected city -->
                             </select>
                             <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 sm:px-3 text-gray-700">
                                 <svg class="h-4 w-4 sm:h-5 sm:w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -1009,33 +1042,6 @@ header("Pragma: no-cache");
                         </div>
                     </div>
                 </div>
-
-                <script>
-                    function updateProvinces() {
-                        // Enable the province dropdown
-                        document.getElementById('province').disabled = false;
-                        // Disable dependent dropdowns
-                        document.getElementById('city').disabled = true;
-                        document.getElementById('barangay').disabled = true;
-                        // Reset dependent dropdown values
-                        document.getElementById('city').innerHTML = '<option value="" selected disabled>Select City/Municipality</option>';
-                        document.getElementById('barangay').innerHTML = '<option value="" selected disabled>Select Barangay</option>';
-                    }
-                    
-                    function updateCities() {
-                        // Enable the city dropdown
-                        document.getElementById('city').disabled = false;
-                        // Disable dependent dropdown
-                        document.getElementById('barangay').disabled = true;
-                        // Reset dependent dropdown value
-                        document.getElementById('barangay').innerHTML = '<option value="" selected disabled>Select Barangay</option>';
-                    }
-                    
-                    function updateBarangays() {
-                        // Enable the barangay dropdown
-                        document.getElementById('barangay').disabled = false;
-                    }
-                </script>
                 
                 <!-- Document Uploads Section -->
                 <div class="bg-navy p-4 sm:p-6 rounded-xl space-y-4 sm:space-y-6">
@@ -1096,7 +1102,7 @@ header("Pragma: no-cache");
         <!-- Modal Footer -->
         <div class="p-4 sm:p-6 md:p-8 flex flex-col sm:flex-row sm:justify-end gap-3 sm:gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
             <button class="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-3 bg-white border border-yellow-600 text-gray-800 rounded-lg font-semibold hover:bg-gray-100 transition-colors text-sm sm:text-base" onclick="closeEditProfileModal()">Cancel</button>
-            <button class="w-full sm:w-auto px-5 sm:px-7 py-2 sm:py-3 bg-yellow-600 text-white rounded-lg font-semibold hover:bg-yellow-700 transition-colors flex items-center justify-center sm:justify-start text-sm sm:text-base">
+            <button type="submit" class="w-full sm:w-auto px-5 sm:px-7 py-2 sm:py-3 bg-yellow-600 text-white rounded-lg font-semibold hover:bg-yellow-700 transition-colors flex items-center justify-center sm:justify-start text-sm sm:text-base">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" sm:width="20" sm:height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
                     <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
                     <polyline points="17 21 17 13 7 13 7 21"></polyline>
@@ -1107,6 +1113,209 @@ header("Pragma: no-cache");
         </div>
     </div>
 </div>
+
+<script>
+// Enhanced address dropdown functions with AJAX
+function updateProvinces() {
+    const regionId = document.getElementById('region').value;
+    const provinceDropdown = document.getElementById('province');
+    
+    if (!regionId) {
+        provinceDropdown.disabled = true;
+        document.getElementById('city').disabled = true;
+        document.getElementById('barangay').disabled = true;
+        return;
+    }
+    
+    // Fetch provinces via AJAX
+    fetch('address/get_provinces.php?region_id=' + regionId)
+        .then(response => response.json())
+        .then(data => {
+            provinceDropdown.innerHTML = '<option value="" selected disabled>Select Province</option>';
+            data.forEach(province => {
+                provinceDropdown.innerHTML += `<option value="${province.province_id}">${province.province_name}</option>`;
+            });
+            provinceDropdown.disabled = false;
+            
+            // Reset dependent dropdowns
+            document.getElementById('city').innerHTML = '<option value="" selected disabled>Select City/Municipality</option>';
+            document.getElementById('city').disabled = true;
+            document.getElementById('barangay').innerHTML = '<option value="" selected disabled>Select Barangay</option>';
+            document.getElementById('barangay').disabled = true;
+        });
+}
+
+function updateCities() {
+    const provinceId = document.getElementById('province').value;
+    const cityDropdown = document.getElementById('city');
+    
+    if (!provinceId) {
+        cityDropdown.disabled = true;
+        document.getElementById('barangay').disabled = true;
+        return;
+    }
+    
+    // Fetch cities via AJAX
+    fetch('address/get_cities.php?province_id=' + provinceId)
+        .then(response => response.json())
+        .then(data => {
+            cityDropdown.innerHTML = '<option value="" selected disabled>Select City/Municipality</option>';
+            data.forEach(city => {
+                cityDropdown.innerHTML += `<option value="${city.municipality_id}">${city.municipality_name}</option>`;
+            });
+            cityDropdown.disabled = false;
+            
+            // Reset dependent dropdown
+            document.getElementById('barangay').innerHTML = '<option value="" selected disabled>Select Barangay</option>';
+            document.getElementById('barangay').disabled = true;
+        });
+}
+
+function updateBarangays() {
+    const cityId = document.getElementById('city').value;
+    const barangayDropdown = document.getElementById('barangay');
+    
+    if (!cityId) {
+        barangayDropdown.disabled = true;
+        return;
+    }
+    
+    // Fetch barangays via AJAX
+    fetch('address/get_barangays.php?city_id=' + cityId)
+        .then(response => response.json())
+        .then(data => {
+            barangayDropdown.innerHTML = '<option value="" selected disabled>Select Barangay</option>';
+            data.forEach(barangay => {
+                barangayDropdown.innerHTML += `<option value="${barangay.barangay_id}">${barangay.barangay_name}</option>`;
+            });
+            barangayDropdown.disabled = false;
+        });
+}
+
+// Add this to your script section
+// Define the missing modal functions
+function closeEditProfileModal() {
+    const modal = document.getElementById('edit-profile-modal');
+    modal.classList.add('opacity-0', 'scale-95');
+    modal.classList.remove('opacity-100', 'scale-100');
+    
+    // After animation completes, hide the modal
+    setTimeout(() => {
+        modal.classList.add('hidden');
+    }, 300);
+}
+
+// Connect the Save Changes button to submit the form
+document.querySelector('button[type="submit"]').addEventListener('click', function() {
+    document.getElementById('profile-form').submit();
+});
+
+document.getElementById('profile-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const submitButton = document.querySelector('button[type="submit"]');
+    const originalButtonText = submitButton.innerHTML;
+    
+    // Show loading state
+    submitButton.innerHTML = '<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Saving...';
+    submitButton.disabled = true;
+    
+    // Log before fetch to confirm event handling
+    console.log('Submitting form...');
+    
+    fetch(this.action, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'Accept': 'application/json'
+        }
+    })
+    .then(response => {
+        console.log('Response received:', response);
+        
+        // First check if the response is OK
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        
+        // Then try to parse as JSON
+        const contentType = response.headers.get('content-type');
+        console.log('Content type:', contentType);
+        
+        if (!contentType || !contentType.includes('application/json')) {
+            throw new TypeError("Oops, we didn't get JSON!");
+        }
+        
+        return response.json();
+    })
+    .then(data => {
+        console.log('Data received:', data);
+        
+        submitButton.innerHTML = originalButtonText;
+        submitButton.disabled = false;
+        
+        if (data.success) {
+            console.log('Showing success SweetAlert');
+            
+            Swal.fire({
+                icon: 'success',
+                title: 'Success!',
+                text: data.message,
+                confirmButtonColor: '#3085d6',
+                confirmButtonText: 'OK'
+            }).then(() => {
+                closeEditProfileModal();
+                // Optional: Refresh the page or update the UI
+                // window.location.reload();
+            });
+        } else {
+            console.log('Showing error SweetAlert');
+            
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: data.message,
+                confirmButtonColor: '#d33',
+                confirmButtonText: 'OK'
+            });
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        
+        submitButton.innerHTML = originalButtonText;
+        submitButton.disabled = false;
+        
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'An error occurred: ' + error.message,
+            confirmButtonColor: '#d33',
+            confirmButtonText: 'OK'
+        });
+    });
+});
+// Close modal when the X button is clicked
+document.getElementById('close-edit-profile-modal').addEventListener('click', closeEditProfileModal);
+</script>
+
+<?php if (isset($_SESSION['show_success_alert'])): ?>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    Swal.fire({
+        title: 'Saved!',
+        text: 'Your changes have been saved.',
+        icon: 'success',
+        confirmButtonText: 'OK'
+    }).then(() => {
+        <?php unset($_SESSION['show_success_alert']); ?>
+    });
+});
+</script>
+<?php endif; ?>
+
 
 <!-- Add Payment Method Modal (Hidden by default) -->
 <div id="add-payment-method-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
