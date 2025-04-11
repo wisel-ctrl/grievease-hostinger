@@ -999,10 +999,7 @@ function closeConfirmationModal() {
 
 // Function to start a new order
 function startNewOrder() {
-  // Clear the cart (in case it wasn't already cleared)
-  cartItems = [];
-  cartTotal = 0;
-  updateCart();
+  
   
   // Close all modals
   
