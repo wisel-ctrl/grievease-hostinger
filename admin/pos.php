@@ -191,31 +191,6 @@ $servicesJson = json_encode($allServices);
       </div>
     </div>
 
-    <!-- Cart Section -->
-    <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border p-5 hover:shadow-card transition-all duration-300">
-      <h2 class="mb-5 text-gray-600 text-lg">Your Cart</h2>
-      <div class="mb-5">
-        <table class="w-full border-collapse">
-          <thead>
-            <tr class="bg-sidebar-hover">
-              <th class="p-3 text-left border-b border-sidebar-border text-sidebar-text">Package/Item</th>
-              <th class="p-3 text-left border-b border-sidebar-border text-sidebar-text">Branch</th>
-              <th class="p-3 text-left border-b border-sidebar-border text-sidebar-text">Category</th>
-              <th class="p-3 text-left border-b border-sidebar-border text-sidebar-text">Price</th>
-              <th class="p-3 text-left border-b border-sidebar-border text-sidebar-text">Action</th>
-            </tr>
-          </thead>
-          <tbody id="cart-items-body">
-            <!-- Cart items will be dynamically added here -->
-          </tbody>
-        </table>
-      </div>
-      <div class="text-lg text-right my-5">
-        <strong class="text-sidebar-text">Total: </strong>
-        <span id="cart-total" class="font-bold text-sidebar-accent">₱0.00</span>
-      </div>
-      <button id="checkout-btn" class="px-4 py-2.5 bg-sidebar-accent text-white rounded font-semibold text-sm hover:bg-darkgold transition-all duration-300" onclick="checkout()" disabled>Proceed to Checkout</button>
-    </div>
 
   </div>
 
@@ -233,7 +208,7 @@ $servicesJson = json_encode($allServices);
         </div>
         <div class="p-5 border-t border-sidebar-border flex justify-end space-x-3">
           <button onclick="closePackageModal()" class="px-4 py-2 border border-sidebar-border text-sidebar-text rounded font-semibold text-sm hover:bg-sidebar-hover transition-all duration-300">Cancel</button>
-          <button onclick="addToCart()" class="px-4 py-2 bg-sidebar-accent text-white rounded font-semibold text-sm hover:bg-darkgold transition-all duration-300">Add to Cart</button>
+          <button onclick="addToCart()" class="px-4 py-2 bg-sidebar-accent text-white rounded font-semibold text-sm hover:bg-darkgold transition-all duration-300">Buy Now</button>
         </div>
       </div>
     </div>
@@ -469,8 +444,6 @@ let categories = <?php echo $categoriesJson; ?>;
 let selectedBranch = null;
 let selectedCategory = null;
 let selectedService = null;
-let cartItems = [];
-let cartTotal = 0;
 
 // DOM loaded event
 document.addEventListener('DOMContentLoaded', function() {
@@ -762,34 +735,30 @@ function closePackageModal() {
 }
 
 // Function to add the selected service to cart
+// Function to handle adding to cart and immediately proceed to checkout
+// Function to handle adding to cart and immediately proceed to checkout
 function addToCart() {
   if (selectedService) {
-    // Check if cart is not empty and the new service has a different branch
-    if (cartItems.length > 0 && cartItems[0].branch_id !== selectedService.branch_id) {
-      const currentBranch = branches.find(b => b.branch_id == cartItems[0].branch_id).branch_name;
-      const newBranch = branches.find(b => b.branch_id == selectedService.branch_id).branch_name;
-      
-      alert(`Cannot add service from ${newBranch} branch. Your cart already contains services from ${currentBranch} branch. Please complete or clear your current order before adding services from a different branch.`);
-      closePackageModal();
-      return;
-    }
+    // Set the service details in the form
+    document.getElementById('service-id').value = selectedService.service_id;
+    document.getElementById('service-price').value = selectedService.selling_price;
+    document.getElementById('branch-id').value = selectedService.branch_id;
     
-    // Check if this service is already in the cart
-    const isAlreadyInCart = cartItems.some(item => item.service_id === selectedService.service_id);
+    // Update the total price in the checkout form
+    document.getElementById('totalPrice').value = selectedService.selling_price;
+    document.getElementById('footer-total-price').textContent = 
+      `₱${parseFloat(selectedService.selling_price).toLocaleString('en-PH', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
     
-    if (isAlreadyInCart) {
-      alert("This service is already in your cart. You cannot add it again.");
-      closePackageModal();
-      return;
-    }
+    // Update minimum price display
+    const minimumPrice = parseFloat(selectedService.selling_price) * 0.5;
+    document.getElementById('min-price').textContent = `₱${minimumPrice.toFixed(2)}`;
     
-    cartItems.push(selectedService);
-    cartTotal += parseFloat(selectedService.selling_price);
-    updateCart();
+    // Close the package modal and open checkout
     closePackageModal();
+    document.getElementById('checkoutModal').classList.remove('hidden');
     
     // Log the added service details
-    console.log("Added to cart:", {
+    console.log("Proceeding to checkout with service:", {
       service_id: selectedService.service_id,
       branch_id: selectedService.branch_id,
       price: selectedService.selling_price
@@ -797,71 +766,10 @@ function addToCart() {
   }
 }
 
-// Function to remove item from cart
-function removeFromCart(index) {
-  if (index >= 0 && index < cartItems.length) {
-    cartTotal -= parseFloat(cartItems[index].selling_price);
-    cartItems.splice(index, 1);
-    updateCart();
-  }
-}
 
-// Function to update cart display
-function updateCart() {
-  const cartBody = document.getElementById('cart-items-body');
-  cartBody.innerHTML = '';
-  
-  if (cartItems.length === 0) {
-    cartBody.innerHTML = `
-      <tr>
-        <td colspan="5" class="p-4 text-center text-gray-500 border-b border-sidebar-border">
-          Your cart is empty. Select services to add them to your cart.
-        </td>
-      </tr>
-    `;
-  } else {
-    cartItems.forEach((item, index) => {
-      const row = document.createElement('tr');
-      row.innerHTML = `
-        <td class="p-3 border-b border-sidebar-border text-sidebar-text">${item.service_name}</td>
-        <td class="p-3 border-b border-sidebar-border text-sidebar-text">${item.branch_name}</td>
-        <td class="p-3 border-b border-sidebar-border text-sidebar-text">${item.service_category_name}</td>
-        <td class="p-3 border-b border-sidebar-border text-sidebar-text">₱${parseFloat(item.selling_price).toLocaleString('en-PH', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
-        <td class="p-3 border-b border-sidebar-border text-sidebar-text">
-          <button onclick="removeFromCart(${index})" class="text-red-500 hover:text-red-700">
-            <i class="fas fa-trash"></i>
-          </button>
-        </td>
-      `;
-      cartBody.appendChild(row);
-    });
-  }
-
-  document.getElementById('cart-total').textContent = `₱${parseFloat(cartTotal).toLocaleString('en-PH', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
-  document.getElementById('checkout-btn').disabled = cartItems.length === 0;
-}
 
 // Function to handle checkout
-function checkout() {
-  // Show the checkout modal
-  document.getElementById('checkoutModal').classList.remove('hidden');
-  
-  // Check if cart is empty
-  if (cartItems.length === 0) {
-    alert("Your cart is empty. Please add services before checkout.");
-    return;
-  }
-  
-  const serviceIds = cartItems.map(item => item.service_id).join(',');
-  document.getElementById('service-id').value = serviceIds;
-  document.getElementById('service-price').value = cartItems[0].selling_price;
-  document.getElementById('branch-id').value = cartItems[0].branch_id;
-  
-  // Update the total price in the checkout form with proper formatting
-  document.getElementById('totalPrice').value = cartTotal.toFixed(2);
-  document.getElementById('footer-total-price').textContent = 
-    `₱${cartTotal.toLocaleString('en-PH', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
-}
+
 
 function closeCheckoutModal() {
   document.getElementById('checkoutModal').classList.add('hidden');
@@ -959,8 +867,8 @@ function confirmCheckout() {
     return;
   }
 
-  // Add cart items data
-  formData.append('cartItems', JSON.stringify(cartItems));
+  // Add service data (single service now instead of cart)
+  formData.append('service_id', document.getElementById('service-id').value);
   formData.append('sold_by', 1); // Assuming admin ID is 1
   formData.append('status', 'Pending');
   
@@ -975,19 +883,11 @@ function confirmCheckout() {
     method: 'POST',
     body: formData
   })
-  .then(response => {
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
-    }
-    return response.json();
-  })
+  .then(response => response.json())
   .then(data => {
     if (data.success) {
       document.getElementById('checkoutModal').classList.add('hidden');
       showConfirmation(data.orderId);
-      cartItems = [];
-      cartTotal = 0;
-      updateCart();
     } else {
       alert('Error: ' + (data.message || 'Failed to process checkout'));
     }
@@ -1011,10 +911,7 @@ function closeConfirmationModal() {
 
 // Function to start a new order
 function startNewOrder() {
-  // Clear the cart (in case it wasn't already cleared)
-  cartItems = [];
-  cartTotal = 0;
-  updateCart();
+  
   
   // Close all modals
   
