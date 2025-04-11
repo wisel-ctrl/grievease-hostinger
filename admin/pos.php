@@ -359,7 +359,6 @@ $servicesJson = json_encode($allServices);
                 <option value="Cash">Cash</option>
                 <option value="G-Cash">G-Cash</option>
                 <option value="Bank Transfer">Bank Transfer</option>
-                <option value="Insurance">Insurance</option>
               </select>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
