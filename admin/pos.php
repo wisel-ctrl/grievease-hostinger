@@ -208,7 +208,7 @@ $servicesJson = json_encode($allServices);
         </div>
         <div class="p-5 border-t border-sidebar-border flex justify-end space-x-3">
           <button onclick="closePackageModal()" class="px-4 py-2 border border-sidebar-border text-sidebar-text rounded font-semibold text-sm hover:bg-sidebar-hover transition-all duration-300">Cancel</button>
-          <button onclick="addToCart()" class="px-4 py-2 bg-sidebar-accent text-white rounded font-semibold text-sm hover:bg-darkgold transition-all duration-300">Add to Cart</button>
+          <button onclick="addToCart()" class="px-4 py-2 bg-sidebar-accent text-white rounded font-semibold text-sm hover:bg-darkgold transition-all duration-300">Buy Now</button>
         </div>
       </div>
     </div>
