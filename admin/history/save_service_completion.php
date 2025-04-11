@@ -68,7 +68,7 @@ try {
         
         // Update inventory quantity
         if (!empty($casket_id)) {
-            $updateInventoryStmt = $conn->prepare("UPDATE inventory_tb SET quantity = quantity - 1 WHERE casket_id = ?");
+            $updateInventoryStmt = $conn->prepare("UPDATE inventory_tb SET quantity = quantity - 1 WHERE inventory_id = ?");
             if ($updateInventoryStmt === false) {
                 throw new Exception('Failed to prepare inventory update: ' . $conn->error);
             }
