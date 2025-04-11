@@ -1,6 +1,67 @@
 <?php
 session_start();
 
+// Check if user is logged in
+if (!isset($_SESSION['user_id'])) {
+    // Redirect to login page
+    header("Location: ../Landing_Page/login.php");
+    exit();
+}
+
+// Check for correct user type based on which directory we're in
+$current_directory = basename(dirname($_SERVER['PHP_SELF']));
+$allowed_user_type = null;
+
+switch ($current_directory) {
+    case 'admin':
+        $allowed_user_type = 1;
+        break;
+    case 'employee':
+        $allowed_user_type = 2;
+        break;
+    case 'customer':
+        $allowed_user_type = 3;
+        break;
+}
+
+// If user is not the correct type for this page, redirect to appropriate page
+if ($_SESSION['user_type'] != $allowed_user_type) {
+    switch ($_SESSION['user_type']) {
+        case 1:
+            header("Location: ../admin/index.php");
+            break;
+        case 2:
+            header("Location: ../employee/index.php");
+            break;
+        case 3:
+            header("Location: ../customer/index.php");
+            break;
+        default:
+            // Invalid user_type
+            session_destroy();
+            header("Location: ../Landing_Page/login.php");
+    }
+    exit();
+}
+
+// Optional: Check for session timeout (30 minutes)
+$session_timeout = 1800; // 30 minutes in seconds
+if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > $session_timeout)) {
+    // Session has expired
+    session_unset();
+    session_destroy();
+    header("Location: ../Landing_Page/login.php?timeout=1");
+    exit();
+}
+
+// Update last activity time
+$_SESSION['last_activity'] = time();
+
+// Prevent caching for authenticated pages
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Cache-Control: post-check=0, pre-check=0", false);
+header("Pragma: no-cache");
+
 require_once '../db_connect.php'; // Database connection
 
                 // Get user's first name from database

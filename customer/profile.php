@@ -75,6 +75,7 @@ header("Pragma: no-cache");
                 $first_name = $row['first_name']; // We're confident user_id exists
                 $last_name = $row['last_name'];
                 $email = $row['email'];
+                $birthdate = $row['birthdate'];
                 $stmt->close();
                 $conn->close();
 ?>
