@@ -397,10 +397,10 @@ $servicesJson = json_encode($allServices);
             Additional Services
           </h4>
           <div class="space-y-3">
-            <label class="flex items-center space-x-3">
-              <input type="checkbox" name="withCremation" class="form-checkbox h-5 w-5 text-sidebar-accent rounded border-gray-300 focus:ring-sidebar-accent">
+          <label class="flex items-center space-x-3">
+              <input type="checkbox" name="withCremation" id="withCremation" class="form-checkbox h-5 w-5 text-sidebar-accent rounded border-gray-300 focus:ring-sidebar-accent">
               <span class="text-gray-700 font-medium">With Cremation</span>
-            </label>
+          </label>
             <p class="text-sm text-gray-500 ml-8">Check this box if the service includes cremation</p>
           </div>
         </div>
@@ -797,6 +797,9 @@ function confirmCheckout() {
   // Get all form inputs
   const form = document.getElementById('checkoutForm');
   const formData = new FormData(form);
+
+  const withCremation = document.getElementById('withCremation').checked;
+  formData.append('withCremation', withCremation ? 'on' : 'off');
 
   // Validate email format
   const email = document.getElementById('clientEmail').value;
