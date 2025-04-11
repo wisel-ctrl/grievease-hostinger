@@ -1,11 +1,46 @@
 <?php
-// Start with PHP tag at the very beginning with no whitespace
-session_start(); // Call session_start only once
+session_start();
 
 // Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
     // Redirect to login page
     header("Location: ../Landing_Page/login.php");
+    exit();
+}
+
+// Check for correct user type based on which directory we're in
+$current_directory = basename(dirname($_SERVER['PHP_SELF']));
+$allowed_user_type = null;
+
+switch ($current_directory) {
+    case 'admin':
+        $allowed_user_type = 1;
+        break;
+    case 'employee':
+        $allowed_user_type = 2;
+        break;
+    case 'customer':
+        $allowed_user_type = 3;
+        break;
+}
+
+// If user is not the correct type for this page, redirect to appropriate page
+if ($_SESSION['user_type'] != $allowed_user_type) {
+    switch ($_SESSION['user_type']) {
+        case 1:
+            header("Location: ../admin/index.php");
+            break;
+        case 2:
+            header("Location: ../employee/index.php");
+            break;
+        case 3:
+            header("Location: ../customer/index.php");
+            break;
+        default:
+            // Invalid user_type
+            session_destroy();
+            header("Location: ../Landing_Page/login.php");
+    }
     exit();
 }
 
@@ -26,6 +61,22 @@ $_SESSION['last_activity'] = time();
 header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Cache-Control: post-check=0, pre-check=0", false);
 header("Pragma: no-cache");
+
+                require_once '../db_connect.php'; // Database connection
+
+                // Get user's first name from database
+                $user_id = $_SESSION['user_id'];
+                $query = "SELECT first_name , last_name , email , birthdate FROM users WHERE id = ?";
+                $stmt = $conn->prepare($query);
+                $stmt->bind_param("i", $user_id);
+                $stmt->execute();
+                $result = $stmt->get_result();
+                $row = $result->fetch_assoc();
+                $first_name = $row['first_name']; // We're confident user_id exists
+                $last_name = $row['last_name'];
+                $email = $row['email'];
+                $stmt->close();
+                $conn->close();
 ?>
 <!DOCTYPE html>
 <html lang="en">
