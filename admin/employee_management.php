@@ -245,11 +245,12 @@ if ($branch_result->num_rows > 0) {
 
 </div>
 
+<!-- View Employee Salary Details Modal -->
 <div id="viewEmployeeModal" class="fixed inset-0 bg-black bg-opacity-60 z-50 hidden overflow-y-auto flex items-center justify-center p-4 w-full h-full">
-  <div class="bg-white rounded-xl shadow-xl w-full max-w-lg mx-2">
+  <div class="bg-white rounded-xl shadow-xl w-full max-w-4xl mx-2">
     <!-- Modal Header -->
     <div class="bg-gradient-to-r from-sidebar-accent to-white flex justify-between items-center p-4 flex-shrink-0 rounded-t-xl">
-      <h3 class="text-lg font-bold text-white"><i class="fas fa-user mr-2"></i> Employee Details</h3>
+      <h3 class="text-lg font-bold text-white"><i class="fas fa-money-bill-wave mr-2"></i> Employee Salary Details</h3>
       <button onclick="closeViewEmployeeModal()" class="bg-black bg-opacity-20 hover:bg-opacity-30 rounded-full p-1.5 text-white hover:text-white transition-all duration-200">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
           <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
@@ -259,50 +260,84 @@ if ($branch_result->num_rows > 0) {
     
     <!-- Modal Body -->
     <div class="p-4">
-      <div class="grid grid-cols-2 gap-4 mb-4">
-        <div>
-          <p class="text-xs font-medium text-gray-500">Employee ID</p>
-          <p id="employeeId" class="text-sm font-medium text-gray-800">-</p>
+      <div class="mb-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+          <div>
+            <p class="text-xs font-medium text-gray-500">Employee ID</p>
+            <p id="employeeId" class="text-sm font-medium text-gray-800">-</p>
+          </div>
+          <div>
+            <p class="text-xs font-medium text-gray-500">Employee Name</p>
+            <p id="employeeName" class="text-sm font-medium text-gray-800">-</p>
+          </div>
+          <div>
+            <p class="text-xs font-medium text-gray-500">Base Salary</p>
+            <p id="employeeBaseSalary" class="text-sm font-medium text-gray-800">-</p>
+          </div>
         </div>
-        <div>
-          <p class="text-xs font-medium text-gray-500">Branch</p>
-          <p id="employeeBranch" class="text-sm font-medium text-gray-800">-</p>
+        
+        <!-- Date Range Picker -->
+        <div class="bg-gray-50 p-4 rounded-lg border border-gray-200 mb-4">
+          <h4 class="text-sm font-medium text-gray-700 mb-3">Select Date Range</h4>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label for="startDate" class="block text-xs font-medium text-gray-700 mb-1">From Date</label>
+              <input type="date" id="startDate" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
+            </div>
+            <div>
+              <label for="endDate" class="block text-xs font-medium text-gray-700 mb-1">To Date</label>
+              <input type="date" id="endDate" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
+            </div>
+            <div class="flex items-end">
+              <button onclick="fetchEmployeeSalary()" class="px-4 py-2 bg-sidebar-accent text-white rounded-md hover:bg-darkgold transition-colors flex items-center">
+                <i class="fas fa-search mr-2"></i> Search
+              </button>
+            </div>
+          </div>
         </div>
-        <div>
-          <p class="text-xs font-medium text-gray-500">Full Name</p>
-          <p id="employeeFullName" class="text-sm font-medium text-gray-800">-</p>
+      </div>
+      
+      <!-- Salary Summary -->
+      <div class="mb-6">
+        <h4 class="text-sm font-medium text-gray-700 mb-2">Salary Summary</h4>
+        <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <p class="text-xs font-medium text-gray-500">Total Services</p>
+              <p id="totalServices" class="text-lg font-bold text-gray-800">0</p>
+            </div>
+            <div>
+              <p class="text-xs font-medium text-gray-500">Total Earnings</p>
+              <p id="totalEarnings" class="text-lg font-bold text-green-600">₱0.00</p>
+            </div>
+            <div>
+              <p class="text-xs font-medium text-gray-500">Base Salary</p>
+              <p id="modalBaseSalary" class="text-lg font-bold text-blue-600">₱0.00</p>
+            </div>
+          </div>
         </div>
-        <div>
-          <p class="text-xs font-medium text-gray-500">Position</p>
-          <p id="employeePosition" class="text-sm font-medium text-gray-800">-</p>
-        </div>
-        <div>
-          <p class="text-xs font-medium text-gray-500">Base Salary</p>
-          <p id="employeeSalary" class="text-sm font-medium text-gray-800">-</p>
-        </div>
-        <div>
-          <p class="text-xs font-medium text-gray-500">Status</p>
-          <p id="employeeStatus" class="text-sm font-medium text-gray-800">-</p>
-        </div>
-        <div>
-          <p class="text-xs font-medium text-gray-500">Gender</p>
-          <p id="employeeGender" class="text-sm font-medium text-gray-800">-</p>
-        </div>
-        <div>
-          <p class="text-xs font-medium text-gray-500">Birthdate</p>
-          <p id="employeeBirthdate" class="text-sm font-medium text-gray-800">-</p>
-        </div>
-        <div>
-          <p class="text-xs font-medium text-gray-500">Email</p>
-          <p id="employeeEmail" class="text-sm font-medium text-gray-800">-</p>
-        </div>
-        <div>
-          <p class="text-xs font-medium text-gray-500">Phone</p>
-          <p id="employeePhone" class="text-sm font-medium text-gray-800">-</p>
-        </div>
-        <div>
-          <p class="text-xs font-medium text-gray-500">Date Created</p>
-          <p id="employeeDateCreated" class="text-sm font-medium text-gray-800">-</p>
+      </div>
+      
+      <!-- Service Details Table -->
+      <div>
+        <h4 class="text-sm font-medium text-gray-700 mb-2">Service Details</h4>
+        <div class="overflow-x-auto">
+          <table class="w-full border-collapse">
+            <thead>
+              <tr class="bg-gray-100">
+                <th class="p-3 text-left text-xs font-medium text-gray-700">Date</th>
+                <th class="p-3 text-left text-xs font-medium text-gray-700">Service</th>
+                <th class="p-3 text-left text-xs font-medium text-gray-700">Service Income</th>
+                <th class="p-3 text-left text-xs font-medium text-gray-700">Employee Share</th>
+              </tr>
+            </thead>
+            <tbody id="serviceDetailsBody">
+              <!-- Service details will be populated here -->
+              <tr>
+                <td colspan="4" class="text-center p-4 text-gray-500">Select a date range to view service details</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
@@ -918,44 +953,132 @@ if ($branch_result->num_rows > 0) {
     }
     }
 
-    function viewEmployeeDetails(employeeId) {
-    // Fetch employee details via AJAX
-    fetch('employeeManagement/get_employee.php?id=' + employeeId)
-      .then(response => response.json())
-      .then(data => {
-        if (data) {
-          // Populate the modal with employee details
-          document.getElementById('employeeId').textContent = data.EmployeeID;
-          document.getElementById('employeeBranch').textContent = data.branch_name;
-          document.getElementById('employeeFullName').textContent = 
-            (data.fname || '') + ' ' + 
-            (data.mname ? data.mname + ' ' : '') + 
-            (data.lname || '') + 
-            (data.suffix ? ' ' + data.suffix : '');
-          document.getElementById('employeePosition').textContent = data.position;
-          document.getElementById('employeeSalary').textContent = '$' + parseFloat(data.base_salary).toFixed(2);
-          document.getElementById('employeeStatus').textContent = data.status;
-          document.getElementById('employeeGender').textContent = data.gender;
-          document.getElementById('employeeBirthdate').textContent = data.bday;
-          document.getElementById('employeeEmail').textContent = data.email;
-          document.getElementById('employeePhone').textContent = data.phone_number;
-          document.getElementById('employeeDateCreated').textContent = data.date_created;
-          
-          // Show the modal
-          document.getElementById('viewEmployeeModal').style.display = 'flex';
-        }
-      })
-      .catch(error => {
-        console.error('Error fetching employee details:', error);
-        alert('Failed to load employee details');
-      });
-  }
-
-  // Function to close the View Employee Modal
-  function closeViewEmployeeModal() {
-    document.getElementById('viewEmployeeModal').style.display = 'none';
-  }
   </script>
+  
+  <script>
+// Global variable to store current employee ID
+let currentEmployeeId = null;
+
+// Function to view employee salary details
+function viewEmployeeDetails(employeeId) {
+  currentEmployeeId = employeeId;
+  
+  // Fetch employee basic info
+  fetch('employeeManagement/get_employee.php?id=' + employeeId)
+    .then(response => response.json())
+    .then(data => {
+      if (data) {
+        // Populate the modal with employee info
+        document.getElementById('employeeId').textContent = data.EmployeeID;
+        document.getElementById('employeeName').textContent = 
+          (data.fname || '') + ' ' + 
+          (data.mname ? data.mname + ' ' : '') + 
+          (data.lname || '') + 
+          (data.suffix ? ' ' + data.suffix : '');
+        
+        // Format base salary
+        const baseSalary = parseFloat(data.base_salary || 0);
+        document.getElementById('employeeBaseSalary').textContent = '₱' + baseSalary.toFixed(2);
+        document.getElementById('modalBaseSalary').textContent = '₱' + baseSalary.toFixed(2);
+        
+        // Set default date range (last 30 days)
+        const endDate = new Date();
+        const startDate = new Date();
+        startDate.setDate(endDate.getDate() - 30);
+        
+        document.getElementById('startDate').valueAsDate = startDate;
+        document.getElementById('endDate').valueAsDate = endDate;
+        
+        // Show the modal
+        document.getElementById('viewEmployeeModal').style.display = 'flex';
+        
+        // Automatically fetch salary data for default date range
+        fetchEmployeeSalary();
+      }
+    })
+    .catch(error => {
+      console.error('Error fetching employee details:', error);
+      alert('Failed to load employee details');
+    });
+}
+
+// Function to fetch employee salary data
+function fetchEmployeeSalary() {
+  if (!currentEmployeeId) return;
+  
+  const startDate = document.getElementById('startDate').value;
+  const endDate = document.getElementById('endDate').value;
+  
+  if (!startDate || !endDate) {
+    alert('Please select both start and end dates');
+    return;
+  }
+  
+  // Show loading state
+  document.getElementById('serviceDetailsBody').innerHTML = `
+    <tr>
+      <td colspan="4" class="text-center p-4 text-gray-500">
+        <i class="fas fa-spinner fa-spin mr-2"></i> Loading...
+      </td>
+    </tr>
+  `;
+  
+  // Fetch salary data
+  fetch(`employeeManagement/get_employee_salary.php?employeeId=${currentEmployeeId}&startDate=${startDate}&endDate=${endDate}`)
+    .then(response => response.json())
+    .then(data => {
+      if (data && data.success) {
+        // Update summary
+        document.getElementById('totalServices').textContent = data.total_services || 0;
+        document.getElementById('totalEarnings').textContent = '₱' + parseFloat(data.total_earnings || 0).toFixed(2);
+        
+        // Update service details table
+        const tbody = document.getElementById('serviceDetailsBody');
+        tbody.innerHTML = '';
+        
+        if (data.services && data.services.length > 0) {
+          data.services.forEach(service => {
+            const row = document.createElement('tr');
+            row.className = 'border-b border-gray-200 hover:bg-gray-50';
+            row.innerHTML = `
+              <td class="p-3 text-sm text-gray-700">${service.date}</td>
+              <td class="p-3 text-sm text-gray-700">${service.service_name}</td>
+              <td class="p-3 text-sm text-gray-700">₱${parseFloat(service.service_income).toFixed(2)}</td>
+              <td class="p-3 text-sm text-gray-700">₱${parseFloat(service.employee_share).toFixed(2)}</td>
+            `;
+            tbody.appendChild(row);
+          });
+        } else {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="4" class="text-center p-4 text-gray-500">No services found for selected date range</td>
+            </tr>
+          `;
+        }
+      } else {
+        document.getElementById('serviceDetailsBody').innerHTML = `
+          <tr>
+            <td colspan="4" class="text-center p-4 text-gray-500">${data.message || 'Error loading salary data'}</td>
+          </tr>
+        `;
+      }
+    })
+    .catch(error => {
+      console.error('Error fetching salary data:', error);
+      document.getElementById('serviceDetailsBody').innerHTML = `
+        <tr>
+          <td colspan="4" class="text-center p-4 text-gray-500">Error loading salary data</td>
+        </tr>
+      `;
+    });
+}
+
+// Function to close the View Employee Modal
+function closeViewEmployeeModal() {
+  document.getElementById('viewEmployeeModal').style.display = 'none';
+  currentEmployeeId = null;
+}
+</script>
   <script src="script.js"></script>
   <script src="tailwind.js"></script>
   
