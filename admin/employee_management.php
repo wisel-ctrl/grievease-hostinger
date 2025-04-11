@@ -59,6 +59,9 @@ header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Cache-Control: post-check=0, pre-check=0", false);
 header("Pragma: no-cache");
 
+// Get the branch_id filter if set
+$branch_filter = isset($_GET['branch_id']) ? intval($_GET['branch_id']) : null;
+
 // Fetch branches from the database for the modal
 $sql = "SELECT branch_id, branch_name FROM branch_tb";
 $branch_result = $conn->query($sql);
@@ -103,12 +106,29 @@ if ($branch_result->num_rows > 0) {
   </div>
 
 <!-- View Employee Details Section -->
-  <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 mb-8">
+<div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 mb-8">
     <div class="flex justify-between items-center p-5 border-b border-sidebar-border">
       <h3 class="text-lg font-semibold text-sidebar-text">Employee Details</h3>
-      <button class="px-4 py-2 bg-sidebar-accent text-white rounded-md text-sm flex items-center hover:bg-darkgold transition-all duration-300" onclick="openAddEmployeeModal()">
-        <i class="fas fa-plus mr-2"></i> Add Employee
-      </button>
+      <div class="flex items-center space-x-4">
+        <!-- Branch Filter Dropdown -->
+        <div class="relative">
+          <select id="branchFilter" onchange="filterByBranch(this.value)" class="appearance-none bg-white border border-sidebar-border rounded-lg px-4 py-2 pr-8 focus:outline-none focus:ring-2 focus:ring-sidebar-accent text-sm">
+            <option value="">All Branches</option>
+            <?php foreach ($branches as $branch): ?>
+              <option value="<?php echo $branch['branch_id']; ?>" <?php echo ($branch_filter == $branch['branch_id']) ? 'selected' : ''; ?>>
+                <?php echo htmlspecialchars($branch['branch_name']); ?>
+              </option>
+            <?php endforeach; ?>
+          </select>
+          <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+            <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+          </div>
+        </div>
+        
+        <button class="px-4 py-2 bg-sidebar-accent text-white rounded-md text-sm flex items-center hover:bg-darkgold transition-all duration-300" onclick="openAddEmployeeModal()">
+          <i class="fas fa-plus mr-2"></i> Add Employee
+        </button>
+      </div>
     </div>
     <div class="overflow-x-auto scrollbar-thin">
       <table class="w-full">
@@ -128,6 +148,7 @@ if ($branch_result->num_rows > 0) {
             function capitalizeWords($string) {
               return ucwords(strtolower(trim($string)));
             }
+                
                 // SQL query to fetch employee details with concatenated name
                 $sql = "SELECT 
                     e.EmployeeID,
@@ -149,8 +170,17 @@ if ($branch_result->num_rows > 0) {
                     e.date_created
                 FROM employee_tb e
                 JOIN branch_tb b ON e.branch_id = b.branch_id";
-
-                $result = $conn->query($sql);
+                
+                // Add branch filter if set
+                if ($branch_filter !== null) {
+                    $sql .= " WHERE e.branch_id = ?";
+                    $stmt = $conn->prepare($sql);
+                    $stmt->bind_param("i", $branch_filter);
+                    $stmt->execute();
+                    $result = $stmt->get_result();
+                } else {
+                    $result = $conn->query($sql);
+                }
 
                 // Check if there are results
                 if ($result->num_rows > 0) {
@@ -194,6 +224,10 @@ if ($branch_result->num_rows > 0) {
                             echo "<i class='fas fa-check'></i></button>";
                         }
                         
+                        // Add View Details button
+                        echo "<button class='p-1.5 bg-purple-100 text-purple-600 rounded hover:bg-purple-200 transition-all' onclick='viewEmployeeDetails(\"" . htmlspecialchars($row['EmployeeID']) . "\")'>";
+                        echo "<i class='fas fa-eye'></i></button>";
+                        
                         echo "</td>";
                         echo "</tr>";
                     }
@@ -209,57 +243,77 @@ if ($branch_result->num_rows > 0) {
     </div>
   </div>
 
-  <!-- Salary Management Section -->
-  <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 mb-8">
-    <div class="flex justify-between items-center p-5 border-b border-sidebar-border">
-      <h3 class="text-lg font-semibold text-sidebar-text">Salary Management</h3>
+</div>
+
+<div id="viewEmployeeModal" class="fixed inset-0 bg-black bg-opacity-60 z-50 hidden overflow-y-auto flex items-center justify-center p-4 w-full h-full">
+  <div class="bg-white rounded-xl shadow-xl w-full max-w-lg mx-2">
+    <!-- Modal Header -->
+    <div class="bg-gradient-to-r from-sidebar-accent to-white flex justify-between items-center p-4 flex-shrink-0 rounded-t-xl">
+      <h3 class="text-lg font-bold text-white"><i class="fas fa-user mr-2"></i> Employee Details</h3>
+      <button onclick="closeViewEmployeeModal()" class="bg-black bg-opacity-20 hover:bg-opacity-30 rounded-full p-1.5 text-white hover:text-white transition-all duration-200">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+        </svg>
+      </button>
     </div>
-    <div class="overflow-x-auto scrollbar-thin">
-      <table class="w-full">
-        <thead>
-          <tr class="bg-sidebar-hover">
-            <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(0)">ID</th>
-            <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(1)">Name</th>
-            <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(2)">Role</th>
-            <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(3)">Salary</th>
-            <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(4)">Status</th>
-            <th class="p-4 text-left text-sm font-medium text-sidebar-text">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr class="border-b border-sidebar-border hover:bg-sidebar-hover">
-            <td class="p-4 text-sm text-sidebar-text">#EMP-001</td>
-            <td class="p-4 text-sm text-sidebar-text">John Doe</td>
-            <td class="p-4 text-sm text-sidebar-text">Manager</td>
-            <td class="p-4 text-sm text-sidebar-text">$5,000</td>
-            <td class="p-4 text-sm">
-              <span class="px-2 py-1 bg-green-100 text-green-600 rounded-full text-xs">Active</span>
-            </td>
-            <td class="p-4 text-sm">
-            <button class="p-1.5 bg-blue-100 text-blue-600 rounded hover:bg-blue-200 transition-all" onclick="viewEmployeeDetails('EMP-001')">
-                <i class="fas fa-eye"></i>
-              </button>
-            </td>
-          </tr>
-          <tr class="border-b border-sidebar-border hover:bg-sidebar-hover">
-            <td class="p-4 text-sm text-sidebar-text">#EMP-002</td>
-            <td class="p-4 text-sm text-sidebar-text">Jane Smith</td>
-            <td class="p-4 text-sm text-sidebar-text">Employee</td>
-            <td class="p-4 text-sm text-sidebar-text">$3,000</td>
-            <td class="p-4 text-sm">
-              <span class="px-2 py-1 bg-red-100 text-red-600 rounded-full text-xs">Terminated</span>
-            </td>
-            <td class="p-4 text-sm">
-              <button class="p-1.5 bg-blue-100 text-blue-600 rounded hover:bg-blue-200 transition-all" onclick="viewEmployeeDetails('EMP-001')">
-                <i class="fas fa-eye"></i>
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+    
+    <!-- Modal Body -->
+    <div class="p-4">
+      <div class="grid grid-cols-2 gap-4 mb-4">
+        <div>
+          <p class="text-xs font-medium text-gray-500">Employee ID</p>
+          <p id="employeeId" class="text-sm font-medium text-gray-800">-</p>
+        </div>
+        <div>
+          <p class="text-xs font-medium text-gray-500">Branch</p>
+          <p id="employeeBranch" class="text-sm font-medium text-gray-800">-</p>
+        </div>
+        <div>
+          <p class="text-xs font-medium text-gray-500">Full Name</p>
+          <p id="employeeFullName" class="text-sm font-medium text-gray-800">-</p>
+        </div>
+        <div>
+          <p class="text-xs font-medium text-gray-500">Position</p>
+          <p id="employeePosition" class="text-sm font-medium text-gray-800">-</p>
+        </div>
+        <div>
+          <p class="text-xs font-medium text-gray-500">Base Salary</p>
+          <p id="employeeSalary" class="text-sm font-medium text-gray-800">-</p>
+        </div>
+        <div>
+          <p class="text-xs font-medium text-gray-500">Status</p>
+          <p id="employeeStatus" class="text-sm font-medium text-gray-800">-</p>
+        </div>
+        <div>
+          <p class="text-xs font-medium text-gray-500">Gender</p>
+          <p id="employeeGender" class="text-sm font-medium text-gray-800">-</p>
+        </div>
+        <div>
+          <p class="text-xs font-medium text-gray-500">Birthdate</p>
+          <p id="employeeBirthdate" class="text-sm font-medium text-gray-800">-</p>
+        </div>
+        <div>
+          <p class="text-xs font-medium text-gray-500">Email</p>
+          <p id="employeeEmail" class="text-sm font-medium text-gray-800">-</p>
+        </div>
+        <div>
+          <p class="text-xs font-medium text-gray-500">Phone</p>
+          <p id="employeePhone" class="text-sm font-medium text-gray-800">-</p>
+        </div>
+        <div>
+          <p class="text-xs font-medium text-gray-500">Date Created</p>
+          <p id="employeeDateCreated" class="text-sm font-medium text-gray-800">-</p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Modal Footer -->
+    <div class="p-3 flex justify-end gap-3 border-t border-gray-200 sticky bottom-0 bg-white rounded-b-xl">
+      <button type="button" onclick="closeViewEmployeeModal()" class="px-3 py-1.5 bg-sidebar-accent text-white rounded-lg text-sm font-medium hover:bg-darkgold transition-colors">
+        Close
+      </button>
     </div>
   </div>
-
 </div>
 
 <!-- Add Employee Modal -->
@@ -685,6 +739,14 @@ if ($branch_result->num_rows > 0) {
       });
 
       
+      function filterByBranch(branchId) {
+    if (branchId === '') {
+      window.location.href = 'employee_management.php';
+    } else {
+      window.location.href = 'employee_management.php?branch_id=' + branchId;
+    }
+  }
+
     // Function to open the Add Employee Modal
     function openAddEmployeeModal() {
       document.getElementById('addEmployeeModal').style.display = 'flex';
@@ -856,22 +918,43 @@ if ($branch_result->num_rows > 0) {
     }
     }
 
-    // Function to view employee details
     function viewEmployeeDetails(employeeId) {
-      // Add logic to fetch employee details
-      document.getElementById('employeeId').textContent = employeeId;
-      document.getElementById('employeeFullName').textContent = 'John Doe';
-      document.getElementById('employeeRoleDetails').textContent = 'Manager';
-      document.getElementById('employeeSalaryDetails').textContent = '$5,000';
-      document.getElementById('employeeStatus').textContent = 'Active';
+    // Fetch employee details via AJAX
+    fetch('employeeManagement/get_employee.php?id=' + employeeId)
+      .then(response => response.json())
+      .then(data => {
+        if (data) {
+          // Populate the modal with employee details
+          document.getElementById('employeeId').textContent = data.EmployeeID;
+          document.getElementById('employeeBranch').textContent = data.branch_name;
+          document.getElementById('employeeFullName').textContent = 
+            (data.fname || '') + ' ' + 
+            (data.mname ? data.mname + ' ' : '') + 
+            (data.lname || '') + 
+            (data.suffix ? ' ' + data.suffix : '');
+          document.getElementById('employeePosition').textContent = data.position;
+          document.getElementById('employeeSalary').textContent = '$' + parseFloat(data.base_salary).toFixed(2);
+          document.getElementById('employeeStatus').textContent = data.status;
+          document.getElementById('employeeGender').textContent = data.gender;
+          document.getElementById('employeeBirthdate').textContent = data.bday;
+          document.getElementById('employeeEmail').textContent = data.email;
+          document.getElementById('employeePhone').textContent = data.phone_number;
+          document.getElementById('employeeDateCreated').textContent = data.date_created;
+          
+          // Show the modal
+          document.getElementById('viewEmployeeModal').style.display = 'flex';
+        }
+      })
+      .catch(error => {
+        console.error('Error fetching employee details:', error);
+        alert('Failed to load employee details');
+      });
+  }
 
-      document.getElementById('viewEmployeeModal').style.display = 'flex';
-    }
-
-    // Function to close the View Employee Modal
-    function closeViewEmployeeModal() {
-      document.getElementById('viewEmployeeModal').style.display = 'none';
-    }
+  // Function to close the View Employee Modal
+  function closeViewEmployeeModal() {
+    document.getElementById('viewEmployeeModal').style.display = 'none';
+  }
   </script>
   <script src="script.js"></script>
   <script src="tailwind.js"></script>
