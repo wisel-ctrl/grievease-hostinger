@@ -192,7 +192,7 @@ $servicesJson = json_encode($allServices);
     </div>
 
     <!-- Cart Section -->
-    <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border p-5 hover:shadow-card transition-all duration-300">
+    <!-- <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border p-5 hover:shadow-card transition-all duration-300">
       <h2 class="mb-5 text-gray-600 text-lg">Your Cart</h2>
       <div class="mb-5">
         <table class="w-full border-collapse">
@@ -206,7 +206,7 @@ $servicesJson = json_encode($allServices);
             </tr>
           </thead>
           <tbody id="cart-items-body">
-            <!-- Cart items will be dynamically added here -->
+            Cart items will be dynamically added here 
           </tbody>
         </table>
       </div>
@@ -215,7 +215,7 @@ $servicesJson = json_encode($allServices);
         <span id="cart-total" class="font-bold text-sidebar-accent">₱0.00</span>
       </div>
       <button id="checkout-btn" class="px-4 py-2.5 bg-sidebar-accent text-white rounded font-semibold text-sm hover:bg-darkgold transition-all duration-300" onclick="checkout()" disabled>Proceed to Checkout</button>
-    </div>
+    </div> -->
 
   </div>
 
