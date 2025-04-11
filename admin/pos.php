@@ -762,34 +762,30 @@ function closePackageModal() {
 }
 
 // Function to add the selected service to cart
+// Function to handle adding to cart and immediately proceed to checkout
+// Function to handle adding to cart and immediately proceed to checkout
 function addToCart() {
   if (selectedService) {
-    // Check if cart is not empty and the new service has a different branch
-    if (cartItems.length > 0 && cartItems[0].branch_id !== selectedService.branch_id) {
-      const currentBranch = branches.find(b => b.branch_id == cartItems[0].branch_id).branch_name;
-      const newBranch = branches.find(b => b.branch_id == selectedService.branch_id).branch_name;
-      
-      alert(`Cannot add service from ${newBranch} branch. Your cart already contains services from ${currentBranch} branch. Please complete or clear your current order before adding services from a different branch.`);
-      closePackageModal();
-      return;
-    }
+    // Set the service details in the form
+    document.getElementById('service-id').value = selectedService.service_id;
+    document.getElementById('service-price').value = selectedService.selling_price;
+    document.getElementById('branch-id').value = selectedService.branch_id;
     
-    // Check if this service is already in the cart
-    const isAlreadyInCart = cartItems.some(item => item.service_id === selectedService.service_id);
+    // Update the total price in the checkout form
+    document.getElementById('totalPrice').value = selectedService.selling_price;
+    document.getElementById('footer-total-price').textContent = 
+      `₱${parseFloat(selectedService.selling_price).toLocaleString('en-PH', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
     
-    if (isAlreadyInCart) {
-      alert("This service is already in your cart. You cannot add it again.");
-      closePackageModal();
-      return;
-    }
+    // Update minimum price display
+    const minimumPrice = parseFloat(selectedService.selling_price) * 0.5;
+    document.getElementById('min-price').textContent = `₱${minimumPrice.toFixed(2)}`;
     
-    cartItems.push(selectedService);
-    cartTotal += parseFloat(selectedService.selling_price);
-    updateCart();
+    // Close the package modal and open checkout
     closePackageModal();
+    document.getElementById('checkoutModal').classList.remove('hidden');
     
     // Log the added service details
-    console.log("Added to cart:", {
+    console.log("Proceeding to checkout with service:", {
       service_id: selectedService.service_id,
       branch_id: selectedService.branch_id,
       price: selectedService.selling_price
@@ -959,8 +955,8 @@ function confirmCheckout() {
     return;
   }
 
-  // Add cart items data
-  formData.append('cartItems', JSON.stringify(cartItems));
+  // Add service data (single service now instead of cart)
+  formData.append('service_id', document.getElementById('service-id').value);
   formData.append('sold_by', 1); // Assuming admin ID is 1
   formData.append('status', 'Pending');
   
@@ -975,19 +971,11 @@ function confirmCheckout() {
     method: 'POST',
     body: formData
   })
-  .then(response => {
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
-    }
-    return response.json();
-  })
+  .then(response => response.json())
   .then(data => {
     if (data.success) {
       document.getElementById('checkoutModal').classList.add('hidden');
       showConfirmation(data.orderId);
-      cartItems = [];
-      cartTotal = 0;
-      updateCart();
     } else {
       alert('Error: ' + (data.message || 'Failed to process checkout'));
     }
