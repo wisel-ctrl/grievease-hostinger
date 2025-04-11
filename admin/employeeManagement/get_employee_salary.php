@@ -13,6 +13,25 @@ if (!$employeeId || !$startDate || !$endDate) {
     exit;
 }
 
+// Validate and format dates
+try {
+    // Create DateTime objects to validate the dates
+    $startDateTime = new DateTime($startDate);
+    $endDateTime = new DateTime($endDate);
+    
+    // Format dates for MySQL (Y-m-d H:i:s)
+    $formattedStartDate = $startDateTime->format('Y-m-d H:i:s');
+    $formattedEndDate = $endDateTime->format('Y-m-d H:i:s');
+    
+    // Optional: If you only want to compare dates without time
+    // $formattedStartDate = $startDateTime->format('Y-m-d') . ' 00:00:00';
+    // $formattedEndDate = $endDateTime->format('Y-m-d') . ' 23:59:59';
+    
+} catch (Exception $e) {
+    echo json_encode(['success' => false, 'message' => 'Invalid date format. Please use YYYY-MM-DD or YYYY-MM-DD HH:MM:SS']);
+    exit;
+}
+
 try {
     // Get base salary first
     $baseSalaryQuery = "SELECT base_salary FROM employee_tb WHERE EmployeeID = ?";
@@ -46,7 +65,7 @@ try {
     ";
     
     $stmt = $conn->prepare($query);
-    $stmt->bind_param("iss", $employeeId, $startDate, $endDate);
+    $stmt->bind_param("iss", $employeeId, $formattedStartDate, $formattedEndDate);
     $stmt->execute();
     $result = $stmt->get_result();
     
