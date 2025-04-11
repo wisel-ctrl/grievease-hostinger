@@ -328,7 +328,6 @@ if ($branch_result->num_rows > 0) {
                 <th class="p-3 text-left text-xs font-medium text-gray-700">Date</th>
                 <th class="p-3 text-left text-xs font-medium text-gray-700">Service</th>
                 <th class="p-3 text-left text-xs font-medium text-gray-700">Service Income</th>
-                <th class="p-3 text-left text-xs font-medium text-gray-700">Employee Share</th>
               </tr>
             </thead>
             <tbody id="serviceDetailsBody">
@@ -1044,7 +1043,6 @@ function fetchEmployeeSalary() {
               <td class="p-3 text-sm text-gray-700">${service.payment_date}</td>
               <td class="p-3 text-sm text-gray-700">${service.service_name}</td>
               <td class="p-3 text-sm text-gray-700">₱${parseFloat(service.service_income).toFixed(2)}</td>
-              <td class="p-3 text-sm text-gray-700">₱${parseFloat(service.employee_share).toFixed(2)}</td>
             `;
             tbody.appendChild(row);
           });

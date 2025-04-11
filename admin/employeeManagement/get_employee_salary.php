@@ -30,8 +30,8 @@ try {
         SELECT 
             esp.payment_date,
             s.service_name,
-            esp.income AS service_income,
-            esp.income AS employee_share  
+            esp.income AS service_income
+             
         FROM 
             employee_service_payments esp
         JOIN 
