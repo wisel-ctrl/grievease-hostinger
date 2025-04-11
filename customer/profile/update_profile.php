@@ -166,6 +166,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         // Commit the transaction
         $conn->commit();
+
+        $conn->close();
         
         // Get the base URL dynamically
 $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https://" : "http://";
@@ -189,8 +191,8 @@ exit();
         exit(); // Add this to ensure proper exit
     }
     
-    $conn->close();
-    exit();
+    
+
 } else {
     // Return error for non-POST requests
     header('Content-Type: application/json');
