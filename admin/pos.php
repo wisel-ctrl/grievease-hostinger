@@ -191,31 +191,6 @@ $servicesJson = json_encode($allServices);
       </div>
     </div>
 
-    <!-- Cart Section -->
-    <!-- <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border p-5 hover:shadow-card transition-all duration-300">
-      <h2 class="mb-5 text-gray-600 text-lg">Your Cart</h2>
-      <div class="mb-5">
-        <table class="w-full border-collapse">
-          <thead>
-            <tr class="bg-sidebar-hover">
-              <th class="p-3 text-left border-b border-sidebar-border text-sidebar-text">Package/Item</th>
-              <th class="p-3 text-left border-b border-sidebar-border text-sidebar-text">Branch</th>
-              <th class="p-3 text-left border-b border-sidebar-border text-sidebar-text">Category</th>
-              <th class="p-3 text-left border-b border-sidebar-border text-sidebar-text">Price</th>
-              <th class="p-3 text-left border-b border-sidebar-border text-sidebar-text">Action</th>
-            </tr>
-          </thead>
-          <tbody id="cart-items-body">
-            Cart items will be dynamically added here 
-          </tbody>
-        </table>
-      </div>
-      <div class="text-lg text-right my-5">
-        <strong class="text-sidebar-text">Total: </strong>
-        <span id="cart-total" class="font-bold text-sidebar-accent">₱0.00</span>
-      </div>
-      <button id="checkout-btn" class="px-4 py-2.5 bg-sidebar-accent text-white rounded font-semibold text-sm hover:bg-darkgold transition-all duration-300" onclick="checkout()" disabled>Proceed to Checkout</button>
-    </div> -->
 
   </div>
 
@@ -469,8 +444,6 @@ let categories = <?php echo $categoriesJson; ?>;
 let selectedBranch = null;
 let selectedCategory = null;
 let selectedService = null;
-let cartItems = [];
-let cartTotal = 0;
 
 // DOM loaded event
 document.addEventListener('DOMContentLoaded', function() {
@@ -793,71 +766,10 @@ function addToCart() {
   }
 }
 
-// Function to remove item from cart
-function removeFromCart(index) {
-  if (index >= 0 && index < cartItems.length) {
-    cartTotal -= parseFloat(cartItems[index].selling_price);
-    cartItems.splice(index, 1);
-    updateCart();
-  }
-}
 
-// Function to update cart display
-function updateCart() {
-  const cartBody = document.getElementById('cart-items-body');
-  cartBody.innerHTML = '';
-  
-  if (cartItems.length === 0) {
-    cartBody.innerHTML = `
-      <tr>
-        <td colspan="5" class="p-4 text-center text-gray-500 border-b border-sidebar-border">
-          Your cart is empty. Select services to add them to your cart.
-        </td>
-      </tr>
-    `;
-  } else {
-    cartItems.forEach((item, index) => {
-      const row = document.createElement('tr');
-      row.innerHTML = `
-        <td class="p-3 border-b border-sidebar-border text-sidebar-text">${item.service_name}</td>
-        <td class="p-3 border-b border-sidebar-border text-sidebar-text">${item.branch_name}</td>
-        <td class="p-3 border-b border-sidebar-border text-sidebar-text">${item.service_category_name}</td>
-        <td class="p-3 border-b border-sidebar-border text-sidebar-text">₱${parseFloat(item.selling_price).toLocaleString('en-PH', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
-        <td class="p-3 border-b border-sidebar-border text-sidebar-text">
-          <button onclick="removeFromCart(${index})" class="text-red-500 hover:text-red-700">
-            <i class="fas fa-trash"></i>
-          </button>
-        </td>
-      `;
-      cartBody.appendChild(row);
-    });
-  }
-
-  document.getElementById('cart-total').textContent = `₱${parseFloat(cartTotal).toLocaleString('en-PH', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
-  document.getElementById('checkout-btn').disabled = cartItems.length === 0;
-}
 
 // Function to handle checkout
-function checkout() {
-  // Show the checkout modal
-  document.getElementById('checkoutModal').classList.remove('hidden');
-  
-  // Check if cart is empty
-  if (cartItems.length === 0) {
-    alert("Your cart is empty. Please add services before checkout.");
-    return;
-  }
-  
-  const serviceIds = cartItems.map(item => item.service_id).join(',');
-  document.getElementById('service-id').value = serviceIds;
-  document.getElementById('service-price').value = cartItems[0].selling_price;
-  document.getElementById('branch-id').value = cartItems[0].branch_id;
-  
-  // Update the total price in the checkout form with proper formatting
-  document.getElementById('totalPrice').value = cartTotal.toFixed(2);
-  document.getElementById('footer-total-price').textContent = 
-    `₱${cartTotal.toLocaleString('en-PH', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
-}
+
 
 function closeCheckoutModal() {
   document.getElementById('checkoutModal').classList.add('hidden');
