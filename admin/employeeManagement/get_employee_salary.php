@@ -31,7 +31,7 @@ try {
             esp.payment_date,
             s.service_name,
             esp.income AS service_income,
-            esp.income AS employee_share  // Using income directly as share
+            esp.income AS employee_share  
         FROM 
             employee_service_payments esp
         JOIN 
