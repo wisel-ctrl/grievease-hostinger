@@ -8,6 +8,9 @@ $response = ['success' => false, 'message' => ''];
 $stmt = null;
 $getPriceStmt = null;
 $updateStmt = null;
+$getServiceStmt = null;
+$getCasketStmt = null;
+$updateInventoryStmt = null;
 
 try {
     // Input validation
@@ -27,8 +30,8 @@ try {
 
     $conn->begin_transaction();
 
-    // Get service price
-    $getPriceStmt = $conn->prepare("SELECT discounted_price FROM sales_tb WHERE sales_id = ?");
+    // Get service price and service_id
+    $getPriceStmt = $conn->prepare("SELECT discounted_price, service_id FROM sales_tb WHERE sales_id = ?");
     if ($getPriceStmt === false) {
         throw new Exception('Failed to prepare price query: ' . $conn->error);
     }
@@ -45,6 +48,37 @@ try {
     
     $serviceData = $priceResult->fetch_assoc();
     $discountedPrice = $serviceData['discounted_price'];
+    $service_id = $serviceData['service_id'];
+
+    // Get casket_id from services_tb
+    $getCasketStmt = $conn->prepare("SELECT casket_id FROM services_tb WHERE service_id = ?");
+    if ($getCasketStmt === false) {
+        throw new Exception('Failed to prepare casket query: ' . $conn->error);
+    }
+    
+    $getCasketStmt->bind_param("i", $service_id);
+    if (!$getCasketStmt->execute()) {
+        throw new Exception('Failed to get casket ID: ' . $getCasketStmt->error);
+    }
+    
+    $casketResult = $getCasketStmt->get_result();
+    if ($casketResult->num_rows > 0) {
+        $casketData = $casketResult->fetch_assoc();
+        $casket_id = $casketData['casket_id'];
+        
+        // Update inventory quantity
+        if (!empty($casket_id)) {
+            $updateInventoryStmt = $conn->prepare("UPDATE inventory_tb SET quantity = quantity - 1 WHERE casket_id = ?");
+            if ($updateInventoryStmt === false) {
+                throw new Exception('Failed to prepare inventory update: ' . $conn->error);
+            }
+            
+            $updateInventoryStmt->bind_param("i", $casket_id);
+            if (!$updateInventoryStmt->execute()) {
+                throw new Exception('Failed to update inventory: ' . $updateInventoryStmt->error);
+            }
+        }
+    }
 
     // Insert staff payments if any
     if (!empty($data['staff_data']) && is_array($data['staff_data'])) {
@@ -136,6 +170,15 @@ try {
     }
     if (isset($updateStmt) && $updateStmt instanceof mysqli_stmt) {
         $updateStmt->close();
+    }
+    if (isset($getServiceStmt) && $getServiceStmt instanceof mysqli_stmt) {
+        $getServiceStmt->close();
+    }
+    if (isset($getCasketStmt) && $getCasketStmt instanceof mysqli_stmt) {
+        $getCasketStmt->close();
+    }
+    if (isset($updateInventoryStmt) && $updateInventoryStmt instanceof mysqli_stmt) {
+        $updateInventoryStmt->close();
     }
     if (isset($conn) && $conn instanceof mysqli) {
         $conn->close();
