@@ -352,101 +352,205 @@ if ($branchResult->num_rows > 0) {
     $paginatedResult = $conn->query($paginatedSql);
     ?>
     
-    <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 mb-8">
-        <div class="flex justify-between items-center p-5 border-b border-sidebar-border">
-            <h3 id="branchTitle_<?php echo $branchId; ?>" class="font-medium text-sidebar-text">
+    <div class="bg-white rounded-lg shadow-md mb-8 border border-sidebar-border overflow-hidden branch-container" data-branch-id="<?php echo $branchId; ?>">
+    <!-- Branch Header with Search and Filters -->
+    <div class="bg-sidebar-hover p-4 border-b border-sidebar-border flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div class="flex items-center">
+            <i class="fas fa-building text-sidebar-accent mr-2"></i>
+            <h4 class="text-lg font-bold text-sidebar-text" id="branchTitle_<?php echo $branchId; ?>">
                 <?php echo htmlspecialchars(ucwords($branchName)); ?> - Inventory Items
-            </h3>
-            <div class="flex items-center space-x-4">
-                <!-- Search Box with Filter Icon -->
-                <div class="relative flex items-center">
-                    <input type="text" id="searchBox_<?php echo $branchId; ?>" class="p-2 pl-10 border border-sidebar-border rounded-md text-sm text-sidebar-text focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent" placeholder="Search items...">
-                    <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
-                    <div class="relative">
-                        <button id="filterButton_<?php echo $branchId; ?>" class="ml-2 p-2 text-gray-500 hover:text-sidebar-accent">
-                            <i class="fas fa-filter"></i>
-                        </button>
-                        <!-- Filter Dropdown -->
-                        <div id="filterDropdown_<?php echo $branchId; ?>" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 border border-gray-200">
-                            <div class="py-1">
-                                <a href="#" class="filter-option block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-sort="default" data-branch="<?php echo $branchId; ?>">Default (Unsorted)</a>
-                                <a href="#" class="filter-option block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-sort="price_asc" data-branch="<?php echo $branchId; ?>">Price: Low to High</a>
-                                <a href="#" class="filter-option block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-sort="price_desc" data-branch="<?php echo $branchId; ?>">Price: High to Low</a>
-                                <a href="#" class="filter-option block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-sort="quantity_asc" data-branch="<?php echo $branchId; ?>">Quantity: Low to High</a>
-                                <a href="#" class="filter-option block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-sort="quantity_desc" data-branch="<?php echo $branchId; ?>">Quantity: High to Low</a>
-                                <a href="#" class="filter-option block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-sort="name_asc" data-branch="<?php echo $branchId; ?>">Name: A to Z</a>
-                                <a href="#" class="filter-option block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-sort="name_desc" data-branch="<?php echo $branchId; ?>">Name: Z to A</a>
+            </h4>
+        </div>
+
+        <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
+            <i class="fas fa-box"></i>
+            <?php echo $totalItems . " Item" . ($totalItems != 1 ? "s" : ""); ?>
+        </span>
+        
+        <!-- Search and Filter Section -->
+        <div class="flex flex-col md:flex-row items-start md:items-center gap-3 w-full md:w-auto">
+            <!-- Search Input -->
+            <div class="relative w-full md:w-64">
+                <input type="text" id="searchBox_<?php echo $branchId; ?>" 
+                       placeholder="Search items..." 
+                       class="pl-8 pr-3 py-2 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
+                <i class="fas fa-search absolute left-2.5 top-3 text-gray-400"></i>
+            </div>
+
+            <!-- Filter Dropdown -->
+            <div class="relative filter-dropdown">
+                <button class="px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover"
+                        id="filterButton_<?php echo $branchId; ?>">
+                    <i class="fas fa-filter text-sidebar-accent"></i>
+                    <span>Filters</span>
+                </button>
+                
+                <!-- Filter Window -->
+                <div id="filterDropdown_<?php echo $branchId; ?>" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-4">
+                    <div class="space-y-4">
+                        <h5 class="text-sm font-medium text-sidebar-text mb-2">Sort By</h5>
+                        <div class="space-y-1">
+                            <div class="flex items-center cursor-pointer">
+                                <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full" data-sort="default" data-branch="<?php echo $branchId; ?>">
+                                    Default (Unsorted)
+                                </span>
+                            </div>
+                            <div class="flex items-center cursor-pointer">
+                                <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full" data-sort="price_asc" data-branch="<?php echo $branchId; ?>">
+                                    Price: Low to High
+                                </span>
+                            </div>
+                            <div class="flex items-center cursor-pointer">
+                                <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full" data-sort="price_desc" data-branch="<?php echo $branchId; ?>">
+                                    Price: High to Low
+                                </span>
+                            </div>
+                            <div class="flex items-center cursor-pointer">
+                                <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full" data-sort="quantity_asc" data-branch="<?php echo $branchId; ?>">
+                                    Quantity: Low to High
+                                </span>
+                            </div>
+                            <div class="flex items-center cursor-pointer">
+                                <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full" data-sort="quantity_desc" data-branch="<?php echo $branchId; ?>">
+                                    Quantity: High to Low
+                                </span>
+                            </div>
+                            <div class="flex items-center cursor-pointer">
+                                <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full" data-sort="name_asc" data-branch="<?php echo $branchId; ?>">
+                                    Name: A to Z
+                                </span>
+                            </div>
+                            <div class="flex items-center cursor-pointer">
+                                <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full" data-sort="name_desc" data-branch="<?php echo $branchId; ?>">
+                                    Name: Z to A
+                                </span>
                             </div>
                         </div>
                     </div>
                 </div>
-                
-                <!-- Archived Button -->
-                <button class="px-4 py-2 bg-gray-200 text-gray-700 rounded-md text-sm flex items-center hover:bg-gray-300 transition-all duration-300" onclick="showArchivedItems(<?php echo $branchId; ?>)">
-                    <i class="fas fa-archive mr-2"></i> Archived
-                </button>
-                
-                <!-- Add Item Button -->
-                <button class="px-4 py-2 bg-sidebar-accent text-white rounded-md text-sm flex items-center hover:bg-darkgold transition-all duration-300" onclick="openAddInventoryModal(<?php echo $branchId; ?>)">
-                    <i class="fas fa-plus mr-2"></i> Add Item
-                </button>
             </div>
+
+            <!-- Archived Button -->
+            <button class="px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover"
+                    onclick="showArchivedItems(<?php echo $branchId; ?>)">
+                <i class="fas fa-archive text-sidebar-accent"></i>
+                <span>Archived</span>
+            </button>
+
+            <button class="px-4 py-2.5 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm whitespace-nowrap" 
+                    onclick="openAddInventoryModal(<?php echo $branchId; ?>)">
+                <i class="fas fa-plus-circle"></i> Add Item
+            </button>
         </div>
-        <div class="overflow-x-auto scrollbar-thin">
-            <table class="w-full">
-                <thead>
-                    <tr class="bg-sidebar-hover">
-                        <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(<?php echo $branchId; ?>, 0)">ID</th>
-                        <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(<?php echo $branchId; ?>, 1)">Item Name</th>
-                        <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(<?php echo $branchId; ?>, 2)">Category</th>
-                        <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(<?php echo $branchId; ?>, 3)">Quantity</th>
-                        <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(<?php echo $branchId; ?>, 4)">Unit Price</th>
-                        <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(<?php echo $branchId; ?>, 5)">Total Value</th>
-                        <th class="p-4 text-left text-sm font-medium text-sidebar-text">Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="inventoryTable_<?php echo $branchId; ?>">
-                    <?php
-                    if ($paginatedResult->num_rows > 0) {
-                        // Output data of each row
-                        while($row = $paginatedResult->fetch_assoc()) {
-                            echo '<tr class="border-b border-sidebar-border hover:bg-sidebar-hover">';
-                            echo '<td class="p-4 text-sm text-sidebar-text font-medium">#INV-' . str_pad($row["inventory_id"], 3, '0', STR_PAD_LEFT) . '</td>';
-                            echo '<td class="p-4 text-sm text-sidebar-text">' . htmlspecialchars($row["item_name"]) . '</td>';
-                            echo '<td class="p-4 text-sm text-sidebar-text">' . htmlspecialchars($row["category_name"]) . '</td>';
-                            echo '<td class="p-4 text-sm text-sidebar-text" data-sort-value="' . $row["quantity"] . '">' . $row["quantity"] . '</td>';
-                            echo '<td class="p-4 text-sm text-sidebar-text" data-sort-value="' . $row["price"] . '">₱' . number_format($row["price"], 2) . '</td>';
-                            echo '<td class="p-4 text-sm text-sidebar-text" data-sort-value="' . $row["total_value"] . '">₱' . number_format($row["total_value"], 2) . '</td>';
-                            echo '<td class="p-4 text-sm">';
-                            echo '<div class="flex space-x-2">';
-                            echo '<button class="p-1.5 bg-blue-100 text-green-600 rounded hover:bg-green-200 transition-all" onclick="openViewItemModal(' . $row["inventory_id"] . ')">';
-                            echo '<i class="fas fa-edit"></i>';
-                            echo '</button>';
-                            echo '<form method="POST" action="inventory/delete_inventory_item.php" onsubmit="return false;" style="display:inline;" class="delete-form">';
-                            echo '<input type="hidden" name="inventory_id" value="' . $row["inventory_id"] . '">';
-                            echo '<button type="submit" class="p-1.5 bg-red-100 text-red-600 rounded hover:bg-red-200 transition-all">';
-                            echo '<i class="fas fa-archive"></i>';
-                            echo '</button>';
-                            echo '</form>';
-                            echo '</div>';
-                            echo '</td>';
-                            echo '</tr>';
-                        }
-                    } else {
-                        echo '<tr class="border-b border-sidebar-border"><td colspan="7" class="p-4 text-center text-sm text-sidebar-text">No inventory items found for this branch</td></tr>';
+    </div>
+    
+    <!-- Inventory Table for this branch -->
+    <div class="overflow-x-auto scrollbar-thin" id="tableContainer<?php echo $branchId; ?>">
+        <div id="loadingIndicator<?php echo $branchId; ?>" class="hidden absolute inset-0 bg-white bg-opacity-50 flex items-center justify-center">
+            <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-sidebar-accent"></div>
+        </div>
+        
+        <table class="w-full">
+            <thead>
+                <tr class="bg-gray-50 border-b border-sidebar-border">
+                    <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(<?php echo $branchId; ?>, 0)">
+                        <div class="flex items-center">
+                            <i class="fas fa-hashtag mr-1.5 text-sidebar-accent"></i> ID 
+                            <i class="fas fa-sort ml-1 text-gray-400"></i>
+                        </div>
+                    </th>
+                    <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(<?php echo $branchId; ?>, 1)">
+                        <div class="flex items-center">
+                            <i class="fas fa-box mr-1.5 text-sidebar-accent"></i> Item Name 
+                            <i class="fas fa-sort ml-1 text-gray-400"></i>
+                        </div>
+                    </th>
+                    <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(<?php echo $branchId; ?>, 2)">
+                        <div class="flex items-center">
+                            <i class="fas fa-th-list mr-1.5 text-sidebar-accent"></i> Category 
+                            <i class="fas fa-sort ml-1 text-gray-400"></i>
+                        </div>
+                    </th>
+                    <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(<?php echo $branchId; ?>, 3)">
+                        <div class="flex items-center">
+                            <i class="fas fa-cubes mr-1.5 text-sidebar-accent"></i> Quantity 
+                            <i class="fas fa-sort ml-1 text-gray-400"></i>
+                        </div>
+                    </th>
+                    <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(<?php echo $branchId; ?>, 4)">
+                        <div class="flex items-center">
+                            <i class="fas fa-tag mr-1.5 text-sidebar-accent"></i> Unit Price 
+                            <i class="fas fa-sort ml-1 text-gray-400"></i>
+                        </div>
+                    </th>
+                    <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(<?php echo $branchId; ?>, 5)">
+                        <div class="flex items-center">
+                            <i class="fas fa-dollar-sign mr-1.5 text-sidebar-accent"></i> Total Value 
+                            <i class="fas fa-sort ml-1 text-gray-400"></i>
+                        </div>
+                    </th>
+                    <th class="p-4 text-left text-sm font-medium text-sidebar-text">
+                        <div class="flex items-center">
+                            <i class="fas fa-cogs mr-1.5 text-sidebar-accent"></i> Actions
+                        </div>
+                    </th>
+                </tr>
+            </thead>
+            <tbody id="inventoryTable_<?php echo $branchId; ?>">
+                <?php
+                if ($paginatedResult->num_rows > 0) {
+                    // Output data of each row
+                    while($row = $paginatedResult->fetch_assoc()) {
+                        echo '<tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">';
+                        echo '<td class="p-4 text-sm text-sidebar-text font-medium">#INV-' . str_pad($row["inventory_id"], 3, '0', STR_PAD_LEFT) . '</td>';
+                        echo '<td class="p-4 text-sm text-sidebar-text">' . htmlspecialchars($row["item_name"]) . '</td>';
+                        echo '<td class="p-4 text-sm text-sidebar-text">';
+                        echo '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">';
+                        echo '<i class="fas fa-folder-open mr-1"></i> ' . htmlspecialchars($row["category_name"]) . '</span>';
+                        echo '</td>';
+                        echo '<td class="p-4 text-sm text-sidebar-text" data-sort-value="' . $row["quantity"] . '">' . $row["quantity"] . '</td>';
+                        echo '<td class="p-4 text-sm font-medium text-sidebar-text" data-sort-value="' . $row["price"] . '">₱' . number_format($row["price"], 2) . '</td>';
+                        echo '<td class="p-4 text-sm font-medium text-sidebar-text" data-sort-value="' . $row["total_value"] . '">₱' . number_format($row["total_value"], 2) . '</td>';
+                        echo '<td class="p-4 text-sm">';
+                        echo '<div class="flex space-x-2">';
+                        echo '<button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="Edit Item" onclick="openViewItemModal(' . $row["inventory_id"] . ')">';
+                        echo '<i class="fas fa-edit"></i>';
+                        echo '</button>';
+                        echo '<form method="POST" action="inventory/delete_inventory_item.php" onsubmit="return false;" style="display:inline;" class="delete-form">';
+                        echo '<input type="hidden" name="inventory_id" value="' . $row["inventory_id"] . '">';
+                        echo '<button type="submit" class="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-all tooltip" title="Archive Item">';
+                        echo '<i class="fas fa-archive"></i>';
+                        echo '</button>';
+                        echo '</form>';
+                        echo '</div>';
+                        echo '</td>';
+                        echo '</tr>';
                     }
-                    ?>
-                </tbody>
-            </table>
-        </div>
+                } else {
+                    echo '<tr>';
+                    echo '<td colspan="7" class="p-6 text-sm text-center">';
+                    echo '<div class="flex flex-col items-center">';
+                    echo '<i class="fas fa-box-open text-gray-300 text-4xl mb-3"></i>';
+                    echo '<p class="text-gray-500">No inventory items found for this branch</p>';
+                    echo '</div>';
+                    echo '</td>';
+                    echo '</tr>';
+                }
+                ?>
+            </tbody>
+        </table>
+        
         <!-- Pagination -->
         <div class="p-4 border-t border-sidebar-border flex justify-between items-center">
-            <div class="text-sm text-gray-500">Showing <?php echo min($itemsPerPage, $totalItems) ?> of <?php echo $totalItems ?> items</div>
+            <div class="text-sm text-gray-500">
+                Showing <?php echo min(($currentPage - 1) * $itemsPerPage + 1, $totalItems) . ' - ' . min($currentPage * $itemsPerPage, $totalItems); ?> 
+                of <?php echo $totalItems; ?> items
+            </div>
             <div class="flex space-x-1">
                 <?php if ($currentPage > 1): ?>
                     <a href="?page_<?php echo $branchId; ?>=<?php echo $currentPage - 1 ?>" class="px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">&laquo;</a>
                 <?php else: ?>
-                    <button disabled class="px-3 py-1 border border-sidebar-border rounded text-sm text-gray-400">&laquo;</button>
+                    <button disabled class="px-3 py-1 border border-sidebar-border rounded text-sm opacity-50 cursor-not-allowed">&laquo;</button>
                 <?php endif; ?>
                 
                 <?php for ($i = 1; $i <= $totalPages; $i++): ?>
@@ -460,11 +564,12 @@ if ($branchResult->num_rows > 0) {
                 <?php if ($currentPage < $totalPages): ?>
                     <a href="?page_<?php echo $branchId; ?>=<?php echo $currentPage + 1 ?>" class="px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">&raquo;</a>
                 <?php else: ?>
-                    <button disabled class="px-3 py-1 border border-sidebar-border rounded text-sm text-gray-400">&raquo;</button>
+                    <button disabled class="px-3 py-1 border border-sidebar-border rounded text-sm opacity-50 cursor-not-allowed">&raquo;</button>
                 <?php endif; ?>
             </div>
         </div>
     </div>
+</div>
     
     <?php
         }
