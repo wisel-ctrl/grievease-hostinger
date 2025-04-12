@@ -42,6 +42,55 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $conn->begin_transaction();
     
     try {
+        // Handle file upload if present
+        $validated_id = 'no'; // Default to no unless we have a valid ID upload
+        
+        if (isset($_FILES['id-upload']) && $_FILES['id-upload']['error'] === UPLOAD_ERR_OK) {
+            $file = $_FILES['id-upload'];
+            
+            // Validate file type
+            $allowed_types = ['image/jpeg', 'image/png'];
+            $file_info = finfo_open(FILEINFO_MIME_TYPE);
+            $mime_type = finfo_file($file_info, $file['tmp_name']);
+            finfo_close($file_info);
+            
+            if (!in_array($mime_type, $allowed_types)) {
+                throw new Exception('Invalid file type. Only JPG and PNG images are allowed.');
+            }
+            
+            // Validate file size (5MB max)
+            if ($file['size'] > 5 * 1024 * 1024) {
+                throw new Exception('File size exceeds 5MB limit.');
+            }
+            
+            // Create uploads directory if it doesn't exist
+            $upload_dir = '../../admin/uploads/valid_ids/';
+            if (!file_exists($upload_dir)) {
+                mkdir($upload_dir, 0777, true);
+            }
+            
+            // Generate unique filename
+            $file_ext = pathinfo($file['name'], PATHINFO_EXTENSION);
+            $filename = 'id_' . $user_id . '_' . time() . '.' . $file_ext;
+            $destination = $upload_dir . $filename;
+            
+            // Move the uploaded file
+            if (!move_uploaded_file($file['tmp_name'], $destination)) {
+                throw new Exception('Failed to save uploaded file.');
+            }
+            
+            // Insert or update user's ID image path in valid_id_tb table
+            $query = "INSERT INTO valid_id_tb (id, image_path) 
+            VALUES (?, ?) 
+            ON DUPLICATE KEY UPDATE image_path = VALUES(image_path)";
+            $stmt = $conn->prepare($query);
+            $stmt->bind_param("is", $user_id, $destination); // full path stored
+            $stmt->execute();
+            $stmt->close();
+            
+            $validated_id = 'yes';
+        }
+        
         // Update user's basic information
         $query = "UPDATE users SET 
                   first_name = ?, 
@@ -51,11 +100,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                   email = ?, 
                   phone_number = ?, 
                   birthdate = ?,
+                  validated_id = ?,
                   updated_at = NOW()
                   WHERE id = ?";
         
         $stmt = $conn->prepare($query);
-        $stmt->bind_param("sssssssi", 
+        $stmt->bind_param("ssssssssi", 
             $first_name, 
             $middle_name, 
             $last_name, 
@@ -63,6 +113,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $email, 
             $phone, 
             $birthdate,
+            $validated_id,
             $user_id
         );
         
@@ -171,7 +222,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         header('Content-Type: application/json');
         echo json_encode([
             'success' => true, 
-            'message' => 'Profile updated successfully!'
+            'message' => 'Profile updated successfully!',
+            'validated_id' => $validated_id
         ]);
         exit();
         

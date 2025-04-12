@@ -87,6 +87,17 @@ header("Pragma: no-cache");
                 $barangay = $row['barangay'];
                 $street_address = $row['street_address'];
                 $zip_code = $row['zip_code'];
+
+                $uploadedImagePath = null;
+
+                // Fetch the uploaded ID image from valid_id_tb
+                $query = "SELECT image_path FROM valid_id_tb WHERE id = ?";
+                $stmt = $conn->prepare($query);
+                $stmt->bind_param("i", $user_id);
+                $stmt->execute();
+                $stmt->bind_result($uploadedImagePath);
+                $stmt->fetch();
+
                 $stmt->close();
 
                 // Get regions for dropdown
@@ -455,7 +466,9 @@ header("Pragma: no-cache");
         </div>
         <div>
             <label class="block text-sm font-medium text-gray-500 mb-1">Phone Number</label>
-            <p class="text-navy"><?php echo htmlspecialchars($phone_number); ?></p>
+            <p class="text-navy <?= empty($phone_number) ? 'opacity-60 italic text-gray-500' : '' ?>">
+                <?= !empty($phone_number) ? htmlspecialchars($phone_number) : 'N/A' ?>
+            </p>
         </div>
         <div>
             <label class="block text-sm font-medium text-gray-500 mb-1">Date of Birth</label>
@@ -505,14 +518,14 @@ header("Pragma: no-cache");
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label class="block text-sm font-medium text-gray-500 mb-1">Uploaded ID</label>
-                            <div class="flex items-center">
-                                <i class="fas fa-file-pdf text-red-500 mr-2"></i>
-                                <p class="text-navy">Government_ID.pdf</p>
-                                <a href="#" class="ml-2 text-blue-500 hover:text-blue-700">
-                                    <i class="fas fa-download"></i>
-                                </a>
-                            </div>
-                            <p class="text-xs text-gray-500 mt-1">Uploaded on: <?php echo date('F d, Y'); ?></p>
+
+                            <?php if ($uploadedImagePath): ?>
+                                <img src="<?php echo '../uploads/valid_ids/' . htmlspecialchars($uploadedImagePath); ?>" 
+                                    alt="Uploaded ID"
+                                    class="mt-2 rounded-lg shadow border w-48 h-auto">
+                            <?php else: ?>
+                                <p class="text-sm text-gray-400 italic">No ID uploaded yet.</p>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>
@@ -1073,18 +1086,31 @@ header("Pragma: no-cache");
                         <!-- ID Upload -->
                         <div>
                             <label for="id-upload" class="block text-sm font-medium text-white mb-2 sm:mb-3">Government-Issued ID*</label>
-                            <div class="flex items-center justify-center w-full">
-                                <label for="id-upload" class="flex flex-col border-4 border-dashed border-gray-300 hover:bg-gray-100 hover:border-yellow-600 rounded-lg p-4 sm:p-6 group text-center cursor-pointer">
-                                    <div class="flex flex-col items-center justify-center">
-                                        <svg class="w-8 h-8 sm:w-12 sm:h-12 text-gray-400 group-hover:text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                                        </svg>
-                                        <p class="text-sm sm:text-base text-gray-500 group-hover:text-yellow-600 mt-2">Upload Government ID</p>
-                                        <p class="text-xs sm:text-sm text-gray-500">(PDF, JPG, PNG)</p>
-                                        <p class="text-xs text-gray-500 mt-1">Max file size: 5MB</p>
+                            <div class="flex flex-col sm:flex-row gap-4">
+                                <div class="flex-1">
+                                    <div class="flex items-center justify-center w-full">
+                                        <label for="id-upload" class="flex flex-col border-4 border-dashed border-gray-300 hover:bg-gray-100 hover:border-yellow-600 rounded-lg p-4 sm:p-6 group text-center cursor-pointer">
+                                            <div class="flex flex-col items-center justify-center">
+                                                <svg class="w-8 h-8 sm:w-12 sm:h-12 text-gray-400 group-hover:text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                                </svg>
+                                                <p class="text-sm sm:text-base text-gray-500 group-hover:text-yellow-600 mt-2">Upload Government ID</p>
+                                                <p class="text-xs sm:text-sm text-gray-500">(JPG, PNG)</p>
+                                                <p class="text-xs text-gray-500 mt-1">Max file size: 5MB</p>
+                                            </div>
+                                            <input type="file" id="id-upload" name="id-upload" class="hidden" accept=".jpg,.jpeg,.png" required>
+                                        </label>
                                     </div>
-                                    <input type="file" id="id-upload" name="id-upload" class="hidden" accept=".pdf,.jpg,.jpeg,.png" required>
-                                </label>
+                                </div>
+                                <!-- Image Preview -->
+                                <div class="flex-1">
+                                    <div class="border border-gray-300 rounded-lg p-4 h-full">
+                                        <h5 class="text-sm font-medium text-white mb-2">ID Preview</h5>
+                                        <div id="image-preview-container" class="flex items-center justify-center bg-gray-100 rounded-lg h-48 overflow-hidden">
+                                            <p class="text-gray-500 text-sm">Preview will appear here</p>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         
@@ -1666,6 +1692,59 @@ document.addEventListener('DOMContentLoaded', function() {
     ];
     
     fields.forEach(fieldId => createErrorElement(fieldId));
+});
+
+// Image upload preview and validation
+document.getElementById('id-upload').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    const previewContainer = document.getElementById('image-preview-container');
+    const maxSize = 5 * 1024 * 1024; // 5MB
+    
+    // Clear previous preview
+    previewContainer.innerHTML = '';
+    
+    if (!file) {
+        previewContainer.innerHTML = '<p class="text-gray-500 text-sm">Preview will appear here</p>';
+        return;
+    }
+    
+    // Validate file type
+    const validTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+    if (!validTypes.includes(file.type)) {
+        Swal.fire({
+            title: 'Invalid File Type',
+            text: 'Please upload only JPG or PNG images.',
+            icon: 'error',
+            confirmButtonColor: '#d9a404'
+        });
+        e.target.value = ''; // Clear the file input
+        previewContainer.innerHTML = '<p class="text-gray-500 text-sm">Preview will appear here</p>';
+        return;
+    }
+    
+    // Validate file size
+    if (file.size > maxSize) {
+        Swal.fire({
+            title: 'File Too Large',
+            text: 'Maximum file size is 5MB.',
+            icon: 'error',
+            confirmButtonColor: '#d9a404'
+        });
+        e.target.value = ''; // Clear the file input
+        previewContainer.innerHTML = '<p class="text-gray-500 text-sm">Preview will appear here</p>';
+        return;
+    }
+    
+    // Create preview
+    const reader = new FileReader();
+    reader.onload = function(event) {
+        const img = document.createElement('img');
+        img.src = event.target.result;
+        img.classList.add('max-h-full', 'max-w-full', 'object-contain');
+        previewContainer.innerHTML = '';
+        previewContainer.appendChild(img);
+    };
+    reader.readAsDataURL(file);
 });
 </script>
 
