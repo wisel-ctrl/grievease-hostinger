@@ -220,13 +220,12 @@ if ($branchResult->num_rows > 0) {
     <div class="bg-sidebar-hover p-4 border-b border-sidebar-border flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div class="flex items-center">
             <h4 class="text-lg font-bold text-sidebar-text">Branch: <?php echo $branchName; ?></h4>
-        </div>
-
-        <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
+            <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
                 <i class="fas fa-clipboard-list"></i>
                 <?php echo $totalServices . " Service" . ($totalServices != 1 ? "s" : ""); ?>
             </span>
-        
+        </div>
+
         <!-- Search and Filter Section -->
         <div class="flex flex-col md:flex-row items-start md:items-center gap-3 w-full md:w-auto">
             <!-- Search Input -->
