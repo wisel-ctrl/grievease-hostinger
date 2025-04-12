@@ -500,7 +500,7 @@ if ($branchResult->num_rows > 0) {
                         echo '<td class="p-4 text-sm text-sidebar-text">' . htmlspecialchars($row["item_name"]) . '</td>';
                         echo '<td class="p-4 text-sm text-sidebar-text">';
                         echo '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">';
-                        echo '<i class="fas fa-folder-open mr-1"></i> ' . htmlspecialchars($row["category_name"]) . '</span>';
+                        echo . htmlspecialchars($row["category_name"]) . '</span>';
                         echo '</td>';
                         echo '<td class="p-4 text-sm text-sidebar-text" data-sort-value="' . $row["quantity"] . '">' . $row["quantity"] . '</td>';
                         echo '<td class="p-4 text-sm font-medium text-sidebar-text" data-sort-value="' . $row["price"] . '">₱' . number_format($row["price"], 2) . '</td>';
