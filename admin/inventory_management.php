@@ -355,16 +355,17 @@ if ($branchResult->num_rows > 0) {
     <div class="bg-white rounded-lg shadow-md mb-8 border border-sidebar-border overflow-hidden branch-container" data-branch-id="<?php echo $branchId; ?>">
     <!-- Branch Header with Search and Filters -->
     <div class="bg-sidebar-hover p-4 border-b border-sidebar-border flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div class="flex items-center">
-            <h4 class="text-lg font-bold text-sidebar-text" id="branchTitle_<?php echo $branchId; ?>">
-                <?php echo htmlspecialchars(ucwords($branchName)); ?> - Inventory Items
-            </h4>
-        </div>
-
+    <div class="flex items-center gap-3">
+        <h4 class="text-lg font-bold text-sidebar-text" id="branchTitle_<?php echo $branchId; ?>">
+            <?php echo htmlspecialchars(ucwords($branchName)); ?> - Inventory Items
+        </h4>
+        
         <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
             <i class="fas fa-box"></i>
             <?php echo $totalItems . " Item" . ($totalItems != 1 ? "s" : ""); ?>
         </span>
+    </div>
+
         
         <!-- Search and Filter Section -->
         <div class="flex flex-col md:flex-row items-start md:items-center gap-3 w-full md:w-auto">
