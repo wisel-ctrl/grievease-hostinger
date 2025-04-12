@@ -356,7 +356,6 @@ if ($branchResult->num_rows > 0) {
     <!-- Branch Header with Search and Filters -->
     <div class="bg-sidebar-hover p-4 border-b border-sidebar-border flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div class="flex items-center">
-            <i class="fas fa-building text-sidebar-accent mr-2"></i>
             <h4 class="text-lg font-bold text-sidebar-text" id="branchTitle_<?php echo $branchId; ?>">
                 <?php echo htmlspecialchars(ucwords($branchName)); ?> - Inventory Items
             </h4>
