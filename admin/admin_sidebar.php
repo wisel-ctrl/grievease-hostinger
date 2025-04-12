@@ -251,6 +251,24 @@
             </span>
           </a>
         </li>
+        <!-- New: LifePlan Menu Item -->
+        <li>
+          <a href="lifeplan.php" class="sidebar-link flex items-center px-5 py-3 text-sidebar-text opacity-80 hover:opacity-100 no-underline transition-all duration-300 hover:bg-sidebar-hover">
+            <i class="fas fa-heartbeat w-5 text-center mr-3 text-sidebar-accent"></i>
+            <span>LifePlan</span>
+          </a>
+        </li>
+        <!-- New: ID Confirmation Menu Item -->
+        <li>
+          <a href="id_confirmation.php" class="sidebar-link flex items-center px-5 py-3 text-sidebar-text opacity-80 hover:opacity-100 no-underline transition-all duration-300 hover:bg-sidebar-hover relative">
+            <i class="fas fa-id-card w-5 text-center mr-3 text-sidebar-accent"></i>
+            <span>ID Confirmation</span>
+            <!-- Notification Badge (optional) -->
+            <span id="id-badge" class="absolute right-4 bg-red-500 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full hidden">
+              0
+            </span>
+          </a>
+        </li>
       </ul>
         
       <!-- Reports & Analytics -->
