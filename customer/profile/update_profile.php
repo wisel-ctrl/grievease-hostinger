@@ -166,21 +166,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         // Commit the transaction
         $conn->commit();
-
-        $conn->close();
         
-        // Get the base URL dynamically
-$protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https://" : "http://";
-$host = $_SERVER['HTTP_HOST'];
-$base_url = $protocol . $host;
-
-// Set the redirect URL
-$redirect_url = $base_url . "/GrievEase/grievease-hostinger/grievease-hostinger/customer/profile.php?success=1";
-
-// Perform the redirect
-header("Location: " . $redirect_url);
-exit();
-                
+        // Instead of redirecting, return a JSON success response
+        header('Content-Type: application/json');
+        echo json_encode([
+            'success' => true, 
+            'message' => 'Profile updated successfully!'
+        ]);
+        exit();
+        
     } catch (Exception $e) {
         // Rollback the transaction if something failed
         $conn->rollback();
@@ -188,11 +182,9 @@ exit();
         // Return error JSON response for AJAX
         header('Content-Type: application/json');
         echo json_encode(['success' => false, 'message' => 'Error updating profile: ' . $e->getMessage()]);
-        exit(); // Add this to ensure proper exit
+        exit();
     }
     
-    
-
 } else {
     // Return error for non-POST requests
     header('Content-Type: application/json');

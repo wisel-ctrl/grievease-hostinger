@@ -67,7 +67,8 @@ header("Pragma: no-cache");
 
                 // Get user's first name from database
                 $user_id = $_SESSION['user_id'];
-                $query = "SELECT first_name, middle_name, last_name, suffix, email, phone_number, birthdate FROM users WHERE id = ?";
+                $query = "SELECT first_name, middle_name, last_name, suffix, email, phone_number, birthdate, 
+                        region, city, province, barangay, street_address, zip_code FROM users WHERE id = ?";
                 $stmt = $conn->prepare($query);
                 $stmt->bind_param("i", $user_id);
                 $stmt->execute();
@@ -80,6 +81,12 @@ header("Pragma: no-cache");
                 $email = $row['email'];
                 $phone_number = $row['phone_number'];
                 $birthdate = $row['birthdate'];
+                $region = $row['region'];
+                $city = $row['city'];
+                $province = $row['province'];
+                $barangay = $row['barangay'];
+                $street_address = $row['street_address'];
+                $zip_code = $row['zip_code'];
                 $stmt->close();
 
                 // Get regions for dropdown
@@ -104,7 +111,9 @@ header("Pragma: no-cache");
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="tailwind.js"></script>
     <script src="profile.js"></script>    
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Add this in the head section of your HTML document -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.32/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.32/dist/sweetalert2.all.min.js"></script>
     <style>
         .modal {
             transition: opacity 0.3s ease-in-out;
@@ -419,48 +428,76 @@ header("Pragma: no-cache");
                 </button>
             </div>
             <div class="p-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-500 mb-1">First Name</label>
-                        <p class="text-navy"> <?php echo htmlspecialchars($first_name); ?></p>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-500 mb-1">Last Name</label>
-                        <p class="text-navy"><?php echo htmlspecialchars($last_name); ?></p>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-500 mb-1">Email Address</label>
-                        <p class="text-navy"><?php echo htmlspecialchars($email); ?></p>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-500 mb-1">Phone Number</label>
-                        <p class="text-navy">(555) 123-4567</p>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-500 mb-1">Date of Birth</label>
-                        <p class="text-navy"><?php echo date('F d Y', strtotime($birthdate)); ?></p>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-500 mb-1">Address</label>
-                        <p class="text-navy">123 Main Street, Apt 4B</p>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-500 mb-1">City</label>
-                        <p class="text-navy">New York</p>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-500 mb-1">State/Province</label>
-                        <p class="text-navy">NY</p>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-500 mb-1">Zip/Postal Code</label>
-                        <p class="text-navy">10001</p>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-500 mb-1">Country</label>
-                        <p class="text-navy">United States</p>
-                    </div>
-                </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+            <label class="block text-sm font-medium text-gray-500 mb-1">First Name</label>
+            <p class="text-navy"> <?php echo htmlspecialchars($first_name); ?></p>
+        </div>
+        <div>
+            <label class="block text-sm font-medium text-gray-500 mb-1">Last Name</label>
+            <p class="text-navy"><?php echo htmlspecialchars($last_name); ?></p>
+        </div>
+        <div>
+            <label class="block text-sm font-medium text-gray-500 mb-1">Middle Name</label>
+            <p class="text-navy <?= empty($middle_name) ? 'opacity-60 italic text-gray-500' : '' ?>">
+                <?= !empty($middle_name) ? htmlspecialchars($middle_name) : 'N/A' ?>
+            </p>
+        </div>
+        <div>
+            <label class="block text-sm font-medium text-gray-500 mb-1">Suffix</label>
+            <p class="text-navy <?= empty($suffix) ? 'opacity-60 italic text-gray-500' : '' ?>">
+                <?= !empty($suffix) ? htmlspecialchars($suffix) : 'N/A' ?>
+            </p>
+        </div>
+        <div>
+            <label class="block text-sm font-medium text-gray-500 mb-1">Email Address</label>
+            <p class="text-navy"><?php echo htmlspecialchars($email); ?></p>
+        </div>
+        <div>
+            <label class="block text-sm font-medium text-gray-500 mb-1">Phone Number</label>
+            <p class="text-navy"><?php echo htmlspecialchars($phone_number); ?></p>
+        </div>
+        <div>
+            <label class="block text-sm font-medium text-gray-500 mb-1">Date of Birth</label>
+            <p class="text-navy"><?php echo date('F d Y', strtotime($birthdate)); ?></p>
+        </div>
+        <div>
+            <label class="block text-sm font-medium text-gray-500 mb-1">Region</label>
+            <p class="text-navy <?= empty($region) ? 'opacity-60 italic text-gray-500' : '' ?>">
+                <?= !empty($region) ? htmlspecialchars($region) : 'N/A' ?>
+            </p>
+        </div>
+        <div>
+            <label class="block text-sm font-medium text-gray-500 mb-1">Province</label>
+            <p class="text-navy <?= empty($province) ? 'opacity-60 italic text-gray-500' : '' ?>">
+                <?= !empty($province) ? htmlspecialchars($province) : 'N/A' ?>
+            </p>
+        </div>
+        <div>
+            <label class="block text-sm font-medium text-gray-500 mb-1">City</label>
+            <p class="text-navy <?= empty($city) ? 'opacity-60 italic text-gray-500' : '' ?>">
+                <?= !empty($city) ? htmlspecialchars($city) : 'N/A' ?>
+            </p>
+        </div>
+        <div>
+            <label class="block text-sm font-medium text-gray-500 mb-1">Barangay</label>
+            <p class="text-navy <?= empty($barangay) ? 'opacity-60 italic text-gray-500' : '' ?>">
+                <?= !empty($barangay) ? htmlspecialchars($barangay) : 'N/A' ?>
+            </p>
+        </div>
+        <div>
+            <label class="block text-sm font-medium text-gray-500 mb-1">Street Address</label>
+            <p class="text-navy <?= empty($street_address) ? 'opacity-60 italic text-gray-500' : '' ?>">
+                <?= !empty($street_address) ? htmlspecialchars($street_address) : 'N/A' ?>
+            </p>
+        </div>
+        <div>
+            <label class="block text-sm font-medium text-gray-500 mb-1">Zip/Postal Code</label>
+            <p class="text-navy <?= empty($zip_code) ? 'opacity-60 italic text-gray-500' : '' ?>">
+                <?= !empty($zip_code) ? htmlspecialchars($zip_code) : 'N/A' ?>
+            </p>
+        </div>
+    </div>
                 
                 <!-- New Uploaded Documents Section -->
                 <div class="mt-8 pt-6 border-t border-gray-200">
@@ -480,28 +517,6 @@ header("Pragma: no-cache");
                     </div>
                 </div>
 
-                <!-- Existing Emergency Contact Section -->
-                <div class="mt-8 pt-6 border-t border-gray-200">
-                    <h3 class="font-hedvig text-lg text-navy mb-4">Emergency Contact</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-500 mb-1">Contact Name</label>
-                            <p class="text-navy">Jane Doe</p>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-500 mb-1">Relationship</label>
-                            <p class="text-navy">Spouse</p>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-500 mb-1">Phone Number</label>
-                            <p class="text-navy">(555) 987-6543</p>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-500 mb-1">Email Address</label>
-                            <p class="text-navy">jane.doe@example.com</p>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
@@ -954,7 +969,8 @@ header("Pragma: no-cache");
                     <div>
                         <label for="phone" class="block text-sm font-medium text-gray-700 mb-1 sm:mb-2">Phone Number*</label>
                         <div class="relative">
-                            <input type="tel" id="phone" name="phone" value="<?php echo htmlspecialchars($phone_number); ?>" required class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent pr-10 text-sm sm:text-base">
+                            <input type="tel" id="phone" name="phone"  pattern="^(\+63\d{10}|0\d{10}|\d{10})$"
+                            title="Phone number (09XXXXXXXXX or +639XXXXXXXXX)" value="<?php echo htmlspecialchars($phone_number); ?>" required class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent pr-10 text-sm sm:text-base">
                             <span class="absolute right-3 sm:right-4 top-1/2 transform -translate-y-1/2 text-yellow-600">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
@@ -1192,8 +1208,233 @@ function updateBarangays() {
         });
 }
 
-// Add this to your script section
-// Define the missing modal functions
+// Phone number validation with format instructions
+function validatePhoneNumber(phone) {
+    // Remove all non-digit and non-plus characters
+    const cleaned = phone.replace(/[^0-9+]/g, '');
+    
+    // Check if starts with +63 (Philippines country code)
+    if (phone.startsWith('+63')) {
+        return cleaned.length === 13; // +63 plus 10 digits
+    }
+    
+    // Check if starts with 0 (local number)
+    if (phone.startsWith('0')) {
+        return cleaned.length === 11; // 0 plus 10 digits
+    }
+    
+    // If doesn't start with 0 or +63, must be 10 digits
+    return cleaned.length === 10;
+}
+
+// Restrict phone input to numbers and + only
+function restrictPhoneInput() {
+    const phoneInput = document.getElementById('phone');
+    
+    // Add help text
+    const helpText = document.createElement('p');
+    helpText.className = 'mt-1 text-xs text-gray-500';
+    helpText.textContent = 'Format: 09XXXXXXXXX or +639XXXXXXXXX';
+    phoneInput.parentNode.appendChild(helpText);
+    
+    phoneInput.addEventListener('keydown', function(e) {
+        // Allow: backspace, delete, tab, escape, enter
+        if ([46, 8, 9, 27, 13].includes(e.keyCode) || 
+            // Allow: Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
+            (e.keyCode === 65 && e.ctrlKey === true) || 
+            (e.keyCode === 67 && e.ctrlKey === true) || 
+            (e.keyCode === 86 && e.ctrlKey === true) || 
+            (e.keyCode === 88 && e.ctrlKey === true) ||
+            // Allow: home, end, left, right
+            (e.keyCode >= 35 && e.keyCode <= 39)) {
+                return;
+        }
+        
+        // Ensure it's a number or + (only at start)
+        if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && 
+            (e.keyCode < 96 || e.keyCode > 105) && 
+            (e.keyCode !== 187 || this.value.length !== 0)) {
+            e.preventDefault();
+        }
+    });
+    
+    phoneInput.addEventListener('input', function() {
+        const value = this.value;
+        // Remove any non-digit/non-plus characters
+        this.value = value.replace(/[^0-9+]/g, '');
+        
+        // Validate in real-time
+        if (!value) {
+            showError('phone', 'Phone number is required');
+        } else if (!validatePhoneNumber(value)) {
+            showError('phone', 'Invalid format. Use: 09XXXXXXXXX or +639XXXXXXXXX');
+        } else {
+            clearError('phone');
+        }
+    });
+}
+
+// Date of birth validation - at least 18 years old
+function validateDateOfBirth(dob) {
+    if (!dob) return false;
+    
+    const birthDate = new Date(dob);
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+    
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+    }
+    
+    return age >= 18;
+}
+
+// Set up date picker restrictions
+function setupDatePicker() {
+    const dobInput = document.getElementById('dob');
+    const today = new Date();
+    const minDate = new Date();
+    minDate.setFullYear(today.getFullYear() - 18);
+    
+    // Set max date to today
+    dobInput.max = today.toISOString().split('T')[0];
+    
+    // Set min date to 18 years ago
+    dobInput.min = new Date(today.getFullYear() - 120, today.getMonth(), today.getDate()).toISOString().split('T')[0];
+}
+
+// Form validation function
+function validateForm() {
+    let isValid = true;
+    
+    // First name validation
+    const firstName = document.getElementById('firstName').value.trim();
+    if (!firstName) {
+        isValid = false;
+        showError('firstName', 'First name is required');
+    } else {
+        clearError('firstName');
+    }
+    
+    // Last name validation
+    const lastName = document.getElementById('lastName').value.trim();
+    if (!lastName) {
+        isValid = false;
+        showError('lastName', 'Last name is required');
+    } else {
+        clearError('lastName');
+    }
+    
+    // Phone number validation
+    const phone = document.getElementById('phone').value.trim();
+    if (!phone) {
+        isValid = false;
+        showError('phone', 'Phone number is required');
+    } else if (!validatePhoneNumber(phone)) {
+        isValid = false;
+        showError('phone', 'Please enter a valid Philippine phone number (10 digits, or 11 digits starting with 0, or +63 followed by 10 digits)');
+    } else {
+        clearError('phone');
+    }
+    
+    // Date of birth validation
+    const dob = document.getElementById('dob').value;
+    if (dob && !validateDateOfBirth(dob)) {
+        isValid = false;
+        showError('dob', 'You must be at least 18 years old');
+    } else {
+        clearError('dob');
+    }
+    
+    // Address validation
+    const region = document.getElementById('region').value;
+    const province = document.getElementById('province').value;
+    const city = document.getElementById('city').value;
+    const barangay = document.getElementById('barangay').value;
+    const streetAddress = document.getElementById('street_address').value.trim();
+    const zip = document.getElementById('zip').value.trim();
+    
+    if (!region) {
+        isValid = false;
+        showError('region', 'Region is required');
+    } else {
+        clearError('region');
+    }
+    
+    if (!province) {
+        isValid = false;
+        showError('province', 'Province is required');
+    } else {
+        clearError('province');
+    }
+    
+    if (!city) {
+        isValid = false;
+        showError('city', 'City/Municipality is required');
+    } else {
+        clearError('city');
+    }
+    
+    if (!barangay) {
+        isValid = false;
+        showError('barangay', 'Barangay is required');
+    } else {
+        clearError('barangay');
+    }
+    
+    if (!streetAddress) {
+        isValid = false;
+        showError('street_address', 'Street address is required');
+    } else {
+        clearError('street_address');
+    }
+    
+    if (!zip) {
+        isValid = false;
+        showError('zip', 'Zip/Postal code is required');
+    } else {
+        clearError('zip');
+    }
+    
+    return isValid;
+}
+
+// Helper function to show error messages
+function showError(fieldId, message) {
+    const field = document.getElementById(fieldId);
+    const errorElement = document.getElementById(`${fieldId}-error`) || createErrorElement(fieldId);
+    
+    field.classList.add('border-red-500');
+    errorElement.textContent = message;
+    errorElement.classList.remove('hidden');
+}
+
+// Helper function to clear error messages
+function clearError(fieldId) {
+    const field = document.getElementById(fieldId);
+    const errorElement = document.getElementById(`${fieldId}-error`);
+    
+    if (errorElement) {
+        field.classList.remove('border-red-500');
+        errorElement.classList.add('hidden');
+    }
+}
+
+// Helper function to create error message elements
+function createErrorElement(fieldId) {
+    const field = document.getElementById(fieldId);
+    const errorElement = document.createElement('p');
+    errorElement.id = `${fieldId}-error`;
+    errorElement.className = 'mt-1 text-sm text-red-600 hidden';
+    
+    // Insert the error element after the field
+    field.parentNode.insertBefore(errorElement, field.nextSibling);
+    
+    return errorElement;
+}
+
+// Define the modal functions
 function closeEditProfileModal() {
     const modal = document.getElementById('edit-profile-modal');
     modal.classList.add('opacity-0', 'scale-95');
@@ -1205,15 +1446,41 @@ function closeEditProfileModal() {
     }, 300);
 }
 
-// Connect the Save Changes button to submit the form
-document.querySelector('button[type="submit"]').addEventListener('click', function() {
-    document.getElementById('profile-form').submit();
+// Connect the Save Changes button to submit the form with SweetAlert confirmation
+document.querySelector('button[type="submit"]').addEventListener('click', function(e) {
+    e.preventDefault(); // Prevent the default form submission
+    
+    // Validate the form first
+    if (!validateForm()) {
+        Swal.fire({
+            title: 'Validation Error',
+            text: 'Please correct the errors in the form before submitting.',
+            icon: 'error',
+            confirmButtonColor: '#d9a404'
+        });
+        return;
+    }
+    
+    Swal.fire({
+        title: 'Save Changes?',
+        text: 'Are you sure you want to update your profile information?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#d9a404', // Yellow color matching your theme
+        cancelButtonColor: '#718096', // Gray color
+        confirmButtonText: 'Yes, save changes',
+        cancelButtonText: 'Cancel'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // User confirmed, now submit the form
+            submitProfileForm();
+        }
+    });
 });
 
-document.getElementById('profile-form').addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    const formData = new FormData(this);
+function submitProfileForm() {
+    const form = document.getElementById('profile-form');
+    const formData = new FormData(form);
     const submitButton = document.querySelector('button[type="submit"]');
     const originalButtonText = submitButton.innerHTML;
     
@@ -1221,10 +1488,7 @@ document.getElementById('profile-form').addEventListener('submit', function(e) {
     submitButton.innerHTML = '<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Saving...';
     submitButton.disabled = true;
     
-    // Log before fetch to confirm event handling
-    console.log('Submitting form...');
-    
-    fetch(this.action, {
+    fetch(form.action, {
         method: 'POST',
         body: formData,
         headers: {
@@ -1233,17 +1497,11 @@ document.getElementById('profile-form').addEventListener('submit', function(e) {
         }
     })
     .then(response => {
-        console.log('Response received:', response);
-        
-        // First check if the response is OK
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }
         
-        // Then try to parse as JSON
         const contentType = response.headers.get('content-type');
-        console.log('Content type:', contentType);
-        
         if (!contentType || !contentType.includes('application/json')) {
             throw new TypeError("Oops, we didn't get JSON!");
         }
@@ -1251,40 +1509,29 @@ document.getElementById('profile-form').addEventListener('submit', function(e) {
         return response.json();
     })
     .then(data => {
-        console.log('Data received:', data);
-        
         submitButton.innerHTML = originalButtonText;
         submitButton.disabled = false;
         
         if (data.success) {
-            console.log('Showing success SweetAlert');
-            
             Swal.fire({
                 icon: 'success',
                 title: 'Success!',
                 text: data.message,
-                confirmButtonColor: '#3085d6',
-                confirmButtonText: 'OK'
+                confirmButtonColor: '#d9a404'
             }).then(() => {
                 closeEditProfileModal();
-                // Optional: Refresh the page or update the UI
-                // window.location.reload();
+                window.location.reload();
             });
         } else {
-            console.log('Showing error SweetAlert');
-            
             Swal.fire({
                 icon: 'error',
                 title: 'Error',
-                text: data.message,
-                confirmButtonColor: '#d33',
-                confirmButtonText: 'OK'
+                text: data.message || 'An unknown error occurred',
+                confirmButtonColor: '#d9a404'
             });
         }
     })
     .catch(error => {
-        console.error('Error:', error);
-        
         submitButton.innerHTML = originalButtonText;
         submitButton.disabled = false;
         
@@ -1292,29 +1539,135 @@ document.getElementById('profile-form').addEventListener('submit', function(e) {
             icon: 'error',
             title: 'Error',
             text: 'An error occurred: ' + error.message,
-            confirmButtonColor: '#d33',
-            confirmButtonText: 'OK'
+            confirmButtonColor: '#d9a404'
         });
     });
+}
+
+// Handle form submission in case it's triggered by hitting enter
+document.getElementById('profile-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    document.querySelector('button[type="submit"]').click();
 });
+
 // Close modal when the X button is clicked
 document.getElementById('close-edit-profile-modal').addEventListener('click', closeEditProfileModal);
-</script>
 
-<?php if (isset($_SESSION['show_success_alert'])): ?>
-<script>
+// Initialize the date picker when the DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
-    Swal.fire({
-        title: 'Saved!',
-        text: 'Your changes have been saved.',
-        icon: 'success',
-        confirmButtonText: 'OK'
-    }).then(() => {
-        <?php unset($_SESSION['show_success_alert']); ?>
+    setupDatePicker();
+    
+    // Create error message elements for all required fields
+    const requiredFields = [
+        'firstName', 'lastName', 'phone', 'region', 'province', 
+        'city', 'barangay', 'street_address', 'zip'
+    ];
+    
+    requiredFields.forEach(fieldId => {
+        createErrorElement(fieldId);
     });
+    
+    // Also create for date of birth in case it's required later
+    createErrorElement('dob');
+});
+
+// Enhanced name validation
+function isValidName(name) {
+    // Must contain at least one non-space character and no special chars/numbers
+    return name.trim().length > 0 && 
+           /^[a-zA-Z\s\-'.]+$/.test(name) && 
+           !/^\s+$/.test(name);
+}
+
+// Real-time validation setup
+function setupRealTimeValidation() {
+
+    restrictPhoneInput();
+
+    // First Name
+    document.getElementById('firstName').addEventListener('input', function() {
+        const value = this.value.trim();
+        if (!value) {
+            showError('firstName', 'First name is required');
+        } else if (!isValidName(value)) {
+            showError('firstName', 'Only letters, spaces, hyphens, apostrophes and periods allowed');
+        } else {
+            clearError('firstName');
+        }
+    });
+
+    // Last Name
+    document.getElementById('lastName').addEventListener('input', function() {
+        const value = this.value.trim();
+        if (!value) {
+            showError('lastName', 'Last name is required');
+        } else if (!isValidName(value)) {
+            showError('lastName', 'Only letters, spaces, hyphens, apostrophes and periods allowed');
+        } else {
+            clearError('lastName');
+        }
+    });
+
+    // Middle Name (optional but still validate format)
+    document.getElementById('middleName').addEventListener('input', function() {
+        const value = this.value.trim();
+        if (value && !isValidName(value)) {
+            showError('middleName', 'Only letters, spaces, hyphens, apostrophes and periods allowed');
+        } else {
+            clearError('middleName');
+        }
+    });
+
+    // Phone Number
+    document.getElementById('phone').addEventListener('input', function() {
+        const value = this.value.trim();
+        if (!value) {
+            showError('phone', 'Phone number is required');
+        } else if (!validatePhoneNumber(value)) {
+            showError('phone', 'Invalid Philippine phone number format');
+        } else {
+            clearError('phone');
+        }
+    });
+
+    // Date of Birth
+    document.getElementById('dob').addEventListener('change', function() {
+        const value = this.value;
+        if (value && !validateDateOfBirth(value)) {
+            showError('dob', 'You must be at least 18 years old');
+        } else {
+            clearError('dob');
+        }
+    });
+
+    // Address Fields
+    const addressFields = ['region', 'province', 'city', 'barangay', 'street_address', 'zip'];
+    addressFields.forEach(field => {
+        document.getElementById(field).addEventListener('change', function() {
+            const value = this.value.trim();
+            if (!value) {
+                showError(field, `${field.replace('_', ' ')} is required`);
+            } else {
+                clearError(field);
+            }
+        });
+    });
+}
+
+// Update DOMContentLoaded
+document.addEventListener('DOMContentLoaded', function() {
+    setupDatePicker();
+    setupRealTimeValidation();
+    
+    // Create error message elements
+    const fields = [
+        'firstName', 'middleName', 'lastName', 'phone', 'dob',
+        'region', 'province', 'city', 'barangay', 'street_address', 'zip'
+    ];
+    
+    fields.forEach(fieldId => createErrorElement(fieldId));
 });
 </script>
-<?php endif; ?>
 
 
 <!-- Add Payment Method Modal (Hidden by default) -->
