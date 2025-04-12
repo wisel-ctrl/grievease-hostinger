@@ -360,6 +360,11 @@ if ($branchResult->num_rows > 0) {
                 <?php echo htmlspecialchars(ucwords($branchName)); ?> - Inventory Items
             </h4>
         </div>
+
+        <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
+            <i class="fas fa-box"></i>
+            <?php echo $totalItems . " Item" . ($totalItems != 1 ? "s" : ""); ?>
+        </span>
         
         <!-- Search and Filter Section -->
         <div class="flex flex-col md:flex-row items-start md:items-center gap-3 w-full md:w-auto">
@@ -500,7 +505,7 @@ if ($branchResult->num_rows > 0) {
                         echo '<td class="p-4 text-sm text-sidebar-text">' . htmlspecialchars($row["item_name"]) . '</td>';
                         echo '<td class="p-4 text-sm text-sidebar-text">';
                         echo '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">';
-                        echo htmlspecialchars($row["category_name"]) . '</span>';
+                        echo  htmlspecialchars($row["category_name"]) . '</span>';
                         echo '</td>';
                         echo '<td class="p-4 text-sm text-sidebar-text" data-sort-value="' . $row["quantity"] . '">' . $row["quantity"] . '</td>';
                         echo '<td class="p-4 text-sm font-medium text-sidebar-text" data-sort-value="' . $row["price"] . '">₱' . number_format($row["price"], 2) . '</td>';

@@ -219,7 +219,6 @@ if ($branchResult->num_rows > 0) {
     <!-- Branch Header with Search and Filters -->
     <div class="bg-sidebar-hover p-4 border-b border-sidebar-border flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div class="flex items-center">
-            <i class="fas fa-building text-sidebar-accent mr-2"></i>
             <h4 class="text-lg font-bold text-sidebar-text">Branch: <?php echo $branchName; ?></h4>
         </div>
 
@@ -371,8 +370,7 @@ if ($branchResult->num_rows > 0) {
                             <td class="p-4 text-sm text-sidebar-text font-medium">#SVC-<?php echo str_pad($row['service_id'], 3, "0", STR_PAD_LEFT); ?></td>
                             <td class="p-4 text-sm text-sidebar-text"><?php echo htmlspecialchars($row["service_name"]); ?></td>
                             <td class="p-4 text-sm text-sidebar-text">
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">
-                                    <i class="fas fa-folder-open mr-1"></i> <?php echo htmlspecialchars($row["service_category_name"]); ?>
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100"> <?php echo htmlspecialchars($row["service_category_name"]); ?>
                                 </span>
                             </td>
                             <td class="p-4 text-sm font-medium text-sidebar-text"><?php echo formatPrice($row["selling_price"]); ?></td>
