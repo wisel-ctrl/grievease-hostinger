@@ -361,11 +361,6 @@ if ($branchResult->num_rows > 0) {
                 <?php echo htmlspecialchars(ucwords($branchName)); ?> - Inventory Items
             </h4>
         </div>
-
-        <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
-            <i class="fas fa-box"></i>
-            <?php echo $totalItems . " Item" . ($totalItems != 1 ? "s" : ""); ?>
-        </span>
         
         <!-- Search and Filter Section -->
         <div class="flex flex-col md:flex-row items-start md:items-center gap-3 w-full md:w-auto">
