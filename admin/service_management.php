@@ -340,7 +340,7 @@ if ($branchResult->num_rows > 0) {
                     </th>
                     <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(<?php echo $branchId; ?>, 3)">
                         <div class="flex items-center">
-                            <i class="fas fa-dollar-sign mr-1.5 text-sidebar-accent"></i> Price 
+                        <i class="fa-solid fa-peso-sign"></i> Price 
                             <i class="fas fa-sort ml-1 text-gray-400"></i>
                         </div>
                     </th>
