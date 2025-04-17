@@ -10,16 +10,12 @@ if (!isset($_GET['id'])) {
 
 $booking_id = (int)$_GET['id'];
 
-$query = "SELECT b.*, 
-                 CONCAT(u.first_name, ' ', COALESCE(u.middle_name, ''), ' ', u.last_name, ' ', COALESCE(u.suffix, '')) AS customer_name,
-                 s.service_name,
-                 u.email,
-                 u.contact_number,
-                 u.address
-          FROM booking_tb b
-          JOIN users u ON b.customerID = u.id
-          JOIN services_tb s ON b.service_id = s.service_id
-          WHERE b.booking_id = ?";
+$query = "SELECT b.*, CONCAT(u.first_name, ' ', COALESCE(u.middle_name, ''), ' ', u.last_name, ' ', 
+            COALESCE(u.suffix, '')) AS customer_name, 
+            s.service_name, u.email FROM booking_tb b 
+            JOIN users u ON b.customerID = u.id 
+            JOIN services_tb s ON b.service_id = s.service_id 
+            WHERE b.booking_id = ?";
 
 $stmt = $conn->prepare($query);
 $stmt->bind_param("i", $booking_id);
