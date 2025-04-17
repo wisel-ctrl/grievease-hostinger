@@ -717,6 +717,7 @@ document.addEventListener('DOMContentLoaded', function() {
         e.preventDefault();
         
         const formData = new FormData(this);
+        const formElement = this; // Store reference to the form
 
         const formEntries = {};
         for (let pair of formData.entries()) {
@@ -730,10 +731,10 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .then(response => response.json())
         .then(data => {
-            
             if (data.success) {
                 alert('Booking successful!');
-                // Redirect or show success message
+                document.getElementById('traditionalModal').classList.add('hidden');
+                formElement.reset(); // Reset the form fields
             } else {
                 alert('Error: ' + data.message);
             }
