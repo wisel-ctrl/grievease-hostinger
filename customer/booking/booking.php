@@ -66,7 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
         // Insert into database
         $stmt = $conn->prepare("
-            INSERT INTO bookings (
+            INSERT INTO booking_tb (
                 customerID, deceased_fname, deceased_midname, deceased_lname, deceased_suffix,
                 deceased_address, deceased_birth, deceased_dodeath, deceased_dateOfBurial,
                 service_id, with_cremate, branch_id, initial_price, deathcert_url,
