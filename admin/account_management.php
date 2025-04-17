@@ -131,7 +131,7 @@ $customersResult = mysqli_query($conn, $customersQuery);
       
       <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
         <i class="fas fa-users"></i>
-        <?php echo $totalRows . " Customer" . ($totalRows != 1 ? "s" : ""); ?>
+        <?php echo $totalCustomersRow . " Customer" . ($totalCustomersRow != 1 ? "s" : ""); ?>
       </span>
     </div>
     
