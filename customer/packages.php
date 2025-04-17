@@ -44,9 +44,6 @@ if ($result) {
         if (!empty($row['flower_design'])) {
             array_splice($inclusions, 1, 0, $row['flower_design']);
         }
-
-        // Add professional embalming last
-        $inclusions[] = "Professional embalming";
         
         $packages[] = [
             'id' => $row['service_id'],
@@ -1000,29 +997,33 @@ function renderPackages(filteredPackages) {
         packageCard.setAttribute('data-image', pkg.image);
         
         packageCard.innerHTML = `
-            <div class="h-48 bg-cover bg-center relative" style="background-image: url('${pkg.image}')">
-                <div class="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-all duration-300"></div>
-                <div class="absolute top-4 right-4 w-12 h-12 rounded-full bg-yellow-600/90 flex items-center justify-center text-white">
-                    <i class="fas fa-${pkg.icon} text-xl"></i>
+            <div class="flex flex-col h-full"> <!-- Added flex container with full height -->
+                <div class="h-48 bg-cover bg-center relative" style="background-image: url('${pkg.image}')">
+                    <div class="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-all duration-300"></div>
+                    <div class="absolute top-4 right-4 w-12 h-12 rounded-full bg-yellow-600/90 flex items-center justify-center text-white">
+                        <i class="fas fa-${pkg.icon} text-xl"></i>
+                    </div>
                 </div>
-            </div>
-            <div class="p-6">
-                <h3 class="text-2xl font-hedvig text-navy mb-3">${pkg.name}</h3>
-                <p class="text-dark mb-4">${pkg.description}</p>
-                <div class="text-3xl font-hedvig text-yellow-600 mb-4">₱${pkg.price.toLocaleString()}</div>
-                <div class="border-t border-gray-200 pt-4 mt-2">
-                    <ul class="space-y-2">
-                        ${pkg.features.map(feature => `
-                            <li class="flex items-center text-sm text-gray-700">
-                                <i class="fas fa-check-circle mr-2 text-yellow-600"></i>
-                                <span>${feature}</span>
-                            </li>
-                        `).join('')}
-                    </ul>
+                <div class="p-6 flex flex-col flex-grow"> <!-- Added flex-grow to content area -->
+                    <div> <!-- Wrapped non-button content in a div -->
+                        <h3 class="text-2xl font-hedvig text-navy mb-3">${pkg.name}</h3>
+                        <p class="text-dark mb-4">${pkg.description}</p>
+                        <div class="text-3xl font-hedvig text-yellow-600 mb-4">₱${pkg.price.toLocaleString()}</div>
+                        <div class="border-t border-gray-200 pt-4 mt-2">
+                            <ul class="space-y-2">
+                                ${pkg.features.map(feature => `
+                                    <li class="flex items-center text-sm text-gray-700">
+                                        <i class="fas fa-check-circle mr-2 text-yellow-600"></i>
+                                        <span>${feature}</span>
+                                    </li>
+                                `).join('')}
+                            </ul>
+                        </div>
+                    </div>
+                    <button class="selectPackageBtn mt-auto w-full bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg shadow-md transition-all duration-300 text-center">
+                        Select Package
+                    </button>
                 </div>
-                <button class="selectPackageBtn block w-full mt-6 bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg shadow-md transition-all duration-300 text-center">
-                    Select Package
-                </button>
             </div>
         `;
         container.appendChild(packageCard);
