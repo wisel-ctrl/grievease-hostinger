@@ -20,6 +20,22 @@ $email = $row['email'];
 $branch_id = $row['branch_id']; // This will be used for the hidden branch_id input
 $stmt->close();
 
+// Add this function to check and fix image paths
+function getImageUrl($image_path) {
+    // If image path is empty or null, return a placeholder
+    if (empty($image_path)) {
+        return 'assets/images/placeholder.jpg'; // Change this to your actual placeholder image path
+    }
+    
+    // If the path doesn't start with http or a slash, add the proper directory prefix
+    if (!preg_match('/^(http|\/)/i', $image_path)) {
+        // Adjust this path to wherever your service images are stored
+        return '../admin/' . $image_path;
+    }
+    
+    return $image_path;
+}
+
 // Fetch packages from database
 $packages = [];
 $query = "SELECT s.service_id, s.service_name, s.description, s.selling_price, s.image_url 
@@ -32,7 +48,7 @@ $result = $conn->query($query);
 if ($result) {
     while ($row = $result->fetch_assoc()) {
         // Parse inclusions (assuming it's stored as a JSON string or comma-separated)
-        $inclusions = [];
+        $inclusions = []; // Define $inclusions here, inside the loop
         if (!empty($row['inclusions'])) {
             // Try to decode as JSON first
             $decoded = json_decode($row['inclusions'], true);
@@ -54,17 +70,33 @@ if ($result) {
             'name' => $row['service_name'],
             'description' => $row['description'],
             'price' => $row['selling_price'],
-            'image' => $row['image_url'],
-            'features' => $inclusions,
+            'image' => getImageUrl($row['image_url']), // Use the helper function for image URLs
+            'features' => $inclusions, // Now $inclusions is defined for each package
             'service' => 'traditional' // Assuming all are traditional for now
         ];
     }
     $result->free();
 }
 
+// Add some debug information
+echo "<!-- DEBUG: Image URLs in database -->\n";
+echo "<!-- ";
+foreach ($packages as $pkg) {
+    echo "Package: " . $pkg['name'] . ", Image: " . $pkg['image'] . "\n";
+}
+echo " -->\n";
+
+// Function to determine icon based on package price
+function getIconForPackage($price) {
+    if ($price > 500000) return 'star';
+    else if ($price > 200000) return 'crown';
+    else if ($price > 100000) return 'heart';
+    else if ($price > 50000) return 'dove';
+    else return 'leaf'; // default icon
+}
+
 $conn->close();
 ?>
-
 
 
 <!DOCTYPE html>
@@ -275,13 +307,65 @@ $conn->close();
     </div>
 
         <!-- Packages Grid -->
-<div id="packages-container" class="grid grid-cols-1 md:grid-cols-3 gap-8">
-    <?php
-    // Assuming $packages is your array of packages passed from the server
-    // If no packages are found, show the no-results message
-    if (empty($filteredPackages)): ?>
-        <!-- No Results Message -->
-        <div id="no-results" class="text-center py-12 col-span-full">
+        <div id="packages-container" class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <?php if (count($packages) > 0): ?>
+                <?php foreach ($packages as $pkg): ?>
+                    <?php 
+                    // Determine icon for this package
+                    $icon = getIconForPackage($pkg['price']);
+                    ?>
+                    <div class="package-card bg-white rounded-[20px] shadow-lg overflow-hidden"
+                         data-price="<?= $pkg['price'] ?>"
+                         data-service="<?= $pkg['service'] ?>"
+                         data-name="<?= htmlspecialchars($pkg['name']) ?>"
+                         data-image="<?= htmlspecialchars($pkg['image']) ?>">
+                        <div class="flex flex-col h-full">
+                            <!-- Image section -->
+                            <div class="h-48 bg-cover bg-center relative" style="background-image: url('<?= htmlspecialchars($pkg['image']) ?>')">
+                                <div class="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-all duration-300"></div>
+                                <div class="absolute top-4 right-4 w-12 h-12 rounded-full bg-yellow-600/90 flex items-center justify-center text-white">
+                                    <i class="fas fa-<?= $icon ?> text-xl"></i>
+                                </div>
+                            </div>
+                            
+                            <!-- Content section with consistent sizing -->
+                            <div class="p-6 flex flex-col flex-grow">
+                                <!-- Title -->
+                                <h3 class="text-2xl font-hedvig text-navy mb-3"><?= htmlspecialchars($pkg['name']) ?></h3>
+                                
+                                <!-- Description -->
+                                <p class="text-dark mb-4 line-clamp-3 h-[72px] overflow-hidden"><?= htmlspecialchars($pkg['description']) ?></p>
+                                
+                                <!-- Price -->
+                                <div class="text-3xl font-hedvig text-yellow-600 mb-4 h-12 flex items-center">
+                                    ₱<?= number_format($pkg['price']) ?>
+                                </div>
+                                
+                                <!-- Features list -->
+                                <div class="border-t border-gray-200 pt-4 mt-2 flex-grow overflow-y-auto">
+                                    <ul class="space-y-2">
+                                        <?php foreach ($pkg['features'] as $feature): ?>
+                                            <li class="flex items-center text-sm text-gray-700">
+                                                <i class="fas fa-check-circle mr-2 text-yellow-600"></i>
+                                                <span><?= htmlspecialchars($feature) ?></span>
+                                            </li>
+                                        <?php endforeach; ?>
+                                    </ul>
+                                </div>
+                                
+                                <!-- Button -->
+                                <button class="selectPackageBtn mt-6 w-full bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg shadow-md transition-all duration-300 text-center">
+                                    Select Package
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            <?php endif; ?>
+        </div>
+
+        <!-- No Results Message (initially hidden) -->
+        <div id="no-results" class="<?= (count($packages) > 0) ? 'hidden' : '' ?> text-center py-12">
             <i class="fas fa-search text-5xl text-gray-300 mb-4"></i>
             <h3 class="text-2xl font-hedvig text-navy mb-2">No Packages Found</h3>
             <p class="text-gray-600 max-w-md mx-auto">We couldn't find any packages matching your criteria. Try adjusting your filters or search terms.</p>
@@ -289,56 +373,7 @@ $conn->close();
                 Reset All Filters
             </button>
         </div>
-    <?php else: 
-        foreach ($filteredPackages as $pkg): ?>
-            <div class="package-card bg-white rounded-[20px] shadow-lg overflow-hidden"
-                 data-price="<?= htmlspecialchars($pkg['price']) ?>"
-                 data-service="<?= htmlspecialchars($pkg['service']) ?>"
-                 data-name="<?= htmlspecialchars($pkg['name']) ?>"
-                 data-image="<?= htmlspecialchars($pkg['image']) ?>">
-                <div class="flex flex-col h-full">
-                    <!-- Image section -->
-                    <div class="h-48 bg-cover bg-center relative" 
-                         style="background-image: url('../admin/uploads/services/<?= htmlspecialchars(basename($pkg['image'])) ?>')">
-                        <div class="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-all duration-300"></div>
-                        <div class="absolute top-4 right-4 w-12 h-12 rounded-full bg-yellow-600/90 flex items-center justify-center text-white">
-                            <i class="fas fa-<?= htmlspecialchars($pkg['icon']) ?> text-xl"></i>
-                        </div>
-                    </div>
-                    
-                    <!-- Content section with consistent sizing -->
-                    <div class="p-6 flex flex-col flex-grow">
-                        <!-- Title -->
-                        <h3 class="text-2xl font-hedvig text-navy mb-3"><?= htmlspecialchars($pkg['name']) ?></h3>
-                        
-                        <!-- Description with fixed height and line clamping -->
-                        <p class="text-dark mb-4 line-clamp-3 h-[72px] overflow-hidden"><?= htmlspecialchars($pkg['description']) ?></p>
-                        
-                        <!-- Price with consistent sizing -->
-                        <div class="text-3xl font-hedvig text-yellow-600 mb-4 h-12 flex items-center">₱<?= number_format($pkg['price'], 0) ?></div>
-                        
-                        <!-- Features list with scroll if needed -->
-                        <div class="border-t border-gray-200 pt-4 mt-2 flex-grow overflow-y-auto">
-                            <ul class="space-y-2">
-                                <?php foreach ($pkg['features'] as $feature): ?>
-                                    <li class="flex items-center text-sm text-gray-700">
-                                        <i class="fas fa-check-circle mr-2 text-yellow-600"></i>
-                                        <span><?= htmlspecialchars($feature) ?></span>
-                                    </li>
-                                <?php endforeach; ?>
-                            </ul>
-                        </div>
-                        
-                        <!-- Button at the bottom -->
-                        <button class="selectPackageBtn mt-6 w-full bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg shadow-md transition-all duration-300 text-center">
-                            Select Package
-                        </button>
-                    </div>
-                </div>
-            </div>
-        <?php endforeach;
-    endif; ?>
-</div>
+    </div>
 
     <!-- Footer -->
     <footer class="bg-black font-playfair text-white py-12">
@@ -708,13 +743,11 @@ $conn->close();
 
 <script src="customer_support.js"></script>
 <script>
-const packagesFromDB = <?php echo json_encode($packages); ?>;
-console.log('packages from db',packagesFromDB);
+
 
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM fully loaded and parsed');
-    // Show service type selection modal for all packages
-    // Use event delegation for the selectPackageBtn
+    const packagesFromDB = <?php echo json_encode($packages); ?>;
+
     document.addEventListener('click', function(event) {
         if (event.target.classList.contains('selectPackageBtn')) {
             const packageCard = event.target.closest('.package-card');
@@ -1024,10 +1057,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Function to render packages
 function renderPackages(filteredPackages) {
-    console.log('Rendering packages:', filteredPackages);
+    console.log('Rendering packages:', filteredPackages); // Log packages being rendered
     const container = document.getElementById('packages-container');
     const noResults = document.getElementById('no-results');
     
+    // Check if elements exist
     if (!container || !noResults) {
         console.error('Required DOM elements not found!');
         return;
@@ -1043,8 +1077,9 @@ function renderPackages(filteredPackages) {
         noResults.classList.add('hidden');
     }
 
+
     filteredPackages.forEach(pkg => {
-        console.log('Creating card for package:', pkg);
+        console.log('Creating card for package:', pkg); // Log each package being rendered
         const packageCard = document.createElement('div');
         packageCard.className = 'package-card bg-white rounded-[20px] shadow-lg overflow-hidden';
         packageCard.setAttribute('data-price', pkg.price);
@@ -1052,44 +1087,28 @@ function renderPackages(filteredPackages) {
         packageCard.setAttribute('data-name', pkg.name);
         packageCard.setAttribute('data-image', pkg.image);
         
-        // Extract filename from image path safely
-        const getImagePath = (imagePath) => {
-            try {
-                // Handle cases where image might be full URL or just filename
-                if (imagePath.includes('http') || imagePath.includes('base64')) {
-                    return imagePath; // Return as-is if it's a URL or base64
-                }
-                // Extract filename and prepend the correct path
-                const filename = imagePath.split('/').pop() || imagePath;
-                return `../admin/uploads/services/${filename}`;
-            } catch (e) {
-                console.error('Error processing image path:', e);
-                return '../admin/uploads/services/default.jpg'; // Fallback image
-            }
-        };
-
         packageCard.innerHTML = `
-            <div class="flex flex-col h-full">
-                <!-- Improved Image Section -->
-                <div class="h-48 bg-cover bg-center relative">
-                    <!-- Actual img tag for better SEO and lazy loading -->
-                    <img src="${getImagePath(pkg.image)}" 
-                         alt="${pkg.name}" 
-                         class="absolute inset-0 w-full h-full object-cover"
-                         loading="lazy"
-                         onerror="this.onerror=null;this.src='../admin/uploads/services/default.jpg'">
+            <div class="flex flex-col h-full"> <!-- Main flex container -->
+                <!-- Image section (unchanged) -->
+                <div class="h-48 bg-cover bg-center relative" style="background-image: url('${pkg.image}')">
                     <div class="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-all duration-300"></div>
                     <div class="absolute top-4 right-4 w-12 h-12 rounded-full bg-yellow-600/90 flex items-center justify-center text-white">
                         <i class="fas fa-${pkg.icon} text-xl"></i>
                     </div>
                 </div>
                 
-                <!-- Content section -->
+                <!-- Content section with consistent sizing -->
                 <div class="p-6 flex flex-col flex-grow">
+                    <!-- Title (unchanged) -->
                     <h3 class="text-2xl font-hedvig text-navy mb-3">${pkg.name}</h3>
+                    
+                    <!-- Description with fixed height and line clamping -->
                     <p class="text-dark mb-4 line-clamp-3 h-[72px] overflow-hidden">${pkg.description}</p>
+                    
+                    <!-- Price with consistent sizing -->
                     <div class="text-3xl font-hedvig text-yellow-600 mb-4 h-12 flex items-center">₱${pkg.price.toLocaleString()}</div>
                     
+                    <!-- Features list with scroll if needed -->
                     <div class="border-t border-gray-200 pt-4 mt-2 flex-grow overflow-y-auto">
                         <ul class="space-y-2">
                             ${pkg.features.map(feature => `
@@ -1101,6 +1120,7 @@ function renderPackages(filteredPackages) {
                         </ul>
                     </div>
                     
+                    <!-- Button at the bottom -->
                     <button class="selectPackageBtn mt-6 w-full bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg shadow-md transition-all duration-300 text-center">
                         Select Package
                     </button>
@@ -1112,34 +1132,74 @@ function renderPackages(filteredPackages) {
 }
 
 function filterAndSortPackages() {
-    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-    const priceSort = document.getElementById('priceSort').value;
-
-    let filteredPackages = packagesFromDB.filter(pkg => 
-        (searchTerm === '' || pkg.name.toLowerCase().includes(searchTerm) || 
-         pkg.description.toLowerCase().includes(searchTerm) ||
-         pkg.features.some(f => f.toLowerCase().includes(searchTerm)))
-    );
-
-    if (priceSort === 'asc') {
-        filteredPackages.sort((a, b) => a.price - b.price);
-    } else if (priceSort === 'desc') {
-        filteredPackages.sort((a, b) => b.price - a.price);
+        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+        const priceSort = document.getElementById('priceSort').value;
+        const packagesContainer = document.getElementById('packages-container');
+        const noResults = document.getElementById('no-results');
+        
+        // Show/hide all package cards based on search
+        let visibleCount = 0;
+        document.querySelectorAll('.package-card').forEach(card => {
+            const packageName = card.dataset.name.toLowerCase();
+            const packageDescription = card.querySelector('p').textContent.toLowerCase();
+            const featureTexts = Array.from(card.querySelectorAll('ul li')).map(li => li.textContent.toLowerCase());
+            
+            const matchesSearch = searchTerm === '' || 
+                                  packageName.includes(searchTerm) || 
+                                  packageDescription.includes(searchTerm) ||
+                                  featureTexts.some(text => text.includes(searchTerm));
+            
+            if (matchesSearch) {
+                card.classList.remove('hidden');
+                visibleCount++;
+            } else {
+                card.classList.add('hidden');
+            }
+        });
+        
+        // Show/hide no results message
+        if (visibleCount === 0) {
+            noResults.classList.remove('hidden');
+        } else {
+            noResults.classList.add('hidden');
+        }
+        
+        // Sort visible cards if needed
+        if (priceSort) {
+            const cards = Array.from(packagesContainer.querySelectorAll('.package-card:not(.hidden)'));
+            cards.sort((a, b) => {
+                const priceA = parseFloat(a.dataset.price);
+                const priceB = parseFloat(b.dataset.price);
+                return priceSort === 'asc' ? priceA - priceB : priceB - priceA;
+            });
+            
+            // Reattach sorted cards
+            cards.forEach(card => {
+                packagesContainer.appendChild(card);
+            });
+        }
     }
 
-    renderPackages(filteredPackages);
-}
-
 function resetFilters() {
-    document.getElementById('searchInput').value = '';
-    document.getElementById('priceSort').value = '';
-    renderPackages(packagesFromDB);
-}
+        document.getElementById('searchInput').value = '';
+        document.getElementById('priceSort').value = '';
+        
+        // Show all cards
+        document.querySelectorAll('.package-card').forEach(card => {
+            card.classList.remove('hidden');
+        });
+        
+        // Hide no results message
+        document.getElementById('no-results').classList.add('hidden');
+    }
+
 
 // Event Listeners
 document.getElementById('searchInput').addEventListener('input', filterAndSortPackages);
-document.getElementById('priceSort').addEventListener('change', filterAndSortPackages);
-document.getElementById('resetFilters').addEventListener('click', resetFilters);
+    document.getElementById('priceSort').addEventListener('change', filterAndSortPackages);
+    document.getElementById('resetFilters').addEventListener('click', resetFilters);
+    document.getElementById('reset-filters-no-results').addEventListener('click', resetFilters);
+
 
 function toggleMenu() {
     const mobileMenu = document.getElementById('mobile-menu');
