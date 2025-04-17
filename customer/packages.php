@@ -682,6 +682,8 @@ $conn->close();
 </div>
 
 <script>
+const packagesFromDB = <?php echo json_encode($packages); ?>;
+
 document.addEventListener('DOMContentLoaded', function() {
     // Show service type selection modal for all packages
     document.querySelectorAll('.selectPackageBtn').forEach(button => {
