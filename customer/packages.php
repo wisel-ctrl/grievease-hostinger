@@ -942,14 +942,6 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('lifeplanMonthlyPayment').textContent = `₱${monthlyPayment.toLocaleString()}`;
     });
 
-    // Form submission for Traditional
-    document.getElementById('traditionalBookingForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        // Add booking submission logic here
-        alert('Traditional service booking submitted successfully!');
-        closeAllModals();
-    });
-
     // Form submission for Lifeplan
     document.getElementById('lifeplanBookingForm').addEventListener('submit', function(e) {
         e.preventDefault();
