@@ -1249,75 +1249,164 @@ if ($result->num_rows > 0) {
 ?>
 
 <!-- Employee Account Management Section -->
-<div id="employee-account-management" class="bg-white rounded-lg shadow-sidebar p-5 border border-sidebar-border hover:shadow-card transition-all duration-300 mb-8">
-  <div class="flex justify-between items-center mb-4">
-    <h3 class="text-base font-semibold text-sidebar-text">Employee Accounts</h3>
-    <div class="flex items-center space-x-4">
+<div id="employee-account-management" class="bg-white rounded-lg shadow-md mb-8 border border-sidebar-border overflow-hidden">
+  <div class="bg-sidebar-hover p-4 border-b border-sidebar-border flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <div class="flex items-center gap-3">
+      <h4 class="text-lg font-bold text-sidebar-text">Employee Accounts</h4>
+      
+      <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
+        <i class="fas fa-user-tie"></i>
+        <span id="totalEmployees"><?php echo $totalEmployees . " Employee" . ($totalEmployees != 1 ? "s" : ""); ?></span>
+      </span>
+    </div>
+    
+    <!-- Search and Filter Section -->
+    <div class="flex flex-col md:flex-row items-start md:items-center gap-3 w-full md:w-auto">
       <!-- Search Input -->
-      <div class="relative flex-grow max-w-md">
-        <input type="text" id="searchInput" placeholder="Search employees..." 
-               value="<?php echo htmlspecialchars($search); ?>" 
-               class="w-full px-3 py-2 pl-10 border border-sidebar-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
-        <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+      <div class="relative w-full md:w-64">
+        <input type="text" id="searchInput" 
+                placeholder="Search employees..." 
+                value="<?php echo htmlspecialchars($search); ?>"
+                class="pl-8 pr-3 py-2 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
+        <i class="fas fa-search absolute left-2.5 top-3 text-gray-400"></i>
       </div>
 
       <!-- Filter Dropdown -->
-      <div class="relative">
-        <button id="filterToggle" class="p-2 bg-gray-100 rounded-md hover:bg-gray-200 transition-all">
-          <i class="fas fa-filter text-sidebar-text"></i>
+      <div class="relative filter-dropdown">
+        <button id="filterToggle" class="px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover">
+          <i class="fas fa-filter text-sidebar-accent"></i>
+          <span>Filters</span>
+          <?php if(isset($sortFilter) && $sortFilter): ?>
+            <span class="h-2 w-2 bg-sidebar-accent rounded-full"></span>
+          <?php endif; ?>
         </button>
         
-        <div id="filterDropdown" class="hidden absolute z-10 right-0 mt-2 w-56 bg-white border border-sidebar-border rounded-md shadow-lg">
-          <div class="py-1">
-            <a href="#" data-sort="id_asc" class="filter-option block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">ID: Ascending</a>
-            <a href="#" data-sort="id_desc" class="filter-option block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">ID: Descending</a>
-            <a href="#" data-sort="name_asc" class="filter-option block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Name: A-Z</a>
-            <a href="#" data-sort="name_desc" class="filter-option block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Name: Z-A</a>
-            <a href="#" data-sort="email_asc" class="filter-option block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Email: A-Z</a>
-            <a href="#" data-sort="email_desc" class="filter-option block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Email: Z-A</a>
-            <a href="#" data-sort="newest" class="filter-option block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Newest First</a>
-            <a href="#" data-sort="oldest" class="filter-option block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Oldest First</a>
+        <!-- Filter Window -->
+        <div id="filterDropdown" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-4">
+          <div class="space-y-4">
+            <!-- Sort Options -->
+            <div>
+              <h5 class="text-sm font-medium text-sidebar-text mb-2">Sort By</h5>
+              <div class="space-y-1">
+                <div class="flex items-center cursor-pointer" data-sort="id_asc">
+                  <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                    ID: Ascending
+                  </span>
+                </div>
+                <div class="flex items-center cursor-pointer" data-sort="id_desc">
+                  <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                    ID: Descending
+                  </span>
+                </div>
+                <div class="flex items-center cursor-pointer" data-sort="name_asc">
+                  <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                    Name: A-Z
+                  </span>
+                </div>
+                <div class="flex items-center cursor-pointer" data-sort="name_desc">
+                  <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                    Name: Z-A
+                  </span>
+                </div>
+                <div class="flex items-center cursor-pointer" data-sort="email_asc">
+                  <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                    Email: A-Z
+                  </span>
+                </div>
+                <div class="flex items-center cursor-pointer" data-sort="email_desc">
+                  <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                    Email: Z-A
+                  </span>
+                </div>
+                <div class="flex items-center cursor-pointer" data-sort="newest">
+                  <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                    Newest First
+                  </span>
+                </div>
+                <div class="flex items-center cursor-pointer" data-sort="oldest">
+                  <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                    Oldest First
+                  </span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- Add Employee Account Button -->
-      <button class="px-4 py-2 bg-sidebar-accent text-white rounded-md text-sm flex items-center hover:bg-darkgold transition-all duration-300" onclick="openAddEmployeeAccountModal()">
-        <i class="fas fa-plus mr-2"></i> Add Employee Account
+      <button class="px-4 py-2.5 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm whitespace-nowrap" 
+              onclick="openAddEmployeeAccountModal()">
+        <i class="fas fa-plus-circle"></i> Add Employee Account
       </button>
     </div>
   </div>
-
-  <div class="overflow-x-auto scrollbar-thin">
+  
+  <!-- Employee Table -->
+  <div class="overflow-x-auto scrollbar-thin" id="employeeTableContainer">
+    <div id="employeeLoadingIndicator" class="hidden absolute inset-0 bg-white bg-opacity-50 flex items-center justify-center">
+      <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-sidebar-accent"></div>
+    </div>
+    
     <table class="w-full">
       <thead>
-        <tr class="bg-sidebar-hover">
-          <th class="p-4 text-left text-sm font-medium text-sidebar-text">ID</th>
-          <th class="p-4 text-left text-sm font-medium text-sidebar-text">Name</th>
-          <th class="p-4 text-left text-sm font-medium text-sidebar-text">Email</th>
-          <th class="p-4 text-left text-sm font-medium text-sidebar-text">Role</th>
-          <th class="p-4 text-left text-sm font-medium text-sidebar-text">Status</th>
-          <th class="p-4 text-left text-sm font-medium text-sidebar-text">Actions</th>
+        <tr class="bg-gray-50 border-b border-sidebar-border">
+          <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(0)">
+            <div class="flex items-center">
+              <i class="fas fa-hashtag mr-1.5 text-sidebar-accent"></i> ID 
+              <i class="fas fa-sort ml-1 text-gray-400"></i>
+            </div>
+          </th>
+          <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(1)">
+            <div class="flex items-center">
+              <i class="fas fa-user mr-1.5 text-sidebar-accent"></i> Name 
+              <i class="fas fa-sort ml-1 text-gray-400"></i>
+            </div>
+          </th>
+          <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(2)">
+            <div class="flex items-center">
+              <i class="fas fa-envelope mr-1.5 text-sidebar-accent"></i> Email 
+              <i class="fas fa-sort ml-1 text-gray-400"></i>
+            </div>
+          </th>
+          <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(3)">
+            <div class="flex items-center">
+              <i class="fas fa-user-tag mr-1.5 text-sidebar-accent"></i> Role 
+              <i class="fas fa-sort ml-1 text-gray-400"></i>
+            </div>
+          </th>
+          <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(4)">
+            <div class="flex items-center">
+              <i class="fas fa-toggle-on mr-1.5 text-sidebar-accent"></i> Status 
+              <i class="fas fa-sort ml-1 text-gray-400"></i>
+            </div>
+          </th>
+          <th class="p-4 text-left text-sm font-medium text-sidebar-text">
+            <div class="flex items-center">
+              <i class="fas fa-cogs mr-1.5 text-sidebar-accent"></i> Actions
+            </div>
+          </th>
         </tr>
       </thead>
       <tbody id="employeeTableBody">
         <?php echo $tableContent; ?>
       </tbody>
     </table>
-  </div>
-  <div class="p-4 border-t border-sidebar-border flex justify-between items-center">
-    <div class="text-sm text-gray-500"><?php echo $paginationInfo; ?></div>
-    <div class="flex space-x-1">
-    <button class="px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo $page <= 1 ? 'opacity-50 cursor-not-allowed' : ''; ?>" 
-              onclick="changePage(<?php echo $page - 1; ?>)" <?php echo $page <= 1 ? 'disabled' : ''; ?>>&laquo;</button>
-      
-      <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-        <button class="px-3 py-1 border border-sidebar-border rounded text-sm <?php echo $i == $page ? 'bg-sidebar-accent text-white' : 'hover:bg-sidebar-hover'; ?> pagination-button" 
-                onclick="changePage(<?php echo $i; ?>)"><?php echo $i; ?></button>
-      <?php endfor; ?>
-      
-      <button class="px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo $page >= $totalPages ? 'opacity-50 cursor-not-allowed' : ''; ?>" 
-              onclick="changePage(<?php echo $page + 1; ?>)" <?php echo $page >= $totalPages ? 'disabled' : ''; ?>>&raquo;</button>
+    
+    <!-- Pagination -->
+    <div class="p-4 border-t border-sidebar-border flex justify-between items-center">
+      <div class="text-sm text-gray-500"><?php echo $paginationInfo; ?></div>
+      <div class="flex space-x-1">
+        <button class="px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo $page <= 1 ? 'opacity-50 cursor-not-allowed' : ''; ?>" 
+                onclick="changePage(<?php echo $page - 1; ?>)" <?php echo $page <= 1 ? 'disabled' : ''; ?>>&laquo;</button>
+        
+        <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+          <button class="px-3 py-1 border border-sidebar-border rounded text-sm <?php echo $i == $page ? 'bg-sidebar-accent text-white' : 'hover:bg-sidebar-hover'; ?> pagination-button" 
+                  onclick="changePage(<?php echo $i; ?>)"><?php echo $i; ?></button>
+        <?php endfor; ?>
+        
+        <button class="px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo $page >= $totalPages ? 'opacity-50 cursor-not-allowed' : ''; ?>" 
+                onclick="changePage(<?php echo $page + 1; ?>)" <?php echo $page >= $totalPages ? 'disabled' : ''; ?>>&raquo;</button>
+      </div>
     </div>
   </div>
 </div>
