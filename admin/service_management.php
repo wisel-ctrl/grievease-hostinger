@@ -570,45 +570,52 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 
 <!-- ADD SERVICE MODAL -->
-<div class="fixed top-0 left-0 w-full h-full bg-black bg-opacity-60 flex items-center justify-center z-50 hidden" id="addServiceModal">
-  <div class="bg-white rounded-xl w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-xl">
-    <!-- Modal Header - Keeping original gradient but reducing padding -->
-    <div class="bg-gradient-to-r from-sidebar-accent to-white flex justify-between items-center p-4 flex-shrink-0">
-      <h3 class="text-xl font-bold text-white flex items-center">
+<div class="fixed inset-0 z-50 flex items-center justify-center hidden" id="addServiceModal">
+  <!-- Modal Backdrop -->
+  <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+  
+  <!-- Modal Content -->
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-lg mx-4 z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+    <!-- Close Button -->
+    <button type="button" class="absolute top-4 right-4 text-gray-500 hover:text-sidebar-accent transition-colors" onclick="closeAddServiceModal()">
+      <i class="fas fa-times"></i>
+    </button>
+    
+    <!-- Modal Header -->
+    <div class="px-6 py-5 border-b border-gray-200">
+      <h3 class="text-xl font-bold text-sidebar-accent flex items-center">
         <i class="fas fa-plus-circle mr-2"></i>
         Add New Service
       </h3>
-      <button class="bg-black bg-opacity-20 hover:bg-opacity-30 rounded-full p-2 text-white hover:text-white transition-all duration-200" onclick="closeAddServiceModal()">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-          <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-        </svg>
-      </button>
     </div>
     
-    <!-- Modal Body - Reduced padding -->
-    <div class="p-4">
+    <!-- Modal Body -->
+    <div class="px-6 py-5">
       <form id="serviceForm" class="space-y-4">
         <div>
-          <label for="serviceName" class="block text-sm font-medium text-gray-700 mb-1 flex items-center">
+          <label for="serviceName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
             <i class="fas fa-tag mr-2 text-sidebar-accent"></i>
             Service Name
           </label>
-          <input type="text" id="serviceName" name="serviceName" class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent" required>
+          <div class="relative">
+            <input type="text" id="serviceName" name="serviceName" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
+          </div>
         </div>
 
-        <!-- Add this after the service name input -->
         <div>
-          <label for="serviceDescription" class="block text-sm font-medium text-gray-700 mb-1 flex items-center">
+          <label for="serviceDescription" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
             <i class="fas fa-align-left mr-2 text-sidebar-accent"></i>
             Description
           </label>
-          <textarea id="serviceDescription" name="serviceDescription" rows="3" class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent"></textarea>
+          <div class="relative">
+            <textarea id="serviceDescription" name="serviceDescription" rows="3" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"></textarea>
+          </div>
         </div>
         
         <!-- Price Section -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div>
-            <label for="capitalPrice" class="block text-sm font-medium text-gray-700 mb-1 flex items-center">
+            <label for="capitalPrice" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
               <i class="fas fa-coins mr-2 text-sidebar-accent"></i>
               Capital Price
             </label>
@@ -616,11 +623,11 @@ document.addEventListener('DOMContentLoaded', () => {
               <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <span class="text-gray-500">₱</span>
               </div>
-              <input type="number" id="capitalPrice" name="capitalPrice" placeholder="0.00" min="0" step="0.01" class="w-full pl-8 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent" required>
+              <input type="number" id="capitalPrice" name="capitalPrice" placeholder="0.00" min="0" step="0.01" class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
             </div>
           </div>
           <div>
-            <label for="sellingPrice" class="block text-sm font-medium text-gray-700 mb-1 flex items-center">
+            <label for="sellingPrice" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
               <i class="fas fa-tags mr-2 text-sidebar-accent"></i>
               Selling Price
             </label>
@@ -628,18 +635,19 @@ document.addEventListener('DOMContentLoaded', () => {
               <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <span class="text-gray-500">₱</span>
               </div>
-              <input type="number" id="sellingPrice" name="sellingPrice" placeholder="0.00" min="0" step="0.01" class="w-full pl-8 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent" required>
+              <input type="number" id="sellingPrice" name="sellingPrice" placeholder="0.00" min="0" step="0.01" class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
             </div>
           </div>
         </div>
         
         <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
           <div>
-            <label for="serviceCategory" class="block text-sm font-medium text-gray-700 mb-1 flex items-center">
+            <label for="serviceCategory" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
               <i class="fas fa-th-list mr-2 text-sidebar-accent"></i>
               Category
             </label>
-            <select id="serviceCategory" name="serviceCategory" class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent" required>
+            <div class="relative">
+              <select id="serviceCategory" name="serviceCategory" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
                 <option value="">Select a Category</option>
                 <?php
                 require_once '../db_connect.php';
@@ -654,16 +662,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else {
                     echo '<option value="">No categories found</option>';
                 }
-               
                 ?>
-            </select>
+              </select>
+            </div>
           </div>
           <div>
-            <label for="casketType" class="block text-sm font-medium text-gray-700 mb-1 flex items-center">
+            <label for="casketType" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
               <i class="fas fa-box mr-2 text-sidebar-accent"></i>
               Casket Type
             </label>
-            <select id="casketType" name="casketType" class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent" required>
+            <div class="relative">
+              <select id="casketType" name="casketType" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
                 <option value="">Select a Casket</option>
                 <?php
                 // Fetch inventory items where category_id = 1 and status = 1
@@ -678,15 +687,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 //     echo '<option value="">No caskets available</option>';
                 // }
                 ?>
-            </select>
+              </select>
+            </div>
           </div>
           <div>
-            <label for="urnType" class="block text-sm font-medium text-gray-700 mb-1 flex items-center">
+            <label for="urnType" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
               <i class="fas fa-urn mr-2 text-sidebar-accent"></i>
               Urn Type
             </label>
-            <select id="urnType" name="urnType" class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
-              <option value="">Select a Urn</option>
+            <div class="relative">
+              <select id="urnType" name="urnType" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+                <option value="">Select a Urn</option>
                 <?php
                 // Fetch inventory items where category_id = 1 and status = 1
                 // $sql = "SELECT inventory_id, item_name FROM inventory_tb WHERE category_id = 3 AND status = 1";
@@ -700,52 +711,55 @@ document.addEventListener('DOMContentLoaded', () => {
                 //     echo '<option value="">No urn available</option>';
                 // }
                 ?>
-            </select>
+              </select>
+            </div>
           </div>
         </div>
 
         <?php
-            // Include database connection
-            require_once '../db_connect.php';
+        // Include database connection
+        require_once '../db_connect.php';
 
-            // Fetch branches from the database
-            $sql = "SELECT branch_id, branch_name FROM branch_tb";
-            $result = $conn->query($sql);
+        // Fetch branches from the database
+        $sql = "SELECT branch_id, branch_name FROM branch_tb";
+        $result = $conn->query($sql);
+        ?>
+
+        <div class="bg-gray-50 p-4 rounded-lg border-l-4 border-gold">
+          <label class="block text-xs font-medium text-gray-700 mb-2">Branch</label>
+          <div class="flex gap-4">
+            <?php
+            if ($result->num_rows > 0) {
+                while ($row = $result->fetch_assoc()) {
+                    echo '<label class="flex items-center space-x-2 cursor-pointer">';
+                    echo '<input type="radio" name="branch_id" value="' . $row['branch_id'] . '" required class="hidden peer">';
+                    echo '<div class="w-5 h-5 rounded-full border-2 border-gold flex items-center justify-center peer-checked:bg-gold peer-checked:border-darkgold transition-colors"></div>';
+                    echo '<span class="text-gray-700 font-medium">' . htmlspecialchars($row['branch_name']) . '</span>';
+                    echo '</label>';
+                }
+            } else {
+                echo '<p class="text-gray-500">No branches available.</p>';
+            }
             ?>
-
-            <div class="bg-gray-50 p-4 rounded-lg border-l-4 border-gold">
-                <label class="block text-sm font-medium text-gray-700 mb-2">Branch</label>
-                <div class="flex gap-4">
-                    <?php
-                    if ($result->num_rows > 0) {
-                        while ($row = $result->fetch_assoc()) {
-                            echo '<label class="flex items-center space-x-2 cursor-pointer">';
-                            echo '<input type="radio" name="branch_id" value="' . $row['branch_id'] . '" required class="hidden peer">';
-                            echo '<div class="w-5 h-5 rounded-full border-2 border-gold flex items-center justify-center peer-checked:bg-gold peer-checked:border-darkgold transition-colors"></div>';
-                            echo '<span class="text-gray-700 font-medium">' . htmlspecialchars($row['branch_name']) . '</span>';
-                            echo '</label>';
-                        }
-                    } else {
-                        echo '<p class="text-gray-500">No branches available.</p>';
-                    }
-                    ?>
-                </div>
-            </div>
+          </div>
+        </div>
         
         <div>
-          <label for="serviceImage" class="block text-sm font-medium text-gray-700 mb-1 flex items-center">
+          <label for="serviceImage" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
             <i class="fas fa-image mr-2 text-sidebar-accent"></i>
             Upload Image
           </label>
-          <div class="flex items-center border border-gray-300 rounded-lg p-2 focus-within:ring-2 focus-within:ring-sidebar-accent focus-within:border-transparent">
-            <i class="fas fa-upload text-gray-400 mr-2"></i>
-            <input type="file" id="serviceImage" name="serviceImage" class="w-full focus:outline-none">
+          <div class="relative">
+            <div class="flex items-center border border-gray-300 rounded-lg px-3 py-2 focus-within:ring-1 focus-within:ring-sidebar-accent focus-within:border-sidebar-accent transition-all duration-200">
+              <i class="fas fa-upload text-gray-400 mr-2"></i>
+              <input type="file" id="serviceImage" name="serviceImage" class="w-full focus:outline-none">
+            </div>
           </div>
         </div>
         
         <!-- Flower Design Section -->
-        <div class="bg-gray-50 p-3 rounded-lg border border-gray-200">
-          <p class="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+        <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+          <p class="block text-xs font-medium text-gray-700 mb-2 flex items-center">
             <i class="fas fa-flower mr-2 text-sidebar-accent"></i>
             Flower Arrangement Sets
           </p>
@@ -784,8 +798,8 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
         
         <!-- Enhanced Essential Services Section -->
-        <div class="bg-gray-50 p-3 rounded-lg border border-gray-200">
-          <p class="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+        <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+          <p class="block text-xs font-medium text-gray-700 mb-2 flex items-center">
             <i class="fas fa-concierge-bell mr-2 text-sidebar-accent"></i>
             Other Essential Services
           </p>
@@ -838,12 +852,12 @@ document.addEventListener('DOMContentLoaded', () => {
     </div>
     
     <!-- Modal Footer --> 
-    <div class="p-4 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
-      <button class="px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-semibold hover:bg-gray-100 transition-colors flex items-center" onclick="closeAddServiceModal()">
+    <div class="px-6 py-4 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
+      <button class="px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center" onclick="closeAddServiceModal()">
         <i class="fas fa-times mr-2"></i>
         Cancel
       </button>
-      <button class="px-6 py-2 bg-sidebar-accent text-white rounded-lg font-semibold hover:bg-darkgold transition-colors flex items-center" onclick="addService()">
+      <button class="px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="addService()">
         <i class="fas fa-plus mr-2"></i>
         Add Service
       </button>
