@@ -1255,8 +1255,7 @@ if ($result->num_rows > 0) {
       <h4 class="text-lg font-bold text-sidebar-text">Employee Accounts</h4>
       
       <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
-        <i class="fas fa-user-tie"></i>
-        <span id="totalEmployees"><?php echo $totalEmployees . " Employee" . ($totalEmployees != 1 ? "s" : ""); ?></span>
+        <i class="fas fa-user-tie"></i><?php echo $totalEmployees . " Employee" . ($totalEmployees != 1 ? "s" : ""); ?></span>
       </span>
     </div>
     
