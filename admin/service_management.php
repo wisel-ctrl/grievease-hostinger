@@ -771,8 +771,7 @@ document.addEventListener('DOMContentLoaded', () => {
             </p>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
               <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
-                <input type="checkbox" name="flowerDesign" value="3 Floral Replacement" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
-                <i class="fas fa-leaf mr-1 text-sidebar-accent"></i>
+                <input type="checkbox" name="flowerDesign" value="3 Floral Replacement" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">\
                 3 Floral Replacement
               </label>
               <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
