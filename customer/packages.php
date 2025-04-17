@@ -682,39 +682,36 @@ $conn->close();
 </div>
 
 <script>
-    const packagesFromDB = <?php echo json_encode($packages); ?>;
-
-    document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function() {
     // Show service type selection modal for all packages
     document.querySelectorAll('.selectPackageBtn').forEach(button => {
-            button.addEventListener('click', function() {
-                const packageCard = this.closest('.package-card');
-                if (!packageCard) return;
-                
-                const packageName = packageCard.dataset.name;
-                const packagePrice = packageCard.dataset.price;
-                const packageImage = packageCard.dataset.image || '';
-                const serviceType = packageCard.dataset.service;
+        button.addEventListener('click', function() {
+            const packageCard = this.closest('.package-card');
+            if (!packageCard) return;
+            
+            const packageName = packageCard.dataset.name;
+            const packagePrice = packageCard.dataset.price;
+            const packageImage = packageCard.dataset.image || '';
+            const serviceType = packageCard.dataset.service;
 
-                sessionStorage.setItem('selectedPackageName', packageName);
-                sessionStorage.setItem('selectedPackagePrice', packagePrice);
-                sessionStorage.setItem('selectedPackageImage', packageImage);
-                sessionStorage.setItem('selectedServiceType', serviceType);
-                
-                const features = Array.from(packageCard.querySelectorAll('ul li')).map(li => li.innerHTML);
-                sessionStorage.setItem('selectedPackageFeatures', JSON.stringify(features));
-                
-                const traditionalBtn = document.getElementById('traditionalServiceBtn');
-                traditionalBtn.innerHTML = `
-                    <i class="fas fa-dove text-3xl text-yellow-600 mb-2"></i>
-                    <span class="font-hedvig text-lg">Traditional</span>
-                    <span class="text-sm text-gray-600 mt-2 text-center">For immediate funeral needs</span>
-                `;
-                
-                document.getElementById('serviceTypeModal').classList.remove('hidden');
-            });
+            sessionStorage.setItem('selectedPackageName', packageName);
+            sessionStorage.setItem('selectedPackagePrice', packagePrice);
+            sessionStorage.setItem('selectedPackageImage', packageImage);
+            sessionStorage.setItem('selectedServiceType', serviceType);
+            
+            const features = Array.from(packageCard.querySelectorAll('ul li')).map(li => li.innerHTML);
+            sessionStorage.setItem('selectedPackageFeatures', JSON.stringify(features));
+            
+            const traditionalBtn = document.getElementById('traditionalServiceBtn');
+            traditionalBtn.innerHTML = `
+                <i class="fas fa-dove text-3xl text-yellow-600 mb-2"></i>
+                <span class="font-hedvig text-lg">Traditional</span>
+                <span class="text-sm text-gray-600 mt-2 text-center">For immediate funeral needs</span>
+            `;
+            
+            document.getElementById('serviceTypeModal').classList.remove('hidden');
         });
-    }
+    });
 
     // Traditional Service button click event
     document.getElementById('traditionalServiceBtn').addEventListener('click', function() {
@@ -940,14 +937,7 @@ $conn->close();
         alert('Lifeplan booking submitted successfully!');
         closeAllModals();
     });
-});
 
-function toggleMenu() {
-    const mobileMenu = document.getElementById('mobile-menu');
-    mobileMenu.classList.toggle('hidden');
-}
-
-document.addEventListener('DOMContentLoaded', function() {
     // Process packages from database
     const processedPackages = packagesFromDB.map(pkg => {
         // Determine icon based on package price or name
@@ -967,68 +957,69 @@ document.addEventListener('DOMContentLoaded', function() {
             features: pkg.features
         };
     });
-}
+
+    // Initial render
+    renderPackages(processedPackages);
+});
 
 // Function to render packages
 function renderPackages(filteredPackages) {
-        const container = document.getElementById('packages-container');
-        container.innerHTML = '';
+    const container = document.getElementById('packages-container');
+    container.innerHTML = '';
 
-        if (filteredPackages.length === 0) {
-            document.getElementById('no-results').classList.remove('hidden');
-            return;
-        } else {
-            document.getElementById('no-results').classList.add('hidden');
-        }
-
-        filteredPackages.forEach(pkg => {
-            const packageCard = document.createElement('div');
-            packageCard.className = 'package-card bg-white rounded-[20px] shadow-lg overflow-hidden';
-            packageCard.setAttribute('data-price', pkg.price);
-            packageCard.setAttribute('data-service', pkg.service);
-            packageCard.setAttribute('data-name', pkg.name);
-            packageCard.setAttribute('data-image', pkg.image);
-            
-            packageCard.innerHTML = `
-                <div class="h-48 bg-cover bg-center relative" style="background-image: url('${pkg.image}')">
-                    <div class="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-all duration-300"></div>
-                    <div class="absolute top-4 right-4 w-12 h-12 rounded-full bg-yellow-600/90 flex items-center justify-center text-white">
-                        <i class="fas fa-${pkg.icon} text-xl"></i>
-                    </div>
-                </div>
-                <div class="p-6">
-                    <h3 class="text-2xl font-hedvig text-navy mb-3">${pkg.name}</h3>
-                    <p class="text-dark mb-4">${pkg.description}</p>
-                    <div class="text-3xl font-hedvig text-yellow-600 mb-4">₱${pkg.price.toLocaleString()}</div>
-                    <div class="border-t border-gray-200 pt-4 mt-2">
-                        <ul class="space-y-2">
-                            ${pkg.features.map(feature => `
-                                <li class="flex items-center text-sm text-gray-700">
-                                    <i class="fas fa-check-circle mr-2 text-yellow-600"></i>
-                                    <span>${feature}</span>
-                                </li>
-                            `).join('')}
-                        </ul>
-                    </div>
-                    <button class="selectPackageBtn block w-full mt-6 bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg shadow-md transition-all duration-300 text-center">
-                        Select Package
-                    </button>
-                </div>
-            `;
-            container.appendChild(packageCard);
-        });
+    if (filteredPackages.length === 0) {
+        document.getElementById('no-results').classList.remove('hidden');
+        return;
+    } else {
+        document.getElementById('no-results').classList.add('hidden');
     }
+
+    filteredPackages.forEach(pkg => {
+        const packageCard = document.createElement('div');
+        packageCard.className = 'package-card bg-white rounded-[20px] shadow-lg overflow-hidden';
+        packageCard.setAttribute('data-price', pkg.price);
+        packageCard.setAttribute('data-service', pkg.service);
+        packageCard.setAttribute('data-name', pkg.name);
+        packageCard.setAttribute('data-image', pkg.image);
+        
+        packageCard.innerHTML = `
+            <div class="h-48 bg-cover bg-center relative" style="background-image: url('${pkg.image}')">
+                <div class="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-all duration-300"></div>
+                <div class="absolute top-4 right-4 w-12 h-12 rounded-full bg-yellow-600/90 flex items-center justify-center text-white">
+                    <i class="fas fa-${pkg.icon} text-xl"></i>
+                </div>
+            </div>
+            <div class="p-6">
+                <h3 class="text-2xl font-hedvig text-navy mb-3">${pkg.name}</h3>
+                <p class="text-dark mb-4">${pkg.description}</p>
+                <div class="text-3xl font-hedvig text-yellow-600 mb-4">₱${pkg.price.toLocaleString()}</div>
+                <div class="border-t border-gray-200 pt-4 mt-2">
+                    <ul class="space-y-2">
+                        ${pkg.features.map(feature => `
+                            <li class="flex items-center text-sm text-gray-700">
+                                <i class="fas fa-check-circle mr-2 text-yellow-600"></i>
+                                <span>${feature}</span>
+                            </li>
+                        `).join('')}
+                    </ul>
+                </div>
+                <button class="selectPackageBtn block w-full mt-6 bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg shadow-md transition-all duration-300 text-center">
+                    Select Package
+                </button>
+            </div>
+        `;
+        container.appendChild(packageCard);
+    });
+}
 
 function filterAndSortPackages() {
     const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-    const serviceFilter = document.getElementById('serviceFilter').value;
     const priceSort = document.getElementById('priceSort').value;
 
-    let filteredPackages = packages.filter(pkg => 
+    let filteredPackages = packagesFromDB.filter(pkg => 
         (searchTerm === '' || pkg.name.toLowerCase().includes(searchTerm) || 
          pkg.description.toLowerCase().includes(searchTerm) ||
-         pkg.features.some(f => f.toLowerCase().includes(searchTerm))) &&
-        (serviceFilter === '' || pkg.service === serviceFilter)
+         pkg.features.some(f => f.toLowerCase().includes(searchTerm)))
     );
 
     if (priceSort === 'asc') {
@@ -1042,19 +1033,14 @@ function filterAndSortPackages() {
 
 function resetFilters() {
     document.getElementById('searchInput').value = '';
-    document.getElementById('serviceFilter').value = '';
     document.getElementById('priceSort').value = '';
-    renderPackages(packages);
+    renderPackages(packagesFromDB);
 }
 
 // Event Listeners
 document.getElementById('searchInput').addEventListener('input', filterAndSortPackages);
-document.getElementById('serviceFilter').addEventListener('change', filterAndSortPackages);
 document.getElementById('priceSort').addEventListener('change', filterAndSortPackages);
 document.getElementById('resetFilters').addEventListener('click', resetFilters);
-
-// Initial render
-renderPackages(processedPackages);
 
 function toggleMenu() {
     const mobileMenu = document.getElementById('mobile-menu');
