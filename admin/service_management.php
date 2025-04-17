@@ -575,7 +575,7 @@ document.addEventListener('DOMContentLoaded', () => {
   <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
   
   <!-- Modal Content -->
-  <div class="relative bg-white rounded-xl shadow-card w-full max-w-lg mx-4 z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-5xl mx-4 z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
     <!-- Close Button -->
     <button type="button" class="absolute top-4 right-4 text-gray-500 hover:text-sidebar-accent transition-colors" onclick="closeAddServiceModal()">
       <i class="fas fa-times"></i>
@@ -591,56 +591,57 @@ document.addEventListener('DOMContentLoaded', () => {
     
     <!-- Modal Body -->
     <div class="px-6 py-5">
-      <form id="serviceForm" class="space-y-4">
-        <div>
-          <label for="serviceName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-tag mr-2 text-sidebar-accent"></i>
-            Service Name
-          </label>
-          <div class="relative">
-            <input type="text" id="serviceName" name="serviceName" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
+      <form id="serviceForm" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Left Column -->
+        <div class="space-y-4">
+          <div>
+            <label for="serviceName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+              <i class="fas fa-tag mr-2 text-sidebar-accent"></i>
+              Service Name
+            </label>
+            <div class="relative">
+              <input type="text" id="serviceName" name="serviceName" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
+            </div>
           </div>
-        </div>
 
-        <div>
-          <label for="serviceDescription" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-align-left mr-2 text-sidebar-accent"></i>
-            Description
-          </label>
-          <div class="relative">
-            <textarea id="serviceDescription" name="serviceDescription" rows="3" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"></textarea>
-          </div>
-        </div>
-        
-        <!-- Price Section -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div>
-            <label for="capitalPrice" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-coins mr-2 text-sidebar-accent"></i>
-              Capital Price
+            <label for="serviceDescription" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+              <i class="fas fa-align-left mr-2 text-sidebar-accent"></i>
+              Description
             </label>
             <div class="relative">
-              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <span class="text-gray-500">₱</span>
-              </div>
-              <input type="number" id="capitalPrice" name="capitalPrice" placeholder="0.00" min="0" step="0.01" class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
+              <textarea id="serviceDescription" name="serviceDescription" rows="3" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"></textarea>
             </div>
           </div>
-          <div>
-            <label for="sellingPrice" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-tags mr-2 text-sidebar-accent"></i>
-              Selling Price
-            </label>
-            <div class="relative">
-              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <span class="text-gray-500">₱</span>
+          
+          <!-- Price Section -->
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label for="capitalPrice" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                <i class="fas fa-coins mr-2 text-sidebar-accent"></i>
+                Capital Price
+              </label>
+              <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <span class="text-gray-500">₱</span>
+                </div>
+                <input type="number" id="capitalPrice" name="capitalPrice" placeholder="0.00" min="0" step="0.01" class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
               </div>
-              <input type="number" id="sellingPrice" name="sellingPrice" placeholder="0.00" min="0" step="0.01" class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
+            </div>
+            <div>
+              <label for="sellingPrice" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                <i class="fas fa-tags mr-2 text-sidebar-accent"></i>
+                Selling Price
+              </label>
+              <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <span class="text-gray-500">₱</span>
+                </div>
+                <input type="number" id="sellingPrice" name="sellingPrice" placeholder="0.00" min="0" step="0.01" class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
+              </div>
             </div>
           </div>
-        </div>
-        
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+          
           <div>
             <label for="serviceCategory" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
               <i class="fas fa-th-list mr-2 text-sidebar-accent"></i>
@@ -666,184 +667,190 @@ document.addEventListener('DOMContentLoaded', () => {
               </select>
             </div>
           </div>
+          
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label for="casketType" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                <i class="fas fa-box mr-2 text-sidebar-accent"></i>
+                Casket Type
+              </label>
+              <div class="relative">
+                <select id="casketType" name="casketType" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
+                  <option value="">Select a Casket</option>
+                  <?php
+                  // Fetch inventory items where category_id = 1 and status = 1
+                  // $sql = "SELECT inventory_id, item_name FROM inventory_tb WHERE category_id = 1 AND status = 1";
+                  // $result = $conn->query($sql);
+
+                  // if ($result->num_rows > 0) {
+                  //     while ($row = $result->fetch_assoc()) {
+                  //         echo '<option value="' . $row["inventory_id"] . '">' . htmlspecialchars($row["item_name"]) . '</option>';
+                  //     }
+                  // } else {
+                  //     echo '<option value="">No caskets available</option>';
+                  // }
+                  ?>
+                </select>
+              </div>
+            </div>
+            <div>
+              <label for="urnType" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                <i class="fas fa-urn mr-2 text-sidebar-accent"></i>
+                Urn Type
+              </label>
+              <div class="relative">
+                <select id="urnType" name="urnType" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+                  <option value="">Select a Urn</option>
+                  <?php
+                  // Fetch inventory items where category_id = 1 and status = 1
+                  // $sql = "SELECT inventory_id, item_name FROM inventory_tb WHERE category_id = 3 AND status = 1";
+                  // $result = $conn->query($sql);
+
+                  // if ($result->num_rows > 0) {
+                  //     while ($row = $result->fetch_assoc()) {
+                  //         echo '<option value="' . $row["inventory_id"] . '">' . htmlspecialchars($row["item_name"]) . '</option>';
+                  //     }
+                  // } else {
+                  //     echo '<option value="">No urn available</option>';
+                  // }
+                  ?>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <?php
+          // Include database connection
+          require_once '../db_connect.php';
+
+          // Fetch branches from the database
+          $sql = "SELECT branch_id, branch_name FROM branch_tb";
+          $result = $conn->query($sql);
+          ?>
+
+          <div class="bg-gray-50 p-4 rounded-lg border-l-4 border-gold">
+            <label class="block text-xs font-medium text-gray-700 mb-2">Branch</label>
+            <div class="flex flex-wrap gap-4">
+              <?php
+              if ($result->num_rows > 0) {
+                  while ($row = $result->fetch_assoc()) {
+                      echo '<label class="flex items-center space-x-2 cursor-pointer">';
+                      echo '<input type="radio" name="branch_id" value="' . $row['branch_id'] . '" required class="hidden peer">';
+                      echo '<div class="w-5 h-5 rounded-full border-2 border-gold flex items-center justify-center peer-checked:bg-gold peer-checked:border-darkgold transition-colors"></div>';
+                      echo '<span class="text-gray-700 font-medium">' . htmlspecialchars($row['branch_name']) . '</span>';
+                      echo '</label>';
+                  }
+              } else {
+                  echo '<p class="text-gray-500">No branches available.</p>';
+              }
+              ?>
+            </div>
+          </div>
+          
           <div>
-            <label for="casketType" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-box mr-2 text-sidebar-accent"></i>
-              Casket Type
+            <label for="serviceImage" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+              <i class="fas fa-image mr-2 text-sidebar-accent"></i>
+              Upload Image
             </label>
             <div class="relative">
-              <select id="casketType" name="casketType" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
-                <option value="">Select a Casket</option>
-                <?php
-                // Fetch inventory items where category_id = 1 and status = 1
-                // $sql = "SELECT inventory_id, item_name FROM inventory_tb WHERE category_id = 1 AND status = 1";
-                // $result = $conn->query($sql);
-
-                // if ($result->num_rows > 0) {
-                //     while ($row = $result->fetch_assoc()) {
-                //         echo '<option value="' . $row["inventory_id"] . '">' . htmlspecialchars($row["item_name"]) . '</option>';
-                //     }
-                // } else {
-                //     echo '<option value="">No caskets available</option>';
-                // }
-                ?>
-              </select>
-            </div>
-          </div>
-          <div>
-            <label for="urnType" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-urn mr-2 text-sidebar-accent"></i>
-              Urn Type
-            </label>
-            <div class="relative">
-              <select id="urnType" name="urnType" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
-                <option value="">Select a Urn</option>
-                <?php
-                // Fetch inventory items where category_id = 1 and status = 1
-                // $sql = "SELECT inventory_id, item_name FROM inventory_tb WHERE category_id = 3 AND status = 1";
-                // $result = $conn->query($sql);
-
-                // if ($result->num_rows > 0) {
-                //     while ($row = $result->fetch_assoc()) {
-                //         echo '<option value="' . $row["inventory_id"] . '">' . htmlspecialchars($row["item_name"]) . '</option>';
-                //     }
-                // } else {
-                //     echo '<option value="">No urn available</option>';
-                // }
-                ?>
-              </select>
-            </div>
-          </div>
-        </div>
-
-        <?php
-        // Include database connection
-        require_once '../db_connect.php';
-
-        // Fetch branches from the database
-        $sql = "SELECT branch_id, branch_name FROM branch_tb";
-        $result = $conn->query($sql);
-        ?>
-
-        <div class="bg-gray-50 p-4 rounded-lg border-l-4 border-gold">
-          <label class="block text-xs font-medium text-gray-700 mb-2">Branch</label>
-          <div class="flex gap-4">
-            <?php
-            if ($result->num_rows > 0) {
-                while ($row = $result->fetch_assoc()) {
-                    echo '<label class="flex items-center space-x-2 cursor-pointer">';
-                    echo '<input type="radio" name="branch_id" value="' . $row['branch_id'] . '" required class="hidden peer">';
-                    echo '<div class="w-5 h-5 rounded-full border-2 border-gold flex items-center justify-center peer-checked:bg-gold peer-checked:border-darkgold transition-colors"></div>';
-                    echo '<span class="text-gray-700 font-medium">' . htmlspecialchars($row['branch_name']) . '</span>';
-                    echo '</label>';
-                }
-            } else {
-                echo '<p class="text-gray-500">No branches available.</p>';
-            }
-            ?>
-          </div>
-        </div>
-        
-        <div>
-          <label for="serviceImage" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-image mr-2 text-sidebar-accent"></i>
-            Upload Image
-          </label>
-          <div class="relative">
-            <div class="flex items-center border border-gray-300 rounded-lg px-3 py-2 focus-within:ring-1 focus-within:ring-sidebar-accent focus-within:border-sidebar-accent transition-all duration-200">
-              <i class="fas fa-upload text-gray-400 mr-2"></i>
-              <input type="file" id="serviceImage" name="serviceImage" class="w-full focus:outline-none">
+              <div class="flex items-center border border-gray-300 rounded-lg px-3 py-2 focus-within:ring-1 focus-within:ring-sidebar-accent focus-within:border-sidebar-accent transition-all duration-200">
+                <i class="fas fa-upload text-gray-400 mr-2"></i>
+                <input type="file" id="serviceImage" name="serviceImage" class="w-full focus:outline-none">
+              </div>
             </div>
           </div>
         </div>
         
-        <!-- Flower Design Section -->
-        <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
-          <p class="block text-xs font-medium text-gray-700 mb-2 flex items-center">
-            <i class="fas fa-flower mr-2 text-sidebar-accent"></i>
-            Flower Arrangement Sets
-          </p>
-          <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
-            <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
-              <input type="checkbox" name="flowerDesign" value="3 Floral Replacement" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
-              <i class="fas fa-leaf mr-1 text-sidebar-accent"></i>
-              3 Floral Replacement
-            </label>
-            <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
-              <input type="checkbox" name="flowerDesign" value="2 Floral Replacement" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
-              <i class="fas fa-leaf mr-1 text-sidebar-accent"></i>
-              2 Floral Replacement
-            </label>
-            <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
-              <input type="checkbox" name="flowerDesign" value="1 Floral Replacement" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
-              <i class="fas fa-leaf mr-1 text-sidebar-accent"></i>
-              1 Floral Replacement
-            </label>
-            <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
-              <input type="checkbox" name="flowerDesign" value="3 Premium Floral Replacement" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
-              <i class="fas fa-crown mr-1 text-sidebar-accent"></i>
-              3 Premium Floral Replacement
-            </label>
-            <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
-              <input type="checkbox" name="flowerDesign" value="2 Premium Floral Replacement" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
-              <i class="fas fa-crown mr-1 text-sidebar-accent"></i>
-              2 Premium Floral Replacement
-            </label>
-            <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
-              <input type="checkbox" name="flowerDesign" value="1 Premium Floral Replacement" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
-              <i class="fas fa-crown mr-1 text-sidebar-accent"></i>
-              1 Premium Floral Replacement
-            </label>
+        <!-- Right Column -->
+        <div class="space-y-4">
+          <!-- Flower Design Section -->
+          <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+            <p class="block text-xs font-medium text-gray-700 mb-2 flex items-center">
+              <i class="fas fa-flower mr-2 text-sidebar-accent"></i>
+              Flower Arrangement Sets
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
+                <input type="checkbox" name="flowerDesign" value="3 Floral Replacement" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
+                <i class="fas fa-leaf mr-1 text-sidebar-accent"></i>
+                3 Floral Replacement
+              </label>
+              <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
+                <input type="checkbox" name="flowerDesign" value="2 Floral Replacement" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
+                <i class="fas fa-leaf mr-1 text-sidebar-accent"></i>
+                2 Floral Replacement
+              </label>
+              <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
+                <input type="checkbox" name="flowerDesign" value="1 Floral Replacement" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
+                <i class="fas fa-leaf mr-1 text-sidebar-accent"></i>
+                1 Floral Replacement
+              </label>
+              <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
+                <input type="checkbox" name="flowerDesign" value="3 Premium Floral Replacement" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
+                <i class="fas fa-crown mr-1 text-sidebar-accent"></i>
+                3 Premium Floral Replacement
+              </label>
+              <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
+                <input type="checkbox" name="flowerDesign" value="2 Premium Floral Replacement" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
+                <i class="fas fa-crown mr-1 text-sidebar-accent"></i>
+                2 Premium Floral Replacement
+              </label>
+              <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
+                <input type="checkbox" name="flowerDesign" value="1 Premium Floral Replacement" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
+                <i class="fas fa-crown mr-1 text-sidebar-accent"></i>
+                1 Premium Floral Replacement
+              </label>
+            </div>
           </div>
-        </div>
-        
-        <!-- Enhanced Essential Services Section -->
-        <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
-          <p class="block text-xs font-medium text-gray-700 mb-2 flex items-center">
-            <i class="fas fa-concierge-bell mr-2 text-sidebar-accent"></i>
-            Other Essential Services
-          </p>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-            <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
-              <input type="checkbox" name="essentialServices" value="Transportation" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
-              <i class="fas fa-car mr-2 text-sidebar-accent"></i>
-              Transportation Service
-            </label>
-            <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
-              <input type="checkbox" name="essentialServices" value="Embalming" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
-              <i class="fas fa-procedures mr-2 text-sidebar-accent"></i>
-              Embalming and Preparation
-            </label>
-            <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
-              <input type="checkbox" name="essentialServices" value="MemorialPrograms" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
-              <i class="fas fa-book-open mr-2 text-sidebar-accent"></i>
-              Memorial Programs
-            </label>
-            <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
-              <input type="checkbox" name="essentialServices" value="Videography" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
-              <i class="fas fa-video mr-2 text-sidebar-accent"></i>
-              Videography & Photography
-            </label>
-            <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
-              <input type="checkbox" name="essentialServices" value="LiveStreaming" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
-              <i class="fas fa-broadcast-tower mr-2 text-sidebar-accent"></i>
-              Live Streaming Service
-            </label>
-            <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
-              <input type="checkbox" name="essentialServices" value="GriefCounseling" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
-              <i class="fas fa-hands-helping mr-2 text-sidebar-accent"></i>
-              Grief Counseling
-            </label>
-            <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
-              <input type="checkbox" name="essentialServices" value="Catering" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
-              <i class="fas fa-utensils mr-2 text-sidebar-accent"></i>
-              Catering Service
-            </label>
-            <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
-              <input type="checkbox" name="essentialServices" value="MusicService" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
-              <i class="fas fa-music mr-2 text-sidebar-accent"></i>
-              Music Service
-            </label>
+          
+          <!-- Enhanced Essential Services Section -->
+          <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+            <p class="block text-xs font-medium text-gray-700 mb-2 flex items-center">
+              <i class="fas fa-concierge-bell mr-2 text-sidebar-accent"></i>
+              Other Essential Services
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+              <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
+                <input type="checkbox" name="essentialServices" value="Transportation" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
+                <i class="fas fa-car mr-2 text-sidebar-accent"></i>
+                Transportation Service
+              </label>
+              <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
+                <input type="checkbox" name="essentialServices" value="Embalming" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
+                <i class="fas fa-procedures mr-2 text-sidebar-accent"></i>
+                Embalming and Preparation
+              </label>
+              <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
+                <input type="checkbox" name="essentialServices" value="MemorialPrograms" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
+                <i class="fas fa-book-open mr-2 text-sidebar-accent"></i>
+                Memorial Programs
+              </label>
+              <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
+                <input type="checkbox" name="essentialServices" value="Videography" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
+                <i class="fas fa-video mr-2 text-sidebar-accent"></i>
+                Videography & Photography
+              </label>
+              <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
+                <input type="checkbox" name="essentialServices" value="LiveStreaming" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
+                <i class="fas fa-broadcast-tower mr-2 text-sidebar-accent"></i>
+                Live Streaming Service
+              </label>
+              <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
+                <input type="checkbox" name="essentialServices" value="GriefCounseling" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
+                <i class="fas fa-hands-helping mr-2 text-sidebar-accent"></i>
+                Grief Counseling
+              </label>
+              <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
+                <input type="checkbox" name="essentialServices" value="Catering" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
+                <i class="fas fa-utensils mr-2 text-sidebar-accent"></i>
+                Catering Service
+              </label>
+              <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
+                <input type="checkbox" name="essentialServices" value="MusicService" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
+                <i class="fas fa-music mr-2 text-sidebar-accent"></i>
+                Music Service
+              </label>
+            </div>
           </div>
         </div>
         
