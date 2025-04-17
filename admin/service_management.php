@@ -582,8 +582,8 @@ document.addEventListener('DOMContentLoaded', () => {
     </button>
     
     <!-- Modal Header -->
-    <div class="px-6 py-5 border-b bg-gradient-to-r from-sidebar-accent to-white border-gray-200">
-      <h3 class="text-xl font-bold text-sidebar-accent flex items-center">
+    <div class="px-6 py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
+      <h3 class="text-xl font-bold text-white flex items-center">
         <i class="fas fa-plus-circle mr-2"></i>
         Add New Service
       </h3>
@@ -864,7 +864,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <i class="fas fa-times mr-2"></i>
         Cancel
       </button>
-      <button class="px-6 py-2 bg-gradient-to-r from-sidebar-accent to-white text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="addService()">
+      <button class="px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="addService()">
         <i class="fas fa-plus mr-2"></i>
         Add Service
       </button>
