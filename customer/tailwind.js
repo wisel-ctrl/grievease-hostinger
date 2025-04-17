@@ -25,12 +25,24 @@ tailwind.config = {
                 'input-border': '#D3D8E1',
                 'error': '#E53E3E',
                 'success': '#38A169',
-                
             },
             boxShadow: {
                 'input': '0 1px 2px rgba(0, 0, 0, 0.05)',
                 'card': '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+            },
+            // Add lineClamp extension
+            lineClamp: {
+                1: '1',
+                2: '2',
+                3: '3',
+                4: '4',
+                5: '5',
+                6: '6',
             }
         }
-    }
+    },
+    // Add the line-clamp plugin
+    plugins: [
+        require('@tailwindcss/line-clamp'),
+    ]
 }

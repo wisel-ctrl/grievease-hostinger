@@ -997,30 +997,40 @@ function renderPackages(filteredPackages) {
         packageCard.setAttribute('data-image', pkg.image);
         
         packageCard.innerHTML = `
-            <div class="flex flex-col h-full"> <!-- Added flex container with full height -->
+            <div class="flex flex-col h-full"> <!-- Main flex container -->
+                <!-- Image section (unchanged) -->
                 <div class="h-48 bg-cover bg-center relative" style="background-image: url('${pkg.image}')">
                     <div class="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-all duration-300"></div>
                     <div class="absolute top-4 right-4 w-12 h-12 rounded-full bg-yellow-600/90 flex items-center justify-center text-white">
                         <i class="fas fa-${pkg.icon} text-xl"></i>
                     </div>
                 </div>
-                <div class="p-6 flex flex-col flex-grow"> <!-- Added flex-grow to content area -->
-                    <div> <!-- Wrapped non-button content in a div -->
-                        <h3 class="text-2xl font-hedvig text-navy mb-3">${pkg.name}</h3>
-                        <p class="text-dark mb-4">${pkg.description}</p>
-                        <div class="text-3xl font-hedvig text-yellow-600 mb-4">₱${pkg.price.toLocaleString()}</div>
-                        <div class="border-t border-gray-200 pt-4 mt-2">
-                            <ul class="space-y-2">
-                                ${pkg.features.map(feature => `
-                                    <li class="flex items-center text-sm text-gray-700">
-                                        <i class="fas fa-check-circle mr-2 text-yellow-600"></i>
-                                        <span>${feature}</span>
-                                    </li>
-                                `).join('')}
-                            </ul>
-                        </div>
+                
+                <!-- Content section with consistent sizing -->
+                <div class="p-6 flex flex-col flex-grow">
+                    <!-- Title (unchanged) -->
+                    <h3 class="text-2xl font-hedvig text-navy mb-3">${pkg.name}</h3>
+                    
+                    <!-- Description with fixed height and line clamping -->
+                    <p class="text-dark mb-4 line-clamp-3 h-[72px] overflow-hidden">${pkg.description}</p>
+                    
+                    <!-- Price with consistent sizing -->
+                    <div class="text-3xl font-hedvig text-yellow-600 mb-4 h-12 flex items-center">₱${pkg.price.toLocaleString()}</div>
+                    
+                    <!-- Features list with scroll if needed -->
+                    <div class="border-t border-gray-200 pt-4 mt-2 flex-grow overflow-y-auto">
+                        <ul class="space-y-2">
+                            ${pkg.features.map(feature => `
+                                <li class="flex items-center text-sm text-gray-700">
+                                    <i class="fas fa-check-circle mr-2 text-yellow-600"></i>
+                                    <span>${feature}</span>
+                                </li>
+                            `).join('')}
+                        </ul>
                     </div>
-                    <button class="selectPackageBtn mt-auto w-full bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg shadow-md transition-all duration-300 text-center">
+                    
+                    <!-- Button at the bottom -->
+                    <button class="selectPackageBtn mt-6 w-full bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg shadow-md transition-all duration-300 text-center">
                         Select Package
                     </button>
                 </div>
