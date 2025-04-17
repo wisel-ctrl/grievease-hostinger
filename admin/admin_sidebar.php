@@ -15,6 +15,19 @@
   $email = $row['email'];
   ?>
 
+<?php
+// First, get the count of pending bookings
+$pending_count = 0;
+$count_query = "SELECT COUNT(*) AS pending_count FROM booking_tb WHERE status = 'Pending'";
+$count_stmt = $conn->prepare($count_query);
+$count_stmt->execute();
+$count_result = $count_stmt->get_result();
+
+if ($count_result->num_rows > 0) {
+    $count_row = $count_result->fetch_assoc();
+    $pending_count = $count_row['pending_count'];
+}
+?>
 <style>
   /* Custom scrollbar styles */
   .scrollbar-thin::-webkit-scrollbar {
@@ -260,14 +273,16 @@
         </li>
         <!-- New: ID Confirmation Menu Item -->
         <li>
-          <a href="id_confirmation.php" class="sidebar-link flex items-center px-5 py-3 text-sidebar-text opacity-80 hover:opacity-100 no-underline transition-all duration-300 hover:bg-sidebar-hover relative">
-            <i class="fas fa-id-card w-5 text-center mr-3 text-sidebar-accent"></i>
-            <span>ID Confirmation</span>
-            <!-- Notification Badge (optional) -->
-            <span id="id-badge" class="absolute right-4 bg-red-500 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full hidden">
-              0
+        <a href="Booking_acceptance.php" class="sidebar-link flex items-center px-5 py-3 text-sidebar-text opacity-80 hover:opacity-100 no-underline transition-all duration-300 hover:bg-sidebar-hover relative">
+            <i class="fas fa-clipboard w-5 text-center mr-3 text-sidebar-accent"></i>
+            <span>Bookings</span>
+            <!-- Notification Badge - Only show if there are pending bookings -->
+            <?php if ($pending_count > 0): ?>
+            <span id="booking-badge" class="absolute right-4 bg-red-500 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full">
+                <?php echo $pending_count; ?>
             </span>
-          </a>
+            <?php endif; ?>
+        </a>
         </li>
       </ul>
         
