@@ -273,43 +273,18 @@ $conn->close();
         <!-- Packages Grid -->
         <div id="packages-container" class="grid grid-cols-1 md:grid-cols-3 gap-8">
             <!-- Legacy Tribute Package -->
-            
-
             <!-- Eternal Remembrance Package -->
-            
-
             <!-- Heritage Memorial Package -->
-            
-
             <!-- Serene Passage Package -->
-            
-
             <!-- Dignified Farewell Package -->
-            
-
             <!-- Peaceful Journey Package -->
-            
-
             <!-- Cherished Memories Package -->
-            
-
             <!-- Gentle Passage Package -->
-           
-
             <!-- Sincere Tribute Package -->
-            
-
             <!-- Heartfelt Farewell Package -->
-           
             <!-- Simple Dignity Package -->
-            
-
             <!-- Essential Remembrance Package -->
-            
-
             <!-- Essential Remembrance Package -->
-            
-
         <!-- No Results Message (hidden by default) -->
         <div id="no-results" class="hidden text-center py-12">
             <i class="fas fa-search text-5xl text-gray-300 mb-4"></i>
@@ -506,6 +481,13 @@ $conn->close();
                             <label for="traditionalDeceasedAddress" class="block text-sm font-medium text-navy mb-2">Address of the Deceased</label>
                             <textarea id="traditionalDeceasedAddress" name="deceasedAddress" rows="3" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600"></textarea>
                         </div>
+                    </div>
+
+                    <div class="flex items-center">
+                        <input type="checkbox" id="traditionalWithCremate" name="with_cremate" value="yes" class="h-4 w-4 text-yellow-600 focus:ring-yellow-500 border-gray-300 rounded">
+                        <label for="traditionalWithCremate" class="ml-2 block text-sm text-navy">
+                            Include cremation service
+                        </label>
                     </div>
 
                     <div class="border-b border-gray-200 pb-4 mb-4">
