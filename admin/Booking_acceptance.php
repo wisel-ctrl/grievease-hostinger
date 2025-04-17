@@ -385,14 +385,33 @@ header("Pragma: no-cache");
     <script src="tailwind.js"></script>
 
     <script>
-      function openBookingDetails() {
-    const modal = document.getElementById("bookingDetailsModal");
-    if (modal) {
-        modal.classList.remove("hidden");
-        modal.classList.add("flex"); // Ensure it's displayed correctly
-        document.body.classList.add("overflow-hidden"); // Prevent background scroll
+      function openBookingDetails(bookingId) {
+      // First, fetch booking details via AJAX
+      fetch('get_booking_details.php?id=' + bookingId)
+        .then(response => response.json())
+        .then(data => {
+          // Populate modal with the fetched data
+          document.getElementById('bookingId').textContent = '#BK-' + 
+            new Date(data.booking_date).getFullYear() + '-' + 
+            String(data.booking_id).padStart(3, '0');
+          document.getElementById('customerName').textContent = data.customer_name;
+          document.getElementById('serviceType').textContent = data.service_name;
+          document.getElementById('dateRequested').textContent = 
+            new Date(data.booking_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+          
+          // Update other fields as needed...
+          
+          // Then show the modal
+          const modal = document.getElementById("bookingDetailsModal");
+          modal.classList.remove("hidden");
+          modal.classList.add("flex");
+          document.body.classList.add("overflow-hidden");
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          // Show error message
+        });
     }
-}
 
 function closeModal() {
     const modal = document.getElementById("bookingDetailsModal");
