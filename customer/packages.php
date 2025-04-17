@@ -717,7 +717,13 @@ document.addEventListener('DOMContentLoaded', function() {
         e.preventDefault();
         
         const formData = new FormData(this);
-        console.log(formData);
+        
+        const formEntries = {};
+        for (let pair of formData.entries()) {
+            formEntries[pair[0]] = pair[1];
+        }
+        console.log("Form data entries:", formEntries);
+
         fetch('booking/booking.php', {
             method: 'POST',
             body: formData
