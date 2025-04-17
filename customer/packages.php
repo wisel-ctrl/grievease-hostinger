@@ -634,7 +634,7 @@ $conn->close();
                         <div class="grid grid-cols-2 gap-4">
                             <div>
                                 <label for="lifeplanGcashReceipt" class="block text-sm font-medium text-navy mb-2">First Payment Receipt *</label>
-                                <input type="file" id="lifeplanGcashReceipt" name="gcashReceipt" accept=".pdf,.jpg,.jpeg,.png" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                                <input type="file" id="lifeplanGcashReceipt" name="gcashReceipt" accept=".pdf,.jpg,.jpeg,.png" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                             </div>
                             <div>
                                 <label for="lifeplanReferenceNumber" class="block text-sm font-medium text-navy mb-2">GCash Reference Number *</label>
@@ -717,7 +717,7 @@ document.addEventListener('DOMContentLoaded', function() {
         e.preventDefault();
         
         const formData = new FormData(this);
-        
+
         const formEntries = {};
         for (let pair of formData.entries()) {
             formEntries[pair[0]] = pair[1];
