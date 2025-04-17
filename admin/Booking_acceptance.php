@@ -317,7 +317,7 @@ header("Pragma: no-cache");
                           <div class="border border-gray-200 rounded-lg overflow-hidden">
                               <div id="deathCertificateAvailable" class="text-center">
                                   <div class="relative bg-gray-100 p-1">
-                                      <img id="deathCertificateImage" src="/api/placeholder/500/300" alt="Death Certificate" class="mx-auto rounded-md max-h-48 object-contain" />
+                                      <img id="deathCertificateImage"  alt="Death Certificate" class="mx-auto rounded-md max-h-48 object-contain" />
                                       <div class="absolute top-2 right-2">
                                           <button class="bg-white rounded-full p-1 shadow-md hover:bg-gray-100 transition-colors duration-200" title="View Full Size">
                                               <i class="fas fa-search-plus text-blue-600"></i>
@@ -346,7 +346,7 @@ header("Pragma: no-cache");
                           </h5>
                           <div class="border border-gray-200 rounded-lg overflow-hidden">
                               <div class="relative bg-gray-100 p-1">
-                                  <img id="paymentProofImage" src="/api/placeholder/500/300" alt="Payment Proof" class="mx-auto rounded-md max-h-48 object-contain" />
+                                  <img id="paymentProofImage"  alt="Payment Proof" class="mx-auto rounded-md max-h-48 object-contain" />
                                   <div class="absolute top-2 right-2">
                                       <button class="bg-white rounded-full p-1 shadow-md hover:bg-gray-100 transition-colors duration-200" title="View Full Size">
                                           <i class="fas fa-search-plus text-blue-600"></i>
