@@ -577,7 +577,7 @@ document.addEventListener('DOMContentLoaded', () => {
   <!-- Modal Content -->
   <div class="relative bg-white rounded-xl shadow-card w-full max-w-5xl mx-4 z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
     <!-- Close Button -->
-    <button type="button" class="absolute top-4 right-4 text-gray-500 hover:text-sidebar-accent transition-colors" onclick="closeAddServiceModal()">
+    <button type="button" class="absolute top-4 right-4 text-gray-500 hover:text-white transition-colors" onclick="closeAddServiceModal()">
       <i class="fas fa-times"></i>
     </button>
     
@@ -860,7 +860,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     <!-- Modal Footer --> 
     <div class="px-6 py-4 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
-      <button class="px-5 py-2 bg-white border border-sidebar-accent text-white rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center" onclick="closeAddServiceModal()">
+      <button class="px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center" onclick="closeAddServiceModal()">
         <i class="fas fa-times mr-2"></i>
         Cancel
       </button>
