@@ -15,6 +15,52 @@ $first_name = $row['first_name'];
 $last_name = $row['last_name'];
 $email = $row['email'];
 $stmt->close();
+
+// Fetch packages from database
+$packages = [];
+$query = "SELECT s.service_id, s.service_name, s.description, s.selling_price, s.image_url, 
+                 s.flower_design, s.inclusions, i.item_name as casket_name
+          FROM services_tb s
+          LEFT JOIN inventory_tb i ON s.casket_id = i.inventory_id
+          WHERE s.status = 'active'";
+$result = $conn->query($query);
+
+if ($result) {
+    while ($row = $result->fetch_assoc()) {
+        // Parse inclusions (assuming it's stored as a JSON string or comma-separated)
+        $inclusions = [];
+        if (!empty($row['inclusions'])) {
+            // Try to decode as JSON first
+            $decoded = json_decode($row['inclusions'], true);
+            $inclusions = is_array($decoded) ? $decoded : explode(',', $row['inclusions']);
+        }
+        
+        // Add flower design to features if it exists
+        if (!empty($row['flower_design'])) {
+            array_unshift($inclusions, $row['flower_design']);
+        }
+        
+        // Add casket name to features if it exists
+        if (!empty($row['casket_name'])) {
+            $inclusions[] = $row['casket_name'] . " casket";
+        }
+        
+        // Add professional embalming as a standard feature
+        $inclusions[] = "Professional embalming";
+        
+        $packages[] = [
+            'id' => $row['service_id'],
+            'name' => $row['service_name'],
+            'description' => $row['description'],
+            'price' => $row['selling_price'],
+            'image' => $row['image_url'],
+            'features' => $inclusions,
+            'service' => 'traditional' // Assuming all are traditional for now
+        ];
+    }
+    $result->free();
+}
+
 $conn->close();
 ?>
 
@@ -230,485 +276,42 @@ $conn->close();
         <!-- Packages Grid -->
         <div id="packages-container" class="grid grid-cols-1 md:grid-cols-3 gap-8">
             <!-- Legacy Tribute Package -->
-            <div class="package-card bg-white rounded-[20px] shadow-lg overflow-hidden" data-price="700000" data-service="traditional" data-name="Legacy Tribute" data-image="../image/700.jpg">
-                <div class="h-48 bg-cover bg-center relative" style="background-image: url('../image/700.jpg')">
-                    <div class="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-all duration-300"></div>
-                    <div class="absolute top-4 right-4 w-12 h-12 rounded-full bg-yellow-600/90 flex items-center justify-center text-white">
-                        <i class="fas fa-star text-xl"></i>
-                    </div>
-                </div>
-                <div class="p-6">
-                    <h3 class="text-2xl font-hedvig text-navy mb-3">Legacy Tribute</h3>
-                    <p class="text-dark mb-4">Our premium package with 3 sets of flower changes and catering on the last day.</p>
-                    <div class="text-3xl font-hedvig text-yellow-600 mb-4">₱700,000</div>
-                    <div class="border-t border-gray-200 pt-4 mt-2">
-                        <ul class="space-y-2">
-                            <li class="flex items-center text-sm text-gray-700">
-                                <i class="fas fa-check-circle mr-2 text-yellow-600"></i>
-                                <span>3 sets of flower changes</span>
-                            </li>
-                            <li class="flex items-center text-sm text-gray-700">
-                                <i class="fas fa-check-circle mr-2 text-yellow-600"></i>
-                                <span>Catering on the last day</span>
-                            </li>
-                            <li class="flex items-center text-sm text-gray-700">
-                                <i class="fas fa-check-circle mr-2 text-yellow-600"></i>
-                                <span>Premium casket selection</span>
-                            </li>
-                            <li class="flex items-center text-sm text-gray-700">
-                                <i class="fas fa-check-circle mr-2 text-yellow-600"></i>
-                                <span>Complete funeral arrangements</span>
-                            </li>
-                        </ul>
-                    </div>
-                    <button class="selectPackageBtn block w-full mt-6 bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg shadow-md transition-all duration-300 text-center">
-                    Select Package
-                </div>
-            </div>
+            
 
             <!-- Eternal Remembrance Package -->
-            <div class="package-card bg-white rounded-[20px] shadow-lg overflow-hidden" data-price="300000" data-service="traditional" data-name="Eternal Remembrance" data-image="../image/300.jpg">
-                <div class="h-48 bg-cover bg-center relative" style="background-image: url('../image/300.jpg')">
-                    <div class="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-all duration-300"></div>
-                    <div class="absolute top-4 right-4 w-12 h-12 rounded-full bg-yellow-600/90 flex items-center justify-center text-white">
-                        <i class="fas fa-crown text-xl"></i>
-                    </div>
-                </div>
-                <div class="p-6">
-                    <h3 class="text-2xl font-hedvig text-navy mb-3">Eternal Remembrance</h3>
-                    <p class="text-dark mb-4">A dignified package with 2 sets of flower changes and comprehensive service.</p>
-                    <div class="text-3xl font-hedvig text-yellow-600 mb-4">₱300,000</div>
-                    <div class="border-t border-gray-200 pt-4 mt-2">
-                        <ul class="space-y-2">
-                            <li class="flex items-center text-sm text-gray-700">
-                                <i class="fas fa-check-circle mr-2 text-yellow-600"></i>
-                                <span>2 sets of flower changes</span>
-                            </li>
-                            <li class="flex items-center text-sm text-gray-700">
-                                <i class="fas fa-check-circle mr-2 text-yellow-600"></i>
-                                <span>Quality casket selection</span>
-                            </li>
-                            <li class="flex items-center text-sm text-gray-700">
-                                <i class="fas fa-check-circle mr-2 text-yellow-600"></i>
-                                <span>Complete funeral service</span>
-                            </li>
-                            <li class="flex items-center text-sm text-gray-700">
-                                <i class="fas fa-check-circle mr-2 text-yellow-600"></i>
-                                <span>Professional embalming</span>
-                            </li>
-                        </ul>
-                    </div>
-                    <button class="selectPackageBtn block w-full mt-6 bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg shadow-md transition-all duration-300 text-center">
-                    Select Package
-                </div>
-            </div>
+            
 
             <!-- Heritage Memorial Package -->
-            <div class="package-card bg-white rounded-[20px] shadow-lg overflow-hidden" data-price="250000" data-service="traditional" data-name="Heritage Memorial" data-image="../image/250.jpg">
-                <div class="h-48 bg-cover bg-center relative" style="background-image: url('../image/250.jpg')">
-                    <div class="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-all duration-300"></div>
-                    <div class="absolute top-4 right-4 w-12 h-12 rounded-full bg-yellow-600/90 flex items-center justify-center text-white">
-                        <i class="fas fa-heart text-xl"></i>
-                    </div>
-                </div>
-                <div class="p-6">
-                    <h3 class="text-2xl font-hedvig text-navy mb-3">Heritage Memorial</h3>
-                    <p class="text-dark mb-4">A traditional package with 2 sets of flower changes and full service.</p>
-                    <div class="text-3xl font-hedvig text-yellow-600 mb-4">₱250,000</div>
-                    <div class="border-t border-gray-200 pt-4 mt-2">
-                        <ul class="space-y-2">
-                            <li class="flex items-center text-sm text-gray-700">
-                                <i class="fas fa-check-circle mr-2 text-yellow-600"></i>
-                                <span>2 sets of flower changes</span>
-                            </li>
-                            <li class="flex items-center text-sm text-gray-700">
-                                <i class="fas fa-check-circle mr-2 text-yellow-600"></i>
-                                <span>Standard casket</span>
-                            </li>
-                            <li class="flex items-center text-sm text-gray-700">
-                                <i class="fas fa-check-circle mr-2 text-yellow-600"></i>
-                                <span>Complete funeral arrangements</span>
-                            </li>
-                            <li class="flex items-center text-sm text-gray-700">
-                                <i class="fas fa-check-circle mr-2 text-yellow-600"></i>
-                                <span>Professional embalming</span>
-                            </li>
-                        </ul>
-                    </div>
-                    <button class="selectPackageBtn block w-full mt-6 bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg shadow-md transition-all duration-300 text-center">
-                    Select Package
-                </div>
-            </div>
+            
 
             <!-- Serene Passage Package -->
-            <div class="package-card bg-white rounded-[20px] shadow-lg overflow-hidden" data-price="200000" data-service="traditional" data-name="Serene Passage" data-image="../image/200.jpg">
-                <div class="h-48 bg-cover bg-center relative" style="background-image: url('../image/200.jpg')">
-                    <div class="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-all duration-300"></div>
-                    <div class="absolute top-4 right-4 w-12 h-12 rounded-full bg-yellow-600/90 flex items-center justify-center text-white">
-                        <i class="fas fa-dove text-xl"></i>
-                    </div>
-                </div>
-                <div class="p-6">
-                    <h3 class="text-2xl font-hedvig text-navy mb-3">Serene Passage</h3>
-                    <p class="text-dark mb-4">A peaceful package with 2 sets of flower changes and basic service.</p>
-                    <div class="text-3xl font-hedvig text-yellow-600 mb-4">₱200,000</div>
-                    <div class="border-t border-gray-200 pt-4 mt-2">
-                        <ul class="space-y-2">
-                            <li class="flex items-center text-sm text-gray-700">
-                                <i class="fas fa-check-circle mr-2 text-yellow-600"></i>
-                                <span>2 sets of flower changes</span>
-                            </li>
-                            <li class="flex items-center text-sm text-gray-700">
-                                <i class="fas fa-check-circle mr-2 text-yellow-600"></i>
-                                <span>Basic casket</span>
-                            </li>
-                            <li class="flex items-center text-sm text-gray-700">
-                                <i class="fas fa-check-circle mr-2 text-yellow-600"></i>
-                                <span>Essential funeral service</span>
-                            </li>
-                            <li class="flex items-center text-sm text-gray-700">
-                                <i class="fas fa-check-circle mr-2 text-yellow-600"></i>
-                                <span>Professional embalming</span>
-                            </li>
-                        </ul>
-                    </div>
-                    <button class="selectPackageBtn block w-full mt-6 bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg shadow-md transition-all duration-300 text-center">
-                    Select Package
-                </div>
-            </div>
+            
 
             <!-- Dignified Farewell Package -->
-            <div class="package-card bg-white rounded-[20px] shadow-lg overflow-hidden" data-price="180000" data-service="traditional" data-name="Dignified Farewell" data-image="../image/180.jpg">
-                <div class="h-48 bg-cover bg-center relative" style="background-image: url('../image/180.jpg')">
-                    <div class="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-all duration-300"></div>
-                    <div class="absolute top-4 right-4 w-12 h-12 rounded-full bg-yellow-600/90 flex items-center justify-center text-white">
-                        <i class="fas fa-cross text-xl"></i>
-                    </div>
-                </div>
-                <div class="p-6">
-                    <h3 class="text-2xl font-hedvig text-navy mb-3">Dignified Farewell</h3>
-                    <p class="text-dark mb-4">A respectful package with 2 sets of flower changes and essential service.</p>
-                    <div class="text-3xl font-hedvig text-yellow-600 mb-4">₱180,000</div>
-                    <div class="border-t border-gray-200 pt-4 mt-2">
-                        <ul class="space-y-2">
-                            <li class="flex items-center text-sm text-gray-700">
-                                <i class="fas fa-check-circle mr-2 text-yellow-600"></i>
-                                <span>2 sets of flower changes</span>
-                            </li>
-                            <li class="flex items-center text-sm text-gray-700">
-                                <i class="fas fa-check-circle mr-2 text-yellow-600"></i>
-                                <span>Basic casket</span>
-                            </li>
-                            <li class="flex items-center text-sm text-gray-700">
-                                <i class="fas fa-check-circle mr-2 text-yellow-600"></i>
-                                <span>Essential funeral service</span>
-                            </li>
-                            <li class="flex items-center text-sm text-gray-700">
-                                <i class="fas fa-check-circle mr-2 text-yellow-600"></i>
-                                <span>Professional embalming</span>
-                            </li>
-                        </ul>
-                    </div>
-                    <button class="selectPackageBtn block w-full mt-6 bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg shadow-md transition-all duration-300 text-center">
-                    Select Package
-                </div>
-            </div>
+            
 
             <!-- Peaceful Journey Package -->
-            <div class="package-card bg-white rounded-[20px] shadow-lg overflow-hidden" data-price="150000" data-service="traditional" data-name="Peaceful Journey" data-image="../image/150.jpg">
-                <div class="h-48 bg-cover bg-center relative" style="background-image: url('../image/150.jpg')">
-                    <div class="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-all duration-300"></div>
-                    <div class="absolute top-4 right-4 w-12 h-12 rounded-full bg-yellow-600/90 flex items-center justify-center text-white">
-                        <i class="fas fa-peace text-xl"></i>
-                    </div>
-                </div>
-                <div class="p-6">
-                    <h3 class="text-2xl font-hedvig text-navy mb-3">Peaceful Journey</h3>
-                    <p class="text-dark mb-4">A comforting package with 2 sets of flower changes and basic service.</p>
-                    <div class="text-3xl font-hedvig text-yellow-600 mb-4">₱150,000</div>
-                    <div class="border-t border-gray-200 pt-4 mt-2">
-                        <ul class="space-y-2">
-                            <li class="flex items-center text-sm text-gray-700">
-                                <i class="fas fa-check-circle mr-2 text-yellow-600"></i>
-                                <span>2 sets of flower changes</span>
-                            </li>
-                            <li class="flex items-center text-sm text-gray-700">
-                                <i class="fas fa-check-circle mr-2 text-yellow-600"></i>
-                                <span>Basic casket</span>
-                            </li>
-                            <li class="flex items-center text-sm text-gray-700">
-                                <i class="fas fa-check-circle mr-2 text-yellow-600"></i>
-                                <span>Essential funeral service</span>
-                            </li>
-                            <li class="flex items-center text-sm text-gray-700">
-                                <i class="fas fa-check-circle mr-2 text-yellow-600"></i>
-                                <span>Professional embalming</span>
-                            </li>
-                        </ul>
-                    </div>
-                    <button class="selectPackageBtn block w-full mt-6 bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg shadow-md transition-all duration-300 text-center">
-                    Select Package
-                </div>
-            </div>
+            
 
             <!-- Cherished Memories Package -->
-            <div class="package-card bg-white rounded-[20px] shadow-lg overflow-hidden" data-price="120000" data-service="traditional" data-name="Cherished Memories" data-image="../image/120.jpg">
-                <div class="h-48 bg-cover bg-center relative" style="background-image: url('../image/120.jpg')">
-                    <div class="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-all duration-300"></div>
-                    <div class="absolute top-4 right-4 w-12 h-12 rounded-full bg-yellow-600/90 flex items-center justify-center text-white">
-                        <i class="fas fa-memory text-xl"></i>
-                    </div>
-                </div>
-                <div class="p-6">
-                    <h3 class="text-2xl font-hedvig text-navy mb-3">Cherished Memories</h3>
-                    <p class="text-dark mb-4">A meaningful package with 1 set of flowers and essential service.</p>
-                    <div class="text-3xl font-hedvig text-yellow-600 mb-4">₱120,000</div>
-                    <div class="border-t border-gray-200 pt-4 mt-2">
-                        <ul class="space-y-2">
-                            <li class="flex items-center text-sm text-gray-700">
-                                <i class="fas fa-check-circle mr-2 text-yellow-600"></i>
-                                <span>1 set of flowers</span>
-                            </li>
-                            <li class="flex items-center text-sm text-gray-700">
-                                <i class="fas fa-check-circle mr-2 text-yellow-600"></i>
-                                <span>Basic casket</span>
-                            </li>
-                            <li class="flex items-center text-sm text-gray-700">
-                                <i class="fas fa-check-circle mr-2 text-yellow-600"></i>
-                                <span>Essential funeral service</span>
-                            </li>
-                            <li class="flex items-center text-sm text-gray-700">
-                                <i class="fas fa-check-circle mr-2 text-yellow-600"></i>
-                                <span>Professional embalming</span>
-                            </li>
-                        </ul>
-                    </div>
-                    <button class="selectPackageBtn block w-full mt-6 bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg shadow-md transition-all duration-300 text-center">
-                    Select Package
-                </div>
-            </div>
+            
 
             <!-- Gentle Passage Package -->
-            <div class="package-card bg-white rounded-[20px] shadow-lg overflow-hidden" data-price="90000" data-service="traditional" data-name="Gentle Passage" data-image="../image/90.jpg">
-                <div class="h-48 bg-cover bg-center relative" style="background-image: url('../image/90.jpg')">
-                    <div class="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-all duration-300"></div>
-                    <div class="absolute top-4 right-4 w-12 h-12 rounded-full bg-yellow-600/90 flex items-center justify-center text-white">
-                        <i class="fas fa-cloud text-xl"></i>
-                    </div>
-                </div>
-                <div class="p-6">
-                    <h3 class="text-2xl font-hedvig text-navy mb-3">Gentle Passage</h3>
-                    <p class="text-dark mb-4">A simple package with 1 set of flowers and basic service.</p>
-                    <div class="text-3xl font-hedvig text-yellow-600 mb-4">₱90,000</div>
-                    <div class="border-t border-gray-200 pt-4 mt-2">
-                        <ul class="space-y-2">
-                            <li class="flex items-center text-sm text-gray-700">
-                                <i class="fas fa-check-circle mr-2 text-yellow-600"></i>
-                                <span>1 set of flowers</span>
-                            </li>
-                            <li class="flex items-center text-sm text-gray-700">
-                                <i class="fas fa-check-circle mr-2 text-yellow-600"></i>
-                                <span>Basic casket</span>
-                            </li>
-                            <li class="flex items-center text-sm text-gray-700">
-                                <i class="fas fa-check-circle mr-2 text-yellow-600"></i>
-                                <span>Essential funeral service</span>
-                            </li>
-                            <li class="flex items-center text-sm text-gray-700">
-                                <i class="fas fa-check-circle mr-2 text-yellow-600"></i>
-                                <span>Professional embalming</span>
-                            </li>
-                        </ul>
-                    </div>
-                    <button class="selectPackageBtn block w-full mt-6 bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg shadow-md transition-all duration-300 text-center">
-                    Select Package
-                </div>
-            </div>
+           
 
             <!-- Sincere Tribute Package -->
-            <div class="package-card bg-white rounded-[20px] shadow-lg overflow-hidden" data-price="80000" data-service="traditional" data-name="Sincere Tribute" data-image="../image/80.jpg">
-                <div class="h-48 bg-cover bg-center relative" style="background-image: url('../image/80.jpg')">
-                    <div class="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-all duration-300"></div>
-                    <div class="absolute top-4 right-4 w-12 h-12 rounded-full bg-yellow-600/90 flex items-center justify-center text-white">
-                        <i class="fas fa-ribbon text-xl"></i>
-                    </div>
-                </div>
-                <div class="p-6">
-                    <h3 class="text-2xl font-hedvig text-navy mb-3">Sincere Tribute</h3>
-                    <p class="text-dark mb-4">A heartfelt package with 2 sets of flowers and basic service.</p>
-                    <div class="text-3xl font-hedvig text-yellow-600 mb-4">₱80,000</div>
-                    <div class="border-t border-gray-200 pt-4 mt-2">
-                        <ul class="space-y-2">
-                            <li class="flex items-center text-sm text-gray-700">
-                                <i class="fas fa-check-circle mr-2 text-yellow-600"></i>
-                                <span>2 sets of flowers</span>
-                            </li>
-                            <li class="flex items-center text-sm text-gray-700">
-                                <i class="fas fa-check-circle mr-2 text-yellow-600"></i>
-                                <span>Basic casket</span>
-                            </li>
-                            <li class="flex items-center text-sm text-gray-700">
-                                <i class="fas fa-check-circle mr-2 text-yellow-600"></i>
-                                <span>Essential funeral service</span>
-                            </li>
-                            <li class="flex items-center text-sm text-gray-700">
-                                <i class="fas fa-check-circle mr-2 text-yellow-600"></i>
-                                <span>Professional embalming</span>
-                            </li>
-                        </ul>
-                    </div>
-                    <button class="selectPackageBtn block w-full mt-6 bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg shadow-md transition-all duration-300 text-center">
-                    Select Package
-                </div>
-            </div>
+            
 
             <!-- Heartfelt Farewell Package -->
-            <div class="package-card bg-white rounded-[20px] shadow-lg overflow-hidden" data-price="75000" data-service="traditional" data-name="Heartfelt Farewell" data-image="../image/75.jpg">
-                <div class="h-48 bg-cover bg-center relative" style="background-image: url('../image/75.jpg')">
-                    <div class="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-all duration-300"></div>
-                    <div class="absolute top-4 right-4 w-12 h-12 rounded-full bg-yellow-600/90 flex items-center justify-center text-white">
-                        <i class="fas fa-heart-broken text-xl"></i>
-                    </div>
-                </div>
-                <div class="p-6">
-                    <h3 class="text-2xl font-hedvig text-navy mb-3">Heartfelt Farewell</h3>
-                    <p class="text-dark mb-4">A compassionate package with 1 set of flowers and essential service.</p>
-                    <div class="text-3xl font-hedvig text-yellow-600 mb-4">₱75,000</div>
-                    <div class="border-t border-gray-200 pt-4 mt-2">
-                        <ul class="space-y-2">
-                            <li class="flex items-center text-sm text-gray-700">
-                                <i class="fas fa-check-circle mr-2 text-yellow-600"></i>
-                                <span>1 set of flowers</span>
-                            </li>
-                            <li class="flex items-center text-sm text-gray-700">
-                                <i class="fas fa-check-circle mr-2 text-yellow-600"></i>
-                                <span>Basic casket</span>
-                            </li>
-                            <li class="flex items-center text-sm text-gray-700">
-                                <i class="fas fa-check-circle mr-2 text-yellow-600"></i>
-                                <span>Essential funeral service</span>
-                            </li>
-                            <li class="flex items-center text-sm text-gray-700">
-                                <i class="fas fa-check-circle mr-2 text-yellow-600"></i>
-                                <span>Professional embalming</span>
-                            </li>
-                        </ul>
-                    </div>
-                    <button class="selectPackageBtn block w-full mt-6 bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg shadow-md transition-all duration-300 text-center">
-                    Select Package
-                </div>
-            </div>
-
+           
             <!-- Simple Dignity Package -->
-            <div class="package-card bg-white rounded-[20px] shadow-lg overflow-hidden" data-price="60000" data-service="traditional" data-name="Simple Dignity" data-image="../image/60.jpg">
-                <div class="h-48 bg-cover bg-center relative" style="background-image: url('../image/60.jpg')">
-                    <div class="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-all duration-300"></div>
-                    <div class="absolute top-4 right-4 w-12 h-12 rounded-full bg-yellow-600/90 flex items-center justify-center text-white">
-                        <i class="fas fa-leaf text-xl"></i>
-                    </div>
-                </div>
-                <div class="p-6">
-                    <h3 class="text-2xl font-hedvig text-navy mb-3">Simple Dignity</h3>
-                    <p class="text-dark mb-4">A straightforward package with 2 sets of flowers and basic service.</p>
-                    <div class="text-3xl font-hedvig text-yellow-600 mb-4">₱60,000</div>
-                    <div class="border-t border-gray-200 pt-4 mt-2">
-                        <ul class="space-y-2">
-                            <li class="flex items-center text-sm text-gray-700">
-                                <i class="fas fa-check-circle mr-2 text-yellow-600"></i>
-                                <span>2 sets of flowers</span>
-                            </li>
-                            <li class="flex items-center text-sm text-gray-700">
-                                <i class="fas fa-check-circle mr-2 text-yellow-600"></i>
-                                <span>Basic casket</span>
-                            </li>
-                            <li class="flex items-center text-sm text-gray-700">
-                                <i class="fas fa-check-circle mr-2 text-yellow-600"></i>
-                                <span>Essential funeral service</span>
-                            </li>
-                            <li class="flex items-center text-sm text-gray-700">
-                                <i class="fas fa-check-circle mr-2 text-yellow-600"></i>
-                                <span>Professional embalming</span>
-                            </li>
-                        </ul>
-                    </div>
-                    <button class="selectPackageBtn block w-full mt-6 bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg shadow-md transition-all duration-300 text-center">
-                    Select Package
-                </div>
-            </div>
+            
 
             <!-- Essential Remembrance Package -->
-            <div class="package-card bg-white rounded-[20px] shadow-lg overflow-hidden" data-price="50000" data-service="traditional" data-name="Essential Remembrance" data-image="../image/50.jpg">
-                <div class="h-48 bg-cover bg-center relative" style="background-image: url('../image/50.jpg')">
-                    <div class="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-all duration-300"></div>
-                    <div class="absolute top-4 right-4 w-12 h-12 rounded-full bg-yellow-600/90 flex items-center justify-center text-white">
-                        <i class="fas fa-leaf text-xl"></i>
-                    </div>
-                </div>
-                <div class="p-6">
-                    <h3 class="text-2xl font-hedvig text-navy mb-3">Essential Remembrance</h3>
-                    <p class="text-dark mb-4">A basic package with 1 set of flowers and essential service.</p>
-                    <div class="text-3xl font-hedvig text-yellow-600 mb-4">₱50,000</div>
-                    <div class="border-t border-gray-200 pt-4 mt-2">
-                        <ul class="space-y-2">
-                            <li class="flex items-center text-sm text-gray-700">
-                                <i class="fas fa-check-circle mr-2 text-yellow-600"></i>
-                                <span>1 set of flowers</span>
-                            </li>
-                            <li class="flex items-center text-sm text-gray-700">
-                                <i class="fas fa-check-circle mr-2 text-yellow-600"></i>
-                                <span>Basic casket</span>
-                            </li>
-                            <li class="flex items-center text-sm text-gray-700">
-                                <i class="fas fa-check-circle mr-2 text-yellow-600"></i>
-                                <span>Essential funeral service</span>
-                            </li>
-                            <li class="flex items-center text-sm text-gray-700">
-                                <i class="fas fa-check-circle mr-2 text-yellow-600"></i>
-                                <span>Professional embalming</span>
-                            </li>
-                        </ul>
-                    </div>
-                    <button class="selectPackageBtn block w-full mt-6 bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg shadow-md transition-all duration-300 text-center">
-                    Select Package
-                </div>
-            </div>
+            
 
             <!-- Essential Remembrance Package -->
-            <div class="package-card bg-white rounded-[20px] shadow-lg overflow-hidden" data-price="35000" data-service="traditional" data-name="Modest Memorial" data-image="../image/35.jpg">
-                <div class="h-48 bg-cover bg-center relative" style="background-image: url('../image/35.jpg')">
-                    <div class="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-all duration-300"></div>
-                    <div class="absolute top-4 right-4 w-12 h-12 rounded-full bg-yellow-600/90 flex items-center justify-center text-white">
-                        <i class="fas fa-leaf text-xl"></i>
-                    </div>
-                </div>
-                <div class="p-6">
-                    <h3 class="text-2xl font-hedvig text-navy mb-3">Modest Memorial</h3>
-                    <p class="text-dark mb-4">Our most affordable package with 1 set of flowers and basic service.</p>
-                    <div class="text-3xl font-hedvig text-yellow-600 mb-4">₱35,000</div>
-                    <div class="border-t border-gray-200 pt-4 mt-2">
-                        <ul class="space-y-2">
-                            <li class="flex items-center text-sm text-gray-700">
-                                <i class="fas fa-check-circle mr-2 text-yellow-600"></i>
-                                <span>1 set of flowers</span>
-                            </li>
-                            <li class="flex items-center text-sm text-gray-700">
-                                <i class="fas fa-check-circle mr-2 text-yellow-600"></i>
-                                <span>Basic casket</span>
-                            </li>
-                            <li class="flex items-center text-sm text-gray-700">
-                                <i class="fas fa-check-circle mr-2 text-yellow-600"></i>
-                                <span>Essential funeral service</span>
-                            </li>
-                            <li class="flex items-center text-sm text-gray-700">
-                                <i class="fas fa-check-circle mr-2 text-yellow-600"></i>
-                                <span>Professional embalming</span>
-                            </li>
-                        </ul>
-                    </div>
-                    <button class="selectPackageBtn block w-full mt-6 bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg shadow-md transition-all duration-300 text-center">
-                    Select Package
-                </div>
-            </div>
+            
 
         <!-- No Results Message (hidden by default) -->
         <div id="no-results" class="hidden text-center py-12">
@@ -1079,41 +682,39 @@ $conn->close();
 </div>
 
 <script>
+    const packagesFromDB = <?php echo json_encode($packages); ?>;
+
     document.addEventListener('DOMContentLoaded', function() {
     // Show service type selection modal for all packages
     document.querySelectorAll('.selectPackageBtn').forEach(button => {
-        button.addEventListener('click', function() {
-            // Get package details from the parent card
-            const packageCard = this.closest('.package-card');
-            if (!packageCard) return; // Safety check
-            
-            const packageName = packageCard.dataset.name;
-            const packagePrice = packageCard.dataset.price;
-            const packageImage = packageCard.dataset.image || '';
-            const serviceType = packageCard.dataset.service;
+            button.addEventListener('click', function() {
+                const packageCard = this.closest('.package-card');
+                if (!packageCard) return;
+                
+                const packageName = packageCard.dataset.name;
+                const packagePrice = packageCard.dataset.price;
+                const packageImage = packageCard.dataset.image || '';
+                const serviceType = packageCard.dataset.service;
 
-            // Store package details in sessionStorage for later use
-            sessionStorage.setItem('selectedPackageName', packageName);
-            sessionStorage.setItem('selectedPackagePrice', packagePrice);
-            sessionStorage.setItem('selectedPackageImage', packageImage);
-            sessionStorage.setItem('selectedServiceType', serviceType);
-            
-            // Get other details from the card content
-            const features = Array.from(packageCard.querySelectorAll('ul li')).map(li => li.innerHTML);
-            sessionStorage.setItem('selectedPackageFeatures', JSON.stringify(features));
-            
-            // Reset to default for traditional service
-            const traditionalBtn = document.getElementById('traditionalServiceBtn');
-            traditionalBtn.innerHTML = `
-                <i class="fas fa-dove text-3xl text-yellow-600 mb-2"></i>
-                <span class="font-hedvig text-lg">Traditional</span>
-                <span class="text-sm text-gray-600 mt-2 text-center">For immediate funeral needs</span>
-            `;
-            
-            // Show service type selection modal
-            document.getElementById('serviceTypeModal').classList.remove('hidden');
+                sessionStorage.setItem('selectedPackageName', packageName);
+                sessionStorage.setItem('selectedPackagePrice', packagePrice);
+                sessionStorage.setItem('selectedPackageImage', packageImage);
+                sessionStorage.setItem('selectedServiceType', serviceType);
+                
+                const features = Array.from(packageCard.querySelectorAll('ul li')).map(li => li.innerHTML);
+                sessionStorage.setItem('selectedPackageFeatures', JSON.stringify(features));
+                
+                const traditionalBtn = document.getElementById('traditionalServiceBtn');
+                traditionalBtn.innerHTML = `
+                    <i class="fas fa-dove text-3xl text-yellow-600 mb-2"></i>
+                    <span class="font-hedvig text-lg">Traditional</span>
+                    <span class="text-sm text-gray-600 mt-2 text-center">For immediate funeral needs</span>
+                `;
+                
+                document.getElementById('serviceTypeModal').classList.remove('hidden');
+            });
         });
-    });
+    }
 
     // Traditional Service button click event
     document.getElementById('traditionalServiceBtn').addEventListener('click', function() {
@@ -1346,232 +947,77 @@ function toggleMenu() {
     mobileMenu.classList.toggle('hidden');
 }
 
-const packages = [
-    {
-        price: 700000,
-        service: "traditional", 
-        name: "Legacy Tribute",
-        description: "Our premium package with 3 sets of flower changes and catering on the last day.",
-        image: "../image/700.jpg",
-        icon: "star",
-        features: [
-            "3 sets of flower changes",
-            "Catering on the last day", 
-            "Premium casket selection",
-            "Complete funeral arrangements"
-        ]
-    },
-    {
-        price: 300000,
-        service: "traditional", 
-        name: "Eternal Remembrance",
-        description: "A dignified package with 2 sets of flower changes and comprehensive service.",
-        image: "../image/300.jpg",
-        icon: "crown",
-        features: [
-            "2 sets of flower changes",
-            "Quality casket selection", 
-            "Complete funeral service",
-            "Professional embalming"
-        ]
-    },
-    {
-        price: 250000,
-        service: "traditional", 
-        name: "Heritage Memorial",
-        description: "A traditional package with 2 sets of flower changes and full service.",
-        image: "../image/250.jpg",
-        icon: "heart",
-        features: [
-            "2 sets of flower changes",
-            "Standard casket",
-            "Complete funeral arrangements", 
-            "Professional embalming"
-        ]
-    },
-    {
-        price: 200000,
-        service: "traditional", 
-        name: "Serene Passage",
-        description: "A peaceful package with 2 sets of flower changes and basic service.",
-        image: "../image/200.jpg",
-        icon: "dove",
-        features: [
-            "2 sets of flower changes",
-            "Basic casket",
-            "Essential funeral service",
-            "Professional embalming"
-        ]
-    },
-    {
-        price: 180000,
-        service: "traditional", 
-        name: "Dignified Farewell",
-        description: "A respectful package with 2 sets of flower changes and essential service.",
-        image: "../image/180.jpg",
-        icon: "cross",
-        features: [
-            "2 sets of flower changes",
-            "Basic casket",
-            "Essential funeral service",
-            "Professional embalming"
-        ]
-    },
-    {
-        price: 150000,
-        service: "traditional", 
-        name: "Peaceful Journey",
-        description: "A comforting package with 2 sets of flower changes and basic service.",
-        image: "../image/150.jpg",
-        icon: "peace",
-        features: [
-            "2 sets of flower changes",
-            "Basic casket",
-            "Essential funeral service",
-            "Professional embalming"
-        ]
-    },
-    {
-        price: 120000,
-        service: "traditional", 
-        name: "Cherished Memories",
-        description: "A meaningful package with 1 set of flowers and essential service.",
-        image: "../image/120.jpg",
-        icon: "memory",
-        features: [
-            "1 set of flowers",
-            "Basic casket",
-            "Essential funeral service",
-            "Professional embalming"
-        ]
-    },
-    {
-        price: 90000,
-        service: "traditional", 
-        name: "Gentle Passage",
-        description: "A simple package with 1 set of flowers and basic service.",
-        image: "../image/90.jpg",
-        icon: "cloud",
-        features: [
-            "1 set of flowers",
-            "Basic casket",
-            "Essential funeral service",
-            "Professional embalming"
-        ]
-    },
-    {
-        price: 80000,
-        service: "traditional", 
-        name: "Sincere Tribute",
-        description: "A heartfelt package with 2 sets of flowers and basic service.",
-        image: "../image/80.jpg",
-        icon: "ribbon",
-        features: [
-            "2 sets of flowers",
-            "Basic casket",
-            "Essential funeral service",
-            "Professional embalming"
-        ]
-    },
-    {
-        price: 75000,
-        service: "traditional", 
-        name: "Heartfelt Farewell",
-        description: "A compassionate package with 1 set of flowers and essential service.",
-        image: "../image/75.jpg",
-        icon: "heart-broken",
-        features: [
-            "1 set of flowers",
-            "Basic casket",
-            "Essential funeral service",
-            "Professional embalming"
-        ]
-    },
-    {
-        price: 60000,
-        service: "traditional", 
-        name: "Simple Dignity",
-        description: "A straightforward package with 2 sets of flowers and basic service.",
-        image: "../image/60.jpg",
-        icon: "leaf",
-        features: [
-            "2 sets of flowers",
-            "Basic casket",
-            "Essential funeral service",
-            "Professional embalming"
-        ]
-    },
-    {
-        price: 50000,
-        service: "traditional", 
-        name: "Essential Remembrance",
-        description: "A basic package with 1 set of flowers and essential service.",
-        image: "../image/50.jpg",
-        icon: "leaf",
-        features: [
-            "1 set of flowers",
-            "Basic casket",
-            "Essential funeral service",
-            "Professional embalming"
-        ]
-    },
-    {
-        price: 35000,
-        service: "traditional", 
-        name: "Modest Memorial",
-        description: "Our most affordable package with 1 set of flowers and basic service.",
-        image: "../image/35.jpg",
-        icon: "leaf",
-        features: [
-            "1 set of flowers",
-            "Basic casket",
-            "Essential funeral service",
-            "Professional embalming"
-        ]
-    },
-];
-
-function renderPackages(filteredPackages) {
-    const container = document.getElementById('packages-container');
-    container.innerHTML = '';
-
-    filteredPackages.forEach(pkg => {
-        const packageCard = document.createElement('div');
-        packageCard.className = 'package-card bg-white rounded-[20px] shadow-lg overflow-hidden';
-        packageCard.setAttribute('data-price', pkg.price);
-        packageCard.setAttribute('data-service', pkg.service);
-        packageCard.setAttribute('data-name', pkg.name);
-        packageCard.setAttribute('data-image', pkg.image);
+document.addEventListener('DOMContentLoaded', function() {
+    // Process packages from database
+    const processedPackages = packagesFromDB.map(pkg => {
+        // Determine icon based on package price or name
+        let icon = 'leaf'; // default icon
+        if (pkg.price > 500000) icon = 'star';
+        else if (pkg.price > 200000) icon = 'crown';
+        else if (pkg.price > 100000) icon = 'heart';
+        else if (pkg.price > 50000) icon = 'dove';
         
-        packageCard.innerHTML = `
-            <div class="h-48 bg-cover bg-center relative" style="background-image: url('${pkg.image}')">
-                <div class="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-all duration-300"></div>
-                <div class="absolute top-4 right-4 w-12 h-12 rounded-full bg-yellow-600/90 flex items-center justify-center text-white">
-                    <i class="fas fa-${pkg.icon} text-xl"></i>
-                </div>
-            </div>
-            <div class="p-6">
-                <h3 class="text-2xl font-hedvig text-navy mb-3">${pkg.name}</h3>
-                <p class="text-dark mb-4">${pkg.description}</p>
-                <div class="text-3xl font-hedvig text-yellow-600 mb-4">₱${pkg.price.toLocaleString()}</div>
-                <div class="border-t border-gray-200 pt-4 mt-2">
-                    <ul class="space-y-2">
-                        ${pkg.features.map(feature => `
-                            <li class="flex items-center text-sm text-gray-700">
-                                <i class="fas fa-check-circle mr-2 text-yellow-600"></i>
-                                <span>${feature}</span>
-                            </li>
-                        `).join('')}
-                    </ul>
-                </div>
-                <button class="selectPackageBtn block w-full mt-6 bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg shadow-md transition-all duration-300 text-center">
-                    Select Package
-                </button>
-            </div>
-        `;
-        container.appendChild(packageCard);
+        return {
+            price: parseFloat(pkg.price),
+            service: pkg.service,
+            name: pkg.name,
+            description: pkg.description,
+            image: pkg.image,
+            icon: icon,
+            features: pkg.features
+        };
     });
 }
+
+// Function to render packages
+function renderPackages(filteredPackages) {
+        const container = document.getElementById('packages-container');
+        container.innerHTML = '';
+
+        if (filteredPackages.length === 0) {
+            document.getElementById('no-results').classList.remove('hidden');
+            return;
+        } else {
+            document.getElementById('no-results').classList.add('hidden');
+        }
+
+        filteredPackages.forEach(pkg => {
+            const packageCard = document.createElement('div');
+            packageCard.className = 'package-card bg-white rounded-[20px] shadow-lg overflow-hidden';
+            packageCard.setAttribute('data-price', pkg.price);
+            packageCard.setAttribute('data-service', pkg.service);
+            packageCard.setAttribute('data-name', pkg.name);
+            packageCard.setAttribute('data-image', pkg.image);
+            
+            packageCard.innerHTML = `
+                <div class="h-48 bg-cover bg-center relative" style="background-image: url('${pkg.image}')">
+                    <div class="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-all duration-300"></div>
+                    <div class="absolute top-4 right-4 w-12 h-12 rounded-full bg-yellow-600/90 flex items-center justify-center text-white">
+                        <i class="fas fa-${pkg.icon} text-xl"></i>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-2xl font-hedvig text-navy mb-3">${pkg.name}</h3>
+                    <p class="text-dark mb-4">${pkg.description}</p>
+                    <div class="text-3xl font-hedvig text-yellow-600 mb-4">₱${pkg.price.toLocaleString()}</div>
+                    <div class="border-t border-gray-200 pt-4 mt-2">
+                        <ul class="space-y-2">
+                            ${pkg.features.map(feature => `
+                                <li class="flex items-center text-sm text-gray-700">
+                                    <i class="fas fa-check-circle mr-2 text-yellow-600"></i>
+                                    <span>${feature}</span>
+                                </li>
+                            `).join('')}
+                        </ul>
+                    </div>
+                    <button class="selectPackageBtn block w-full mt-6 bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg shadow-md transition-all duration-300 text-center">
+                        Select Package
+                    </button>
+                </div>
+            `;
+            container.appendChild(packageCard);
+        });
+    }
 
 function filterAndSortPackages() {
     const searchTerm = document.getElementById('searchInput').value.toLowerCase();
@@ -1608,7 +1054,7 @@ document.getElementById('priceSort').addEventListener('change', filterAndSortPac
 document.getElementById('resetFilters').addEventListener('click', resetFilters);
 
 // Initial render
-renderPackages(packages);
+renderPackages(processedPackages);
 
 function toggleMenu() {
     const mobileMenu = document.getElementById('mobile-menu');
