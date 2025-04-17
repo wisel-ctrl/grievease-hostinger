@@ -440,7 +440,7 @@ document.addEventListener('DOMContentLoaded', function() {
   <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
   
   <!-- Modal Content -->
-  <div class="relative bg-white rounded-xl shadow-card w-full max-w-lg mx-4 z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-5xl mx-4 z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
     <!-- Close Button -->
     <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeAddCustomerAccountModal()">
       <i class="fas fa-times"></i>
@@ -456,8 +456,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     <!-- Modal Body -->
     <div class="px-6 py-5">
-      <form id="addCustomerAccountForm" method="post" action="addCustomer/add_customer.php">
-        <div class="grid grid-cols-2 gap-4">
+      <form id="addCustomerAccountForm" method="post" action="addCustomer/add_customer.php" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Left Column -->
+        <div class="space-y-4">
           <div>
             <label for="firstName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
               <i class="fas fa-user mr-2 text-sidebar-accent"></i>
@@ -467,17 +468,6 @@ document.addEventListener('DOMContentLoaded', function() {
               <input type="text" id="firstName" name="firstName" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="First Name" required>
             </div>
             <p id="firstNameError" class="text-red-500 text-xs mt-1 hidden"></p>
-          </div>
-          
-          <div>
-            <label for="middleName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-user mr-2 text-sidebar-accent"></i>
-              Middle Name
-            </label>
-            <div class="relative">
-              <input type="text" id="middleName" name="middleName" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="Middle Name">
-            </div>
-            <p id="middleNameError" class="text-red-500 text-xs mt-1 hidden"></p>
           </div>
           
           <div>
@@ -491,88 +481,118 @@ document.addEventListener('DOMContentLoaded', function() {
             <p id="lastNameError" class="text-red-500 text-xs mt-1 hidden"></p>
           </div>
           
-          <div>
-            <label for="suffix" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-user-tag mr-2 text-sidebar-accent"></i>
-              Suffix <span class="text-xs text-gray-500">(Optional)</span>
-            </label>
-            <div class="relative">
-              <select id="suffix" name="suffix" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
-                <option value="">Select Suffix</option>
-                <option value="Jr">Jr</option>
-                <option value="Sr">Sr</option>
-                <option value="I">I</option>
-                <option value="II">II</option>
-                <option value="III">III</option>
-                <option value="IV">IV</option>
-                <option value="V">V</option>
-              </select>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label for="middleName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                <i class="fas fa-user mr-2 text-sidebar-accent"></i>
+                Middle Name
+              </label>
+              <div class="relative">
+                <input type="text" id="middleName" name="middleName" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="Middle Name">
+              </div>
+              <p id="middleNameError" class="text-red-500 text-xs mt-1 hidden"></p>
+            </div>
+            
+            <div>
+              <label for="suffix" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                <i class="fas fa-user-tag mr-2 text-sidebar-accent"></i>
+                Suffix
+              </label>
+              <div class="relative">
+                <select id="suffix" name="suffix" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+                  <option value="">Select Suffix</option>
+                  <option value="Jr">Jr</option>
+                  <option value="Sr">Sr</option>
+                  <option value="I">I</option>
+                  <option value="II">II</option>
+                  <option value="III">III</option>
+                  <option value="IV">IV</option>
+                  <option value="V">V</option>
+                </select>
+              </div>
             </div>
           </div>
-        </div>
-        
-        <div class="mt-4">
-          <label for="birthdate" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-calendar-alt mr-2 text-sidebar-accent"></i>
-            Birthdate <span class="text-red-500">*</span>
-          </label>
-          <div class="relative">
-            <input type="date" id="birthdate" name="birthdate" 
-              class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
-              max="<?php echo date('Y-m-d'); ?>" required>
+          
+          <div>
+            <label for="birthdate" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+              <i class="fas fa-calendar-alt mr-2 text-sidebar-accent"></i>
+              Birthdate <span class="text-red-500">*</span>
+            </label>
+            <div class="relative">
+              <input type="date" id="birthdate" name="birthdate" 
+                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
+                max="<?php echo date('Y-m-d'); ?>" required>
+            </div>
+            <p id="birthdateError" class="text-red-500 text-xs mt-1 hidden"></p>
           </div>
-          <p id="birthdateError" class="text-red-500 text-xs mt-1 hidden"></p>
-        </div>
-        
-        <div class="mt-4">
-          <label for="customerEmail" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-envelope mr-2 text-sidebar-accent"></i>
-            Email <span class="text-red-500">*</span>
-          </label>
-          <div class="relative">
-            <input type="email" id="customerEmail" name="customerEmail" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="Email" required>
+          
+          <div>
+            <label for="branchLocation" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+              <i class="fas fa-map-marker-alt mr-2 text-sidebar-accent"></i>
+              Branch Location <span class="text-red-500">*</span>
+            </label>
+            <div class="relative">
+              <select id="branchLocation" name="branchLocation" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
+                <option value="">Select Branch</option>
+                <!-- Branch options will be populated by AJAX -->
+              </select>
+            </div>
+            <p id="branchError" class="text-red-500 text-xs mt-1 hidden">Please select a branch</p>
           </div>
-          <p id="emailError" class="text-red-500 text-xs mt-1 hidden"></p>
         </div>
         
-        <div class="mt-4">
-          <label for="customerPhone" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-phone mr-2 text-sidebar-accent"></i>
-            Phone Number <span class="text-red-500">*</span>
-          </label>
-          <div class="relative">
-            <input type="tel" id="customerPhone" name="customerPhone" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="Phone Number" required>
+        <!-- Right Column -->
+        <div class="space-y-4">
+          <div>
+            <label for="customerEmail" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+              <i class="fas fa-envelope mr-2 text-sidebar-accent"></i>
+              Email Address <span class="text-red-500">*</span>
+            </label>
+            <div class="relative">
+              <input type="email" id="customerEmail" name="customerEmail" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="example@email.com" required>
+            </div>
+            <p id="emailError" class="text-red-500 text-xs mt-1 hidden"></p>
           </div>
-          <p id="phoneError" class="text-red-500 text-xs mt-1 hidden"></p>
-        </div>
-        
-        <div class="mt-4">
-          <label for="branchLocation" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-map-marker-alt mr-2 text-sidebar-accent"></i>
-            Branch Location <span class="text-red-500">*</span>
-          </label>
-          <div class="relative">
-            <select id="branchLocation" name="branchLocation" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
-              <option value="">Select Branch</option>
-              <!-- Branch options will be populated by AJAX -->
-            </select>
+          
+          <div>
+            <label for="customerPhone" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+              <i class="fas fa-phone mr-2 text-sidebar-accent"></i>
+              Phone Number <span class="text-red-500">*</span>
+            </label>
+            <div class="relative">
+              <input type="tel" id="customerPhone" name="customerPhone" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="Phone Number" required>
+            </div>
+            <p id="phoneError" class="text-red-500 text-xs mt-1 hidden"></p>
           </div>
-          <p id="branchError" class="text-red-500 text-xs mt-1 hidden">Please select a branch</p>
-        </div>
-        
-        <div class="mt-4">
-          <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-key mr-2 text-sidebar-accent"></i>
-            Generated Password
-          </label>
-          <div class="relative">
-            <input type="password" id="generatedPassword" name="password" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200 bg-gray-100" readonly>
-            <button type="button" class="absolute right-2 top-2 text-gray-500 hover:text-gray-700" onclick="togglePassword()">
-              <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 12s2.947-5.455 8.02-5.455S20.02 12 20.02 12s-2.947 5.455-8.02 5.455S3.98 12 3.98 12z" />
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 15a3 3 0 100-6 3 3 0 000 6z" />
-              </svg>
-            </button>
+          
+          <div>
+            <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+              <i class="fas fa-key mr-2 text-sidebar-accent"></i>
+              Generated Password
+            </label>
+            <div class="relative">
+              <input type="password" id="generatedPassword" name="password" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200 bg-gray-100" readonly>
+              <button type="button" class="absolute right-2 top-2 text-gray-500 hover:text-gray-700" onclick="togglePassword()">
+                <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 12s2.947-5.455 8.02-5.455S20.02 12 20.02 12s-2.947 5.455-8.02 5.455S3.98 12 3.98 12z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 15a3 3 0 100-6 3 3 0 000 6z" />
+                </svg>
+              </button>
+            </div>
+          </div>
+          
+          <!-- Additional Information Card -->
+          <div class="bg-gray-50 p-4 rounded-lg border-l-4 border-sidebar-accent mt-4">
+            <h4 class="text-sm font-medium text-gray-700 mb-2 flex items-center">
+              <i class="fas fa-info-circle mr-2 text-sidebar-accent"></i>
+              Account Information
+            </h4>
+            <p class="text-sm text-gray-600">
+              An account will be created with the provided information. A temporary password will be generated automatically.
+            </p>
+            <p class="text-sm text-gray-600 mt-2">
+              The customer will be able to change their password after logging in for the first time.
+            </p>
           </div>
         </div>
         
