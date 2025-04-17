@@ -960,6 +960,7 @@ document.addEventListener('DOMContentLoaded', function() {
         };
     });
 
+    console.logs(processedPackages);
     // Initial render
     renderPackages(processedPackages);
 });
