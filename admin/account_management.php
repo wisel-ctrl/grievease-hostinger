@@ -1648,7 +1648,7 @@ function closeAddEmployeeAccountModal() {
   <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
   
   <!-- Modal Content -->
-  <div class="relative bg-white rounded-xl shadow-card w-full max-w-lg mx-4 z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-5xl mx-4 z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
     <!-- Close Button -->
     <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeAddEmployeeAccountModal()">
       <i class="fas fa-times"></i>
@@ -1664,8 +1664,9 @@ function closeAddEmployeeAccountModal() {
     
     <!-- Modal Body -->
     <div class="px-6 py-5">
-      <form id="addEmployeeAccountForm" method="post" action="addEmployee/add_employee.php">
-        <div class="grid grid-cols-2 gap-4">
+      <form id="addEmployeeAccountForm" method="post" action="addEmployee/add_employee.php" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Left Column -->
+        <div class="space-y-4">
           <div>
             <label for="empFirstName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
               <i class="fas fa-user mr-2 text-sidebar-accent"></i>
@@ -1676,15 +1677,7 @@ function closeAddEmployeeAccountModal() {
             </div>
             <p id="empFirstNameError" class="text-red-500 text-xs mt-1 hidden">First name is required</p>
           </div>
-          <div>
-            <label for="empMiddleName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-user mr-2 text-sidebar-accent"></i>
-              Middle Name
-            </label>
-            <div class="relative">
-              <input type="text" id="empMiddleName" name="middleName" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="Middle Name">
-            </div>
-          </div>
+          
           <div>
             <label for="empLastName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
               <i class="fas fa-user mr-2 text-sidebar-accent"></i>
@@ -1695,89 +1688,116 @@ function closeAddEmployeeAccountModal() {
             </div>
             <p id="empLastNameError" class="text-red-500 text-xs mt-1 hidden">Last name is required</p>
           </div>
-          <div>
-            <label for="suffix" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-user-tag mr-2 text-sidebar-accent"></i>
-              Suffix <span class="text-xs text-gray-500">(Optional)</span>
-            </label>
-            <div class="relative">
-              <select id="suffix" name="suffix" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
-                <option value="">Select Suffix</option>
-                <option value="Jr">Jr</option>
-                <option value="Sr">Sr</option>
-                <option value="I">I</option>
-                <option value="II">II</option>
-                <option value="III">III</option>
-                <option value="IV">IV</option>
-                <option value="V">V</option>
-              </select>
+          
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label for="empMiddleName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                <i class="fas fa-user mr-2 text-sidebar-accent"></i>
+                Middle Name
+              </label>
+              <div class="relative">
+                <input type="text" id="empMiddleName" name="middleName" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="Middle Name">
+              </div>
+            </div>
+            
+            <div>
+              <label for="suffix" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                <i class="fas fa-user-tag mr-2 text-sidebar-accent"></i>
+                Suffix <span class="text-xs text-gray-500">(Optional)</span>
+              </label>
+              <div class="relative">
+                <select id="suffix" name="suffix" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+                  <option value="">Select Suffix</option>
+                  <option value="Jr">Jr</option>
+                  <option value="Sr">Sr</option>
+                  <option value="I">I</option>
+                  <option value="II">II</option>
+                  <option value="III">III</option>
+                  <option value="IV">IV</option>
+                  <option value="V">V</option>
+                </select>
+              </div>
             </div>
           </div>
-        </div>
-        
-        <!-- Birthdate Field -->
-        <div class="mt-4">
-          <label for="empBirthdate" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-calendar-alt mr-2 text-sidebar-accent"></i>
-            Birthdate <span class="text-red-500">*</span>
-          </label>
-          <div class="relative">
-            <input type="date" id="empBirthdate" name="birthdate" 
-                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
-                  max="<?php echo date('Y-m-d'); ?>" 
-                  required>
+          
+          <div>
+            <label for="empBirthdate" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+              <i class="fas fa-calendar-alt mr-2 text-sidebar-accent"></i>
+              Birthdate <span class="text-red-500">*</span>
+            </label>
+            <div class="relative">
+              <input type="date" id="empBirthdate" name="birthdate" 
+                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
+                max="<?php echo date('Y-m-d'); ?>" required>
+            </div>
+            <p id="empBirthdateError" class="text-red-500 text-xs mt-1 hidden">Birthdate is required and cannot be in the future</p>
           </div>
-          <p id="empBirthdateError" class="text-red-500 text-xs mt-1 hidden">Birthdate is required and cannot be in the future</p>
-        </div>
-        
-        <div class="mt-4">
-          <label for="employeeEmail" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-envelope mr-2 text-sidebar-accent"></i>
-            Email <span class="text-red-500">*</span>
-          </label>
-          <div class="relative">
-            <input type="email" id="employeeEmail" name="email" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="Email" required>
-          </div>
-        </div>
-              
-        <div class="mt-4">
-          <label for="employeePhone" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-phone mr-2 text-sidebar-accent"></i>
-            Phone Number <span class="text-red-500">*</span>
-          </label>
-          <div class="relative">
-            <input type="tel" id="employeePhone" name="phoneNumber" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="Phone Number" required>
+          
+          <div>
+            <label for="empBranchLocation" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+              <i class="fas fa-map-marker-alt mr-2 text-sidebar-accent"></i>
+              Branch Location <span class="text-red-500">*</span>
+            </label>
+            <div class="relative">
+              <select id="empBranchLocation" name="branchLocation" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
+                <option value="">Select Branch</option>
+                <!-- Branch options will be populated by JavaScript -->
+              </select>
+            </div>
+            <p id="empBranchError" class="text-red-500 text-xs mt-1 hidden">Please select a branch</p>
           </div>
         </div>
         
-        <div class="mt-4">
-          <label for="empBranchLocation" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-map-marker-alt mr-2 text-sidebar-accent"></i>
-            Branch Location <span class="text-red-500">*</span>
-          </label>
-          <div class="relative">
-            <select id="empBranchLocation" name="branchLocation" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
-              <option value="">Select Branch</option>
-              <!-- Branch options will be populated by JavaScript -->
-            </select>
+        <!-- Right Column -->
+        <div class="space-y-4">
+          <div>
+            <label for="employeeEmail" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+              <i class="fas fa-envelope mr-2 text-sidebar-accent"></i>
+              Email Address <span class="text-red-500">*</span>
+            </label>
+            <div class="relative">
+              <input type="email" id="employeeEmail" name="email" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="example@email.com" required>
+            </div>
           </div>
-          <p id="empBranchError" class="text-red-500 text-xs mt-1 hidden">Please select a branch</p>
-        </div>
-        
-        <!-- Generated Password Display -->
-        <div class="mt-4">
-          <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-key mr-2 text-sidebar-accent"></i>
-            Generated Password
-          </label>
-          <div class="relative">
-            <input type="password" id="empGeneratedPassword" name="password" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200 bg-gray-100" readonly autocomplete="new-password">
-            <button type="button" class="absolute right-2 top-2 text-gray-500 hover:text-gray-700" onclick="toggleEmpPassword()">
-              <svg id="empEyeIcon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 12s2.947-5.455 8.02-5.455S20.02 12 20.02 12s-2.947 5.455-8.02 5.455S3.98 12 3.98 12z" />
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 15a3 3 0 100-6 3 3 0 000 6z" />
-              </svg>
-            </button>
+          
+          <div>
+            <label for="employeePhone" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+              <i class="fas fa-phone mr-2 text-sidebar-accent"></i>
+              Phone Number <span class="text-red-500">*</span>
+            </label>
+            <div class="relative">
+              <input type="tel" id="employeePhone" name="phoneNumber" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="Phone Number" required>
+            </div>
+          </div>
+          
+          <div>
+            <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+              <i class="fas fa-key mr-2 text-sidebar-accent"></i>
+              Generated Password
+            </label>
+            <div class="relative">
+              <input type="password" id="empGeneratedPassword" name="password" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200 bg-gray-100" readonly autocomplete="new-password">
+              <button type="button" class="absolute right-2 top-2 text-gray-500 hover:text-gray-700" onclick="toggleEmpPassword()">
+                <svg id="empEyeIcon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 12s2.947-5.455 8.02-5.455S20.02 12 20.02 12s-2.947 5.455-8.02 5.455S3.98 12 3.98 12z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 15a3 3 0 100-6 3 3 0 000 6z" />
+                </svg>
+              </button>
+            </div>
+          </div>
+          
+          <!-- Additional Information Card -->
+          <div class="bg-gray-50 p-4 rounded-lg border-l-4 border-sidebar-accent mt-4">
+            <h4 class="text-sm font-medium text-gray-700 mb-2 flex items-center">
+              <i class="fas fa-info-circle mr-2 text-sidebar-accent"></i>
+              Account Information
+            </h4>
+            <p class="text-sm text-gray-600">
+              An employee account will be created with the provided information. A temporary password will be generated automatically.
+            </p>
+            <p class="text-sm text-gray-600 mt-2">
+              The employee will be able to change their password after logging in for the first time.
+            </p>
           </div>
         </div>
         
