@@ -683,8 +683,10 @@ $conn->close();
 
 <script>
 const packagesFromDB = <?php echo json_encode($packages); ?>;
+console.log('packages from db',packagesFromDB);
 
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM fully loaded and parsed');
     // Show service type selection modal for all packages
     document.querySelectorAll('.selectPackageBtn').forEach(button => {
         button.addEventListener('click', function() {
@@ -942,6 +944,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Process packages from database
     const processedPackages = packagesFromDB.map(pkg => {
+        console.log('Processing package:', pkg); // Log each package being processed
         // Determine icon based on package price or name
         let icon = 'leaf'; // default icon
         if (pkg.price > 500000) icon = 'star';
@@ -959,18 +962,19 @@ document.addEventListener('DOMContentLoaded', function() {
             features: pkg.features
         };
     });
-
-    console.logs(processedPackages);
+    console.log('Processed packages:', processedPackages); // Log the processed packages
     // Initial render
     renderPackages(processedPackages);
 });
 
 // Function to render packages
 function renderPackages(filteredPackages) {
+    console.log('Rendering packages:', filteredPackages); // Log packages being rendered
     const container = document.getElementById('packages-container');
     container.innerHTML = '';
 
     if (filteredPackages.length === 0) {
+        console.log('No packages to display, showing no-results message');
         document.getElementById('no-results').classList.remove('hidden');
         return;
     } else {
@@ -978,6 +982,7 @@ function renderPackages(filteredPackages) {
     }
 
     filteredPackages.forEach(pkg => {
+        console.log('Creating card for package:', pkg); // Log each package being rendered
         const packageCard = document.createElement('div');
         packageCard.className = 'package-card bg-white rounded-[20px] shadow-lg overflow-hidden';
         packageCard.setAttribute('data-price', pkg.price);
