@@ -140,42 +140,54 @@ header("Pragma: no-cache");
           </tr>
         </thead>
         <tbody>
-          <tr class="border-b border-sidebar-border hover:bg-sidebar-hover">
-            <td class="p-4 text-sm text-sidebar-text font-medium">#BK-2025-001</td>
-            <td class="p-4 text-sm text-sidebar-text">John Doe</td>
-            <td class="p-4 text-sm text-sidebar-text">Funeral Service Package A</td>
-            <td class="p-4 text-sm text-sidebar-text">Mar 15, 2025</td>
-            <td class="p-4 text-sm">
-              <span class="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs">Pending</span>
-            </td>
-            <td class="p-4 text-sm">
-              <button onclick="openBookingDetails()" class="text-blue-600 hover:text-blue-800 text-sm font-medium">View Details</button>
-            </td>
-          </tr>
-          <tr class="border-b border-sidebar-border hover:bg-sidebar-hover">
-            <td class="p-4 text-sm text-sidebar-text font-medium">#BK-2025-002</td>
-            <td class="p-4 text-sm text-sidebar-text">Jane Smith</td>
-            <td class="p-4 text-sm text-sidebar-text">Memorial Service</td>
-            <td class="p-4 text-sm text-sidebar-text">Mar 16, 2025</td>
-            <td class="p-4 text-sm">
-              <span class="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs">Pending</span>
-            </td>
-            <td class="p-4 text-sm">
-              <button onclick="openBookingDetails()" class="text-blue-600 hover:text-blue-800 text-sm font-medium">View Details</button>
-            </td>
-          </tr>
-          <tr class="border-b border-sidebar-border hover:bg-sidebar-hover">
-            <td class="p-4 text-sm text-sidebar-text font-medium">#BK-2025-003</td>
-            <td class="p-4 text-sm text-sidebar-text">Robert Johnson</td>
-            <td class="p-4 text-sm text-sidebar-text">Cremation Service</td>
-            <td class="p-4 text-sm text-sidebar-text">Mar 17, 2025</td>
-            <td class="p-4 text-sm">
-              <span class="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs">Pending</span>
-            </td>
-            <td class="p-4 text-sm">
-              <button onclick="openBookingDetails()" class="text-blue-600 hover:text-blue-800 text-sm font-medium">View Details</button>
-            </td>
-          </tr>
+          <?php
+          // Query to get booking data with joins
+          $query = "SELECT b.booking_id, b.booking_date, b.status, 
+                          CONCAT(u.first_name, ' ', COALESCE(u.middle_name, ''), ' ', u.last_name, ' ', COALESCE(u.suffix, '')) AS customer_name,
+                          s.service_name
+                    FROM booking_tb b
+                    JOIN users u ON b.customerID = u.id
+                    JOIN services_tb s ON b.service_id = s.service_id
+                    WHERE b.status = 'Pending'
+                    ORDER BY b.booking_date DESC";
+          
+          $stmt = $conn->prepare($query);
+          $stmt->execute();
+          $result = $stmt->get_result();
+          
+          if ($result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+              // Format booking ID
+              $booking_id = "#BK-" . date('Y', strtotime($row['booking_date'])) . "-" . str_pad($row['booking_id'], 3, '0', STR_PAD_LEFT);
+              
+              // Format date
+              $formatted_date = date('M j, Y', strtotime($row['booking_date']));
+              
+              // Status badge class
+              $status_class = "bg-yellow-100 text-yellow-800";
+              if ($row['status'] == 'Approved') {
+                $status_class = "bg-green-100 text-green-800";
+              } elseif ($row['status'] == 'Rejected') {
+                $status_class = "bg-red-100 text-red-800";
+              }
+              
+              echo '<tr class="border-b border-sidebar-border hover:bg-sidebar-hover">';
+              echo '<td class="p-4 text-sm text-sidebar-text font-medium">' . htmlspecialchars($booking_id) . '</td>';
+              echo '<td class="p-4 text-sm text-sidebar-text">' . htmlspecialchars($row['customer_name']) . '</td>';
+              echo '<td class="p-4 text-sm text-sidebar-text">' . htmlspecialchars($row['service_name']) . '</td>';
+              echo '<td class="p-4 text-sm text-sidebar-text">' . htmlspecialchars($formatted_date) . '</td>';
+              echo '<td class="p-4 text-sm">';
+              echo '<span class="px-2 py-1 ' . $status_class . ' rounded-full text-xs">' . htmlspecialchars($row['status']) . '</span>';
+              echo '</td>';
+              echo '<td class="p-4 text-sm">';
+              echo '<button onclick="openBookingDetails(' . $row['booking_id'] . ')" class="text-blue-600 hover:text-blue-800 text-sm font-medium">View Details</button>';
+              echo '</td>';
+              echo '</tr>';
+            }
+          } else {
+            echo '<tr><td colspan="6" class="p-4 text-center text-gray-500">No pending bookings found</td></tr>';
+          }
+          ?>
         </tbody>
       </table>
     </div>
