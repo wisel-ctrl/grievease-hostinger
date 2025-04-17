@@ -387,7 +387,7 @@ header("Pragma: no-cache");
     <script>
       function openBookingDetails(bookingId) {
       // First, fetch booking details via AJAX
-      fetch('get_booking_details.php?id=' + bookingId)
+      fetch('bookingpage/get_booking_details.php?id=' + bookingId)
         .then(response => response.json())
         .then(data => {
           // Populate modal with the fetched data
