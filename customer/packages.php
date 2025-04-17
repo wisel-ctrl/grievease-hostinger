@@ -65,7 +65,7 @@ if ($result) {
 $conn->close();
 ?>
 
-<script src="customer_support.js"></script>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -667,6 +667,7 @@ $conn->close();
     </div>
 </div>
 
+<script src="customer_support.js"></script>
 <script>
 const packagesFromDB = <?php echo json_encode($packages); ?>;
 console.log('packages from db',packagesFromDB);
