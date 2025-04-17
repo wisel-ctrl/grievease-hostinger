@@ -5,7 +5,10 @@ require_once '../db_connect.php'; // Database connection
 
 // Get user's first name from database
 $user_id = $_SESSION['user_id'];
-$query = "SELECT first_name, last_name, email, birthdate FROM users WHERE id = ?";
+$query = "SELECT u.first_name, u.last_name, u.email, u.birthdate, u.branch_loc, b.branch_id 
+          FROM users u
+          LEFT JOIN branch_tb b ON u.branch_loc = b.branch_name
+          WHERE u.id = ?";
 $stmt = $conn->prepare($query);
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
@@ -14,6 +17,7 @@ $row = $result->fetch_assoc();
 $first_name = $row['first_name'];
 $last_name = $row['last_name'];
 $email = $row['email'];
+$branch_id = $row['branch_id']; // This will be used for the hidden branch_id input
 $stmt->close();
 
 // Fetch packages from database
@@ -434,8 +438,10 @@ $conn->close();
                 </div>
 
                 <form id="traditionalBookingForm" class="space-y-4">
-                    <input type="hidden" id="traditionalSelectedPackageName" name="packageName">
-                    <input type="hidden" id="traditionalSelectedPackagePrice" name="packagePrice">
+                <input type="hidden" id="traditionalSelectedPackagePrice" name="packagePrice">
+                <input type="hidden" id="traditionalServiceId" name="service_id">
+                <input type="hidden" id="traditionalBranchId" name="branch_id">
+                <input type="hidden" name="customerID" value="<?php echo isset($_SESSION['user_id']) ? $_SESSION['user_id'] : ''; ?>">
                     
                     <div class="border-b border-gray-200 pb-4 mb-4">
                         <h3 class="text-lg font-hedvig text-navy mb-4">Deceased Information</h3>
@@ -483,7 +489,7 @@ $conn->close();
                         </div>
 
                         <div class="flex items-center">
-                        <input type="checkbox" id="traditionalWithCremate" name="with_cremate" value="yes" class="h-4 w-4 text-yellow-600 focus:ring-yellow-500 border-gray-300 rounded">
+                        <input type="checkbox" id="traditionalWithCremate" name="with_cremate" value="yes" class="h-4 w-4 mt-2 text-yellow-600 focus:ring-yellow-500 border-gray-300 rounded">
                         <label for="traditionalWithCremate" class="ml-2 block text-sm text-navy">
                             Include cremation service
                         </label>
@@ -707,6 +713,31 @@ document.addEventListener('DOMContentLoaded', function() {
         openTraditionalModal();
     });
 
+    document.getElementById('traditionalBookingForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(this);
+        
+        fetch('booking/booking.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);
+            if (data.success) {
+                alert('Booking successful!');
+                // Redirect or show success message
+            } else {
+                alert('Error: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred. Please try again.');
+        });
+    });
+
     // Traditional addon checkbox event handling
     document.querySelectorAll('.traditional-addon').forEach(checkbox => {
         checkbox.addEventListener('change', function() {
@@ -773,6 +804,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const packageImage = sessionStorage.getItem('selectedPackageImage');
         const packageFeatures = JSON.parse(sessionStorage.getItem('selectedPackageFeatures') || '[]');
         
+        // Find the full package details from packagesFromDB to get the service_id
+        const selectedPackage = packagesFromDB.find(pkg => pkg.name === packageName);
+        
         // Update modal title
         document.querySelector('#traditionalModal .font-hedvig.text-2xl.text-navy').textContent = 'Book Your Package';
         
@@ -802,8 +836,9 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         
         // Update the form's hidden fields with package info
-        document.getElementById('traditionalSelectedPackageName').value = packageName;
-        document.getElementById('traditionalSelectedPackagePrice').value = packagePrice;
+        document.getElementById('traditionalSelectedPackagePrice').value = totalPrice;
+        document.getElementById('traditionalServiceId').value = selectedPackage.id; // Set the service_id
+        document.getElementById('traditionalBranchId').value = <?php echo $branch_id; ?>; // Set the branch_id from PHP
         
         // Show traditional modal
         document.getElementById('traditionalModal').classList.remove('hidden');
