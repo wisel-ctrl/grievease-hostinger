@@ -998,6 +998,13 @@ header("Pragma: no-cache");
                     </div>
                 </div>
                 
+                <button id="open-change-password-modal" class="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-3 bg-navy border border-yellow-600 text-white rounded-lg font-semibold hover:bg-navy border border-yellow-600 text-yellow-400">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 inline">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                    Change Password
+                </button>
                 
                 
                 <!-- Address Information Section -->
@@ -1157,6 +1164,112 @@ header("Pragma: no-cache");
         </div>
     </div>
 </div>
+
+<!-- Change Password Modal -->
+<div id="change-password-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto">
+    <!-- Modal Backdrop -->
+    <div class="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm"></div>
+    
+    <!-- Modal Content -->
+    <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 z-10 transform transition-all duration-300 scale-95 opacity-0">
+        <!-- Modal Header -->
+        <div class="bg-gradient-to-r from-yellow-600 to-white flex justify-between items-center p-4 sm:p-6 flex-shrink-0 rounded-t-2xl">
+            <h3 class="text-xl sm:text-2xl font-bold text-white">Change Password</h3>
+            <button type="button" id="close-change-password-modal" class="bg-black bg-opacity-20 hover:bg-opacity-30 rounded-full p-2 sm:p-3 text-white hover:text-white transition-all duration-200">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                </svg>
+            </button>
+        </div>
+        
+        <!-- Modal Body -->
+        <div class="p-4 sm:p-6 space-y-4 sm:space-y-6">
+            <p class="text-gray-600 text-base mb-4">Enter your current password and choose a new strong password.</p>
+            
+            <form class="space-y-4 sm:space-y-6" id="password-form" method="POST" action="profile/update_password.php">
+                <!-- Current Password -->
+                <div>
+                    <label for="current-password" class="block text-sm font-medium text-gray-700 mb-1 sm:mb-2">Current Password*</label>
+                    <div class="relative">
+                        <input type="password" id="current-password" name="current-password" required class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base">
+                        <span class="password-toggle absolute right-3 sm:right-4 top-1/2 transform -translate-y-1/2 text-gray-600 cursor-pointer" data-target="current-password">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="eye-show">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="eye-hide hidden">
+                                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                                <line x1="1" y1="1" x2="23" y2="23"></line>
+                            </svg>
+                        </span>
+                    </div>
+                    <p id="current-password-error" class="mt-1 text-sm text-red-600 hidden"></p>
+                </div>
+                
+                <!-- New Password -->
+                <div>
+                    <label for="new-password" class="block text-sm font-medium text-gray-700 mb-1 sm:mb-2">New Password*</label>
+                    <div class="relative">
+                        <input type="password" id="new-password" name="new-password" required class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base">
+                        <span class="password-toggle absolute right-3 sm:right-4 top-1/2 transform -translate-y-1/2 text-gray-600 cursor-pointer" data-target="new-password">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="eye-show">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="eye-hide hidden">
+                                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                                <line x1="1" y1="1" x2="23" y2="23"></line>
+                            </svg>
+                        </span>
+                    </div>
+                    <p id="new-password-error" class="mt-1 text-sm text-red-600 hidden"></p>
+                    <div class="mt-2 text-xs text-gray-500">
+                        Password must:
+                        <ul class="list-disc list-inside ml-1 space-y-1 mt-1">
+                            <li id="length-check" class="text-gray-500">Be at least 8 characters long</li>
+                            <li id="uppercase-check" class="text-gray-500">Contain at least one uppercase letter</li>
+                            <li id="lowercase-check" class="text-gray-500">Contain at least one lowercase letter</li>
+                            <li id="number-check" class="text-gray-500">Contain at least one number</li>
+                            <li id="special-check" class="text-gray-500">Contain at least one special character</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- Confirm Password -->
+                <div>
+                    <label for="confirm-password" class="block text-sm font-medium text-gray-700 mb-1 sm:mb-2">Confirm New Password*</label>
+                    <div class="relative">
+                        <input type="password" id="confirm-password" name="confirm-password" required class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base">
+                        <span class="password-toggle absolute right-3 sm:right-4 top-1/2 transform -translate-y-1/2 text-gray-600 cursor-pointer" data-target="confirm-password">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="eye-show">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="eye-hide hidden">
+                                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                                <line x1="1" y1="1" x2="23" y2="23"></line>
+                            </svg>
+                        </span>
+                    </div>
+                    <p id="confirm-password-error" class="mt-1 text-sm text-red-600 hidden"></p>
+                </div>
+            </form>
+        </div>
+            
+        <!-- Modal Footer -->
+        <div class="p-4 sm:p-6 flex flex-col sm:flex-row sm:justify-end gap-3 sm:gap-4 border-t border-gray-200">
+            <button class="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-3 bg-white border border-yellow-600 text-gray-800 rounded-lg font-semibold hover:bg-gray-100 transition-colors text-sm sm:text-base" id="cancel-change-password">Cancel</button>
+            <button type="submit" id="submit-change-password" class="w-full sm:w-auto px-5 sm:px-7 py-2 sm:py-3 bg-yellow-600 text-white rounded-lg font-semibold hover:bg-yellow-700 transition-colors flex items-center justify-center sm:justify-start text-sm sm:text-base">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+                Update Password
+            </button>
+        </div>
+    </div>
+</div>
+
 
 <script>
 // Enhanced address dropdown functions with AJAX
@@ -1749,6 +1862,285 @@ document.getElementById('id-upload').addEventListener('change', function(e) {
     reader.readAsDataURL(file);
 });
 </script>
+
+<script>
+// Password change modal functions
+function openChangePasswordModal() {
+    const modal = document.getElementById('change-password-modal');
+    modal.classList.remove('hidden');
+    
+    // Animate opening
+    setTimeout(() => {
+        modal.querySelector('.relative').classList.remove('scale-95', 'opacity-0');
+        modal.querySelector('.relative').classList.add('scale-100', 'opacity-100');
+    }, 10);
+    
+    // Reset form
+    document.getElementById('password-form').reset();
+    clearPasswordValidationState();
+}
+
+function closeChangePasswordModal() {
+    const modal = document.getElementById('change-password-modal');
+    modal.querySelector('.relative').classList.remove('opacity-100', 'scale-100');
+    modal.querySelector('.relative').classList.add('opacity-0', 'scale-95');
+    
+    // After animation completes, hide the modal
+    setTimeout(() => {
+        modal.classList.add('hidden');
+    }, 300);
+}
+
+// Toggle password visibility
+function setupPasswordToggle() {
+    const toggles = document.querySelectorAll('.password-toggle');
+    
+    toggles.forEach(toggle => {
+        toggle.addEventListener('click', function() {
+            const targetId = this.getAttribute('data-target');
+            const passwordInput = document.getElementById(targetId);
+            const eyeShow = this.querySelector('.eye-show');
+            const eyeHide = this.querySelector('.eye-hide');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                eyeShow.classList.add('hidden');
+                eyeHide.classList.remove('hidden');
+            } else {
+                passwordInput.type = 'password';
+                eyeShow.classList.remove('hidden');
+                eyeHide.classList.add('hidden');
+            }
+        });
+    });
+}
+
+// Clear password validation state
+function clearPasswordValidationState() {
+    const checks = ['length-check', 'uppercase-check', 'lowercase-check', 'number-check', 'special-check'];
+    checks.forEach(check => {
+        document.getElementById(check).classList.remove('text-green-500');
+        document.getElementById(check).classList.add('text-gray-500');
+    });
+    
+    // Clear error messages
+    document.getElementById('current-password-error').classList.add('hidden');
+    document.getElementById('new-password-error').classList.add('hidden');
+    document.getElementById('confirm-password-error').classList.add('hidden');
+    
+    // Remove red borders
+    document.getElementById('current-password').classList.remove('border-red-500');
+    document.getElementById('new-password').classList.remove('border-red-500');
+    document.getElementById('confirm-password').classList.remove('border-red-500');
+}
+
+// Validate password strength
+function validatePasswordStrength(password) {
+    const lengthCheck = password.length >= 8;
+    const uppercaseCheck = /[A-Z]/.test(password);
+    const lowercaseCheck = /[a-z]/.test(password);
+    const numberCheck = /[0-9]/.test(password);
+    const specialCheck = /[^A-Za-z0-9]/.test(password);
+    
+    document.getElementById('length-check').className = lengthCheck ? 'text-green-500' : 'text-gray-500';
+    document.getElementById('uppercase-check').className = uppercaseCheck ? 'text-green-500' : 'text-gray-500';
+    document.getElementById('lowercase-check').className = lowercaseCheck ? 'text-green-500' : 'text-gray-500';
+    document.getElementById('number-check').className = numberCheck ? 'text-green-500' : 'text-gray-500';
+    document.getElementById('special-check').className = specialCheck ? 'text-green-500' : 'text-gray-500';
+    
+    return lengthCheck && uppercaseCheck && lowercaseCheck && numberCheck && specialCheck;
+}
+
+// Setup password change form validation
+function setupPasswordFormValidation() {
+    const currentPasswordInput = document.getElementById('current-password');
+    const newPasswordInput = document.getElementById('new-password');
+    const confirmPasswordInput = document.getElementById('confirm-password');
+    
+    // Current password validation
+    currentPasswordInput.addEventListener('input', function() {
+        if (!this.value) {
+            showPasswordError('current-password', 'Current password is required');
+        } else {
+            clearPasswordError('current-password');
+        }
+    });
+    
+    // New password validation with strength requirements
+    newPasswordInput.addEventListener('input', function() {
+        const password = this.value;
+        
+        if (!password) {
+            showPasswordError('new-password', 'New password is required');
+            return;
+        }
+        
+        const isStrong = validatePasswordStrength(password);
+        
+        if (!isStrong) {
+            showPasswordError('new-password', 'Password does not meet all requirements');
+        } else {
+            clearPasswordError('new-password');
+        }
+        
+        // Check if confirm password matches
+        const confirmPassword = confirmPasswordInput.value;
+        if (confirmPassword && confirmPassword !== password) {
+            showPasswordError('confirm-password', 'Passwords do not match');
+        } else if (confirmPassword) {
+            clearPasswordError('confirm-password');
+        }
+    });
+    
+    // Confirm password validation
+    confirmPasswordInput.addEventListener('input', function() {
+        const confirmPassword = this.value;
+        const newPassword = newPasswordInput.value;
+        
+        if (!confirmPassword) {
+            showPasswordError('confirm-password', 'Please confirm your password');
+        } else if (confirmPassword !== newPassword) {
+            showPasswordError('confirm-password', 'Passwords do not match');
+        } else {
+            clearPasswordError('confirm-password');
+        }
+    });
+}
+
+// Show password error
+function showPasswordError(fieldId, message) {
+    const field = document.getElementById(fieldId);
+    const errorElement = document.getElementById(`${fieldId}-error`);
+    
+    field.classList.add('border-red-500');
+    errorElement.textContent = message;
+    errorElement.classList.remove('hidden');
+}
+
+// Clear password error
+function clearPasswordError(fieldId) {
+    const field = document.getElementById(fieldId);
+    const errorElement = document.getElementById(`${fieldId}-error`);
+    
+    field.classList.remove('border-red-500');
+    errorElement.classList.add('hidden');
+}
+
+// Handle form submission
+function handleChangePasswordSubmit() {
+    const currentPassword = document.getElementById('current-password').value;
+    const newPassword = document.getElementById('new-password').value;
+    const confirmPassword = document.getElementById('confirm-password').value;
+    
+    // Validate all fields
+    let isValid = true;
+    
+    if (!currentPassword) {
+        showPasswordError('current-password', 'Current password is required');
+        isValid = false;
+    }
+    
+    if (!newPassword) {
+        showPasswordError('new-password', 'New password is required');
+        isValid = false;
+    } else if (!validatePasswordStrength(newPassword)) {
+        showPasswordError('new-password', 'Password does not meet all requirements');
+        isValid = false;
+    }
+    
+    if (!confirmPassword) {
+        showPasswordError('confirm-password', 'Please confirm your password');
+        isValid = false;
+    } else if (confirmPassword !== newPassword) {
+        showPasswordError('confirm-password', 'Passwords do not match');
+        isValid = false;
+    }
+    
+    if (!isValid) {
+        return;
+    }
+    
+    // Show loading state
+    const submitButton = document.getElementById('submit-change-password');
+    const originalButtonText = submitButton.innerHTML;
+    submitButton.innerHTML = '<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Updating...';
+    submitButton.disabled = true;
+    
+    // Submit the form via AJAX
+    const form = document.getElementById('password-form');
+    const formData = new FormData(form);
+    
+    fetch(form.action, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'Accept': 'application/json'
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        submitButton.innerHTML = originalButtonText;
+        submitButton.disabled = false;
+        
+        if (data.success) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Success!',
+                text: data.message || 'Password updated successfully!',
+                confirmButtonColor: '#d9a404'
+            }).then(() => {
+                closeChangePasswordModal();
+            });
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: data.message || 'Failed to update password. Please try again.',
+                confirmButtonColor: '#d9a404'
+            });
+        }
+    })
+    .catch(error => {
+        submitButton.innerHTML = originalButtonText;
+        submitButton.disabled = false;
+        
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'An error occurred: ' + error.message,
+            confirmButtonColor: '#d9a404'
+        });
+    });
+}
+
+// Initialize all change password related functionality
+document.addEventListener('DOMContentLoaded', function() {
+    // Set up open/close modal buttons
+    document.getElementById('open-change-password-modal').addEventListener('click', openChangePasswordModal);
+    document.getElementById('close-change-password-modal').addEventListener('click', closeChangePasswordModal);
+    document.getElementById('cancel-change-password').addEventListener('click', closeChangePasswordModal);
+    
+    // Set up form submission
+    document.getElementById('submit-change-password').addEventListener('click', handleChangePasswordSubmit);
+    document.getElementById('password-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        handleChangePasswordSubmit();
+    });
+    
+    // Set up password toggle functionality
+    setupPasswordToggle();
+    
+    // Set up real-time validation
+    setupPasswordFormValidation();
+});
+</script>
+
 
 
 <!-- Add Payment Method Modal (Hidden by default) -->
