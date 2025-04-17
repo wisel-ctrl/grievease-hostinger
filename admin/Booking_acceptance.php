@@ -165,9 +165,9 @@ header("Pragma: no-cache");
               
               // Status badge class
               $status_class = "bg-yellow-100 text-yellow-800";
-              if ($row['status'] == 'Approved') {
+              if ($row['status'] == 'Accepted') {
                 $status_class = "bg-green-100 text-green-800";
-              } elseif ($row['status'] == 'Rejected') {
+              } elseif ($row['status'] == 'Declined') {
                 $status_class = "bg-red-100 text-red-800";
               }
               
