@@ -396,6 +396,7 @@ header("Pragma: no-cache");
             String(data.booking_id).padStart(3, '0');
           document.getElementById('customerName').textContent = data.customer_name;
           document.getElementById('serviceType').textContent = data.service_name;
+          document.getElementById('emailAddress').textContent = data.email;
           document.getElementById('dateRequested').textContent = 
             new Date(data.booking_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
           
