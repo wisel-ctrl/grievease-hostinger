@@ -717,14 +717,14 @@ document.addEventListener('DOMContentLoaded', function() {
         e.preventDefault();
         
         const formData = new FormData(this);
-        
+        console.log(formData);
         fetch('booking/booking.php', {
             method: 'POST',
             body: formData
         })
         .then(response => response.json())
         .then(data => {
-            console.log(data);
+            
             if (data.success) {
                 alert('Booking successful!');
                 // Redirect or show success message
