@@ -971,15 +971,24 @@ document.addEventListener('DOMContentLoaded', function() {
 function renderPackages(filteredPackages) {
     console.log('Rendering packages:', filteredPackages); // Log packages being rendered
     const container = document.getElementById('packages-container');
+    const noResults = document.getElementById('no-results');
+    
+    // Check if elements exist
+    if (!container || !noResults) {
+        console.error('Required DOM elements not found!');
+        return;
+    }
+
     container.innerHTML = '';
 
     if (filteredPackages.length === 0) {
         console.log('No packages to display, showing no-results message');
-        document.getElementById('no-results').classList.remove('hidden');
+        noResults.classList.remove('hidden');
         return;
     } else {
-        document.getElementById('no-results').classList.add('hidden');
+        noResults.classList.add('hidden');
     }
+
 
     filteredPackages.forEach(pkg => {
         console.log('Creating card for package:', pkg); // Log each package being rendered
