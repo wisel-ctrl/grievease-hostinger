@@ -275,22 +275,13 @@ $conn->close();
     </div>
 
         <!-- Packages Grid -->
-        <div id="packages-container" class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <!-- Legacy Tribute Package -->
-            <!-- Eternal Remembrance Package -->
-            <!-- Heritage Memorial Package -->
-            <!-- Serene Passage Package -->
-            <!-- Dignified Farewell Package -->
-            <!-- Peaceful Journey Package -->
-            <!-- Cherished Memories Package -->
-            <!-- Gentle Passage Package -->
-            <!-- Sincere Tribute Package -->
-            <!-- Heartfelt Farewell Package -->
-            <!-- Simple Dignity Package -->
-            <!-- Essential Remembrance Package -->
-            <!-- Essential Remembrance Package -->
-        <!-- No Results Message (hidden by default) -->
-        <div id="no-results" class="hidden text-center py-12">
+<div id="packages-container" class="grid grid-cols-1 md:grid-cols-3 gap-8">
+    <?php
+    // Assuming $packages is your array of packages passed from the server
+    // If no packages are found, show the no-results message
+    if (empty($filteredPackages)): ?>
+        <!-- No Results Message -->
+        <div id="no-results" class="text-center py-12 col-span-full">
             <i class="fas fa-search text-5xl text-gray-300 mb-4"></i>
             <h3 class="text-2xl font-hedvig text-navy mb-2">No Packages Found</h3>
             <p class="text-gray-600 max-w-md mx-auto">We couldn't find any packages matching your criteria. Try adjusting your filters or search terms.</p>
@@ -298,8 +289,56 @@ $conn->close();
                 Reset All Filters
             </button>
         </div>
-    </div>
-    </div>
+    <?php else: 
+        foreach ($filteredPackages as $pkg): ?>
+            <div class="package-card bg-white rounded-[20px] shadow-lg overflow-hidden"
+                 data-price="<?= htmlspecialchars($pkg['price']) ?>"
+                 data-service="<?= htmlspecialchars($pkg['service']) ?>"
+                 data-name="<?= htmlspecialchars($pkg['name']) ?>"
+                 data-image="<?= htmlspecialchars($pkg['image']) ?>">
+                <div class="flex flex-col h-full">
+                    <!-- Image section -->
+                    <div class="h-48 bg-cover bg-center relative" 
+                         style="background-image: url('../admin/uploads/services/<?= htmlspecialchars(basename($pkg['image'])) ?>')">
+                        <div class="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-all duration-300"></div>
+                        <div class="absolute top-4 right-4 w-12 h-12 rounded-full bg-yellow-600/90 flex items-center justify-center text-white">
+                            <i class="fas fa-<?= htmlspecialchars($pkg['icon']) ?> text-xl"></i>
+                        </div>
+                    </div>
+                    
+                    <!-- Content section with consistent sizing -->
+                    <div class="p-6 flex flex-col flex-grow">
+                        <!-- Title -->
+                        <h3 class="text-2xl font-hedvig text-navy mb-3"><?= htmlspecialchars($pkg['name']) ?></h3>
+                        
+                        <!-- Description with fixed height and line clamping -->
+                        <p class="text-dark mb-4 line-clamp-3 h-[72px] overflow-hidden"><?= htmlspecialchars($pkg['description']) ?></p>
+                        
+                        <!-- Price with consistent sizing -->
+                        <div class="text-3xl font-hedvig text-yellow-600 mb-4 h-12 flex items-center">₱<?= number_format($pkg['price'], 0) ?></div>
+                        
+                        <!-- Features list with scroll if needed -->
+                        <div class="border-t border-gray-200 pt-4 mt-2 flex-grow overflow-y-auto">
+                            <ul class="space-y-2">
+                                <?php foreach ($pkg['features'] as $feature): ?>
+                                    <li class="flex items-center text-sm text-gray-700">
+                                        <i class="fas fa-check-circle mr-2 text-yellow-600"></i>
+                                        <span><?= htmlspecialchars($feature) ?></span>
+                                    </li>
+                                <?php endforeach; ?>
+                            </ul>
+                        </div>
+                        
+                        <!-- Button at the bottom -->
+                        <button class="selectPackageBtn mt-6 w-full bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg shadow-md transition-all duration-300 text-center">
+                            Select Package
+                        </button>
+                    </div>
+                </div>
+            </div>
+        <?php endforeach;
+    endif; ?>
+</div>
 
     <!-- Footer -->
     <footer class="bg-black font-playfair text-white py-12">
@@ -985,11 +1024,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Function to render packages
 function renderPackages(filteredPackages) {
-    console.log('Rendering packages:', filteredPackages); // Log packages being rendered
+    console.log('Rendering packages:', filteredPackages);
     const container = document.getElementById('packages-container');
     const noResults = document.getElementById('no-results');
     
-    // Check if elements exist
     if (!container || !noResults) {
         console.error('Required DOM elements not found!');
         return;
@@ -1005,9 +1043,8 @@ function renderPackages(filteredPackages) {
         noResults.classList.add('hidden');
     }
 
-
     filteredPackages.forEach(pkg => {
-        console.log('Creating card for package:', pkg); // Log each package being rendered
+        console.log('Creating card for package:', pkg);
         const packageCard = document.createElement('div');
         packageCard.className = 'package-card bg-white rounded-[20px] shadow-lg overflow-hidden';
         packageCard.setAttribute('data-price', pkg.price);
@@ -1015,30 +1052,44 @@ function renderPackages(filteredPackages) {
         packageCard.setAttribute('data-name', pkg.name);
         packageCard.setAttribute('data-image', pkg.image);
         
-        packageCard.innerHTML = `
-            <div class="flex flex-col h-full"> <!-- Main flex container -->
-                <!-- Image section (unchanged) -->
-                <div class="h-48 bg-cover bg-center relative" 
-     style="background-image: url('../admin/uploads/services/${pkg.image.split('/').pop()}')">
-    <div class="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-all duration-300"></div>
-    <div class="absolute top-4 right-4 w-12 h-12 rounded-full bg-yellow-600/90 flex items-center justify-center text-white">
-        <i class="fas fa-${pkg.icon} text-xl"></i>
-    </div>
-</div>
+        // Extract filename from image path safely
+        const getImagePath = (imagePath) => {
+            try {
+                // Handle cases where image might be full URL or just filename
+                if (imagePath.includes('http') || imagePath.includes('base64')) {
+                    return imagePath; // Return as-is if it's a URL or base64
+                }
+                // Extract filename and prepend the correct path
+                const filename = imagePath.split('/').pop() || imagePath;
+                return `../admin/uploads/services/${filename}`;
+            } catch (e) {
+                console.error('Error processing image path:', e);
+                return '../admin/uploads/services/default.jpg'; // Fallback image
+            }
+        };
 
+        packageCard.innerHTML = `
+            <div class="flex flex-col h-full">
+                <!-- Improved Image Section -->
+                <div class="h-48 bg-cover bg-center relative">
+                    <!-- Actual img tag for better SEO and lazy loading -->
+                    <img src="${getImagePath(pkg.image)}" 
+                         alt="${pkg.name}" 
+                         class="absolute inset-0 w-full h-full object-cover"
+                         loading="lazy"
+                         onerror="this.onerror=null;this.src='../admin/uploads/services/default.jpg'">
+                    <div class="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-all duration-300"></div>
+                    <div class="absolute top-4 right-4 w-12 h-12 rounded-full bg-yellow-600/90 flex items-center justify-center text-white">
+                        <i class="fas fa-${pkg.icon} text-xl"></i>
+                    </div>
+                </div>
                 
-                <!-- Content section with consistent sizing -->
+                <!-- Content section -->
                 <div class="p-6 flex flex-col flex-grow">
-                    <!-- Title (unchanged) -->
                     <h3 class="text-2xl font-hedvig text-navy mb-3">${pkg.name}</h3>
-                    
-                    <!-- Description with fixed height and line clamping -->
                     <p class="text-dark mb-4 line-clamp-3 h-[72px] overflow-hidden">${pkg.description}</p>
-                    
-                    <!-- Price with consistent sizing -->
                     <div class="text-3xl font-hedvig text-yellow-600 mb-4 h-12 flex items-center">₱${pkg.price.toLocaleString()}</div>
                     
-                    <!-- Features list with scroll if needed -->
                     <div class="border-t border-gray-200 pt-4 mt-2 flex-grow overflow-y-auto">
                         <ul class="space-y-2">
                             ${pkg.features.map(feature => `
@@ -1050,7 +1101,6 @@ function renderPackages(filteredPackages) {
                         </ul>
                     </div>
                     
-                    <!-- Button at the bottom -->
                     <button class="selectPackageBtn mt-6 w-full bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg shadow-md transition-all duration-300 text-center">
                         Select Package
                     </button>
