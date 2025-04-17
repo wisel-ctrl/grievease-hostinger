@@ -12,7 +12,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Validate required fields
     $requiredFields = [
         'deceasedFirstName', 'deceasedLastName', 'dateOfDeath',
-        'gcashReceipt', 'referenceNumber', 'packageName',
+        'referenceNumber', 'packageName',
         'packagePrice', 'service_id', 'branch_id'
     ];
 
