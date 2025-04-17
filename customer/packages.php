@@ -34,19 +34,19 @@ if ($result) {
             $decoded = json_decode($row['inclusions'], true);
             $inclusions = is_array($decoded) ? $decoded : explode(',', $row['inclusions']);
         }
-        
-        // Add casket name to features if it exists
+
+        // Add casket name first (if it exists)
         if (!empty($row['casket_name'])) {
-            $inclusions[] = $row['casket_name'] . " casket";
+            array_unshift($inclusions, $row['casket_name'] . " casket");
         }
 
-        // Add professional embalming as a standard feature
-        $inclusions[] = "Professional embalming";
-
-        // Add flower design to features if it exists
+        // Add flower design second (if it exists)
         if (!empty($row['flower_design'])) {
-            array_unshift($inclusions, $row['flower_design']);
+            array_splice($inclusions, 1, 0, $row['flower_design']);
         }
+
+        // Add professional embalming last
+        $inclusions[] = "Professional embalming";
         
         $packages[] = [
             'id' => $row['service_id'],
