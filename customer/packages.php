@@ -685,9 +685,10 @@ console.log('packages from db',packagesFromDB);
 document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM fully loaded and parsed');
     // Show service type selection modal for all packages
-    document.querySelectorAll('.selectPackageBtn').forEach(button => {
-        button.addEventListener('click', function() {
-            const packageCard = this.closest('.package-card');
+    // Use event delegation for the selectPackageBtn
+    document.addEventListener('click', function(event) {
+        if (event.target.classList.contains('selectPackageBtn')) {
+            const packageCard = event.target.closest('.package-card');
             if (!packageCard) return;
             
             const packageName = packageCard.dataset.name;
@@ -700,7 +701,7 @@ document.addEventListener('DOMContentLoaded', function() {
             sessionStorage.setItem('selectedPackageImage', packageImage);
             sessionStorage.setItem('selectedServiceType', serviceType);
             
-            const features = Array.from(packageCard.querySelectorAll('ul li')).map(li => li.innerHTML);
+            const features = Array.from(packageCard.querySelectorAll('ul li')).map(li => li.textContent.trim());
             sessionStorage.setItem('selectedPackageFeatures', JSON.stringify(features));
             
             const traditionalBtn = document.getElementById('traditionalServiceBtn');
@@ -711,7 +712,7 @@ document.addEventListener('DOMContentLoaded', function() {
             `;
             
             document.getElementById('serviceTypeModal').classList.remove('hidden');
-        });
+        }
     });
 
     // Traditional Service button click event
