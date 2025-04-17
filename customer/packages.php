@@ -7,7 +7,7 @@ require_once '../db_connect.php'; // Database connection
 $user_id = $_SESSION['user_id'];
 $query = "SELECT u.first_name, u.last_name, u.email, u.birthdate, u.branch_loc, b.branch_id 
           FROM users u
-          LEFT JOIN branch_tb b ON u.branch_loc = b.branch_name
+          LEFT JOIN branch_tb b ON u.branch_loc = b.branch_id
           WHERE u.id = ?";
 $stmt = $conn->prepare($query);
 $stmt->bind_param("i", $user_id);
