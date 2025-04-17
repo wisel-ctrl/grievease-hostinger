@@ -1018,7 +1018,7 @@ function renderPackages(filteredPackages) {
         packageCard.innerHTML = `
             <div class="flex flex-col h-full"> <!-- Main flex container -->
                 <!-- Image section (unchanged) -->
-                <div class="h-48 bg-cover bg-center relative" style="background-image: url('${pkg.image}')">
+                <div class="h-48 bg-cover bg-center relative" style="background-image: url('../admin/uploads/services/${pkg.image.split('/').pop()}')">
                     <div class="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-all duration-300"></div>
                     <div class="absolute top-4 right-4 w-12 h-12 rounded-full bg-yellow-600/90 flex items-center justify-center text-white">
                         <i class="fas fa-${pkg.icon} text-xl"></i>
