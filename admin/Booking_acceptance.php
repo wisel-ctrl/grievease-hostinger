@@ -385,34 +385,163 @@ header("Pragma: no-cache");
     <script src="tailwind.js"></script>
 
     <script>
-      function openBookingDetails(bookingId) {
-      // First, fetch booking details via AJAX
-      fetch('bookingpage/get_booking_details.php?id=' + bookingId)
-        .then(response => response.json())
-        .then(data => {
-          // Populate modal with the fetched data
-          document.getElementById('bookingId').textContent = '#BK-' + 
-            new Date(data.booking_date).getFullYear() + '-' + 
-            String(data.booking_id).padStart(3, '0');
-          document.getElementById('customerName').textContent = data.customer_name;
-          document.getElementById('serviceType').textContent = data.service_name;
-          document.getElementById('emailAddress').textContent = data.email;
-          document.getElementById('dateRequested').textContent = 
-            new Date(data.booking_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-          
-          // Update other fields as needed...
-          
-          // Then show the modal
-          const modal = document.getElementById("bookingDetailsModal");
-          modal.classList.remove("hidden");
-          modal.classList.add("flex");
-          document.body.classList.add("overflow-hidden");
-        })
-        .catch(error => {
-          console.error('Error:', error);
-          // Show error message
-        });
+    function openBookingDetails(bookingId) {
+  // First, fetch booking details via AJAX
+  fetch('bookingpage/get_booking_details.php?id=' + bookingId)
+    .then(response => response.json())
+    .then(data => {
+      // Populate modal with the basic details
+      document.getElementById('bookingId').textContent = '#BK-' + 
+        new Date(data.booking_date).getFullYear() + '-' + 
+        String(data.booking_id).padStart(3, '0');
+      document.getElementById('customerName').textContent = data.customer_name;
+      document.getElementById('contactNumber').textContent = data.contact_number || "Not provided";
+      document.getElementById('emailAddress').textContent = data.email;
+      document.getElementById('address').textContent = data.address || "Not provided";
+      document.getElementById('serviceType').textContent = data.service_name;
+      document.getElementById('dateRequested').textContent = 
+        new Date(data.booking_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+      document.getElementById('serviceDate').textContent = 
+        data.deceased_dateOfBurial ? new Date(data.deceased_dateOfBurial).toLocaleDateString('en-US', 
+        { month: 'short', day: 'numeric', year: 'numeric' }) : "Not scheduled";
+      document.getElementById('amountPaid').textContent = "$" + parseFloat(data.amount_paid).toFixed(2);
+      
+      // Update booking status
+      const statusElement = document.getElementById('bookingStatus');
+      if (data.status === 'Accepted') {
+        statusElement.innerHTML = `
+          <span class="px-3 py-1.5 text-sm font-medium rounded-full bg-green-100 text-green-800 flex items-center">
+            <i class="fas fa-check-circle mr-1.5"></i>
+            Accepted
+          </span>`;
+      } else if (data.status === 'Declined') {
+        statusElement.innerHTML = `
+          <span class="px-3 py-1.5 text-sm font-medium rounded-full bg-red-100 text-red-800 flex items-center">
+            <i class="fas fa-times-circle mr-1.5"></i>
+            Declined
+          </span>`;
+      } else {
+        statusElement.innerHTML = `
+          <span class="px-3 py-1.5 text-sm font-medium rounded-full bg-yellow-100 text-sidebar-accent flex items-center">
+            <i class="fas fa-clock mr-1.5"></i>
+            Pending
+          </span>`;
+      }
+      
+      // Debug the data received
+      console.log("Death Certificate URL:", data.deathcert_url);
+      console.log("Payment Proof URL:", data.payment_url);
+      
+      // Handle Death Certificate Image
+      const deathCertAvailable = document.getElementById('deathCertificateAvailable');
+      const deathCertNotAvailable = document.getElementById('deathCertificateNotAvailable');
+      const deathCertImage = document.getElementById('deathCertificateImage');
+
+      if (data.deathcert_url && data.deathcert_url !== '') {
+        // Use relative path with ../ to navigate up and then to the customer/booking/uploads folder
+        const deathCertPath = '../customer/booking/uploads/' + data.deathcert_url.replace(/^uploads\//, '');
+        console.log("Death Certificate Path:", deathCertPath);
+        
+        // Set error handler before setting src
+        deathCertImage.onerror = function() {
+          console.error("Failed to load death certificate image:", deathCertPath);
+          deathCertAvailable.classList.add('hidden');
+          deathCertNotAvailable.classList.remove('hidden');
+        };
+        
+        deathCertImage.src = deathCertPath;
+        deathCertAvailable.classList.remove('hidden');
+        deathCertNotAvailable.classList.add('hidden');
+      } else {
+        deathCertAvailable.classList.add('hidden');
+        deathCertNotAvailable.classList.remove('hidden');
+      }
+
+      // Handle Payment Proof Image
+      const paymentProofImage = document.getElementById('paymentProofImage');
+      const paymentProofContainer = paymentProofImage.parentElement;
+
+      if (data.payment_url && data.payment_url !== '') {
+        // Use relative path with ../ to navigate up and then to the customer/booking/uploads folder
+        const paymentProofPath = '../customer/booking/uploads/' + data.payment_url.replace(/^uploads\//, '');
+        console.log("Payment Proof Path:", paymentProofPath);
+        
+        // Set error handler before setting src
+        paymentProofImage.onerror = function() {
+          console.error("Failed to load payment proof image:", paymentProofPath);
+          // Create a placeholder instead of loading another image
+          const placeholderHTML = `
+            <div class="flex flex-col items-center justify-center py-8 px-4 bg-gray-50">
+              <i class="fas fa-exclamation-circle text-gray-400 text-3xl mb-2"></i>
+              <p class="text-gray-500 text-center">Image could not be loaded</p>
+            </div>`;
+          paymentProofContainer.innerHTML = placeholderHTML;
+        };
+        
+        paymentProofImage.src = paymentProofPath;
+      } else {
+        // Create a placeholder for when no payment proof exists
+        const placeholderHTML = `
+          <div class="flex flex-col items-center justify-center py-8 px-4 bg-gray-50">
+            <i class="fas fa-exclamation-circle text-gray-400 text-3xl mb-2"></i>
+            <p class="text-gray-500 text-center">No payment proof provided</p>
+          </div>`;
+        paymentProofContainer.innerHTML = placeholderHTML;
+      }
+            
+      // Show the modal
+      const modal = document.getElementById("bookingDetailsModal");
+      modal.classList.remove("hidden");
+      modal.classList.add("flex");
+      document.body.classList.add("overflow-hidden");
+      
+      // Add image viewer listeners
+      setTimeout(addImageViewerListeners, 100); // Small delay to ensure DOM is updated
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('Failed to load booking details. Please try again.');
+    });
+}
+
+// Function to add click handlers to the magnify buttons
+function addImageViewerListeners() {
+  const zoomButtons = document.querySelectorAll('#bookingDetailsModal button[title="View Full Size"]');
+  zoomButtons.forEach(button => {
+    button.addEventListener('click', function() {
+      const imageElement = this.closest('.relative').querySelector('img');
+      if (imageElement && imageElement.src) {
+        viewFullSizeImage(imageElement.src);
+      }
+    });
+  });
+}
+
+// Function to show full-size image
+function viewFullSizeImage(imageSrc) {
+  const fullSizeModal = document.createElement('div');
+  fullSizeModal.className = 'fixed inset-0 bg-black bg-opacity-90 z-[60] flex items-center justify-center p-4';
+  
+  fullSizeModal.innerHTML = `
+    <div class="relative max-w-4xl w-full">
+      <img src="${imageSrc}" class="max-w-full max-h-[80vh] object-contain mx-auto" />
+      <button class="absolute top-4 right-4 bg-white bg-opacity-20 hover:bg-opacity-30 rounded-full p-2 text-white transition-all duration-200">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+        </svg>
+      </button>
+    </div>
+  `;
+  
+  document.body.appendChild(fullSizeModal);
+  
+  // Close on click
+  fullSizeModal.addEventListener('click', function(e) {
+    if (e.target === fullSizeModal || e.target.closest('button')) {
+      document.body.removeChild(fullSizeModal);
     }
+  });
+}
 
 function closeModal() {
     const modal = document.getElementById("bookingDetailsModal");
