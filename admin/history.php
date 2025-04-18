@@ -80,6 +80,7 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
   <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <style>
     body.modal-open {
       overflow: hidden;
@@ -144,7 +145,7 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
           // Modify your ongoingQuery to include a check for assigned staff
           $ongoingQuery = "SELECT s.sales_id, s.fname, s.mname, s.lname, s.suffix, 
           s.fname_deceased, s.mname_deceased, s.lname_deceased, s.suffix_deceased,
-          sv.service_name, s.date_of_burial, s.balance, s.status, s.payment_status,
+          sv.service_name, s.date_of_burial, s.balance, s.status, s.customerID, s.payment_status,
           (SELECT COUNT(*) FROM employee_service_payments esp WHERE esp.sales_id = s.sales_id) AS staff_assigned
           FROM sales_tb s
           JOIN services_tb sv ON s.service_id = sv.service_id
@@ -178,11 +179,15 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
                     <i class="fas fa-edit"></i>
                   </button>
                   <?php if ($row['staff_assigned'] == 0): ?>
-    <button class="p-1.5 bg-green-100 text-green-600 rounded hover:bg-green-200 transition-all" onclick="openAssignStaffModal('<?php echo $row['sales_id']; ?>')">
-      <i class="fas fa-users"></i>
-    </button>
-  <?php endif; ?>
-                  <button class="p-1.5 bg-purple-100 text-purple-600 rounded hover:bg-purple-200 transition-all" onclick="openCompleteModal('<?php echo $row['sales_id']; ?>')">
+                    <button class="p-1.5 bg-green-100 text-green-600 rounded hover:bg-green-200 transition-all assign-staff-btn" 
+                            onclick="checkCustomerBeforeAssign('<?php echo $row['sales_id']; ?>', <?php echo $row['customer_id'] ? 'true' : 'false'; ?>)"
+                            <?php echo !$row['customer_id'] ? 'disabled' : ''; ?>>
+                      <i class="fas fa-users"></i>
+                    </button>
+                  <?php endif; ?>
+                  <button class="p-1.5 bg-purple-100 text-purple-600 rounded hover:bg-purple-200 transition-all complete-btn" 
+                          onclick="checkCustomerBeforeComplete('<?php echo $row['sales_id']; ?>', <?php echo $row['customer_id'] ? 'true' : 'false'; ?>)"
+                          <?php echo !$row['customer_id'] ? 'disabled' : ''; ?>>
                     <i class="fas fa-check"></i>
                   </button>
                 </td>
@@ -1994,8 +1999,52 @@ function filterTable(table, searchTerm) {
     }
   });
 }
-
 </script> 
+<script>
+// Function to check customer before assigning staff
+function checkCustomerBeforeAssign(salesId, hasCustomer) {
+    if (!hasCustomer) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Customer Required',
+            text: 'Please enter a customer account first by clicking the edit button',
+            confirmButtonColor: '#3085d6',
+            confirmButtonText: 'OK'
+        });
+        return;
+    }
+    openAssignStaffModal(salesId);
+}
+
+// Function to check customer before completing service
+function checkCustomerBeforeComplete(salesId, hasCustomer) {
+    if (!hasCustomer) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Customer Required',
+            text: 'Please enter a customer account first by clicking the edit button',
+            confirmButtonColor: '#3085d6',
+            confirmButtonText: 'OK'
+        });
+        return;
+    }
+    openCompleteModal(salesId);
+}
+
+// Add CSS for disabled buttons
+const style = document.createElement('style');
+style.textContent = `
+    .assign-staff-btn:disabled, .complete-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+    .assign-staff-btn:disabled:hover, .complete-btn:disabled:hover {
+        background-color: initial !important;
+    }
+`;
+document.head.appendChild(style);
+
+</script>
 <script src="tailwind.js"></script>
 </body> 
 </html>
