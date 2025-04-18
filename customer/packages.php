@@ -3,6 +3,67 @@ session_start();
 
 require_once '../db_connect.php'; // Database connection
 
+// Check if user is logged in
+if (!isset($_SESSION['user_id'])) {
+    // Redirect to login page
+    header("Location: ../Landing_Page/login.php");
+    exit();
+}
+
+// Check for correct user type based on which directory we're in
+$current_directory = basename(dirname($_SERVER['PHP_SELF']));
+$allowed_user_type = null;
+
+switch ($current_directory) {
+    case 'admin':
+        $allowed_user_type = 1;
+        break;
+    case 'employee':
+        $allowed_user_type = 2;
+        break;
+    case 'customer':
+        $allowed_user_type = 3;
+        break;
+}
+
+// If user is not the correct type for this page, redirect to appropriate page
+if ($_SESSION['user_type'] != $allowed_user_type) {
+    switch ($_SESSION['user_type']) {
+        case 1:
+            header("Location: ../admin/index.php");
+            break;
+        case 2:
+            header("Location: ../employee/index.php");
+            break;
+        case 3:
+            header("Location: ../customer/index.php");
+            break;
+        default:
+            // Invalid user_type
+            session_destroy();
+            header("Location: ../Landing_Page/login.php");
+    }
+    exit();
+}
+
+// Optional: Check for session timeout (30 minutes)
+$session_timeout = 1800; // 30 minutes in seconds
+if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > $session_timeout)) {
+    // Session has expired
+    session_unset();
+    session_destroy();
+    header("Location: ../Landing_Page/login.php?timeout=1");
+    exit();
+}
+
+// Update last activity time
+$_SESSION['last_activity'] = time();
+
+// Prevent caching for authenticated pages
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Cache-Control: post-check=0, pre-check=0", false);
+header("Pragma: no-cache");
+
 // Get user's first name from database
 $user_id = $_SESSION['user_id'];
 $query = "SELECT u.first_name, u.last_name, u.email, u.birthdate, u.branch_loc, b.branch_id 
@@ -20,17 +81,13 @@ $email = $row['email'];
 $branch_id = $row['branch_id']; // This will be used for the hidden branch_id input
 $stmt->close();
 
-// Add this function to check and fix image paths
 function getImageUrl($image_path) {
-    // If image path is empty or null, return a placeholder
     if (empty($image_path)) {
-        return 'assets/images/placeholder.jpg'; // Change this to your actual placeholder image path
+        return 'assets/images/placeholder.jpg';
     }
     
-    // If the path doesn't start with http or a slash, add the proper directory prefix
     if (!preg_match('/^(http|\/)/i', $image_path)) {
-        // Adjust this path to wherever your service images are stored
-        return '../admin/' . $image_path;
+        return '../../admin/servicesManagement/' . $image_path;
     }
     
     return $image_path;
@@ -1206,6 +1263,7 @@ function toggleMenu() {
     mobileMenu.classList.toggle('hidden');
 }
 </script>
+
 
 </body>
 </html>
