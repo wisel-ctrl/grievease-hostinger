@@ -180,14 +180,14 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
                   </button>
                   <?php if ($row['staff_assigned'] == 0): ?>
                     <button class="p-1.5 bg-green-100 text-green-600 rounded hover:bg-green-200 transition-all assign-staff-btn" 
-                            onclick="checkCustomerBeforeAssign('<?php echo $row['sales_id']; ?>', <?php echo $row['customer_id'] ? 'true' : 'false'; ?>)"
-                            <?php echo !$row['customer_id'] ? 'disabled' : ''; ?>>
+                            onclick="checkCustomerBeforeAssign('<?php echo $row['sales_id']; ?>', <?php echo $row['customerID'] ? 'true' : 'false'; ?>)"
+                            <?php echo !$row['customerID'] ? 'disabled' : ''; ?>>
                       <i class="fas fa-users"></i>
                     </button>
                   <?php endif; ?>
                   <button class="p-1.5 bg-purple-100 text-purple-600 rounded hover:bg-purple-200 transition-all complete-btn" 
-                          onclick="checkCustomerBeforeComplete('<?php echo $row['sales_id']; ?>', <?php echo $row['customer_id'] ? 'true' : 'false'; ?>)"
-                          <?php echo !$row['customer_id'] ? 'disabled' : ''; ?>>
+                          onclick="checkCustomerBeforeComplete('<?php echo $row['sales_id']; ?>', <?php echo $row['customerID'] ? 'true' : 'false'; ?>)"
+                          <?php echo !$row['customerID'] ? 'disabled' : ''; ?>>
                     <i class="fas fa-check"></i>
                   </button>
                 </td>
