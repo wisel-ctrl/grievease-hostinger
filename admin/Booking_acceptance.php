@@ -324,10 +324,6 @@ header("Pragma: no-cache");
                                           </button>
                                       </div>
                                   </div>
-                                  <div class="bg-gray-50 p-2 text-xs text-gray-500 flex items-center justify-center">
-                                      <i class="fas fa-clock mr-1"></i>
-                                      Uploaded on Mar 15, 2025
-                                  </div>
                               </div>
                               <div id="deathCertificateNotAvailable" class="hidden">
                                   <div class="flex flex-col items-center justify-center py-8 px-4 bg-gray-50">
@@ -352,10 +348,6 @@ header("Pragma: no-cache");
                                           <i class="fas fa-search-plus text-blue-600"></i>
                                       </button>
                                   </div>
-                              </div>
-                              <div class="bg-gray-50 p-2 text-xs text-gray-500 flex items-center justify-center">
-                                  <i class="fas fa-credit-card mr-1"></i>
-                                  Payment received on Mar 15, 2025
                               </div>
                           </div>
                       </div>
