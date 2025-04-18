@@ -75,7 +75,40 @@ require_once '../db_connect.php'; // Database connection
                 $first_name = $row['first_name']; // We're confident user_id exists
                 $last_name = $row['last_name'];
                 $email = $row['email'];
-                $stmt->close();
+                
+                // Get notification count for the current user
+                $notifications_count = [
+                    'total' => 0,
+                    'pending' => 0,
+                    'accepted' => 0,
+                    'declined' => 0
+                ];
+
+                if (isset($_SESSION['user_id'])) {
+                    $user_id = $_SESSION['user_id'];
+                    $query = "SELECT status FROM booking_tb WHERE customerID = ?";
+                    $stmt = $conn->prepare($query);
+                    $stmt->bind_param("i", $user_id);
+                    $stmt->execute();
+                    $result = $stmt->get_result();
+                    
+                    while ($booking = $result->fetch_assoc()) {
+                        $notifications_count['total']++;
+                        
+                        switch ($booking['status']) {
+                            case 'Pending':
+                                $notifications_count['pending']++;
+                                break;
+                            case 'Accepted':
+                                $notifications_count['accepted']++;
+                                break;
+                            case 'Declined':
+                                $notifications_count['declined']++;
+                                break;
+                        }
+                    }
+                    $stmt->close();
+                }
                 $conn->close();
 ?>
 
@@ -139,7 +172,11 @@ require_once '../db_connect.php'; // Database connection
             <div class="hidden md:flex items-center space-x-4">
                 <a href="notification.php" class="relative text-white hover:text-yellow-600 transition-colors">
                     <i class="fas fa-bell"></i>
-                    <span class="absolute -top-2 -right-2 bg-yellow-600 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">2</span>
+                    <?php if ($notifications_count['pending'] > 0): ?>
+                    <span class="absolute -top-2 -right-2 bg-yellow-600 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                        <?php echo $notifications_count['pending']; ?>
+                    </span>
+                    <?php endif; ?>
                 </a>
                 
                 <div class="relative group">
@@ -173,10 +210,14 @@ require_once '../db_connect.php'; // Database connection
             <!-- mobile menu header -->
             <div class="md:hidden flex justify-between items-center px-4 py-3 border-b border-gray-700">
         <div class="flex items-center space-x-4">
-            <a href="notification.php" class="relative text-white hover:text-yellow-600 transition-colors">
-                <i class="fas fa-bell text-xl"></i>
-                <span class="absolute -top-2 -right-2 bg-yellow-600 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">2</span>
-            </a>
+                <a href="notification.php" class="relative text-white hover:text-yellow-600 transition-colors">
+                    <i class="fas fa-bell"></i>
+                    <?php if ($notifications_count['pending'] > 0): ?>
+                    <span class="absolute -top-2 -right-2 bg-yellow-600 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                        <?php echo $notifications_count['pending']; ?>
+                    </span>
+                    <?php endif; ?>
+                </a>
             <button onclick="toggleMenu()" class="focus:outline-none text-white">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
