@@ -200,6 +200,7 @@ $conn->close();
     <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Cinzel:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="tailwind.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         :root {
             --navbar-height: 64px;
@@ -841,8 +842,6 @@ $conn->close();
 
 <script src="customer_support.js"></script>
 <script>
-
-
 document.addEventListener('DOMContentLoaded', function() {
     const packagesFromDB = <?php echo json_encode($packages); ?>;
 
@@ -884,37 +883,103 @@ document.addEventListener('DOMContentLoaded', function() {
         openTraditionalModal();
     });
 
-    document.getElementById('traditionalBookingForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        const formData = new FormData(this);
-        const formElement = this; // Store reference to the form
+    // Replace the traditionalBookingForm submit event listener with this:
+document.getElementById('traditionalBookingForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const formElement = this;
 
-        const formEntries = {};
-        for (let pair of formData.entries()) {
-            formEntries[pair[0]] = pair[1];
+    // Show confirmation dialog
+    Swal.fire({
+        title: 'Confirm Booking',
+        text: 'Are you sure you want to proceed with this booking?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#d97706', // yellow-600
+        cancelButtonColor: '#6b7280',  // gray-500
+        confirmButtonText: 'Yes, book now',
+        cancelButtonText: 'Cancel'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // User confirmed, proceed with booking
+            fetch('booking/booking.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    
+                    // Close modal and reset form
+                    document.getElementById('traditionalModal').classList.add('hidden');
+                    formElement.reset();
+                    
+                    // Show notification
+                    showNotification('New Booking', 'Your booking has been confirmed. Click to view details.', 'notification.php');
+                } else {
+                    Swal.fire({
+                        title: 'Error',
+                        text: data.message || 'An error occurred. Please try again.',
+                        icon: 'error',
+                        confirmButtonColor: '#d97706'
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire({
+                    title: 'Error',
+                    text: 'An error occurred. Please try again.',
+                    icon: 'error',
+                    confirmButtonColor: '#d97706'
+                });
+            });
         }
-        console.log("Form data entries:", formEntries);
-
-        fetch('booking/booking.php', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert('Booking successful!');
-                document.getElementById('traditionalModal').classList.add('hidden');
-                formElement.reset(); // Reset the form fields
-            } else {
-                alert('Error: ' + data.message);
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('An error occurred. Please try again.');
-        });
     });
+});
+
+// Add this function to show notifications
+function showNotification(title, message, redirectUrl) {
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = 'fixed top-4 right-4 z-50 w-80 bg-white rounded-lg shadow-lg overflow-hidden border-l-4 border-yellow-600 transform transition-all duration-300 hover:scale-105 cursor-pointer';
+    notification.innerHTML = `
+        <div class="p-4" onclick="window.location.href='${redirectUrl}'">
+            <div class="flex items-start">
+                <div class="flex-shrink-0">
+                    <i class="fas fa-bell text-yellow-600 text-xl mt-1"></i>
+                </div>
+                <div class="ml-3 w-0 flex-1 pt-0.5">
+                    <p class="text-sm font-medium text-gray-900">${title}</p>
+                    <p class="mt-1 text-sm text-gray-500">${message}</p>
+                </div>
+                <div class="ml-4 flex-shrink-0 flex">
+                    <button class="bg-white rounded-md inline-flex text-gray-400 hover:text-gray-500 focus:outline-none" onclick="event.stopPropagation(); this.parentNode.parentNode.parentNode.remove()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Add to body
+    document.body.appendChild(notification);
+    
+    // Auto-remove after 5 seconds
+    setTimeout(() => {
+        notification.classList.add('opacity-0');
+        setTimeout(() => {
+            notification.remove();
+        }, 300);
+    }, 5000);
+    
+    // Click handler for the close button
+    notification.querySelector('button').addEventListener('click', function(e) {
+        e.stopPropagation();
+        notification.remove();
+    });
+}
 
     // Traditional addon checkbox event handling
     document.querySelectorAll('.traditional-addon').forEach(checkbox => {
@@ -1122,11 +1187,58 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Form submission for Lifeplan
     document.getElementById('lifeplanBookingForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        // Add booking submission logic here
-        alert('Lifeplan booking submitted successfully!');
-        closeAllModals();
+    e.preventDefault();
+    const formData = new FormData(this);
+    const formElement = this;
+
+    Swal.fire({
+        title: 'Confirm Lifeplan Booking',
+        text: 'Are you sure you want to proceed with this lifeplan?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#d97706',
+        cancelButtonColor: '#6b7280',
+        confirmButtonText: 'Yes, proceed',
+        cancelButtonText: 'Cancel'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch('booking/lifeplan_booking.php', { // Update this URL to your actual endpoint
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        title: 'Success!',
+                        text: 'Lifeplan booking submitted successfully!',
+                        icon: 'success',
+                        confirmButtonColor: '#d97706'
+                    });
+                    closeAllModals();
+                    formElement.reset();
+                    showNotification('New Lifeplan', 'Your lifeplan has been confirmed. Click to view details.', 'notification.php');
+                } else {
+                    Swal.fire({
+                        title: 'Error',
+                        text: data.message || 'An error occurred. Please try again.',
+                        icon: 'error',
+                        confirmButtonColor: '#d97706'
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire({
+                    title: 'Error',
+                    text: 'An error occurred. Please try again.',
+                    icon: 'error',
+                    confirmButtonColor: '#d97706'
+                });
+            });
+        }
     });
+});
 
     // Process packages from database
     const processedPackages = packagesFromDB.map(pkg => {
