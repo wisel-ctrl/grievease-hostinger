@@ -1017,7 +1017,7 @@ $conn->close();
   <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
   
   <!-- Modal Content -->
-  <div class="relative bg-white rounded-xl shadow-card w-full max-w-4xl mx-4 z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-lg mx-4 z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
     <!-- Close Button -->
     <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeEditExpenseModal()">
       <i class="fas fa-times"></i>
@@ -1033,122 +1033,116 @@ $conn->close();
     
     <!-- Modal Body -->
     <div class="px-6 py-4">
-      <form id="editExpenseForm" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <form id="editExpenseForm" class="space-y-4">
         <input type="hidden" id="editExpenseId" name="editExpenseId">
         
-        <!-- Left Column -->
-        <div class="space-y-3">
+        <div>
+          <label for="editExpenseDescription" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            <i class="fas fa-tag mr-2 text-sidebar-accent"></i>
+            Expense Name
+          </label>
+          <input type="text" id="editExpenseDescription" name="editExpenseDescription" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
+        </div>
+        
+        <div class="grid grid-cols-2 gap-3">
           <div>
-            <label for="editExpenseDescription" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-tag mr-2 text-sidebar-accent"></i>
-              Expense Name
+            <label for="editExpenseCategory" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+              <i class="fas fa-th-list mr-2 text-sidebar-accent"></i>
+              Category
             </label>
-            <input type="text" id="editExpenseDescription" name="editExpenseDescription" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
-          </div>
-          
-          <div class="grid grid-cols-2 gap-3">
-            <div>
-              <label for="editExpenseCategory" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                <i class="fas fa-th-list mr-2 text-sidebar-accent"></i>
-                Category
-              </label>
-              <select id="editExpenseCategory" name="editExpenseCategory" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
-                <option value="" disabled selected>Select category</option>
-                <option value="Supplies">Supplies</option>
-                <option value="Utilities">Utilities</option>
-                <option value="Salaries">Salaries</option>
-                <option value="Maintenance">Maintenance</option>
-                <option value="Other">Other</option>
-              </select>
-            </div>
-            
-            <div>
-              <label for="editExpenseDate" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                <i class="fas fa-calendar mr-2 text-sidebar-accent"></i>
-                Date
-              </label>
-              <input type="date" id="editExpenseDate" name="editExpenseDate" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
-            </div>
+            <select id="editExpenseCategory" name="editExpenseCategory" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
+              <option value="" disabled selected>Select category</option>
+              <option value="Supplies">Supplies</option>
+              <option value="Utilities">Utilities</option>
+              <option value="Salaries">Salaries</option>
+              <option value="Maintenance">Maintenance</option>
+              <option value="Other">Other</option>
+            </select>
           </div>
           
           <div>
-            <label for="editExpenseAmount" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-coins mr-2 text-sidebar-accent"></i>
-              Amount
+            <label for="editExpenseDate" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+              <i class="fas fa-calendar mr-2 text-sidebar-accent"></i>
+              Date
             </label>
-            <div class="relative">
-              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <span class="text-gray-500">₱</span>
-              </div>
-              <input type="number" id="editExpenseAmount" name="editExpenseAmount" class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
-            </div>
-          </div>
-          
-          <div>
-            <label for="editExpenseNote" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-sticky-note mr-2 text-sidebar-accent"></i>
-              Note
-            </label>
-            <textarea id="editExpenseNote" name="editExpenseNote" rows="3" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"></textarea>
+            <input type="date" id="editExpenseDate" name="editExpenseDate" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
           </div>
         </div>
         
-        <!-- Right Column -->
-        <div class="space-y-3">
-          <div class="bg-gray-50 p-3 rounded-lg border border-gray-200">
-            <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-check-circle mr-2 text-sidebar-accent"></i>
-              Status
+        <div>
+          <label for="editExpenseAmount" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            <i class="fas fa-coins mr-2 text-sidebar-accent"></i>
+            Amount
+          </label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <span class="text-gray-500">₱</span>
+            </div>
+            <input type="number" id="editExpenseAmount" name="editExpenseAmount" class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
+          </div>
+        </div>
+        
+        <div class="bg-gray-50 p-3 rounded-lg border border-gray-200">
+          <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            <i class="fas fa-check-circle mr-2 text-sidebar-accent"></i>
+            Status
+          </label>
+          <div class="grid grid-cols-2 gap-2">
+            <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
+              <input type="radio" id="editStatusPaid" name="editExpenseStatus" value="paid" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
+              <i class="fas fa-check-circle mr-1 text-sidebar-accent"></i>
+              Paid
             </label>
-            <div class="grid grid-cols-2 gap-2">
-              <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
-                <input type="radio" id="editStatusPaid" name="editExpenseStatus" value="paid" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
-                <i class="fas fa-check-circle mr-1 text-sidebar-accent"></i>
-                Paid
-              </label>
-              <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
-                <input type="radio" id="editStatusToBePaid" name="editExpenseStatus" value="to be paid" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
-                <i class="fas fa-clock mr-1 text-sidebar-accent"></i>
-                To Be Paid
-              </label>
-            </div>
+            <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
+              <input type="radio" id="editStatusToBePaid" name="editExpenseStatus" value="to be paid" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
+              <i class="fas fa-clock mr-1 text-sidebar-accent"></i>
+              To Be Paid
+            </label>
           </div>
+        </div>
+        
+        <div class="bg-gray-50 p-3 rounded-lg border-l-4 border-gold">
+          <label class="block text-xs font-medium text-gray-700 mb-1">Branch</label>
+          <div class="grid grid-cols-2 gap-2">
+          <?php
+          // Include database connection
+          require_once '../db_connect.php';
           
-          <div class="bg-gray-50 p-3 rounded-lg border-l-4 border-gold">
-            <label class="block text-xs font-medium text-gray-700 mb-1">Branch</label>
-            <div class="grid grid-cols-2 gap-2">
-            <?php
-            // Include database connection
-            require_once '../db_connect.php';
-            
-            // Create connection
-            $conn = new mysqli($servername, $username, $password, $dbname);
-            
-            // Check connection
-            if ($conn->connect_error) {
-                die("Connection failed: " . $conn->connect_error);
-            }
-            
-            $sql = "SELECT branch_id, branch_name FROM branch_tb";
-            $result = $conn->query($sql);
-            
-            if ($result->num_rows > 0) {
-                while($row = $result->fetch_assoc()) {
-                    echo '<label class="flex items-center space-x-2 cursor-pointer">';
-                    echo '<input type="radio" id="editBranch_' . htmlspecialchars($row['branch_id']) . '" 
-                          name="editExpenseBranch" value="' . htmlspecialchars($row['branch_id']) . '" 
-                          class="hidden peer">';
-                    echo '<div class="w-4 h-4 rounded-full border-2 border-gold flex items-center justify-center peer-checked:bg-gold peer-checked:border-darkgold transition-colors"></div>';
-                    echo '<span class="text-sm text-gray-700">' . htmlspecialchars($row['branch_name']) . '</span>';
-                    echo '</label>';
-                }
-            } else {
-                echo '<p class="text-gray-500">No branches available.</p>';
-            }
-            $conn->close();
-            ?>
-            </div>
+          // Create connection
+          $conn = new mysqli($servername, $username, $password, $dbname);
+          
+          // Check connection
+          if ($conn->connect_error) {
+              die("Connection failed: " . $conn->connect_error);
+          }
+          
+          $sql = "SELECT branch_id, branch_name FROM branch_tb";
+          $result = $conn->query($sql);
+          
+          if ($result->num_rows > 0) {
+              while($row = $result->fetch_assoc()) {
+                  echo '<label class="flex items-center space-x-2 cursor-pointer">';
+                  echo '<input type="radio" id="editBranch_' . htmlspecialchars($row['branch_id']) . '" 
+                        name="editExpenseBranch" value="' . htmlspecialchars($row['branch_id']) . '" 
+                        class="hidden peer">';
+                  echo '<div class="w-4 h-4 rounded-full border-2 border-gold flex items-center justify-center peer-checked:bg-gold peer-checked:border-darkgold transition-colors"></div>';
+                  echo '<span class="text-sm text-gray-700">' . htmlspecialchars($row['branch_name']) . '</span>';
+                  echo '</label>';
+              }
+          } else {
+              echo '<p class="text-gray-500">No branches available.</p>';
+          }
+          $conn->close();
+          ?>
           </div>
+        </div>
+        
+        <div>
+          <label for="editExpenseNote" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            <i class="fas fa-sticky-note mr-2 text-sidebar-accent"></i>
+            Note
+          </label>
+          <textarea id="editExpenseNote" name="editExpenseNote" rows="3" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"></textarea>
         </div>
       </form>
     </div>
