@@ -114,181 +114,226 @@ $offset = ($current_page - 1) * $bookings_per_page;
   </div>
 
   <!-- Pending Bookings List -->
-  <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 mb-8">
-      <div class="flex justify-between items-center p-5 border-b border-sidebar-border">
-      <!-- Left: Title -->
-      <h2 class="text-xl font-semibold text-sidebar-text">Pending Requests</h2>
-
-      <!-- Center: Booking count -->
-      <div class="flex items-center space-x-2 text-gray-600 text-sm">
-        <i class="fas fa-list-ul text-sidebar-accent"></i>
-        <span>
-          <?php 
-            if ($total_bookings > 0) {
-                echo $total_bookings . " bookings";
-            } else {
-                echo "No bookings";
-            }
-          ?>
-        </span>
-      </div>
-
-      <!-- Right: Search input -->
-      <div class="relative">
-        <input type="text" placeholder="Search bookings..." class="pl-9 pr-4 py-2 border border-sidebar-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
-        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-          <i class="fas fa-search text-gray-400"></i>
+<div class="bg-white rounded-lg shadow-md mb-8 border border-sidebar-border overflow-hidden branch-container">
+    <!-- Header with Search -->
+    <div class="bg-sidebar-hover p-4 border-b border-sidebar-border flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div class="flex items-center gap-3">
+            <h4 class="text-lg font-bold text-sidebar-text">Pending Requests</h4>
+            
+            <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
+                <i class="fas fa-list-ul"></i>
+                <?php 
+                  if ($total_bookings > 0) {
+                      echo $total_bookings . " booking" . ($total_bookings != 1 ? "s" : "");
+                  } else {
+                      echo "No bookings";
+                  }
+                ?>
+            </span>
         </div>
-      </div>
-    </div>
-
-    <div class="overflow-x-auto scrollbar-thin">
-      <table class="w-full">
-        <thead>
-          <tr class="bg-sidebar-hover">
-            <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(0)">
-              <div class="flex items-center">
-                Booking ID <i class="fas fa-sort ml-1 text-gray-400"></i>
-              </div>
-            </th>
-            <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(1)">
-              <div class="flex items-center">
-                Customer <i class="fas fa-sort ml-1 text-gray-400"></i>
-              </div>
-            </th>
-            <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(2)">
-              <div class="flex items-center">
-                Service <i class="fas fa-sort ml-1 text-gray-400"></i>
-              </div>
-            </th>
-            <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(3)">
-              <div class="flex items-center">
-                Date Requested <i class="fas fa-sort ml-1 text-gray-400"></i>
-              </div>
-            </th>
-            <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(4)">
-              <div class="flex items-center">
-                Status <i class="fas fa-sort ml-1 text-gray-400"></i>
-              </div>
-            </th>
-            <th class="p-4 text-left text-sm font-medium text-sidebar-text">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <?php
-          // Query to get booking data with joins and pagination
-            $query = "SELECT b.booking_id, b.booking_date, b.status, 
-                    CONCAT(u.first_name, ' ', COALESCE(u.middle_name, ''), ' ', u.last_name, ' ', COALESCE(u.suffix, '')) AS customer_name,
-                    s.service_name
-                    FROM booking_tb b
-                    JOIN users u ON b.customerID = u.id
-                    JOIN services_tb s ON b.service_id = s.service_id
-                    WHERE b.status = 'Pending'
-                    ORDER BY b.booking_date DESC
-                    LIMIT ?, ?";
-
-            $stmt = $conn->prepare($query);
-            $stmt->bind_param("ii", $offset, $bookings_per_page);
-            $stmt->execute();
-            $result = $stmt->get_result();
-
-            // Display bookings as before
-            if ($result->num_rows > 0) {
-            while ($row = $result->fetch_assoc()) {
-            // Your existing code for displaying each booking row
-            // Format booking ID
-            $booking_id = "#BK-" . date('Y', strtotime($row['booking_date'])) . "-" . str_pad($row['booking_id'], 3, '0', STR_PAD_LEFT);
-
-            // Format date
-            $formatted_date = date('M j, Y', strtotime($row['booking_date']));
-
-            // Status badge class
-            $status_class = "bg-yellow-100 text-yellow-800";
-            if ($row['status'] == 'Accepted') {
-            $status_class = "bg-green-100 text-green-800";
-            } elseif ($row['status'] == 'Declined') {
-            $status_class = "bg-red-100 text-red-800";
-            }
-
-            echo '<tr class="border-b border-sidebar-border hover:bg-sidebar-hover">';
-            echo '<td class="p-4 text-sm text-sidebar-text font-medium">' . htmlspecialchars($booking_id) . '</td>';
-            echo '<td class="p-4 text-sm text-sidebar-text">' . htmlspecialchars($row['customer_name']) . '</td>';
-            echo '<td class="p-4 text-sm text-sidebar-text">' . htmlspecialchars($row['service_name']) . '</td>';
-            echo '<td class="p-4 text-sm text-sidebar-text">' . htmlspecialchars($formatted_date) . '</td>';
-            echo '<td class="p-4 text-sm">';
-            echo '<span class="px-2 py-1 ' . $status_class . ' rounded-full text-xs">' . htmlspecialchars($row['status']) . '</span>';
-            echo '</td>';
-            echo '<td class="p-4 text-sm">';
-            echo '<button onclick="openBookingDetails(' . $row['booking_id'] . ')" class="text-blue-600 hover:text-blue-800 text-sm font-medium">View Details</button>';
-            echo '</td>';
-            echo '</tr>';
-            }
-            } else {
-            echo '<tr><td colspan="6" class="p-4 text-center text-gray-500">No pending bookings found</td></tr>';
-            }
-          ?>
-        </tbody>
-      </table>
-    </div>
-    <div class="p-4 border-t border-sidebar-border flex justify-between items-center">
-      <div class="text-sm text-gray-500">
-          <?php 
-          // Get the number of bookings on the current page
-          $current_page_bookings = $result->num_rows;
-
-          if ($total_bookings > 0) {
-            $start = $offset + 1;
-            $end = $offset + $result->num_rows;
         
-              echo "Showing {$start} to {$end} ";
-          } else {
-              echo "No bookings found";
-          }
-          ?>
-      </div>
-      <div class="flex space-x-1">
-          <?php if ($total_pages > 1): ?>
-              <!-- First page and Previous page -->
-              <a href="?page=1" class="px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($current_page == 1) ? 'opacity-50 cursor-not-allowed' : ''; ?>" <?php echo ($current_page == 1) ? 'tabindex="-1" aria-disabled="true"' : ''; ?>>&laquo;</a>
-              <a href="?page=<?php echo max(1, $current_page - 1); ?>" class="px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($current_page == 1) ? 'opacity-50 cursor-not-allowed' : ''; ?>" <?php echo ($current_page == 1) ? 'tabindex="-1" aria-disabled="true"' : ''; ?>>&lsaquo;</a>
-              
-              <!-- Page numbers -->
-              <?php
-              // Determine the range of page numbers to show
-              $range = 2; // Show 2 pages before and after the current page
-              $start_page = max(1, $current_page - $range);
-              $end_page = min($total_pages, $current_page + $range);
-              
-              // Always show first page
-              if ($start_page > 1) {
-                  echo '<a href="?page=1" class="px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">1</a>';
-                  if ($start_page > 2) {
-                      echo '<span class="px-3 py-1 text-gray-500">...</span>';
+        <!-- Search Section -->
+        <div class="flex flex-col md:flex-row items-start md:items-center gap-3 w-full md:w-auto">
+            <!-- Search Input -->
+            <div class="relative w-full md:w-64">
+                <input type="text" placeholder="Search bookings..." 
+                       class="pl-8 pr-3 py-2 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
+                <i class="fas fa-search absolute left-2.5 top-3 text-gray-400"></i>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bookings Table -->
+    <div class="overflow-x-auto scrollbar-thin">
+        <table class="w-full">
+            <thead>
+                <tr class="bg-gray-50 border-b border-sidebar-border">
+                    <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(0)">
+                        <div class="flex items-center">
+                            <i class="fas fa-hashtag mr-1.5 text-sidebar-accent"></i> Booking ID 
+                            <i class="fas fa-sort ml-1 text-gray-400"></i>
+                        </div>
+                    </th>
+                    <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(1)">
+                        <div class="flex items-center">
+                            <i class="fas fa-user mr-1.5 text-sidebar-accent"></i> Customer 
+                            <i class="fas fa-sort ml-1 text-gray-400"></i>
+                        </div>
+                    </th>
+                    <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(2)">
+                        <div class="flex items-center">
+                            <i class="fas fa-tag mr-1.5 text-sidebar-accent"></i> Service 
+                            <i class="fas fa-sort ml-1 text-gray-400"></i>
+                        </div>
+                    </th>
+                    <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(3)">
+                        <div class="flex items-center">
+                            <i class="fas fa-calendar mr-1.5 text-sidebar-accent"></i> Date Requested 
+                            <i class="fas fa-sort ml-1 text-gray-400"></i>
+                        </div>
+                    </th>
+                    <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(4)">
+                        <div class="flex items-center">
+                            <i class="fas fa-toggle-on mr-1.5 text-sidebar-accent"></i> Status 
+                            <i class="fas fa-sort ml-1 text-gray-400"></i>
+                        </div>
+                    </th>
+                    <th class="p-4 text-left text-sm font-medium text-sidebar-text">
+                        <div class="flex items-center">
+                            <i class="fas fa-cogs mr-1.5 text-sidebar-accent"></i> Actions
+                        </div>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php
+                // Query to get booking data with joins and pagination
+                  $query = "SELECT b.booking_id, b.booking_date, b.status, 
+                          CONCAT(u.first_name, ' ', COALESCE(u.middle_name, ''), ' ', u.last_name, ' ', COALESCE(u.suffix, '')) AS customer_name,
+                          s.service_name
+                          FROM booking_tb b
+                          JOIN users u ON b.customerID = u.id
+                          JOIN services_tb s ON b.service_id = s.service_id
+                          WHERE b.status = 'Pending'
+                          ORDER BY b.booking_date DESC
+                          LIMIT ?, ?";
+
+                  $stmt = $conn->prepare($query);
+                  $stmt->bind_param("ii", $offset, $bookings_per_page);
+                  $stmt->execute();
+                  $result = $stmt->get_result();
+
+                  if ($result->num_rows > 0) {
+                    while ($row = $result->fetch_assoc()) {
+                      // Format booking ID
+                      $booking_id = "#BK-" . date('Y', strtotime($row['booking_date'])) . "-" . str_pad($row['booking_id'], 3, '0', STR_PAD_LEFT);
+
+                      // Format date
+                      $formatted_date = date('M j, Y', strtotime($row['booking_date']));
+
+                      // Status badge class
+                      $status_class = "bg-yellow-100 text-yellow-800 border border-yellow-200";
+                      $status_icon = "fa-clock";
+                      if ($row['status'] == 'Accepted') {
+                        $status_class = "bg-green-100 text-green-600 border border-green-200";
+                        $status_icon = "fa-check-circle";
+                      } elseif ($row['status'] == 'Declined') {
+                        $status_class = "bg-red-100 text-red-600 border border-red-200";
+                        $status_icon = "fa-times-circle";
+                      }
+                ?>
+                      <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
+                          <td class="p-4 text-sm text-sidebar-text font-medium"><?php echo htmlspecialchars($booking_id); ?></td>
+                          <td class="p-4 text-sm text-sidebar-text"><?php echo htmlspecialchars($row['customer_name']); ?></td>
+                          <td class="p-4 text-sm text-sidebar-text">
+                              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">
+                                  <?php echo htmlspecialchars($row['service_name']); ?>
+                              </span>
+                          </td>
+                          <td class="p-4 text-sm text-sidebar-text"><?php echo htmlspecialchars($formatted_date); ?></td>
+                          <td class="p-4 text-sm">
+                              <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium <?php echo $status_class; ?>">
+                                  <i class="fas <?php echo $status_icon; ?> mr-1"></i> <?php echo htmlspecialchars($row['status']); ?>
+                              </span>
+                          </td>
+                          <td class="p-4 text-sm">
+                              <div class="flex space-x-2">
+                                  <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" 
+                                          title="View Details" 
+                                          onclick="openBookingDetails(<?php echo $row['booking_id']; ?>)">
+                                      <i class="fas fa-eye"></i>
+                                  </button>
+                              </div>
+                          </td>
+                      </tr>
+                <?php
+                    }
+                  } else {
+                ?>
+                    <tr>
+                        <td colspan="6" class="p-6 text-sm text-center">
+                            <div class="flex flex-col items-center">
+                                <i class="fas fa-inbox text-gray-300 text-4xl mb-3"></i>
+                                <p class="text-gray-500">No pending bookings found</p>
+                            </div>
+                        </td>
+                    </tr>
+                <?php
                   }
-              }
-              
-              // Show page numbers
-              for ($i = $start_page; $i <= $end_page; $i++) {
-                  $active_class = ($i == $current_page) ? 'bg-sidebar-accent text-white' : 'border border-sidebar-border hover:bg-sidebar-hover';
-                  echo '<a href="?page=' . $i . '" class="px-3 py-1 rounded text-sm ' . $active_class . '">' . $i . '</a>';
-              }
-              
-              // Always show last page
-              if ($end_page < $total_pages) {
-                  if ($end_page < $total_pages - 1) {
-                      echo '<span class="px-3 py-1 text-gray-500">...</span>';
-                  }
-                  echo '<a href="?page=' . $total_pages . '" class="px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">' . $total_pages . '</a>';
-              }
-              ?>
-              
-              <!-- Next page and Last page -->
-              <a href="?page=<?php echo min($total_pages, $current_page + 1); ?>" class="px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($current_page == $total_pages) ? 'opacity-50 cursor-not-allowed' : ''; ?>" <?php echo ($current_page == $total_pages) ? 'tabindex="-1" aria-disabled="true"' : ''; ?>>&rsaquo;</a>
-              <a href="?page=<?php echo $total_pages; ?>" class="px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($current_page == $total_pages) ? 'opacity-50 cursor-not-allowed' : ''; ?>" <?php echo ($current_page == $total_pages) ? 'tabindex="-1" aria-disabled="true"' : ''; ?>>&raquo;</a>
-          <?php endif; ?>
-      </div>
-  </div>
-  </div>
+                ?>
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- Pagination -->
+    <div class="p-4 border-t border-sidebar-border flex justify-between items-center">
+        <div class="text-sm text-gray-500">
+            <?php 
+            // Get the number of bookings on the current page
+            $current_page_bookings = $result->num_rows;
+
+            if ($total_bookings > 0) {
+              $start = $offset + 1;
+              $end = $offset + $result->num_rows;
+          
+                echo "Showing {$start} - {$end} of {$total_bookings} bookings";
+            } else {
+                echo "No bookings found";
+            }
+            ?>
+        </div>
+        <div class="flex space-x-1">
+            <?php if ($total_pages > 1): ?>
+                <!-- First page and Previous page -->
+                <button class="px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($current_page == 1) ? 'opacity-50 cursor-not-allowed' : ''; ?>" 
+                        onclick="changePage(1)" 
+                        <?php echo ($current_page == 1) ? 'disabled' : ''; ?>>&laquo;</button>
+                
+                <button class="px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($current_page == 1) ? 'opacity-50 cursor-not-allowed' : ''; ?>" 
+                        onclick="changePage(<?php echo max(1, $current_page - 1); ?>)" 
+                        <?php echo ($current_page == 1) ? 'disabled' : ''; ?>>&lsaquo;</button>
+                
+                <!-- Page numbers -->
+                <?php
+                // Determine the range of page numbers to show
+                $range = 2; // Show 2 pages before and after the current page
+                $start_page = max(1, $current_page - $range);
+                $end_page = min($total_pages, $current_page + $range);
+                
+                // Always show first page
+                if ($start_page > 1) {
+                    echo '<button class="px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover" onclick="changePage(1)">1</button>';
+                    if ($start_page > 2) {
+                        echo '<span class="px-3 py-1 text-gray-500">...</span>';
+                    }
+                }
+                
+                // Show page numbers
+                for ($i = $start_page; $i <= $end_page; $i++) {
+                    $active_class = ($i == $current_page) ? 'bg-sidebar-accent text-white' : 'border border-sidebar-border hover:bg-sidebar-hover';
+                    echo '<button class="px-3 py-1 rounded text-sm ' . $active_class . '" onclick="changePage(' . $i . ')">' . $i . '</button>';
+                }
+                
+                // Always show last page
+                if ($end_page < $total_pages) {
+                    if ($end_page < $total_pages - 1) {
+                        echo '<span class="px-3 py-1 text-gray-500">...</span>';
+                    }
+                    echo '<button class="px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover" onclick="changePage(' . $total_pages . ')">' . $total_pages . '</button>';
+                }
+                ?>
+                
+                <!-- Next page and Last page -->
+                <button class="px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($current_page == $total_pages) ? 'opacity-50 cursor-not-allowed' : ''; ?>" 
+                        onclick="changePage(<?php echo min($total_pages, $current_page + 1); ?>)" 
+                        <?php echo ($current_page == $total_pages) ? 'disabled' : ''; ?>>&rsaquo;</button>
+                        
+                <button class="px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($current_page == $total_pages) ? 'opacity-50 cursor-not-allowed' : ''; ?>" 
+                        onclick="changePage(<?php echo $total_pages; ?>)" 
+                        <?php echo ($current_page == $total_pages) ? 'disabled' : ''; ?>>&raquo;</button>
+            <?php endif; ?>
+        </div>
+    </div>
 </div>
 
 <!-- Improved Booking Details Modal -->
