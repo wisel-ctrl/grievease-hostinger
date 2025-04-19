@@ -328,7 +328,7 @@ $servicesJson = json_encode($allServices);
               </div>
             </div>
             
-            <!-- In your checkout modal form -->
+
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <label for="dateOfBirth" class="block text-sm font-medium text-gray-700 mb-1">Date of Birth <span class="text-xs text-gray-500">(Optional)</span></label>
@@ -636,8 +636,24 @@ $servicesJson = json_encode($allServices);
             </div>
           </div>
         </div>
-      </form>
-    </div>
+              <!-- Cremation Checklist Section (Added to match checkoutModal) -->
+              <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                  <h4 class="text-lg font-bold text-gray-800 mb-4 pb-2 border-b border-gray-200 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 text-sidebar-accent">
+                      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                    </svg>
+                    Additional Services
+                  </h4>
+                  <div class="space-y-3">
+                    <label class="flex items-center space-x-3">
+                      <input type="checkbox" name="withCremation" id="lp-withCremation" class="form-checkbox h-5 w-5 text-sidebar-accent rounded border-gray-300 focus:ring-sidebar-accent">
+                      <span class="text-gray-700 font-medium">With Cremation</span>
+                    </label>
+                    <p class="text-sm text-gray-500 ml-8">Check this box if the service includes cremation</p>
+                  </div>
+                </div>
+              </form>
+        </div>
 
     <!-- Modal Footer -->
     <div class="p-6 flex justify-between items-center border-t border-gray-200 sticky bottom-0 bg-white">
