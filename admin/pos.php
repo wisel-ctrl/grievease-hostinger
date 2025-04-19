@@ -161,7 +161,7 @@ $servicesJson = json_encode($allServices);
       </div>
     </div>
 
-    <!-- Category Selection Section (Initially hidden) -->
+    <!-- Category Selection Section (Initially hidden)
     <div id="category-selection" class="mb-8 hidden">
       <div class="flex items-center mb-5">
         <button onclick="goBackToBranches()" class="mr-3 p-2 bg-white border border-sidebar-border rounded-lg shadow-input text-sidebar-text hover:bg-sidebar-hover transition-all duration-300">
@@ -170,14 +170,14 @@ $servicesJson = json_encode($allServices);
         <h2 class="text-gray-600 text-lg">Select a Service Category for <span id="selected-branch-name" class="font-semibold text-sidebar-accent"></span></h2>
       </div>
       <div id="categories-container" class="grid grid-cols-1 md:grid-cols-3 gap-5">
-        <!-- Categories will be dynamically added here based on database data -->
+        Categories will be dynamically added here based on database data 
       </div>
-    </div>
+    </div> -->
 
     <!-- Services Section (Initially hidden) -->
     <div id="services-section" class="mb-8 hidden">
       <div class="flex items-center mb-5">
-        <button onclick="goBackToCategories()" class="mr-3 p-2 bg-white border border-sidebar-border rounded-lg shadow-input text-sidebar-text hover:bg-sidebar-hover transition-all duration-300">
+        <button onclick="goBackToBranches()" class="mr-3 p-2 bg-white border border-sidebar-border rounded-lg shadow-input text-sidebar-text hover:bg-sidebar-hover transition-all duration-300">
           <i class="fas fa-arrow-left"></i>
         </button>
         <h2 class="text-gray-600 text-lg">
@@ -578,13 +578,14 @@ function loadBranches() {
 // Function to select a branch
 function selectBranch(branchId, branchName) {
   selectedBranch = branchId;
-  document.getElementById('selected-branch-name').textContent = branchName;
-  document.getElementById('branch-selection').classList.add('hidden');
-  document.getElementById('category-selection').classList.remove('hidden');
-  document.getElementById('services-section').classList.add('hidden');
+  document.getElementById('services-branch-name').textContent = branchName;
   
-  // Load categories for this branch
-  loadCategories();
+  // Skip category selection and go directly to services
+  document.getElementById('branch-selection').classList.add('hidden');
+  document.getElementById('services-section').classList.remove('hidden');
+  
+  // Load all services for this branch
+  loadServices();
 }
 
 // Function to go back to branch selection
@@ -592,107 +593,129 @@ function goBackToBranches() {
   document.getElementById('branch-selection').classList.remove('hidden');
   document.getElementById('category-selection').classList.add('hidden');
   document.getElementById('services-section').classList.add('hidden');
+  document.getElementById('services-container').classList.add('hidden');
   selectedBranch = null;
 }
 
 // Function to load categories
-function loadCategories() {
-  const container = document.getElementById('categories-container');
-  container.innerHTML = '';
+// function loadCategories() {
+//   const container = document.getElementById('categories-container');
+//   container.innerHTML = '';
   
-  // Get all unique categories that have services in the selected branch
-  const branchServices = allServices.filter(service => service.branch_id == selectedBranch);
-  const branchCategories = [];
+//   // Get all unique categories that have services in the selected branch
+//   const branchServices = allServices.filter(service => service.branch_id == selectedBranch);
+//   const branchCategories = [];
   
-  // Find all categories that have services in this branch
-  branchServices.forEach(service => {
-    const category = categories.find(cat => cat.service_categoryID == service.service_categoryID);
-    if (category && !branchCategories.some(c => c.service_categoryID == category.service_categoryID)) {
-      branchCategories.push(category);
-    }
-  });
+//   // Find all categories that have services in this branch
+//   branchServices.forEach(service => {
+//     const category = categories.find(cat => cat.service_categoryID == service.service_categoryID);
+//     if (category && !branchCategories.some(c => c.service_categoryID == category.service_categoryID)) {
+//       branchCategories.push(category);
+//     }
+//   });
   
-  if (branchCategories.length === 0) {
-    container.innerHTML = '<div class="col-span-full text-center py-8 text-gray-500">No service categories available for this branch.</div>';
-    return;
-  }
+//   if (branchCategories.length === 0) {
+//     container.innerHTML = '<div class="col-span-full text-center py-8 text-gray-500">No service categories available for this branch.</div>';
+//     return;
+//   }
   
-  branchCategories.forEach(category => {
-    const categoryCard = document.createElement('div');
-    categoryCard.className = 'bg-white rounded-lg p-5 shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 cursor-pointer';
-    categoryCard.innerHTML = `
-      <div class="text-xl font-bold mb-3 text-sidebar-text">${category.service_category_name}</div>
-      <div class="flex justify-between items-center">
-        <div class="text-gray-500 text-sm"><i class="fas fa-tag mr-1"></i> Service Category</div>
-        <i class="fas fa-chevron-right text-sidebar-accent"></i>
-      </div>
-    `;
-    categoryCard.onclick = () => selectCategory(category.service_categoryID, category.service_category_name);
-    container.appendChild(categoryCard);
-  });
-}
+//   branchCategories.forEach(category => {
+//     const categoryCard = document.createElement('div');
+//     categoryCard.className = 'bg-white rounded-lg p-5 shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 cursor-pointer';
+//     categoryCard.innerHTML = `
+//       <div class="text-xl font-bold mb-3 text-sidebar-text">${category.service_category_name}</div>
+//       <div class="flex justify-between items-center">
+//         <div class="text-gray-500 text-sm"><i class="fas fa-tag mr-1"></i> Service Category</div>
+//         <i class="fas fa-chevron-right text-sidebar-accent"></i>
+//       </div>
+//     `;
+//     categoryCard.onclick = () => selectCategory(category.service_categoryID, category.service_category_name);
+//     container.appendChild(categoryCard);
+//   });
+// }
 
-// Function to select a category
-function selectCategory(categoryId, categoryName) {
-  selectedCategory = categoryId;
-  document.getElementById('selected-category-name').textContent = categoryName;
-  document.getElementById('services-branch-name').textContent = 
-    branches.find(branch => branch.branch_id == selectedBranch).branch_name;
+// // Function to select a category
+// function selectCategory(categoryId, categoryName) {
+//   selectedCategory = categoryId;
+//   document.getElementById('selected-category-name').textContent = categoryName;
+//   document.getElementById('services-branch-name').textContent = 
+//     branches.find(branch => branch.branch_id == selectedBranch).branch_name;
   
-  document.getElementById('category-selection').classList.add('hidden');
-  document.getElementById('services-section').classList.remove('hidden');
+//   document.getElementById('category-selection').classList.add('hidden');
+//   document.getElementById('services-section').classList.remove('hidden');
   
-  // Load services for this branch and category
-  loadServices();
-}
+//   // Load services for this branch and category
+//   loadServices();
+// }
 
-// Function to go back to category selection
-function goBackToCategories() {
-  document.getElementById('category-selection').classList.remove('hidden');
-  document.getElementById('services-section').classList.add('hidden');
-  selectedCategory = null;
-}
+// // Function to go back to category selection
+// function goBackToCategories() {
+//   document.getElementById('category-selection').classList.remove('hidden');
+//   document.getElementById('services-section').classList.add('hidden');
+//   selectedCategory = null;
+// }
 
 // Function to load services for the selected branch and category
 function loadServices() {
   const container = document.getElementById('services-container');
   container.innerHTML = '';
 
-  // Filter services that match both the selected branch and category
+  // Filter services that match the selected branch (no category filter)
   const filteredServices = allServices.filter(service => 
-    service.branch_id == selectedBranch && 
-    service.service_categoryID == selectedCategory
+    service.branch_id == selectedBranch
   );
 
   if (filteredServices.length === 0) {
-    container.innerHTML = '<div class="col-span-full text-center py-8 text-gray-500">No services available for this category at this branch.</div>';
+    container.innerHTML = '<div class="col-span-full text-center py-8 text-gray-500">No services available for this branch.</div>';
     return;
   }
 
+  // Group services by category for better organization
+  const servicesByCategory = {};
   filteredServices.forEach(service => {
-    const serviceCard = document.createElement('div');
-    serviceCard.className = 'bg-white rounded-lg overflow-hidden shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 cursor-pointer';
-    serviceCard.onclick = () => showServiceDetails(service);
-
-    // Use a default image if none provided or if the URL is empty
-    const imageUrl = service.image_url && service.image_url.trim() !== '' ? service.image_url : 'assets/images/service-default.png';
-
-    // Create a truncated version of inclusions for the card
-    const inclusionsSummary = service.inclusions && service.inclusions.length > 100 
-      ? service.inclusions.substring(0, 100) + '...'
-      : service.inclusions || 'No inclusions specified';
-
-    serviceCard.innerHTML = `
-      <div class="h-40 bg-center bg-cover bg-no-repeat" style="background-image: url('${imageUrl}');"></div>
-      <div class="p-5">
-        <div class="text-lg font-bold mb-2.5 text-sidebar-text">${service.service_name}</div>
-        <div class="text-gray-500 text-sm mb-3">${service.flower_design}</div>
-        <div class="text-gray-500 text-sm mb-3">${inclusionsSummary}</div>
-        <div class="text-lg font-bold text-sidebar-accent">₱${parseFloat(service.selling_price).toLocaleString('en-PH', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
-      </div>
-    `;
-    container.appendChild(serviceCard);
+    const categoryName = categories.find(cat => 
+      cat.service_categoryID == service.service_categoryID
+    ).service_category_name;
+    
+    if (!servicesByCategory[categoryName]) {
+      servicesByCategory[categoryName] = [];
+    }
+    servicesByCategory[categoryName].push(service);
   });
+
+  // Create sections for each category
+  for (const [categoryName, services] of Object.entries(servicesByCategory)) {
+    // Add category heading
+    const categoryHeader = document.createElement('div');
+    categoryHeader.className = 'col-span-full mt-6 mb-3';
+    categoryHeader.innerHTML = `<h3 class="text-xl font-bold text-sidebar-text">${categoryName}</h3>`;
+    container.appendChild(categoryHeader);
+
+    // Add services for this category
+    services.forEach(service => {
+      const serviceCard = document.createElement('div');
+      serviceCard.className = 'bg-white rounded-lg overflow-hidden shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 cursor-pointer';
+      serviceCard.onclick = () => showServiceDetails(service);
+
+      const imageUrl = service.image_url && service.image_url.trim() !== '' ? 
+        service.image_url : 'assets/images/service-default.png';
+
+      const inclusionsSummary = service.inclusions && service.inclusions.length > 100 
+        ? service.inclusions.substring(0, 100) + '...'
+        : service.inclusions || 'No inclusions specified';
+
+      serviceCard.innerHTML = `
+        <div class="h-40 bg-center bg-cover bg-no-repeat" style="background-image: url('${imageUrl}');"></div>
+        <div class="p-5">
+          <div class="text-lg font-bold mb-2.5 text-sidebar-text">${service.service_name}</div>
+          <div class="text-gray-500 text-sm mb-3">${service.flower_design}</div>
+          <div class="text-gray-500 text-sm mb-3">${inclusionsSummary}</div>
+          <div class="text-lg font-bold text-sidebar-accent">₱${parseFloat(service.selling_price).toLocaleString('en-PH', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+        </div>
+      `;
+      container.appendChild(serviceCard);
+    });
+  }
 }
 
 // Function to show service details in modal
@@ -750,8 +773,6 @@ function closePackageModal() {
   selectedService = null;
 }
 
-// Function to add the selected service to cart
-// Function to handle adding to cart and immediately proceed to checkout
 // Function to handle adding to cart and immediately proceed to checkout
 function addToCart() {
   if (selectedService) {
@@ -781,11 +802,6 @@ function addToCart() {
     });
   }
 }
-
-
-
-// Function to handle checkout
-
 
 function closeCheckoutModal() {
   document.getElementById('checkoutModal').classList.add('hidden');
