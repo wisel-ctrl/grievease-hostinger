@@ -637,7 +637,7 @@ if ($branchResult->num_rows > 0) {
   <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
   
   <!-- Modal Content -->
-  <div class="relative bg-white rounded-xl shadow-card w-full max-w-5xl mx-4 z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-2xl mx-4 z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
     <!-- Close Button -->
     <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeAddInventoryModal()">
       <i class="fas fa-times"></i>
@@ -653,116 +653,111 @@ if ($branchResult->num_rows > 0) {
     
     <!-- Modal Body -->
     <div class="px-6 py-5">
-      <form id="addInventoryForm" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <!-- Left Column -->
-        <div class="space-y-4">
-          <div>
-            <label for="itemName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-tag mr-2 text-sidebar-accent"></i>
-              Item Name
-            </label>
-            <div class="relative">
-              <input type="text" id="itemName" name="itemName" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="Item Name">
-            </div>
-          </div>
-          
-          <div>
-            <label for="category" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-th-list mr-2 text-sidebar-accent"></i>
-              Category
-            </label>
-            <div class="relative">
-              <select id="category" name="category" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
-                <option value="" disabled selected>Select a Category</option>
-                <?php
-                // Include database connection
-                include '../db_connect.php';
-
-                // Fetch categories from the database
-                $sql = "SELECT category_id, category_name FROM inventory_category";
-                $result = $conn->query($sql);
-                
-                if ($result->num_rows > 0) {
-                    while ($row = $result->fetch_assoc()) {
-                        echo '<option value="' . $row['category_id'] . '">' . htmlspecialchars($row['category_name']) . '</option>';
-                    }
-                } else {
-                    echo '<option value="" disabled>No Categories Available</option>';
-                }
-                ?>
-              </select>
-            </div>
-          </div>
-
-          <?php
-          // Include database connection
-          include '../db_connect.php';
-
-          // Fetch branches from the database
-          $sql = "SELECT branch_id, branch_name FROM branch_tb";
-          $result = $conn->query($sql);
-          ?>
-
-          <div class="bg-gray-50 p-4 rounded-lg border-l-4 border-gold">
-            <label class="block text-xs font-medium text-gray-700 mb-2">Branch</label>
-            <div class="flex flex-wrap gap-4">
-              <?php
-              if ($result->num_rows > 0) {
-                  while ($row = $result->fetch_assoc()) {
-                      echo '<label class="flex items-center space-x-2 cursor-pointer">';
-                      echo '<input type="radio" name="branch" value="' . $row['branch_id'] . '" required class="hidden peer">';
-                      echo '<div class="w-5 h-5 rounded-full border-2 border-gold flex items-center justify-center peer-checked:bg-gold peer-checked:border-darkgold transition-colors"></div>';
-                      echo '<span class="text-gray-700 font-medium">' . htmlspecialchars($row['branch_name']) . '</span>';
-                      echo '</label>';
-                  }
-              } else {
-                  echo '<p class="text-gray-500">No branches available.</p>';
-              }
-              ?>
-            </div>
-          </div>
-          
-          <div>
-            <label for="quantity" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-sort-amount-up mr-2 text-sidebar-accent"></i>
-              Quantity
-            </label>
-            <div class="relative">
-              <input type="number" id="quantity" name="quantity" min="1" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="Quantity">
-            </div>
+      <form id="addInventoryForm" class="grid grid-cols-1 gap-6">
+        <!-- Item Name -->
+        <div>
+          <label for="itemName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            <i class="fas fa-tag mr-2 text-sidebar-accent"></i>
+            Item Name
+          </label>
+          <div class="relative">
+            <input type="text" id="itemName" name="itemName" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="Item Name">
           </div>
         </div>
         
-        <!-- Right Column -->
-        <div class="space-y-4">
-          <div>
-            <label for="unitPrice" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-coins mr-2 text-sidebar-accent"></i>
-              Unit Price
-            </label>
-            <div class="relative">
-              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <span class="text-gray-500">₱</span>
-              </div>
-              <input type="number" id="unitPrice" name="unitPrice" step="0.01" required class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="0.00">
+        <!-- Category -->
+        <div>
+          <label for="category" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            <i class="fas fa-th-list mr-2 text-sidebar-accent"></i>
+            Category
+          </label>
+          <div class="relative">
+            <select id="category" name="category" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+              <option value="" disabled selected>Select a Category</option>
+              <?php
+              // Include database connection
+              include '../db_connect.php';
+
+              // Fetch categories from the database
+              $sql = "SELECT category_id, category_name FROM inventory_category";
+              $result = $conn->query($sql);
+              
+              if ($result->num_rows > 0) {
+                  while ($row = $result->fetch_assoc()) {
+                      echo '<option value="' . $row['category_id'] . '">' . htmlspecialchars($row['category_name']) . '</option>';
+                  }
+              } else {
+                  echo '<option value="" disabled>No Categories Available</option>';
+              }
+              ?>
+            </select>
+          </div>
+        </div>
+
+        <!-- Branch -->
+        <div class="bg-gray-50 p-4 rounded-lg border-l-4 border-gold">
+          <label class="block text-xs font-medium text-gray-700 mb-2">Branch</label>
+          <div class="flex flex-wrap gap-4">
+            <?php
+            // Include database connection
+            include '../db_connect.php';
+
+            // Fetch branches from the database
+            $sql = "SELECT branch_id, branch_name FROM branch_tb";
+            $result = $conn->query($sql);
+            
+            if ($result->num_rows > 0) {
+                while ($row = $result->fetch_assoc()) {
+                    echo '<label class="flex items-center space-x-2 cursor-pointer">';
+                    echo '<input type="radio" name="branch" value="' . $row['branch_id'] . '" required class="hidden peer">';
+                    echo '<div class="w-5 h-5 rounded-full border-2 border-gold flex items-center justify-center peer-checked:bg-gold peer-checked:border-darkgold transition-colors"></div>';
+                    echo '<span class="text-gray-700 font-medium">' . htmlspecialchars($row['branch_name']) . '</span>';
+                    echo '</label>';
+                }
+            } else {
+                echo '<p class="text-gray-500">No branches available.</p>';
+            }
+            ?>
+          </div>
+        </div>
+        
+        <!-- Quantity -->
+        <div>
+          <label for="quantity" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            <i class="fas fa-sort-amount-up mr-2 text-sidebar-accent"></i>
+            Quantity
+          </label>
+          <div class="relative">
+            <input type="number" id="quantity" name="quantity" min="1" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="Quantity">
+          </div>
+        </div>
+        
+        <!-- Unit Price -->
+        <div>
+          <label for="unitPrice" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            <i class="fas fa-coins mr-2 text-sidebar-accent"></i>
+            Unit Price
+          </label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <span class="text-gray-500">₱</span>
+            </div>
+            <input type="number" id="unitPrice" name="unitPrice" step="0.01" required class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="0.00">
+          </div>
+        </div>
+        
+        <!-- File Upload -->
+        <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+          <label for="itemImage" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            <i class="fas fa-image mr-2 text-sidebar-accent"></i>
+            Upload Item Image
+          </label>
+          <div class="relative">
+            <div class="flex items-center border border-gray-300 rounded-lg px-3 py-2 focus-within:ring-1 focus-within:ring-sidebar-accent focus-within:border-sidebar-accent transition-all duration-200">
+              <i class="fas fa-upload text-gray-400 mr-2"></i>
+              <input type="file" id="itemImage" name="itemImage" accept="image/*" class="w-full focus:outline-none">
             </div>
           </div>
-          
-          <!-- File Upload -->
-          <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
-            <label for="itemImage" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-image mr-2 text-sidebar-accent"></i>
-              Upload Item Image
-            </label>
-            <div class="relative">
-              <div class="flex items-center border border-gray-300 rounded-lg px-3 py-2 focus-within:ring-1 focus-within:ring-sidebar-accent focus-within:border-sidebar-accent transition-all duration-200">
-                <i class="fas fa-upload text-gray-400 mr-2"></i>
-                <input type="file" id="itemImage" name="itemImage" accept="image/*" class="w-full focus:outline-none">
-              </div>
-            </div>
-          </div>
-          
-          <!-- Additional fields or options can be added here -->
         </div>
       </form>
     </div>
