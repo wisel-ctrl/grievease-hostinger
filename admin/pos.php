@@ -129,7 +129,29 @@ $servicesJson = json_encode($allServices);
   <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+  /* Add these styles to your existing CSS */
+      #serviceTypeModal .bg-cream {
+        background-color: #FFF8E1;
+      }
 
+      #serviceTypeModal .border-yellow-600 {
+        border-color: #D97706;
+      }
+
+      #serviceTypeModal .text-yellow-600 {
+        color: #D97706;
+      }
+
+      #serviceTypeModal .text-navy {
+        color: #1E3A8A;
+      }
+
+      #serviceTypeModal button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+  </style>
 </head>
 <body class="flex bg-gray-50">
 
@@ -414,6 +436,203 @@ $servicesJson = json_encode($allServices);
       <div class="flex gap-4">
         <button class="px-5 py-3 bg-white border border-sidebar-accent text-sidebar-accent rounded-lg font-semibold hover:bg-navy transition-colors" onclick="closeCheckoutModal()">Cancel</button>
         <button class="px-6 py-3 bg-sidebar-accent text-white rounded-lg font-semibold hover:bg-darkgold transition-colors flex items-center" onclick="confirmCheckout()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+          Confirm Order
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Service Type Selection Modal -->
+<div id="serviceTypeModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4 hidden">
+    <div class="w-full max-w-md bg-white rounded-2xl shadow-xl overflow-hidden">
+        <div class="p-6">
+            <h2 class="text-2xl font-bold text-navy mb-6 text-center">Select Service Type</h2>
+            
+            <div class="grid grid-cols-2 gap-4">
+                <button id="traditionalServiceBtn" class="bg-cream hover:bg-yellow-100 border-2 border-yellow-600 text-navy px-6 py-8 rounded-lg shadow-md transition-all duration-300 flex flex-col items-center">
+                    <i class="fas fa-dove text-3xl text-yellow-600 mb-2"></i>
+                    <span class="font-bold text-lg">Traditional</span>
+                    <span class="text-sm text-gray-600 mt-2 text-center">For immediate funeral needs</span>
+                </button>
+                
+                <button id="lifeplanServiceBtn" class="bg-cream hover:bg-yellow-100 border-2 border-yellow-600 text-navy px-6 py-8 rounded-lg shadow-md transition-all duration-300 flex flex-col items-center">
+                    <i class="fas fa-seedling text-3xl text-yellow-600 mb-2"></i>
+                    <span class="font-bold text-lg">Lifeplan</span>
+                    <span class="text-sm text-gray-600 mt-2 text-center">Pre-need funeral planning</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Lifeplan Checkout Modal (similar structure to checkoutModal but with beneficiary info) -->
+<div class="fixed top-0 left-0 w-full h-full bg-black bg-opacity-60 flex items-center justify-center z-50 hidden" id="lifeplanCheckoutModal">
+  <div class="bg-white rounded-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto shadow-xl">
+    <!-- Modal Header -->
+    <div class="bg-gradient-to-r from-sidebar-accent to-white flex justify-between items-center p-6 flex-shrink-0">
+      <h3 class="text-xl font-bold text-white">Complete Your Lifeplan Order</h3>
+      <button class="bg-black bg-opacity-20 hover:bg-opacity-30 rounded-full p-2 text-white hover:text-white transition-all duration-200" onclick="closeLifeplanCheckoutModal()">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Modal Body -->
+    <div class="p-6">
+      <form id="lifeplanCheckoutForm" class="space-y-8">
+        <input type="hidden" id="lp-service-id" name="service_id" value="">
+        <input type="hidden" id="lp-service-price" name="service_price">
+        <input type="hidden" id="lp-branch-id" name="branch_id" value="">
+
+        <!-- Client Information Section (Same as traditional) -->
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+          <h4 class="text-lg font-bold text-gray-800 mb-4 pb-2 border-b border-gray-200 flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 text-sidebar-accent">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+            Client Information
+          </h4>
+          <div class="space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div>
+                <label for="lp-clientFirstName" class="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+                <input type="text" id="lp-clientFirstName" name="clientFirstName" required class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
+              </div>
+              <div>
+                <label for="lp-clientMiddleName" class="block text-sm font-medium text-gray-700 mb-1">Middle Name <span class="text-xs text-gray-500">(Optional)</span></label>
+                <input type="text" id="lp-clientMiddleName" name="clientMiddleName" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
+              </div>
+              <div>
+                <label for="lp-clientLastName" class="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+                <input type="text" id="lp-clientLastName" name="clientLastName" required class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
+              </div>
+              <div>
+                <label for="lp-clientSuffix" class="block text-sm font-medium text-gray-700 mb-1">Suffix <span class="text-xs text-gray-500">(Optional)</span></label>
+                <input type="text" id="lp-clientSuffix" name="clientSuffix" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
+              </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label for="lp-clientPhone" class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                <input type="tel" id="lp-clientPhone" name="clientPhone" required class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
+              </div>
+              <div>
+                <label for="lp-clientEmail" class="block text-sm font-medium text-gray-700 mb-1">Email Address <span class="text-xs text-gray-500">(Optional)</span></label>
+                <input type="email" id="lp-clientEmail" name="clientEmail" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Beneficiary Information Section (Replaces Deceased Information) -->
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+          <h4 class="text-lg font-bold text-gray-800 mb-4 pb-2 border-b border-gray-200 flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 text-sidebar-accent">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+              <circle cx="8.5" cy="7" r="4"></circle>
+              <line x1="20" y1="8" x2="20" y2="14"></line>
+              <line x1="23" y1="11" x2="17" y2="11"></line>
+            </svg>
+            Beneficiary Information
+          </h4>
+          <div class="space-y-5">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div>
+                <label for="beneficiaryFirstName" class="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+                <input type="text" id="beneficiaryFirstName" name="beneficiaryFirstName" required class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
+              </div>
+              <div>
+                <label for="beneficiaryMiddleName" class="block text-sm font-medium text-gray-700 mb-1">Middle Name <span class="text-xs text-gray-500">(Optional)</span></label>
+                <input type="text" id="beneficiaryMiddleName" name="beneficiaryMiddleName" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
+              </div>
+              <div>
+                <label for="beneficiaryLastName" class="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+                <input type="text" id="beneficiaryLastName" name="beneficiaryLastName" required class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
+              </div>
+              <div>
+                <label for="beneficiarySuffix" class="block text-sm font-medium text-gray-700 mb-1">Suffix <span class="text-xs text-gray-500">(Optional)</span></label>
+                <input type="text" id="beneficiarySuffix" name="beneficiarySuffix" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
+              </div>
+            </div>
+            
+            <div class="grid grid-cols-1 gap-4">
+              <div>
+                <label for="beneficiaryDateOfBirth" class="block text-sm font-medium text-gray-700 mb-1">Date of Birth</label>
+                <input type="date" id="beneficiaryDateOfBirth" name="beneficiaryDateOfBirth" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
+              </div>
+            </div>
+            <div>
+              <label for="beneficiaryAddress" class="block text-sm font-medium text-gray-700 mb-1">Address</label>
+              <textarea id="beneficiaryAddress" name="beneficiaryAddress" required class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent" rows="2"></textarea>
+            </div>
+            <div>
+              <label for="beneficiaryRelationship" class="block text-sm font-medium text-gray-700 mb-1">Relationship to Client</label>
+              <input type="text" id="beneficiaryRelationship" name="beneficiaryRelationship" required class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
+            </div>
+          </div>
+        </div>
+  
+        <!-- Payment Information (Same as traditional) -->
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+          <h4 class="text-lg font-bold text-gray-800 mb-4 pb-2 border-b border-gray-200 flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 text-sidebar-accent">
+              <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+              <line x1="1" y1="10" x2="23" y2="10"></line>
+            </svg>
+            Payment Information
+          </h4>
+          <div class="space-y-5">
+            <div>
+              <label for="lp-paymentMethod" class="block text-sm font-medium text-gray-700 mb-1">Method of Payment</label>
+              <select id="lp-paymentMethod" name="paymentMethod" required class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
+                <option value="" disabled selected>Select payment method</option>
+                <option value="Cash">Cash</option>
+                <option value="G-Cash">G-Cash</option>
+                <option value="Bank Transfer">Bank Transfer</option>
+              </select>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label for="lp-totalPrice" class="block text-sm font-medium text-gray-700 mb-1">
+                  Total Price 
+                  <span class="text-xs text-gray-500">(Minimum: <span id="lp-min-price">₱0.00</span>)</span>
+                </label>
+                <div class="relative">
+                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <span class="text-gray-500">₱</span>
+                  </div>
+                  <input type="number" id="lp-totalPrice" name="totalPrice" class="w-full pl-8 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
+                </div>
+              </div>
+              <div>
+                <label for="lp-amountPaid" class="block text-sm font-medium text-gray-700 mb-1">Amount Paid</label>
+                <div class="relative">
+                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <span class="text-gray-500">₱</span>
+                  </div>
+                  <input type="number" id="lp-amountPaid" name="amountPaid" required class="w-full pl-8 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- Modal Footer -->
+    <div class="p-6 flex justify-between items-center border-t border-gray-200 sticky bottom-0 bg-white">
+      <div class="text-gray-600">
+        <p class="font-medium">Order Total: <span class="text-xl font-bold text-sidebar-accent" id="lp-footer-total-price">₱0.00</span></p>
+      </div>
+      <div class="flex gap-4">
+        <button class="px-5 py-3 bg-white border border-sidebar-accent text-sidebar-accent rounded-lg font-semibold hover:bg-navy transition-colors" onclick="closeLifeplanCheckoutModal()">Cancel</button>
+        <button class="px-6 py-3 bg-sidebar-accent text-white rounded-lg font-semibold hover:bg-darkgold transition-colors flex items-center" onclick="confirmLifeplanCheckout()">
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
             <polyline points="20 6 9 17 4 12"></polyline>
           </svg>
@@ -772,33 +991,166 @@ function closePackageModal() {
 }
 
 // Function to handle adding to cart and immediately proceed to checkout
+// Modify the addToCart function to show service type selection first
 function addToCart() {
   if (selectedService) {
-    // Set the service details in the form
+    // Set the service details in a temporary storage
     document.getElementById('service-id').value = selectedService.service_id;
     document.getElementById('service-price').value = selectedService.selling_price;
     document.getElementById('branch-id').value = selectedService.branch_id;
     
-    // Update the total price in the checkout form
-    document.getElementById('totalPrice').value = selectedService.selling_price;
-    document.getElementById('footer-total-price').textContent = 
-      `₱${parseFloat(selectedService.selling_price).toLocaleString('en-PH', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
-    
-    // Update minimum price display
-    const minimumPrice = parseFloat(selectedService.selling_price) * 0.5;
-    document.getElementById('min-price').textContent = `₱${minimumPrice.toFixed(2)}`;
-    
-    // Close the package modal and open checkout
+    // Close package modal and show service type selection
     closePackageModal();
-    document.getElementById('checkoutModal').classList.remove('hidden');
-    
-    // Log the added service details
-    console.log("Proceeding to checkout with service:", {
-      service_id: selectedService.service_id,
-      branch_id: selectedService.branch_id,
-      price: selectedService.selling_price
-    });
+    document.getElementById('serviceTypeModal').classList.remove('hidden');
   }
+}
+
+// Add event listeners for service type buttons
+document.addEventListener('DOMContentLoaded', function() {
+  // Traditional Service Button
+  document.getElementById('traditionalServiceBtn').addEventListener('click', function() {
+    document.getElementById('serviceTypeModal').classList.add('hidden');
+    openTraditionalCheckout();
+  });
+  
+  // Lifeplan Service Button
+  document.getElementById('lifeplanServiceBtn').addEventListener('click', function() {
+    document.getElementById('serviceTypeModal').classList.add('hidden');
+    openLifeplanCheckout();
+  });
+});
+
+// Function to open traditional checkout
+function openTraditionalCheckout() {
+  // Update the total price in the checkout form
+  document.getElementById('totalPrice').value = selectedService.selling_price;
+  document.getElementById('footer-total-price').textContent = 
+    `₱${parseFloat(selectedService.selling_price).toLocaleString('en-PH', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+  
+  // Update minimum price display
+  const minimumPrice = parseFloat(selectedService.selling_price) * 0.5;
+  document.getElementById('min-price').textContent = `₱${minimumPrice.toFixed(2)}`;
+  
+  // Open checkout modal
+  document.getElementById('checkoutModal').classList.remove('hidden');
+}
+
+// Function to open lifeplan checkout
+function openLifeplanCheckout() {
+  // Set the service details in the lifeplan form
+  document.getElementById('lp-service-id').value = selectedService.service_id;
+  document.getElementById('lp-service-price').value = selectedService.selling_price;
+  document.getElementById('lp-branch-id').value = selectedService.branch_id;
+  
+  // Update the total price in the lifeplan checkout form
+  document.getElementById('lp-totalPrice').value = selectedService.selling_price;
+  document.getElementById('lp-footer-total-price').textContent = 
+    `₱${parseFloat(selectedService.selling_price).toLocaleString('en-PH', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+  
+  // Update minimum price display
+  const minimumPrice = parseFloat(selectedService.selling_price) * 0.5;
+  document.getElementById('lp-min-price').textContent = `₱${minimumPrice.toFixed(2)}`;
+  
+  // Open lifeplan checkout modal
+  document.getElementById('lifeplanCheckoutModal').classList.remove('hidden');
+}
+
+// Function to close lifeplan checkout modal
+function closeLifeplanCheckoutModal() {
+  document.getElementById('lifeplanCheckoutModal').classList.add('hidden');
+}
+
+// Function to confirm lifeplan checkout
+function confirmLifeplanCheckout() {
+  // Get all form inputs
+  const form = document.getElementById('lifeplanCheckoutForm');
+  const formData = new FormData(form);
+
+  // Validate required fields
+  const requiredFields = [
+    'lp-clientFirstName', 'lp-clientLastName', 'lp-clientPhone',
+    'beneficiaryFirstName', 'beneficiaryLastName', 'beneficiaryRelationship'
+  ];
+  
+  for (const fieldId of requiredFields) {
+    const field = document.getElementById(fieldId);
+    if (!field.value.trim()) {
+      alert(`Please fill in ${field.labels[0].textContent}`);
+      field.focus();
+      return;
+    }
+  }
+
+  // Validate email format if provided
+  const email = document.getElementById('lp-clientEmail').value;
+  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    alert("Please enter a valid email address.");
+    return;
+  }
+
+  // Validate phone number (digits only)
+  const phone = document.getElementById('lp-clientPhone').value;
+  if (phone && !/^\d+$/.test(phone)) {
+    alert("Phone number should contain only digits.");
+    return;
+  }
+
+  // Validate date of birth (if provided)
+  const dateOfBirth = document.getElementById('beneficiaryDateOfBirth').value;
+  const today = new Date().toISOString().split('T')[0];
+  if (dateOfBirth && dateOfBirth > today) {
+    alert("Date of birth cannot be in the future.");
+    return;
+  }
+
+  // Payment validations (same as traditional)
+  const servicePrice = parseFloat(document.getElementById('lp-service-price').value) || 0;
+  const totalPrice = parseFloat(document.getElementById('lp-totalPrice').value) || 0;
+  const amountPaid = parseFloat(document.getElementById('lp-amountPaid').value) || 0;
+
+  // Validate total price is at least 50% of service price
+  const minimumAllowedPrice = servicePrice * 0.5;
+  if (totalPrice < minimumAllowedPrice) {
+    alert(`Total price cannot be lower than 50% of the service price (₱${minimumAllowedPrice.toFixed(2)}).`);
+    return;
+  }
+
+  // Validate amount paid doesn't exceed total price
+  if (amountPaid > totalPrice) {
+    alert("Amount paid cannot exceed the total price.");
+    return;
+  }
+
+  // Add service data
+  formData.append('service_id', document.getElementById('lp-service-id').value);
+  formData.append('branch_id', document.getElementById('lp-branch-id').value);
+  formData.append('sold_by', 1); // Assuming admin ID is 1
+  formData.append('status', 'Pending');
+  formData.append('service_type', 'Lifeplan'); // Mark as lifeplan service
+  
+  // Calculate balance
+  const balance = totalPrice - amountPaid;
+  formData.append('balance', balance.toFixed(2));
+  formData.append('payment_status', balance > 0 ? 'With Balance' : 'Fully Paid');
+
+  // Send data to server using AJAX
+  fetch('process_lifeplan_checkout.php', {
+    method: 'POST',
+    body: formData
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      document.getElementById('lifeplanCheckoutModal').classList.add('hidden');
+      showConfirmation(data.orderId);
+    } else {
+      alert('Error: ' + (data.message || 'Failed to process checkout'));
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    alert('An error occurred while processing your order. Please try again.');
+  });
 }
 
 function closeCheckoutModal() {
