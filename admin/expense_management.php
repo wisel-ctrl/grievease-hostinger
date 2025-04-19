@@ -822,14 +822,14 @@ $conn->close();
   <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
   
   <!-- Modal Content -->
-  <div class="relative bg-white rounded-xl shadow-card w-full max-w-md mx-4 z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-4xl mx-4 z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
     <!-- Close Button -->
     <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeAddExpenseModal()">
       <i class="fas fa-times"></i>
     </button>
     
     <!-- Modal Header -->
-    <div class="px-6 py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
+    <div class="px-6 py-4 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
       <h3 class="text-xl font-bold text-white flex items-center">
         <i class="fas fa-plus-circle mr-2"></i>
         Add New Expense
@@ -837,133 +837,173 @@ $conn->close();
     </div>
     
     <!-- Modal Body -->
-    <div class="px-6 py-5">
-      <form id="expenseForm" class="space-y-4">
-        <div>
-          <label for="expenseDescription" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-tag mr-2 text-sidebar-accent"></i>
-            Expense Name
-          </label>
-          <div class="relative">
+    <div class="px-6 py-4">
+      <form id="expenseForm" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Left Column -->
+        <div class="space-y-3">
+          <div>
+            <label for="expenseDescription" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+              <i class="fas fa-tag mr-2 text-sidebar-accent"></i>
+              Expense Name
+            </label>
             <input type="text" id="expenseDescription" name="expenseDescription" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
           </div>
-        </div>
-        
-        <div class="bg-gray-50 p-4 rounded-lg border-l-4 border-gold">
-          <label class="block text-xs font-medium text-gray-700 mb-2">Branch</label>
-          <div class="flex flex-wrap gap-4">
-          <?php
-          // Include your MySQLi database connection
-          require_once '../db_connect.php';
           
-          // Create connection
-          $conn = new mysqli($servername, $username, $password, $dbname);
-          
-          // Check connection
-          if ($conn->connect_error) {
-              die("Connection failed: " . $conn->connect_error);
-          }
-          
-          $sql = "SELECT branch_id, branch_name FROM branch_tb";
-          $result = $conn->query($sql);
-          
-          if ($result->num_rows > 0) {
-              $first = true;
-              while($row = $result->fetch_assoc()) {
-                  echo '<label class="flex items-center space-x-2 cursor-pointer">';
-                  echo '<input type="radio" name="expenseBranch" value="' . $row['branch_id'] . '"' . 
-                       ($first ? ' checked' : '') . ' required class="hidden peer">';
-                  echo '<div class="w-5 h-5 rounded-full border-2 border-gold flex items-center justify-center peer-checked:bg-gold peer-checked:border-darkgold transition-colors"></div>';
-                  echo '<span class="text-gray-700 font-medium">' . htmlspecialchars($row['branch_name']) . '</span>';
-                  echo '</label>';
-                  $first = false;
-              }
-          } else {
-              echo '<p class="text-gray-500">No branches available.</p>';
-          }
-          $conn->close();
-          ?>
-          </div>
-        </div>
-
-        <div>
-          <label for="expenseCategory" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-th-list mr-2 text-sidebar-accent"></i>
-            Category
-          </label>
-          <div class="relative">
-            <select id="expenseCategory" name="expenseCategory" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
-              <option value="" disabled selected>Select a category</option>
-              <option value="Supplies">Supplies</option>
-              <option value="Utilities">Utilities</option>
-              <option value="Salaries">Salaries</option>
-              <option value="Maintenance">Maintenance</option>
-              <option value="Other">Other</option>
-            </select>
-          </div>
-        </div>
-        
-        <div>
-          <label for="expenseAmount" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-coins mr-2 text-sidebar-accent"></i>
-            Amount
-          </label>
-          <div class="relative">
-            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <span class="text-gray-500">₱</span>
-            </div>
-            <input type="number" id="expenseAmount" name="expenseAmount" class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
-          </div>
-        </div>
-        
-        <div>
-          <label for="expenseDate" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-calendar mr-2 text-sidebar-accent"></i>
-            Date
-          </label>
-          <div class="relative">
-            <input type="date" id="expenseDate" name="expenseDate" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
-          </div>
-        </div>
-        
-        <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
-          <label class="block text-xs font-medium text-gray-700 mb-2 flex items-center">
-            <i class="fas fa-check-circle mr-2 text-sidebar-accent"></i>
-            Status
-          </label>
           <div class="grid grid-cols-2 gap-3">
-            <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
-              <input type="radio" id="statusPaid" name="expenseStatus" value="paid" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent" checked>
-              <i class="fas fa-check-circle mr-1 text-sidebar-accent"></i>
-              Paid
+            <div>
+              <label for="expenseCategory" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                <i class="fas fa-th-list mr-2 text-sidebar-accent"></i>
+                Category
+              </label>
+              <select id="expenseCategory" name="expenseCategory" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
+                <option value="" disabled selected>Select category</option>
+                <option value="Supplies">Supplies</option>
+                <option value="Utilities">Utilities</option>
+                <option value="Salaries">Salaries</option>
+                <option value="Maintenance">Maintenance</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            
+            <div>
+              <label for="expenseDate" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                <i class="fas fa-calendar mr-2 text-sidebar-accent"></i>
+                Date
+              </label>
+              <input type="date" id="expenseDate" name="expenseDate" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
+            </div>
+          </div>
+          
+          <div>
+            <label for="expenseAmount" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+              <i class="fas fa-coins mr-2 text-sidebar-accent"></i>
+              Amount
             </label>
-            <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
-              <input type="radio" id="statusToBePaid" name="expenseStatus" value="to be paid" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
-              <i class="fas fa-clock mr-1 text-sidebar-accent"></i>
-              To Be Paid
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <span class="text-gray-500">₱</span>
+              </div>
+              <input type="number" id="expenseAmount" name="expenseAmount" class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
+            </div>
+          </div>
+          
+          <div>
+            <label for="expenseNote" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+              <i class="fas fa-sticky-note mr-2 text-sidebar-accent"></i>
+              Note
             </label>
+            <textarea id="expenseNote" name="expenseNote" rows="3" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"></textarea>
+          </div>
+          
+          <div>
+            <label for="expenseReceipt" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+              <i class="fas fa-file-invoice mr-2 text-sidebar-accent"></i>
+              Upload Receipt
+            </label>
+            <div class="flex items-center border border-gray-300 rounded-lg px-3 py-2 focus-within:ring-1 focus-within:ring-sidebar-accent focus-within:border-sidebar-accent transition-all duration-200">
+              <i class="fas fa-upload text-gray-400 mr-2"></i>
+              <input type="file" id="expenseReceipt" name="expenseReceipt" class="w-full focus:outline-none">
+            </div>
           </div>
         </div>
         
-        <div>
-          <label for="expenseNote" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-sticky-note mr-2 text-sidebar-accent"></i>
-            Note
-          </label>
-          <div class="relative">
-            <textarea id="expenseNote" name="expenseNote" rows="3" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"></textarea>
+        <!-- Right Column -->
+        <div class="space-y-3">
+          <div class="bg-gray-50 p-3 rounded-lg border border-gray-200">
+            <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+              <i class="fas fa-check-circle mr-2 text-sidebar-accent"></i>
+              Status
+            </label>
+            <div class="grid grid-cols-2 gap-2">
+              <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
+                <input type="radio" id="statusPaid" name="expenseStatus" value="paid" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent" checked>
+                <i class="fas fa-check-circle mr-1 text-sidebar-accent"></i>
+                Paid
+              </label>
+              <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
+                <input type="radio" id="statusToBePaid" name="expenseStatus" value="to be paid" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
+                <i class="fas fa-clock mr-1 text-sidebar-accent"></i>
+                To Be Paid
+              </label>
+            </div>
+          </div>
+          
+          <div class="bg-gray-50 p-3 rounded-lg border border-gray-200">
+            <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+              <i class="fas fa-money-bill-wave mr-2 text-sidebar-accent"></i>
+              Payment Method
+            </label>
+            <div class="grid grid-cols-2 gap-2">
+              <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
+                <input type="radio" id="methodCash" name="paymentMethod" value="cash" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent" checked>
+                <i class="fas fa-money-bill-alt mr-1 text-sidebar-accent"></i>
+                Cash
+              </label>
+              <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
+                <input type="radio" id="methodCredit" name="paymentMethod" value="credit" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
+                <i class="fas fa-credit-card mr-1 text-sidebar-accent"></i>
+                Credit Card
+              </label>
+              <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
+                <input type="radio" id="methodTransfer" name="paymentMethod" value="transfer" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
+                <i class="fas fa-exchange-alt mr-1 text-sidebar-accent"></i>
+                Bank Transfer
+              </label>
+              <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
+                <input type="radio" id="methodOther" name="paymentMethod" value="other" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
+                <i class="fas fa-ellipsis-h mr-1 text-sidebar-accent"></i>
+                Other
+              </label>
+            </div>
+          </div>
+          
+          <div class="bg-gray-50 p-3 rounded-lg border-l-4 border-gold">
+            <label class="block text-xs font-medium text-gray-700 mb-1">Branch</label>
+            <div class="grid grid-cols-2 gap-2">
+            <?php
+            // Include database connection
+            require_once '../db_connect.php';
+            
+            // Create connection
+            $conn = new mysqli($servername, $username, $password, $dbname);
+            
+            // Check connection
+            if ($conn->connect_error) {
+                die("Connection failed: " . $conn->connect_error);
+            }
+            
+            $sql = "SELECT branch_id, branch_name FROM branch_tb";
+            $result = $conn->query($sql);
+            
+            if ($result->num_rows > 0) {
+                $first = true;
+                while($row = $result->fetch_assoc()) {
+                    echo '<label class="flex items-center space-x-2 cursor-pointer">';
+                    echo '<input type="radio" name="expenseBranch" value="' . $row['branch_id'] . '"' . 
+                         ($first ? ' checked' : '') . ' required class="hidden peer">';
+                    echo '<div class="w-4 h-4 rounded-full border-2 border-gold flex items-center justify-center peer-checked:bg-gold peer-checked:border-darkgold transition-colors"></div>';
+                    echo '<span class="text-sm text-gray-700">' . htmlspecialchars($row['branch_name']) . '</span>';
+                    echo '</label>';
+                    $first = false;
+                }
+            } else {
+                echo '<p class="text-gray-500">No branches available.</p>';
+            }
+            $conn->close();
+            ?>
+            </div>
           </div>
         </div>
       </form>
     </div>
     
     <!-- Modal Footer -->
-    <div class="px-6 py-4 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
-      <button class="px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center" onclick="closeAddExpenseModal()">
+    <div class="px-6 py-3 flex justify-end gap-3 border-t border-gray-200 sticky bottom-0 bg-white">
+      <button class="px-4 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center" onclick="closeAddExpenseModal()">
         <i class="fas fa-times mr-2"></i>
         Cancel
       </button>
-      <button class="px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="addExpense()">
+      <button class="px-5 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="addExpense()">
         <i class="fas fa-plus mr-2"></i>
         Add Expense
       </button>
