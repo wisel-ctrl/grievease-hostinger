@@ -123,258 +123,127 @@ if ($lastMonth > 0) {
   </div>
 
   <!-- Expense Overview Cards -->
-  <div class="mb-8">
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-        <div class="bg-white rounded-lg shadow-sidebar p-5 border border-sidebar-border hover:shadow-card transition-all duration-300">
-        <div class="flex items-center mb-3">
-            <div class="w-12 h-12 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center mr-3">
-            <i class="fas fa-peso-sign text-lg"></i>
-
-            </div>
-            <span class="text-sidebar-text font-medium">Total Expenses</span>
+<div class="mb-6">
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <!-- Total Expenses Card -->
+    <div class="bg-white rounded-lg shadow-sidebar p-4 border border-sidebar-border hover:shadow-card transition-all duration-300">
+      <div class="flex items-center mb-2">
+        <div class="w-10 h-10 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center mr-3">
+          <i class="fas fa-peso-sign text-base"></i>
         </div>
-        <div class="text-3xl font-bold mb-2 text-sidebar-text">₱<?php echo $totalAmount; ?></div>
-        <div class="text-sm <?php echo $trendClass; ?> flex items-center">
-            <i class="fas <?php echo $trendIcon; ?> mr-1"></i> <?php echo $trendText; ?>
-        </div>
+        <span class="text-sidebar-text font-medium text-sm">Total Expenses</span>
+      </div>
+      <div class="text-2xl font-bold mb-1 text-sidebar-text">₱<?php echo $totalAmount; ?></div>
+      <div class="text-xs <?php echo $trendClass; ?> flex items-center">
+        <i class="fas <?php echo $trendIcon; ?> mr-1"></i> <?php echo $trendText; ?>
+      </div>
     </div>
-      
     
-    <?php
-      // Database connection (assuming you already have this)
-      require_once '../db_connect.php';
-
-      // 1. Set your monthly budget (you can change this value)
-      // Option 1: Single budget for all expenses
-      $monthlyBudget = 50000; // Set your default monthly budget here in PHP
-
-      // Option 2: Budget by category (uncomment if you want category-specific budgets)
-      
-      $categoryBudgets = [
-          'Supplies' => 15000,
-          'Utilities' => 50000,
-          'Salaries' => 100000,
-          'Maintenance' => 25000,
-          'Other' => 50000
-      ];
-      $monthlyBudget = array_sum($categoryBudgets); // Total of all categories
-      
-
-      // 2. Calculate current month's expenses
-      $currentMonthQuery = "SELECT SUM(price) as total 
-                          FROM expense_tb 
-                          WHERE appearance = 'visible' 
-                          AND MONTH(date) = MONTH(CURRENT_DATE()) 
-                          AND YEAR(date) = YEAR(CURRENT_DATE())";
-      $currentMonthResult = $conn->query($currentMonthQuery);
-      $currentMonthRow = $currentMonthResult->fetch_assoc();
-      $currentSpend = $currentMonthRow['total'] ?? 0;
-
-      // 3. Calculate days remaining in the month
-      $today = new DateTime();
-      $lastDayOfMonth = new DateTime('last day of this month');
-      $daysLeft = $today->diff($lastDayOfMonth)->days;
-
-      // 4. Calculate percentage used (with protection against division by zero)
-      $percentageUsed = ($monthlyBudget > 0) ? min(($currentSpend / $monthlyBudget) * 100, 100) : 0;
-
-      // 5. Determine warning colors
-      $warningLevel = ($percentageUsed >= 90) ? 'text-red-600' : 
-                    (($percentageUsed >= 75) ? 'text-yellow-600' : 'text-green-600');
-      $daysLeftClass = ($daysLeft > 5) ? 'text-green-600' : 'text-red-600';
-      ?>
-
-      <div class="bg-white rounded-lg shadow-sidebar p-5 border border-sidebar-border hover:shadow-card transition-all duration-300">
-          <div class="flex items-center mb-3">
-              <div class="w-12 h-12 rounded-lg bg-yellow-100 text-yellow-600 flex items-center justify-center mr-3">
-                  <i class="fas fa-wallet text-lg"></i>
-              </div>
-              <span class="text-sidebar-text font-medium">Monthly Budget Status</span>
-          </div>
-          
-          <div class="flex items-end justify-between mb-2">
-              <div class="text-2xl font-bold text-sidebar-text <?php echo $warningLevel; ?>">
-                  ₱<?php echo number_format($currentSpend, 2); ?>
-              </div>
-              <div class="text-sm text-gray-500">of ₱<?php echo number_format($monthlyBudget, 2); ?> budget</div>
-          </div>
-          
-          <div class="w-full bg-gray-200 rounded-full h-3 mb-2">
-              <div class="bg-yellow-500 h-3 rounded-full" style="width: <?php echo $percentageUsed; ?>%"></div>
-          </div>
-          
-          <div class="flex justify-between items-center">
-              <div class="text-sm <?php echo $daysLeftClass; ?> flex items-center">
-                  <i class="fas fa-clock mr-1"></i> <?php echo $daysLeft; ?> days remaining
-              </div>
-              <div class="text-sm <?php echo $warningLevel; ?>">
-                  <?php echo round($percentageUsed); ?>% used
-              </div>
-          </div>
-          
-          <?php if ($percentageUsed >= 100): ?>
-              <div class="mt-2 text-xs bg-red-100 text-red-800 p-1 rounded text-center">
-                  <i class="fas fa-exclamation-circle mr-1"></i> Budget exceeded!
-              </div>
-          <?php elseif ($percentageUsed >= 90): ?>
-              <div class="mt-2 text-xs bg-yellow-100 text-yellow-800 p-1 rounded text-center">
-                  <i class="fas fa-exclamation-triangle mr-1"></i> Approaching budget limit
-              </div>
-          <?php endif; ?>
-          
-          <!-- Optional: Daily spending rate projection -->
-          <?php
-          $daysPassed = date('j'); // Current day of month
-          $dailyRate = ($daysPassed > 0) ? $currentSpend / $daysPassed : 0;
-          $projectedSpend = $dailyRate * date('t');
-          $projectionClass = ($projectedSpend > $monthlyBudget) ? 'text-red-600' : 'text-green-600';
-          ?>
-          <div class="mt-2 text-xs text-gray-500 border-t pt-2">
-              Daily rate: ₱<?php echo number_format($dailyRate, 2); ?> | 
-              Projected: <span class="<?php echo $projectionClass; ?>">₱<?php echo number_format($projectedSpend, 2); ?></span>
-          </div>
-      </div>
-      
-      <?php
-      // Enhanced query to get both count and total amount
-      $overdueQuery = "SELECT COUNT(*) as count, SUM(price) as total 
-                      FROM expense_tb 
-                      WHERE appearance = 'visible' 
-                      AND status = 'To be paid' 
-                      AND date < CURDATE()";
-      $overdueResult = $conn->query($overdueQuery);
-      $overdueData = $overdueResult->fetch_assoc();
-      $overdueCount = $overdueData['count'] ?? 0;
-      $overdueAmount = $overdueData['total'] ?? 0;
-
-      // Get urgency level (how many days overdue)
-      $urgencyQuery = "SELECT 
-                      SUM(CASE WHEN DATEDIFF(CURDATE(), date) > 30 THEN 1 ELSE 0 END) as critical,
-                      SUM(CASE WHEN DATEDIFF(CURDATE(), date) BETWEEN 15 AND 30 THEN 1 ELSE 0 END) as high,
-                      SUM(CASE WHEN DATEDIFF(CURDATE(), date) BETWEEN 7 AND 14 THEN 1 ELSE 0 END) as medium,
-                      SUM(CASE WHEN DATEDIFF(CURDATE(), date) BETWEEN 1 AND 6 THEN 1 ELSE 0 END) as low
-                      FROM expense_tb 
-                      WHERE appearance = 'visible' 
-                      AND status = 'To be paid' 
-                      AND date < CURDATE()";
-      $urgencyResult = $conn->query($urgencyQuery);
-      $urgencyData = $urgencyResult->fetch_assoc();
-      ?>
-
-      <div class="bg-white rounded-lg shadow-sidebar p-5 border border-sidebar-border hover:shadow-card transition-all duration-300">
-          <div class="flex items-center mb-3">
-              <div class="w-12 h-12 rounded-lg bg-orange-100 text-orange-600 flex items-center justify-center mr-3">
-                  <i class="fas fa-exclamation-triangle text-lg"></i>
-              </div>
-              <div>
-                  <span class="text-sidebar-text font-medium">Overdue Payments</span>
-                  <div class="text-xs text-gray-500">Total: ₱<?php echo number_format($overdueAmount, 2); ?></div>
-              </div>
-          </div>
-          
-          <div class="text-3xl font-bold mb-2 text-sidebar-text"><?php echo $overdueCount; ?></div>
-          
-          <!-- Urgency breakdown -->
-          <div class="grid grid-cols-4 gap-2 mb-3 text-xs">
-              <div class="text-center">
-                  <div class="text-red-600 font-medium"><?php echo $urgencyData['critical'] ?? 0; ?></div>
-                  <div class="text-gray-500">30+ days</div>
-              </div>
-              <div class="text-center">
-                  <div class="text-orange-500 font-medium"><?php echo $urgencyData['high'] ?? 0; ?></div>
-                  <div class="text-gray-500">15-30 days</div>
-              </div>
-              <div class="text-center">
-                  <div class="text-yellow-500 font-medium"><?php echo $urgencyData['medium'] ?? 0; ?></div>
-                  <div class="text-gray-500">7-14 days</div>
-              </div>
-              <div class="text-center">
-                  <div class="text-blue-500 font-medium"><?php echo $urgencyData['low'] ?? 0; ?></div>
-                  <div class="text-gray-500">1-6 days</div>
-              </div>
-          </div>
-          
-          <div class="text-sm <?php echo $trendClass; ?> flex items-center">
-              <i class="fas <?php echo $trendIcon; ?> mr-1"></i> <?php echo $trendText; ?>
-          </div>
-          
-          
-      </div>
-      
-      <?php
-        // Database connection
-        require_once '../db_connect.php';
-
-        // 1. Count upcoming payments (status = "To be paid" with future dates)
-        $upcomingQuery = "SELECT COUNT(*) as count 
-                        FROM expense_tb 
-                        WHERE appearance = 'visible' 
-                        AND status = 'To be paid' 
-                        AND date > CURDATE()";
-        $upcomingResult = $conn->query($upcomingQuery);
-        $upcomingCount = $upcomingResult->fetch_assoc()['count'] ?? 0;
-
-        // 2. Count last month's upcoming payments for comparison
-        $lastMonthUpcomingQuery = "SELECT COUNT(*) as count 
-                                  FROM expense_tb 
-                                  WHERE appearance = 'visible' 
-                                  AND status = 'To be paid' 
-                                  AND date BETWEEN DATE_SUB(CURDATE(), INTERVAL 1 MONTH) AND CURDATE()";
-        $lastMonthUpcomingResult = $conn->query($lastMonthUpcomingQuery);
-        $lastMonthUpcomingCount = $lastMonthUpcomingResult->fetch_assoc()['count'] ?? 0;
-
-        // 3. Calculate percentage change
-        if ($lastMonthUpcomingCount > 0) {
-            $percentageChange = (($upcomingCount - $lastMonthUpcomingCount) / $lastMonthUpcomingCount) * 100;
-        } else {
-            $percentageChange = $upcomingCount > 0 ? 100 : 0;
-        }
-
-        // 4. Determine trend styling
-        if ($percentageChange > 0) {
-            $trendClass = 'text-green-600';
-            $trendIcon = 'fa-arrow-up';
-            $trendText = abs(round($percentageChange)) . '% from last month';
-        } elseif ($percentageChange < 0) {
-            $trendClass = 'text-red-600';
-            $trendIcon = 'fa-arrow-down';
-            $trendText = abs(round($percentageChange)) . '% from last month';
-        } else {
-            $trendClass = 'text-gray-600';
-            $trendIcon = 'fa-equals';
-            $trendText = 'No change from last month';
-        }
-
-        // 5. Get nearest upcoming payment date
-        $nearestQuery = "SELECT MIN(date) as nearest_date 
-                        FROM expense_tb 
-                        WHERE appearance = 'visible' 
-                        AND status = 'To be paid' 
-                        AND date > CURDATE()";
-        $nearestResult = $conn->query($nearestQuery);
-        $nearestDate = $nearestResult->fetch_assoc()['nearest_date'];
-        ?>
-
-        <div class="bg-white rounded-lg shadow-sidebar p-5 border border-sidebar-border hover:shadow-card transition-all duration-300">
-            <div class="flex items-center mb-3">
-                <div class="w-12 h-12 rounded-lg bg-purple-100 text-purple-600 flex items-center justify-center mr-3">
-                    <i class="fas fa-calendar-alt text-lg"></i>
-                </div>
-                <div>
-                    <span class="text-sidebar-text font-medium">Upcoming Payments</span>
-                    <?php if ($nearestDate): ?>
-                    <div class="text-xs text-gray-500">Next due: <?php echo date('M j', strtotime($nearestDate)); ?></div>
-                    <?php endif; ?>
-                </div>
-            </div>
-            
-            <div class="text-3xl font-bold mb-2 text-sidebar-text"><?php echo $upcomingCount; ?></div>
-            
-            <div class="text-sm <?php echo $trendClass; ?> flex items-center">
-                <i class="fas <?php echo $trendIcon; ?> mr-1"></i> <?php echo $trendText; ?>
-            </div>
+    <!-- Monthly Budget Status Card -->
+    <div class="bg-white rounded-lg shadow-sidebar p-4 border border-sidebar-border hover:shadow-card transition-all duration-300">
+      <div class="flex items-center mb-2">
+        <div class="w-10 h-10 rounded-lg bg-yellow-100 text-yellow-600 flex items-center justify-center mr-3">
+          <i class="fas fa-wallet text-base"></i>
         </div>
-  </div></div>
+        <span class="text-sidebar-text font-medium text-sm">Monthly Budget Status</span>
+      </div>
+      
+      <div class="flex items-end justify-between mb-1">
+        <div class="text-xl font-bold text-sidebar-text <?php echo $warningLevel; ?>">
+          ₱<?php echo number_format($currentSpend, 2); ?>
+        </div>
+        <div class="text-xs text-gray-500">of ₱<?php echo number_format($monthlyBudget, 2); ?></div>
+      </div>
+      
+      <div class="w-full bg-gray-200 rounded-full h-2 mb-1">
+        <div class="bg-yellow-500 h-2 rounded-full" style="width: <?php echo $percentageUsed; ?>%"></div>
+      </div>
+      
+      <div class="flex justify-between items-center text-xs">
+        <div class="<?php echo $daysLeftClass; ?> flex items-center">
+          <i class="fas fa-clock mr-1"></i> <?php echo $daysLeft; ?> days left
+        </div>
+        <div class="<?php echo $warningLevel; ?>">
+          <?php echo round($percentageUsed); ?>% used
+        </div>
+      </div>
+      
+      <?php if ($percentageUsed >= 100): ?>
+        <div class="mt-1 text-xs bg-red-100 text-red-800 p-1 rounded text-center">
+          <i class="fas fa-exclamation-circle mr-1"></i> Budget exceeded!
+        </div>
+      <?php elseif ($percentageUsed >= 90): ?>
+        <div class="mt-1 text-xs bg-yellow-100 text-yellow-800 p-1 rounded text-center">
+          <i class="fas fa-exclamation-triangle mr-1"></i> Approaching limit
+        </div>
+      <?php endif; ?>
+      
+      <div class="mt-1 text-xs text-gray-500 border-t pt-1">
+        Daily: ₱<?php echo number_format($dailyRate, 2); ?> | 
+        Projected: <span class="<?php echo $projectionClass; ?>">₱<?php echo number_format($projectedSpend, 2); ?></span>
+      </div>
+    </div>
+    
+    <!-- Overdue Payments Card -->
+    <div class="bg-white rounded-lg shadow-sidebar p-4 border border-sidebar-border hover:shadow-card transition-all duration-300">
+      <div class="flex items-center mb-2">
+        <div class="w-10 h-10 rounded-lg bg-orange-100 text-orange-600 flex items-center justify-center mr-3">
+          <i class="fas fa-exclamation-triangle text-base"></i>
+        </div>
+        <div>
+          <span class="text-sidebar-text font-medium text-sm">Overdue Payments</span>
+          <div class="text-xs text-gray-500">Total: ₱<?php echo number_format($overdueAmount, 2); ?></div>
+        </div>
+      </div>
+      
+      <div class="text-2xl font-bold mb-2 text-sidebar-text"><?php echo $overdueCount; ?></div>
+      
+      <div class="grid grid-cols-4 gap-1 mb-2 text-xs">
+        <div class="text-center">
+          <div class="text-red-600 font-medium"><?php echo $urgencyData['critical'] ?? 0; ?></div>
+          <div class="text-gray-500">30d+</div>
+        </div>
+        <div class="text-center">
+          <div class="text-orange-500 font-medium"><?php echo $urgencyData['high'] ?? 0; ?></div>
+          <div class="text-gray-500">15-30d</div>
+        </div>
+        <div class="text-center">
+          <div class="text-yellow-500 font-medium"><?php echo $urgencyData['medium'] ?? 0; ?></div>
+          <div class="text-gray-500">7-14d</div>
+        </div>
+        <div class="text-center">
+          <div class="text-blue-500 font-medium"><?php echo $urgencyData['low'] ?? 0; ?></div>
+          <div class="text-gray-500">1-6d</div>
+        </div>
+      </div>
+      
+      <div class="text-xs <?php echo $trendClass; ?> flex items-center">
+        <i class="fas <?php echo $trendIcon; ?> mr-1"></i> <?php echo $trendText; ?>
+      </div>
+    </div>
+    
+    <!-- Upcoming Payments Card -->
+    <div class="bg-white rounded-lg shadow-sidebar p-4 border border-sidebar-border hover:shadow-card transition-all duration-300">
+      <div class="flex items-center mb-2">
+        <div class="w-10 h-10 rounded-lg bg-purple-100 text-purple-600 flex items-center justify-center mr-3">
+          <i class="fas fa-calendar-alt text-base"></i>
+        </div>
+        <div>
+          <span class="text-sidebar-text font-medium text-sm">Upcoming Payments</span>
+          <?php if ($nearestDate): ?>
+          <div class="text-xs text-gray-500">Next: <?php echo date('M j', strtotime($nearestDate)); ?></div>
+          <?php endif; ?>
+        </div>
+      </div>
+      
+      <div class="text-2xl font-bold mb-2 text-sidebar-text"><?php echo $upcomingCount; ?></div>
+      
+      <div class="text-xs <?php echo $trendClass; ?> flex items-center">
+        <i class="fas <?php echo $trendIcon; ?> mr-1"></i> <?php echo $trendText; ?>
+      </div>
+    </div>
+  </div>
+</div>
 
   <!-- Expense Charts -->
   <?php
