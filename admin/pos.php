@@ -466,8 +466,8 @@ document.addEventListener('DOMContentLoaded', function() {
   // Load branches first
   loadBranches();
   
-  // Initialize empty cart
-  updateCart();
+  // Update the back button in services section to go back to branches
+  document.querySelector('#services-section button').onclick = goBackToBranches;
   
   // Sidebar toggle functionality
   document.getElementById('hamburger-menu').addEventListener('click', toggleSidebar);
@@ -593,7 +593,6 @@ function goBackToBranches() {
   document.getElementById('branch-selection').classList.remove('hidden');
   document.getElementById('category-selection').classList.add('hidden');
   document.getElementById('services-section').classList.add('hidden');
-  document.getElementById('services-container').classList.add('hidden');
   selectedBranch = null;
 }
 
