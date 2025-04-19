@@ -771,120 +771,90 @@ if ($branchResult->num_rows > 0) {
 </div>
 
 <!-- Edit Inventory Modal -->
-<div class="fixed inset-0 z-50 flex items-center justify-center hidden" id="editInventoryModal">
-  <!-- Modal Backdrop -->
-  <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
-  
-  <!-- Modal Content -->
-  <div class="relative bg-white rounded-xl shadow-card w-full max-w-md mx-4 z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
-    <!-- Close Button -->
-    <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeEditInventoryModal()">
-      <i class="fas fa-times"></i>
-    </button>
-    
+
+<div id="editInventoryModal" class="fixed hidden top-0 left-0 w-full h-full bg-black bg-opacity-60 flex items-center justify-center z-50">
+  <div class="bg-white rounded-xl w-full max-w-md max-h-[90vh] overflow-y-auto shadow-xl">
     <!-- Modal Header -->
-    <div class="px-6 py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
-      <h3 class="text-xl font-bold text-white flex items-center">
-        <i class="fas fa-edit mr-2"></i>
-        Edit Inventory Item
-      </h3>
+    <div class="bg-gradient-to-r from-sidebar-accent to-white flex justify-between items-center p-6 flex-shrink-0">
+      <h3 class="text-xl font-bold text-white"><i class="fas fa-edit"></i> Edit Inventory Item</h3>
+      <button class="bg-black bg-opacity-20 hover:bg-opacity-30 rounded-full p-2 text-white hover:text-white transition-all duration-200" onclick="closeEditInventoryModal()">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+        </svg>
+      </button>
     </div>
     
     <!-- Modal Body -->
-    <div class="px-6 py-5">
+    <div class="p-6">
       <form id="editInventoryForm" class="space-y-4">
         <div class="space-y-4">
           <div>
-            <label for="editItemId" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-hashtag mr-2 text-sidebar-accent"></i>
-              Item ID
-            </label>
-            <div class="relative">
-              <input type="text" id="editItemId" name="editItemId" value="<?php echo $item_id; ?>" class="w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-lg cursor-not-allowed" readonly>
-            </div>
+            <label for="editItemId" class="block text-sm font-medium text-gray-700 mb-1">Item ID</label>
+            <input type="text" id="editItemId" name="editItemId" value="<?php echo $item_id; ?>" class="w-full p-3 border border-gray-300 rounded-lg bg-gray-100 cursor-not-allowed" readonly>
           </div>
 
           <div>
-            <label for="editItemName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-tag mr-2 text-sidebar-accent"></i>
-              Item Name
-            </label>
-            <div class="relative">
-              <input type="text" id="editItemName" name="editItemName" value="<?php echo $item_name; ?>" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="Item Name">
-            </div>
+            <label for="editItemName" class="block text-sm font-medium text-gray-700 mb-1">Item Name</label>
+            <input type="text" id="editItemName" name="editItemName" value="<?php echo $item_name; ?>" required class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent" placeholder="Item Name">
           </div>
 
           <!-- Category Dropdown -->
           <div>
-            <label for="category" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-th-list mr-2 text-sidebar-accent"></i>
-              Category
-            </label>
-            <div class="relative">
-              <select id="category" name="category" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
-                <option value="" disabled>Select a Category</option>
-                <?php
-                // Fetch categories again
-                include '../db_connect.php';
-                $sql = "SELECT category_id, category_name FROM inventory_category";
-                $result = $conn->query($sql);
-                if ($result->num_rows > 0) {
-                    while ($row = $result->fetch_assoc()) {
-                        $selected = ($row['category_id'] == $category_id) ? 'selected' : '';
-                        echo '<option value="' . $row['category_id'] . '" ' . $selected . '>' . htmlspecialchars($row['category_name']) . '</option>';
-                    }
-                } else {
-                    echo '<option value="" disabled>No Categories Available</option>';
-                }
-                ?>
-              </select>
-            </div>
+            <label for="category" class="block text-sm font-medium text-gray-700 mb-1">Category</label>
+            <select id="category" name="category" required class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
+              <option value="" disabled>Select a Category</option>
+              <?php
+              // Fetch categories again
+              include '../db_connect.php';
+              $sql = "SELECT category_id, category_name FROM inventory_category";
+              $result = $conn->query($sql);
+              if ($result->num_rows > 0) {
+                  while ($row = $result->fetch_assoc()) {
+                      $selected = ($row['category_id'] == $category_id) ? 'selected' : '';
+                      echo '<option value="' . $row['category_id'] . '" ' . $selected . '>' . htmlspecialchars($row['category_name']) . '</option>';
+                  }
+              } else {
+                  echo '<option value="" disabled>No Categories Available</option>';
+              }
+              ?>
+            </select>
           </div>
 
           <div>
-            <label for="editQuantity" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-cubes mr-2 text-sidebar-accent"></i>
-              Quantity
-            </label>
-            <div class="relative">
-              <input type="number" id="editQuantity" name="editQuantity" value="<?php echo $quantity; ?>" min="1" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="Quantity">
-            </div>
+            <label for="editQuantity" class="block text-sm font-medium text-gray-700 mb-1">Quantity</label>
+            <input type="number" id="editQuantity" name="editQuantity" value="<?php echo $quantity; ?>" min="1" required class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent" placeholder="Quantity">
           </div>
 
           <div>
-            <label for="editUnitPrice" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-coins mr-2 text-sidebar-accent"></i>
-              Unit Price
-            </label>
+            <label for="editUnitPrice" class="block text-sm font-medium text-gray-700 mb-1">Unit Price</label>
             <div class="relative">
               <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <span class="text-gray-500">₱</span>
               </div>
-              <input type="number" id="editUnitPrice" name="editUnitPrice" value="<?php echo $unit_price; ?>" step="0.01" required class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="0.00">
+              <input type="number" id="editUnitPrice" name="editUnitPrice" value="<?php echo $unit_price; ?>" step="0.01" required class="w-full pl-8 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent" placeholder="0.00">
             </div>
           </div>
 
           <!-- Current Image Preview -->
-          <div>
-            <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-image mr-2 text-sidebar-accent"></i>
-              Current Image
-            </label>
-            <div class="bg-navy p-4 rounded-lg">
+          <div class="bg-navy p-5 rounded-xl">
+            <div class="flex flex-col items-center space-y-3">
               <div class="w-full h-32 bg-center bg-cover rounded-lg shadow-md" style="background-image: url('<?php echo $inventory_img; ?>');"></div>
+              <span class="text-sm text-gray-600">Current Image</span>
             </div>
           </div>
 
           <!-- File Upload -->
-          <div>
-            <label for="editItemImage" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-upload mr-2 text-sidebar-accent"></i>
-              Upload New Image
-            </label>
+          <div class="bg-gray-50 p-5 rounded-xl">
+            <label for="editItemImage" class="block text-sm font-medium text-gray-700 mb-3">Upload New Image</label>
             <div class="relative">
-              <div class="flex items-center border border-gray-300 rounded-lg px-3 py-2 focus-within:ring-1 focus-within:ring-sidebar-accent focus-within:border-sidebar-accent transition-all duration-200">
-                <i class="fas fa-upload text-gray-400 mr-2"></i>
-                <input type="file" id="editItemImage" name="editItemImage" accept="image/*" class="w-full focus:outline-none">
+              <input type="file" id="editItemImage" name="editItemImage" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20">
+              <div class="w-full p-3 border border-dashed border-gray-300 rounded-lg bg-gray-50 text-gray-500 text-sm flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 text-sidebar-accent">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="17 8 12 3 7 8"></polyline>
+                  <line x1="12" y1="3" x2="12" y2="15"></line>
+                </svg>
+                Choose file or drag here
               </div>
             </div>
           </div>
@@ -893,13 +863,16 @@ if ($branchResult->num_rows > 0) {
     </div>
   
     <!-- Modal Footer -->
-    <div class="px-6 py-4 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
-      <button class="px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center" onclick="closeEditInventoryModal()">
-        <i class="fas fa-times mr-2"></i>
+    <div class="p-6 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
+      <button class="px-5 py-3 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-semibold hover:bg-navy transition-colors" onclick="closeEditInventoryModal()">
         Cancel
       </button>
-      <button type="submit" form="editInventoryForm" class="px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center">
-        <i class="fas fa-save mr-2"></i>
+      <button type="submit" form="editInventoryForm" class="px-6 py-3 bg-sidebar-accent text-white rounded-lg font-semibold hover:bg-darkgold transition-colors flex items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
+          <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+          <polyline points="17 21 17 13 7 13 7 21"></polyline>
+          <polyline points="7 3 7 8 15 8"></polyline>
+        </svg>
         Save Changes
       </button>
     </div>
