@@ -597,6 +597,20 @@ $servicesJson = json_encode($allServices);
                 <option value="Bank Transfer">Bank Transfer</option>
               </select>
             </div>
+
+            <div>
+              <label for="lp-paymentTerm" class="block text-sm font-medium text-gray-700 mb-1">Payment Term</label>
+              <select id="lp-paymentTerm" name="paymentTerm" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
+                <option value="1">1 Year (Full Payment)</option>
+                <option value="2">2 Years</option>
+                <option value="3">3 Years</option>
+                <option value="5">5 Years</option>
+              </select>
+              <div id="lp-monthlyPayment" class="mt-2 text-sm text-gray-600 hidden">
+                Monthly Payment: <span class="font-semibold text-sidebar-accent">₱0.00</span>
+              </div>
+            </div>
+
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label for="lp-totalPrice" class="block text-sm font-medium text-gray-700 mb-1">
@@ -987,6 +1001,53 @@ function openTraditionalCheckout() {
   document.getElementById('checkoutModal').classList.remove('hidden');
 }
 
+function setupLifeplanPaymentTerms() {
+  const paymentTermSelect = document.getElementById('lp-paymentTerm');
+  const totalPriceInput = document.getElementById('lp-totalPrice');
+  const monthlyPaymentDiv = document.getElementById('lp-monthlyPayment');
+  const monthlyPaymentAmount = monthlyPaymentDiv.querySelector('span');
+  
+  // Function to calculate monthly payment
+  function calculateMonthlyPayment() {
+    const servicePrice = parseFloat(document.getElementById('lp-service-price').value) || 0;
+    const termYears = parseInt(paymentTermSelect.value) || 1;
+    
+    if (termYears === 1) {
+      // Full payment
+      monthlyPaymentDiv.classList.add('hidden');
+      totalPriceInput.value = servicePrice.toFixed(2);
+      document.getElementById('lp-footer-total-price').textContent = 
+        `₱${servicePrice.toLocaleString('en-PH', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+    } else {
+      // Installment
+      const termMonths = termYears * 12;
+      const monthlyPayment = servicePrice / termMonths;
+      
+      monthlyPaymentAmount.textContent = 
+        `₱${monthlyPayment.toLocaleString('en-PH', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+      monthlyPaymentDiv.classList.remove('hidden');
+      
+      // Update total price (can be overridden by user)
+      totalPriceInput.value = servicePrice.toFixed(2);
+      document.getElementById('lp-footer-total-price').textContent = 
+        `₱${servicePrice.toLocaleString('en-PH', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+    }
+    
+    // Update minimum price
+    const minimumPrice = servicePrice * 0.5;
+    document.getElementById('lp-min-price').textContent = `₱${minimumPrice.toFixed(2)}`;
+  }
+  
+  // Calculate when term changes
+  paymentTermSelect.addEventListener('change', calculateMonthlyPayment);
+  
+  // Also calculate when service price changes
+  document.getElementById('lp-service-price').addEventListener('change', calculateMonthlyPayment);
+  
+  // Initial calculation
+  calculateMonthlyPayment();
+}
+
 // Function to open lifeplan checkout
 function openLifeplanCheckout() {
   const serviceTypeModal = document.getElementById('serviceTypeModal');
@@ -1008,6 +1069,7 @@ function openLifeplanCheckout() {
   const minimumPrice = parseFloat(servicePrice) * 0.5;
   document.getElementById('lp-min-price').textContent = `₱${minimumPrice.toFixed(2)}`;
   
+  setupLifeplanPaymentTerms();
   // Open lifeplan checkout modal
   document.getElementById('lifeplanCheckoutModal').classList.remove('hidden');
 }
