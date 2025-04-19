@@ -1097,16 +1097,20 @@ function closeLifeplanCheckoutModal() {
 
 // Function to confirm lifeplan checkout
 function confirmLifeplanCheckout() {
-  // Get all form inputs
   const form = document.getElementById('lifeplanCheckoutForm');
   const formData = new FormData(form);
+
+  // Include the checkbox value for cremation
+  const withCremation = document.getElementById('lp-withCremation').checked;
+  formData.append('withCremation', withCremation ? 'on' : 'off');
 
   // Validate required fields
   const requiredFields = [
     'lp-clientFirstName', 'lp-clientLastName', 'lp-clientPhone',
-    'beneficiaryFirstName', 'beneficiaryLastName', 'beneficiaryRelationship'
+    'beneficiaryFirstName', 'beneficiaryLastName', 'beneficiaryRelationship',
+    'beneficiaryAddress'
   ];
-  
+
   for (const fieldId of requiredFields) {
     const field = document.getElementById(fieldId);
     if (!field.value.trim()) {
@@ -1116,21 +1120,21 @@ function confirmLifeplanCheckout() {
     }
   }
 
-  // Validate email format if provided
+  // Email validation
   const email = document.getElementById('lp-clientEmail').value;
   if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     alert("Please enter a valid email address.");
     return;
   }
 
-  // Validate phone number (digits only)
+  // Phone validation
   const phone = document.getElementById('lp-clientPhone').value;
   if (phone && !/^\d+$/.test(phone)) {
     alert("Phone number should contain only digits.");
     return;
   }
 
-  // Validate date of birth (if provided)
+  // Date of birth validation
   const dateOfBirth = document.getElementById('beneficiaryDateOfBirth').value;
   const today = new Date().toISOString().split('T')[0];
   if (dateOfBirth && dateOfBirth > today) {
@@ -1138,55 +1142,44 @@ function confirmLifeplanCheckout() {
     return;
   }
 
-  // Payment validations (same as traditional)
+  // Price validations
   const servicePrice = parseFloat(document.getElementById('lp-service-price').value) || 0;
   const totalPrice = parseFloat(document.getElementById('lp-totalPrice').value) || 0;
   const amountPaid = parseFloat(document.getElementById('lp-amountPaid').value) || 0;
 
-  // Validate total price is at least 50% of service price
   const minimumAllowedPrice = servicePrice * 0.5;
   if (totalPrice < minimumAllowedPrice) {
     alert(`Total price cannot be lower than 50% of the service price (₱${minimumAllowedPrice.toFixed(2)}).`);
     return;
   }
 
-  // Validate amount paid doesn't exceed total price
   if (amountPaid > totalPrice) {
     alert("Amount paid cannot exceed the total price.");
     return;
   }
 
-  // Add service data
+  // Additional data
   formData.append('service_id', document.getElementById('lp-service-id').value);
   formData.append('branch_id', document.getElementById('lp-branch-id').value);
-  formData.append('sold_by', 1); // Assuming admin ID is 1
+  formData.append('sold_by', 1); // Example admin ID
   formData.append('status', 'Pending');
-  formData.append('service_type', 'Lifeplan'); // Mark as lifeplan service
-  
-  // Calculate balance
+  formData.append('service_type', 'Lifeplan');
+  formData.append('payment_term', document.getElementById('lp-paymentTerm').value);
+
   const balance = totalPrice - amountPaid;
   formData.append('balance', balance.toFixed(2));
   formData.append('payment_status', balance > 0 ? 'With Balance' : 'Fully Paid');
 
-  // Send data to server using AJAX
-  fetch('process_lifeplan_checkout.php', {
-    method: 'POST',
-    body: formData
-  })
-  .then(response => response.json())
-  .then(data => {
-    if (data.success) {
-      document.getElementById('lifeplanCheckoutModal').classList.add('hidden');
-      showConfirmation(data.orderId);
-    } else {
-      alert('Error: ' + (data.message || 'Failed to process checkout'));
-    }
-  })
-  .catch(error => {
-    console.error('Error:', error);
-    alert('An error occurred while processing your order. Please try again.');
-  });
+  // LOG instead of sending to server
+  console.log('Collected Form Data (Not sent):');
+  for (let [key, value] of formData.entries()) {
+    console.log(`${key}: ${value}`);
+  }
+
+  // Optional: show a temporary success message without backend
+  alert('Form data is ready and logged to the console (not sent to server).');
 }
+
 
 function closeCheckoutModal() {
   document.getElementById('checkoutModal').classList.add('hidden');
