@@ -115,7 +115,7 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
   <!-- Ongoing Services Section -->
 <div class="bg-white rounded-lg shadow-md mb-8 border border-sidebar-border overflow-hidden branch-container" data-branch-id="ongoing-services">
     <!-- Section Header with Search -->
-    <div class="bg-sidebar-hover p-5 border-b border-sidebar-border flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <div class="bg-sidebar-hover p-4 border-b border-sidebar-border flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div class="flex items-center gap-3">
             <h3 class="text-lg font-bold text-sidebar-text">Ongoing Services</h3>
             
@@ -132,7 +132,7 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
         </div>
         
         <!-- Search Section -->
-        <div class="flex items-center gap-3">
+        <div class="flex flex-col md:flex-row items-start md:items-center gap-3 w-full md:w-auto">
             <!-- Search Input -->
             <div class="relative w-full md:w-64">
                 <input type="text" id="searchOngoing" 
@@ -150,62 +150,54 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
             <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-sidebar-accent"></div>
         </div>
         
-        <table class="w-full min-w-max">
+        <table class="w-full">
             <thead>
                 <tr class="bg-gray-50 border-b border-sidebar-border">
-                    <th class="px-6 py-4 text-left text-sm font-medium text-sidebar-text whitespace-nowrap cursor-pointer" onclick="sortTable(0)">
-                        <div class="flex items-center gap-1.5">
-                            <i class="fas fa-hashtag text-sidebar-accent"></i>
-                            <span>ID</span>
+                    <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(0)">
+                        <div class="flex items-center">
+                            <i class="fas fa-hashtag mr-1.5 text-sidebar-accent"></i> ID 
                             <i class="fas fa-sort ml-1 text-gray-400"></i>
                         </div>
                     </th>
-                    <th class="px-6 py-4 text-left text-sm font-medium text-sidebar-text whitespace-nowrap cursor-pointer" onclick="sortTable(1)">
-                        <div class="flex items-center gap-1.5">
-                            <i class="fas fa-user text-sidebar-accent"></i>
-                            <span>Client Name</span>
+                    <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(1)">
+                        <div class="flex items-center">
+                            <i class="fas fa-user mr-1.5 text-sidebar-accent"></i> Client Name 
                             <i class="fas fa-sort ml-1 text-gray-400"></i>
                         </div>
                     </th>
-                    <th class="px-6 py-4 text-left text-sm font-medium text-sidebar-text whitespace-nowrap cursor-pointer" onclick="sortTable(2)">
-                        <div class="flex items-center gap-1.5">
-                            <i class="fas fa-user-alt text-sidebar-accent"></i>
-                            <span>Deceased Name</span>
+                    <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(2)">
+                        <div class="flex items-center">
+                            <i class="fas fa-user-alt mr-1.5 text-sidebar-accent"></i> Deceased Name 
                             <i class="fas fa-sort ml-1 text-gray-400"></i>
                         </div>
                     </th>
-                    <th class="px-6 py-4 text-left text-sm font-medium text-sidebar-text whitespace-nowrap cursor-pointer" onclick="sortTable(3)">
-                        <div class="flex items-center gap-1.5">
-                            <i class="fas fa-tag text-sidebar-accent"></i>
-                            <span>Service Type</span>
+                    <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(3)">
+                        <div class="flex items-center">
+                            <i class="fas fa-tag mr-1.5 text-sidebar-accent"></i> Service Type 
                             <i class="fas fa-sort ml-1 text-gray-400"></i>
                         </div>
                     </th>
-                    <th class="px-6 py-4 text-left text-sm font-medium text-sidebar-text whitespace-nowrap cursor-pointer" onclick="sortTable(4)">
-                        <div class="flex items-center gap-1.5">
-                            <i class="fas fa-calendar text-sidebar-accent"></i>
-                            <span>Date of Burial</span>
+                    <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(4)">
+                        <div class="flex items-center">
+                            <i class="fas fa-calendar mr-1.5 text-sidebar-accent"></i> Date of Burial 
                             <i class="fas fa-sort ml-1 text-gray-400"></i>
                         </div>
                     </th>
-                    <th class="px-6 py-4 text-left text-sm font-medium text-sidebar-text whitespace-nowrap cursor-pointer" onclick="sortTable(5)">
-                        <div class="flex items-center gap-1.5">
-                            <i class="fas fa-toggle-on text-sidebar-accent"></i>
-                            <span>Status</span>
+                    <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(5)">
+                        <div class="flex items-center">
+                            <i class="fas fa-toggle-on mr-1.5 text-sidebar-accent"></i> Status 
                             <i class="fas fa-sort ml-1 text-gray-400"></i>
                         </div>
                     </th>
-                    <th class="px-6 py-4 text-left text-sm font-medium text-sidebar-text whitespace-nowrap cursor-pointer" onclick="sortTable(6)">
-                        <div class="flex items-center gap-1.5">
-                            <i class="fas fa-peso-sign text-sidebar-accent"></i>
-                            <span>Balance</span>
+                    <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(6)">
+                        <div class="flex items-center">
+                            <i class="fas fa-peso-sign mr-1.5 text-sidebar-accent"></i> Outstanding Balance 
                             <i class="fas fa-sort ml-1 text-gray-400"></i>
                         </div>
                     </th>
-                    <th class="px-6 py-4 text-left text-sm font-medium text-sidebar-text whitespace-nowrap">
-                        <div class="flex items-center gap-1.5">
-                            <i class="fas fa-cogs text-sidebar-accent"></i>
-                            <span>Actions</span>
+                    <th class="p-4 text-left text-sm font-medium text-sidebar-text">
+                        <div class="flex items-center">
+                            <i class="fas fa-cogs mr-1.5 text-sidebar-accent"></i> Actions
                         </div>
                     </th>
                 </tr>
@@ -213,6 +205,7 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
             <tbody>
                 <?php
                 // Query for Ongoing Services (status = 'Pending')
+                // Modify your ongoingQuery to include a check for assigned staff
                 $ongoingQuery = "SELECT s.sales_id, s.fname, s.mname, s.lname, s.suffix, 
                 s.fname_deceased, s.mname_deceased, s.lname_deceased, s.suffix_deceased,
                 sv.service_name, s.date_of_burial, s.balance, s.status, s.customerID, s.payment_status,
@@ -235,23 +228,23 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
                                     ($row['suffix_deceased'] ? ' ' . $row['suffix_deceased'] : ''));
                     ?>
                     <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
-                        <td class="px-6 py-4 text-sm text-sidebar-text font-medium">#<?php echo $row['sales_id']; ?></td>
-                        <td class="px-6 py-4 text-sm text-sidebar-text"><?php echo $clientName; ?></td>
-                        <td class="px-6 py-4 text-sm text-sidebar-text"><?php echo $deceasedName; ?></td>
-                        <td class="px-6 py-4 text-sm text-sidebar-text">
+                        <td class="p-4 text-sm text-sidebar-text font-medium">#<?php echo $row['sales_id']; ?></td>
+                        <td class="p-4 text-sm text-sidebar-text"><?php echo $clientName; ?></td>
+                        <td class="p-4 text-sm text-sidebar-text"><?php echo $deceasedName; ?></td>
+                        <td class="p-4 text-sm text-sidebar-text">
                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">
                                 <?php echo htmlspecialchars($row['service_name']); ?>
                             </span>
                         </td>
-                        <td class="px-6 py-4 text-sm text-sidebar-text"><?php echo htmlspecialchars($row['date_of_burial']); ?></td>
-                        <td class="px-6 py-4 text-sm">
+                        <td class="p-4 text-sm text-sidebar-text"><?php echo htmlspecialchars($row['date_of_burial']); ?></td>
+                        <td class="p-4 text-sm">
                             <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-500 border border-orange-200">
                                 <i class="fas fa-pause-circle mr-1"></i> <?php echo htmlspecialchars($row['status']); ?>
                             </span>
                         </td>
-                        <td class="px-6 py-4 text-sm font-medium text-sidebar-text">₱<?php echo number_format($row['balance'], 2); ?></td>
-                        <td class="px-6 py-4 text-sm">
-                            <div class="flex space-x-3">
+                        <td class="p-4 text-sm font-medium text-sidebar-text">₱<?php echo number_format($row['balance'], 2); ?></td>
+                        <td class="p-4 text-sm">
+                            <div class="flex space-x-2">
                                 <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="Edit Service" onclick="openEditServiceModal('<?php echo $row['sales_id']; ?>')">
                                     <i class="fas fa-edit"></i>
                                 </button>
@@ -277,10 +270,10 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
                 } else {
                   ?>
                   <tr>
-                    <td colspan="8" class="px-6 py-8 text-sm text-center">
+                    <td colspan="8" class="p-6 text-sm text-center">
                         <div class="flex flex-col items-center">
-                            <i class="fas fa-inbox text-gray-300 text-5xl mb-4"></i>
-                            <p class="text-gray-500 text-base">No ongoing services found</p>
+                            <i class="fas fa-inbox text-gray-300 text-4xl mb-3"></i>
+                            <p class="text-gray-500">No ongoing services found</p>
                         </div>
                     </td>
                   </tr>
@@ -290,18 +283,12 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
             </tbody>
         </table>
         
-        <!-- Pagination -->
-        <div class="px-6 py-4 border-t border-sidebar-border flex justify-end items-center">
-            <?php
-            // You can implement pagination here if needed
-            // This is a placeholder for pagination controls
-            ?>
-            <div class="flex space-x-2">
-                <button class="px-3 py-2 border border-sidebar-border rounded-lg text-sm hover:bg-sidebar-hover">&laquo; Previous</button>
-                <button class="px-3 py-2 bg-sidebar-accent text-white rounded-lg text-sm">1</button>
-                <button class="px-3 py-2 border border-sidebar-border rounded-lg text-sm hover:bg-sidebar-hover">Next &raquo;</button>
-            </div>
-        </div>
+        <!-- Pagination - if needed, you can add pagination similar to first code -->
+        <?php
+        // If you want to add pagination, you would define variables like:
+        // $page, $recordsPerPage, $totalOngoing, $offset, $totalPages
+        // And then render the pagination controls here
+        ?>
     </div>
 </div>
 
