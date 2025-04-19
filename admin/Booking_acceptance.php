@@ -337,170 +337,174 @@ $offset = ($current_page - 1) * $bookings_per_page;
 </div>
 
 <!-- Improved Booking Details Modal -->
-<div id="bookingDetailsModal" class="fixed inset-0 bg-black bg-opacity-60 z-50 hidden overflow-y-auto flex items-center justify-center p-4 w-full h-full">
-  <div class="bg-white rounded-xl shadow-2xl modal-content transform transition-all duration-300 ease-out max-w-4xl w-full">
-      <!-- Modal Header -->
-    <div class="bg-gradient-to-r from-sidebar-accent to-white flex justify-between items-center p-6 flex-shrink-0">
-      <h3 id="modal-package-title" class="text-xl font-bold text-white">Booking Details</h3>
-      <button class="bg-black bg-opacity-20 hover:bg-opacity-30 rounded-full p-2 text-white hover:text-white transition-all duration-200" onclick="closeModal()">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-          <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-        </svg>
+<div id="bookingDetailsModal" class="fixed inset-0 z-50 flex items-center justify-center hidden" >
+  <!-- Modal Backdrop -->
+  <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+  
+  <!-- Modal Content -->
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-4xl mx-4 z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+    <!-- Close Button -->
+    <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeModal()">
+      <i class="fas fa-times"></i>
+    </button>
+    
+    <!-- Modal Header -->
+    <div class="px-6 py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
+      <h3 id="modal-package-title" class="text-xl font-bold text-white flex items-center">
+        <i class="fas fa-info-circle mr-2"></i>
+        Booking Details
+      </h3>
+    </div>
+    
+    <!-- Modal Body -->
+    <div class="px-6 py-5">
+      <!-- Booking ID and Status Banner -->
+      <div class="flex justify-between items-center mb-6 bg-gray-50 p-4 rounded-lg">
+        <div class="flex items-center">
+          <div class="bg-navy rounded-full p-2 mr-3">
+            <i class="fas fa-hashtag text-sidebar-accent"></i>
+          </div>
+          <div>
+            <p class="text-sm text-gray-500">Booking ID</p>
+            <p class="font-semibold text-gray-800" id="bookingId">#BK-2025-001</p>
+          </div>
+        </div>
+        <div>
+          <p class="text-sm text-gray-500 mb-1">Status</p>
+          <div id="bookingStatus">
+            <span class="px-3 py-1.5 text-sm font-medium rounded-full bg-yellow-100 text-sidebar-accent flex items-center">
+              <i class="fas fa-clock mr-1.5"></i>
+              Pending
+            </span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Content Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Left Column -->
+        <div class="space-y-4">
+          <!-- Customer Information -->
+          <div class="bg-white rounded-lg p-5 border border-gray-200 shadow-sm">
+            <h4 class="font-semibold text-gray-800 mb-4 flex items-center">
+              <i class="fas fa-user text-sidebar-accent mr-2"></i>
+              Customer Information
+            </h4>
+            <div class="space-y-3">
+              <div class="flex">
+                <div class="w-1/3 text-sm text-gray-500">Name</div>
+                <div class="w-2/3 font-medium text-gray-800" id="customerName">John Doe</div>
+              </div>
+              <div class="flex">
+                <div class="w-1/3 text-sm text-gray-500">Contact</div>
+                <div class="w-2/3 font-medium text-gray-800" id="contactNumber">(555) 123-4567</div>
+              </div>
+              <div class="flex">
+                <div class="w-1/3 text-sm text-gray-500">Email</div>
+                <div class="w-2/3 font-medium text-gray-800" id="emailAddress">john.doe@example.com</div>
+              </div>
+              <div class="flex">
+                <div class="w-1/3 text-sm text-gray-500">Address</div>
+                <div class="w-2/3 font-medium text-gray-800" id="address">123 Main St, Anytown, CA 12345</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Service Details -->
+          <div class="bg-white rounded-lg p-5 border border-gray-200 shadow-sm">
+            <h4 class="font-semibold text-gray-800 mb-4 flex items-center">
+              <i class="fas fa-hands-helping text-sidebar-accent mr-2"></i>
+              Service Details
+            </h4>
+            <div class="space-y-3">
+              <div class="flex">
+                <div class="w-1/3 text-sm text-gray-500">Service Type</div>
+                <div class="w-2/3 font-medium text-gray-800" id="serviceType">Funeral Service Package A</div>
+              </div>
+              <div class="flex">
+                <div class="w-1/3 text-sm text-gray-500">Date Requested</div>
+                <div class="w-2/3 font-medium text-gray-800" id="dateRequested">Mar 15, 2025</div>
+              </div>
+              <div class="flex">
+                <div class="w-1/3 text-sm text-gray-500">Service Date</div>
+                <div class="w-2/3 font-medium text-gray-800" id="serviceDate">Mar 20, 2025</div>
+              </div>
+              <div class="flex">
+                <div class="w-1/3 text-sm text-gray-500">Amount Paid</div>
+                <div class="w-2/3 font-medium text-gray-800" id="amountPaid">$3,500.00</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Right Column -->
+        <div class="space-y-4">
+          <!-- Documents -->
+          <div class="bg-white rounded-lg p-5 border border-gray-200 shadow-sm">
+            <h4 class="font-semibold text-gray-800 mb-4 flex items-center">
+              <i class="fas fa-file-alt text-sidebar-accent mr-2"></i>
+              Documents
+            </h4>
+            
+            <!-- Death Certificate -->
+            <div id="deathCertificateSection" class="mb-5">
+              <h5 class="font-medium text-gray-700 mb-2 flex items-center">
+                <i class="fas fa-certificate text-gray-500 mr-2"></i>
+                Death Certificate
+              </h5>
+              <div class="border border-gray-200 rounded-lg overflow-hidden">
+                <div id="deathCertificateAvailable" class="text-center">
+                  <div class="relative bg-gray-100 p-1">
+                    <img id="deathCertificateImage" alt="Death Certificate" class="mx-auto rounded-md max-h-48 object-contain" />
+                    <div class="absolute top-2 right-2">
+                      <button class="bg-white rounded-full p-1 shadow-md hover:bg-gray-100 transition-colors duration-200" title="View Full Size">
+                        <i class="fas fa-search-plus text-blue-600"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <div id="deathCertificateNotAvailable" class="hidden">
+                  <div class="flex flex-col items-center justify-center py-8 px-4 bg-gray-50">
+                    <i class="fas fa-exclamation-circle text-gray-400 text-3xl mb-2"></i>
+                    <p class="text-gray-500 text-center">No death certificate has been uploaded yet.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Payment Proof -->
+            <div>
+              <h5 class="font-medium text-gray-700 mb-2 flex items-center">
+                <i class="fas fa-receipt text-gray-500 mr-2"></i>
+                Payment Proof
+              </h5>
+              <div class="border border-gray-200 rounded-lg overflow-hidden">
+                <div class="relative bg-gray-100 p-1">
+                  <img id="paymentProofImage" alt="Payment Proof" class="mx-auto rounded-md max-h-48 object-contain" />
+                  <div class="absolute top-2 right-2">
+                    <button class="bg-white rounded-full p-1 shadow-md hover:bg-gray-100 transition-colors duration-200" title="View Full Size">
+                      <i class="fas fa-search-plus text-blue-600"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Modal Footer --> 
+    <div class="px-6 py-4 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
+      <button class="px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center" onclick="confirmDecline()">
+        <i class="fas fa-times-circle mr-2"></i>
+        Decline Booking
+      </button>
+      <button class="px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="confirmAccept()">
+        <i class="fas fa-check-circle mr-2"></i>
+        Accept Booking
       </button>
     </div>
-      
-      <!-- Modal Body (Scrollable Content) -->
-      <div class="modal-body">
-          <!-- Booking ID and Status Banner -->
-          <div class="flex justify-between items-center mb-6 bg-gray-50 p-4 rounded-lg">
-              <div class="flex items-center">
-                  <div class="bg-navy rounded-full p-2 mr-3">
-                      <i class="fas fa-hashtag text-sidebar-accent"></i>
-                  </div>
-                  <div>
-                      <p class="text-sm text-gray-500">Booking ID</p>
-                      <p class="font-semibold text-gray-800" id="bookingId">#BK-2025-001</p>
-                  </div>
-              </div>
-              <div>
-                  <p class="text-sm text-gray-500 mb-1">Status</p>
-                  <div id="bookingStatus">
-                      <span class="px-3 py-1.5 text-sm font-medium rounded-full bg-yellow-100 text-sidebar-accent flex items-center">
-                          <i class="fas fa-clock mr-1.5"></i>
-                          Pending
-                      </span>
-                  </div>
-              </div>
-          </div>
-          
-          <!-- Content Grid -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <!-- Left Column -->
-              <div>
-                
-                  <!-- Customer Information -->
-                  <div class="bg-white rounded-lg p-5 border border-gray-200 shadow-sm mb-6">
-                    <h4 class="font-semibold text-gray-800 mb-4 flex items-center">
-                        <i class="fas fa-user text-sidebar-accent mr-2"></i>
-                        Customer Information
-                    </h4>
-                    <div class="space-y-3">
-                        <div class="flex">
-                            <div class="w-1/3 text-sm text-gray-500">Name</div>
-                            <div class="w-2/3 font-medium text-gray-800" id="customerName">John Doe</div>
-                        </div>
-                        <div class="flex">
-                            <div class="w-1/3 text-sm text-gray-500">Contact</div>
-                            <div class="w-2/3 font-medium text-gray-800" id="contactNumber">(555) 123-4567</div>
-                        </div>
-                        <div class="flex">
-                            <div class="w-1/3 text-sm text-gray-500">Email</div>
-                            <div class="w-2/3 font-medium text-gray-800" id="emailAddress">john.doe@example.com</div>
-                        </div>
-                        <div class="flex">
-                            <div class="w-1/3 text-sm text-gray-500">Address</div>
-                            <div class="w-2/3 font-medium text-gray-800" id="address">123 Main St, Anytown, CA 12345</div>
-                        </div>
-                    </div>
-                </div>
-
-                  <!-- Service Details -->
-                  <div class="bg-white rounded-lg p-5 border border-gray-200 shadow-sm">
-                      <h4 class="font-semibold text-gray-800 mb-4 flex items-center">
-                          <i class="fas fa-hands-helping text-sidebar-accent mr-2"></i>
-                          Service Details
-                      </h4>
-                      <div class="space-y-3">
-                          <div class="flex">
-                              <div class="w-1/3 text-sm text-gray-500">Service Type</div>
-                              <div class="w-2/3 font-medium text-gray-800" id="serviceType">Funeral Service Package A</div>
-                          </div>
-                          <div class="flex">
-                              <div class="w-1/3 text-sm text-gray-500">Date Requested</div>
-                              <div class="w-2/3 font-medium text-gray-800" id="dateRequested">Mar 15, 2025</div>
-                          </div>
-                          <div class="flex">
-                              <div class="w-1/3 text-sm text-gray-500">Service Date</div>
-                              <div class="w-2/3 font-medium text-gray-800" id="serviceDate">Mar 20, 2025</div>
-                          </div>
-                          <div class="flex">
-                              <div class="w-1/3 text-sm text-gray-500">Amount Paid</div>
-                              <div class="w-2/3 font-medium text-gray-800" id="amountPaid">$3,500.00</div>
-                          </div>
-                      </div>
-                  </div>  
-              </div>
-              
-              <!-- Right Column -->
-              <div>
-                  <!-- Documents -->
-                  <div class="bg-white rounded-lg p-5 border border-gray-200 shadow-sm">
-                      <h4 class="font-semibold text-gray-800 mb-4 flex items-center">
-                          <i class="fas fa-file-alt text-sidebar-accent mr-2"></i>
-                          Documents
-                      </h4>
-                      
-                      <!-- Death Certificate -->
-                      <div id="deathCertificateSection" class="mb-5">
-                          <h5 class="font-medium text-gray-700 mb-2 flex items-center">
-                              <i class="fas fa-certificate text-gray-500 mr-2"></i>
-                              Death Certificate
-                          </h5>
-                          <div class="border border-gray-200 rounded-lg overflow-hidden">
-                              <div id="deathCertificateAvailable" class="text-center">
-                                  <div class="relative bg-gray-100 p-1">
-                                      <img id="deathCertificateImage"  alt="Death Certificate" class="mx-auto rounded-md max-h-48 object-contain" />
-                                      <div class="absolute top-2 right-2">
-                                          <button class="bg-white rounded-full p-1 shadow-md hover:bg-gray-100 transition-colors duration-200" title="View Full Size">
-                                              <i class="fas fa-search-plus text-blue-600"></i>
-                                          </button>
-                                      </div>
-                                  </div>
-                              </div>
-                              <div id="deathCertificateNotAvailable" class="hidden">
-                                  <div class="flex flex-col items-center justify-center py-8 px-4 bg-gray-50">
-                                      <i class="fas fa-exclamation-circle text-gray-400 text-3xl mb-2"></i>
-                                      <p class="text-gray-500 text-center">No death certificate has been uploaded yet.</p>
-                                  </div>
-                              </div>
-                          </div>
-                      </div>
-                      
-                      <!-- Payment Proof -->
-                      <div>
-                          <h5 class="font-medium text-gray-700 mb-2 flex items-center">
-                              <i class="fas fa-receipt text-gray-500 mr-2"></i>
-                              Payment Proof
-                          </h5>
-                          <div class="border border-gray-200 rounded-lg overflow-hidden">
-                              <div class="relative bg-gray-100 p-1">
-                                  <img id="paymentProofImage"  alt="Payment Proof" class="mx-auto rounded-md max-h-48 object-contain" />
-                                  <div class="absolute top-2 right-2">
-                                      <button class="bg-white rounded-full p-1 shadow-md hover:bg-gray-100 transition-colors duration-200" title="View Full Size">
-                                          <i class="fas fa-search-plus text-blue-600"></i>
-                                      </button>
-                                  </div>
-                              </div>
-                          </div>
-                      </div>
-                  </div>
-              </div>
-          </div>
-      </div>
-      
-      <!-- Action Buttons -->
-      <div class="p-6 border-t border-gray-200 modal-footer bg-gray-50">
-          <div class="flex flex-col-reverse sm:flex-row justify-end gap-4">
-              <button onclick="confirmDecline()" class="bg-white border border-sidebar-accent text-sidebar-accent hover:bg-navy font-medium rounded-lg px-5 py-2.5 transition-colors duration-200 flex items-center justify-center">
-                  <!-- <i class="fas fa-times-circle mr-2"></i> -->
-                  Decline Booking
-              </button>
-              <button onclick="confirmAccept()" class="bg-sidebar-accent text-white hover:bg-darkgold font-medium rounded-lg px-5 py-2.5 transition-colors duration-200 flex items-center justify-center">
-                  <!-- <i class="fas fa-check-circle mr-2"></i> -->
-                  Accept Booking
-              </button>
-          </div>
-      </div>
   </div>
 </div>
 
