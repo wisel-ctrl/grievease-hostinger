@@ -691,6 +691,17 @@ document.addEventListener('DOMContentLoaded', function() {
   // Sidebar toggle functionality
   document.getElementById('hamburger-menu').addEventListener('click', toggleSidebar);
 
+  document.getElementById('traditionalServiceBtn').addEventListener('click', function() {
+    document.getElementById('serviceTypeModal').classList.add('hidden');
+    openTraditionalCheckout();
+  });
+  
+  // Lifeplan Service Button
+  document.getElementById('lifeplanServiceBtn').addEventListener('click', function() {
+    document.getElementById('serviceTypeModal').classList.add('hidden');
+    openLifeplanCheckout();
+  });
+
   // Initialize payment validations
   initializePaymentValidations();
 
@@ -1004,21 +1015,6 @@ function addToCart() {
     document.getElementById('serviceTypeModal').classList.remove('hidden');
   }
 }
-
-// Add event listeners for service type buttons
-document.addEventListener('DOMContentLoaded', function() {
-  // Traditional Service Button
-  document.getElementById('traditionalServiceBtn').addEventListener('click', function() {
-    document.getElementById('serviceTypeModal').classList.add('hidden');
-    openTraditionalCheckout();
-  });
-  
-  // Lifeplan Service Button
-  document.getElementById('lifeplanServiceBtn').addEventListener('click', function() {
-    document.getElementById('serviceTypeModal').classList.add('hidden');
-    openLifeplanCheckout();
-  });
-});
 
 // Function to open traditional checkout
 function openTraditionalCheckout() {
