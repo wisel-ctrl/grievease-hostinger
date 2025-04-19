@@ -589,30 +589,41 @@ if ($branchResult->num_rows > 0) {
 
 </div>
 <!-- Add this modal HTML at the end of your file, before the closing PHP tag -->
-<div id="viewItemModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center">
-  <div class="bg-white rounded-lg shadow-lg max-w-2xl w-full">
-    <div class="p-5 border-b border-sidebar-border flex justify-between items-center">
-    <h3 class="text-xl font-bold text-sidebar-accent"><i class="fas fa-box"></i> Inventory Item Details</h3>
-      <button onclick="closeViewItemModal()" class="text-gray-500 hover:text-gray-700">
-        <i class="fas fa-times"></i>
-
+<div class="fixed inset-0 z-50 flex items-center justify-center hidden" id="viewItemModal">
+  <!-- Modal Backdrop -->
+  <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+  
+  <!-- Modal Content -->
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-2xl mx-4 z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+    <!-- Close Button -->
+    <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeViewItemModal()">
+      <i class="fas fa-times"></i>
+    </button>
+    
+    <!-- Modal Header -->
+    <div class="px-6 py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
+      <h3 class="text-xl font-bold text-white flex items-center">
+        <i class="fas fa-box mr-2"></i>
+        Inventory Item Details
+      </h3>
     </div>
-    <div class="p-5" id="itemDetailsContent">
+    
+    <!-- Modal Body -->
+    <div class="px-6 py-5" id="itemDetailsContent">
       <!-- Item details will be loaded here via AJAX -->
       <div class="flex justify-center">
         <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-sidebar-accent"></div>
       </div>
     </div>
-    <div class="p-6 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
-      <button class="px-5 py-3 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-semibold hover:bg-navy transition-colors" onclick="closeViewItemModal()">
+    
+    <!-- Modal Footer --> 
+    <div class="px-6 py-4 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
+      <button class="px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center" onclick="closeViewItemModal()">
+        <i class="fas fa-times mr-2"></i>
         Cancel
       </button>
-      <button type="button" class="px-6 py-3 bg-sidebar-accent text-white rounded-lg font-semibold hover:bg-darkgold transition-colors flex items-center" onclick="saveItemChanges()">
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
-          <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
-          <polyline points="17 21 17 13 7 13 7 21"></polyline>
-          <polyline points="7 3 7 8 15 8"></polyline>
-        </svg>
+      <button class="px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="saveItemChanges()">
+        <i class="fas fa-save mr-2"></i>
         Save Changes
       </button>
     </div>
