@@ -825,64 +825,6 @@ function goBackToBranches() {
   selectedBranch = null;
 }
 
-// Function to load categories
-// function loadCategories() {
-//   const container = document.getElementById('categories-container');
-//   container.innerHTML = '';
-  
-//   // Get all unique categories that have services in the selected branch
-//   const branchServices = allServices.filter(service => service.branch_id == selectedBranch);
-//   const branchCategories = [];
-  
-//   // Find all categories that have services in this branch
-//   branchServices.forEach(service => {
-//     const category = categories.find(cat => cat.service_categoryID == service.service_categoryID);
-//     if (category && !branchCategories.some(c => c.service_categoryID == category.service_categoryID)) {
-//       branchCategories.push(category);
-//     }
-//   });
-  
-//   if (branchCategories.length === 0) {
-//     container.innerHTML = '<div class="col-span-full text-center py-8 text-gray-500">No service categories available for this branch.</div>';
-//     return;
-//   }
-  
-//   branchCategories.forEach(category => {
-//     const categoryCard = document.createElement('div');
-//     categoryCard.className = 'bg-white rounded-lg p-5 shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 cursor-pointer';
-//     categoryCard.innerHTML = `
-//       <div class="text-xl font-bold mb-3 text-sidebar-text">${category.service_category_name}</div>
-//       <div class="flex justify-between items-center">
-//         <div class="text-gray-500 text-sm"><i class="fas fa-tag mr-1"></i> Service Category</div>
-//         <i class="fas fa-chevron-right text-sidebar-accent"></i>
-//       </div>
-//     `;
-//     categoryCard.onclick = () => selectCategory(category.service_categoryID, category.service_category_name);
-//     container.appendChild(categoryCard);
-//   });
-// }
-
-// // Function to select a category
-// function selectCategory(categoryId, categoryName) {
-//   selectedCategory = categoryId;
-//   document.getElementById('selected-category-name').textContent = categoryName;
-//   document.getElementById('services-branch-name').textContent = 
-//     branches.find(branch => branch.branch_id == selectedBranch).branch_name;
-  
-//   document.getElementById('category-selection').classList.add('hidden');
-//   document.getElementById('services-section').classList.remove('hidden');
-  
-//   // Load services for this branch and category
-//   loadServices();
-// }
-
-// // Function to go back to category selection
-// function goBackToCategories() {
-//   document.getElementById('category-selection').classList.remove('hidden');
-//   document.getElementById('services-section').classList.add('hidden');
-//   selectedCategory = null;
-// }
-
 // Function to load services for the selected branch and category
 function loadServices() {
   const container = document.getElementById('services-container');
@@ -948,6 +890,7 @@ function loadServices() {
 
 // Function to show service details in modal
 function showServiceDetails(service) {
+  console.log("Showing service details:", service);
   selectedService = service;
   document.getElementById('modal-title').textContent = service.service_name;
   document.getElementById('service-price').value = service.selling_price;
@@ -1004,11 +947,13 @@ function closePackageModal() {
 // Function to handle adding to cart and immediately proceed to checkout
 // Modify the addToCart function to show service type selection first
 function addToCart() {
+  console.log("Selected service in addToCart:", selectedService);
   if (selectedService) {
-    // Set the service details in a temporary storage
-    document.getElementById('service-id').value = selectedService.service_id;
-    document.getElementById('service-price').value = selectedService.selling_price;
-    document.getElementById('branch-id').value = selectedService.branch_id;
+    // Store the selected service in the service type modal's data attributes
+    const serviceTypeModal = document.getElementById('serviceTypeModal');
+    serviceTypeModal.dataset.serviceId = selectedService.service_id;
+    serviceTypeModal.dataset.servicePrice = selectedService.selling_price;
+    serviceTypeModal.dataset.branchId = selectedService.branch_id;
     
     // Close package modal and show service type selection
     closePackageModal();
@@ -1018,13 +963,24 @@ function addToCart() {
 
 // Function to open traditional checkout
 function openTraditionalCheckout() {
+  console.log("Opening traditional checkout with service:", document.getElementById('serviceTypeModal').dataset);
+  const serviceTypeModal = document.getElementById('serviceTypeModal');
+  const serviceId = serviceTypeModal.dataset.serviceId;
+  const servicePrice = serviceTypeModal.dataset.servicePrice;
+  const branchId = serviceTypeModal.dataset.branchId;
+
+  // Set the service details in the form
+  document.getElementById('service-id').value = serviceId;
+  document.getElementById('service-price').value = servicePrice;
+  document.getElementById('branch-id').value = branchId;
+  
   // Update the total price in the checkout form
-  document.getElementById('totalPrice').value = selectedService.selling_price;
+  document.getElementById('totalPrice').value = servicePrice;
   document.getElementById('footer-total-price').textContent = 
-    `₱${parseFloat(selectedService.selling_price).toLocaleString('en-PH', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+    `₱${parseFloat(servicePrice).toLocaleString('en-PH', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
   
   // Update minimum price display
-  const minimumPrice = parseFloat(selectedService.selling_price) * 0.5;
+  const minimumPrice = parseFloat(servicePrice) * 0.5;
   document.getElementById('min-price').textContent = `₱${minimumPrice.toFixed(2)}`;
   
   // Open checkout modal
@@ -1033,18 +989,23 @@ function openTraditionalCheckout() {
 
 // Function to open lifeplan checkout
 function openLifeplanCheckout() {
+  const serviceTypeModal = document.getElementById('serviceTypeModal');
+  const serviceId = serviceTypeModal.dataset.serviceId;
+  const servicePrice = serviceTypeModal.dataset.servicePrice;
+  const branchId = serviceTypeModal.dataset.branchId;
+
   // Set the service details in the lifeplan form
-  document.getElementById('lp-service-id').value = selectedService.service_id;
-  document.getElementById('lp-service-price').value = selectedService.selling_price;
-  document.getElementById('lp-branch-id').value = selectedService.branch_id;
+  document.getElementById('lp-service-id').value = serviceId;
+  document.getElementById('lp-service-price').value = servicePrice;
+  document.getElementById('lp-branch-id').value = branchId;
   
   // Update the total price in the lifeplan checkout form
-  document.getElementById('lp-totalPrice').value = selectedService.selling_price;
+  document.getElementById('lp-totalPrice').value = servicePrice;
   document.getElementById('lp-footer-total-price').textContent = 
-    `₱${parseFloat(selectedService.selling_price).toLocaleString('en-PH', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+    `₱${parseFloat(servicePrice).toLocaleString('en-PH', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
   
   // Update minimum price display
-  const minimumPrice = parseFloat(selectedService.selling_price) * 0.5;
+  const minimumPrice = parseFloat(servicePrice) * 0.5;
   document.getElementById('lp-min-price').textContent = `₱${minimumPrice.toFixed(2)}`;
   
   // Open lifeplan checkout modal
