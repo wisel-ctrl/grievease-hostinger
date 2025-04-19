@@ -515,13 +515,72 @@ $categoriesDataJson = json_encode([
 
   <!-- Add New Expense Button -->
   <!-- Replace the entire expense table section with this code -->
-<div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 mb-8">
-    <div class="flex justify-between items-center p-5 border-b border-sidebar-border">
-        <h3 class="font-medium text-sidebar-text">Expenses</h3>
-        <button class="bg-sidebar-accent hover:bg-darkgold text-white px-4 py-2 rounded flex items-center text-sm transition-all duration-300" onclick="openAddExpenseModal()">
-            <i class="fas fa-plus mr-2"></i> Add Expense
-        </button>
+<div class="bg-white rounded-lg shadow-md mb-8 border border-sidebar-border overflow-hidden branch-container">
+    <div class="bg-sidebar-hover p-4 border-b border-sidebar-border flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div class="flex items-center gap-3">
+            <h4 class="text-lg font-bold text-sidebar-text">Expenses Management</h4>
+            
+            <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
+                <i class="fas fa-clipboard-list"></i>
+                All Expenses
+            </span>
+        </div>
+        
+        <!-- Search and Filter Section -->
+        <div class="flex flex-col md:flex-row items-start md:items-center gap-3 w-full md:w-auto">
+            <!-- Search Input -->
+            <div class="relative w-full md:w-64">
+                <input type="text" id="searchExpenses" 
+                       placeholder="Search expenses..." 
+                       class="pl-8 pr-3 py-2 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent"
+                       oninput="debouncedFilterExpenses()">
+                <i class="fas fa-search absolute left-2.5 top-3 text-gray-400"></i>
+            </div>
+
+            <!-- Filter Dropdown -->
+            <div class="relative filter-dropdown">
+                <button class="px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover"
+                        onclick="toggleExpenseFilterWindow()">
+                    <i class="fas fa-filter text-sidebar-accent"></i>
+                    <span>Filters</span>
+                    <span id="filterIndicator" class="hidden h-2 w-2 bg-sidebar-accent rounded-full"></span>
+                </button>
+                
+                <!-- Filter Window -->
+                <div id="expenseFilterWindow" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-4">
+                    <div class="space-y-4">
+                        <!-- Status Filter -->
+                        <div>
+                            <h5 class="text-sm font-medium text-sidebar-text mb-2">Status</h5>
+                            <div class="space-y-1">
+                                <div class="flex items-center cursor-pointer" onclick="setExpenseFilter('status', '')">
+                                    <span class="filter-option bg-sidebar-accent text-white px-2 py-1 rounded text-sm w-full">
+                                        All Statuses
+                                    </span>
+                                </div>
+                                <div class="flex items-center cursor-pointer" onclick="setExpenseFilter('status', 'paid')">
+                                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                                        Paid
+                                    </span>
+                                </div>
+                                <div class="flex items-center cursor-pointer" onclick="setExpenseFilter('status', 'to be paid')">
+                                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                                        To be paid
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button class="px-4 py-2.5 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm whitespace-nowrap" 
+                    onclick="openAddExpenseModal()">
+                <i class="fas fa-plus-circle"></i> Add New Expense
+            </button>
+        </div>
     </div>
+    
     <div class="overflow-x-auto scrollbar-thin">
         <?php
         include '../db_connect.php';
@@ -532,71 +591,100 @@ $categoriesDataJson = json_encode([
         
         if ($branchResult->num_rows > 0) {
             while($branch = $branchResult->fetch_assoc()) {
-                echo '<div class="mb-8">';
-                echo '<h4 class="text-lg font-semibold p-4 bg-gray-100">'.$branch['branch_name'].' Expenses</h4>';
+                // Count total expenses for this branch
+                $countQuery = "SELECT COUNT(*) as total FROM expense_tb WHERE branch_id = ".$branch['branch_id']." AND appearance = 'visible'";
+                $countResult = $conn->query($countQuery);
+                $countRow = $countResult->fetch_assoc();
+                $totalExpenses = $countRow['total'];
+                
+                echo '<div class="branch-expenses mb-8" data-branch-id="'.$branch['branch_id'].'">';
+                echo '<div class="bg-sidebar-hover p-4 border-b border-sidebar-border flex items-center gap-3">';
+                echo '<h4 class="text-lg font-bold text-sidebar-text">Branch: '.$branch['branch_name'].'</h4>';
+                echo '<span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">';
+                echo '<i class="fas fa-clipboard-list"></i> '.$totalExpenses.' Expense'.($totalExpenses != 1 ? 's' : '');
+                echo '</span>';
+                echo '</div>';
                 
                 // Fetch expenses for this branch
-                // With this:
                 $expenseQuery = "SELECT * FROM expense_tb WHERE branch_id = ".$branch['branch_id']." AND appearance = 'visible' ORDER BY date DESC";
                 $expenseResult = $conn->query($expenseQuery);
                 
                 if ($expenseResult->num_rows > 0) {
                     echo '<table class="w-full">';
                     echo '<thead>
-                            <tr class="bg-sidebar-hover">
-                                <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(0)">
+                            <tr class="bg-gray-50 border-b border-sidebar-border">
+                                <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortExpenseTable('.$branch['branch_id'].', 0)">
                                     <div class="flex items-center">
-                                        ID <i class="fas fa-sort ml-1 text-gray-400"></i>
+                                        <i class="fas fa-hashtag mr-1.5 text-sidebar-accent"></i> ID
+                                        <i class="fas fa-sort ml-1 text-gray-400"></i>
                                     </div>
                                 </th>
-                                <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(1)">
+                                <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortExpenseTable('.$branch['branch_id'].', 1)">
                                     <div class="flex items-center">
-                                        Expense Name <i class="fas fa-sort ml-1 text-gray-400"></i>
+                                        <i class="fas fa-tag mr-1.5 text-sidebar-accent"></i> Expense Name
+                                        <i class="fas fa-sort ml-1 text-gray-400"></i>
                                     </div>
                                 </th>
-                                <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(2)">
+                                <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortExpenseTable('.$branch['branch_id'].', 2)">
                                     <div class="flex items-center">
-                                        Category <i class="fas fa-sort ml-1 text-gray-400"></i>
+                                        <i class="fas fa-th-list mr-1.5 text-sidebar-accent"></i> Category
+                                        <i class="fas fa-sort ml-1 text-gray-400"></i>
                                     </div>
                                 </th>
-                                <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(3)">
+                                <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortExpenseTable('.$branch['branch_id'].', 3)">
                                     <div class="flex items-center">
-                                        Amount <i class="fas fa-sort ml-1 text-gray-400"></i>
+                                        <i class="fas fa-peso-sign mr-1.5 text-sidebar-accent"></i> Amount
+                                        <i class="fas fa-sort ml-1 text-gray-400"></i>
                                     </div>
                                 </th>
-                                <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(4)">
+                                <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortExpenseTable('.$branch['branch_id'].', 4)">
                                     <div class="flex items-center">
-                                        Date <i class="fas fa-sort ml-1 text-gray-400"></i>
+                                        <i class="fas fa-calendar mr-1.5 text-sidebar-accent"></i> Date
+                                        <i class="fas fa-sort ml-1 text-gray-400"></i>
                                     </div>
                                 </th>
-                                <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(5)">
+                                <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortExpenseTable('.$branch['branch_id'].', 5)">
                                     <div class="flex items-center">
-                                        Status <i class="fas fa-sort ml-1 text-gray-400"></i>
+                                        <i class="fas fa-toggle-on mr-1.5 text-sidebar-accent"></i> Status
+                                        <i class="fas fa-sort ml-1 text-gray-400"></i>
                                     </div>
                                 </th>
-                                <th class="p-4 text-left text-sm font-medium text-sidebar-text">Actions</th>
+                                <th class="p-4 text-left text-sm font-medium text-sidebar-text">
+                                    <div class="flex items-center">
+                                        <i class="fas fa-cogs mr-1.5 text-sidebar-accent"></i> Actions
+                                    </div>
+                                </th>
                             </tr>
                         </thead>
                         <tbody>';
                     
                     while($expense = $expenseResult->fetch_assoc()) {
-                        $statusClass = $expense['status'] == 'paid' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800';
+                        $statusClass = $expense['status'] == 'paid' 
+                            ? "bg-green-100 text-green-600 border border-green-200" 
+                            : "bg-orange-100 text-orange-500 border border-orange-200";
+                        $statusIcon = $expense['status'] == 'paid' ? "fa-check-circle" : "fa-clock";
                         $statusText = $expense['status'] == 'paid' ? 'Paid' : 'To be paid';
                         
-                        echo '<tr class="border-b border-sidebar-border hover:bg-sidebar-hover">';
+                        echo '<tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">';
                         echo '<td class="p-4 text-sm text-sidebar-text font-medium">#EXP-'.str_pad($expense['expense_ID'], 3, '0', STR_PAD_LEFT).'</td>';
-                        echo '<td class="p-4 text-sm text-sidebar-text">'.$expense['expense_name'].'</td>';
-                        echo '<td class="p-4 text-sm text-sidebar-text">'.$expense['category'].'</td>';
-                        echo '<td class="p-4 text-sm text-sidebar-text">$'.number_format($expense['price'], 2).'</td>';
+                        echo '<td class="p-4 text-sm text-sidebar-text">'.htmlspecialchars($expense['expense_name']).'</td>';
+                        echo '<td class="p-4 text-sm text-sidebar-text">';
+                        echo '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">'.htmlspecialchars($expense['category']).'</span>';
+                        echo '</td>';
+                        echo '<td class="p-4 text-sm font-medium text-sidebar-text">$'.number_format($expense['price'], 2).'</td>';
                         echo '<td class="p-4 text-sm text-sidebar-text">'.$expense['date'].'</td>';
-                        echo '<td class="p-4 text-sm"><span class="px-2 py-1 '.$statusClass.' rounded-full text-xs">'.$statusText.'</span></td>';
+                        echo '<td class="p-4 text-sm">';
+                        echo '<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium '.$statusClass.'">';
+                        echo '<i class="fas '.$statusIcon.' mr-1"></i> '.$statusText;
+                        echo '</span>';
+                        echo '</td>';
                         echo '<td class="p-4 text-sm">';
                         echo '<div class="flex space-x-2">';
-                        echo '<button class="p-1.5 bg-blue-100 text-blue-600 rounded hover:bg-blue-200 transition-all" onclick="openEditExpenseModal(\'#EXP-'.str_pad($expense['expense_ID'], 3, '0', STR_PAD_LEFT).'\', \''.addslashes($expense['expense_name']).'\', \''.addslashes($expense['category']).'\', \''.$expense['price'].'\', \''.$expense['date'].'\', \''.$expense['branch_id'].'\', \''.$expense['status'].'\', \''.addslashes($expense['notes'] ?? '').'\');">';
+                        echo '<button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="Edit Expense" onclick="openEditExpenseModal(\'#EXP-'.str_pad($expense['expense_ID'], 3, '0', STR_PAD_LEFT).'\', \''.addslashes($expense['expense_name']).'\', \''.addslashes($expense['category']).'\', \''.$expense['price'].'\', \''.$expense['date'].'\', \''.$expense['branch_id'].'\', \''.$expense['status'].'\', \''.addslashes($expense['notes'] ?? '').'\');">';
                         echo '<i class="fas fa-edit"></i>';
                         echo '</button>';
-                        echo '<button class="p-1.5 bg-red-100 text-red-600 rounded hover:bg-red-200 transition-all" onclick="deleteExpense(\'#EXP-'.str_pad($expense['expense_ID'], 3, '0', STR_PAD_LEFT).'\')">';
-                        echo '<i class="fas fa-trash"></i>';
+                        echo '<button class="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-all tooltip" title="Delete Expense" onclick="deleteExpense(\'#EXP-'.str_pad($expense['expense_ID'], 3, '0', STR_PAD_LEFT).'\')">';
+                        echo '<i class="fas fa-trash-alt"></i>';
                         echo '</button>';
                         echo '</div>';
                         echo '</td>';
@@ -604,8 +692,24 @@ $categoriesDataJson = json_encode([
                     }
                     
                     echo '</tbody></table>';
+                    
+                    // Pagination placeholder (you would need to implement this part)
+                    echo '<div class="p-4 border-t border-sidebar-border flex justify-between items-center">';
+                    echo '<div class="text-sm text-gray-500">Showing 1 - '.$expenseResult->num_rows.' of '.$totalExpenses.' expenses</div>';
+                    echo '<div class="flex space-x-1">';
+                    echo '<button class="px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover opacity-50 cursor-not-allowed" disabled>&laquo;</button>';
+                    echo '<button class="px-3 py-1 border border-sidebar-border rounded text-sm bg-sidebar-accent text-white">1</button>';
+                    echo '<button class="px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover opacity-50 cursor-not-allowed" disabled>&raquo;</button>';
+                    echo '</div>';
+                    echo '</div>';
+                    
                 } else {
-                    echo '<div class="p-4 text-center text-sm text-sidebar-text">No expenses found for this branch</div>';
+                    echo '<div class="p-6 text-sm text-center">';
+                    echo '<div class="flex flex-col items-center">';
+                    echo '<i class="fas fa-inbox text-gray-300 text-4xl mb-3"></i>';
+                    echo '<p class="text-gray-500">No expenses found for this branch</p>';
+                    echo '</div>';
+                    echo '</div>';
                 }
                 
                 echo '</div>'; // Close branch section
@@ -618,8 +722,6 @@ $categoriesDataJson = json_encode([
         ?>
     </div>
 </div>
-
-      </div>
 
 <!-- Modal for Adding New Expense -->
 <div id="addExpenseModal" class="fixed top-0 left-0 w-full h-full bg-black bg-opacity-60 flex items-center justify-center z-50 hidden">
