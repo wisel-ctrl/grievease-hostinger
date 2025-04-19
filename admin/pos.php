@@ -591,7 +591,6 @@ function selectBranch(branchId, branchName) {
 // Function to go back to branch selection
 function goBackToBranches() {
   document.getElementById('branch-selection').classList.remove('hidden');
-  document.getElementById('category-selection').classList.add('hidden');
   document.getElementById('services-section').classList.add('hidden');
   selectedBranch = null;
 }
