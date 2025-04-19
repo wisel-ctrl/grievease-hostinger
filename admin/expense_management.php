@@ -817,29 +817,41 @@ $conn->close();
 
 
 <!-- Modal for Adding New Expense -->
-<div id="addExpenseModal" class="fixed top-0 left-0 w-full h-full bg-black bg-opacity-60 flex items-center justify-center z-50 hidden">
-  <div class="bg-white rounded-xl w-full max-w-md max-h-[90vh] overflow-y-auto shadow-xl">
+<div id="addExpenseModal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
+  <!-- Modal Backdrop -->
+  <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+  
+  <!-- Modal Content -->
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-md mx-4 z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+    <!-- Close Button -->
+    <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeAddExpenseModal()">
+      <i class="fas fa-times"></i>
+    </button>
+    
     <!-- Modal Header -->
-    <div class="bg-gradient-to-r from-sidebar-accent to-white flex justify-between items-center p-6 flex-shrink-0">
-      <h3 class="text-xl font-bold text-white">Add New Expense</h3>
-      <button class="bg-black bg-opacity-20 hover:bg-opacity-30 rounded-full p-2 text-white hover:text-white transition-all duration-200" onclick="closeAddExpenseModal()">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-          <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-        </svg>
-      </button>
+    <div class="px-6 py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
+      <h3 class="text-xl font-bold text-white flex items-center">
+        <i class="fas fa-plus-circle mr-2"></i>
+        Add New Expense
+      </h3>
     </div>
     
     <!-- Modal Body -->
-    <div class="p-6">
-      <form id="expenseForm" class="space-y-5">
+    <div class="px-6 py-5">
+      <form id="expenseForm" class="space-y-4">
         <div>
-          <label for="expenseDescription" class="block text-sm font-medium text-gray-700 mb-1">Expense Name</label>
-          <input type="text" id="expenseDescription" name="expenseDescription" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent" required>
+          <label for="expenseDescription" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            <i class="fas fa-tag mr-2 text-sidebar-accent"></i>
+            Expense Name
+          </label>
+          <div class="relative">
+            <input type="text" id="expenseDescription" name="expenseDescription" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
+          </div>
         </div>
         
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Branch</label>
-          <div class="flex gap-4">
+        <div class="bg-gray-50 p-4 rounded-lg border-l-4 border-gold">
+          <label class="block text-xs font-medium text-gray-700 mb-2">Branch</label>
+          <div class="flex flex-wrap gap-4">
           <?php
           // Include your MySQLi database connection
           require_once '../db_connect.php';
@@ -858,19 +870,16 @@ $conn->close();
           if ($result->num_rows > 0) {
               $first = true;
               while($row = $result->fetch_assoc()) {
-                  echo '<div class="flex items-center">';
-                  echo '<input type="radio" id="branch_' . htmlspecialchars($row['branch_id']) . '" 
-                        name="expenseBranch" value="' . htmlspecialchars($row['branch_id']) . '" 
-                        class="w-4 h-4 text-sidebar-accent focus:ring-sidebar-accent"' . 
-                        ($first ? ' checked' : '') . '>';
-                  echo '<label for="branch_' . htmlspecialchars($row['branch_id']) . '" 
-                        class="ml-2 text-sm text-gray-700">' . 
-                        htmlspecialchars($row['branch_name']) . '</label>';
-                  echo '</div>';
+                  echo '<label class="flex items-center space-x-2 cursor-pointer">';
+                  echo '<input type="radio" name="expenseBranch" value="' . $row['branch_id'] . '"' . 
+                       ($first ? ' checked' : '') . ' required class="hidden peer">';
+                  echo '<div class="w-5 h-5 rounded-full border-2 border-gold flex items-center justify-center peer-checked:bg-gold peer-checked:border-darkgold transition-colors"></div>';
+                  echo '<span class="text-gray-700 font-medium">' . htmlspecialchars($row['branch_name']) . '</span>';
+                  echo '</label>';
                   $first = false;
               }
           } else {
-              echo '<div class="text-red-500">No branches found</div>';
+              echo '<p class="text-gray-500">No branches available.</p>';
           }
           $conn->close();
           ?>
@@ -878,57 +887,84 @@ $conn->close();
         </div>
 
         <div>
-          <label for="expenseCategory" class="block text-sm font-medium text-gray-700 mb-1">Category</label>
-          <select id="expenseCategory" name="expenseCategory" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent" required>
-            <option value="" disabled selected>Select a category</option>
-            <option value="Supplies">Supplies</option>
-            <option value="Utilities">Utilities</option>
-            <option value="Salaries">Salaries</option>
-            <option value="Maintenance">Maintenance</option>
-            <option value="Other">Other</option>
-          </select>
+          <label for="expenseCategory" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            <i class="fas fa-th-list mr-2 text-sidebar-accent"></i>
+            Category
+          </label>
+          <div class="relative">
+            <select id="expenseCategory" name="expenseCategory" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
+              <option value="" disabled selected>Select a category</option>
+              <option value="Supplies">Supplies</option>
+              <option value="Utilities">Utilities</option>
+              <option value="Salaries">Salaries</option>
+              <option value="Maintenance">Maintenance</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
         </div>
+        
         <div>
-          <label for="expenseAmount" class="block text-sm font-medium text-gray-700 mb-1">Amount</label>
+          <label for="expenseAmount" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            <i class="fas fa-coins mr-2 text-sidebar-accent"></i>
+            Amount
+          </label>
           <div class="relative">
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <span class="text-gray-500">₱</span>
             </div>
-            <input type="number" id="expenseAmount" name="expenseAmount" class="w-full pl-8 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent" required>
+            <input type="number" id="expenseAmount" name="expenseAmount" class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
           </div>
-        </div>
-        <div>
-          <label for="expenseDate" class="block text-sm font-medium text-gray-700 mb-1">Date</label>
-          <input type="date" id="expenseDate" name="expenseDate" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent" required>
         </div>
         
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
-          <div class="flex gap-4">
-            <div class="flex items-center">
-              <input type="radio" id="statusPaid" name="expenseStatus" value="paid" class="w-4 h-4 text-sidebar-accent focus:ring-sidebar-accent" checked>
-              <label for="statusPaid" class="ml-2 text-sm text-gray-700">Paid</label>
-            </div>
-            <div class="flex items-center">
-              <input type="radio" id="statusToBePaid" name="expenseStatus" value="to be paid" class="w-4 h-4 text-sidebar-accent focus:ring-sidebar-accent">
-              <label for="statusToBePaid" class="ml-2 text-sm text-gray-700">To Be Paid</label>
-            </div>
+          <label for="expenseDate" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            <i class="fas fa-calendar mr-2 text-sidebar-accent"></i>
+            Date
+          </label>
+          <div class="relative">
+            <input type="date" id="expenseDate" name="expenseDate" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
           </div>
         </div>
+        
+        <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+          <label class="block text-xs font-medium text-gray-700 mb-2 flex items-center">
+            <i class="fas fa-check-circle mr-2 text-sidebar-accent"></i>
+            Status
+          </label>
+          <div class="grid grid-cols-2 gap-3">
+            <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
+              <input type="radio" id="statusPaid" name="expenseStatus" value="paid" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent" checked>
+              <i class="fas fa-check-circle mr-1 text-sidebar-accent"></i>
+              Paid
+            </label>
+            <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
+              <input type="radio" id="statusToBePaid" name="expenseStatus" value="to be paid" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
+              <i class="fas fa-clock mr-1 text-sidebar-accent"></i>
+              To Be Paid
+            </label>
+          </div>
+        </div>
+        
         <div>
-          <label for="expenseNote" class="block text-sm font-medium text-gray-700 mb-1">Note</label>
-          <textarea id="expenseNote" name="expenseNote" rows="3" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent"></textarea>
+          <label for="expenseNote" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            <i class="fas fa-sticky-note mr-2 text-sidebar-accent"></i>
+            Note
+          </label>
+          <div class="relative">
+            <textarea id="expenseNote" name="expenseNote" rows="3" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"></textarea>
+          </div>
         </div>
       </form>
     </div>
     
     <!-- Modal Footer -->
-    <div class="p-6 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
-      <button class="px-5 py-3 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-semibold hover:bg-navy transition-colors" onclick="closeAddExpenseModal()">Cancel</button>
-      <button class="px-6 py-3 bg-sidebar-accent text-white rounded-lg font-semibold hover:bg-darkgold transition-colors flex items-center" onclick="addExpense()">
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
-          <polyline points="20 6 9 17 4 12"></polyline>
-        </svg>
+    <div class="px-6 py-4 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
+      <button class="px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center" onclick="closeAddExpenseModal()">
+        <i class="fas fa-times mr-2"></i>
+        Cancel
+      </button>
+      <button class="px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="addExpense()">
+        <i class="fas fa-plus mr-2"></i>
         Add Expense
       </button>
     </div>
