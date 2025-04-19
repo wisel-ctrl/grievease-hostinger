@@ -593,6 +593,7 @@ function goBackToBranches() {
   document.getElementById('branch-selection').classList.remove('hidden');
   document.getElementById('category-selection').classList.add('hidden');
   document.getElementById('services-section').classList.add('hidden');
+  document.getElementById('services-container').classList.add('hidden');
   selectedBranch = null;
 }
 
@@ -772,8 +773,6 @@ function closePackageModal() {
   selectedService = null;
 }
 
-// Function to add the selected service to cart
-// Function to handle adding to cart and immediately proceed to checkout
 // Function to handle adding to cart and immediately proceed to checkout
 function addToCart() {
   if (selectedService) {
@@ -803,11 +802,6 @@ function addToCart() {
     });
   }
 }
-
-
-
-// Function to handle checkout
-
 
 function closeCheckoutModal() {
   document.getElementById('checkoutModal').classList.add('hidden');
