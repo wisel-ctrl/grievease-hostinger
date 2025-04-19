@@ -815,13 +815,6 @@ if ($branchResult->num_rows > 0) {
 $conn->close();
 ?>
 
-<!-- Add New Expense Button (Global) -->
-<div class="fixed bottom-6 right-6 z-10">
-    <button class="bg-sidebar-accent hover:bg-darkgold text-white p-4 rounded-full shadow-lg flex items-center justify-center"
-            onclick="openAddExpenseModal()">
-        <i class="fas fa-plus text-xl"></i>
-    </button>
-</div>
 
 <!-- Modal for Adding New Expense -->
 <div id="addExpenseModal" class="fixed top-0 left-0 w-full h-full bg-black bg-opacity-60 flex items-center justify-center z-50 hidden">
