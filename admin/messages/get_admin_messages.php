@@ -1,6 +1,14 @@
 <?php
-session_start();
+
+ob_start();
+ini_set('display_errors', 0);
+error_reporting(E_ALL);
+
 header('Content-Type: application/json');
+
+try {
+    session_start();
+
 
 // Check if user is logged in as admin
 if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] != 1) {
@@ -14,6 +22,27 @@ require_once '../../db_connect.php'; // Adjust path as needed
 // Get admin ID from session
 $admin_id = $_SESSION['user_id'];
 
+$debug_query = "
+    SELECT COUNT(*) as chat_count
+    FROM chat_recipients cr
+    WHERE cr.userId = '$admin_id'
+";
+$debug_result = $conn->query($debug_query);
+$debug_row = $debug_result->fetch_assoc();
+error_log("Admin chat count: " . $debug_row['chat_count']);
+
+// Debug query
+$debug_rooms = "
+    SELECT DISTINCT cm.chatRoomId
+    FROM chat_messages cm
+    JOIN chat_recipients cr ON cm.chatId = cr.chatId
+    WHERE cr.userId = '$admin_id'
+";
+$room_result = $conn->query($debug_rooms);
+while ($room = $room_result->fetch_assoc()) {
+    error_log("Found chatroom: " . $room['chatRoomId']);
+}
+
 // Prepare filter conditions
 $filter_condition = "";
 $search_condition = "";
@@ -24,7 +53,7 @@ if (isset($_GET['filter'])) {
     
     switch ($filter) {
         case 'unread':
-            $filter_condition = " AND (cm.status = 'sent' AND cm.receiver = '$admin_id')";
+            $filter_condition = " AND (cm.status = 'sent' AND cr.userId = '$admin_id')";
             break;
         case 'today':
             $filter_condition = " AND DATE(cm.timestamp) = CURDATE()";
@@ -52,34 +81,37 @@ $query = "
     SELECT 
         cm.chatRoomId,
         cm.sender,
-        cm.receiver,
         cm.message,
         cm.timestamp,
         cm.status,
+        cm.messageType,
+        cm.attachmentUrl,
         CONCAT(u.first_name, ' ', u.last_name) AS sender_name,
         u.email AS sender_email,
-        NULL AS sender_profile_picture,
         (
             SELECT COUNT(*) 
-            FROM chat_messages 
-            WHERE chatRoomId = cm.chatRoomId 
-            AND receiver = '$admin_id' 
-            AND status = 'sent'
+            FROM chat_messages cm2
+            JOIN chat_recipients cr2 ON cm2.chatId = cr2.chatId
+            WHERE cm2.chatRoomId = cm.chatRoomId 
+            AND cr2.userId = '$admin_id' 
+            AND cm2.sender != '$admin_id'
+            AND cr2.status = 'sent'
         ) AS unread_count
     FROM chat_messages cm
-    INNER JOIN (
-        SELECT chatRoomId, MAX(timestamp) as max_timestamp
-        FROM chat_messages
-        WHERE sender = '$admin_id' OR receiver = '$admin_id'
-        GROUP BY chatRoomId
-    ) latest ON cm.chatRoomId = latest.chatRoomId AND cm.timestamp = latest.max_timestamp
-    LEFT JOIN users u ON (
-        CASE 
-            WHEN cm.sender = '$admin_id' THEN cm.receiver
-            ELSE cm.sender
-        END = u.id
+    JOIN chat_recipients cr ON cm.chatId = cr.chatId
+    JOIN users u ON cm.sender = u.id
+    WHERE cr.userId = '$admin_id'
+    AND cm.chatId IN (
+        SELECT chatId 
+        FROM chat_recipients 
+        WHERE userId = '$admin_id'
     )
-    WHERE u.user_type = 3 $filter_condition $search_condition
+    AND cm.timestamp = (
+        SELECT MAX(timestamp) 
+        FROM chat_messages 
+        WHERE chatRoomId = cm.chatRoomId
+    )
+    $filter_condition $search_condition
     ORDER BY cm.timestamp DESC
 ";
 
@@ -106,6 +138,18 @@ echo json_encode([
     'count' => count($conversations),
     'conversations' => $conversations
 ]);
+} catch (Exception $e) {
+    // Clear any output that might have been sent before the error
+    ob_clean();
+    
+    // Output error as JSON
+    echo json_encode([
+        'success' => false,
+        'error' => $e->getMessage()
+    ]);
+}
 
 $conn->close();
+
+ob_end_flush();
 ?>

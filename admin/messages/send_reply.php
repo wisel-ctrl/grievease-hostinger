@@ -26,22 +26,43 @@ $chatRoomId = $conn->real_escape_string($data['chatRoomId']);
 $receiverId = $conn->real_escape_string($data['receiverId']);
 $message = $conn->real_escape_string($data['message']);
 
-// Generate a unique chat ID
-$chatId = uniqid('chat_', true);
+// Start transaction
+$conn->begin_transaction();
 
-// Insert the message
-$query = "
-    INSERT INTO chat_messages (chatId, sender, receiver, message, status, chatRoomId)
-    VALUES ('$chatId', '$admin_id', '$receiverId', '$message', 'sent', '$chatRoomId')
-";
-
-if ($conn->query($query) === TRUE) {
+try {
+    // Generate a unique chat ID
+    $chatId = uniqid('chat_', true);
+    
+    // Insert the message into chat_messages
+    $message_query = "
+        INSERT INTO chat_messages (chatId, sender, message, status, chatRoomId, messageType)
+        VALUES ('$chatId', '$admin_id', '$message', 'sent', '$chatRoomId', 'text')
+    ";
+    
+    $conn->query($message_query);
+    
+    // Add entries to chat_recepients for both sender and receiver
+    $recipient_query_sender = "
+        INSERT INTO chat_recipients (chatId, userId, status)
+        VALUES ('$chatId', '$admin_id', 'read')
+    ";
+    
+    $recipient_query_receiver = "
+        INSERT INTO chat_recipients (chatId, userId, status)
+        VALUES ('$chatId', '$receiverId', 'sent')
+    ";
+    
+    $conn->query($recipient_query_sender);
+    $conn->query($recipient_query_receiver);
+    
+    // Commit transaction
+    $conn->commit();
+    
     // Get the newly inserted message
     $new_message_query = "
         SELECT 
             chatId,
             sender,
-            receiver,
             message,
             timestamp,
             status,
@@ -59,10 +80,14 @@ if ($conn->query($query) === TRUE) {
         'message' => 'Reply sent successfully',
         'data' => $new_message
     ]);
-} else {
+    
+} catch (Exception $e) {
+    // Rollback transaction on error
+    $conn->rollback();
+    
     echo json_encode([
         'success' => false,
-        'error' => 'Error sending reply: ' . $conn->error
+        'error' => 'Error sending reply: ' . $e->getMessage()
     ]);
 }
 

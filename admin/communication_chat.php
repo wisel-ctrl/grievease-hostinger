@@ -306,9 +306,10 @@ header("Pragma: no-cache");
         </div>
       </div>
     </div>
-    
-    <!-- Message Detail Modal -->
-    <div id="message-detail-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center">
+  </div>
+
+      <!-- Message Detail Modal -->
+      <div id="message-detail-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center">
       <div class="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[80vh] flex flex-col">
         <!-- Modal Header -->
         <div class="p-4 border-b border-gray-200 flex justify-between items-center">
@@ -348,7 +349,7 @@ header("Pragma: no-cache");
         </div>
       </div>
     </div>
-  </div>
+
 
     <script>
       document.addEventListener('DOMContentLoaded', function() {

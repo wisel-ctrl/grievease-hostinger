@@ -33,7 +33,15 @@ if (!$chatRoomId) {
 }
 
 // Prepare statement to retrieve messages
-$stmt = $conn->prepare("SELECT * FROM chat_messages WHERE chatRoomId = ? ORDER BY timestamp ASC");
+$stmt = $conn->prepare("
+    SELECT m.*, GROUP_CONCAT(r.userId) as recipients
+    FROM chat_messages m
+    LEFT JOIN chat_recipients r ON m.chatId = r.chatId
+    WHERE m.chatRoomId = ?
+    GROUP BY m.chatId
+    ORDER BY m.timestamp ASC
+");
+
 $stmt->bind_param("s", $chatRoomId);
 $stmt->execute();
 
@@ -43,6 +51,13 @@ $messages = [];
 
 // Fetch all messages
 while ($row = $result->fetch_assoc()) {
+    // Convert recipients string to array
+    if ($row['recipients']) {
+        $row['recipients'] = explode(',', $row['recipients']);
+    } else {
+        $row['recipients'] = [];
+    }
+    
     $messages[] = $row;
 }
 

@@ -18,9 +18,9 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 $data = json_decode(file_get_contents('php://input'), true);
 
 // Validate required fields
-if (!isset($data['chatId']) || !isset($data['status'])) {
+if (!isset($data['chatId']) || !isset($data['status']) || !isset($data['userId'])) {
     http_response_code(400);
-    echo json_encode(['error' => 'Missing required fields']);
+    echo json_encode(['error' => 'Missing required fields (chatId, status, userId)']);
     exit;
 }
 
@@ -31,9 +31,9 @@ if (!in_array($data['status'], ['delivered', 'read'])) {
     exit;
 }
 
-// Prepare statement to update status
-$stmt = $conn->prepare("UPDATE chat_messages SET status = ? WHERE chatId = ?");
-$stmt->bind_param("ss", $data['status'], $data['chatId']);
+// Prepare statement to update status for specific recipient
+$stmt = $conn->prepare("UPDATE chat_recipients SET status = ? WHERE chatId = ? AND userId = ?");
+$stmt->bind_param("sss", $data['status'], $data['chatId'], $data['userId']);
 
 // Execute the statement
 if ($stmt->execute()) {

@@ -101,6 +101,11 @@
                         </div>`;
                     
                     chatMessages.innerHTML += messageHtml;
+                    
+                    // Update status to 'read' for messages from support agent
+                    if (msg.sender === 'support_agent' || msg.sender === 'bot') {
+                        updateMessageStatus(msg.chatId, 'read', currentUser);
+                    }
                 });
                 
                 // Auto-scroll to the bottom
@@ -112,7 +117,7 @@
     }
 
     // Function to save message to database
-    async function saveMessage(sender, receiver, message, chatRoomId, messageType = 'text', attachmentUrl = null, automated = false) {
+    async function saveMessage(sender, message, chatRoomId, messageType = 'text', attachmentUrl = null, automated = false) {
         try {
             const response = await fetch('customService/save_message.php', {
                 method: 'POST',
@@ -121,7 +126,6 @@
                 },
                 body: JSON.stringify({
                     sender,
-                    receiver,
                     message,
                     chatRoomId,
                     messageType,
@@ -140,7 +144,7 @@
     }
 
     // Function to update message status
-    async function updateMessageStatus(chatId, status) {
+    async function updateMessageStatus(chatId, status, userId) {
         try {
             const response = await fetch('customService/update_status.php', {
                 method: 'POST',
@@ -149,7 +153,8 @@
                 },
                 body: JSON.stringify({
                     chatId,
-                    status
+                    status,
+                    userId
                 })
             });
             
@@ -233,15 +238,16 @@
         chatMessages.scrollTop = chatMessages.scrollHeight;
         
         // Save user message to database
-        await saveMessage(
+        const messageResponse = await saveMessage(
             currentUser,          // sender
-            'support_agent',      // receiver
             message,              // message
             currentChatRoomId,    // chatRoomId
             'text',               // messageType
             null,                 // attachmentUrl
             false                 // automated
         );
+        
+        console.log('Message sent response:', messageResponse);
         
         // Simulate response from support agent
         setTimeout(async () => {
@@ -272,10 +278,12 @@
             chatMessages.innerHTML += responseHtml;
             chatMessages.scrollTop = chatMessages.scrollHeight;
             
-            // Save agent response to database with correct parameters
+            // Use bot as sender for automated replies
+            const botSender = 'bot';
+            
+            // Save agent response to database
             await saveMessage(
-                'support_agent',      // sender
-                currentUser,          // receiver
+                botSender,           // sender (bot for automated messages)
                 responseMessage,      // message
                 currentChatRoomId,    // chatRoomId
                 'text',               // messageType
@@ -343,10 +351,12 @@
             `;
             document.getElementById('chat-messages').innerHTML = welcomeHtml;
             
+            // Use bot as sender for automated welcome message
+            const botSender = 'bot';
+            
             // Save welcome message to database
             saveMessage(
-                'support_agent',
-                currentUser,
+                botSender,
                 welcomeMessage,
                 currentChatRoomId,
                 'text',  // messageType

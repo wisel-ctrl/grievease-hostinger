@@ -1,6 +1,7 @@
 <?php
 // save_message.php - Endpoint to save messages to the database
 session_start();
+
 // Include database connection
 require_once '../../db_connect.php';
 
@@ -35,43 +36,12 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
-$sender = $_SESSION['user_id']; // Get sender ID from session
+$user_id = $_SESSION['user_id']; // Get user ID from session
 
-// Fetch the branch_loc of the sender
-$senderQuery = $conn->query("SELECT branch_loc FROM users WHERE id = $sender");
-$senderData = $senderQuery->fetch_assoc();
-$branch_loc = $senderData['branch_loc'];
-
-// Fetch all admin users (user_type = 1)
-$adminQuery = $conn->query("SELECT id FROM users WHERE user_type = 1");
-$admins = [];
-while ($row = $adminQuery->fetch_assoc()) {
-    $admins[] = $row['id'];
-}
-
-// If no admins found, return an error
-if (empty($admins)) {
-    http_response_code(400);
-    echo json_encode(['error' => 'No admin users found']);
-    exit;
-}
-
-// Fetch receiver2 and receiver3 based on branch_loc
-$receiverQuery = $conn->query("SELECT id FROM users WHERE user_type = 2 AND branch_loc = '$branch_loc'");
-$receivers = [];
-while ($row = $receiverQuery->fetch_assoc()) {
-    $receivers[] = $row['id'];
-}
-
-// Ensure there are exactly two receivers
-if (count($receivers) < 2) {
-    http_response_code(400);
-    echo json_encode(['error' => 'Not enough receivers found']);
-    exit;
-}
-
-$receiver2 = $receivers[0];
-$receiver3 = $receivers[1];
+// Fetch the branch_loc of the user
+$userQuery = $conn->query("SELECT branch_loc FROM users WHERE id = $user_id");
+$userData = $userQuery->fetch_assoc();
+$branch_loc = $userData['branch_loc'];
 
 // Validate message field
 if (!isset($data['message']) || empty(trim($data['message']))) {
@@ -90,45 +60,93 @@ $status = 'sent';
 // Detect if it's an automated reply
 $isAutomatedReply = isset($data['automated']) && $data['automated'] === true;
 
-// Set sender and receiver based on message type
+// Set the sender based on whether it's an automated reply or not
+$sender = $isAutomatedReply ? 'bot' : $user_id;
+
+// Check if this is an automated reply and if we should send it
 if ($isAutomatedReply) {
-    // For automated replies, set sender to 'bot' and receiver to the logged-in user
-    $sender = 'bot'; // Fixed sender for automated replies
-    $receiver = $_SESSION['user_id']; // The logged-in user is the receiver
-} else {
-    // For normal messages, the logged-in user is the sender, and the first admin is the receiver
-    $receiver = $admins[0]; // Assume first admin receives the message
+    // Check if there are already automated replies in this chat room
+    $checkStmt = $conn->prepare("SELECT COUNT(*) as count FROM chat_messages WHERE chatRoomId = ? AND sender = 'bot'");
+    $checkStmt->bind_param("s", $chatRoomId);
+    $checkStmt->execute();
+    $result = $checkStmt->get_result();
+    $row = $result->fetch_assoc();
+    
+    // If there are already automated replies, don't send another one
+    if ($row['count'] > 0) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Automated reply already sent for this conversation'
+        ]);
+        $checkStmt->close();
+        exit;
+    }
+    $checkStmt->close();
 }
 
-// Prepare statement to insert message
-$stmt = $conn->prepare("INSERT INTO chat_messages (chatId, sender, receiver, receiver2, receiver3, message, timestamp, status, chatRoomId, messageType, attachmentUrl) 
-                       VALUES (?, ?, ?, ?, ?, ?, NOW(), ?, ?, ?, ?)");
+// Begin transaction
+$conn->begin_transaction();
 
-// Insert the message
-$stmt->bind_param("ssssssssss", 
-    $chatId, 
-    $sender, 
-    $receiver, 
-    $receiver2, 
-    $receiver3, 
-    $data['message'], 
-    $status, 
-    $chatRoomId, 
-    $messageType, 
-    $attachmentUrl
-);
-
-// Execute the insert statement
-if ($stmt->execute()) {
+try {
+    // Insert the message into chat_messages table
+    $messageStmt = $conn->prepare("INSERT INTO chat_messages (chatId, sender, message, timestamp, status, chatRoomId, messageType, attachmentUrl) 
+                           VALUES (?, ?, ?, NOW(), ?, ?, ?, ?)");
+    
+    $messageStmt->bind_param("sssssss", 
+        $chatId, 
+        $sender, 
+        $data['message'], 
+        $status, 
+        $chatRoomId, 
+        $messageType, 
+        $attachmentUrl
+    );
+    
+    // Execute the message insert
+    $messageStmt->execute();
+    
+    // Determine recipients based on message type
+    $recipients = [];
+    
+    if ($isAutomatedReply) {
+        // For automated replies, the recipient is the logged-in user
+        $recipients[] = $user_id;
+    } else {
+        // Add all admin users (user_type = 1) as recipients
+        $adminQuery = $conn->query("SELECT id FROM users WHERE user_type = 1");
+        while ($row = $adminQuery->fetch_assoc()) {
+            $recipients[] = $row['id'];
+        }
+        
+        // Add all branch employees (user_type = 2) with matching branch_loc
+        $branchQuery = $conn->query("SELECT id FROM users WHERE user_type = 2 AND branch_loc = '$branch_loc'");
+        while ($row = $branchQuery->fetch_assoc()) {
+            $recipients[] = $row['id'];
+        }
+    }
+    
+    // Insert into chat_recipients table for each recipient
+    if (!empty($recipients)) {
+        $recipientStmt = $conn->prepare("INSERT INTO chat_recipients (chatId, userId, status) VALUES (?, ?, 'sent')");
+        
+        foreach ($recipients as $recipient) {
+            $recipientStmt->bind_param("ss", $chatId, $recipient);
+            $recipientStmt->execute();
+        }
+        
+        $recipientStmt->close();
+    }
+    
+    // Commit transaction
+    $conn->commit();
+    
     echo json_encode([
         'success' => true,
         'message' => $isAutomatedReply ? 'Automated reply sent successfully' : 'Message sent successfully',
         'data' => [
             'chatId' => $chatId,
-            'sender' => $sender,  // Now correctly assigned
-            'receiver' => $receiver, // Now correctly assigned
-            'receiver2' => $receiver2,
-            'receiver3' => $receiver3,
+            'sender' => $sender,
+            'recipients' => $recipients,
             'message' => $data['message'],
             'timestamp' => date('Y-m-d H:i:s'),
             'status' => $status,
@@ -136,11 +154,15 @@ if ($stmt->execute()) {
             'messageType' => $messageType
         ]
     ]);
-} else {
+    
+} catch (Exception $e) {
+    // Roll back transaction on error
+    $conn->rollback();
+    
     http_response_code(500);
-    echo json_encode(['error' => 'Failed to send message', 'details' => $stmt->error]);
+    echo json_encode(['error' => 'Failed to send message', 'details' => $e->getMessage()]);
 }
 
-$stmt->close();
+$messageStmt->close();
 $conn->close();
 ?>
