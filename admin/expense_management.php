@@ -140,49 +140,49 @@ if ($lastMonth > 0) {
     </div>
     
     <!-- Monthly Budget Status Card -->
-    <div class="bg-white rounded-lg shadow-sidebar p-4 border border-sidebar-border hover:shadow-card transition-all duration-300">
-      <div class="flex items-center mb-2">
-        <div class="w-10 h-10 rounded-lg bg-yellow-100 text-yellow-600 flex items-center justify-center mr-3">
-          <i class="fas fa-wallet text-base"></i>
-        </div>
-        <span class="text-sidebar-text font-medium text-sm">Monthly Budget Status</span>
-      </div>
-      
-      <div class="flex items-end justify-between mb-1">
-        <div class="text-xl font-bold text-sidebar-text <?php echo $warningLevel; ?>">
-          ₱<?php echo number_format($currentSpend, 2); ?>
-        </div>
-        <div class="text-xs text-gray-500">of ₱<?php echo number_format($monthlyBudget, 2); ?></div>
-      </div>
-      
-      <div class="w-full bg-gray-200 rounded-full h-2 mb-1">
-        <div class="bg-yellow-500 h-2 rounded-full" style="width: <?php echo $percentageUsed; ?>%"></div>
-      </div>
-      
-      <div class="flex justify-between items-center text-xs">
-        <div class="<?php echo $daysLeftClass; ?> flex items-center">
-          <i class="fas fa-clock mr-1"></i> <?php echo $daysLeft; ?> days left
-        </div>
-        <div class="<?php echo $warningLevel; ?>">
-          <?php echo round($percentageUsed); ?>% used
-        </div>
-      </div>
-      
-      <?php if ($percentageUsed >= 100): ?>
-        <div class="mt-1 text-xs bg-red-100 text-red-800 p-1 rounded text-center">
-          <i class="fas fa-exclamation-circle mr-1"></i> Budget exceeded!
-        </div>
-      <?php elseif ($percentageUsed >= 90): ?>
-        <div class="mt-1 text-xs bg-yellow-100 text-yellow-800 p-1 rounded text-center">
-          <i class="fas fa-exclamation-triangle mr-1"></i> Approaching limit
-        </div>
-      <?php endif; ?>
-      
-      <div class="mt-1 text-xs text-gray-500 border-t pt-1">
-        Daily: ₱<?php echo number_format($dailyRate, 2); ?> | 
-        Projected: <span class="<?php echo $projectionClass; ?>">₱<?php echo number_format($projectedSpend, 2); ?></span>
-      </div>
+<div class="bg-white rounded-lg shadow-sidebar p-4 border border-sidebar-border hover:shadow-card transition-all duration-300">
+  <div class="flex items-center mb-2">
+    <div class="w-10 h-10 rounded-lg bg-yellow-100 text-yellow-600 flex items-center justify-center mr-3">
+      <i class="fas fa-wallet text-base"></i>
     </div>
+    <span class="text-sidebar-text font-medium text-sm">Monthly Budget Status</span>
+  </div>
+  
+  <div class="flex items-end justify-between mb-1">
+    <div class="text-xl font-bold text-sidebar-text <?php echo ($percentageUsed >= 90) ? 'text-red-600' : (($percentageUsed >= 75) ? 'text-yellow-600' : 'text-green-600'); ?>">
+      ₱<?php echo number_format($currentSpend, 2); ?>
+    </div>
+    <div class="text-xs text-gray-500">of ₱<?php echo number_format($monthlyBudget, 2); ?> budget</div>
+  </div>
+  
+  <div class="w-full bg-gray-200 rounded-full h-2 mb-1">
+    <div class="bg-yellow-500 h-2 rounded-full" style="width: <?php echo $percentageUsed; ?>%"></div>
+  </div>
+  
+  <div class="flex justify-between items-center text-xs">
+    <div class="<?php echo ($daysLeft > 5) ? 'text-green-600' : 'text-red-600'; ?> flex items-center">
+      <i class="fas fa-clock mr-1"></i> <?php echo $daysLeft; ?> days remaining
+    </div>
+    <div class="<?php echo ($percentageUsed >= 90) ? 'text-red-600' : (($percentageUsed >= 75) ? 'text-yellow-600' : 'text-green-600'); ?>">
+      <?php echo round($percentageUsed); ?>% used
+    </div>
+  </div>
+  
+  <?php if ($percentageUsed >= 100): ?>
+    <div class="mt-1 text-xs bg-red-100 text-red-800 p-1 rounded text-center">
+      <i class="fas fa-exclamation-circle mr-1"></i> Budget exceeded!
+    </div>
+  <?php elseif ($percentageUsed >= 90): ?>
+    <div class="mt-1 text-xs bg-yellow-100 text-yellow-800 p-1 rounded text-center">
+      <i class="fas fa-exclamation-triangle mr-1"></i> Approaching budget limit
+    </div>
+  <?php endif; ?>
+  
+  <div class="mt-1 text-xs text-gray-500 border-t pt-1">
+    Daily rate: ₱<?php echo number_format($dailyRate, 2); ?> | 
+    Projected: <span class="<?php echo ($projectedSpend > $monthlyBudget) ? 'text-red-600' : 'text-green-600'; ?>">₱<?php echo number_format($projectedSpend, 2); ?></span>
+  </div>
+</div>
     
     <!-- Overdue Payments Card -->
     <div class="bg-white rounded-lg shadow-sidebar p-4 border border-sidebar-border hover:shadow-card transition-all duration-300">
