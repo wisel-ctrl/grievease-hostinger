@@ -46,7 +46,7 @@ try {
     
     // Service details
     $with_cremate = ($_POST['withCremation'] === 'on') ? 'yes' : 'no';
-    $payment_method = 'Installment'; // Default or from form if available
+    $payment_method = $_POST['paymentMethod'] ?? 'Installment';
     $payment_duration = trim($_POST['lp-paymentTerm']);
     
     // Pricing
