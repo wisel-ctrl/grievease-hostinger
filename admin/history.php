@@ -152,13 +152,13 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
           </th>
           <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(1)">
             <div class="flex items-center">
-              <i class="fas fa-user mr-1.5 text-sidebar-accent"></i> Client Name 
+              <i class="fas fa-user mr-1.5 text-sidebar-accent"></i> Client
               <i class="fas fa-sort ml-1 text-gray-400"></i>
             </div>
           </th>
           <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(2)">
             <div class="flex items-center">
-              <i class="fas fa-user-alt mr-1.5 text-sidebar-accent"></i> Deceased Name 
+              <i class="fas fa-user-alt mr-1.5 text-sidebar-accent"></i> Deceased
               <i class="fas fa-sort ml-1 text-gray-400"></i>
             </div>
           </th>
