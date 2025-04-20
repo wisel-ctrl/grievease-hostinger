@@ -1332,90 +1332,128 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
 </div>
 
   <!-- Modal for Recording Payment -->
-<div class="fixed top-0 left-0 w-full h-full bg-black bg-opacity-60 flex items-center justify-center z-50 hidden" id="recordPaymentModal">
-  <div class="bg-white rounded-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto shadow-xl">
+<div class="fixed inset-0 z-50 flex items-center justify-center hidden" id="recordPaymentModal">
+  <!-- Modal Backdrop -->
+  <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+  
+  <!-- Modal Content -->
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-4xl mx-4 z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+    <!-- Close Button -->
+    <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeRecordPaymentModal()">
+      <i class="fas fa-times"></i>
+    </button>
+    
     <!-- Modal Header -->
-    <div class="bg-gradient-to-r from-sidebar-accent to-white flex justify-between items-center p-6 flex-shrink-0">
-      <h3 class="text-xl font-bold text-white">Record Payment</h3>
-      <button class="bg-black bg-opacity-20 hover:bg-opacity-30 rounded-full p-2 text-white hover:text-white transition-all duration-200" onclick="closeRecordPaymentModal()">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-          <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-        </svg>
-      </button>
+    <div class="px-6 py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
+      <h3 class="text-xl font-bold text-white flex items-center">
+        <i class="fas fa-money-bill-wave mr-2"></i>
+        Record Payment
+      </h3>
     </div>
     
     <!-- Modal Body -->
-    <div class="p-6">
+    <div class="px-6 py-5">
       <form id="recordPaymentForm" class="space-y-6">
         <!-- Payment Information Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <input type="hidden" id="customerID" name="customerID">
         <input type="hidden" id="branchID" name="branchID">
           <!-- Service ID -->
-          <div class="bg-gray-50 p-5 rounded-xl border border-gray-200">
-            <label class="block text-sm font-medium text-gray-700 mb-1" for="paymentServiceId">Sales ID</label>
-            <input class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent bg-gray-100" type="text" id="paymentServiceId" name="paymentServiceId" readonly>
+          <div>
+            <label for="paymentServiceId" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+              <i class="fas fa-hashtag mr-2 text-sidebar-accent"></i>
+              Sales ID
+            </label>
+            <div class="relative">
+              <input type="text" id="paymentServiceId" name="paymentServiceId" readonly class="w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+            </div>
           </div>
           
           <!-- Client Name -->
-          <div class="bg-gray-50 p-5 rounded-xl border border-gray-200">
-            <label class="block text-sm font-medium text-gray-700 mb-1" for="paymentClientName">Client Name</label>
-            <input class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent bg-gray-100" type="text" id="paymentClientName" name="paymentClientName" readonly>
+          <div>
+            <label for="paymentClientName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+              <i class="fas fa-user mr-2 text-sidebar-accent"></i>
+              Client Name
+            </label>
+            <div class="relative">
+              <input type="text" id="paymentClientName" name="paymentClientName" readonly class="w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+            </div>
           </div>
           
           <!-- Outstanding Balance -->
-          <div class="bg-gray-50 p-5 rounded-xl border border-gray-200">
-            <label class="block text-sm font-medium text-gray-700 mb-1" for="currentBalance">Outstanding Balance</label>
+          <div>
+            <label for="currentBalance" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+              <i class="fas fa-balance-scale mr-2 text-sidebar-accent"></i>
+              Outstanding Balance
+            </label>
             <div class="relative">
               <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <span class="text-gray-500">₱</span>
               </div>
-              <input class="w-full pl-8 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent bg-gray-100" type="text" id="currentBalance" name="currentBalance" readonly>
+              <input type="text" id="currentBalance" name="currentBalance" readonly class="w-full pl-8 px-3 py-2 bg-gray-100 border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
             </div>
           </div>
           
           <!-- Payment Amount -->
-          <div class="bg-gray-50 p-5 rounded-xl border border-gray-200">
-            <label class="block text-sm font-medium text-gray-700 mb-1" for="paymentAmount">Payment Amount</label>
+          <div>
+            <label for="paymentAmount" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+              <i class="fas fa-coins mr-2 text-sidebar-accent"></i>
+              Payment Amount
+            </label>
             <div class="relative">
               <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <span class="text-gray-500">₱</span>
               </div>
-              <input class="w-full pl-8 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent" type="number" id="paymentAmount" name="paymentAmount" required>
+              <input type="number" id="paymentAmount" name="paymentAmount" required class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
             </div>
           </div>
           
           <!-- Payment Method -->
-          <div class="bg-gray-50 p-5 rounded-xl border border-gray-200">
-            <label class="block text-sm font-medium text-gray-700 mb-1" for="paymentMethod">Payment Method</label>
-            <select class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent" id="paymentMethod" name="paymentMethod" required>
-              <option value="" disabled selected>Select payment method</option>
-              <option value="Cash">Cash</option>
-              <option value="G  Cash">G-Cash</option>
-              <option value="Credit Card">Credit Card</option>
-              <option value="Bank Transfer">Bank Transfer</option>
-            </select>
+          <div>
+            <label for="paymentMethod" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+              <i class="fas fa-credit-card mr-2 text-sidebar-accent"></i>
+              Payment Method
+            </label>
+            <div class="relative">
+              <select id="paymentMethod" name="paymentMethod" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+                <option value="" disabled selected>Select payment method</option>
+                <option value="Cash">Cash</option>
+                <option value="G  Cash">G-Cash</option>
+                <option value="Credit Card">Credit Card</option>
+                <option value="Bank Transfer">Bank Transfer</option>
+              </select>
+            </div>
           </div>
           
           <!-- Payment Date -->
-          <div class="bg-gray-50 p-5 rounded-xl border border-gray-200">
-            <label class="block text-sm font-medium text-gray-700 mb-1" for="paymentDate">Payment Date</label>
-            <input class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent" type="date" id="paymentDate" name="paymentDate" required>
+          <div>
+            <label for="paymentDate" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+              <i class="fas fa-calendar-alt mr-2 text-sidebar-accent"></i>
+              Payment Date
+            </label>
+            <div class="relative">
+              <input type="date" id="paymentDate" name="paymentDate" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+            </div>
           </div>
         </div>
         
         <!-- Notes Section -->
-        <div class="bg-navy p-5 rounded-xl shadow-sm border border-purple-100">
-          <label class="block text-sm font-medium text-gray-700 mb-1" for="paymentNotes">Notes</label>
-          <textarea class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent" id="paymentNotes" name="paymentNotes" rows="3"></textarea>
+        <div>
+          <label for="paymentNotes" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            <i class="fas fa-sticky-note mr-2 text-sidebar-accent"></i>
+            Notes
+          </label>
+          <div class="relative">
+            <textarea id="paymentNotes" name="paymentNotes" rows="3" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"></textarea>
+          </div>
         </div>
         
         <!-- Summary Section -->
-        <div class="bg-navy p-6 rounded-xl shadow-sm border border-purple-100">
-          <h4 class="font-bold text-lg mb-4 text-gray-800 border-b border-purple-100 pb-2 flex items-center">
+        <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+          <p class="block text-xs font-medium text-gray-700 mb-2 flex items-center">
             <i class="fas fa-money-bill-wave mr-2 text-sidebar-accent"></i>
             Payment Summary
-          </h4>
+          </p>
           <div class="flex justify-between mb-2 text-gray-700">
             <span>Current Balance:</span>
             <span id="summary-current-balance" class="font-medium">₱0.00</span>
@@ -1436,19 +1474,19 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
       </form>
     </div>
     
-    <!-- Modal Footer -->
-    <div class="p-6 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
-      <button class="px-5 py-3 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-semibold hover:bg-navy transition-colors" onclick="closeRecordPaymentModal()">Cancel</button>
-      <button class="px-6 py-3 bg-sidebar-accent text-white rounded-lg font-semibold hover:bg-darkgold transition-colors flex items-center" onclick="savePayment()">
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
-          <polyline points="20 6 9 17 4 12"></polyline>
-        </svg>
+    <!-- Modal Footer --> 
+    <div class="px-6 py-4 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
+      <button class="px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center" onclick="closeRecordPaymentModal()">
+        <i class="fas fa-times mr-2"></i>
+        Cancel
+      </button>
+      <button class="px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="savePayment()">
+        <i class="fas fa-check mr-2"></i>
         Record Payment
       </button>
     </div>
   </div>
 </div>
-
 
 
   <script src="script.js"></script>
