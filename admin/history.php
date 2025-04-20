@@ -655,13 +655,14 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
       </h3>
     </div>
     
-    <!-- Modal Body -->
+    <!-- Modal Body - Converted to 2 columns -->
     <div class="px-6 py-5">
-      <form id="serviceForm" class="space-y-6">
+      <form id="serviceForm" class="grid md:grid-cols-2 gap-x-6 gap-y-6">
         <input type="hidden" id="salesId" name="sales_id">
         
-        <!-- Customer and Service Selection -->
-        <div class="grid md:grid-cols-2 gap-4">
+        <!-- Left Column -->
+        <div class="space-y-6">
+          <!-- Customer Selection -->
           <div>
             <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
               <i class="fas fa-user mr-2 text-sidebar-accent"></i>
@@ -681,7 +682,39 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
             </div>
             <input type="hidden" id="selectedCustomerId" name="customer_id">
           </div>
-            
+
+          <!-- Contact Information -->
+          <div>
+            <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+              <i class="fas fa-envelope mr-2 text-sidebar-accent"></i>
+              Email
+            </label>
+            <div class="relative">
+              <input 
+                type="email" 
+                id="email" 
+                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                placeholder="Enter Email"
+              >
+            </div>
+          </div>
+          
+          <div>
+            <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+              <i class="fas fa-phone mr-2 text-sidebar-accent"></i>
+              Phone
+            </label>
+            <div class="relative">
+              <input 
+                type="tel" 
+                id="phone" 
+                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                placeholder="Enter Phone Number"
+              >
+            </div>
+          </div>
+
+          <!-- Service Selection -->
           <div>
             <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
               <i class="fas fa-briefcase mr-2 text-sidebar-accent"></i>
@@ -697,29 +730,27 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
               </select>
             </div>
           </div>
-        </div>
 
-        <!-- Service Price -->
-        <div>
-          <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-dollar-sign mr-2 text-sidebar-accent"></i>
-            Service Price
-          </label>
-          <div class="relative">
-            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <span class="text-gray-500">₱</span>
+          <!-- Service Price -->
+          <div>
+            <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+              <i class="fas fa-dollar-sign mr-2 text-sidebar-accent"></i>
+              Service Price
+            </label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <span class="text-gray-500">₱</span>
+              </div>
+              <input 
+                type="number" 
+                id="servicePrice" 
+                class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                placeholder="Enter Service Price"
+              >
             </div>
-            <input 
-              type="number" 
-              id="servicePrice" 
-              class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-              placeholder="Enter Service Price"
-            >
           </div>
-        </div>
 
-        <!-- Name Fields - Now in 2 columns -->
-        <div class="grid md:grid-cols-2 gap-4">
+          <!-- Customer Name Fields -->
           <div class="space-y-4">
             <div>
               <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
@@ -738,22 +769,6 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
             <div>
               <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
                 <i class="fas fa-user mr-2 text-sidebar-accent"></i>
-                Last Name
-              </label>
-              <div class="relative">
-                <input 
-                  type="text" 
-                  id="lastName" 
-                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                  placeholder="Last Name"
-                >
-              </div>
-            </div>
-          </div>
-          <div class="space-y-4">
-            <div>
-              <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                <i class="fas fa-user mr-2 text-sidebar-accent"></i>
                 Middle Name
               </label>
               <div class="relative">
@@ -762,6 +777,20 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
                   id="middleName" 
                   class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
                   placeholder="Middle Name"
+                >
+              </div>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                <i class="fas fa-user mr-2 text-sidebar-accent"></i>
+                Last Name
+              </label>
+              <div class="relative">
+                <input 
+                  type="text" 
+                  id="lastName" 
+                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                  placeholder="Last Name"
                 >
               </div>
             </div>
@@ -780,113 +809,94 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
               </div>
             </div>
           </div>
-        </div>
 
-        <!-- Contact Information -->
-        <div class="grid md:grid-cols-2 gap-4">
-          <div>
-            <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-envelope mr-2 text-sidebar-accent"></i>
-              Email
-            </label>
-            <div class="relative">
-              <input 
-                type="email" 
-                id="email" 
-                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                placeholder="Enter Email"
-              >
-            </div>
-          </div>
-          <div>
-            <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-phone mr-2 text-sidebar-accent"></i>
-              Phone
-            </label>
-            <div class="relative">
-              <input 
-                type="tel" 
-                id="phone" 
-                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                placeholder="Enter Phone Number"
-              >
+          <!-- Branch Selection -->
+          <div class="bg-gray-50 p-4 rounded-lg border-l-4 border-gold">
+            <label class="block text-xs font-medium text-gray-700 mb-2">Branch</label>
+            <div class="flex flex-wrap gap-4">
+              <label class="flex items-center space-x-2 cursor-pointer">
+                <input type="radio" name="branch" value="1" class="hidden peer">
+                <div class="w-5 h-5 rounded-full border-2 border-gold flex items-center justify-center peer-checked:bg-gold peer-checked:border-darkgold transition-colors"></div>
+                <span class="text-gray-700 font-medium">Pila</span>
+              </label>
+              <label class="flex items-center space-x-2 cursor-pointer">
+                <input type="radio" name="branch" value="2" class="hidden peer">
+                <div class="w-5 h-5 rounded-full border-2 border-gold flex items-center justify-center peer-checked:bg-gold peer-checked:border-darkgold transition-colors"></div>
+                <span class="text-gray-700 font-medium">Paete</span>
+              </label>
             </div>
           </div>
         </div>
-
-        <!-- Deceased Information -->
-        <div class="space-y-4">
+        
+        <!-- Right Column -->
+        <div class="space-y-6">
           <h4 class="text-lg font-semibold flex items-center">
             <i class="fas fa-file-medical mr-2 text-sidebar-accent"></i>
             Deceased Information
           </h4>
           
-          <!-- Deceased Name - Now in 2 columns -->
-          <div class="grid md:grid-cols-2 gap-4">
-            <div class="space-y-4">
-              <div>
-                <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                  <i class="fas fa-user mr-2 text-sidebar-accent"></i>
-                  First Name
-                </label>
-                <div class="relative">
-                  <input 
-                    type="text" 
-                    id="deceasedFirstName" 
-                    class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                    placeholder="First Name"
-                  >
-                </div>
-              </div>
-              <div>
-                <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                  <i class="fas fa-user mr-2 text-sidebar-accent"></i>
-                  Last Name
-                </label>
-                <div class="relative">
-                  <input 
-                    type="text" 
-                    id="deceasedLastName" 
-                    class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                    placeholder="Last Name"
-                  >
-                </div>
+          <!-- Deceased Name Fields -->
+          <div class="space-y-4">
+            <div>
+              <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                <i class="fas fa-user mr-2 text-sidebar-accent"></i>
+                First Name
+              </label>
+              <div class="relative">
+                <input 
+                  type="text" 
+                  id="deceasedFirstName" 
+                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                  placeholder="First Name"
+                >
               </div>
             </div>
-            <div class="space-y-4">
-              <div>
-                <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                  <i class="fas fa-user mr-2 text-sidebar-accent"></i>
-                  Middle Name
-                </label>
-                <div class="relative">
-                  <input 
-                    type="text" 
-                    id="deceasedMiddleName" 
-                    class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                    placeholder="Middle Name"
-                  >
-                </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                <i class="fas fa-user mr-2 text-sidebar-accent"></i>
+                Middle Name
+              </label>
+              <div class="relative">
+                <input 
+                  type="text" 
+                  id="deceasedMiddleName" 
+                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                  placeholder="Middle Name"
+                >
               </div>
-              <div>
-                <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                  <i class="fas fa-user mr-2 text-sidebar-accent"></i>
-                  Suffix
-                </label>
-                <div class="relative">
-                  <input 
-                    type="text" 
-                    id="deceasedSuffix" 
-                    class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                    placeholder="Suffix"
-                  >
-                </div>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                <i class="fas fa-user mr-2 text-sidebar-accent"></i>
+                Last Name
+              </label>
+              <div class="relative">
+                <input 
+                  type="text" 
+                  id="deceasedLastName" 
+                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                  placeholder="Last Name"
+                >
+              </div>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                <i class="fas fa-user mr-2 text-sidebar-accent"></i>
+                Suffix
+              </label>
+              <div class="relative">
+                <input 
+                  type="text" 
+                  id="deceasedSuffix" 
+                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                  placeholder="Suffix"
+                >
               </div>
             </div>
           </div>
 
           <!-- Deceased Dates -->
-          <div class="grid md:grid-cols-3 gap-4">
+          <div class="space-y-4">
             <div>
               <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
                 <i class="fas fa-calendar-alt mr-2 text-sidebar-accent"></i>
@@ -944,23 +954,6 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
             </div>
           </div>
 
-          <!-- Branch Selection -->
-          <div class="bg-gray-50 p-4 rounded-lg border-l-4 border-gold">
-            <label class="block text-xs font-medium text-gray-700 mb-2">Branch</label>
-            <div class="flex flex-wrap gap-4">
-              <label class="flex items-center space-x-2 cursor-pointer">
-                <input type="radio" name="branch" value="1" class="hidden peer">
-                <div class="w-5 h-5 rounded-full border-2 border-gold flex items-center justify-center peer-checked:bg-gold peer-checked:border-darkgold transition-colors"></div>
-                <span class="text-gray-700 font-medium">Pila</span>
-              </label>
-              <label class="flex items-center space-x-2 cursor-pointer">
-                <input type="radio" name="branch" value="2" class="hidden peer">
-                <div class="w-5 h-5 rounded-full border-2 border-gold flex items-center justify-center peer-checked:bg-gold peer-checked:border-darkgold transition-colors"></div>
-                <span class="text-gray-700 font-medium">Paete</span>
-              </label>
-            </div>
-          </div>
-
           <!-- Death Certificate Upload -->
           <div>
             <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
@@ -994,8 +987,8 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
       </form>
     </div>
     
-    <!-- Modal Footer --> 
-    <div class="px-6 py-4 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
+    <!-- Modal Footer -->
+    <div class="px-6 py-4 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white col-span-2">
       <button class="px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center" onclick="closeEditServiceModal()">
         <i class="fas fa-times mr-2"></i>
         Cancel
