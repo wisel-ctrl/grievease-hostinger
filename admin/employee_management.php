@@ -112,10 +112,20 @@ if ($branch_result->num_rows > 0) {
         <div class="flex items-center gap-3">
             <h3 class="text-lg font-bold text-sidebar-text">Employee Details</h3>
             
-            <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
-                <i class="fas fa-users"></i>
-                <?php echo $result->num_rows . " Employee" . ($result->num_rows != 1 ? "s" : ""); ?>
-            </span>
+            <?php
+// First, execute a dedicated count query for employees
+$employeeCountQuery = "SELECT COUNT(*) as total FROM employee_tb";
+$employeeCountResult = $conn->query($employeeCountQuery);
+if (!$employeeCountResult) {
+    die("Employee count query failed: " . $conn->error);
+}
+$totalEmployees = $employeeCountResult->fetch_assoc()['total'] ?? 0; // Default to 0 if fetch fails
+?>
+
+<span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
+    <i class="fas fa-users"></i>
+    <?php echo $totalEmployees . " Employee" . ($totalEmployees != 1 ? "s" : ""); ?>
+</span>
         </div>
         
         <!-- Search and Filter Section -->
