@@ -1139,6 +1139,11 @@ function confirmLifeplanCheckout() {
   formData.append('balance', balance.toFixed(2));
   formData.append('payment_status', balance > 0 ? 'With Balance' : 'Fully Paid');
 
+  console.log('Submitting the following form data:');
+for (let [key, value] of formData.entries()) {
+  console.log(`${key}: ${value}`);
+}
+
   fetch('posFunctions/process_lifeplan_checkout.php', {
     method: 'POST',
     body: formData
