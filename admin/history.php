@@ -1118,32 +1118,34 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
 </div>
 
 <!-- Complete Service Modal -->
-<div class="fixed top-0 left-0 w-full h-full bg-black bg-opacity-60 flex items-center justify-center z-50 hidden" id="completeServiceModal">
-  <div class="bg-white rounded-xl w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-xl">
+<div class="fixed inset-0 z-50 flex items-center justify-center hidden" id="completeServiceModal">
+  <!-- Modal Backdrop -->
+  <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+  
+  <!-- Modal Content -->
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-5xl mx-4 z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+    <!-- Close Button -->
+    <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeCompleteModal()">
+      <i class="fas fa-times"></i>
+    </button>
+    
     <!-- Modal Header -->
-    <div class="bg-gradient-to-r from-sidebar-accent to-white flex justify-between items-center p-6 flex-shrink-0">
-      <h3 class="text-xl font-bold text-white">Complete Service</h3>
-      <button class="bg-black bg-opacity-20 hover:bg-opacity-30 rounded-full p-2 text-white hover:text-white transition-all duration-200" onclick="closeCompleteModal()">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-          <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-        </svg>
-      </button>
+    <div class="px-6 py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
+      <h3 class="text-xl font-bold text-white flex items-center">
+        <i class="fas fa-check-circle mr-2"></i>
+        Complete Service
+      </h3>
     </div>
     
     <!-- Modal Body -->
-    <div class="p-6">
+    <div class="px-6 py-5">
       <form id="completeServiceForm" class="space-y-6">
         <input type="hidden" id="completeServiceId">
         
         <!-- Drivers Section -->
-        <div id="completeDriversSection" class="bg-gray-50 p-5 rounded-xl">
-          <h4 class="text-lg font-bold mb-4 text-gray-700 flex items-center">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 text-sidebar-accent">
-              <rect x="1" y="3" width="15" height="13"></rect>
-              <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
-              <circle cx="5.5" cy="18.5" r="2.5"></circle>
-              <circle cx="18.5" cy="18.5" r="2.5"></circle>
-            </svg>
+        <div id="completeDriversSection" class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+          <h4 class="text-sm font-medium text-gray-700 mb-2 flex items-center">
+            <i class="fas fa-car mr-2 text-sidebar-accent"></i>
             Drivers
           </h4>
           <div class="grid grid-cols-2 gap-4" id="completeDriversList">
@@ -1152,14 +1154,9 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
         </div>
         
         <!-- Personnel Section -->
-        <div id="completePersonnelSection" class="bg-gray-50 p-5 rounded-xl">
-          <h4 class="text-lg font-bold mb-4 text-gray-700 flex items-center">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 text-sidebar-accent">
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-              <circle cx="9" cy="7" r="4"></circle>
-              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-            </svg>
+        <div id="completePersonnelSection" class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+          <h4 class="text-sm font-medium text-gray-700 mb-2 flex items-center">
+            <i class="fas fa-users mr-2 text-sidebar-accent"></i>
             Personnel
           </h4>
           <div class="grid grid-cols-2 gap-4" id="completePersonnelList">
@@ -1168,32 +1165,42 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
         </div>
         
         <div>
-          <label for="completionDate" class="block text-sm font-medium text-gray-700 mb-1">Completion Date</label>
-          <input type="date" id="completionDate" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent" required>
+          <label for="completionDate" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            <i class="fas fa-calendar mr-2 text-sidebar-accent"></i>
+            Completion Date
+          </label>
+          <div class="relative">
+            <input type="date" id="completionDate" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
+          </div>
         </div>
         
         <div>
-          <label for="completionNotes" class="block text-sm font-medium text-gray-700 mb-1">Completion Notes</label>
-          <textarea id="completionNotes" rows="3" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent"></textarea>
+          <label for="completionNotes" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            <i class="fas fa-sticky-note mr-2 text-sidebar-accent"></i>
+            Completion Notes
+          </label>
+          <div class="relative">
+            <textarea id="completionNotes" rows="3" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"></textarea>
+          </div>
         </div>
         
-        <div class="bg-navy p-5 rounded-xl">
+        <div class="bg-gray-50 p-4 rounded-lg border-l-4 border-gold">
           <div class="flex items-center">
-            <input type="checkbox" id="finalBalanceSettled" class="mr-2">
+            <input type="checkbox" id="finalBalanceSettled" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
             <label for="finalBalanceSettled" class="text-gray-700 font-medium">Confirm all balances are settled</label>
           </div>
         </div>
       </form>
     </div>
     
-    <!-- Modal Footer -->
-    <div class="p-6 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
-      <button class="px-5 py-3 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-semibold hover:bg-navy transition-colors" onclick="closeCompleteModal()">Cancel</button>
-      <button class="px-6 py-3 bg-sidebar-accent text-white rounded-lg font-semibold hover:bg-darkgold transition-colors flex items-center" onclick="finalizeServiceCompletion()">
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
-          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-          <polyline points="22 4 12 14.01 9 11.01"></polyline>
-        </svg>
+    <!-- Modal Footer --> 
+    <div class="px-6 py-4 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
+      <button class="px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center" onclick="closeCompleteModal()">
+        <i class="fas fa-times mr-2"></i>
+        Cancel
+      </button>
+      <button class="px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="finalizeServiceCompletion()">
+        <i class="fas fa-check mr-2"></i>
         Complete Service
       </button>
     </div>
