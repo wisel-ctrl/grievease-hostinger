@@ -1140,61 +1140,54 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
       </h3>
     </div>
     
-    <!-- Modal Body - Converted to 2 columns -->
+    <!-- Modal Body -->
     <div class="px-6 py-5">
-      <form id="completeServiceForm" class="grid md:grid-cols-2 gap-x-6 gap-y-6">
+      <form id="completeServiceForm" class="space-y-6">
         <input type="hidden" id="completeServiceId">
         
-        <!-- Left Column -->
-        <div class="space-y-6">
-          <!-- Drivers Section -->
-          <div id="completeDriversSection" class="bg-gray-50 p-4 rounded-lg border border-gray-200 h-full">
-            <h4 class="text-sm font-medium text-gray-700 mb-2 flex items-center">
-              <i class="fas fa-car mr-2 text-sidebar-accent"></i>
-              Drivers
-            </h4>
-            <div class="grid grid-cols-1 gap-4" id="completeDriversList">
-              <!-- Drivers will be populated here -->
-            </div>
-          </div>
-          
-          <div>
-            <label for="completionDate" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-calendar mr-2 text-sidebar-accent"></i>
-              Completion Date
-            </label>
-            <div class="relative">
-              <input type="date" id="completionDate" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
-            </div>
+        <!-- Drivers Section -->
+        <div id="completeDriversSection" class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+          <h4 class="text-sm font-medium text-gray-700 mb-2 flex items-center">
+            <i class="fas fa-car mr-2 text-sidebar-accent"></i>
+            Drivers
+          </h4>
+          <div class="grid grid-cols-2 gap-4" id="completeDriversList">
+            <!-- Drivers will be populated here -->
           </div>
         </div>
         
-        <!-- Right Column -->
-        <div class="space-y-6">
-          <!-- Personnel Section -->
-          <div id="completePersonnelSection" class="bg-gray-50 p-4 rounded-lg border border-gray-200 h-full">
-            <h4 class="text-sm font-medium text-gray-700 mb-2 flex items-center">
-              <i class="fas fa-users mr-2 text-sidebar-accent"></i>
-              Personnel
-            </h4>
-            <div class="grid grid-cols-1 gap-4" id="completePersonnelList">
-              <!-- Personnel will be populated here -->
-            </div>
-          </div>
-          
-          <div>
-            <label for="completionNotes" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-sticky-note mr-2 text-sidebar-accent"></i>
-              Completion Notes
-            </label>
-            <div class="relative">
-              <textarea id="completionNotes" rows="3" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"></textarea>
-            </div>  
+        <!-- Personnel Section -->
+        <div id="completePersonnelSection" class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+          <h4 class="text-sm font-medium text-gray-700 mb-2 flex items-center">
+            <i class="fas fa-users mr-2 text-sidebar-accent"></i>
+            Personnel
+          </h4>
+          <div class="grid grid-cols-2 gap-4" id="completePersonnelList">
+            <!-- Personnel will be populated here -->
           </div>
         </div>
         
-        <!-- Bottom Section - Full Width -->
-        <div class="md:col-span-2 bg-gray-50 p-4 rounded-lg border-l-4 border-gold">
+        <div>
+          <label for="completionDate" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            <i class="fas fa-calendar mr-2 text-sidebar-accent"></i>
+            Completion Date
+          </label>
+          <div class="relative">
+            <input type="date" id="completionDate" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
+          </div>
+        </div>
+        
+        <div>
+          <label for="completionNotes" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            <i class="fas fa-sticky-note mr-2 text-sidebar-accent"></i>
+            Completion Notes
+          </label>
+          <div class="relative">
+            <textarea id="completionNotes" rows="3" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"></textarea>
+          </div>
+        </div>
+        
+        <div class="bg-gray-50 p-4 rounded-lg border-l-4 border-gold">
           <div class="flex items-center">
             <input type="checkbox" id="finalBalanceSettled" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
             <label for="finalBalanceSettled" class="text-gray-700 font-medium">Confirm all balances are settled</label>
