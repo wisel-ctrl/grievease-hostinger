@@ -57,6 +57,7 @@ $_SESSION['last_activity'] = time();
 header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Cache-Control: post-check=0, pre-check=0", false);
 header("Pragma: no-cache");
+
 ?>
 
 <!DOCTYPE html>
@@ -68,379 +69,207 @@ header("Pragma: no-cache");
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Hedvig+Letters+Serif:opsz@12..144&family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
   
   <style>
-    /* Base Typography */
-    body {
-      font-family: 'Hedvig Letters Serif', serif;
-      background-color: #F9F6F0; /* cream color from config */
+     /* Base Typography */
+  body {
+    font-family: 'Hedvig Letters Serif', serif;
+  }
+  
+  /* Message status indicators */
+  .message-new {
+    border-left: 3px solid #CA8A04; /* Using your sidebar accent color */
+  }
+  
+  .message-read {
+    border-left: 3px solid transparent;
+  }
+  
+  /* Header Styles */
+  h1 {
+    font-family: 'Cinzel', serif;
+    font-size: 1.5rem; /* 24px */
+    font-weight: 700;
+    color: #1E293B; /* slate-800 */
+  }
+  
+  h2 {
+    font-family: 'Cinzel', serif;
+    font-size: 1.25rem; /* 20px */
+    font-weight: 600;
+    color: #1E293B; /* slate-800 */
+  }
+  
+  h3 {
+    font-family: 'Cinzel', serif;
+    font-size: 1.125rem; /* 18px */
+    font-weight: 600;
+    color: #1E293B; /* slate-800 */
+  }
+  
+  h5 {
+    font-family: 'Cinzel', serif;
+    font-size: 0.875rem; /* 14px */
+    font-weight: 500;
+    color: #CA8A04; /* sidebar accent color */
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  
+  /* Text Colors */
+  .text-sidebar-accent {
+    color: #CA8A04;
+  }
+  
+  .text-sidebar-text {
+    color: #334155; /* slate-700 */
+  }
+  
+  /* Button Styles */
+  button {
+    font-family: 'Hedvig Letters Serif', serif;
+    font-size: 0.875rem; /* 14px */
+    transition: all 0.3s ease;
+  }
+  
+  /* Input Fields */
+  input, textarea {
+    font-family: 'Hedvig Letters Serif', serif;
+    font-size: 0.875rem; /* 14px */
+    border: 1px solid #CBD5E1; /* slate-300 */
+    border-radius: 0.375rem; /* 6px */
+  }
+  
+  /* Icons */
+  .fas {
+    color: #64748B; /* slate-500 */
+    transition: color 0.3s ease;
+  }
+  
+  /* Hover States */
+  button:hover .fas {
+    color: #1E293B; /* slate-800 */
+  }
+  
+  /* Message Bubbles */
+  .admin-message {
+    background-color: #CA8A04; /* sidebar accent */
+    color: white;
+  }
+  
+  .customer-message {
+    background-color: #F1F5F9; /* slate-100 */
+    color: #1E293B; /* slate-800 */
+  }
+  
+  /* Timestamp Text */
+  .message-time {
+    font-size: 0.75rem; /* 12px */
+    color: #64748B; /* slate-500 */
+  }
+  
+  /* Badges */
+  .badge {
+    font-size: 0.75rem; /* 12px */
+    background-color: #CA8A04; /* sidebar accent */
+    color: white;
+  }
+  
+  /* Ensure sidebar maintains styling */
+  #sidebar {
+    background-color: white !important;
+    z-index: 50 !important;
+    font-family: 'Hedvig Letters Serif', serif;
+  }
+  
+  /* Mobile Responsiveness */
+  @media (max-width: 768px) {
+    #sidebar.translate-x-0 {
+      background-color: white !important;
+      box-shadow: 2px 0 10px rgba(0,0,0,0.1);
     }
     
+    h1 {
+      font-size: 1.25rem; /* 20px */
+    }
+    
+    h2 {
+      font-size: 1.125rem; /* 18px */
+    }
+  }
+  
+  /* Custom scrollbar to match sidebar */
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.05);
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: rgba(202, 138, 4, 0.6);
+    border-radius: 4px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background: rgba(202, 138, 4, 0.9);
+  }
     /* Message status indicators */
     .message-new {
-      border-left: 3px solid #CA8A04; /* sidebar accent color from config */
+      border-left: 3px solid #008080;
     }
     
     .message-read {
       border-left: 3px solid transparent;
     }
-    
-    /* Header Styles */
-    h1 {
-      font-family: 'Cinzel', serif;
-      font-size: 1.5rem; /* 24px */
-      font-weight: 700;
-      color: #334155; /* slate-800 from config */
-    }
-    
-    h2 {
-      font-family: 'Cinzel', serif;
-      font-size: 1.25rem; /* 20px */
-      font-weight: 600;
-      color: #334155; /* slate-800 from config */
-    }
-    
-    h3 {
-      font-family: 'Cinzel', serif;
-      font-size: 1.125rem; /* 18px */
-      font-weight: 600;
-      color: #334155; /* slate-800 from config */
-    }
-    
-    h5 {
-      font-family: 'Cinzel', serif;
-      font-size: 0.875rem; /* 14px */
-      font-weight: 500;
-      color: #CA8A04; /* sidebar accent color from config */
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-    
-    /* Text Colors */
-    .text-sidebar-accent {
-      color: #CA8A04; /* sidebar accent color from config */
-    }
-    
-    .text-sidebar-text {
-      color: #334155; /* slate-700 from config */
-    }
-    
-    /* Button Styles */
-    button {
-      font-family: 'Hedvig Letters Serif', serif;
-      font-size: 0.875rem; /* 14px */
-      transition: all 0.3s ease;
-    }
-    
-    /* Custom Button Styling */
-    .btn-primary {
-      background-color: #CA8A04; /* sidebar-accent from config */
-      color: white;
-      padding: 0.5rem 1rem;
-      border-radius: 0.375rem;
-      transition: all 0.2s ease;
-    }
-    
-    .btn-primary:hover {
-      background-color: #B7791F; /* darkgold from config */
-    }
-    
-    .btn-secondary {
-      background-color: #F1F5F9; /* secondary from config */
-      color: #334155; /* secondary-foreground from config */
-      padding: 0.5rem 1rem;
-      border-radius: 0.375rem;
-      transition: all 0.2s ease;
-    }
-    
-    .btn-secondary:hover {
-      background-color: #E2E8F0; /* sidebar-border from config */
-    }
-    
-    /* Input Fields */
-    input, textarea {
-      font-family: 'Hedvig Letters Serif', serif;
-      font-size: 0.875rem; /* 14px */
-      border: 1px solid #D3D8E1; /* input-border from config */
-      border-radius: 0.375rem; /* 6px */
-      padding: 0.5rem 0.75rem;
-      transition: all 0.2s ease;
-    }
-    
-    input:focus, textarea:focus {
-      outline: none;
-      border-color: #CA8A04; /* sidebar-accent from config */
-      box-shadow: 0 0 0 2px rgba(202, 138, 4, 0.2);
-    }
-    
-    /* Icons */
-    .fas {
-      color: #64748B; /* slate-500 */
-      transition: color 0.3s ease;
-    }
-    
-    /* Hover States */
-    button:hover .fas {
-      color: #334155; /* slate-800 */
-    }
-    
-    /* Message Bubbles */
-    .admin-message {
-      background-color: #CA8A04; /* sidebar accent */
-      color: white;
-    }
-    
-    .customer-message {
-      background-color: #F1F5F9; /* secondary from config */
-      color: #334155; /* secondary-foreground from config */
-    }
-    
-    /* Timestamp Text */
-    .message-time {
-      font-size: 0.75rem; /* 12px */
-      color: #64748B; /* slate-500 */
-    }
-    
-    /* Badges */
-    .badge {
-      font-size: 0.75rem; /* 12px */
-      background-color: #CA8A04; /* sidebar accent */
-      color: white;
-      padding: 0.25rem 0.5rem;
-      border-radius: 9999px;
-    }
-    
-    /* Card Styling */
-    .card {
-      background-color: white;
-      border-radius: 0.5rem;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-      transition: all 0.3s ease;
-    }
-    
-    .card-hover:hover {
-      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-      transform: translateY(-2px);
-    }
-    
-    /* Ensure sidebar maintains styling */
+    /* Ensure sidebar maintains background in all views */
     #sidebar {
       background-color: white !important;
-      z-index: 50 !important;
-      font-family: 'Hedvig Letters Serif', serif;
-      border-right: 1px solid #E2E8F0; /* sidebar-border from config */
+      z-index: 50 !important; /* Higher than chat content */
     }
-    
-    /* Mobile Responsiveness */
+
+    /* When sidebar is open on mobile, ensure it's above everything */
     @media (max-width: 768px) {
       #sidebar.translate-x-0 {
         background-color: white !important;
         box-shadow: 2px 0 10px rgba(0,0,0,0.1);
       }
-      
-      h1 {
-        font-size: 1.25rem; /* 20px */
-      }
-      
-      h2 {
-        font-size: 1.125rem; /* 18px */
-      }
-      
-      .main-content {
-        padding: 1rem !important;
-      }
     }
-    
-    /* Custom scrollbar to match sidebar */
-    .scrollbar-thin::-webkit-scrollbar {
-      width: 4px;
-      height: 4px;
-    }
-    .scrollbar-thin::-webkit-scrollbar-track {
-      background: rgba(0, 0, 0, 0.05);
-    }
-    .scrollbar-thin::-webkit-scrollbar-thumb {
-      background: rgba(202, 138, 4, 0.6);
-      border-radius: 4px;
-    }
-    .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-      background: rgba(202, 138, 4, 0.9);
-    }
-    
-    /* Enhanced Conversation UI */
-    .message-bubble {
-      max-width: 75%;
-      padding: 0.75rem 1rem;
-      border-radius: 1rem;
-      position: relative;
-      margin-bottom: 1rem;
-    }
-    
-    .message-bubble-admin {
-      background-color: #CA8A04; /* sidebar-accent */
-      color: white;
-      border-top-right-radius: 0;
-      margin-left: auto;
-    }
-    
-    .message-bubble-customer {
-      background-color: #F1F5F9; /* secondary */
-      color: #334155; /* secondary-foreground */
-      border-top-left-radius: 0;
-    }
-    
-    /* Message list item styling */
-    .message-item {
-      transition: all 0.2s ease;
-    }
-    
-    .message-item:hover {
-      background-color: #F0F4F8; /* navy from config */
-    }
-    
-    /* Enhanced input styling */
-    .enhanced-input {
-      width: 100%;
-      padding: 0.75rem 1rem;
-      border: 1px solid #D3D8E1; /* input-border */
-      border-radius: 0.5rem;
-      transition: all 0.2s ease;
-    }
-    
-    .enhanced-input:focus {
-      outline: none;
-      border-color: #CA8A04; /* sidebar-accent */
-      box-shadow: 0 0 0 2px rgba(202, 138, 4, 0.2);
-    }
-    
-    /* Avatar styling */
-    .avatar {
-      width: 2.5rem;
-      height: 2.5rem;
-      border-radius: 9999px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background-color: #CA8A04; /* sidebar-accent */
-      color: white;
-      font-weight: 600;
-    }
-    
     body.communication-chat #sidebar {
       background-color: white !important;
       z-index: 50 !important;
     }
-    
     .main-content {
       z-index: 40; /* Lower than sidebar's 50 */
     }
-    
-    /* Modal enhancements */
-    .modal-card {
-      background-color: white;
-      border-radius: 0.75rem;
-      overflow: hidden;
-      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-      max-width: 48rem;
-      width: 90%;
-      max-height: 80vh;
-      display: flex;
-      flex-direction: column;
-    }
-    
-    .modal-header {
-      padding: 1rem 1.5rem;
-      border-bottom: 1px solid #E2E8F0;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    
-    .modal-body {
-      flex-grow: 1;
-      overflow-y: auto;
-      padding: 1.5rem;
-    }
-    
-    .modal-footer {
-      padding: 1rem 1.5rem;
-      border-top: 1px solid #E2E8F0;
-    }
   </style>
-  
-  <script>
-    // Include Tailwind Config
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: {
-            'playfair': ['"Playfair Display"', 'serif'],
-            'alexbrush': ['"Alex Brush"', 'cursive'],
-            'inter': ['Inter', 'sans-serif'],
-            'cinzel': ['Cinzel', 'serif'],
-            'hedvig': ['Hedvig Letters Serif', 'serif']
-          },
-          colors: {
-            'yellow': {
-              600: '#CA8A04',
-            },
-            'navy': '#F0F4F8',
-            'cream': '#F9F6F0',
-            'dark': '#4A5568',
-            'gold': '#D69E2E',
-            'darkgold': '#B7791F',
-            'primary': '#F8FAFC',
-            'primary-foreground': '#334155',
-            'secondary': '#F1F5F9',
-            'secondary-foreground': '#334155',
-            'border': '#E4E9F0',
-            'input-border': '#D3D8E1',
-            'error': '#E53E3E',
-            'success': '#38A169',
-            'sidebar-bg': '#FFFFFF',
-            'sidebar-hover': '#F1F5F9',
-            'sidebar-text': '#334155',
-            'sidebar-accent': '#CA8A04',
-            'sidebar-border': '#E2E8F0',
-          },
-          boxShadow: {
-            'input': '0 1px 2px rgba(0, 0, 0, 0.05)',
-            'card': '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
-            'sidebar': '0 0 15px rgba(0, 0, 0, 0.05)'
-          }
-        }
-      }
-    }
-  </script>
 </head>
-<body class="flex bg-cream communication-chat">
+<body class="flex bg-gray-50 communication-chat">
 
 <?php include 'admin_sidebar.php'; ?>
   
   <!-- Main Content -->
-  <div id="main-content" class="p-6 bg-cream min-h-screen transition-all duration-300 ml-64 w-[calc(100%-16rem)] main-content">
-    <div class="flex justify-between items-center mb-6 bg-white p-5 rounded-lg shadow-card">
-      <h1 class="text-2xl font-bold text-sidebar-text font-cinzel">Customer Messages</h1>
-      <div class="flex gap-3">
+  <div id="main-content" class="p-6 bg-gray-50 min-h-screen transition-all duration-300 ml-64 w-[calc(100%-16rem)] main-content">
+    <div class="flex justify-between items-center mb-6 bg-white p-4 rounded-lg shadow">
+      <h1 class="text-2xl font-bold text-gray-800">Customer Messages</h1>
+      <div class="flex gap-2">
         <div class="relative">
-          <input type="text" id="customer-search" placeholder="Search customers..." class="enhanced-input pl-10 pr-4 py-2">
-          <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+          <input type="text" id="customer-search" placeholder="Search customers..." class="px-4 py-2 pl-10 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent">
+          <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
         </div>
-        <button id="refresh-messages" class="btn-secondary flex items-center gap-2">
+        <button id="refresh-messages" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-md flex items-center gap-2">
           <i class="fas fa-sync-alt"></i> Refresh
         </button>
         <div class="relative">
-          <button id="filter-dropdown-btn" class="btn-secondary flex items-center gap-2">
+          <button id="filter-dropdown-btn" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-md flex items-center gap-2">
             <i class="fas fa-filter"></i> Filter
           </button>
-          <div id="filter-dropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-card z-10">
+          <div id="filter-dropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10">
             <div class="py-1">
-              <button class="block w-full text-left px-4 py-2.5 text-sm text-sidebar-text hover:bg-sidebar-hover" onclick="filterMessages('all')">All Messages</button>
-              <button class="block w-full text-left px-4 py-2.5 text-sm text-sidebar-text hover:bg-sidebar-hover" onclick="filterMessages('unread')">Unread Only</button>
-              <button class="block w-full text-left px-4 py-2.5 text-sm text-sidebar-text hover:bg-sidebar-hover" onclick="filterMessages('today')">Today</button>
-              <button class="block w-full text-left px-4 py-2.5 text-sm text-sidebar-text hover:bg-sidebar-hover" onclick="filterMessages('week')">This Week</button>
-              <button class="block w-full text-left px-4 py-2.5 text-sm text-sidebar-text hover:bg-sidebar-hover" onclick="filterMessages('month')">This Month</button>
+              <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="filterMessages('all')">All Messages</button>
+              <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="filterMessages('unread')">Unread Only</button>
+              <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="filterMessages('today')">Today</button>
+              <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="filterMessages('week')">This Week</button>
+              <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="filterMessages('month')">This Month</button>
             </div>
           </div>
         </div>
@@ -448,78 +277,78 @@ header("Pragma: no-cache");
     </div>
 
     <!-- Customer Messages Interface -->
-    <div class="bg-white rounded-lg shadow-card overflow-hidden">
+    <div class="bg-white rounded-lg shadow-md overflow-hidden">
       <!-- Messages Header -->
-      <div class="border-b border-sidebar-border bg-primary p-4">
+      <div class="border-b border-gray-200 bg-gray-50 p-4">
         <div class="flex justify-between items-center">
-          <h2 class="text-lg font-semibold text-sidebar-text font-cinzel">Incoming Customer Messages</h2>
-          <div class="text-sm text-dark"><span id="message-count" class="font-medium">0</span> messages</div>
+          <h2 class="text-lg font-semibold text-gray-800">Incoming Customer Messages</h2>
+          <div class="text-sm text-gray-500">Showing <span id="message-count" class="font-medium">0</span> messages</div>
         </div>
       </div>
       
       <!-- Messages Content -->
-      <div class="divide-y divide-sidebar-border">
+      <div class="divide-y divide-gray-200">
         <!-- Empty state - No messages -->
-        <div id="empty-state" class="py-16 flex flex-col items-center justify-center text-dark">
-          <div class="bg-navy rounded-full p-5 mb-5">
-            <i class="fas fa-inbox text-4xl text-sidebar-accent"></i>
+        <div id="empty-state" class="py-12 flex flex-col items-center justify-center text-gray-500">
+          <div class="bg-gray-100 rounded-full p-4 mb-4">
+            <i class="fas fa-inbox text-3xl"></i>
           </div>
-          <h3 class="text-lg font-medium mb-2 font-cinzel">No customer messages</h3>
-          <p class="text-sm text-dark mb-6">Customer messages will appear here when received</p>
-          <button id="load-messages-btn" class="btn-primary flex items-center gap-2">
-            <i class="fas fa-envelope text-white"></i> Load Messages
+          <h3 class="text-lg font-medium mb-1">No customer messages</h3>
+          <p class="text-sm">Customer messages will appear here when received</p>
+          <button id="load-messages-btn" class="mt-4 bg-[#008080] text-white px-4 py-2 rounded-md hover:bg-opacity-90 transition-colors">
+            Load Messages
           </button>
         </div>
         
         <!-- Message list container -->
-        <div id="message-list" class="hidden max-h-[70vh] overflow-y-auto scrollbar-thin">
+        <div id="message-list" class="hidden">
           <!-- Messages will be loaded here dynamically -->
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Message Detail Modal -->
-  <div id="message-detail-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center p-4">
-    <div class="modal-card">
-      <!-- Modal Header -->
-      <div class="modal-header">
-        <div>
-          <h3 class="text-lg font-semibold font-cinzel text-sidebar-text" id="modal-customer-name">Customer Name</h3>
-          <p class="text-sm text-dark" id="modal-message-date">customer@email.com</p>
-        </div>
-        <button id="close-modal" class="text-dark hover:text-sidebar-accent transition duration-200">
-          <i class="fas fa-times text-xl"></i>
-        </button>
-      </div>
-      
-      <!-- Modal Body - Conversation -->
-      <div class="modal-body scrollbar-thin" id="modal-conversation">
-        <!-- Conversation messages will be loaded here -->
-      </div>
-      
-      <!-- Modal Footer - Reply Form -->
-      <div class="modal-footer">
-        <div class="flex gap-3 mb-3">
-          <button class="text-dark hover:text-sidebar-accent" title="Attach File">
-            <i class="fas fa-paperclip"></i>
-          </button>
-          <button class="text-dark hover:text-sidebar-accent" title="Quick Reply Template">
-            <i class="fas fa-reply-all"></i>
-          </button>
-          <button class="text-dark hover:text-sidebar-accent" title="Format Text">
-            <i class="fas fa-font"></i>
+      <!-- Message Detail Modal -->
+      <div id="message-detail-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center">
+      <div class="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[80vh] flex flex-col">
+        <!-- Modal Header -->
+        <div class="p-4 border-b border-gray-200 flex justify-between items-center">
+          <div>
+            <h3 class="text-lg font-semibold" id="modal-customer-name">Customer Name</h3>
+            <p class="text-sm text-gray-500" id="modal-message-date">Date</p>
+          </div>
+          <button id="close-modal" class="text-gray-500 hover:text-gray-700">
+            <i class="fas fa-times text-xl"></i>
           </button>
         </div>
-        <div class="flex gap-3">
-          <textarea id="reply-input" class="enhanced-input" placeholder="Type your reply..."></textarea>
-          <button class="btn-primary flex items-center" id="send-reply">
-            <i class="fas fa-paper-plane mr-2"></i> Send
-          </button>
+        
+        <!-- Modal Body - Conversation -->
+        <div class="p-4 overflow-y-auto flex-grow" id="modal-conversation">
+          <!-- Conversation messages will be loaded here -->
+        </div>
+        
+        <!-- Modal Footer - Reply Form -->
+        <div class="p-4 border-t border-gray-200">
+          <div class="flex gap-2 mb-2">
+            <button class="text-gray-500 hover:text-gray-700" title="Attach File">
+              <i class="fas fa-paperclip"></i>
+            </button>
+            <button class="text-gray-500 hover:text-gray-700" title="Quick Reply Template">
+              <i class="fas fa-reply-all"></i>
+            </button>
+            <button class="text-gray-500 hover:text-gray-700" title="Format Text">
+              <i class="fas fa-font"></i>
+            </button>
+          </div>
+          <div class="flex gap-2">
+            <textarea id="reply-input" class="flex-1 p-2.5 border border-gray-300 rounded text-sm" placeholder="Type your reply..."></textarea>
+            <button class="bg-[#008080] text-white px-4 py-2 rounded-md hover:bg-opacity-90" id="send-reply">
+              <i class="fas fa-paper-plane mr-2"></i> Send
+            </button>
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
 
     <script>
