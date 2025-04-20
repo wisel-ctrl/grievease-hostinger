@@ -636,371 +636,335 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
 </div>
 
   <!-- Modal for Editing Service -->
-<div class="fixed inset-0 z-50 flex items-center justify-center hidden" id="editServiceModal">
-  <!-- Modal Backdrop -->
-  <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
-  
-  <!-- Modal Content -->
-  <div class="relative bg-white rounded-xl shadow-card w-full max-w-5xl mx-4 z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
-    <!-- Close Button -->
-    <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeEditServiceModal()">
-      <i class="fas fa-times"></i>
-    </button>
-    
+<div class="fixed top-0 left-0 w-full h-full bg-black bg-opacity-60 flex items-center justify-center z-50 hidden" id="editServiceModal">
+  <div class="bg-white rounded-xl w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-xl">
     <!-- Modal Header -->
-    <div class="px-6 py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
+    <div class="bg-gradient-to-r from-sidebar-accent to-white flex justify-between items-center p-6 flex-shrink-0">
       <h3 class="text-xl font-bold text-white flex items-center">
-        <i class="fas fa-edit mr-3"></i>
+        <i class="fas fa-edit mr-3 text-white"></i>
         Edit Service
       </h3>
+      <button class="bg-black bg-opacity-20 hover:bg-opacity-30 rounded-full p-2 text-white hover:text-white transition-all duration-200" onclick="closeEditServiceModal()">
+        <i class="fas fa-times text-xl"></i>
+      </button>
     </div>
     
-    <!-- Modal Body -->
-    <div class="px-6 py-5">
-      <form id="serviceForm" class="space-y-6">
-        <input type="hidden" id="salesId" name="sales_id">
+    <form id="serviceForm" class="p-6 space-y-6">
+      <!-- Customer and Service Selection -->
+      <div class="grid md:grid-cols-2 gap-4">
+      <input type="hidden" id="salesId" name="sales_id">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 flex items-center">
+          <i class="fas fa-user mr-2 text-sidebar-accent"></i>
+          Search Customer
+        </label>
+        <div class="relative">
+          <input 
+            type="text" 
+            id="customerSearch" 
+            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200"
+            placeholder="Type customer name..."
+            autocomplete="off"
+          >
+          <div id="customerResults" class="absolute z-10 mt-1 w-full bg-white shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto hidden">
+            <!-- Results will appear here -->
+          </div>
+        </div>
+        <input type="hidden" id="selectedCustomerId" name="customer_id">
+      </div>
         
-        <!-- Customer and Service Selection -->
-        <div class="grid md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 flex items-center">
+            <i class="fas fa-briefcase mr-2 text-sidebar-accent"></i>
+            Select Service
+          </label>
+          <select 
+            id="serviceSelect" 
+            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200"
+          >
+            <option value="">Choose Service</option>
+            <!-- Options will be populated dynamically -->
+          </select>
+        </div>
+      </div>
+
+      <!-- Service Price -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 flex items-center">
+          <i class="fas fa-dollar-sign mr-2 text-sidebar-accent"></i>
+          Service Price
+        </label>
+        <input 
+          type="number" 
+          id="servicePrice" 
+          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200"
+          placeholder="Enter Service Price"
+        >
+      </div>
+
+      <!-- Name Fields - Now in 2 columns -->
+      <div class="grid md:grid-cols-2 gap-4">
+        <div class="space-y-4">
           <div>
-            <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            <label class="block text-sm font-medium text-gray-700 flex items-center">
               <i class="fas fa-user mr-2 text-sidebar-accent"></i>
-              Search Customer
+              First Name
             </label>
-            <div class="relative">
+            <input 
+              type="text" 
+              id="firstName" 
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200"
+              placeholder="First Name"
+            >
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 flex items-center">
+              <i class="fas fa-user mr-2 text-sidebar-accent"></i>
+              Last Name
+            </label>
+            <input 
+              type="text" 
+              id="lastName" 
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200"
+              placeholder="Last Name"
+            >
+          </div>
+        </div>
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 flex items-center">
+              <i class="fas fa-user mr-2 text-sidebar-accent"></i>
+              Middle Name
+            </label>
+            <input 
+              type="text" 
+              id="middleName" 
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200"
+              placeholder="Middle Name"
+            >
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 flex items-center">
+              <i class="fas fa-user mr-2 text-sidebar-accent"></i>
+              Suffix
+            </label>
+            <input 
+              type="text" 
+              id="nameSuffix" 
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200"
+              placeholder="Suffix"
+            >
+          </div>
+        </div>
+      </div>
+
+      <!-- Contact Information -->
+      <div class="grid md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 flex items-center">
+            <i class="fas fa-envelope mr-2 text-sidebar-accent"></i>
+            Email
+          </label>
+          <input 
+            type="email" 
+            id="email" 
+            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200"
+            placeholder="Enter Email"
+          >
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 flex items-center">
+            <i class="fas fa-phone mr-2 text-sidebar-accent"></i>
+            Phone
+          </label>
+          <input 
+            type="tel" 
+            id="phone" 
+            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200"
+            placeholder="Enter Phone Number"
+          >
+        </div>
+      </div>
+
+      <!-- Deceased Information -->
+      <div class="space-y-4">
+        <h4 class="text-lg font-semibold flex items-center">
+          <i class="fas fa-file-medical mr-2 text-sidebar-accent"></i>
+          Deceased Information
+        </h4>
+        
+        <!-- Deceased Name - Now in 2 columns -->
+        <div class="grid md:grid-cols-2 gap-4">
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 flex items-center">
+                <i class="fas fa-user mr-2 text-sidebar-accent"></i>
+                First Name
+              </label>
               <input 
                 type="text" 
-                id="customerSearch" 
-                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                placeholder="Type customer name..."
-                autocomplete="off"
+                id="deceasedFirstName" 
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200"
+                placeholder="First Name"
               >
-              <div id="customerResults" class="absolute z-10 mt-1 w-full bg-white shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto hidden">
-                <!-- Results will appear here -->
-              </div>
             </div>
-            <input type="hidden" id="selectedCustomerId" name="customer_id">
-          </div>
-            
-          <div>
-            <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-briefcase mr-2 text-sidebar-accent"></i>
-              Select Service
-            </label>
-            <div class="relative">
-              <select 
-                id="serviceSelect" 
-                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+            <div>
+              <label class="block text-sm font-medium text-gray-700 flex items-center">
+                <i class="fas fa-user mr-2 text-sidebar-accent"></i>
+                Last Name
+              </label>
+              <input 
+                type="text" 
+                id="deceasedLastName" 
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200"
+                placeholder="Last Name"
               >
-                <option value="">Choose Service</option>
-                <!-- Options will be populated dynamically -->
-              </select>
+            </div>
+          </div>
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 flex items-center">
+                <i class="fas fa-user mr-2 text-sidebar-accent"></i>
+                Middle Name
+              </label>
+              <input 
+                type="text" 
+                id="deceasedMiddleName" 
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200"
+                placeholder="Middle Name"
+              >
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 flex items-center">
+                <i class="fas fa-user mr-2 text-sidebar-accent"></i>
+                Suffix
+              </label>
+              <input 
+                type="text" 
+                id="deceasedSuffix" 
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200"
+                placeholder="Suffix"
+              >
             </div>
           </div>
         </div>
 
-        <!-- Service Price -->
-        <div>
-          <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-dollar-sign mr-2 text-sidebar-accent"></i>
-            Service Price
-          </label>
-          <div class="relative">
-            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <span class="text-gray-500">₱</span>
-            </div>
+        <!-- Deceased Dates -->
+        <div class="grid md:grid-cols-3 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 flex items-center">
+              <i class="fas fa-calendar-alt mr-2 text-sidebar-accent"></i>
+              Birth Date
+            </label>
             <input 
-              type="number" 
-              id="servicePrice" 
-              class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-              placeholder="Enter Service Price"
+              type="date" 
+              id="birthDate" 
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200"
+            >
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 flex items-center">
+              <i class="fas fa-calendar-times mr-2 text-sidebar-accent"></i>
+              Date of Death
+            </label>
+            <input 
+              type="date" 
+              id="deathDate" 
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200"
+            >
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 flex items-center">
+              <i class="fas fa-calendar-check mr-2 text-sidebar-accent"></i>
+              Date of Burial/Cremation
+            </label>
+            <input 
+              type="date" 
+              id="burialDate" 
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200"
             >
           </div>
         </div>
 
-        <!-- Name Fields - Now in 2 columns -->
-        <div class="grid md:grid-cols-2 gap-4">
-          <div class="space-y-4">
-            <div>
-              <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                <i class="fas fa-user mr-2 text-sidebar-accent"></i>
-                First Name
-              </label>
-              <div class="relative">
-                <input 
-                  type="text" 
-                  id="firstName" 
-                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                  placeholder="First Name"
-                >
-              </div>
-            </div>
-            <div>
-              <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                <i class="fas fa-user mr-2 text-sidebar-accent"></i>
-                Last Name
-              </label>
-              <div class="relative">
-                <input 
-                  type="text" 
-                  id="lastName" 
-                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                  placeholder="Last Name"
-                >
-              </div>
-            </div>
-          </div>
-          <div class="space-y-4">
-            <div>
-              <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                <i class="fas fa-user mr-2 text-sidebar-accent"></i>
-                Middle Name
-              </label>
-              <div class="relative">
-                <input 
-                  type="text" 
-                  id="middleName" 
-                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                  placeholder="Middle Name"
-                >
-              </div>
-            </div>
-            <div>
-              <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                <i class="fas fa-user mr-2 text-sidebar-accent"></i>
-                Suffix
-              </label>
-              <div class="relative">
-                <input 
-                  type="text" 
-                  id="nameSuffix" 
-                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                  placeholder="Suffix"
-                >
-              </div>
-            </div>
+        <!-- Deceased Address -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 flex items-center">
+            <i class="fas fa-map-marker-alt mr-2 text-sidebar-accent"></i>
+            Deceased Address
+          </label>
+          <input 
+            type="text" 
+            id="deceasedAddress" 
+            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200"
+            placeholder="Enter Deceased Address"
+          >
+        </div>
+
+        <!-- Branch Selection -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 flex items-center">
+            <i class="fas fa-building mr-2 text-sidebar-accent"></i>
+            Select Branch
+          </label>
+          <div class="mt-2 space-x-4">
+            <label class="inline-flex items-center">
+              <input 
+                type="radio" 
+                name="branch" 
+                value="1" 
+                class="form-radio h-4 w-4 text-sidebar-accent"
+              >
+              <span class="ml-2">Pila</span>
+            </label>
+            <label class="inline-flex items-center">
+              <input 
+                type="radio" 
+                name="branch" 
+                value="2" 
+                class="form-radio h-4 w-4 text-sidebar-accent"
+              >
+              <span class="ml-2">Paete</span>
+            </label>
           </div>
         </div>
 
-        <!-- Contact Information -->
-        <div class="grid md:grid-cols-2 gap-4">
-          <div>
-            <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-envelope mr-2 text-sidebar-accent"></i>
-              Email
-            </label>
-            <div class="relative">
-              <input 
-                type="email" 
-                id="email" 
-                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                placeholder="Enter Email"
-              >
+        <!-- Death Certificate Upload -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 flex items-center">
+            <i class="fas fa-file-upload mr-2 text-sidebar-accent"></i>
+            Death Certificate
+          </label>
+          <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
+            <div class="space-y-1 text-center">
+              <i class="fas fa-cloud-upload-alt text-4xl text-sidebar-accent mb-4"></i>
+              <div class="flex text-sm text-gray-600">
+                <label for="deathCertificate" class="relative cursor-pointer bg-white rounded-md font-medium text-sidebar-accent hover:text-opacity-80 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-sidebar-accent">
+                  <span>Upload a file</span>
+                  <input 
+                    id="deathCertificate" 
+                    name="deathCertificate" 
+                    type="file" 
+                    class="sr-only"
+                    accept=".pdf,.jpg,.jpeg,.png"
+                  >
+                </label>
+                <p class="pl-1">or drag and drop</p>
+              </div>
+              <p class="text-xs text-gray-500">PNG, JPG, PDF up to 10MB</p>
             </div>
           </div>
-          <div>
-            <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-phone mr-2 text-sidebar-accent"></i>
-              Phone
-            </label>
-            <div class="relative">
-              <input 
-                type="tel" 
-                id="phone" 
-                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                placeholder="Enter Phone Number"
-              >
-            </div>
-          </div>
+          <p id="file-name" class="mt-2 text-sm text-gray-500"></p>
         </div>
-
-        <!-- Deceased Information -->
-        <div class="space-y-4">
-          <h4 class="text-lg font-semibold flex items-center">
-            <i class="fas fa-file-medical mr-2 text-sidebar-accent"></i>
-            Deceased Information
-          </h4>
-          
-          <!-- Deceased Name - Now in 2 columns -->
-          <div class="grid md:grid-cols-2 gap-4">
-            <div class="space-y-4">
-              <div>
-                <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                  <i class="fas fa-user mr-2 text-sidebar-accent"></i>
-                  First Name
-                </label>
-                <div class="relative">
-                  <input 
-                    type="text" 
-                    id="deceasedFirstName" 
-                    class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                    placeholder="First Name"
-                  >
-                </div>
-              </div>
-              <div>
-                <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                  <i class="fas fa-user mr-2 text-sidebar-accent"></i>
-                  Last Name
-                </label>
-                <div class="relative">
-                  <input 
-                    type="text" 
-                    id="deceasedLastName" 
-                    class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                    placeholder="Last Name"
-                  >
-                </div>
-              </div>
-            </div>
-            <div class="space-y-4">
-              <div>
-                <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                  <i class="fas fa-user mr-2 text-sidebar-accent"></i>
-                  Middle Name
-                </label>
-                <div class="relative">
-                  <input 
-                    type="text" 
-                    id="deceasedMiddleName" 
-                    class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                    placeholder="Middle Name"
-                  >
-                </div>
-              </div>
-              <div>
-                <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                  <i class="fas fa-user mr-2 text-sidebar-accent"></i>
-                  Suffix
-                </label>
-                <div class="relative">
-                  <input 
-                    type="text" 
-                    id="deceasedSuffix" 
-                    class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                    placeholder="Suffix"
-                  >
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Deceased Dates -->
-          <div class="grid md:grid-cols-3 gap-4">
-            <div>
-              <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                <i class="fas fa-calendar-alt mr-2 text-sidebar-accent"></i>
-                Birth Date
-              </label>
-              <div class="relative">
-                <input 
-                  type="date" 
-                  id="birthDate" 
-                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                >
-              </div>
-            </div>
-            <div>
-              <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                <i class="fas fa-calendar-times mr-2 text-sidebar-accent"></i>
-                Date of Death
-              </label>
-              <div class="relative">
-                <input 
-                  type="date" 
-                  id="deathDate" 
-                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                >
-              </div>
-            </div>
-            <div>
-              <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                <i class="fas fa-calendar-check mr-2 text-sidebar-accent"></i>
-                Date of Burial/Cremation
-              </label>
-              <div class="relative">
-                <input 
-                  type="date" 
-                  id="burialDate" 
-                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                >
-              </div>
-            </div>
-          </div>
-
-          <!-- Deceased Address -->
-          <div>
-            <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-map-marker-alt mr-2 text-sidebar-accent"></i>
-              Deceased Address
-            </label>
-            <div class="relative">
-              <input 
-                type="text" 
-                id="deceasedAddress" 
-                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                placeholder="Enter Deceased Address"
-              >
-            </div>
-          </div>
-
-          <!-- Branch Selection -->
-          <div class="bg-gray-50 p-4 rounded-lg border-l-4 border-gold">
-            <label class="block text-xs font-medium text-gray-700 mb-2">Branch</label>
-            <div class="flex flex-wrap gap-4">
-              <label class="flex items-center space-x-2 cursor-pointer">
-                <input type="radio" name="branch" value="1" class="hidden peer">
-                <div class="w-5 h-5 rounded-full border-2 border-gold flex items-center justify-center peer-checked:bg-gold peer-checked:border-darkgold transition-colors"></div>
-                <span class="text-gray-700 font-medium">Pila</span>
-              </label>
-              <label class="flex items-center space-x-2 cursor-pointer">
-                <input type="radio" name="branch" value="2" class="hidden peer">
-                <div class="w-5 h-5 rounded-full border-2 border-gold flex items-center justify-center peer-checked:bg-gold peer-checked:border-darkgold transition-colors"></div>
-                <span class="text-gray-700 font-medium">Paete</span>
-              </label>
-            </div>
-          </div>
-
-          <!-- Death Certificate Upload -->
-          <div>
-            <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-file-upload mr-2 text-sidebar-accent"></i>
-              Death Certificate
-            </label>
-            <div class="relative">
-              <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg">
-                <div class="space-y-1 text-center">
-                  <i class="fas fa-cloud-upload-alt text-4xl text-sidebar-accent mb-4"></i>
-                  <div class="flex text-sm text-gray-600">
-                    <label for="deathCertificate" class="relative cursor-pointer bg-white rounded-md font-medium text-sidebar-accent hover:text-opacity-80 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-sidebar-accent">
-                      <span>Upload a file</span>
-                      <input 
-                        id="deathCertificate" 
-                        name="deathCertificate" 
-                        type="file" 
-                        class="sr-only"
-                        accept=".pdf,.jpg,.jpeg,.png"
-                      >
-                    </label>
-                    <p class="pl-1">or drag and drop</p>
-                  </div>
-                  <p class="text-xs text-gray-500">PNG, JPG, PDF up to 10MB</p>
-                </div>
-              </div>
-              <p id="file-name" class="mt-2 text-sm text-gray-500"></p>
-            </div>
-          </div>
-        </div>
-      </form>
-    </div>
+      </div>
+    </form>
     
-    <!-- Modal Footer --> 
-    <div class="px-6 py-4 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
-      <button class="px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center" onclick="closeEditServiceModal()">
-        <i class="fas fa-times mr-2"></i>
+    <!-- Modal Footer -->
+    <div class="p-6 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
+      <button class="px-5 py-3 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-semibold hover:bg-navy transition-colors" onclick="closeEditServiceModal()">
+        <i class="fas fa-times mr-2 text-sidebar-accent"></i>
         Cancel
       </button>
-      <button class="px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="saveServiceChanges()">
+      <button class="px-6 py-3 bg-sidebar-accent text-white rounded-lg font-semibold hover:bg-darkgold transition-colors" onclick="saveServiceChanges()">
         <i class="fas fa-save mr-2"></i>
         Save Changes
       </button>
