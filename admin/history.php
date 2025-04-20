@@ -1210,21 +1210,28 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
   </div>
 </div>
 
-<div class="fixed top-0 left-0 w-full h-full bg-black bg-opacity-60 flex items-center justify-center z-50 hidden" id="viewServiceModal">
-  <div class="bg-white rounded-xl w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-xl">
+<div class="fixed inset-0 z-50 flex items-center justify-center hidden" id="viewServiceModal">
+  <!-- Modal Backdrop -->
+  <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+  
+  <!-- Modal Content -->
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-5xl mx-4 z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+    <!-- Close Button -->
+    <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeViewServiceModal()">
+      <i class="fas fa-times"></i>
+    </button>
+    
     <!-- Modal Header -->
-    <div class="bg-gradient-to-r from-sidebar-accent to-white flex justify-between items-center p-6 flex-shrink-0">
-      <h3 class="text-xl font-bold text-white">Service Details</h3>
-      <button class="bg-black bg-opacity-20 hover:bg-opacity-30 rounded-full p-2 text-white hover:text-white transition-all duration-200" onclick="closeViewServiceModal()">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-          <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-        </svg>
-      </button>
+    <div class="px-6 py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
+      <h3 class="text-xl font-bold text-white flex items-center">
+        <i class="fas fa-info-circle mr-2"></i>
+        Service Details
+      </h3>
     </div>
     
     <!-- Modal Body -->
-    <div class="p-6">
-      <div class="bg-gray-50 p-5 rounded-xl">
+    <div class="px-6 py-5">
+      <div class="bg-gray-50 p-5 rounded-lg border border-gray-200">
         <div class="space-y-3">
           <p class="flex justify-between">
             <span class="font-medium text-gray-700">ID:</span>
@@ -1258,8 +1265,11 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
       </div>
       
       <!-- Initial Staff Section -->
-      <div class="bg-gray-50 p-5 rounded-xl mt-4">
-        <h4 class="font-semibold text-gray-800 mb-3">Initial Staff</h4>
+      <div class="bg-gray-50 p-5 rounded-lg border border-gray-200 mt-4">
+        <h4 class="font-semibold text-gray-800 mb-3 flex items-center">
+          <i class="fas fa-user-friends mr-2 text-sidebar-accent"></i>
+          Initial Staff
+        </h4>
         <div class="space-y-3">
           <p class="flex justify-between">
             <span class="font-medium text-gray-700">Date:</span>
@@ -1285,8 +1295,11 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
       </div>
       
       <!-- Burial Staff Section -->
-      <div class="bg-gray-50 p-5 rounded-xl mt-4">
-        <h4 class="font-semibold text-gray-800 mb-3">Burial Staff</h4>
+      <div class="bg-gray-50 p-5 rounded-lg border border-gray-200 mt-4">
+        <h4 class="font-semibold text-gray-800 mb-3 flex items-center">
+          <i class="fas fa-people-carry mr-2 text-sidebar-accent"></i>
+          Burial Staff
+        </h4>
         <div class="space-y-3">
           <p class="flex justify-between">
             <span class="font-medium text-gray-700">Date:</span>
@@ -1309,8 +1322,11 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
     </div>
     
     <!-- Modal Footer -->
-    <div class="p-6 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
-      <button class="px-5 py-3 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-semibold hover:bg-navy transition-colors" onclick="closeViewServiceModal()">Close</button>
+    <div class="px-6 py-4 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
+      <button class="px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center" onclick="closeViewServiceModal()">
+        <i class="fas fa-times mr-2"></i>
+        Close
+      </button>
     </div>
   </div>
 </div>
