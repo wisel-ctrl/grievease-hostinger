@@ -112,25 +112,19 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
     </div>
   </div>
 
-  <?php
-// At the very top of your Ongoing Services section
-$ongoingCount = 0;
-if (isset($ongoingResult) && is_object($ongoingResult)) {
-    $ongoingCount = $ongoingResult->num_rows;
-}
-?>
-
   <!-- Ongoing Services Section -->
 <div class="bg-white rounded-lg shadow-md mb-8 border border-sidebar-border overflow-hidden">
   <div class="bg-sidebar-hover p-4 border-b border-sidebar-border flex flex-col md:flex-row md:items-center md:justify-between gap-4">
     <div class="flex items-center gap-3">
       <h4 class="text-lg font-bold text-sidebar-text">Ongoing Services</h4>
         
-      <!-- Then in your span -->
-<span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
-    <i class="fas fa-clipboard-list"></i>
-    <?php echo $ongoingCount . " Service" . ($ongoingCount != 1 ? "s" : ""); ?>
-</span>
+      <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
+        <i class="fas fa-clipboard-list"></i>
+        <?php 
+          $ongoingCount = $ongoingResult->num_rows;
+          echo $ongoingCount . " Service" . ($ongoingCount != 1 ? "s" : ""); 
+        ?>
+      </span>
     </div>
       
     <!-- Search Section -->
