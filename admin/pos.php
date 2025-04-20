@@ -1176,8 +1176,37 @@ function confirmLifeplanCheckout() {
     console.log(`${key}: ${value}`);
   }
 
-  // Optional: show a temporary success message without backend
-  alert('Form data is ready and logged to the console (not sent to server).');
+  fetch('posFunctions/process_lifeplan_checkout.php', {
+    method: 'POST',
+    body: formData
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    return response.json();
+  })
+  .then(data => {
+    if (data.success) {
+      // Success handling
+      alert('Transaction successfully saved!');
+      // Optional: redirect or clear form
+      // window.location.href = 'success_page.php';
+      form.reset();
+    } else {
+      // Server-side validation failed
+      alert(data.message || 'Error processing your request. Please try again.');
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    alert('An error occurred while saving the data. Please try again.');
+  })
+  .finally(() => {
+    // Restore button state
+    submitBtn.innerHTML = originalBtnText;
+    submitBtn.disabled = false;
+  });
 }
 
 
