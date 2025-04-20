@@ -657,7 +657,7 @@ $totalEmployees = $employeeCountResult->fetch_assoc()['total'] ?? 0; // Default 
   <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
   
   <!-- Modal Content -->
-  <div class="relative bg-white rounded-xl shadow-card w-full max-w-lg mx-4 z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-5xl mx-4 z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
     <!-- Close Button -->
     <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeEditEmployeeModal()">
       <i class="fas fa-times"></i>
@@ -673,87 +673,112 @@ $totalEmployees = $employeeCountResult->fetch_assoc()['total'] ?? 0; // Default 
     
     <!-- Modal Body -->
     <div class="px-6 py-5">
-      <form id="editEmployeeAccountForm">
+      <form id="editEmployeeAccountForm" class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <!-- Hidden field for employee ID -->
         <input type="hidden" id="editEmployeeId" name="employeeId">
         
-        <!-- Name Fields in Two Rows -->
-        <div class="grid grid-cols-2 gap-3">
+        <!-- Left Column -->
+        <div class="space-y-4">
+          <!-- Name Fields -->
+          <div class="grid grid-cols-2 gap-3">
             <div>
-                <label for="editFirstName" class="block text-xs font-medium text-gray-700 mb-1">First Name *</label>
+              <label for="editFirstName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                <i class="fas fa-user mr-2 text-sidebar-accent"></i>
+                First Name *
+              </label>
+              <div class="relative">
                 <input type="text" id="editFirstName" name="firstName" required
-                    class="w-full px-2 py-1.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent"
+                    class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
                     placeholder="First Name" pattern="[A-Za-z\s]+" title="Only letters and spaces allowed">
+              </div>
             </div>
             <div>
-                <label for="editLastName" class="block text-xs font-medium text-gray-700 mb-1">Last Name *</label>
+              <label for="editLastName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                <i class="fas fa-user mr-2 text-sidebar-accent"></i>
+                Last Name *
+              </label>
+              <div class="relative">
                 <input type="text" id="editLastName" name="lastName" required
-                    class="w-full px-2 py-1.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent"
+                    class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
                     placeholder="Last Name" pattern="[A-Za-z\s]+" title="Only letters and spaces allowed">
+              </div>
             </div>
+          </div>
+          
+          <div class="grid grid-cols-2 gap-3">
             <div>
-                <label for="editMiddleName" class="block text-xs font-medium text-gray-700 mb-1">Middle Name</label>
+              <label for="editMiddleName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                <i class="fas fa-user mr-2 text-sidebar-accent"></i>
+                Middle Name
+              </label>
+              <div class="relative">
                 <input type="text" id="editMiddleName" name="middleName"
-                    class="w-full px-2 py-1.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent"
+                    class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
                     placeholder="Middle Name" pattern="[A-Za-z\s]+" title="Only letters and spaces allowed">
+              </div>
             </div>
             <div>
-                <label for="editSuffix" class="block text-xs font-medium text-gray-700 mb-1">Suffix <span class="text-xs text-gray-500">(Optional)</span></label>
+              <label for="editSuffix" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                <i class="fas fa-user-tag mr-2 text-sidebar-accent"></i>
+                Suffix <span class="text-xs text-gray-500">(Optional)</span>
+              </label>
+              <div class="relative">
                 <input type="text" id="editSuffix" name="suffix"
-                    class="w-full px-2 py-1.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent"
+                    class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
                     placeholder="e.g., Jr., Sr.">
+              </div>
             </div>
-        </div>
+          </div>
 
-        <!-- Date of Birth Field -->
-        <div class="mt-3">
-            <label for="editDateOfBirth" class="block text-xs font-medium text-gray-700 mb-1">Date of Birth *</label>
-            <input type="date" id="editDateOfBirth" name="dateOfBirth" required
-                class="w-full px-2 py-1.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent"
-                max="<?php echo date('Y-m-d', strtotime('-18 years')); ?>">
-        </div>
-
-        <!-- Gender Selection -->
-        <div class="mt-3 bg-gray-50 p-3 rounded-lg">
-            <label class="block text-xs font-medium text-gray-700 mb-2 flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-1 text-sidebar-accent">
-                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
-                    <circle cx="9" cy="7" r="4"></circle>
-                </svg>
-                Gender *
+          <!-- Date of Birth Field -->
+          <div>
+            <label for="editDateOfBirth" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+              <i class="fas fa-calendar-alt mr-2 text-sidebar-accent"></i>
+              Date of Birth *
             </label>
-            <div class="flex space-x-4">
-                <label class="inline-flex items-center p-2 border border-gray-300 rounded-lg bg-white hover:border-sidebar-accent cursor-pointer transition-all">
-                    <input type="radio" name="gender" value="Male" required class="mr-1 h-3 w-3 text-sidebar-accent" id="editGenderMale">
-                    Male
-                </label>
-                <label class="inline-flex items-center p-2 border border-gray-300 rounded-lg bg-white hover:border-sidebar-accent cursor-pointer transition-all">
-                    <input type="radio" name="gender" value="Female" required class="mr-1 h-3 w-3 text-sidebar-accent" id="editGenderFemale">
-                    Female
-                </label>
+            <div class="relative">
+              <input type="date" id="editDateOfBirth" name="dateOfBirth" required
+                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                  max="<?php echo date('Y-m-d', strtotime('-18 years')); ?>">
             </div>
-        </div>
+          </div>
 
-        <div class="grid grid-cols-2 gap-3 mt-3">
+          <!-- Contact Information -->
+          <div class="grid grid-cols-2 gap-3">
             <div>
-                <label for="editEmployeeEmail" class="block text-xs font-medium text-gray-700 mb-1">Email Address *</label>
+              <label for="editEmployeeEmail" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                <i class="fas fa-envelope mr-2 text-sidebar-accent"></i>
+                Email Address *
+              </label>
+              <div class="relative">
                 <input type="email" id="editEmployeeEmail" name="employeeEmail" required
-                    class="w-full px-2 py-1.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent"
+                    class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
                     placeholder="Email">
+              </div>
             </div>
             <div>
-                <label for="editEmployeePhone" class="block text-xs font-medium text-gray-700 mb-1">Phone Number *</label>
+              <label for="editEmployeePhone" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                <i class="fas fa-phone-alt mr-2 text-sidebar-accent"></i>
+                Phone Number *
+              </label>
+              <div class="relative">
                 <input type="tel" id="editEmployeePhone" name="employeePhone" required
-                    class="w-full px-2 py-1.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent"
+                    class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
                     placeholder="09XXXXXXXXX or +63XXXXXXXXXX" pattern="(\+63|0)\d{10}" title="Philippine phone number (09XXXXXXXXX or +63XXXXXXXXXX)">
+              </div>
             </div>
-        </div>
+          </div>
 
-        <div class="grid grid-cols-2 gap-3 mt-3">
+          <!-- Position and Salary -->
+          <div class="grid grid-cols-2 gap-3">
             <div>
-                <label for="editEmployeePosition" class="block text-xs font-medium text-gray-700 mb-1">Position *</label>
+              <label for="editEmployeePosition" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                <i class="fas fa-briefcase mr-2 text-sidebar-accent"></i>
+                Position *
+              </label>
+              <div class="relative">
                 <select id="editEmployeePosition" name="employeePosition" required
-                    class="w-full px-2 py-1.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
+                    class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
                     <option value="">Select Position</option>
                     <option value="Embalmer">Embalmer</option>
                     <option value="Driver">Driver</option>
@@ -762,34 +787,63 @@ $totalEmployees = $employeeCountResult->fetch_assoc()['total'] ?? 0; // Default 
                     <option value="Operational Head">Operational Head</option>
                     <option value="Personnel">Personnel</option>
                 </select>
+              </div>
             </div>
             <div>
-                <label for="editEmployeeSalary" class="block text-xs font-medium text-gray-700 mb-1">Salary per Service (₱) *</label>
-                <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
-                        <span class="text-gray-500">₱</span>
-                    </div>
-                    <input type="number" id="editEmployeeSalary" name="employeeSalary" required step="0.01" min="0.01"
-                        class="w-full pl-6 py-1.5 px-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent"
-                        placeholder="Amount">
+              <label for="editEmployeeSalary" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                <i class="fas fa-money-bill-wave mr-2 text-sidebar-accent"></i>
+                Salary per Service (₱) *
+              </label>
+              <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <span class="text-gray-500">₱</span>
                 </div>
+                <input type="number" id="editEmployeeSalary" name="employeeSalary" required step="0.01" min="0.01"
+                    class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                    placeholder="Amount">
+              </div>
             </div>
+          </div>
         </div>
-
-        <!-- Branch Selection -->
-        <div class="mt-3">
-            <div class="bg-gray-50 p-4 rounded-lg border-l-4 border-gold">
-                <label class="block text-xs font-medium text-gray-700 mb-2">Branch</label>
-                <div class="flex flex-wrap gap-4">
-                    <?php foreach ($branches as $branch): ?>
-                        <label class="flex items-center space-x-2 cursor-pointer">
-                            <input type="radio" name="branch" value="<?php echo $branch['branch_id']; ?>" required class="hidden peer editBranchRadio" id="editBranch<?php echo $branch['branch_id']; ?>">
-                            <div class="w-5 h-5 rounded-full border-2 border-gold flex items-center justify-center peer-checked:bg-gold peer-checked:border-darkgold transition-colors"></div>
-                            <span class="text-gray-700 font-medium"><?php echo htmlspecialchars($branch['branch_name']); ?></span>
-                        </label>
-                    <?php endforeach; ?>
-                </div>
+        
+        <!-- Right Column -->
+        <div class="space-y-4">
+          <!-- Gender Selection -->
+          <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+            <p class="block text-xs font-medium text-gray-700 mb-2 flex items-center">
+              <i class="fas fa-venus-mars mr-2 text-sidebar-accent"></i>
+              Gender *
+            </p>
+            <div class="grid grid-cols-2 gap-3">
+              <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
+                <input type="radio" name="gender" value="Male" required class="mr-2 text-sidebar-accent focus:ring-sidebar-accent" id="editGenderMale">
+                <i class="fas fa-male mr-1 text-sidebar-accent"></i>
+                Male
+              </label>
+              <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
+                <input type="radio" name="gender" value="Female" required class="mr-2 text-sidebar-accent focus:ring-sidebar-accent" id="editGenderFemale">
+                <i class="fas fa-female mr-1 text-sidebar-accent"></i>
+                Female
+              </label>
             </div>
+          </div>
+          
+          <!-- Branch Selection -->
+          <div class="bg-gray-50 p-4 rounded-lg border-l-4 border-gold">
+            <label class="block text-xs font-medium text-gray-700 mb-2 flex items-center">
+              <i class="fas fa-building mr-2 text-sidebar-accent"></i>
+              Branch Location *
+            </label>
+            <div class="flex flex-wrap gap-4">
+              <?php foreach ($branches as $branch): ?>
+                <label class="flex items-center space-x-2 cursor-pointer">
+                  <input type="radio" name="branch" value="<?php echo $branch['branch_id']; ?>" required class="hidden peer editBranchRadio" id="editBranch<?php echo $branch['branch_id']; ?>">
+                  <div class="w-5 h-5 rounded-full border-2 border-gold flex items-center justify-center peer-checked:bg-gold peer-checked:border-darkgold transition-colors"></div>
+                  <span class="text-gray-700 font-medium"><?php echo htmlspecialchars($branch['branch_name']); ?></span>
+                </label>
+              <?php endforeach; ?>
+            </div>
+          </div>
         </div>
       </form>
     </div>
