@@ -1170,6 +1170,12 @@ function confirmLifeplanCheckout() {
   formData.append('balance', balance.toFixed(2));
   formData.append('payment_status', balance > 0 ? 'With Balance' : 'Fully Paid');
 
+   // Show loading indicator
+   const submitBtn = document.querySelector('#lifeplanCheckoutForm button[type="submit"]');
+  const originalBtnText = submitBtn.innerHTML;
+  submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+  submitBtn.disabled = true;
+
   // LOG instead of sending to server
   console.log('Collected Form Data (Not sent):');
   for (let [key, value] of formData.entries()) {
