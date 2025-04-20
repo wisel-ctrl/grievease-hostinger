@@ -118,12 +118,16 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
     <div class="flex items-center gap-3">
       <h4 class="text-lg font-bold text-sidebar-text">Ongoing Services</h4>
         
+      <?php
+      // Count total ongoing services (status = 'Pending')
+      $countQuery = "SELECT COUNT(*) as total FROM sales_tb WHERE status = 'Pending'";
+      $countResult = $conn->query($countQuery);
+      $totalOngoing = $countResult->fetch_assoc()['total'];
+      ?>
+      
       <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
         <i class="fas fa-clipboard-list"></i>
-        <?php 
-          $ongoingCount = $ongoingResult->num_rows;
-          echo $ongoingCount . " Service" . ($ongoingCount != 1 ? "s" : ""); 
-        ?>
+        <?php echo $totalOngoing . " Service" . ($totalOngoing != 1 ? "s" : ""); ?>
       </span>
     </div>
       
