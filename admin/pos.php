@@ -484,7 +484,7 @@ $servicesJson = json_encode($allServices);
 
     <!-- Modal Body -->
     <div class="p-6">
-      <form id="lifeplanCheckoutForm" class="space-y-8">
+    <form id="lifeplanCheckoutForm" class="space-y-8" onsubmit="event.preventDefault(); confirmLifeplanCheckout();">
         <input type="hidden" id="lp-service-id" name="service_id" value="">
         <input type="hidden" id="lp-service-price" name="service_price">
         <input type="hidden" id="lp-branch-id" name="branch_id" value="">
@@ -1097,7 +1097,30 @@ function closeLifeplanCheckoutModal() {
 // Function to confirm lifeplan checkout
 function confirmLifeplanCheckout() {
   const form = document.getElementById('lifeplanCheckoutForm');
-  const formData = new FormData(form);
+  const formData = {
+    service_id: document.getElementById('lp-service-id').value,
+    branch_id: document.getElementById('lp-branch-id').value,
+    sold_by: 1, // Example admin ID
+    clientFirstName: document.getElementById('lp-clientFirstName').value,
+    clientMiddleName: document.getElementById('lp-clientMiddleName').value,
+    clientLastName: document.getElementById('lp-clientLastName').value,
+    clientSuffix: document.getElementById('lp-clientSuffix').value,
+    clientEmail: document.getElementById('lp-clientEmail').value,
+    clientPhone: document.getElementById('lp-clientPhone').value,
+    beneficiaryFirstName: document.getElementById('beneficiaryFirstName').value,
+    beneficiaryMiddleName: document.getElementById('beneficiaryMiddleName').value,
+    beneficiaryLastName: document.getElementById('beneficiaryLastName').value,
+    beneficiarySuffix: document.getElementById('beneficiarySuffix').value,
+    beneficiaryDateOfBirth: document.getElementById('beneficiaryDateOfBirth').value,
+    beneficiaryAddress: document.getElementById('beneficiaryAddress').value,
+    beneficiaryRelationship: document.getElementById('beneficiaryRelationship').value,
+    withCremation: document.getElementById('lp-withCremation').checked ? 'on' : 'off',
+    paymentMethod: document.getElementById('lp-paymentMethod').value,
+    paymentTerm: document.getElementById('lp-paymentTerm').value,
+    service_price: document.getElementById('lp-service-price').value,
+    totalPrice: document.getElementById('lp-totalPrice').value,
+    amountPaid: document.getElementById('lp-amountPaid').value
+  };
   
   // Get the submit button once at the beginning
   const submitBtn = document.getElementById('lp-confirm-btn');
