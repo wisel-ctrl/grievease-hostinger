@@ -1122,90 +1122,26 @@ function confirmLifeplanCheckout() {
     }
   }
 
-  // Email validation
-  const email = document.getElementById('lp-clientEmail').value;
-  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    submitBtn.innerHTML = originalBtnText;
-    submitBtn.disabled = false;
-    alert("Please enter a valid email address.");
-    return;
-  }
-
-  // Phone validation
-  const phone = document.getElementById('lp-clientPhone').value;
-  if (phone && !/^\d+$/.test(phone)) {
-    submitBtn.innerHTML = originalBtnText;
-    submitBtn.disabled = false;
-    alert("Phone number should contain only digits.");
-    return;
-  }
-
-  // Date of birth validation
-  const dateOfBirth = document.getElementById('beneficiaryDateOfBirth').value;
-  const today = new Date().toISOString().split('T')[0];
-  if (dateOfBirth && dateOfBirth > today) {
-    submitBtn.innerHTML = originalBtnText;
-    submitBtn.disabled = false;
-    alert("Date of birth cannot be in the future.");
-    return;
-  }
-
-  // Price validations
-  const servicePrice = parseFloat(document.getElementById('lp-service-price').value) || 0;
+  // Prepare data for submission
+  const formData = new FormData(form);
+  
+  // Add additional fields that aren't in the form
+  formData.append('service_id', document.getElementById('lp-service-id').value);
+  formData.append('branch_id', document.getElementById('lp-branch-id').value);
+  formData.append('sold_by', 1); // Example admin ID
+  formData.append('withCremation', document.getElementById('lp-withCremation').checked ? 'on' : 'off');
+  
+  // Calculate balance
   const totalPrice = parseFloat(document.getElementById('lp-totalPrice').value) || 0;
   const amountPaid = parseFloat(document.getElementById('lp-amountPaid').value) || 0;
-
-  const minimumAllowedPrice = servicePrice * 0.5;
-  if (totalPrice < minimumAllowedPrice) {
-    submitBtn.innerHTML = originalBtnText;
-    submitBtn.disabled = false;
-    alert(`Total price cannot be lower than 50% of the service price (₱${minimumAllowedPrice.toFixed(2)}).`);
-    return;
-  }
-
-  if (amountPaid > totalPrice) {
-    submitBtn.innerHTML = originalBtnText;
-    submitBtn.disabled = false;
-    alert("Amount paid cannot exceed the total price.");
-    return;
-  }
-
-  // Prepare data for submission
-  const formData = {
-    service_id: document.getElementById('lp-service-id').value,
-    branch_id: document.getElementById('lp-branch-id').value,
-    sold_by: 1, // Example admin ID
-    clientFirstName: document.getElementById('lp-clientFirstName').value,
-    clientMiddleName: document.getElementById('lp-clientMiddleName').value,
-    clientLastName: document.getElementById('lp-clientLastName').value,
-    clientSuffix: document.getElementById('lp-clientSuffix').value,
-    clientEmail: document.getElementById('lp-clientEmail').value,
-    clientPhone: document.getElementById('lp-clientPhone').value,
-    beneficiaryFirstName: document.getElementById('beneficiaryFirstName').value,
-    beneficiaryMiddleName: document.getElementById('beneficiaryMiddleName').value,
-    beneficiaryLastName: document.getElementById('beneficiaryLastName').value,
-    beneficiarySuffix: document.getElementById('beneficiarySuffix').value,
-    beneficiaryDateOfBirth: document.getElementById('beneficiaryDateOfBirth').value,
-    beneficiaryAddress: document.getElementById('beneficiaryAddress').value,
-    beneficiaryRelationship: document.getElementById('beneficiaryRelationship').value,
-    withCremation: document.getElementById('lp-withCremation').checked ? 'on' : 'off',
-    paymentMethod: document.getElementById('lp-paymentMethod').value,
-    paymentTerm: document.getElementById('lp-paymentTerm').value,
-    service_price: document.getElementById('lp-service-price').value,
-    totalPrice: document.getElementById('lp-totalPrice').value,
-    amountPaid: document.getElementById('lp-amountPaid').value,
-    status: 'Pending',
-    service_type: 'Lifeplan',
-    balance: (totalPrice - amountPaid).toFixed(2),
-    payment_status: (totalPrice - amountPaid) > 0 ? 'With Balance' : 'Fully Paid'
-  };
+  const balance = totalPrice - amountPaid;
+  
+  formData.append('balance', balance.toFixed(2));
+  formData.append('payment_status', balance > 0 ? 'With Balance' : 'Fully Paid');
 
   fetch('posFunctions/process_lifeplan_checkout.php', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(formData)
+    body: formData
   })
   .then(response => {
     if (!response.ok) {

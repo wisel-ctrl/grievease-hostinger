@@ -5,12 +5,6 @@ require_once '../../db_connect.php';
 $response = ['success' => false, 'message' => ''];
 
 try {
-    // Get JSON input
-    $input = json_decode(file_get_contents('php://input'), true);
-    if (json_last_error() !== JSON_ERROR_NONE) {
-        throw new Exception('Invalid JSON input');
-    }
-
     // Validate required fields
     $requiredFields = [
         'clientFirstName', 'clientLastName', 'clientPhone',
@@ -20,42 +14,42 @@ try {
     ];
 
     foreach ($requiredFields as $field) {
-        if (empty($input[$field])) {
+        if (empty($_POST[$field])) {
             throw new Exception("Missing required field: $field");
         }
     }
 
     // Prepare data
-    $service_id = intval($input['service_id']);
-    $branch_id = intval($input['branch_id']);
-    $sellerID = intval($input['sold_by']);
+    $service_id = intval($_POST['service_id']);
+    $branch_id = intval($_POST['branch_id']);
+    $sellerID = 1; // Assuming admin ID is 1
     
     // Client information
-    $fname = trim($input['clientFirstName']);
-    $mname = !empty($input['clientMiddleName']) ? trim($input['clientMiddleName']) : null;
-    $lname = trim($input['clientLastName']);
-    $suffix = !empty($input['clientSuffix']) ? trim($input['clientSuffix']) : null;
-    $email = !empty($input['clientEmail']) ? trim($input['clientEmail']) : null;
-    $phone = trim($input['clientPhone']);
+    $fname = trim($_POST['clientFirstName']);
+    $mname = !empty($_POST['clientMiddleName']) ? trim($_POST['clientMiddleName']) : null;
+    $lname = trim($_POST['clientLastName']);
+    $suffix = !empty($_POST['clientSuffix']) ? trim($_POST['clientSuffix']) : null;
+    $email = !empty($_POST['clientEmail']) ? trim($_POST['clientEmail']) : null;
+    $phone = trim($_POST['clientPhone']);
     
-    // Beneficiary information (note spelling matches database)
-    $beneficiary_fname = trim($input['beneficiaryFirstName']);
-    $beneficiary_mname = !empty($input['beneficiaryMiddleName']) ? trim($input['beneficiaryMiddleName']) : null;
-    $beneficiary_lname = trim($input['beneficiaryLastName']);
-    $beneficiary_suffix = !empty($input['beneficiarySuffix']) ? trim($input['beneficiarySuffix']) : null;
-    $beneficiary_dob = !empty($input['beneficiaryDateOfBirth']) ? $input['beneficiaryDateOfBirth'] : date('Y-m-d');
-    $beneficiary_address = trim($input['beneficiaryAddress']);
-    $relationship_to_client = trim($input['beneficiaryRelationship']);
+    // Beneficiary information
+    $beneficiary_fname = trim($_POST['beneficiaryFirstName']);
+    $beneficiary_mname = !empty($_POST['beneficiaryMiddleName']) ? trim($_POST['beneficiaryMiddleName']) : null;
+    $beneficiary_lname = trim($_POST['beneficiaryLastName']);
+    $beneficiary_suffix = !empty($_POST['beneficiarySuffix']) ? trim($_POST['beneficiarySuffix']) : null;
+    $beneficiary_dob = !empty($_POST['beneficiaryDateOfBirth']) ? $_POST['beneficiaryDateOfBirth'] : date('Y-m-d');
+    $beneficiary_address = trim($_POST['beneficiaryAddress']);
+    $relationship_to_client = trim($_POST['beneficiaryRelationship']);
     
     // Service details
-    $with_cremate = ($input['withCremation'] === 'on') ? 'yes' : 'no';
-    $payment_method = $input['paymentMethod'] ?? 'Installment';
-    $payment_duration = trim($input['paymentTerm']);
+    $with_cremate = ($_POST['withCremation'] === 'on') ? 'yes' : 'no';
+    $payment_method = $_POST['paymentMethod'] ?? 'Installment';
+    $payment_duration = trim($_POST['paymentTerm']);
     
     // Pricing
-    $initial_price = floatval($input['service_price']);
-    $custom_price = floatval($input['totalPrice']);
-    $amount_paid = !empty($input['amountPaid']) ? floatval($input['amountPaid']) : 0.00;
+    $initial_price = floatval($_POST['service_price']);
+    $custom_price = floatval($_POST['totalPrice']);
+    $amount_paid = !empty($_POST['amountPaid']) ? floatval($_POST['amountPaid']) : 0.00;
     
     // Calculate dates and status
     $initial_date = date('Y-m-d');
@@ -97,5 +91,6 @@ try {
     error_log($e->getMessage());
 }
 
+$conn->close();
 echo json_encode($response);
 ?>
