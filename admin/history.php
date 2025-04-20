@@ -118,14 +118,17 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
     <div class="flex items-center gap-3">
       <h4 class="text-lg font-bold text-sidebar-text">Ongoing Services</h4>
         
-      <?php ob_start(); ?>
-<span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
+      <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
     <i class="fas fa-clipboard-list"></i>
     <?php 
-    echo $ongoingResult->num_rows . " Service" . ($ongoingResult->num_rows != 1 ? "s" : "");
+    try {
+        $count = $ongoingResult->num_rows;
+        echo $count . " Service" . ($count != 1 ? "s" : "");
+    } catch (Exception $e) {
+        echo "0 Services (Error)";
+    }
     ?>
 </span>
-<?php ob_end_flush(); ?>
     </div>
       
     <!-- Search Section -->
