@@ -120,10 +120,7 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
         
       <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
         <i class="fas fa-clipboard-list"></i>
-        <?php 
-          $ongoingCount = $ongoingResult->num_rows;
-          echo $ongoingCount . " Service" . ($ongoingCount != 1 ? "s" : ""); 
-        ?>
+        <?php echo $ongoingResult . " Service" . ($ongoingResult != 1 ? "s" : ""); ?>
       </span>
     </div>
       
