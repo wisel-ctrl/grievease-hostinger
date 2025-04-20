@@ -444,87 +444,192 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
 </div>
 
   <!-- Past Services - With Outstanding Balance Section -->
-  <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 mb-8">
-    <div class="flex justify-between items-center p-5 border-b border-sidebar-border">
-      <h3 class="text-lg font-semibold text-sidebar-text">Past Services - With Outstanding Balance</h3>
-      <div class="relative">
-        <input type="text" id="searchOutstanding" placeholder="Search..." class="pl-9 pr-4 py-2 border border-sidebar-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
-        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-          <i class="fas fa-search text-gray-400"></i>
-        </div>
-      </div>
-    </div>
-    <div class="overflow-x-auto scrollbar-thin">
-      <table class="w-full">
-        <thead>
-          <tr class="bg-sidebar-hover">
-            <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(0)">ID</th>
-            <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(1)">Client Name</th>
-            <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(2)">Deceased Name</th>
-            <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(3)">Service Type</th>
-            <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(4)">Date of Burial</th>
-            <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(5)">Status</th>
-            <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(6)">Outstanding Balance</th>
-            <th class="p-4 text-left text-sm font-medium text-sidebar-text">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <?php
-          // Query for Past Services - With Balance (status = 'Completed' AND payment_status = 'With Balance')
-          $withBalanceQuery = "SELECT s.sales_id, s.fname, s.mname, s.lname, s.suffix, 
-                              s.fname_deceased, s.mname_deceased, s.lname_deceased, s.suffix_deceased,
-                              sv.service_name, s.date_of_burial, s.balance, s.status, s.payment_status
-                              FROM sales_tb s
-                              JOIN services_tb sv ON s.service_id = sv.service_id
-                              WHERE s.status = 'Completed' AND s.payment_status = 'With Balance'";
-          $withBalanceResult = $conn->query($withBalanceQuery);
-          
-          if ($withBalanceResult->num_rows > 0) {
-            while($row = $withBalanceResult->fetch_assoc()) {
-              $clientName = htmlspecialchars($row['fname'] . ' ' . 
-              ($row['mname'] ? $row['mname'] . ' ' : '') . 
-              $row['lname'] . 
-              ($row['suffix'] ? ' ' . $row['suffix'] : ''));
-                          
-              $deceasedName = htmlspecialchars($row['fname_deceased'] . ' ' . 
-                              ($row['mname_deceased'] ? $row['mname_deceased'] . ' ' : '') . 
-                              $row['lname_deceased'] . 
-                              ($row['suffix_deceased'] ? ' ' . $row['suffix_deceased'] : ''));
-              ?>
-              <tr class="border-b border-sidebar-border hover:bg-sidebar-hover">
-                <td class="p-4 text-sm text-sidebar-text">#<?php echo $row['sales_id']; ?></td>
-                <td class="p-4 text-sm text-sidebar-text"><?php echo $clientName; ?></td>
-                <td class="p-4 text-sm text-sidebar-text"><?php echo $deceasedName; ?></td>
-                <td class="p-4 text-sm text-sidebar-text"><?php echo htmlspecialchars($row['service_name']); ?></td>
-                <td class="p-4 text-sm text-sidebar-text"><?php echo htmlspecialchars($row['date_of_burial']); ?></td>
-                <td class="p-4 text-sm">
-                  <span class="px-2.5 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-500"><?php echo htmlspecialchars($row['payment_status']); ?></span>
-                </td>
-                <td class="p-4 text-sm text-sidebar-text">₱<?php echo number_format($row['balance'], 2); ?></td>
-                <td class="p-4 text-sm">
-                  <button class="p-1.5 bg-blue-100 text-blue-600 rounded hover:bg-blue-200 transition-all" onclick="viewServiceDetails('<?php echo $row['sales_id']; ?>')">
-                    <i class="fas fa-eye"></i>
-                  </button>
-                  <button class="p-1.5 bg-green-100 text-green-600 rounded hover:bg-green-200 transition-all" onclick="openRecordPaymentModal('<?php echo $row['sales_id']; ?>','<?php echo $clientName; ?>','<?php echo $row['balance']; ?>')">
-                    <i class="fas fa-money-bill-wave"></i>
-                  </button>
-                </td>
-              </tr>
-              <?php
-            }
-          } else {
-            ?>
-            <tr>
-              <td colspan="8" class="p-4 text-sm text-center text-sidebar-text">No past services with outstanding balance found</td>
-            </tr>
+<div class="bg-white rounded-lg shadow-md mb-8 border border-sidebar-border overflow-hidden branch-container">
+    <!-- Section Header with Search -->
+    <div class="bg-sidebar-hover p-4 border-b border-sidebar-border flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div class="flex items-center gap-3">
+            <h3 class="text-lg font-bold text-sidebar-text">Past Services - With Outstanding Balance</h3>
+            
             <?php
-          }
-          ?>
-        </tbody>
-      </table>
-    </div>
-  </div>
+            $totalWithBalance = $withBalanceResult->num_rows;
+            ?>
+            <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
+                <i class="fas fa-clipboard-list"></i>
+                <?php echo $totalWithBalance . " Record" . ($totalWithBalance != 1 ? "s" : ""); ?>
+            </span>
         </div>
+        
+        <!-- Search Section -->
+        <div class="flex flex-col md:flex-row items-start md:items-center gap-3 w-full md:w-auto">
+            <!-- Search Input -->
+            <div class="relative w-full md:w-64">
+                <input type="text" id="searchOutstanding" 
+                       placeholder="Search records..." 
+                       class="pl-8 pr-3 py-2 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent"
+                       oninput="debouncedOutstandingFilter()">
+                <i class="fas fa-search absolute left-2.5 top-3 text-gray-400"></i>
+            </div>
+            
+            <button class="px-4 py-2.5 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm whitespace-nowrap" 
+                    onclick="exportOutstandingBalances()">
+                <i class="fas fa-file-download"></i> Export Data
+            </button>
+        </div>
+    </div>
+    
+    <!-- Services Table -->
+    <div class="overflow-x-auto scrollbar-thin" id="outstandingTableContainer">
+        <div id="outstandingLoadingIndicator" class="hidden absolute inset-0 bg-white bg-opacity-50 flex items-center justify-center">
+            <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-sidebar-accent"></div>
+        </div>
+        
+        <table class="w-full">
+            <thead>
+                <tr class="bg-gray-50 border-b border-sidebar-border">
+                    <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortOutstandingTable(0)">
+                        <div class="flex items-center">
+                            <i class="fas fa-hashtag mr-1.5 text-sidebar-accent"></i> ID 
+                            <i class="fas fa-sort ml-1 text-gray-400"></i>
+                        </div>
+                    </th>
+                    <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortOutstandingTable(1)">
+                        <div class="flex items-center">
+                            <i class="fas fa-user mr-1.5 text-sidebar-accent"></i> Client
+                            <i class="fas fa-sort ml-1 text-gray-400"></i>
+                        </div>
+                    </th>
+                    <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortOutstandingTable(2)">
+                        <div class="flex items-center">
+                            <i class="fas fa-user-circle mr-1.5 text-sidebar-accent"></i> Deceased
+                            <i class="fas fa-sort ml-1 text-gray-400"></i>
+                        </div>
+                    </th>
+                    <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortOutstandingTable(3)">
+                        <div class="flex items-center">
+                            <i class="fas fa-tag mr-1.5 text-sidebar-accent"></i> Service Type 
+                            <i class="fas fa-sort ml-1 text-gray-400"></i>
+                        </div>
+                    </th>
+                    <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortOutstandingTable(4)">
+                        <div class="flex items-center">
+                            <i class="fas fa-calendar mr-1.5 text-sidebar-accent"></i> Date of Burial 
+                            <i class="fas fa-sort ml-1 text-gray-400"></i>
+                        </div>
+                    </th>
+                    <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortOutstandingTable(5)">
+                        <div class="flex items-center">
+                            <i class="fas fa-toggle-on mr-1.5 text-sidebar-accent"></i> Status 
+                            <i class="fas fa-sort ml-1 text-gray-400"></i>
+                        </div>
+                    </th>
+                    <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortOutstandingTable(6)">
+                        <div class="flex items-center">
+                            <i class="fas fa-peso-sign mr-1.5 text-sidebar-accent"></i> Outstanding Balance 
+                            <i class="fas fa-sort ml-1 text-gray-400"></i>
+                        </div>
+                    </th>
+                    <th class="p-4 text-left text-sm font-medium text-sidebar-text">
+                        <div class="flex items-center">
+                            <i class="fas fa-cogs mr-1.5 text-sidebar-accent"></i> Actions
+                        </div>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php
+                // Query for Past Services - With Balance (status = 'Completed' AND payment_status = 'With Balance')
+                $withBalanceQuery = "SELECT s.sales_id, s.fname, s.mname, s.lname, s.suffix, 
+                                    s.fname_deceased, s.mname_deceased, s.lname_deceased, s.suffix_deceased,
+                                    sv.service_name, s.date_of_burial, s.balance, s.status, s.payment_status
+                                    FROM sales_tb s
+                                    JOIN services_tb sv ON s.service_id = sv.service_id
+                                    WHERE s.status = 'Completed' AND s.payment_status = 'With Balance'";
+                $withBalanceResult = $conn->query($withBalanceQuery);
+                
+                if ($withBalanceResult->num_rows > 0) {
+                    while($row = $withBalanceResult->fetch_assoc()) {
+                        $clientName = htmlspecialchars($row['fname'] . ' ' . 
+                                    ($row['mname'] ? $row['mname'] . ' ' : '') . 
+                                    $row['lname'] . 
+                                    ($row['suffix'] ? ' ' . $row['suffix'] : ''));
+                                    
+                        $deceasedName = htmlspecialchars($row['fname_deceased'] . ' ' . 
+                                    ($row['mname_deceased'] ? $row['mname_deceased'] . ' ' : '') . 
+                                    $row['lname_deceased'] . 
+                                    ($row['suffix_deceased'] ? ' ' . $row['suffix_deceased'] : ''));
+                        ?>
+                        <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
+                            <td class="p-4 text-sm text-sidebar-text font-medium">#<?php echo $row['sales_id']; ?></td>
+                            <td class="p-4 text-sm text-sidebar-text"><?php echo $clientName; ?></td>
+                            <td class="p-4 text-sm text-sidebar-text"><?php echo $deceasedName; ?></td>
+                            <td class="p-4 text-sm text-sidebar-text"><?php echo htmlspecialchars($row['service_name']); ?></td>
+                            <td class="p-4 text-sm text-sidebar-text"><?php echo htmlspecialchars($row['date_of_burial']); ?></td>
+                            <td class="p-4 text-sm">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-500 border border-yellow-200">
+                                    <i class="fas fa-exclamation-circle mr-1"></i> <?php echo htmlspecialchars($row['payment_status']); ?>
+                                </span>
+                            </td>
+                            <td class="p-4 text-sm font-medium text-sidebar-text">₱<?php echo number_format($row['balance'], 2); ?></td>
+                            <td class="p-4 text-sm">
+                                <div class="flex space-x-2">
+                                    <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="View Details" onclick="viewServiceDetails('<?php echo $row['sales_id']; ?>')">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="p-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition-all tooltip" title="Record Payment" onclick="openRecordPaymentModal('<?php echo $row['sales_id']; ?>','<?php echo $clientName; ?>','<?php echo $row['balance']; ?>')">
+                                        <i class="fas fa-money-bill-wave"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <?php
+                    }
+                } else {
+                    ?>
+                    <tr>
+                        <td colspan="8" class="p-6 text-sm text-center">
+                            <div class="flex flex-col items-center">
+                                <i class="fas fa-inbox text-gray-300 text-4xl mb-3"></i>
+                                <p class="text-gray-500">No past services with outstanding balance found</p>
+                            </div>
+                        </td>
+                    </tr>
+                    <?php
+                }
+                ?>
+            </tbody>
+        </table>
+        
+        <!-- Pagination -->
+        <?php
+        // Assuming you'll implement pagination similar to the first example
+        $recordsPerPage = 10; // Change as needed
+        $totalOutstanding = $withBalanceResult->num_rows;
+        $totalPages = ceil($totalOutstanding / $recordsPerPage);
+        $currentPage = isset($_GET['outstandingPage']) ? (int)$_GET['outstandingPage'] : 1;
+        $offset = ($currentPage - 1) * $recordsPerPage;
+        ?>
+        <div class="p-4 border-t border-sidebar-border flex justify-between items-center">
+            <div class="text-sm text-gray-500">
+                Showing <?php echo ($offset + 1) . ' - ' . min($offset + $recordsPerPage, $totalOutstanding); ?> 
+                of <?php echo $totalOutstanding; ?> records
+            </div>
+            <div class="flex space-x-1">
+                <button class="px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo $currentPage <= 1 ? 'opacity-50 cursor-not-allowed' : ''; ?>" 
+                        onclick="changeOutstandingPage(<?php echo $currentPage - 1; ?>)" 
+                        <?php echo $currentPage <= 1 ? 'disabled' : ''; ?>>&laquo;</button>
+                
+                <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                    <button class="px-3 py-1 border border-sidebar-border rounded text-sm <?php echo $i == $currentPage ? 'bg-sidebar-accent text-white' : 'hover:bg-sidebar-hover'; ?>" 
+                            onclick="changeOutstandingPage(<?php echo $i; ?>)"><?php echo $i; ?></button>
+                <?php endfor; ?>
+                
+                <button class="px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo $currentPage >= $totalPages ? 'opacity-50 cursor-not-allowed' : ''; ?>" 
+                        onclick="changeOutstandingPage(<?php echo $currentPage + 1; ?>)" 
+                        <?php echo $currentPage >= $totalPages ? 'disabled' : ''; ?>>&raquo;</button>
+            </div>
+        </div>
+    </div>
+</div>
 
   <!-- Modal for Editing Service -->
 <div class="fixed top-0 left-0 w-full h-full bg-black bg-opacity-60 flex items-center justify-center z-50 hidden" id="editServiceModal">
