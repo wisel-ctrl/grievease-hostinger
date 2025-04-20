@@ -1098,8 +1098,16 @@ function closeLifeplanCheckoutModal() {
 function confirmLifeplanCheckout() {
   const form = document.getElementById('lifeplanCheckoutForm');
   const formData = new FormData(form);
-  const submitBtn = document.getElementById('lp-confirm-btn'); // Get button by ID
-
+  
+  // Get the submit button once at the beginning
+  const submitBtn = document.getElementById('lp-confirm-btn');
+  let originalBtnText = '';
+  
+  if (submitBtn) {
+    originalBtnText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+    submitBtn.disabled = true;
+  }
 
   // Include the checkbox value for cremation
   const withCremation = document.getElementById('lp-withCremation').checked;
@@ -1115,28 +1123,24 @@ function confirmLifeplanCheckout() {
   for (const fieldId of requiredFields) {
     const field = document.getElementById(fieldId);
     if (!field.value.trim()) {
+      // Restore button state if validation fails
+      if (submitBtn) {
+        submitBtn.innerHTML = originalBtnText;
+        submitBtn.disabled = false;
+      }
       alert(`Please fill in ${field.labels[0].textContent}`);
       field.focus();
       return;
     }
   }
 
-  if (submitBtn) {
-    const originalBtnText = submitBtn.innerHTML;
-    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
-    submitBtn.disabled = true;
-
-    // Restore button state after operation completes
-    const restoreButton = () => {
-      submitBtn.innerHTML = originalBtnText;
-      submitBtn.disabled = false;
-    };
-  }
-
-
   // Email validation
   const email = document.getElementById('lp-clientEmail').value;
   if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    if (submitBtn) {
+      submitBtn.innerHTML = originalBtnText;
+      submitBtn.disabled = false;
+    }
     alert("Please enter a valid email address.");
     return;
   }
@@ -1144,6 +1148,10 @@ function confirmLifeplanCheckout() {
   // Phone validation
   const phone = document.getElementById('lp-clientPhone').value;
   if (phone && !/^\d+$/.test(phone)) {
+    if (submitBtn) {
+      submitBtn.innerHTML = originalBtnText;
+      submitBtn.disabled = false;
+    }
     alert("Phone number should contain only digits.");
     return;
   }
@@ -1152,6 +1160,10 @@ function confirmLifeplanCheckout() {
   const dateOfBirth = document.getElementById('beneficiaryDateOfBirth').value;
   const today = new Date().toISOString().split('T')[0];
   if (dateOfBirth && dateOfBirth > today) {
+    if (submitBtn) {
+      submitBtn.innerHTML = originalBtnText;
+      submitBtn.disabled = false;
+    }
     alert("Date of birth cannot be in the future.");
     return;
   }
@@ -1163,11 +1175,19 @@ function confirmLifeplanCheckout() {
 
   const minimumAllowedPrice = servicePrice * 0.5;
   if (totalPrice < minimumAllowedPrice) {
+    if (submitBtn) {
+      submitBtn.innerHTML = originalBtnText;
+      submitBtn.disabled = false;
+    }
     alert(`Total price cannot be lower than 50% of the service price (₱${minimumAllowedPrice.toFixed(2)}).`);
     return;
   }
 
   if (amountPaid > totalPrice) {
+    if (submitBtn) {
+      submitBtn.innerHTML = originalBtnText;
+      submitBtn.disabled = false;
+    }
     alert("Amount paid cannot exceed the total price.");
     return;
   }
@@ -1184,18 +1204,6 @@ function confirmLifeplanCheckout() {
   formData.append('balance', balance.toFixed(2));
   formData.append('payment_status', balance > 0 ? 'With Balance' : 'Fully Paid');
 
-   // Show loading indicator
-   const submitBtn = document.querySelector('#lifeplanCheckoutForm button[type="submit"]');
-  const originalBtnText = submitBtn.innerHTML;
-  submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
-  submitBtn.disabled = true;
-
-  // LOG instead of sending to server
-  console.log('Collected Form Data (Not sent):');
-  for (let [key, value] of formData.entries()) {
-    console.log(`${key}: ${value}`);
-  }
-
   fetch('posFunctions/process_lifeplan_checkout.php', {
     method: 'POST',
     body: formData
@@ -1208,9 +1216,13 @@ function confirmLifeplanCheckout() {
   })
   .then(data => {
     if (data.success) {
+      // Success handling
       alert('Transaction successfully saved!');
+      // Optional: redirect or clear form
+      // window.location.href = 'success_page.php';
       form.reset();
     } else {
+      // Server-side validation failed
       alert(data.message || 'Error processing your request. Please try again.');
     }
   })
@@ -1219,8 +1231,10 @@ function confirmLifeplanCheckout() {
     alert('An error occurred while saving the data. Please try again.');
   })
   .finally(() => {
+    // Restore button state
     if (submitBtn) {
-      restoreButton();
+      submitBtn.innerHTML = originalBtnText;
+      submitBtn.disabled = false;
     }
   });
 }
