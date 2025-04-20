@@ -502,29 +502,29 @@ $servicesJson = json_encode($allServices);
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div>
                 <label for="lp-clientFirstName" class="block text-sm font-medium text-gray-700 mb-1">First Name</label>
-                <input type="text" id="lp-clientFirstName" name="lp-clientFirstName" required class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
+                <input type="text" id="lp-clientFirstName" name="clientFirstName" required class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
               </div>
               <div>
                 <label for="lp-clientMiddleName" class="block text-sm font-medium text-gray-700 mb-1">Middle Name <span class="text-xs text-gray-500">(Optional)</span></label>
-                <input type="text" id="lp-clientMiddleName" name="lp-clientMiddleName" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
+                <input type="text" id="lp-clientMiddleName" name="clientMiddleName" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
               </div>
               <div>
                 <label for="lp-clientLastName" class="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
-                <input type="text" id="lp-clientLastName" name="lp-clientLastName" required class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
+                <input type="text" id="lp-clientLastName" name="clientLastName" required class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
               </div>
               <div>
                 <label for="lp-clientSuffix" class="block text-sm font-medium text-gray-700 mb-1">Suffix <span class="text-xs text-gray-500">(Optional)</span></label>
-                <input type="text" id="lp-clientSuffix" name="lp-clientSuffix" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
+                <input type="text" id="lp-clientSuffix" name="clientSuffix" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
               </div>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label for="lp-clientPhone" class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
-                <input type="tel" id="lp-clientPhone" name="lp-clientPhone" required class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
+                <input type="tel" id="lp-clientPhone" name="clientPhone" required class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
               </div>
               <div>
                 <label for="lp-clientEmail" class="block text-sm font-medium text-gray-700 mb-1">Email Address <span class="text-xs text-gray-500">(Optional)</span></label>
-                <input type="email" id="lp-clientEmail" name="lp-clientEmail" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
+                <input type="email" id="lp-clientEmail" name="clientEmail" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
               </div>
             </div>
           </div>
