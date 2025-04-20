@@ -107,7 +107,7 @@ $result = $conn->query($sql);
                 </th>
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" onclick="sortTable(<?php echo $branchId; ?>, 3)">
                     <div class="flex items-center">
-                        <i class="fas fa-dollar-sign mr-1.5 text-blue-500"></i> Price 
+                        <i class="fas fa-peso-sign mr-1.5 text-blue-500"></i> Price 
                         <i class="fas fa-sort ml-1 text-gray-400"></i>
                     </div>
                 </th>

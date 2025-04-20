@@ -685,7 +685,7 @@ if ($branchResult->num_rows > 0) {
                     </th>
                     <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(<?php echo $branchId; ?>, 1)">
                         <div class="flex items-center">
-                            <i class="fas fa-file-invoice-dollar mr-1.5 text-sidebar-accent"></i> Expense Name 
+                            <i class="fas fa-file-invoice-peso mr-1.5 text-sidebar-accent"></i> Expense Name 
                             <i class="fas fa-sort ml-1 text-gray-400"></i>
                         </div>
                     </th>
@@ -697,7 +697,7 @@ if ($branchResult->num_rows > 0) {
                     </th>
                     <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(<?php echo $branchId; ?>, 3)">
                         <div class="flex items-center">
-                            <i class="fas fa-dollar-sign mr-1.5 text-sidebar-accent"></i> Amount 
+                            <i class="fas fa-peso-sign mr-1.5 text-sidebar-accent"></i> Amount 
                             <i class="fas fa-sort ml-1 text-gray-400"></i>
                         </div>
                     </th>

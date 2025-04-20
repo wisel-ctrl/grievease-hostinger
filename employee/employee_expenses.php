@@ -240,7 +240,7 @@
       <div class="bg-white rounded-lg shadow-sidebar p-5 border border-sidebar-border hover:shadow-card transition-all duration-300">
         <div class="flex items-center mb-3">
           <div class="w-12 h-12 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center mr-3">
-            <i class="fas fa-dollar-sign text-lg"></i>
+            <i class="fas fa-peso-sign text-lg"></i>
           </div>
           <span class="text-sidebar-text font-medium">Total Expenses</span>
         </div>

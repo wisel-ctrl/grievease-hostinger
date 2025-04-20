@@ -734,7 +734,7 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
           <!-- Service Price -->
           <div>
             <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-dollar-sign mr-2 text-sidebar-accent"></i>
+              <i class="fas fa-peso-sign mr-2 text-sidebar-accent"></i>
               Service Price
             </label>
             <div class="relative">
