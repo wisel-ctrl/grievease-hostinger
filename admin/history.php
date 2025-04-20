@@ -1014,7 +1014,7 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
   <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
   
   <!-- Modal Content -->
-  <div class="relative bg-white rounded-xl shadow-card w-full max-w-lg mx-4 z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-5xl mx-4 z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
     <!-- Close Button -->
     <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeAssignStaffModal()">
       <i class="fas fa-times"></i>
@@ -1079,25 +1079,35 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
         
         // These sections will be populated via AJAX when the modal opens
         ?>
-        <div id="embalmersSection" class="bg-gray-50 p-5 rounded-xl border border-gray-200">
-          <!-- Embalmers will be loaded here -->
-        </div>
         
-        <div id="driversSection" class="bg-gray-50 p-5 rounded-xl border border-gray-200">
-          <!-- Drivers will be loaded here -->
-        </div>
-        
-        <div id="personnelSection" class="bg-gray-50 p-5 rounded-xl border border-gray-200">
-          <!-- Personnel will be loaded here -->
-        </div>
-        
-        <div>
-          <label for="assignmentNotes" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-sticky-note mr-2 text-sidebar-accent"></i>
-            Notes
-          </label>
-          <div class="relative">
-            <textarea id="assignmentNotes" rows="3" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"></textarea>
+        <!-- Changed to grid layout for consistent sizing with the other modals -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Left Column -->
+          <div class="space-y-4">
+            <div id="embalmersSection" class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+              <!-- Embalmers will be loaded here -->
+            </div>
+            
+            <div id="driversSection" class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+              <!-- Drivers will be loaded here -->
+            </div>
+          </div>
+          
+          <!-- Right Column -->
+          <div class="space-y-4">
+            <div id="personnelSection" class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+              <!-- Personnel will be loaded here -->
+            </div>
+            
+            <div>
+              <label for="assignmentNotes" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                <i class="fas fa-sticky-note mr-2 text-sidebar-accent"></i>
+                Notes
+              </label>
+              <div class="relative">
+                <textarea id="assignmentNotes" rows="5" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"></textarea>
+              </div>
+            </div>
           </div>
         </div>
       </form>
