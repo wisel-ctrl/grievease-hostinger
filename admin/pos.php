@@ -662,8 +662,7 @@ $servicesJson = json_encode($allServices);
       </div>
       <div class="flex gap-4">
         <button class="px-5 py-3 bg-white border border-sidebar-accent text-sidebar-accent rounded-lg font-semibold hover:bg-navy transition-colors" onclick="closeLifeplanCheckoutModal()">Cancel</button>
-        <button class="px-6 py-3 bg-sidebar-accent text-white rounded-lg font-semibold hover:bg-darkgold transition-colors flex items-center" onclick="confirmLifeplanCheckout()" type= "submit">
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
+        <button id="lp-confirm-btn" class="px-6 py-3 bg-sidebar-accent text-white rounded-lg font-semibold hover:bg-darkgold transition-colors flex items-center" onclick="confirmLifeplanCheckout()" type="submit">          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
             <polyline points="20 6 9 17 4 12"></polyline>
           </svg>
           Confirm Order
@@ -1099,6 +1098,8 @@ function closeLifeplanCheckoutModal() {
 function confirmLifeplanCheckout() {
   const form = document.getElementById('lifeplanCheckoutForm');
   const formData = new FormData(form);
+  const submitBtn = document.getElementById('lp-confirm-btn'); // Get button by ID
+
 
   // Include the checkbox value for cremation
   const withCremation = document.getElementById('lp-withCremation').checked;
@@ -1119,6 +1120,19 @@ function confirmLifeplanCheckout() {
       return;
     }
   }
+
+  if (submitBtn) {
+    const originalBtnText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+    submitBtn.disabled = true;
+
+    // Restore button state after operation completes
+    const restoreButton = () => {
+      submitBtn.innerHTML = originalBtnText;
+      submitBtn.disabled = false;
+    };
+  }
+
 
   // Email validation
   const email = document.getElementById('lp-clientEmail').value;
@@ -1194,13 +1208,9 @@ function confirmLifeplanCheckout() {
   })
   .then(data => {
     if (data.success) {
-      // Success handling
       alert('Transaction successfully saved!');
-      // Optional: redirect or clear form
-      // window.location.href = 'success_page.php';
       form.reset();
     } else {
-      // Server-side validation failed
       alert(data.message || 'Error processing your request. Please try again.');
     }
   })
@@ -1209,9 +1219,9 @@ function confirmLifeplanCheckout() {
     alert('An error occurred while saving the data. Please try again.');
   })
   .finally(() => {
-    // Restore button state
-    submitBtn.innerHTML = originalBtnText;
-    submitBtn.disabled = false;
+    if (submitBtn) {
+      restoreButton();
+    }
   });
 }
 
