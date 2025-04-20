@@ -106,143 +106,227 @@ if ($branch_result->num_rows > 0) {
   </div>
 
 <!-- View Employee Details Section -->
-<div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 mb-8">
-    <div class="flex justify-between items-center p-5 border-b border-sidebar-border">
-      <h3 class="text-lg font-semibold text-sidebar-text">Employee Details</h3>
-      <div class="flex items-center space-x-4">
-        <!-- Branch Filter Dropdown -->
-        <div class="relative">
-          <select id="branchFilter" onchange="filterByBranch(this.value)" class="appearance-none bg-white border border-sidebar-border rounded-lg px-4 py-2 pr-8 focus:outline-none focus:ring-2 focus:ring-sidebar-accent text-sm">
-            <option value="">All Branches</option>
-            <?php foreach ($branches as $branch): ?>
-              <option value="<?php echo $branch['branch_id']; ?>" <?php echo ($branch_filter == $branch['branch_id']) ? 'selected' : ''; ?>>
-                <?php echo htmlspecialchars($branch['branch_name']); ?>
-              </option>
-            <?php endforeach; ?>
-          </select>
-          <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-            <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
-          </div>
+<div class="bg-white rounded-lg shadow-md mb-8 border border-sidebar-border overflow-hidden">
+    <!-- Employee Header with Search and Filters -->
+    <div class="bg-sidebar-hover p-4 border-b border-sidebar-border flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div class="flex items-center gap-3">
+            <h3 class="text-lg font-bold text-sidebar-text">Employee Details</h3>
+            
+            <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
+                <i class="fas fa-users"></i>
+                <?php echo $result->num_rows . " Employee" . ($result->num_rows != 1 ? "s" : ""); ?>
+            </span>
         </div>
         
-        <button class="px-4 py-2 bg-sidebar-accent text-white rounded-md text-sm flex items-center hover:bg-darkgold transition-all duration-300" onclick="openAddEmployeeModal()">
-          <i class="fas fa-plus mr-2"></i> Add Employee
-        </button>
-      </div>
+        <!-- Search and Filter Section -->
+        <div class="flex flex-col md:flex-row items-start md:items-center gap-3 w-full md:w-auto">
+            <!-- Search Input -->
+            <div class="relative w-full md:w-64">
+                <input type="text" id="searchEmployees" 
+                       placeholder="Search employees..." 
+                       class="pl-8 pr-3 py-2 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent"
+                       oninput="debouncedFilterEmployees()">
+                <i class="fas fa-search absolute left-2.5 top-3 text-gray-400"></i>
+            </div>
+
+            <!-- Branch Filter Dropdown -->
+            <div class="relative w-full md:w-auto">
+                <select id="branchFilter" onchange="filterByBranch(this.value)" class="appearance-none bg-white border border-gray-300 rounded-lg px-4 py-2 pr-8 focus:outline-none focus:ring-2 focus:ring-sidebar-accent text-sm w-full md:w-auto">
+                    <option value="">All Branches</option>
+                    <?php foreach ($branches as $branch): ?>
+                        <option value="<?php echo $branch['branch_id']; ?>" <?php echo ($branch_filter == $branch['branch_id']) ? 'selected' : ''; ?>>
+                            <?php echo htmlspecialchars($branch['branch_name']); ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                    <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                </div>
+            </div>
+
+            <button class="px-4 py-2.5 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm whitespace-nowrap" 
+                    onclick="openAddEmployeeModal()">
+                <i class="fas fa-plus-circle"></i> Add Employee
+            </button>
+        </div>
     </div>
-    <div class="overflow-x-auto scrollbar-thin">
-      <table class="w-full">
-        <thead>
-          <tr class="bg-sidebar-hover">
-            <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(0)">ID</th>
-            <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(1)">Name</th>
-            <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(2)">Position</th>
-            <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(3)">Base Salary</th>
-            <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(4)">Status</th>
-            <th class="p-4 text-left text-sm font-medium text-sidebar-text">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-        <?php 
-          // Function to capitalize each word
-            function capitalizeWords($string) {
-              return ucwords(strtolower(trim($string)));
-            }
-                
-                // SQL query to fetch employee details with concatenated name
-                $sql = "SELECT 
-                    e.EmployeeID,
-                    CONCAT(
-                        COALESCE(e.fname, ''), 
-                        CASE WHEN e.mname IS NOT NULL AND e.mname != '' THEN CONCAT(' ', e.mname) ELSE '' END,
-                        CASE WHEN e.lname IS NOT NULL AND e.lname != '' THEN CONCAT(' ', e.lname) ELSE '' END,
-                        CASE WHEN e.suffix IS NOT NULL AND e.suffix != '' THEN CONCAT(' ', e.suffix) ELSE '' END
-                    ) AS full_name,
-                    e.position,
-                    e.base_salary,
-                    e.status,
-                    e.branch_id,
-                    b.branch_name,
-                    e.gender,
-                    e.bday,
-                    e.phone_number,
-                    e.email,
-                    e.date_created
-                FROM employee_tb e
-                JOIN branch_tb b ON e.branch_id = b.branch_id";
-                
-                // Add branch filter if set
-                if ($branch_filter !== null) {
-                    $sql .= " WHERE e.branch_id = ?";
-                    $stmt = $conn->prepare($sql);
-                    $stmt->bind_param("i", $branch_filter);
-                    $stmt->execute();
-                    $result = $stmt->get_result();
-                } else {
-                    $result = $conn->query($sql);
+    
+    <!-- Employee Table -->
+    <div class="overflow-x-auto scrollbar-thin" id="employeeTableContainer">
+        <div id="loadingIndicator" class="hidden absolute inset-0 bg-white bg-opacity-50 flex items-center justify-center">
+            <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-sidebar-accent"></div>
+        </div>
+        
+        <table class="w-full">
+            <thead>
+                <tr class="bg-gray-50 border-b border-sidebar-border">
+                    <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(0)">
+                        <div class="flex items-center">
+                            <i class="fas fa-hashtag mr-1.5 text-sidebar-accent"></i> ID 
+                            <i class="fas fa-sort ml-1 text-gray-400"></i>
+                        </div>
+                    </th>
+                    <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(1)">
+                        <div class="flex items-center">
+                            <i class="fas fa-user mr-1.5 text-sidebar-accent"></i> Name 
+                            <i class="fas fa-sort ml-1 text-gray-400"></i>
+                        </div>
+                    </th>
+                    <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(2)">
+                        <div class="flex items-center">
+                            <i class="fas fa-briefcase mr-1.5 text-sidebar-accent"></i> Position 
+                            <i class="fas fa-sort ml-1 text-gray-400"></i>
+                        </div>
+                    </th>
+                    <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(3)">
+                        <div class="flex items-center">
+                            <i class="fas fa-dollar-sign mr-1.5 text-sidebar-accent"></i> Base Salary 
+                            <i class="fas fa-sort ml-1 text-gray-400"></i>
+                        </div>
+                    </th>
+                    <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(4)">
+                        <div class="flex items-center">
+                            <i class="fas fa-toggle-on mr-1.5 text-sidebar-accent"></i> Status 
+                            <i class="fas fa-sort ml-1 text-gray-400"></i>
+                        </div>
+                    </th>
+                    <th class="p-4 text-left text-sm font-medium text-sidebar-text">
+                        <div class="flex items-center">
+                            <i class="fas fa-cogs mr-1.5 text-sidebar-accent"></i> Actions
+                        </div>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+            <?php 
+              // Function to capitalize each word
+                function capitalizeWords($string) {
+                  return ucwords(strtolower(trim($string)));
                 }
+                    
+                    // SQL query to fetch employee details with concatenated name
+                    $sql = "SELECT 
+                        e.EmployeeID,
+                        CONCAT(
+                            COALESCE(e.fname, ''), 
+                            CASE WHEN e.mname IS NOT NULL AND e.mname != '' THEN CONCAT(' ', e.mname) ELSE '' END,
+                            CASE WHEN e.lname IS NOT NULL AND e.lname != '' THEN CONCAT(' ', e.lname) ELSE '' END,
+                            CASE WHEN e.suffix IS NOT NULL AND e.suffix != '' THEN CONCAT(' ', e.suffix) ELSE '' END
+                        ) AS full_name,
+                        e.position,
+                        e.base_salary,
+                        e.status,
+                        e.branch_id,
+                        b.branch_name,
+                        e.gender,
+                        e.bday,
+                        e.phone_number,
+                        e.email,
+                        e.date_created
+                    FROM employee_tb e
+                    JOIN branch_tb b ON e.branch_id = b.branch_id";
+                    
+                    // Add branch filter if set
+                    if ($branch_filter !== null) {
+                        $sql .= " WHERE e.branch_id = ?";
+                        $stmt = $conn->prepare($sql);
+                        $stmt->bind_param("i", $branch_filter);
+                        $stmt->execute();
+                        $result = $stmt->get_result();
+                    } else {
+                        $result = $conn->query($sql);
+                    }
 
-                // Check if there are results
-                if ($result->num_rows > 0) {
-                    // Output data of each row
-                    while($row = $result->fetch_assoc()) {
-                        // Capitalize names and first letter of status
-                        $full_name = capitalizeWords($row['full_name']);
-                        $position = capitalizeWords($row['position']);
-                        $status = ucfirst(strtolower($row['status']));
+                    // Check if there are results
+                    if ($result->num_rows > 0) {
+                        // Output data of each row
+                        while($row = $result->fetch_assoc()) {
+                            // Capitalize names and first letter of status
+                            $full_name = capitalizeWords($row['full_name']);
+                            $position = capitalizeWords($row['position']);
+                            $status = ucfirst(strtolower($row['status']));
 
-                        // Determine status color and text
-                        switch (strtolower($row['status'])) {
-                            case 'active':
-                                $status_class = "px-2 py-1 bg-green-500 text-white rounded-full text-xs";
-                                break;
-                            case 'terminated':
-                                $status_class = "px-2 py-1 bg-red-500 text-white rounded-full text-xs";
-                                break;
-                            default:
-                                $status_class = "px-2 py-1 bg-gray-500 text-white rounded-full text-xs";
+                            // Determine status color and text
+                            switch (strtolower($row['status'])) {
+                                case 'active':
+                                    $statusClass = "bg-green-100 text-green-600 border border-green-200";
+                                    $statusIcon = "fa-check-circle";
+                                    break;
+                                case 'terminated':
+                                    $statusClass = "bg-red-100 text-red-600 border border-red-200";
+                                    $statusIcon = "fa-times-circle";
+                                    break;
+                                default:
+                                    $statusClass = "bg-gray-100 text-gray-600 border border-gray-200";
+                                    $statusIcon = "fa-question-circle";
+                            }
+
+                            echo "<tr class='border-b border-sidebar-border hover:bg-sidebar-hover transition-colors'>";
+                            echo "<td class='p-4 text-sm text-sidebar-text font-medium'>#" . htmlspecialchars($row['EmployeeID']) . "</td>";
+                            echo "<td class='p-4 text-sm text-sidebar-text'>" . htmlspecialchars($full_name) . "</td>";
+                            echo "<td class='p-4 text-sm text-sidebar-text'>";
+                            echo "<span class='inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100'>" . htmlspecialchars($position) . "</span>";
+                            echo "</td>";
+                            echo "<td class='p-4 text-sm font-medium text-sidebar-text'>$" . number_format($row['base_salary'], 2) . "</td>";
+                            
+                            echo "<td class='p-4 text-sm'>";
+                            echo "<span class='inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium " . $statusClass . "'>";
+                            echo "<i class='fas " . $statusIcon . " mr-1'></i> " . htmlspecialchars($status) . "</span>";
+                            echo "</td>";
+                            
+                            // Actions column with styled buttons
+                            echo "<td class='p-4 text-sm'>";
+                            echo "<div class='flex space-x-2'>";
+                            echo "<button class='p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip' title='Edit Employee' onclick='openEditEmployeeModal(\"" . htmlspecialchars($row['EmployeeID']) . "\")'>";
+                            echo "<i class='fas fa-edit'></i></button>";
+                            
+                            if (strtolower($row['status']) == 'active') {
+                                echo "<button class='p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-all tooltip' title='Terminate Employee' onclick='terminateEmployee(\"" . htmlspecialchars($row['EmployeeID']) . "\")'>";
+                                echo "<i class='fas fa-trash-alt'></i></button>";
+                            } else {
+                                echo "<button class='p-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition-all tooltip' title='Reinstate Employee' onclick='reinstateEmployee(\"" . htmlspecialchars($row['EmployeeID']) . "\")'>";
+                                echo "<i class='fas fa-check'></i></button>";
+                            }
+                            
+                            echo "<button class='p-2 bg-purple-100 text-purple-600 rounded-lg hover:bg-purple-200 transition-all tooltip' title='View Details' onclick='viewEmployeeDetails(\"" . htmlspecialchars($row['EmployeeID']) . "\")'>";
+                            echo "<i class='fas fa-eye'></i></button>";
+                            echo "</div>";
+                            echo "</td>";
+                            echo "</tr>";
                         }
-
-                        echo "<tr class='border-b border-sidebar-border hover:bg-sidebar-hover'>";
-                        echo "<td class='p-4 text-sm text-sidebar-text'>#" . htmlspecialchars($row['EmployeeID']) . "</td>";
-                        echo "<td class='p-4 text-sm text-sidebar-text'>" . htmlspecialchars($full_name) . "</td>";
-                        echo "<td class='p-4 text-sm text-sidebar-text'>" . htmlspecialchars($position) . "</td>";
-                        echo "<td class='p-4 text-sm text-sidebar-text'>$" . number_format($row['base_salary'], 2) . "</td>";
-                        
-                        echo "<td class='p-4 text-sm'><span class='" . $status_class . "'>" . htmlspecialchars($status) . "</span></td>";
-                        
-                        // Actions column with horizontal margin between buttons
-                        echo "<td class='p-4 text-sm flex items-center space-x-2'>";
-                        echo "<button class='p-1.5 bg-blue-100 text-blue-600 rounded hover:bg-blue-200 transition-all' onclick='openEditEmployeeModal(\"" . htmlspecialchars($row['EmployeeID']) . "\")'>";
-                        echo "<i class='fas fa-edit'></i></button>";
-                        
-                        if (strtolower($row['status']) == 'active') {
-                            echo "<button class='p-1.5 bg-red-100 text-red-600 rounded hover:bg-red-200 transition-all' onclick='terminateEmployee(\"" . htmlspecialchars($row['EmployeeID']) . "\")'>";
-                            echo "<i class='fas fa-trash'></i></button>";
-                        } else {
-                            echo "<button class='p-1.5 bg-green-100 text-green-600 rounded hover:bg-green-200 transition-all' onclick='reinstateEmployee(\"" . htmlspecialchars($row['EmployeeID']) . "\")'>";
-                            echo "<i class='fas fa-check'></i></button>";
-                        }
-                        
-                        // Add View Details button
-                        echo "<button class='p-1.5 bg-purple-100 text-purple-600 rounded hover:bg-purple-200 transition-all' onclick='viewEmployeeDetails(\"" . htmlspecialchars($row['EmployeeID']) . "\")'>";
-                        echo "<i class='fas fa-eye'></i></button>";
-                        
+                    } else {
+                        echo "<tr>";
+                        echo "<td colspan='6' class='p-6 text-sm text-center'>";
+                        echo "<div class='flex flex-col items-center'>";
+                        echo "<i class='fas fa-users text-gray-300 text-4xl mb-3'></i>";
+                        echo "<p class='text-gray-500'>No employees found</p>";
+                        echo "</div>";
                         echo "</td>";
                         echo "</tr>";
                     }
-                } else {
-                    echo "<tr><td colspan='6' class='text-center p-4'>No employees found</td></tr>";
-                }
 
-                // Close connection
-                $conn->close();
-                ?>
-        </tbody>
-      </table>
+                    // Close connection
+                    $conn->close();
+                    ?>
+            </tbody>
+        </table>
+        
+        <!-- Pagination (assuming you'd want to add pagination) -->
+        <div class="p-4 border-t border-sidebar-border flex justify-between items-center">
+            <div class="text-sm text-gray-500">
+                <?php if (isset($result) && $result->num_rows > 0): ?>
+                    Showing 1 - <?php echo $result->num_rows; ?> of <?php echo $result->num_rows; ?> employees
+                <?php else: ?>
+                    No employees found
+                <?php endif; ?>
+            </div>
+            <div class="flex space-x-1">
+                <!-- Pagination would go here if needed -->
+                <!-- This is a placeholder for future pagination implementation -->
+                <!-- Similar to the first code's pagination structure -->
+            </div>
+        </div>
     </div>
-  </div>
-
 </div>
 
 <!-- View Employee Salary Details Modal -->
