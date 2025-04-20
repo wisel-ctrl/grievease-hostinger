@@ -1097,6 +1097,80 @@ function closeLifeplanCheckoutModal() {
 // Function to confirm lifeplan checkout
 function confirmLifeplanCheckout() {
   const form = document.getElementById('lifeplanCheckoutForm');
+  const submitBtn = document.getElementById('lp-confirm-btn');
+  let originalBtnText = submitBtn.innerHTML;
+  
+  // Set loading state
+  submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+  submitBtn.disabled = true;
+
+  // Validate required fields
+  const requiredFields = [
+    'lp-clientFirstName', 'lp-clientLastName', 'lp-clientPhone',
+    'beneficiaryFirstName', 'beneficiaryLastName', 'beneficiaryRelationship',
+    'beneficiaryAddress'
+  ];
+
+  for (const fieldId of requiredFields) {
+    const field = document.getElementById(fieldId);
+    if (!field.value.trim()) {
+      submitBtn.innerHTML = originalBtnText;
+      submitBtn.disabled = false;
+      alert(`Please fill in ${field.labels[0].textContent}`);
+      field.focus();
+      return;
+    }
+  }
+
+  // Email validation
+  const email = document.getElementById('lp-clientEmail').value;
+  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    submitBtn.innerHTML = originalBtnText;
+    submitBtn.disabled = false;
+    alert("Please enter a valid email address.");
+    return;
+  }
+
+  // Phone validation
+  const phone = document.getElementById('lp-clientPhone').value;
+  if (phone && !/^\d+$/.test(phone)) {
+    submitBtn.innerHTML = originalBtnText;
+    submitBtn.disabled = false;
+    alert("Phone number should contain only digits.");
+    return;
+  }
+
+  // Date of birth validation
+  const dateOfBirth = document.getElementById('beneficiaryDateOfBirth').value;
+  const today = new Date().toISOString().split('T')[0];
+  if (dateOfBirth && dateOfBirth > today) {
+    submitBtn.innerHTML = originalBtnText;
+    submitBtn.disabled = false;
+    alert("Date of birth cannot be in the future.");
+    return;
+  }
+
+  // Price validations
+  const servicePrice = parseFloat(document.getElementById('lp-service-price').value) || 0;
+  const totalPrice = parseFloat(document.getElementById('lp-totalPrice').value) || 0;
+  const amountPaid = parseFloat(document.getElementById('lp-amountPaid').value) || 0;
+
+  const minimumAllowedPrice = servicePrice * 0.5;
+  if (totalPrice < minimumAllowedPrice) {
+    submitBtn.innerHTML = originalBtnText;
+    submitBtn.disabled = false;
+    alert(`Total price cannot be lower than 50% of the service price (₱${minimumAllowedPrice.toFixed(2)}).`);
+    return;
+  }
+
+  if (amountPaid > totalPrice) {
+    submitBtn.innerHTML = originalBtnText;
+    submitBtn.disabled = false;
+    alert("Amount paid cannot exceed the total price.");
+    return;
+  }
+
+  // Prepare data for submission
   const formData = {
     service_id: document.getElementById('lp-service-id').value,
     branch_id: document.getElementById('lp-branch-id').value,
@@ -1119,113 +1193,12 @@ function confirmLifeplanCheckout() {
     paymentTerm: document.getElementById('lp-paymentTerm').value,
     service_price: document.getElementById('lp-service-price').value,
     totalPrice: document.getElementById('lp-totalPrice').value,
-    amountPaid: document.getElementById('lp-amountPaid').value
+    amountPaid: document.getElementById('lp-amountPaid').value,
+    status: 'Pending',
+    service_type: 'Lifeplan',
+    balance: (totalPrice - amountPaid).toFixed(2),
+    payment_status: (totalPrice - amountPaid) > 0 ? 'With Balance' : 'Fully Paid'
   };
-  
-  // Get the submit button once at the beginning
-  const submitBtn = document.getElementById('lp-confirm-btn');
-  let originalBtnText = '';
-  
-  if (submitBtn) {
-    originalBtnText = submitBtn.innerHTML;
-    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
-    submitBtn.disabled = true;
-  }
-
-  // Include the checkbox value for cremation
-  const withCremation = document.getElementById('lp-withCremation').checked;
-  formData.append('withCremation', withCremation ? 'on' : 'off');
-
-  // Validate required fields
-  const requiredFields = [
-    'lp-clientFirstName', 'lp-clientLastName', 'lp-clientPhone',
-    'beneficiaryFirstName', 'beneficiaryLastName', 'beneficiaryRelationship',
-    'beneficiaryAddress'
-  ];
-
-  for (const fieldId of requiredFields) {
-    const field = document.getElementById(fieldId);
-    if (!field.value.trim()) {
-      // Restore button state if validation fails
-      if (submitBtn) {
-        submitBtn.innerHTML = originalBtnText;
-        submitBtn.disabled = false;
-      }
-      alert(`Please fill in ${field.labels[0].textContent}`);
-      field.focus();
-      return;
-    }
-  }
-
-  // Email validation
-  const email = document.getElementById('lp-clientEmail').value;
-  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    if (submitBtn) {
-      submitBtn.innerHTML = originalBtnText;
-      submitBtn.disabled = false;
-    }
-    alert("Please enter a valid email address.");
-    return;
-  }
-
-  // Phone validation
-  const phone = document.getElementById('lp-clientPhone').value;
-  if (phone && !/^\d+$/.test(phone)) {
-    if (submitBtn) {
-      submitBtn.innerHTML = originalBtnText;
-      submitBtn.disabled = false;
-    }
-    alert("Phone number should contain only digits.");
-    return;
-  }
-
-  // Date of birth validation
-  const dateOfBirth = document.getElementById('beneficiaryDateOfBirth').value;
-  const today = new Date().toISOString().split('T')[0];
-  if (dateOfBirth && dateOfBirth > today) {
-    if (submitBtn) {
-      submitBtn.innerHTML = originalBtnText;
-      submitBtn.disabled = false;
-    }
-    alert("Date of birth cannot be in the future.");
-    return;
-  }
-
-  // Price validations
-  const servicePrice = parseFloat(document.getElementById('lp-service-price').value) || 0;
-  const totalPrice = parseFloat(document.getElementById('lp-totalPrice').value) || 0;
-  const amountPaid = parseFloat(document.getElementById('lp-amountPaid').value) || 0;
-
-  const minimumAllowedPrice = servicePrice * 0.5;
-  if (totalPrice < minimumAllowedPrice) {
-    if (submitBtn) {
-      submitBtn.innerHTML = originalBtnText;
-      submitBtn.disabled = false;
-    }
-    alert(`Total price cannot be lower than 50% of the service price (₱${minimumAllowedPrice.toFixed(2)}).`);
-    return;
-  }
-
-  if (amountPaid > totalPrice) {
-    if (submitBtn) {
-      submitBtn.innerHTML = originalBtnText;
-      submitBtn.disabled = false;
-    }
-    alert("Amount paid cannot exceed the total price.");
-    return;
-  }
-
-  // Additional data
-  formData.append('service_id', document.getElementById('lp-service-id').value);
-  formData.append('branch_id', document.getElementById('lp-branch-id').value);
-  formData.append('sold_by', 1); // Example admin ID
-  formData.append('status', 'Pending');
-  formData.append('service_type', 'Lifeplan');
-  formData.append('payment_term', document.getElementById('lp-paymentTerm').value);
-
-  const balance = totalPrice - amountPaid;
-  formData.append('balance', balance.toFixed(2));
-  formData.append('payment_status', balance > 0 ? 'With Balance' : 'Fully Paid');
 
   fetch('posFunctions/process_lifeplan_checkout.php', {
     method: 'POST',
@@ -1234,25 +1207,28 @@ function confirmLifeplanCheckout() {
     },
     body: JSON.stringify(formData)
   })
-  .then(response => response.json())
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    return response.json();
+  })
   .then(data => {
     if (data.success) {
       alert('Transaction successfully saved!');
       form.reset();
       closeLifeplanCheckoutModal();
     } else {
-      alert(data.message || 'Error processing your request.');
+      throw new Error(data.message || 'Error processing your request.');
     }
   })
   .catch(error => {
     console.error('Error:', error);
-    alert('An error occurred while saving the data.');
+    alert(error.message || 'An error occurred while saving the data.');
   })
   .finally(() => {
-    if (submitBtn) {
-      submitBtn.innerHTML = originalBtnText;
-      submitBtn.disabled = false;
-    }
+    submitBtn.innerHTML = originalBtnText;
+    submitBtn.disabled = false;
   });
 }
 
