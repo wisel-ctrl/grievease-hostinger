@@ -652,21 +652,28 @@ $totalEmployees = $employeeCountResult->fetch_assoc()['total'] ?? 0; // Default 
   </div>
 </div>
 
-<div id="editEmployeeModal" class="fixed inset-0 bg-black bg-opacity-60 z-50 hidden overflow-y-auto flex items-center justify-center p-4 w-full h-full">
-  <div class="bg-white rounded-xl shadow-xl w-full max-w-lg mx-2">
+<div class="fixed inset-0 z-50 flex items-center justify-center hidden" id="editEmployeeModal">
+  <!-- Modal Backdrop -->
+  <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+  
+  <!-- Modal Content -->
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-lg mx-4 z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+    <!-- Close Button -->
+    <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeEditEmployeeModal()">
+      <i class="fas fa-times"></i>
+    </button>
+    
     <!-- Modal Header -->
-    <div class="bg-gradient-to-r from-sidebar-accent to-white flex justify-between items-center p-4 flex-shrink-0 rounded-t-xl">
-      <h3 class="text-lg font-bold text-white"><i class="fas fa-user-edit mr-2"></i> Edit Employee Account</h3>
-      <button onclick="closeEditEmployeeModal()" class="bg-black bg-opacity-20 hover:bg-opacity-30 rounded-full p-1.5 text-white hover:text-white transition-all duration-200">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-          <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-        </svg>
-      </button>
+    <div class="px-6 py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
+      <h3 class="text-xl font-bold text-white flex items-center">
+        <i class="fas fa-user-edit mr-2"></i>
+        Edit Employee Account
+      </h3>
     </div>
     
     <!-- Modal Body -->
-    <div class="p-4">
-    <form id="editEmployeeAccountForm">
+    <div class="px-6 py-5">
+      <form id="editEmployeeAccountForm">
         <!-- Hidden field for employee ID -->
         <input type="hidden" id="editEmployeeId" name="employeeId">
         
@@ -770,17 +777,10 @@ $totalEmployees = $employeeCountResult->fetch_assoc()['total'] ?? 0; // Default 
         </div>
 
         <!-- Branch Selection -->
-        <div class="mt-3 bg-navy p-3 rounded-lg shadow-sm border border-purple-100">
-            <label class="block text-xs font-medium text-gray-800 mb-2 flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-1 text-sidebar-accent">
-                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                    <polyline points="9 22 9 12 15 12 15 22"></polyline>
-                </svg>
-                Branch Location *
-            </label>
+        <div class="mt-3">
             <div class="bg-gray-50 p-4 rounded-lg border-l-4 border-gold">
-                <label class="block text-sm font-medium text-gray-700 mb-2">Branch</label>
-                <div class="flex gap-4">
+                <label class="block text-xs font-medium text-gray-700 mb-2">Branch</label>
+                <div class="flex flex-wrap gap-4">
                     <?php foreach ($branches as $branch): ?>
                         <label class="flex items-center space-x-2 cursor-pointer">
                             <input type="radio" name="branch" value="<?php echo $branch['branch_id']; ?>" required class="hidden peer editBranchRadio" id="editBranch<?php echo $branch['branch_id']; ?>">
@@ -791,20 +791,19 @@ $totalEmployees = $employeeCountResult->fetch_assoc()['total'] ?? 0; // Default 
                 </div>
             </div>
         </div>
-    </form>
+      </form>
+    </div>
     
-    <!-- Modal Footer -->
-    <div class="p-3 flex justify-end gap-3 border-t border-gray-200 sticky bottom-0 bg-white rounded-b-xl">
-        <button type="button" onclick="closeEditEmployeeModal()" class="px-3 py-1.5 bg-white border border-sidebar-accent text-gray-800 rounded-lg text-sm font-medium hover:bg-navy transition-colors">
-            Cancel
-        </button>
-        <button type="submit" form="editEmployeeAccountForm" class="px-3 py-1.5 bg-sidebar-accent text-white rounded-lg text-sm font-medium hover:bg-darkgold transition-colors flex items-center">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-1">
-                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-            </svg>
-            Update Employee
-        </button>
+    <!-- Modal Footer --> 
+    <div class="px-6 py-4 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
+      <button class="px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center" onclick="closeEditEmployeeModal()">
+        <i class="fas fa-times mr-2"></i>
+        Cancel
+      </button>
+      <button type="submit" form="editEmployeeAccountForm" class="px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center">
+        <i class="fas fa-save mr-2"></i>
+        Update Employee
+      </button>
     </div>
   </div>
 </div>
