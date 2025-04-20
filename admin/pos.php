@@ -1126,18 +1126,18 @@ function confirmLifeplanCheckout() {
   const formData = new FormData(form);
   
   // Add additional fields that aren't in the form
-  formData.append('service_id', document.getElementById('lp-service-id').value);
-  formData.append('branch_id', document.getElementById('lp-branch-id').value);
-  formData.append('sold_by', 1); // Example admin ID
-  formData.append('withCremation', document.getElementById('lp-withCremation').checked ? 'on' : 'off');
+  formData.set('service_id', document.getElementById('lp-service-id').value);
+  formData.set('branch_id', document.getElementById('lp-branch-id').value);
+  formData.set('sold_by', 1); // Example admin ID
+  formData.set('withCremation', document.getElementById('lp-withCremation').checked ? 'on' : 'off');
   
   // Calculate balance
   const totalPrice = parseFloat(document.getElementById('lp-totalPrice').value) || 0;
   const amountPaid = parseFloat(document.getElementById('lp-amountPaid').value) || 0;
   const balance = totalPrice - amountPaid;
   
-  formData.append('balance', balance.toFixed(2));
-  formData.append('payment_status', balance > 0 ? 'With Balance' : 'Fully Paid');
+  formData.set('balance', balance.toFixed(2));
+  formData.set('payment_status', balance > 0 ? 'With Balance' : 'Fully Paid');
 
   console.log('Submitting the following form data:');
 for (let [key, value] of formData.entries()) {
