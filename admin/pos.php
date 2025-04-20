@@ -1140,13 +1140,19 @@ function confirmLifeplanCheckout() {
   formData.set('payment_status', balance > 0 ? 'With Balance' : 'Fully Paid');
 
   console.log('Submitting the following form data:');
-for (let [key, value] of formData.entries()) {
-  console.log(`${key}: ${value}`);
-}
+  for (let [key, value] of formData.entries()) {
+    console.log(`${key}: ${value}`);
+  }
 
   fetch('posFunctions/process_lifeplan_checkout.php', {
     method: 'POST',
     body: formData
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    return response.json(); // Parse the JSON response
   })
   .then(data => {
     if (data.success) {
