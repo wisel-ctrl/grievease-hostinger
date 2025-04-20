@@ -1337,7 +1337,7 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
   <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
   
   <!-- Modal Content -->
-  <div class="relative bg-white rounded-xl shadow-card w-full max-w-4xl mx-4 z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-5xl mx-4 z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
     <!-- Close Button -->
     <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeRecordPaymentModal()">
       <i class="fas fa-times"></i>
@@ -1353,11 +1353,12 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
     
     <!-- Modal Body -->
     <div class="px-6 py-5">
-      <form id="recordPaymentForm" class="space-y-6">
-        <!-- Payment Information Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <input type="hidden" id="customerID" name="customerID">
-        <input type="hidden" id="branchID" name="branchID">
+      <form id="recordPaymentForm" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Left Column -->
+        <div class="space-y-4">
+          <input type="hidden" id="customerID" name="customerID">
+          <input type="hidden" id="branchID" name="branchID">
+          
           <!-- Service ID -->
           <div>
             <label for="paymentServiceId" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
@@ -1394,6 +1395,20 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
             </div>
           </div>
           
+          <!-- Notes Section -->
+          <div>
+            <label for="paymentNotes" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+              <i class="fas fa-sticky-note mr-2 text-sidebar-accent"></i>
+              Notes
+            </label>
+            <div class="relative">
+              <textarea id="paymentNotes" name="paymentNotes" rows="5" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"></textarea>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Right Column -->
+        <div class="space-y-4">
           <!-- Payment Amount -->
           <div>
             <label for="paymentAmount" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
@@ -1435,40 +1450,29 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
               <input type="date" id="paymentDate" name="paymentDate" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
             </div>
           </div>
-        </div>
-        
-        <!-- Notes Section -->
-        <div>
-          <label for="paymentNotes" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-sticky-note mr-2 text-sidebar-accent"></i>
-            Notes
-          </label>
-          <div class="relative">
-            <textarea id="paymentNotes" name="paymentNotes" rows="3" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"></textarea>
-          </div>
-        </div>
-        
-        <!-- Summary Section -->
-        <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
-          <p class="block text-xs font-medium text-gray-700 mb-2 flex items-center">
-            <i class="fas fa-money-bill-wave mr-2 text-sidebar-accent"></i>
-            Payment Summary
-          </p>
-          <div class="flex justify-between mb-2 text-gray-700">
-            <span>Current Balance:</span>
-            <span id="summary-current-balance" class="font-medium">₱0.00</span>
-          </div>
-          <div class="flex justify-between mb-2 text-gray-700">
-            <span>Payment Amount:</span>
-            <span id="summary-payment-amount" class="font-medium">₱0.00</span>
-          </div>
-          <div class="flex justify-between mb-2 text-gray-700">
-            <span>Total Paid:</span>
-            <span id="total-amount-paid" class="font-medium">₱0.00</span>
-          </div>
-          <div class="flex justify-between font-bold text-lg mt-4 pt-4 border-t border-dashed border-purple-200 text-sidebar-accent">
-            <span>New Balance:</span>
-            <span id="summary-new-balance">₱0.00</span>
+          
+          <!-- Summary Section -->
+          <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+            <p class="block text-xs font-medium text-gray-700 mb-2 flex items-center">
+              <i class="fas fa-money-bill-wave mr-2 text-sidebar-accent"></i>
+              Payment Summary
+            </p>
+            <div class="flex justify-between mb-2 text-gray-700">
+              <span>Current Balance:</span>
+              <span id="summary-current-balance" class="font-medium">₱0.00</span>
+            </div>
+            <div class="flex justify-between mb-2 text-gray-700">
+              <span>Payment Amount:</span>
+              <span id="summary-payment-amount" class="font-medium">₱0.00</span>
+            </div>
+            <div class="flex justify-between mb-2 text-gray-700">
+              <span>Total Paid:</span>
+              <span id="total-amount-paid" class="font-medium">₱0.00</span>
+            </div>
+            <div class="flex justify-between font-bold text-lg mt-4 pt-4 border-t border-dashed border-purple-200 text-sidebar-accent">
+              <span>New Balance:</span>
+              <span id="summary-new-balance">₱0.00</span>
+            </div>
           </div>
         </div>
       </form>
