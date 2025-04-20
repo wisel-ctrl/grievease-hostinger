@@ -117,86 +117,46 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
   <div class="bg-sidebar-hover p-4 border-b border-sidebar-border flex flex-col md:flex-row md:items-center md:justify-between gap-4">
     <div class="flex items-center gap-3">
       <h4 class="text-lg font-bold text-sidebar-text">Ongoing Services</h4>
-        
       <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
         <i class="fas fa-clipboard-list"></i>
-        <?php 
-          $ongoingCount = $ongoingResult->num_rows;
-          echo $ongoingCount . " Service" . ($ongoingCount != 1 ? "s" : ""); 
-        ?>
+        <?php echo $ongoingResult->num_rows . " Service" . ($ongoingResult->num_rows != 1 ? "s" : ""); ?>
       </span>
     </div>
-      
-    <!-- Search Section -->
-    <div class="flex flex-col md:flex-row items-start md:items-center gap-3 w-full md:w-auto">
-      <!-- Search Input -->
-      <div class="relative w-full md:w-64">
-        <input type="text" id="searchOngoing" 
-               placeholder="Search services..." 
-               class="pl-8 pr-3 py-2 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
-        <i class="fas fa-search absolute left-2.5 top-3 text-gray-400"></i>
-      </div>
+    <div class="relative w-full md:w-64">
+      <input type="text" id="searchOngoing" placeholder="Search services..." class="pl-8 pr-3 py-2 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
+      <i class="fas fa-search absolute left-2.5 top-3 text-gray-400"></i>
     </div>
   </div>
     
-  <!-- Services Table -->
   <div class="overflow-x-auto scrollbar-thin">      
     <table class="w-full">
       <thead>
         <tr class="bg-gray-50 border-b border-sidebar-border">
-          <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(0)">
-            <div class="flex items-center">
-              <i class="fas fa-hashtag mr-1.5 text-sidebar-accent"></i> ID 
-              <i class="fas fa-sort ml-1 text-gray-400"></i>
-            </div>
-          </th>
-          <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(1)">
-            <div class="flex items-center">
-              <i class="fas fa-user mr-1.5 text-sidebar-accent"></i> Client Name 
-              <i class="fas fa-sort ml-1 text-gray-400"></i>
-            </div>
-          </th>
-          <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(2)">
-            <div class="flex items-center">
-              <i class="fas fa-user-alt mr-1.5 text-sidebar-accent"></i> Deceased Name 
-              <i class="fas fa-sort ml-1 text-gray-400"></i>
-            </div>
-          </th>
-          <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(3)">
-            <div class="flex items-center">
-              <i class="fas fa-tag mr-1.5 text-sidebar-accent"></i> Service Type 
-              <i class="fas fa-sort ml-1 text-gray-400"></i>
-            </div>
-          </th>
-          <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(4)">
-            <div class="flex items-center">
-              <i class="fas fa-calendar mr-1.5 text-sidebar-accent"></i> Date of Burial 
-              <i class="fas fa-sort ml-1 text-gray-400"></i>
-            </div>
-          </th>
-          <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(5)">
-            <div class="flex items-center">
-              <i class="fas fa-toggle-on mr-1.5 text-sidebar-accent"></i> Status 
-              <i class="fas fa-sort ml-1 text-gray-400"></i>
-            </div>
-          </th>
-          <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(6)">
-            <div class="flex items-center">
-              <i class="fas fa-peso-sign mr-1.5 text-sidebar-accent"></i> Outstanding Balance 
-              <i class="fas fa-sort ml-1 text-gray-400"></i>
-            </div>
-          </th>
-          <th class="p-4 text-left text-sm font-medium text-sidebar-text">
-            <div class="flex items-center">
-              <i class="fas fa-cogs mr-1.5 text-sidebar-accent"></i> Actions
-            </div>
-          </th>
+          <?php
+          $headers = [
+            ['icon' => 'hashtag', 'text' => 'ID'],
+            ['icon' => 'user', 'text' => 'Client Name'],
+            ['icon' => 'user-alt', 'text' => 'Deceased Name'],
+            ['icon' => 'tag', 'text' => 'Service Type'],
+            ['icon' => 'calendar', 'text' => 'Date of Burial'],
+            ['icon' => 'toggle-on', 'text' => 'Status'],
+            ['icon' => 'peso-sign', 'text' => 'Outstanding Balance'],
+            ['icon' => 'cogs', 'text' => 'Actions', 'sortable' => false]
+          ];
+          
+          foreach($headers as $index => $header): ?>
+            <th class="p-4 text-left text-sm font-medium text-sidebar-text <?= isset($header['sortable']) && !$header['sortable'] ? '' : 'cursor-pointer' ?>" 
+                <?= isset($header['sortable']) && !$header['sortable'] ? '' : "onclick=\"sortTable($index)\"" ?>>
+              <div class="flex items-center">
+                <i class="fas fa-<?= $header['icon'] ?> mr-1.5 text-sidebar-accent"></i> <?= $header['text'] ?>
+                <?= isset($header['sortable']) && !$header['sortable'] ? '' : '<i class="fas fa-sort ml-1 text-gray-400"></i>' ?>
+              </div>
+            </th>
+          <?php endforeach; ?>
         </tr>
       </thead>
       <tbody>
         <?php
-        // Query for Ongoing Services (status = 'Pending')
-        // Modify your ongoingQuery to include a check for assigned staff
         $ongoingQuery = "SELECT s.sales_id, s.fname, s.mname, s.lname, s.suffix, 
         s.fname_deceased, s.mname_deceased, s.lname_deceased, s.suffix_deceased,
         sv.service_name, s.date_of_burial, s.balance, s.status, s.customerID, s.payment_status,
@@ -219,38 +179,39 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
                             ($row['suffix_deceased'] ? ' ' . $row['suffix_deceased'] : ''));
             ?>
             <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
-              <td class="p-4 text-sm text-sidebar-text font-medium">#<?php echo $row['sales_id']; ?></td>
-              <td class="p-4 text-sm text-sidebar-text"><?php echo $clientName; ?></td>
-              <td class="p-4 text-sm text-sidebar-text"><?php echo $deceasedName; ?></td>
+              <td class="p-4 text-sm text-sidebar-text font-medium">#<?= $row['sales_id'] ?></td>
+              <td class="p-4 text-sm text-sidebar-text"><?= $clientName ?></td>
+              <td class="p-4 text-sm text-sidebar-text"><?= $deceasedName ?></td>
               <td class="p-4 text-sm text-sidebar-text">
                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">
-                  <?php echo htmlspecialchars($row['service_name']); ?>
+                  <?= htmlspecialchars($row['service_name']) ?>
                 </span>
               </td>
-              <td class="p-4 text-sm text-sidebar-text"><?php echo htmlspecialchars($row['date_of_burial']); ?></td>
+              <td class="p-4 text-sm text-sidebar-text"><?= htmlspecialchars($row['date_of_burial']) ?></td>
               <td class="p-4 text-sm">
                 <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-500 border border-orange-200">
-                  <i class="fas fa-pause-circle mr-1"></i> <?php echo htmlspecialchars($row['status']); ?>
+                  <i class="fas fa-pause-circle mr-1"></i> <?= htmlspecialchars($row['status']) ?>
                 </span>
               </td>
-              <td class="p-4 text-sm font-medium text-sidebar-text">₱<?php echo number_format($row['balance'], 2); ?></td>
+              <td class="p-4 text-sm font-medium text-sidebar-text">₱<?= number_format($row['balance'], 2) ?></td>
               <td class="p-4 text-sm">
                 <div class="flex space-x-2">
-                  <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="Edit Service" onclick="openEditServiceModal('<?php echo $row['sales_id']; ?>')">
+                  <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" 
+                          title="Edit Service" onclick="openEditServiceModal('<?= $row['sales_id'] ?>')">
                     <i class="fas fa-edit"></i>
                   </button>
                   <?php if ($row['staff_assigned'] == 0): ?>
                     <button class="p-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition-all tooltip assign-staff-btn" 
                             title="Assign Staff"
-                            onclick="checkCustomerBeforeAssign('<?php echo $row['sales_id']; ?>', <?php echo $row['customerID'] ? 'true' : 'false'; ?>)"
-                            <?php echo !$row['customerID'] ? 'disabled' : ''; ?>>
+                            onclick="checkCustomerBeforeAssign('<?= $row['sales_id'] ?>', <?= $row['customerID'] ? 'true' : 'false' ?>)"
+                            <?= !$row['customerID'] ? 'disabled' : '' ?>>
                       <i class="fas fa-users"></i>
                     </button>
                   <?php endif; ?>
                   <button class="p-2 bg-purple-100 text-purple-600 rounded-lg hover:bg-purple-200 transition-all tooltip complete-btn" 
                           title="Complete Service"
-                          onclick="checkCustomerBeforeComplete('<?php echo $row['sales_id']; ?>', <?php echo $row['customerID'] ? 'true' : 'false'; ?>)"
-                          <?php echo !$row['customerID'] ? 'disabled' : ''; ?>>
+                          onclick="checkCustomerBeforeComplete('<?= $row['sales_id'] ?>', <?= $row['customerID'] ? 'true' : 'false' ?>)"
+                          <?= !$row['customerID'] ? 'disabled' : '' ?>>
                     <i class="fas fa-check"></i>
                   </button>
                 </div>
@@ -258,8 +219,7 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
             </tr>
             <?php
           }
-        } else {
-          ?>
+        } else { ?>
           <tr>
             <td colspan="8" class="p-6 text-sm text-center">
               <div class="flex flex-col items-center">
@@ -268,18 +228,13 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
               </div>
             </td>
           </tr>
-          <?php
-        }
-        ?>
+        <?php } ?>
       </tbody>
     </table>
-      
-    <!-- Pagination placeholder - can be dynamically populated if needed -->
     <div class="p-4 border-t border-sidebar-border flex justify-between items-center">
       <div class="text-sm text-gray-500">
-        Showing 1 - <?php echo $ongoingResult->num_rows; ?> of <?php echo $ongoingResult->num_rows; ?> services
+        Showing 1 - <?= $ongoingResult->num_rows ?> of <?= $ongoingResult->num_rows ?> services
       </div>
-      <!-- Add pagination controls here if needed -->
     </div>
   </div>
 </div>
