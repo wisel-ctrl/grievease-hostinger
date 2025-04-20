@@ -662,7 +662,7 @@ $servicesJson = json_encode($allServices);
       </div>
       <div class="flex gap-4">
         <button class="px-5 py-3 bg-white border border-sidebar-accent text-sidebar-accent rounded-lg font-semibold hover:bg-navy transition-colors" onclick="closeLifeplanCheckoutModal()">Cancel</button>
-        <button class="px-6 py-3 bg-sidebar-accent text-white rounded-lg font-semibold hover:bg-darkgold transition-colors flex items-center" onclick="confirmLifeplanCheckout()">
+        <button class="px-6 py-3 bg-sidebar-accent text-white rounded-lg font-semibold hover:bg-darkgold transition-colors flex items-center" onclick="confirmLifeplanCheckout()" type= "submit">
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
             <polyline points="20 6 9 17 4 12"></polyline>
           </svg>
