@@ -271,10 +271,6 @@ header("Pragma: no-cache");
               <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="filterMessages('week')">This Week</button>
               <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="filterMessages('month')">This Month</button>
             </div>
-          </div>
-        </div>
-      </div>
-    </div>
 
     <!-- Customer Messages Interface -->
     <div class="bg-white rounded-lg shadow-md overflow-hidden">
@@ -283,8 +279,6 @@ header("Pragma: no-cache");
         <div class="flex justify-between items-center">
           <h2 class="text-lg font-semibold text-gray-800">Incoming Customer Messages</h2>
           <div class="text-sm text-gray-500">Showing <span id="message-count" class="font-medium">0</span> messages</div>
-        </div>
-      </div>
       
       <!-- Messages Content -->
       <div class="divide-y divide-gray-200">
@@ -304,9 +298,13 @@ header("Pragma: no-cache");
         <div id="message-list" class="hidden">
           <!-- Messages will be loaded here dynamically -->
         </div>
+      <!-- Message list container -->
+      <div id="message-list" class="hidden">
+        <!-- Messages will be loaded here dynamically -->
       </div>
     </div>
   </div>
+</div>
 
       <!-- Message Detail Modal -->
       <div id="message-detail-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center">
@@ -347,8 +345,6 @@ header("Pragma: no-cache");
             </button>
           </div>
         </div>
-      </div>
-    </div>
 
 
     <script>
