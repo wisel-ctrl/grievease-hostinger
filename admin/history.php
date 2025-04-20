@@ -1009,20 +1009,27 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
 </div>
 
 <!-- Assign Staff Modal -->
-<div class="fixed top-0 left-0 w-full h-full bg-black bg-opacity-60 flex items-center justify-center z-50 hidden" id="assignStaffModal">
-  <div class="bg-white rounded-xl w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-xl">
+<div class="fixed inset-0 z-50 flex items-center justify-center hidden" id="assignStaffModal">
+  <!-- Modal Backdrop -->
+  <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+  
+  <!-- Modal Content -->
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-lg mx-4 z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+    <!-- Close Button -->
+    <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeAssignStaffModal()">
+      <i class="fas fa-times"></i>
+    </button>
+    
     <!-- Modal Header -->
-    <div class="bg-gradient-to-r from-sidebar-accent to-white flex justify-between items-center p-6 flex-shrink-0">
-      <h3 class="text-xl font-bold text-white">Assign Staff to Service</h3>
-      <button class="bg-black bg-opacity-20 hover:bg-opacity-30 rounded-full p-2 text-white hover:text-white transition-all duration-200" onclick="closeAssignStaffModal()">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-          <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-        </svg>
-      </button>
+    <div class="px-6 py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
+      <h3 class="text-xl font-bold text-white flex items-center">
+        <i class="fas fa-user-plus mr-2"></i>
+        Assign Staff to Service
+      </h3>
     </div>
     
     <!-- Modal Body -->
-    <div class="p-6">
+    <div class="px-6 py-5">
       <form id="assignStaffForm" class="space-y-6">
         <input type="hidden" id="assignServiceId">
         
@@ -1057,7 +1064,7 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
                     $employeeId = htmlspecialchars($employee['employee_id']);
                     
                     echo '<div class="flex items-center">';
-                    echo '<input type="checkbox" id="'.$positionLower.$count.'" name="assigned_staff[]" value="'.$employeeId.'" class="mr-2">';
+                    echo '<input type="checkbox" id="'.$positionLower.$count.'" name="assigned_staff[]" value="'.$employeeId.'" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">';
                     echo '<label for="'.$positionLower.$count.'" class="text-gray-700">'.$fullName.'</label>';
                     echo '</div>';
                     
@@ -1072,34 +1079,38 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
         
         // These sections will be populated via AJAX when the modal opens
         ?>
-        <div id="embalmersSection" class="bg-gray-50 p-5 rounded-xl">
+        <div id="embalmersSection" class="bg-gray-50 p-5 rounded-xl border border-gray-200">
           <!-- Embalmers will be loaded here -->
         </div>
         
-        <div id="driversSection" class="bg-gray-50 p-5 rounded-xl">
+        <div id="driversSection" class="bg-gray-50 p-5 rounded-xl border border-gray-200">
           <!-- Drivers will be loaded here -->
         </div>
         
-        <div id="personnelSection" class="bg-gray-50 p-5 rounded-xl">
+        <div id="personnelSection" class="bg-gray-50 p-5 rounded-xl border border-gray-200">
           <!-- Personnel will be loaded here -->
         </div>
         
         <div>
-          <label for="assignmentNotes" class="block text-sm font-medium text-gray-700 mb-1">Notes</label>
-          <textarea id="assignmentNotes" rows="3" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent"></textarea>
+          <label for="assignmentNotes" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            <i class="fas fa-sticky-note mr-2 text-sidebar-accent"></i>
+            Notes
+          </label>
+          <div class="relative">
+            <textarea id="assignmentNotes" rows="3" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"></textarea>
+          </div>
         </div>
       </form>
     </div>
     
-    <!-- Modal Footer -->
-    <div class="p-6 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
-      <button class="px-5 py-3 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-semibold hover:bg-navy transition-colors" onclick="closeAssignStaffModal()">Cancel</button>
-      <button class="px-6 py-3 bg-sidebar-accent text-white rounded-lg font-semibold hover:bg-darkgold transition-colors flex items-center" onclick="saveStaffAssignment()">
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
-          <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
-          <polyline points="17 21 17 13 7 13 7 21"></polyline>
-          <polyline points="7 3 7 8 15 8"></polyline>
-        </svg>
+    <!-- Modal Footer --> 
+    <div class="px-6 py-4 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
+      <button class="px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center" onclick="closeAssignStaffModal()">
+        <i class="fas fa-times mr-2"></i>
+        Cancel
+      </button>
+      <button class="px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="saveStaffAssignment()">
+        <i class="fas fa-save mr-2"></i>
         Save Assignment
       </button>
     </div>
