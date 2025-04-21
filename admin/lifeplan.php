@@ -322,29 +322,25 @@ header("Pragma: no-cache");
             
             // Prepare and execute the query using MySQLi
             $query = "SELECT 
-                        lp.lifeplan_id,
-                        lp.service_id,
-                        lp.customerID,
-                        CONCAT(lp.benefeciary_fname, ' ', 
-                              COALESCE(lp.benefeciary_mname, ''), 
-                              CASE 
-                                  WHEN lp.benefeciary_mname IS NOT NULL AND lp.benefeciary_mname != '' THEN ' ' 
-                                  ELSE '' 
-                              END,
-                              lp.benefeciary_lname, 
-                              CASE 
-                                  WHEN lp.benefeciary_suffix IS NOT NULL AND lp.benefeciary_suffix != '' THEN CONCAT(' ', lp.benefeciary_suffix) 
-                                  ELSE '' 
-                              END) AS benefeciary_fullname,
-                        lp.payment_duration,
-                        lp.custom_price,
-                        lp.payment_status,
-                        s.service_name
-                      FROM 
-                        lifeplan_tb lp
-                      JOIN 
-                        services_tb s ON lp.service_id = s.service_id
-                      LIMIT 6"; // Limit to 6 records for pagination
+    lp.lifeplan_id,
+    lp.service_id,
+    lp.customerID,
+    CONCAT_WS(' ',
+        lp.benefeciary_fname,
+        NULLIF(lp.benefeciary_mname, ''),
+        lp.benefeciary_lname,
+        NULLIF(lp.benefeciary_suffix, '')
+    ) AS benefeciary_fullname,
+    lp.payment_duration,
+    lp.custom_price,
+    lp.payment_status,
+    s.service_name
+FROM 
+    lifeplan_tb lp
+JOIN 
+    services_tb s ON lp.service_id = s.service_id
+LIMIT 6
+"; // Limit to 6 records for pagination
             
             $result = $mysqli->query($query);
             
