@@ -817,10 +817,9 @@ function confirmAccept() {
             document.getElementById('branchId').value = data.branch_id || '';
             document.getElementById('initialPrice').value = data.initial_price || '';
             document.getElementById('deathCertUrl').value = data.deathcert_url || '';
-            document.getElementById('withCremate').value = data.with_cremate || '0';
+            document.getElementById('withCremate').value = data.with_cremate || 'no';
             
-            // Set the amount paid field to the initial price by default
-            document.getElementById('amountPaidInput').value = parseFloat(data.initial_price || 0).toFixed(2);
+            
             
             // Show the payment modal
             openPaymentModal();
