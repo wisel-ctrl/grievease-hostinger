@@ -312,8 +312,39 @@ header("Pragma: no-cache");
       <!-- Table -->
     <div class="overflow-x-auto">
         <table class="w-full">
-          <thead>
-            <!-- Your table headers... -->
+        <thead>
+            <tr class="bg-gray-50 text-left">
+              <th class="px-6 py-3 text-gray-700 font-semibold">
+                <div class="flex items-center">
+                  <i class="fas fa-user mr-2 text-accent"></i> Beneficiary Name
+                </div>
+              </th>
+              <th class="px-6 py-3 text-gray-700 font-semibold">
+                <div class="flex items-center">
+                  <i class="fas fa-hand-holding-heart mr-2 text-accent"></i> Service Name
+                </div>
+              </th>
+              <th class="px-6 py-3 text-gray-700 font-semibold">
+                <div class="flex items-center">
+                  <i class="fas fa-calendar-alt mr-2 text-accent"></i> Payment Duration
+                </div>
+              </th>
+              <th class="px-6 py-3 text-gray-700 font-semibold">
+                <div class="flex items-center">
+                  <i class="fas fa-tag mr-2 text-accent"></i> Price
+                </div>
+              </th>
+              <th class="px-6 py-3 text-gray-700 font-semibold">
+                <div class="flex items-center">
+                  <i class="fas fa-credit-card mr-2 text-accent"></i> Payment Status
+                </div>
+              </th>
+              <th class="px-6 py-3 text-gray-700 font-semibold">
+                <div class="flex items-center">
+                  <i class="fas fa-cogs mr-2 text-accent"></i> Actions
+                </div>
+              </th>
+            </tr>
           </thead>
           <tbody class="divide-y divide-gray-200">
             <?php
