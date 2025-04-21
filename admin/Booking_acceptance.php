@@ -850,11 +850,14 @@ function closePaymentModal() {
 // Handle payment form submission
 document.getElementById('paymentForm').addEventListener('submit', function(e) {
     e.preventDefault();
+    console.log('Payment form submitted'); // Log form submission
     
     const amountPaid = document.getElementById('amountPaidInput').value;
     const paymentMethod = document.getElementById('paymentMethod').value;
+    console.log('Amount Paid:', amountPaid, 'Payment Method:', paymentMethod); // Log input values
     
     if (!amountPaid || !paymentMethod) {
+        console.log('Validation failed - missing fields'); // Log validation failure
         Swal.fire({
             icon: 'error',
             title: 'Error',
@@ -865,15 +868,21 @@ document.getElementById('paymentForm').addEventListener('submit', function(e) {
     
     // Prepare the data to send - include all hidden fields
     const formData = new FormData(this); // This will automatically include all form fields
+    console.log('FormData entries:'); // Log FormData contents
+    for (let [key, value] of formData.entries()) {
+        console.log(key, value);
+    }
     
     // Add additional data that might not be in the form
     formData.append('bookingId', currentBookingIdForPayment);
     formData.append('action', 'acceptBooking');
+    console.log('Added additional fields - bookingId:', currentBookingIdForPayment, 'action: acceptBooking');
     
     // Calculate balance for display in confirmation
     const initialPrice = parseFloat(document.getElementById('initialPrice').value) || 0;
     const balance = initialPrice - parseFloat(amountPaid);
     const paymentStatus = balance <= 0 ? 'Fully Paid' : 'With Balance';
+    console.log('Calculated values - Initial Price:', initialPrice, 'Balance:', balance, 'Status:', paymentStatus);
     
     // Show confirmation dialog with payment summary
     Swal.fire({
@@ -893,6 +902,7 @@ document.getElementById('paymentForm').addEventListener('submit', function(e) {
         cancelButtonColor: '#d33',
     }).then((result) => {
         if (result.isConfirmed) {
+            console.log('User confirmed payment'); // Log user confirmation
             // Show loading indicator
             Swal.fire({
                 title: 'Processing...',
@@ -904,18 +914,22 @@ document.getElementById('paymentForm').addEventListener('submit', function(e) {
             });
             
             // Send the data via AJAX
+            console.log('Sending AJAX request to bookingpage/process_booking.php'); // Log AJAX request
             fetch('bookingpage/process_booking.php', {
                 method: 'POST',
                 body: formData
             })
             .then(response => {
+                console.log('Received response, status:', response.status); // Log response status
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
                 return response.json();
             })
             .then(data => {
+                console.log('Response data:', data); // Log response data
                 if (data.success) {
+                    console.log('Payment processed successfully'); // Log success
                     Swal.fire({
                         icon: 'success',
                         title: 'Success!',
@@ -923,23 +937,27 @@ document.getElementById('paymentForm').addEventListener('submit', function(e) {
                         showConfirmButton: false,
                         timer: 2000
                     }).then(() => {
+                        console.log('Closing modals and reloading page'); // Log final actions
                         closePaymentModal();
                         closeModal();
                         // Refresh the page to update the table
                         window.location.reload();
                     });
                 } else {
+                    console.error('Server reported error:', data.message || 'No error message provided'); // Log server error
                     throw new Error(data.message || 'Failed to process booking');
                 }
             })
             .catch(error => {
-                console.error('Error:', error);
+                console.error('Error in payment processing:', error); // Enhanced error logging
                 Swal.fire({
                     icon: 'error',
                     title: 'Error',
                     text: error.message || 'An error occurred while processing your request',
                 });
             });
+        } else {
+            console.log('User cancelled payment'); // Log cancellation
         }
     });
 });
