@@ -102,7 +102,8 @@ header("Pragma: no-cache");
             'change_text' => 'projected growth',
             'icon' => 'chart-line',
             'color' => 'blue',
-            'prefix' => '$'
+            'prefix' => '$',
+            'inverse_change' => false // For sales, increasing is good
         ],
         [
             'title' => 'Projected Orders',
@@ -111,7 +112,8 @@ header("Pragma: no-cache");
             'change_text' => 'from this quarter',
             'icon' => 'box',
             'color' => 'purple',
-            'prefix' => ''
+            'prefix' => '',
+            'inverse_change' => false // For orders, increasing is good
         ],
         [
             'title' => 'Payment Rate',
@@ -121,13 +123,16 @@ header("Pragma: no-cache");
             'icon' => 'money-check-alt',
             'color' => 'green',
             'prefix' => '',
-            'suffix' => '%'
+            'suffix' => '%',
+            'inverse_change' => false // For payment rate, increasing is good
         ]
     ];
     
     foreach ($cards as $card) {
         // Determine if change is positive (for display)
-        $isPositive = $card['change'] >= 0;
+        // Using the same logic as the inventory cards
+        $isPositive = isset($card['inverse_change']) && $card['inverse_change'] ? 
+                    $card['change'] < 0 : $card['change'] >= 0;
         
         // Set color class for change indicator
         $changeColorClass = $isPositive ? 'text-emerald-600' : 'text-rose-600';
