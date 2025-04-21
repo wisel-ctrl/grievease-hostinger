@@ -155,7 +155,6 @@ header("Pragma: no-cache");
             'value' => $totalItems,
             'change' => $itemsChange,
             'icon' => 'boxes',
-            'color' => 'blue',
             'prefix' => ''
         ],
         [
@@ -163,7 +162,6 @@ header("Pragma: no-cache");
             'value' => number_format($totalValue, 2),
             'change' => $valueChange,
             'icon' => 'peso-sign',
-            'color' => 'green',
             'prefix' => '₱'
         ],
         [
@@ -171,7 +169,6 @@ header("Pragma: no-cache");
             'value' => $lowStock,
             'change' => $lowStockChange,
             'icon' => 'exclamation-triangle',
-            'color' => 'orange',
             'prefix' => '',
             'inverse_change' => true // For low stock, increasing is bad
         ],
@@ -180,10 +177,17 @@ header("Pragma: no-cache");
             'value' => $turnoverRate,
             'change' => 3, // Hardcoded in original
             'icon' => 'sync-alt',
-            'color' => 'purple',
             'prefix' => '',
             'suffix' => '%'
         ]
+    ];
+    
+    // Icon colors - using a consistent accent color scheme for all cards
+    $iconColors = [
+        'Total Items' => 'text-blue-600',
+        'Total Value' => 'text-green-600',
+        'Low Stock Items' => 'text-orange-600',
+        'Turnover Rate' => 'text-purple-600'
     ];
     
     foreach ($cards as $card) {
@@ -199,14 +203,17 @@ header("Pragma: no-cache");
         
         // Set suffix if present
         $suffix = isset($card['suffix']) ? $card['suffix'] : '';
+        
+        // Get the appropriate icon color
+        $iconColor = $iconColors[$card['title']];
     ?>
     
-    <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
-        <!-- Card header with gradient background -->
-        <div class="bg-gradient-to-r from-<?php echo $card['color']; ?>-50 to-<?php echo $card['color']; ?>-100/30 px-6 py-4">
-            <div class="flex items-center justify-between mb-1">
+    <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden border border-gray-100">
+        <!-- Card header - all cards have the same white background -->
+        <div class="px-6 py-4">
+            <div class="flex items-center justify-between mb-3">
                 <h3 class="text-sm font-medium text-gray-700"><?php echo $card['title']; ?></h3>
-                <div class="w-10 h-10 rounded-full bg-white/90 text-<?php echo $card['color']; ?>-600 flex items-center justify-center">
+                <div class="w-10 h-10 rounded-full bg-gray-50 <?php echo $iconColor; ?> flex items-center justify-center">
                     <i class="fas fa-<?php echo $card['icon']; ?>"></i>
                 </div>
             </div>
@@ -216,7 +223,7 @@ header("Pragma: no-cache");
         </div>
         
         <!-- Card footer with change indicator -->
-        <div class="px-6 py-3 bg-white border-t border-gray-100">
+        <div class="px-6 py-3 bg-gray-50 border-t border-gray-100">
             <div class="flex items-center <?php echo $changeColorClass; ?>">
                 <i class="fas fa-arrow-<?php echo $isPositive ? 'up' : 'down'; ?> mr-1.5 text-xs"></i>
                 <span class="font-medium text-xs"><?php echo $changeValue; ?>% </span>
