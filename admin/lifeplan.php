@@ -430,32 +430,7 @@ header("Pragma: no-cache");
       </div>
       
       <!-- Pagination -->
-      <div class="flex justify-between items-center mt-6">
-        <?php
-        // Get total count of records using MySQLi
-        $countQuery = "SELECT COUNT(*) as total FROM lifeplan_tb";
-        $countResult = $mysqli->query($countQuery);
-        
-        if ($countResult) {
-          $totalRecords = $countResult->fetch_assoc()['total'];
-          $countResult->free();
-        } else {
-          $totalRecords = 0;
-        }
-        ?>
-        <div class="text-sm text-gray-500">Showing 1 to 6 of <?php echo $totalRecords; ?> entries</div>
-        <div class="flex gap-2">
-          <button class="px-3 py-1 border border-gray-300 rounded bg-white text-gray-500 hover:bg-gray-50 transition-colors">
-            <i class="fas fa-chevron-left"></i>
-          </button>
-          <button class="px-3 py-1 border border-accent bg-accent text-white rounded hover:bg-yellow-700 transition-colors">1</button>
-          <button class="px-3 py-1 border border-gray-300 rounded bg-white text-gray-500 hover:bg-gray-50 transition-colors">2</button>
-          <button class="px-3 py-1 border border-gray-300 rounded bg-white text-gray-500 hover:bg-gray-50 transition-colors">3</button>
-          <button class="px-3 py-1 border border-gray-300 rounded bg-white text-gray-500 hover:bg-gray-50 transition-colors">
-            <i class="fas fa-chevron-right"></i>
-          </button>
-        </div>
-      </div>
+      
     </div>
     
     <!-- Footer -->
