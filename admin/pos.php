@@ -174,35 +174,26 @@ $servicesJson = json_encode($allServices);
 
     <!-- Branch Selection Section -->
 <div id="branch-selection" class="mb-8">
-  <div class="flex items-center mb-6">
-    <div class="bg-sidebar-accent w-1 h-6 mr-3 rounded"></div>
-    <h2 class="text-gray-700 text-xl font-medium">Select a Branch Location</h2>
-  </div>
-  <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
-    <div id="branches-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <!-- Branches will be dynamically added here based on database data -->
-    </div>
+  <h2 class="mb-5 text-gray-600 text-lg">Select a Branch Location</h2>
+  <div id="branches-container" class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-3xl mx-auto">
+    <!-- Branches will be dynamically added here based on database data -->
   </div>
 </div>
 
 <!-- Services Section (Initially hidden) -->
 <div id="services-section" class="mb-8 hidden">
-  <div class="flex items-center mb-6">
-    <button onclick="goBackToBranches()" class="mr-4 p-2.5 bg-white border border-sidebar-border rounded-lg shadow-sm text-sidebar-text hover:bg-sidebar-hover transition-all duration-300 flex items-center">
-      <i class="fas fa-arrow-left mr-2"></i>
-      <span>Back</span>
+  <div class="flex items-center mb-5">
+    <button onclick="goBackToBranches()" class="mr-3 p-2 bg-white border border-sidebar-border rounded-lg shadow-input text-sidebar-text hover:bg-sidebar-hover transition-all duration-300">
+      <i class="fas fa-arrow-left"></i>
     </button>
-    <div class="bg-sidebar-accent w-1 h-6 mr-3 rounded"></div>
-    <h2 class="text-gray-700 text-xl font-medium">
-      <span id="selected-category-name" class="text-sidebar-accent"></span> Services at 
-      <span id="services-branch-name" class="text-sidebar-accent"></span>
+    <h2 class="text-gray-600 text-lg">
+      <span id="selected-category-name" class="font-semibold text-sidebar-accent"></span> Services at 
+      <span id="services-branch-name" class="font-semibold text-sidebar-accent"></span>
     </h2>
   </div>
   
-  <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
-    <div id="services-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-      <!-- Services will be dynamically added here based on branch and category selection -->
-    </div>
+  <div id="services-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+    <!-- Services will be dynamically added here based on branch and category selection -->
   </div>
 </div>
 
