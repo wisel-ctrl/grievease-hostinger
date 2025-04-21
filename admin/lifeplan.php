@@ -322,25 +322,25 @@ header("Pragma: no-cache");
             
             // Prepare and execute the query using MySQLi
             $query = "SELECT 
-    lp.lifeplan_id,
-    lp.service_id,
-    lp.customerID,
-    CONCAT_WS(' ',
-        lp.benefeciary_fname,
-        NULLIF(lp.benefeciary_mname, ''),
-        lp.benefeciary_lname,
-        NULLIF(lp.benefeciary_suffix, '')
-    ) AS benefeciary_fullname,
-    lp.payment_duration,
-    lp.custom_price,
-    lp.payment_status,
-    s.service_name
-FROM 
-    lifeplan_tb lp
-JOIN 
-    services_tb s ON lp.service_id = s.service_id
-LIMIT 6
-"; // Limit to 6 records for pagination
+                          lp.lifeplan_id,
+                          lp.service_id,
+                          lp.customerID,
+                          CONCAT_WS(' ',
+                              lp.benefeciary_fname,
+                              NULLIF(lp.benefeciary_mname, ''),
+                              lp.benefeciary_lname,
+                              NULLIF(lp.benefeciary_suffix, '')
+                          ) AS benefeciary_fullname,
+                          lp.payment_duration,
+                          lp.custom_price,
+                          lp.payment_status,
+                          s.service_name
+                      FROM 
+                          lifeplan_tb lp
+                      JOIN 
+                          services_tb s ON lp.service_id = s.service_id
+                      LIMIT 6
+                      "; // Limit to 6 records for pagination
             
             $result = $mysqli->query($query);
             
@@ -358,15 +358,15 @@ LIMIT 6
                 $statusClass = '';
                 $statusIcon = '';
                 switch ($row['payment_status']) {
-                  case 'Paid':
+                  case 'paid':
                     $statusClass = 'bg-green-100 text-green-800';
                     $statusIcon = 'fa-check-circle';
                     break;
-                  case 'Pending':
+                  case 'ongoing':
                     $statusClass = 'bg-yellow-100 text-yellow-800';
                     $statusIcon = 'fa-clock';
                     break;
-                  case 'Overdue':
+                  case 'overdue':
                     $statusClass = 'bg-red-100 text-red-800';
                     $statusIcon = 'fa-exclamation-circle';
                     break;
