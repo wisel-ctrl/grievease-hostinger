@@ -121,7 +121,7 @@ if ($lastMonth > 0) {
   </div>
 
   <!-- Expense Overview Cards -->
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
     <?php
     // Database connection (assuming you already have this)
     require_once '../db_connect.php';
@@ -166,6 +166,12 @@ if ($lastMonth > 0) {
     $warningLevel = ($percentageUsed >= 90) ? 'text-red-600' : 
                   (($percentageUsed >= 75) ? 'text-yellow-600' : 'text-green-600');
     $daysLeftClass = ($daysLeft > 5) ? 'text-green-600' : 'text-red-600';
+    
+    // Calculate daily rate and projected spend
+    $daysPassed = date('j'); // Current day of month
+    $dailyRate = ($daysPassed > 0) ? $currentSpend / $daysPassed : 0;
+    $projectedSpend = $dailyRate * date('t');
+    $projectionClass = ($projectedSpend > $monthlyBudget) ? 'text-red-600' : 'text-green-600';
     
     // Calculate overdue payments
     $overdueQuery = "SELECT COUNT(*) as count, SUM(price) as total 
@@ -264,32 +270,27 @@ if ($lastMonth > 0) {
             'suffix' => '',
             'warning_class' => $warningLevel,
             'extra_content' => '
-                <div class="w-full bg-gray-200 rounded-full h-3 mb-2">
-                    <div class="bg-yellow-500 h-3 rounded-full" style="width: ' . $percentageUsed . '%"></div>
+                <div class="w-full bg-gray-200 rounded-full h-2 mb-1.5">
+                    <div class="bg-yellow-500 h-2 rounded-full" style="width: ' . $percentageUsed . '%"></div>
                 </div>
-                <div class="flex justify-between items-center">
-                    <div class="text-sm ' . $daysLeftClass . ' flex items-center">
-                        <i class="fas fa-clock mr-1"></i> ' . $daysLeft . ' days remaining
+                <div class="flex justify-between items-center text-xs mb-1">
+                    <div class="' . $daysLeftClass . ' flex items-center">
+                        <i class="fas fa-clock mr-1"></i> ' . $daysLeft . ' days left
                     </div>
-                    <div class="text-sm ' . $warningLevel . '">
+                    <div class="' . $warningLevel . '">
                         ' . round($percentageUsed) . '% used
                     </div>
                 </div>
-                ' . ($percentageUsed >= 100 ? '
-                <div class="mt-2 text-xs bg-red-100 text-red-800 p-1 rounded text-center">
-                    <i class="fas fa-exclamation-circle mr-1"></i> Budget exceeded!
+                ' . ($percentageUsed >= 90 ? '
+                <div class="text-xs bg-' . ($percentageUsed >= 100 ? 'red' : 'yellow') . '-100 text-' . ($percentageUsed >= 100 ? 'red' : 'yellow') . '-800 py-0.5 px-1 rounded text-center">
+                    <i class="fas fa-' . ($percentageUsed >= 100 ? 'exclamation-circle' : 'exclamation-triangle') . ' mr-1"></i> ' .
+                    ($percentageUsed >= 100 ? 'Budget exceeded!' : 'Approaching limit') . '
                 </div>
-                ' : ($percentageUsed >= 90 ? '
-                <div class="mt-2 text-xs bg-yellow-100 text-yellow-800 p-1 rounded text-center">
-                    <i class="fas fa-exclamation-triangle mr-1"></i> Approaching budget limit
-                </div>
-                ' : '')) . '
-                ' . (isset($dailyRate) ? '
-                <div class="mt-2 text-xs text-gray-500 border-t pt-2">
-                    Daily rate: ₱' . number_format($dailyRate, 2) . ' | 
-                    Projected: <span class="' . $projectionClass . '">₱' . number_format($projectedSpend, 2) . '</span>
-                </div>
-                ' : '')
+                ' : '') . '
+                <div class="text-xs text-gray-500 mt-1 flex justify-between items-center">
+                    <span>Daily: ₱' . number_format($dailyRate, 0) . '</span>
+                    <span>Projected: <span class="' . $projectionClass . '">₱' . number_format($projectedSpend, 0) . '</span></span>
+                </div>'
         ],
         [
             'title' => 'Overdue Payments',
@@ -300,26 +301,23 @@ if ($lastMonth > 0) {
             'prefix' => '',
             'suffix' => '',
             'extra_content' => '
-                <div class="grid grid-cols-4 gap-2 mb-3 text-xs">
+                <div class="grid grid-cols-4 gap-1 text-xs">
                     <div class="text-center">
                         <div class="text-red-600 font-medium">' . ($urgencyData['critical'] ?? 0) . '</div>
-                        <div class="text-gray-500">30+ days</div>
+                        <div class="text-gray-500 text-xs">30d+</div>
                     </div>
                     <div class="text-center">
                         <div class="text-orange-500 font-medium">' . ($urgencyData['high'] ?? 0) . '</div>
-                        <div class="text-gray-500">15-30 days</div>
+                        <div class="text-gray-500 text-xs">15-30d</div>
                     </div>
                     <div class="text-center">
                         <div class="text-yellow-500 font-medium">' . ($urgencyData['medium'] ?? 0) . '</div>
-                        <div class="text-gray-500">7-14 days</div>
+                        <div class="text-gray-500 text-xs">7-14d</div>
                     </div>
                     <div class="text-center">
                         <div class="text-blue-500 font-medium">' . ($urgencyData['low'] ?? 0) . '</div>
-                        <div class="text-gray-500">1-6 days</div>
+                        <div class="text-gray-500 text-xs">1-6d</div>
                     </div>
-                </div>
-                <div class="text-sm ' . $trendClass . ' flex items-center">
-                    <i class="fas ' . $trendIcon . ' mr-1"></i> ' . $trendText . '
                 </div>'
         ],
         [
@@ -341,22 +339,22 @@ if ($lastMonth > 0) {
     foreach ($cards as $card) {
     ?>
     
-    <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
-        <!-- Card header with brighter gradient background -->
-        <div class="bg-gradient-to-r from-<?php echo $card['color']; ?>-100 to-<?php echo $card['color']; ?>-200 px-6 py-4">
+    <div class="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
+        <!-- Card header with gradient background -->
+        <div class="bg-gradient-to-r from-<?php echo $card['color']; ?>-100 to-<?php echo $card['color']; ?>-200 p-3">
             <div class="flex items-center justify-between mb-1">
-                <div>
+                <div class="flex-grow">
                     <h3 class="text-sm font-medium text-gray-700"><?php echo $card['title']; ?></h3>
                     <?php if (isset($card['sub_text']) && !empty($card['sub_text'])): ?>
                     <div class="text-xs text-gray-500"><?php echo $card['sub_text']; ?></div>
                     <?php endif; ?>
                 </div>
-                <div class="w-10 h-10 rounded-full bg-white/90 text-<?php echo $card['color']; ?>-600 flex items-center justify-center">
-                    <i class="fas fa-<?php echo $card['icon']; ?>"></i>
+                <div class="w-8 h-8 rounded-full bg-white/90 text-<?php echo $card['color']; ?>-600 flex items-center justify-center ml-2 flex-shrink-0">
+                    <i class="fas fa-<?php echo $card['icon']; ?> text-sm"></i>
                 </div>
             </div>
             <div class="flex items-end">
-                <span class="text-2xl md:text-3xl font-bold <?php echo isset($card['warning_class']) ? $card['warning_class'] : 'text-gray-800'; ?>">
+                <span class="text-xl md:text-2xl font-bold <?php echo isset($card['warning_class']) ? $card['warning_class'] : 'text-gray-800'; ?>">
                     <?php echo $card['prefix'] . $card['value'] . $card['suffix']; ?>
                 </span>
             </div>
@@ -364,17 +362,17 @@ if ($lastMonth > 0) {
         
         <!-- Extra content if any -->
         <?php if (!empty($card['extra_content'])): ?>
-        <div class="px-6 py-3 bg-white">
+        <div class="px-3 py-2 bg-white border-t border-gray-50">
             <?php echo $card['extra_content']; ?>
         </div>
         <?php endif; ?>
         
         <!-- Card footer with change indicator -->
         <?php if (isset($card['change']) && !empty($card['change'])): ?>
-        <div class="px-6 py-3 bg-white border-t border-gray-100">
+        <div class="px-3 py-2 bg-white border-t border-gray-50 text-xs">
             <div class="flex items-center <?php echo $card['change_class']; ?>">
-                <i class="fas <?php echo $card['change_icon']; ?> mr-1.5 text-xs"></i>
-                <span class="text-xs"><?php echo $card['change']; ?></span>
+                <i class="fas <?php echo $card['change_icon']; ?> mr-1"></i>
+                <span><?php echo $card['change']; ?></span>
             </div>
         </div>
         <?php endif; ?>
