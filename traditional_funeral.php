@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GrievEase - Traditional Funeral Service</title>
+    <title>GrievEase - Traditional Funeral</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -123,7 +123,7 @@
             <div class="h-64 bg-cover bg-center" style="background-image: url('Landing_Page/Landing_images/sampleImageLANG.jpg')">
                 <div class="absolute inset-0 bg-black/50"></div>
                 <div class="absolute inset-0 flex flex-col justify-center items-center text-white p-8">
-                    <h1 class="text-5xl md:text-6xl font-hedvig text-center mb-6">Traditional Funeral Services</h1>
+                    <h1 class="text-5xl md:text-6xl font-hedvig text-center mb-6">Traditional Funeral</h1>
                     <p class="text-xl max-w-2xl text-center">Honoring your loved one with dignity, respect, and time-honored traditions</p>
                 </div>
             </div>
