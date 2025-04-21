@@ -119,7 +119,6 @@ header("Pragma: no-cache");
     $lowStock = $lowStockResult->fetch_assoc()['low_stock'];
     
     // Calculate turnover rate (simplified - could be based on historical data)
-    // This is a placeholder - you might want to calculate this differently
     $turnoverQuery = "SELECT 
                         (SUM(CASE WHEN quantity < 10 THEN 1 ELSE 0 END) / COUNT(*)) * 100 as turnover_rate 
                       FROM inventory_tb 
@@ -148,13 +147,18 @@ header("Pragma: no-cache");
     $lowStockChange = $lastMonthData['last_month_low_stock'] > 0 ? 
                      (($lowStock - $lastMonthData['last_month_low_stock']) / $lastMonthData['last_month_low_stock']) * 100 : 0;
     
-    // Card data array
+    // Enhanced card data array with stronger colors
     $cards = [
         [
             'title' => 'Total Items',
             'value' => $totalItems,
             'change' => $itemsChange,
             'icon' => 'boxes',
+            'color' => 'blue',
+            'bg_color' => 'bg-blue-600',
+            'text_color' => 'text-white',
+            'icon_bg' => 'bg-blue-100',
+            'icon_color' => 'text-blue-700',
             'prefix' => ''
         ],
         [
@@ -162,6 +166,11 @@ header("Pragma: no-cache");
             'value' => number_format($totalValue, 2),
             'change' => $valueChange,
             'icon' => 'peso-sign',
+            'color' => 'green',
+            'bg_color' => 'bg-emerald-600',
+            'text_color' => 'text-white',
+            'icon_bg' => 'bg-emerald-100',
+            'icon_color' => 'text-emerald-700',
             'prefix' => '₱'
         ],
         [
@@ -169,6 +178,11 @@ header("Pragma: no-cache");
             'value' => $lowStock,
             'change' => $lowStockChange,
             'icon' => 'exclamation-triangle',
+            'color' => 'orange',
+            'bg_color' => 'bg-amber-500',
+            'text_color' => 'text-white',
+            'icon_bg' => 'bg-amber-100',
+            'icon_color' => 'text-amber-700',
             'prefix' => '',
             'inverse_change' => true // For low stock, increasing is bad
         ],
@@ -177,17 +191,14 @@ header("Pragma: no-cache");
             'value' => $turnoverRate,
             'change' => 3, // Hardcoded in original
             'icon' => 'sync-alt',
+            'color' => 'purple',
+            'bg_color' => 'bg-purple-600',
+            'text_color' => 'text-white',
+            'icon_bg' => 'bg-purple-100',
+            'icon_color' => 'text-purple-700',
             'prefix' => '',
             'suffix' => '%'
         ]
-    ];
-    
-    // Icon colors - using a consistent accent color scheme for all cards
-    $iconColors = [
-        'Total Items' => 'text-blue-600',
-        'Total Value' => 'text-green-600',
-        'Low Stock Items' => 'text-orange-600',
-        'Turnover Rate' => 'text-purple-600'
     ];
     
     foreach ($cards as $card) {
@@ -203,27 +214,24 @@ header("Pragma: no-cache");
         
         // Set suffix if present
         $suffix = isset($card['suffix']) ? $card['suffix'] : '';
-        
-        // Get the appropriate icon color
-        $iconColor = $iconColors[$card['title']];
     ?>
     
-    <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden border border-gray-100">
-        <!-- Card header - all cards have the same white background -->
-        <div class="px-6 py-4">
-            <div class="flex items-center justify-between mb-3">
-                <h3 class="text-sm font-medium text-gray-700"><?php echo $card['title']; ?></h3>
-                <div class="w-10 h-10 rounded-full bg-gray-50 <?php echo $iconColor; ?> flex items-center justify-center">
+    <div class="bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden">
+        <!-- Card header with solid color background instead of gradient -->
+        <div class="<?php echo $card['bg_color']; ?> px-6 py-5">
+            <div class="flex items-center justify-between mb-2">
+                <h3 class="text-sm font-medium <?php echo $card['text_color']; ?>"><?php echo $card['title']; ?></h3>
+                <div class="w-10 h-10 rounded-full <?php echo $card['icon_bg']; ?> <?php echo $card['icon_color']; ?> flex items-center justify-center shadow-md">
                     <i class="fas fa-<?php echo $card['icon']; ?>"></i>
                 </div>
             </div>
             <div class="flex items-end">
-                <span class="text-2xl md:text-3xl font-bold text-gray-800"><?php echo $card['prefix'] . $card['value'] . $suffix; ?></span>
+                <span class="text-2xl md:text-3xl font-bold <?php echo $card['text_color']; ?>"><?php echo $card['prefix'] . $card['value'] . $suffix; ?></span>
             </div>
         </div>
         
         <!-- Card footer with change indicator -->
-        <div class="px-6 py-3 bg-gray-50 border-t border-gray-100">
+        <div class="px-6 py-3 bg-white border-t border-gray-100">
             <div class="flex items-center <?php echo $changeColorClass; ?>">
                 <i class="fas fa-arrow-<?php echo $isPositive ? 'up' : 'down'; ?> mr-1.5 text-xs"></i>
                 <span class="font-medium text-xs"><?php echo $changeValue; ?>% </span>
