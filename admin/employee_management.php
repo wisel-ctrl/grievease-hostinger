@@ -342,61 +342,56 @@ $totalEmployees = $employeeCountResult->fetch_assoc()['total'] ?? 0; // Default 
 <!-- View Employee Salary Details Modal -->
 <div id="viewEmployeeModal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
   <!-- Modal Backdrop -->
-  <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm transition-opacity duration-300"></div>
+  <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
   
   <!-- Modal Content -->
-  <div class="relative bg-white rounded-xl shadow-xl w-full max-w-4xl mx-4 z-10 transform transition-all duration-300 max-h-[90vh] overflow-hidden flex flex-col">
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-lg mx-4 z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+    <!-- Close Button -->
+    <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeViewEmployeeModal()">
+      <i class="fas fa-times"></i>
+    </button>
+    
     <!-- Modal Header -->
-    <div class="px-8 py-6 border-b bg-gradient-to-r from-sidebar-accent to-darkgold">
-      <div class="flex justify-between items-center">
-        <h3 class="text-xl font-bold text-white flex items-center">
-          <i class="fas fa-money-bill-wave mr-3"></i>
-          Employee Salary Details
-        </h3>
-        <!-- Close Button -->
-        <button type="button" class="text-white hover:text-white/80 transition-colors focus:outline-none focus:ring-2 focus:ring-white/30 rounded-full p-1" onclick="closeViewEmployeeModal()">
-          <i class="fas fa-times text-lg"></i>
-        </button>
-      </div>
+    <div class="px-6 py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
+      <h3 class="text-xl font-bold text-white flex items-center">
+        <i class="fas fa-money-bill-wave mr-2"></i>
+        Employee Salary Details
+      </h3>
     </div>
     
     <!-- Modal Body -->
-    <div class="flex-1 overflow-y-auto px-8 py-6">
-      <!-- Employee Info Card -->
-      <div class="bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl border border-gray-200 shadow-sm p-6 mb-6">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div class="px-6 py-5">
+      <!-- Employee Information -->
+      <div class="mb-6">
+        <div class="space-y-4">
           <div>
-            <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Employee ID</p>
-            <p id="employeeId" class="text-base font-semibold text-gray-800">-</p>
+            <p class="text-xs font-medium text-gray-500">Employee ID</p>
+            <p id="employeeId" class="text-sm font-medium text-gray-800">-</p>
           </div>
           <div>
-            <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Employee Name</p>
-            <p id="employeeName" class="text-base font-semibold text-gray-800">-</p>
+            <p class="text-xs font-medium text-gray-500">Employee Name</p>
+            <p id="employeeName" class="text-sm font-medium text-gray-800">-</p>
           </div>
           <div>
-            <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Base Salary</p>
-            <p id="employeeBaseSalary" class="text-base font-semibold text-gray-800">-</p>
+            <p class="text-xs font-medium text-gray-500">Base Salary</p>
+            <p id="employeeBaseSalary" class="text-sm font-medium text-gray-800">-</p>
           </div>
         </div>
-      </div>
-      
-      <!-- Date Range Picker -->
-      <div class="bg-white rounded-xl border border-gray-200 shadow-sm mb-8">
-        <div class="border-b border-gray-200 px-6 py-4">
-          <h4 class="text-sm font-semibold text-gray-700">Select Date Range</h4>
-        </div>
-        <div class="p-6">
-          <div class="grid grid-cols-1 md:grid-cols-7 gap-4 items-end">
-            <div class="md:col-span-3">
-              <label for="startDate" class="block text-xs font-medium text-gray-700 mb-2">From Date</label>
-              <input type="date" id="startDate" class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+        
+        <!-- Date Range Picker -->
+        <div class="bg-gray-50 p-4 rounded-lg border border-gray-200 mt-6">
+          <h4 class="text-sm font-medium text-gray-700 mb-3">Select Date Range</h4>
+          <div class="space-y-4">
+            <div>
+              <label for="startDate" class="block text-xs font-medium text-gray-700 mb-1">From Date</label>
+              <input type="date" id="startDate" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
             </div>
-            <div class="md:col-span-3">
-              <label for="endDate" class="block text-xs font-medium text-gray-700 mb-2">To Date</label>
-              <input type="date" id="endDate" class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+            <div>
+              <label for="endDate" class="block text-xs font-medium text-gray-700 mb-1">To Date</label>
+              <input type="date" id="endDate" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
             </div>
-            <div class="md:col-span-1">
-              <button onclick="fetchEmployeeSalary()" class="w-full px-4 py-3 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center">
+            <div>
+              <button onclick="fetchEmployeeSalary()" class="w-full px-4 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center">
                 <i class="fas fa-search mr-2"></i> Search
               </button>
             </div>
@@ -405,30 +400,21 @@ $totalEmployees = $employeeCountResult->fetch_assoc()['total'] ?? 0; // Default 
       </div>
       
       <!-- Salary Summary -->
-      <div class="mb-8">
-        <h4 class="text-base font-semibold text-gray-800 mb-4">Salary Summary</h4>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <!-- Total Services Card -->
-          <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6 hover:shadow-md transition-shadow duration-300">
-            <div class="flex flex-col">
-              <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">Total Services</p>
-              <p id="totalServices" class="text-3xl font-bold text-gray-800">0</p>
+      <div class="mb-6">
+        <h4 class="text-sm font-medium text-gray-700 mb-2">Salary Summary</h4>
+        <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+          <div class="space-y-4">
+            <div>
+              <p class="text-xs font-medium text-gray-500">Total Services</p>
+              <p id="totalServices" class="text-lg font-bold text-gray-800">0</p>
             </div>
-          </div>
-          
-          <!-- Total Earnings Card -->
-          <div class="bg-white rounded-xl border border-green-200 shadow-sm p-6 hover:shadow-md transition-shadow duration-300">
-            <div class="flex flex-col">
-              <p class="text-xs font-medium text-green-600 uppercase tracking-wider mb-2">Total Earnings</p>
-              <p id="totalEarnings" class="text-3xl font-bold text-green-600">₱0.00</p>
+            <div>
+              <p class="text-xs font-medium text-gray-500">Total Earnings</p>
+              <p id="totalEarnings" class="text-lg font-bold text-green-600">₱0.00</p>
             </div>
-          </div>
-          
-          <!-- Base Salary Card -->
-          <div class="bg-white rounded-xl border border-blue-200 shadow-sm p-6 hover:shadow-md transition-shadow duration-300">
-            <div class="flex flex-col">
-              <p class="text-xs font-medium text-blue-600 uppercase tracking-wider mb-2">Base Salary</p>
-              <p id="modalBaseSalary" class="text-3xl font-bold text-blue-600">₱0.00</p>
+            <div>
+              <p class="text-xs font-medium text-gray-500">Base Salary</p>
+              <p id="modalBaseSalary" class="text-lg font-bold text-blue-600">₱0.00</p>
             </div>
           </div>
         </div>
@@ -436,32 +422,30 @@ $totalEmployees = $employeeCountResult->fetch_assoc()['total'] ?? 0; // Default 
       
       <!-- Service Details Table -->
       <div>
-        <h4 class="text-base font-semibold text-gray-800 mb-4">Service Details</h4>
-        <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-          <div class="overflow-x-auto">
-            <table class="w-full border-collapse">
-              <thead>
-                <tr>
-                  <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider bg-gray-50 border-b border-gray-200">Date</th>
-                  <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider bg-gray-50 border-b border-gray-200">Service</th>
-                  <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider bg-gray-50 border-b border-gray-200">Service Income</th>
-                </tr>
-              </thead>
-              <tbody id="serviceDetailsBody" class="divide-y divide-gray-200">
-                <!-- Service details will be populated here -->
-                <tr>
-                  <td colspan="4" class="text-center py-8 text-gray-500 italic">Select a date range to view service details</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+        <h4 class="text-sm font-medium text-gray-700 mb-2">Service Details</h4>
+        <div class="overflow-x-auto">
+          <table class="w-full border-collapse">
+            <thead>
+              <tr class="bg-gray-100">
+                <th class="p-3 text-left text-xs font-medium text-gray-700">Date</th>
+                <th class="p-3 text-left text-xs font-medium text-gray-700">Service</th>
+                <th class="p-3 text-left text-xs font-medium text-gray-700">Income</th>
+              </tr>
+            </thead>
+            <tbody id="serviceDetailsBody">
+              <!-- Service details will be populated here -->
+              <tr>
+                <td colspan="3" class="text-center p-4 text-gray-500">Select a date range to view service details</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
     
     <!-- Modal Footer -->
-    <div class="px-8 py-4 flex justify-end border-t border-gray-200 bg-gray-50">
-      <button type="button" onclick="closeViewEmployeeModal()" class="px-6 py-3 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center">
+    <div class="px-6 py-4 flex justify-end border-t border-gray-200 sticky bottom-0 bg-white">
+      <button type="button" onclick="closeViewEmployeeModal()" class="w-full px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center">
         <i class="fas fa-times mr-2"></i>
         Close
       </button>
