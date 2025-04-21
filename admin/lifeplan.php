@@ -349,7 +349,7 @@ header("Pragma: no-cache");
           <tbody class="divide-y divide-gray-200">
             <?php
             // Include database connection
-            require_once '../includes/dbh.inc.php';
+            require_once '../db_connect.php';
             
             // Prepare and execute the query using MySQLi
             $query = "SELECT 
