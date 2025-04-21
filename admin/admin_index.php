@@ -101,100 +101,100 @@ require_once '../db_connect.php'; // Database connection
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
   <!-- Services This Month Card -->
   <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden border border-gray-200">
-    <!-- Card header with subdued gradient background -->
-    <div class="bg-gradient-to-r from-slate-100 to-slate-300 px-6 py-4">
+    <!-- Card header with golden gradient background -->
+    <div class="bg-gradient-to-r from-amber-50 to-amber-200 px-6 py-4">
       <div class="flex items-center justify-between mb-1">
-        <h3 class="text-sm font-medium text-gray-700">Services This Month</h3>
-        <div class="w-10 h-10 rounded-full bg-white/90 text-slate-600 flex items-center justify-center shadow-sm">
+        <h3 class="text-sm font-medium text-amber-800">Services This Month</h3>
+        <div class="w-10 h-10 rounded-full bg-white/90 text-amber-600 flex items-center justify-center shadow-sm">
           <i class="fas fa-calendar-alt"></i>
         </div>
       </div>
       <div class="flex items-end">
-        <span class="text-2xl md:text-3xl font-bold text-gray-800">42</span>
+        <span class="text-2xl md:text-3xl font-bold text-amber-900">42</span>
       </div>
     </div>
     
     <!-- Card footer with change indicator -->
     <div class="px-6 py-3 bg-white border-t border-gray-100">
-      <div class="flex items-center text-slate-600">
+      <div class="flex items-center text-amber-700">
         <i class="fas fa-arrow-up mr-1.5 text-xs"></i>
         <span class="font-medium text-xs">8% </span>
-        <span class="text-xs text-gray-500 ml-1">from last month</span>
+        <span class="text-xs text-amber-600 ml-1">from last month</span>
       </div>
     </div>
   </div>
   
   <!-- Revenue Card -->
   <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden border border-gray-200">
-    <!-- Card header with subdued gradient background -->
-    <div class="bg-gradient-to-r from-gray-100 to-gray-300 px-6 py-4">
+    <!-- Card header with golden gradient background -->
+    <div class="bg-gradient-to-r from-yellow-50 to-yellow-200 px-6 py-4">
       <div class="flex items-center justify-between mb-1">
-        <h3 class="text-sm font-medium text-gray-700">Revenue</h3>
-        <div class="w-10 h-10 rounded-full bg-white/90 text-gray-600 flex items-center justify-center shadow-sm">
+        <h3 class="text-sm font-medium text-yellow-800">Revenue</h3>
+        <div class="w-10 h-10 rounded-full bg-white/90 text-yellow-600 flex items-center justify-center shadow-sm">
           <i class="fas fa-peso-sign"></i>
         </div>
       </div>
       <div class="flex items-end">
-        <span class="text-2xl md:text-3xl font-bold text-gray-800">$87,320</span>
+        <span class="text-2xl md:text-3xl font-bold text-yellow-900">$87,320</span>
       </div>
     </div>
     
     <!-- Card footer with change indicator -->
     <div class="px-6 py-3 bg-white border-t border-gray-100">
-      <div class="flex items-center text-slate-600">
+      <div class="flex items-center text-yellow-700">
         <i class="fas fa-arrow-up mr-1.5 text-xs"></i>
         <span class="font-medium text-xs">12% </span>
-        <span class="text-xs text-gray-500 ml-1">from last month</span>
+        <span class="text-xs text-yellow-600 ml-1">from last month</span>
       </div>
     </div>
   </div>
   
   <!-- Pending Services Card -->
   <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden border border-gray-200">
-    <!-- Card header with subdued gradient background -->
-    <div class="bg-gradient-to-r from-stone-100 to-stone-300 px-6 py-4">
+    <!-- Card header with golden gradient background -->
+    <div class="bg-gradient-to-r from-orange-50 to-orange-200 px-6 py-4">
       <div class="flex items-center justify-between mb-1">
-        <h3 class="text-sm font-medium text-gray-700">Pending Services</h3>
-        <div class="w-10 h-10 rounded-full bg-white/90 text-stone-600 flex items-center justify-center shadow-sm">
+        <h3 class="text-sm font-medium text-orange-800">Pending Services</h3>
+        <div class="w-10 h-10 rounded-full bg-white/90 text-orange-600 flex items-center justify-center shadow-sm">
           <i class="fas fa-tasks"></i>
         </div>
       </div>
       <div class="flex items-end">
-        <span class="text-2xl md:text-3xl font-bold text-gray-800">14</span>
+        <span class="text-2xl md:text-3xl font-bold text-orange-900">14</span>
       </div>
     </div>
     
     <!-- Card footer with change indicator -->
     <div class="px-6 py-3 bg-white border-t border-gray-100">
-      <div class="flex items-center text-slate-600">
+      <div class="flex items-center text-orange-700">
         <i class="fas fa-arrow-down mr-1.5 text-xs"></i>
         <span class="font-medium text-xs">3% </span>
-        <span class="text-xs text-gray-500 ml-1">from last month</span>
+        <span class="text-xs text-orange-600 ml-1">from last month</span>
       </div>
     </div>
   </div>
   
   <!-- Completed Services Card -->
   <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden border border-gray-200">
-    <!-- Card header with subdued gradient background -->
-    <div class="bg-gradient-to-r from-zinc-100 to-zinc-300 px-6 py-4">
+    <!-- Card header with golden gradient background -->
+    <div class="bg-gradient-to-r from-amber-100 to-yellow-300 px-6 py-4">
       <div class="flex items-center justify-between mb-1">
-        <h3 class="text-sm font-medium text-gray-700">Completed Services</h3>
-        <div class="w-10 h-10 rounded-full bg-white/90 text-zinc-600 flex items-center justify-center shadow-sm">
+        <h3 class="text-sm font-medium text-amber-800">Completed Services</h3>
+        <div class="w-10 h-10 rounded-full bg-white/90 text-amber-600 flex items-center justify-center shadow-sm">
           <i class="fas fa-clipboard-check"></i>
         </div>
       </div>
       <div class="flex items-end">
-        <span class="text-2xl md:text-3xl font-bold text-gray-800">28</span>
+        <span class="text-2xl md:text-3xl font-bold text-amber-900">28</span>
       </div>
     </div>
     
     <!-- Card footer with change indicator -->
     <div class="px-6 py-3 bg-white border-t border-gray-100">
-      <div class="flex items-center text-slate-600">
+      <div class="flex items-center text-amber-700">
         <i class="fas fa-arrow-up mr-1.5 text-xs"></i>
         <span class="font-medium text-xs">15% </span>
-        <span class="text-xs text-gray-500 ml-1">from last month</span>
+        <span class="text-xs text-amber-600 ml-1">from last month</span>
       </div>
     </div>
   </div>
