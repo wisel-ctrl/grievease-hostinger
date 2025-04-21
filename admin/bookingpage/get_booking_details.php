@@ -12,7 +12,7 @@ $booking_id = (int)$_GET['id'];
 
 $query = "SELECT b.*, CONCAT(u.first_name, ' ', COALESCE(u.middle_name, ''), ' ', u.last_name, ' ', 
             COALESCE(u.suffix, '')) AS customer_name, 
-            s.service_name, u.email FROM booking_tb b 
+            s.service_name,u.phone_number, u.email FROM booking_tb b 
             JOIN users u ON b.customerID = u.id 
             JOIN services_tb s ON b.service_id = s.service_id 
             WHERE b.booking_id = ?";

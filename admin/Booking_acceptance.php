@@ -790,7 +790,7 @@ function confirmAccept() {
     currentBookingIdForPayment = bookingId;
     
     // Fetch booking details again to get all the required fields
-    fetch('bookingpage/get_booking_details.php?id=' + bookingId)
+    fetch('bookingpage/getting_details_for_accept.php?id=' + bookingId)
         .then(response => response.json())
         .then(data => {
             // Set all the hidden fields
