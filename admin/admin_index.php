@@ -102,7 +102,7 @@ require_once '../db_connect.php'; // Database connection
   <!-- Services This Month Card -->
   <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
     <!-- Card header with brighter gradient background -->
-    <div class="bg-gradient-to-r from-slate-100 to-slate-200 px-6 py-4">
+    <div class="bg-gradient-to-r from-blue-100 to-blue-200 px-6 py-4">
       <div class="flex items-center justify-between mb-1">
         <h3 class="text-sm font-medium text-gray-700">Services This Month</h3>
         <div class="w-10 h-10 rounded-full bg-white/90 text-slate-600 flex items-center justify-center">
