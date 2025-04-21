@@ -197,58 +197,153 @@ require_once '../db_connect.php'; // Database connection
 </div>
 
   <!-- Branch Comparison -->
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-    <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300">
-      <div class="flex justify-between items-center p-5 border-b border-sidebar-border">
-        <h3 class="font-medium text-sidebar-text">Pila Branch</h3>
-      </div>
-      <div class="p-5">
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div>
-            <div class="text-xl font-bold text-sidebar-text">₱67,350</div>
-            <div class="text-sm text-gray-500">Revenue</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+  <!-- Pila Branch Card -->
+  <div class="bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden">
+    <!-- Card header with gradient background -->
+    <div class="bg-gradient-to-r from-indigo-100 to-blue-200 p-5 border-b border-gray-100">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 rounded-full bg-white/90 text-blue-600 flex items-center justify-center shadow-sm">
+            <i class="fas fa-building"></i>
           </div>
-          <div>
-            <div class="text-xl font-bold text-sidebar-text">₱21,550</div>
-            <div class="text-sm text-gray-500">Profit</div>
-          </div>
-          <div>
-            <div class="text-xl font-bold text-sidebar-text">32.0%</div>
-            <div class="text-sm text-gray-500">Margin</div>
-          </div>
-          <div>
-            <div class="text-xl font-bold text-sidebar-text">286</div>
-            <div class="text-sm text-gray-500">Customers</div>
-          </div>
+          <h3 class="text-lg font-semibold text-gray-800">Pila Branch</h3>
         </div>
+        <span class="px-3 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">Main Branch</span>
       </div>
     </div>
-    <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300">
-      <div class="flex justify-between items-center p-5 border-b border-sidebar-border">
-        <h3 class="font-medium text-sidebar-text">Paete Branch</h3>
-      </div>
-      <div class="p-5">
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div>
-            <div class="text-xl font-bold text-sidebar-text">₱59,100</div>
-            <div class="text-sm text-gray-500">Revenue</div>
+    
+    <!-- Card content -->
+    <div class="p-6">
+      <div class="grid grid-cols-2 gap-6">
+        <!-- Revenue -->
+        <div class="bg-gray-50 rounded-lg p-4 border border-gray-100">
+          <div class="flex items-center mb-1 text-gray-500 text-sm">
+            <i class="fas fa-chart-line mr-2"></i>
+            <span>Revenue</span>
           </div>
-          <div>
-            <div class="text-xl font-bold text-sidebar-text">₱16,690</div>
-            <div class="text-sm text-gray-500">Profit</div>
+          <div class="text-xl font-bold text-gray-800">₱67,350</div>
+          <div class="mt-2 text-xs flex items-center text-emerald-600">
+            <i class="fas fa-arrow-up mr-1"></i>
+            <span>5.2% vs last month</span>
           </div>
-          <div>
-            <div class="text-xl font-bold text-sidebar-text">28.2%</div>
-            <div class="text-sm text-gray-500">Margin</div>
+        </div>
+        
+        <!-- Profit -->
+        <div class="bg-gray-50 rounded-lg p-4 border border-gray-100">
+          <div class="flex items-center mb-1 text-gray-500 text-sm">
+            <i class="fas fa-wallet mr-2"></i>
+            <span>Profit</span>
           </div>
-          <div>
-            <div class="text-xl font-bold text-sidebar-text">245</div>
-            <div class="text-sm text-gray-500">Customers</div>
+          <div class="text-xl font-bold text-gray-800">₱21,550</div>
+          <div class="mt-2 text-xs flex items-center text-emerald-600">
+            <i class="fas fa-arrow-up mr-1"></i>
+            <span>3.8% vs last month</span>
+          </div>
+        </div>
+        
+        <!-- Margin -->
+        <div class="bg-gray-50 rounded-lg p-4 border border-gray-100">
+          <div class="flex items-center mb-1 text-gray-500 text-sm">
+            <i class="fas fa-percentage mr-2"></i>
+            <span>Margin</span>
+          </div>
+          <div class="text-xl font-bold text-gray-800">32.0%</div>
+          <div class="mt-2 text-xs flex items-center text-emerald-600">
+            <i class="fas fa-arrow-up mr-1"></i>
+            <span>1.2% vs last month</span>
+          </div>
+        </div>
+        
+        <!-- Customers -->
+        <div class="bg-gray-50 rounded-lg p-4 border border-gray-100">
+          <div class="flex items-center mb-1 text-gray-500 text-sm">
+            <i class="fas fa-users mr-2"></i>
+            <span>Customers</span>
+          </div>
+          <div class="text-xl font-bold text-gray-800">286</div>
+          <div class="mt-2 text-xs flex items-center text-emerald-600">
+            <i class="fas fa-arrow-up mr-1"></i>
+            <span>4.0% vs last month</span>
           </div>
         </div>
       </div>
     </div>
   </div>
+  
+  <!-- Paete Branch Card -->
+  <div class="bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden">
+    <!-- Card header with gradient background -->
+    <div class="bg-gradient-to-r from-purple-100 to-violet-200 p-5 border-b border-gray-100">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 rounded-full bg-white/90 text-purple-600 flex items-center justify-center shadow-sm">
+            <i class="fas fa-store"></i>
+          </div>
+          <h3 class="text-lg font-semibold text-gray-800">Paete Branch</h3>
+        </div>
+        <span class="px-3 py-1 text-xs font-medium bg-purple-100 text-purple-800 rounded-full">Secondary Branch</span>
+      </div>
+    </div>
+    
+    <!-- Card content -->
+    <div class="p-6">
+      <div class="grid grid-cols-2 gap-6">
+        <!-- Revenue -->
+        <div class="bg-gray-50 rounded-lg p-4 border border-gray-100">
+          <div class="flex items-center mb-1 text-gray-500 text-sm">
+            <i class="fas fa-chart-line mr-2"></i>
+            <span>Revenue</span>
+          </div>
+          <div class="text-xl font-bold text-gray-800">₱59,100</div>
+          <div class="mt-2 text-xs flex items-center text-emerald-600">
+            <i class="fas fa-arrow-up mr-1"></i>
+            <span>3.5% vs last month</span>
+          </div>
+        </div>
+        
+        <!-- Profit -->
+        <div class="bg-gray-50 rounded-lg p-4 border border-gray-100">
+          <div class="flex items-center mb-1 text-gray-500 text-sm">
+            <i class="fas fa-wallet mr-2"></i>
+            <span>Profit</span>
+          </div>
+          <div class="text-xl font-bold text-gray-800">₱16,690</div>
+          <div class="mt-2 text-xs flex items-center text-rose-600">
+            <i class="fas fa-arrow-down mr-1"></i>
+            <span>1.2% vs last month</span>
+          </div>
+        </div>
+        
+        <!-- Margin -->
+        <div class="bg-gray-50 rounded-lg p-4 border border-gray-100">
+          <div class="flex items-center mb-1 text-gray-500 text-sm">
+            <i class="fas fa-percentage mr-2"></i>
+            <span>Margin</span>
+          </div>
+          <div class="text-xl font-bold text-gray-800">28.2%</div>
+          <div class="mt-2 text-xs flex items-center text-rose-600">
+            <i class="fas fa-arrow-down mr-1"></i>
+            <span>0.5% vs last month</span>
+          </div>
+        </div>
+        
+        <!-- Customers -->
+        <div class="bg-gray-50 rounded-lg p-4 border border-gray-100">
+          <div class="flex items-center mb-1 text-gray-500 text-sm">
+            <i class="fas fa-users mr-2"></i>
+            <span>Customers</span>
+          </div>
+          <div class="text-xl font-bold text-gray-800">245</div>
+          <div class="mt-2 text-xs flex items-center text-emerald-600">
+            <i class="fas fa-arrow-up mr-1"></i>
+            <span>2.1% vs last month</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
   <!-- Charts -->
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
