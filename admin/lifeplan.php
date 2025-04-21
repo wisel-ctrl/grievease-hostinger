@@ -485,5 +485,25 @@ header("Pragma: no-cache");
       <p>© 2025 Grievease. All rights reserved.</p>
     </div>
   </div>
+
+  <script>
+// Log the fetched data to console
+console.log("Fetched Lifeplan Data:", <?php echo json_encode($fetchedData); ?>);
+
+// Detailed log of each record
+<?php foreach ($fetchedData as $index => $record): ?>
+    console.log("Record #<?php echo $index + 1; ?>:", {
+        lifeplan_id: "<?php echo $record['lifeplan_id']; ?>",
+        beneficiary: "<?php echo $record['benefeciary_fullname']; ?>",
+        service: "<?php echo $record['service_name']; ?>",
+        duration: "<?php echo $record['payment_duration']; ?> years",
+        price: "₱<?php echo number_format($record['custom_price'], 2); ?>",
+        status: "<?php echo $record['payment_status']; ?>"
+    });
+<?php endforeach; ?>
+
+// Summary log
+console.log("Total records fetched: <?php echo count($fetchedData); ?>");
+</script>
 </body>
 </html>
