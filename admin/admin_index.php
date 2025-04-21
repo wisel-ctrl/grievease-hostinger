@@ -100,8 +100,8 @@ require_once '../db_connect.php'; // Database connection
   <!-- Analytics Cards -->
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
   <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
-    <!-- Card header with gradient background -->
-    <div class="bg-gradient-to-r from-blue-50 to-blue-100/30 px-6 py-4">
+    <!-- Card header with brighter gradient background -->
+    <div class="bg-gradient-to-r from-blue-100 to-blue-200 px-6 py-4">
       <div class="flex items-center justify-between mb-1">
         <h3 class="text-sm font-medium text-gray-700">Services This Month</h3>
         <div class="w-10 h-10 rounded-full bg-white/90 text-blue-600 flex items-center justify-center">
@@ -124,8 +124,8 @@ require_once '../db_connect.php'; // Database connection
   </div>
   
   <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
-    <!-- Card header with gradient background -->
-    <div class="bg-gradient-to-r from-green-50 to-green-100/30 px-6 py-4">
+    <!-- Card header with brighter gradient background -->
+    <div class="bg-gradient-to-r from-green-100 to-green-200 px-6 py-4">
       <div class="flex items-center justify-between mb-1">
         <h3 class="text-sm font-medium text-gray-700">Revenue</h3>
         <div class="w-10 h-10 rounded-full bg-white/90 text-green-600 flex items-center justify-center">
@@ -148,8 +148,8 @@ require_once '../db_connect.php'; // Database connection
   </div>
   
   <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
-    <!-- Card header with gradient background -->
-    <div class="bg-gradient-to-r from-orange-50 to-orange-100/30 px-6 py-4">
+    <!-- Card header with brighter gradient background -->
+    <div class="bg-gradient-to-r from-orange-100 to-orange-200 px-6 py-4">
       <div class="flex items-center justify-between mb-1">
         <h3 class="text-sm font-medium text-gray-700">Pending Services</h3>
         <div class="w-10 h-10 rounded-full bg-white/90 text-orange-600 flex items-center justify-center">
@@ -172,8 +172,8 @@ require_once '../db_connect.php'; // Database connection
   </div>
   
   <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
-    <!-- Card header with gradient background -->
-    <div class="bg-gradient-to-r from-purple-50 to-purple-100/30 px-6 py-4">
+    <!-- Card header with brighter gradient background -->
+    <div class="bg-gradient-to-r from-purple-100 to-purple-200 px-6 py-4">
       <div class="flex items-center justify-between mb-1">
         <h3 class="text-sm font-medium text-gray-700">Completed Services</h3>
         <div class="w-10 h-10 rounded-full bg-white/90 text-purple-600 flex items-center justify-center">
