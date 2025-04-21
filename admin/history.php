@@ -1360,9 +1360,9 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
           <input type="hidden" id="branchID" name="branchID">
           
           <!-- Service ID -->
-          <div>
-            <label for="paymentServiceId" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-hashtag mr-2 text-sidebar-accent"></i>
+          <div class="flex flex-col">
+            <label for="paymentServiceId" class="text-xs font-medium text-gray-700 mb-1 flex items-center">
+              <i class="fas fa-hashtag mr-2 text-sidebar-accent w-4 text-center"></i>
               Sales ID
             </label>
             <div class="relative">
@@ -1371,9 +1371,9 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
           </div>
           
           <!-- Client Name -->
-          <div>
-            <label for="paymentClientName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-user mr-2 text-sidebar-accent"></i>
+          <div class="flex flex-col">
+            <label for="paymentClientName" class="text-xs font-medium text-gray-700 mb-1 flex items-center">
+              <i class="fas fa-user mr-2 text-sidebar-accent w-4 text-center"></i>
               Client Name
             </label>
             <div class="relative">
@@ -1382,9 +1382,9 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
           </div>
           
           <!-- Outstanding Balance -->
-          <div>
-            <label for="currentBalance" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-balance-scale mr-2 text-sidebar-accent"></i>
+          <div class="flex flex-col">
+            <label for="currentBalance" class="text-xs font-medium text-gray-700 mb-1 flex items-center">
+              <i class="fas fa-balance-scale mr-2 text-sidebar-accent w-4 text-center"></i>
               Outstanding Balance
             </label>
             <div class="relative">
@@ -1396,9 +1396,9 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
           </div>
           
           <!-- Notes Section -->
-          <div>
-            <label for="paymentNotes" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-sticky-note mr-2 text-sidebar-accent"></i>
+          <div class="flex flex-col">
+            <label for="paymentNotes" class="text-xs font-medium text-gray-700 mb-1 flex items-center">
+              <i class="fas fa-sticky-note mr-2 text-sidebar-accent w-4 text-center"></i>
               Notes
             </label>
             <div class="relative">
@@ -1410,9 +1410,9 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
         <!-- Right Column -->
         <div class="space-y-4">
           <!-- Payment Amount -->
-          <div>
-            <label for="paymentAmount" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-coins mr-2 text-sidebar-accent"></i>
+          <div class="flex flex-col">
+            <label for="paymentAmount" class="text-xs font-medium text-gray-700 mb-1 flex items-center">
+              <i class="fas fa-coins mr-2 text-sidebar-accent w-4 text-center"></i>
               Payment Amount
             </label>
             <div class="relative">
@@ -1424,16 +1424,16 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
           </div>
           
           <!-- Payment Method -->
-          <div>
-            <label for="paymentMethod" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-credit-card mr-2 text-sidebar-accent"></i>
+          <div class="flex flex-col">
+            <label for="paymentMethod" class="text-xs font-medium text-gray-700 mb-1 flex items-center">
+              <i class="fas fa-credit-card mr-2 text-sidebar-accent w-4 text-center"></i>
               Payment Method
             </label>
             <div class="relative">
               <select id="paymentMethod" name="paymentMethod" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
                 <option value="" disabled selected>Select payment method</option>
                 <option value="Cash">Cash</option>
-                <option value="G  Cash">G-Cash</option>
+                <option value="G Cash">G-Cash</option>
                 <option value="Credit Card">Credit Card</option>
                 <option value="Bank Transfer">Bank Transfer</option>
               </select>
@@ -1441,9 +1441,9 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
           </div>
           
           <!-- Payment Date -->
-          <div>
-            <label for="paymentDate" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-calendar-alt mr-2 text-sidebar-accent"></i>
+          <div class="flex flex-col">
+            <label for="paymentDate" class="text-xs font-medium text-gray-700 mb-1 flex items-center">
+              <i class="fas fa-calendar-alt mr-2 text-sidebar-accent w-4 text-center"></i>
               Payment Date
             </label>
             <div class="relative">
@@ -1454,7 +1454,7 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
           <!-- Summary Section -->
           <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
             <p class="block text-xs font-medium text-gray-700 mb-2 flex items-center">
-              <i class="fas fa-money-bill-wave mr-2 text-sidebar-accent"></i>
+              <i class="fas fa-money-bill-wave mr-2 text-sidebar-accent w-4 text-center"></i>
               Payment Summary
             </p>
             <div class="flex justify-between mb-2 text-gray-700">
