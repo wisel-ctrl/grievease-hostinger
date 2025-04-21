@@ -109,50 +109,72 @@ function formatPrice($price) {
 
 
   <!-- Summary statistics row -->
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-    <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm flex items-center">
-      <div class="p-3 bg-blue-100 text-blue-600 rounded-full mr-3">
-        <i class="fas fa-tags"></i>
-      </div>
-      <div>
-        <p class="text-xs text-gray-500">Total Services</p>
-        <p class="text-lg font-semibold"><?php 
-          $totalSql = "SELECT COUNT(*) as total FROM services_tb";
-          $totalResult = $conn->query($totalSql);
-          $total = $totalResult->fetch_assoc()['total'];
-          echo $total;
-        ?></p>
-      </div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <?php
+    // Get total services count
+    $totalSql = "SELECT COUNT(*) as total FROM services_tb";
+    $totalResult = $conn->query($totalSql);
+    $total = $totalResult->fetch_assoc()['total'];
+    
+    // Get active services count
+    $activeSql = "SELECT COUNT(*) as total FROM services_tb WHERE status = 'Active'";
+    $activeResult = $conn->query($activeSql);
+    $active = $activeResult->fetch_assoc()['total'];
+    
+    // Get inactive services count
+    $inactiveSql = "SELECT COUNT(*) as total FROM services_tb WHERE status = 'Inactive'";
+    $inactiveResult = $conn->query($inactiveSql);
+    $inactive = $inactiveResult->fetch_assoc()['total'];
+    
+    // Card data array
+    $cards = [
+        [
+            'title' => 'Total Services',
+            'value' => $total,
+            'icon' => 'tags',
+            'color' => 'blue'
+        ],
+        [
+            'title' => 'Active Services',
+            'value' => $active,
+            'icon' => 'check-circle',
+            'color' => 'green'
+        ],
+        [
+            'title' => 'Inactive Services',
+            'value' => $inactive,
+            'icon' => 'pause-circle',
+            'color' => 'orange'
+        ]
+    ];
+    
+    foreach ($cards as $card) {
+    ?>
+    
+    <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
+        <!-- Card header with brighter gradient background -->
+        <div class="bg-gradient-to-r from-<?php echo $card['color']; ?>-100 to-<?php echo $card['color']; ?>-200 px-6 py-4">
+            <div class="flex items-center justify-between mb-1">
+                <h3 class="text-sm font-medium text-gray-700"><?php echo $card['title']; ?></h3>
+                <div class="w-10 h-10 rounded-full bg-white/90 text-<?php echo $card['color']; ?>-600 flex items-center justify-center">
+                    <i class="fas fa-<?php echo $card['icon']; ?>"></i>
+                </div>
+            </div>
+            <div class="flex items-end">
+                <span class="text-2xl md:text-3xl font-bold text-gray-800"><?php echo $card['value']; ?></span>
+            </div>
+        </div>
+        
+        <!-- Card footer with simple info -->
+        <div class="px-6 py-3 bg-white border-t border-gray-100">
+            <div class="flex items-center text-gray-500">
+                <span class="text-xs">Updated today</span>
+            </div>
+        </div>
     </div>
-    <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm flex items-center">
-      <div class="p-3 bg-green-100 text-green-600 rounded-full mr-3">
-        <i class="fas fa-check-circle"></i>
-      </div>
-      <div>
-        <p class="text-xs text-gray-500">Active Services</p>
-        <p class="text-lg font-semibold"><?php 
-          $activeSql = "SELECT COUNT(*) as total FROM services_tb WHERE status = 'Active'";
-          $activeResult = $conn->query($activeSql);
-          $active = $activeResult->fetch_assoc()['total'];
-          echo $active;
-        ?></p>
-      </div>
-    </div>
-    <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm flex items-center">
-      <div class="p-3 bg-orange-100 text-orange-600 rounded-full mr-3">
-        <i class="fas fa-pause-circle"></i>
-      </div>
-      <div>
-        <p class="text-xs text-gray-500">Inactive Services</p>
-        <p class="text-lg font-semibold"><?php 
-          $inactiveSql = "SELECT COUNT(*) as total FROM services_tb WHERE status = 'Inactive'";
-          $inactiveResult = $conn->query($inactiveSql);
-          $inactive = $inactiveResult->fetch_assoc()['total'];
-          echo $inactive;
-        ?></p>
-      </div>
-    </div>
-  </div>
+    
+    <?php } ?>
+</div>
 
   <?php
 // Pagination and Search/Filter Logic
