@@ -310,41 +310,10 @@ header("Pragma: no-cache");
       </div>
       
       <!-- Table -->
-      <div class="overflow-x-auto">
+    <div class="overflow-x-auto">
         <table class="w-full">
           <thead>
-            <tr class="bg-gray-50 text-left">
-              <th class="px-6 py-3 text-gray-700 font-semibold">
-                <div class="flex items-center">
-                  <i class="fas fa-user mr-2 text-accent"></i> Beneficiary Name
-                </div>
-              </th>
-              <th class="px-6 py-3 text-gray-700 font-semibold">
-                <div class="flex items-center">
-                  <i class="fas fa-hand-holding-heart mr-2 text-accent"></i> Service Name
-                </div>
-              </th>
-              <th class="px-6 py-3 text-gray-700 font-semibold">
-                <div class="flex items-center">
-                  <i class="fas fa-calendar-alt mr-2 text-accent"></i> Payment Duration
-                </div>
-              </th>
-              <th class="px-6 py-3 text-gray-700 font-semibold">
-                <div class="flex items-center">
-                  <i class="fas fa-tag mr-2 text-accent"></i> Price
-                </div>
-              </th>
-              <th class="px-6 py-3 text-gray-700 font-semibold">
-                <div class="flex items-center">
-                  <i class="fas fa-credit-card mr-2 text-accent"></i> Payment Status
-                </div>
-              </th>
-              <th class="px-6 py-3 text-gray-700 font-semibold">
-                <div class="flex items-center">
-                  <i class="fas fa-cogs mr-2 text-accent"></i> Actions
-                </div>
-              </th>
-            </tr>
+            <!-- Your table headers... -->
           </thead>
           <tbody class="divide-y divide-gray-200">
             <?php
@@ -379,10 +348,16 @@ header("Pragma: no-cache");
             
             $result = $mysqli->query($query);
             
+            // Create an array to store all fetched data for logging
+            $fetchedData = array();
+            
             // Check if query was successful
             if ($result) {
               // Loop through the results and display each row
               while ($row = $result->fetch_assoc()) {
+                // Add row data to our logging array
+                $fetchedData[] = $row;
+                
                 // Determine status badge class
                 $statusClass = '';
                 $statusIcon = '';
@@ -446,6 +421,9 @@ header("Pragma: no-cache");
               // Handle query error
               echo '<tr><td colspan="6" class="px-6 py-4 text-center text-red-500">Error loading data: ' . $mysqli->error . '</td></tr>';
             }
+            
+            // Close database connection
+            $mysqli->close();
             ?>
           </tbody>
         </table>
