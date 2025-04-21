@@ -357,7 +357,7 @@ header("Pragma: no-cache");
             require_once '../db_connect.php';
             
             // Database connection check
-            if (!$mysqli) {
+            if (!$conn) {
                 echo '<tr><td colspan="6" class="px-6 py-4 text-center text-red-500">Database connection failed</td></tr>';
             } else {
                 // Prepare and execute the query using MySQLi
@@ -382,11 +382,11 @@ header("Pragma: no-cache");
                           LIMIT 6
                           "; // Limit to 6 records for pagination
                 
-                $result = $mysqli->query($query);
+                $result = $conn->query($query);
                 
                 // Check if query was successful
                 if (!$result) {
-                    echo '<tr><td colspan="6" class="px-6 py-4 text-center text-red-500">Query error: ' . $mysqli->error . '</td></tr>';
+                    echo '<tr><td colspan="6" class="px-6 py-4 text-center text-red-500">Query error: ' . $conn->error . '</td></tr>';
                 } else if ($result->num_rows == 0) {
                     echo '<tr><td colspan="6" class="px-6 py-4 text-center text-gray-500">No records found</td></tr>';
                 } else {
@@ -457,7 +457,7 @@ header("Pragma: no-cache");
                 }
                 
                 // Close database connection
-                $mysqli->close();
+                $conn->close();
             }
             ?>
           </tbody>
