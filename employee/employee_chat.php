@@ -1,4 +1,5 @@
 <?php
+//employee_chat.php
 session_start();
 
 // Check if user is logged in
@@ -47,174 +48,217 @@ header("Pragma: no-cache");
 // Database connection
 require_once '../db_connect.php';
 
-// Function to get all messages for the logged-in employee
+// Function to get all messages for the logged-in employee using chat_recipients
 function getEmployeeMessages($conn, $employeeId, $filter = 'all') {
   $query = "SELECT cm.*, 
             u_sender.first_name AS sender_first_name, 
             u_sender.last_name AS sender_last_name,
-            u_sender.email AS sender_email
+            u_sender.email AS sender_email,
+            cr.status AS recipient_status,
+            (SELECT COUNT(*) FROM chat_recipients 
+             WHERE chatId = cm.chatId 
+             AND userId = ? 
+             AND status IN ('sent', 'delivered')) AS unread_count
             FROM chat_messages cm
+            JOIN chat_recipients cr ON cm.chatId = cr.chatId
             LEFT JOIN users u_sender ON cm.sender = u_sender.id
-            WHERE (cm.receiver2 = ? OR cm.receiver3 = ?) 
-            AND cm.sender != 'bot' ";  // Add this condition to exclude bot messages
-  
+            WHERE cr.userId = ?";
+
   // Add filter conditions
   switch ($filter) {
       case 'unread':
-          $query .= "AND (cm.status = 'sent' OR cm.status = 'delivered') ";
+          $query .= " AND cr.status IN ('sent', 'delivered') ";
           break;
       case 'today':
-          $query .= "AND DATE(cm.timestamp) = CURDATE() ";
+          $query .= " AND DATE(cm.timestamp) = CURDATE() ";
           break;
       case 'week':
-          $query .= "AND YEARWEEK(cm.timestamp) = YEARWEEK(CURDATE()) ";
+          $query .= " AND YEARWEEK(cm.timestamp) = YEARWEEK(CURDATE()) ";
           break;
       case 'month':
-          $query .= "AND MONTH(cm.timestamp) = MONTH(CURDATE()) AND YEAR(cm.timestamp) = YEAR(CURDATE()) ";
+          $query .= " AND MONTH(cm.timestamp) = MONTH(CURDATE()) AND YEAR(cm.timestamp) = YEAR(CURDATE()) ";
           break;
   }
-  
-  $query .= "ORDER BY cm.timestamp DESC";
-  
+
+  $query .= " GROUP BY cm.chatId ORDER BY cm.timestamp DESC";
+
   $stmt = $conn->prepare($query);
   $stmt->bind_param("ss", $employeeId, $employeeId);
   $stmt->execute();
   $result = $stmt->get_result();
-  
+
   $messages = [];
   while ($row = $result->fetch_assoc()) {
       $messages[] = $row;
   }
-  
+
   return $messages;
 }
 
-// Function to mark message as read
-function markMessageAsRead($conn, $chatId) {
-    $query = "UPDATE chat_messages SET status = 'read' WHERE chatId = ?";
-    $stmt = $conn->prepare($query);
-    $stmt->bind_param("s", $chatId);
-    return $stmt->execute();
+// Function to mark message as read in chat_recipients
+function markMessageAsRead($conn, $chatId, $userId) {
+  $query = "UPDATE chat_recipients SET status = 'read' WHERE chatId = ? AND userId = ?";
+  $stmt = $conn->prepare($query);
+  $stmt->bind_param("ss", $chatId, $userId);
+  return $stmt->execute();
 }
 
-// Function to send a reply
+// Function to send a reply with chat_recipients
 function sendReply($conn, $chatRoomId, $senderId, $receiverId, $message) {
-    $chatId = uniqid('chat_', true);
-    $query = "INSERT INTO chat_messages (chatId, sender, receiver, message, chatRoomId, messageType, status) 
-              VALUES (?, ?, ?, ?, ?, 'text', 'sent')";
-    $stmt = $conn->prepare($query);
-    $stmt->bind_param("sssss", $chatId, $senderId, $receiverId, $message, $chatRoomId);
-    return $stmt->execute();
+  $chatId = uniqid('chat_', true);
+  
+  // Start transaction
+  $conn->begin_transaction();
+  
+  try {
+      // Insert into chat_messages
+      $query = "INSERT INTO chat_messages (chatId, sender, message, chatRoomId, messageType, status) 
+                VALUES (?, ?, ?, ?, 'text', 'sent')";
+      $stmt = $conn->prepare($query);
+      $stmt->bind_param("ssss", $chatId, $senderId, $message, $chatRoomId);
+      $stmt->execute();
+      
+      // Insert into chat_recipients for the sender (status = 'read')
+      $query = "INSERT INTO chat_recipients (chatId, userId, status) VALUES (?, ?, 'read')";
+      $stmt = $conn->prepare($query);
+      $stmt->bind_param("ss", $chatId, $senderId);
+      $stmt->execute();
+      
+      // Insert into chat_recipients for the receiver (status = 'sent')
+      $query = "INSERT INTO chat_recipients (chatId, userId, status) VALUES (?, ?, 'sent')";
+      $stmt = $conn->prepare($query);
+      $stmt->bind_param("ss", $chatId, $receiverId);
+      $stmt->execute();
+      
+      $conn->commit();
+      return true;
+  } catch (Exception $e) {
+      $conn->rollback();
+      return false;
+  }
 }
 
-// Function to get conversation history
-function getConversationHistory($conn, $chatRoomId) {
+// Function to get conversation history with chat_recipients
+function getConversationHistory($conn, $chatRoomId, $currentUserId) {
   $query = "SELECT cm.*, 
             u_sender.first_name AS sender_first_name, 
-            u_sender.last_name AS sender_last_name
+            u_sender.last_name AS sender_last_name,
+            cr.status AS recipient_status
             FROM chat_messages cm
+            JOIN chat_recipients cr ON cm.chatId = cr.chatId
             LEFT JOIN users u_sender ON cm.sender = u_sender.id
             WHERE cm.chatRoomId = ?
-            AND cm.sender != 'bot'
+            AND cr.userId = ?
             ORDER BY cm.timestamp ASC";
-  
+
   $stmt = $conn->prepare($query);
-  $stmt->bind_param("s", $chatRoomId);
+  $stmt->bind_param("ss", $chatRoomId, $currentUserId);
   $stmt->execute();
   $result = $stmt->get_result();
-  
+
   $messages = [];
   while ($row = $result->fetch_assoc()) {
       $messages[] = $row;
   }
   
+  // Mark messages as read
+  $query = "UPDATE chat_recipients SET status = 'read' 
+            WHERE chatId IN (SELECT chatId FROM chat_messages WHERE chatRoomId = ?)
+            AND userId = ? AND status IN ('sent', 'delivered')";
+  $stmt = $conn->prepare($query);
+  $stmt->bind_param("ss", $chatRoomId, $currentUserId);
+  $stmt->execute();
+
   return $messages;
 }
-// Function to search customers by name or email
-function searchCustomers($conn, $searchTerm) {
+
+// Function to search customers by name or email with chat_recipients
+function searchCustomers($conn, $searchTerm, $employeeId) {
   $searchTerm = "%$searchTerm%";
   $query = "SELECT cm.*, 
             u_sender.first_name AS sender_first_name, 
             u_sender.last_name AS sender_last_name,
-            u_sender.email AS sender_email
+            u_sender.email AS sender_email,
+            cr.status AS recipient_status
             FROM chat_messages cm
+            JOIN chat_recipients cr ON cm.chatId = cr.chatId
             LEFT JOIN users u_sender ON cm.sender = u_sender.id
-            WHERE (cm.receiver2 = ? OR cm.receiver3 = ?) 
-            AND cm.sender != 'bot'  
+            WHERE cr.userId = ?
             AND (u_sender.first_name LIKE ? OR u_sender.last_name LIKE ? OR u_sender.email LIKE ?)
+            GROUP BY cm.chatId
             ORDER BY cm.timestamp DESC";
-  
+
   $stmt = $conn->prepare($query);
-  $employeeId = $_SESSION['user_id'];
-  $stmt->bind_param("sssss", $employeeId, $employeeId, $searchTerm, $searchTerm, $searchTerm);
+  $stmt->bind_param("ssss", $employeeId, $searchTerm, $searchTerm, $searchTerm);
   $stmt->execute();
   $result = $stmt->get_result();
-  
+
   $messages = [];
   while ($row = $result->fetch_assoc()) {
       $messages[] = $row;
   }
-  
+
   return $messages;
 }
 
 // API Endpoints
 if (isset($_GET['action'])) {
-    header('Content-Type: application/json');
-    
-    switch ($_GET['action']) {
-        case 'getMessages':
-            $filter = isset($_GET['filter']) ? $_GET['filter'] : 'all';
-            $messages = getEmployeeMessages($conn, $_SESSION['user_id'], $filter);
-            echo json_encode(['success' => true, 'messages' => $messages, 'count' => count($messages)]);
-            break;
-            
-        case 'getConversation':
-            if (isset($_GET['chatRoomId'])) {
-                $conversation = getConversationHistory($conn, $_GET['chatRoomId']);
-                echo json_encode(['success' => true, 'conversation' => $conversation]);
-            } else {
-                echo json_encode(['success' => false, 'error' => 'Chat room ID not provided']);
-            }
-            break;
-            
-        case 'markAsRead':
-            if (isset($_GET['chatId'])) {
-                $success = markMessageAsRead($conn, $_GET['chatId']);
-                echo json_encode(['success' => $success]);
-            } else {
-                echo json_encode(['success' => false, 'error' => 'Chat ID not provided']);
-            }
-            break;
-            
-        case 'sendReply':
-            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-                $data = json_decode(file_get_contents('php://input'), true);
-                if (isset($data['chatRoomId']) && isset($data['receiverId']) && isset($data['message'])) {
-                    $success = sendReply($conn, $data['chatRoomId'], $_SESSION['user_id'], $data['receiverId'], $data['message']);
-                    echo json_encode(['success' => $success]);
-                } else {
-                    echo json_encode(['success' => false, 'error' => 'Required parameters missing']);
-                }
-            }
-            break;
-            
-        case 'searchCustomers':
-            if (isset($_GET['searchTerm'])) {
-                $results = searchCustomers($conn, $_GET['searchTerm']);
-                echo json_encode(['success' => true, 'messages' => $results, 'count' => count($results)]);
-            } else {
-                echo json_encode(['success' => false, 'error' => 'Search term not provided']);
-            }
-            break;
-            
-        default:
-            echo json_encode(['success' => false, 'error' => 'Invalid action']);
-    }
-    
-    exit;
+  header('Content-Type: application/json');
+  
+  switch ($_GET['action']) {
+      case 'getMessages':
+          $filter = isset($_GET['filter']) ? $_GET['filter'] : 'all';
+          $messages = getEmployeeMessages($conn, $_SESSION['user_id'], $filter);
+          echo json_encode(['success' => true, 'messages' => $messages, 'count' => count($messages)]);
+          break;
+          
+      case 'getConversation':
+          if (isset($_GET['chatRoomId'])) {
+              $conversation = getConversationHistory($conn, $_GET['chatRoomId'], $_SESSION['user_id']);
+              echo json_encode(['success' => true, 'conversation' => $conversation]);
+          } else {
+              echo json_encode(['success' => false, 'error' => 'Chat room ID not provided']);
+          }
+          break;
+          
+      case 'markAsRead':
+          if (isset($_GET['chatId'])) {
+              $success = markMessageAsRead($conn, $_GET['chatId'], $_SESSION['user_id']);
+              echo json_encode(['success' => $success]);
+          } else {
+              echo json_encode(['success' => false, 'error' => 'Chat ID not provided']);
+          }
+          break;
+          
+      case 'sendReply':
+          if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+              $data = json_decode(file_get_contents('php://input'), true);
+              if (isset($data['chatRoomId']) && isset($data['receiverId']) && isset($data['message'])) {
+                  $success = sendReply($conn, $data['chatRoomId'], $_SESSION['user_id'], $data['receiverId'], $data['message']);
+                  echo json_encode(['success' => $success]);
+              } else {
+                  echo json_encode(['success' => false, 'error' => 'Required parameters missing']);
+              }
+          }
+          break;
+          
+      case 'searchCustomers':
+          if (isset($_GET['searchTerm'])) {
+              $results = searchCustomers($conn, $_GET['searchTerm'], $_SESSION['user_id']);
+              echo json_encode(['success' => true, 'messages' => $results, 'count' => count($results)]);
+          } else {
+              echo json_encode(['success' => false, 'error' => 'Search term not provided']);
+          }
+          break;
+          
+      default:
+          echo json_encode(['success' => false, 'error' => 'Invalid action']);
+  }
+  
+  exit;
 }
 ?>
+
 
 <!-- Main Content -->
 <div id="main-content" class="p-6 bg-gray-100 min-h-screen transition-all duration-300 ml-64 main-content">
@@ -275,9 +319,10 @@ if (isset($_GET['action'])) {
         </div>
       </div>
     </div>
-    
-    <!-- Message Detail Modal -->
-    <div id="message-detail-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center">
+  </div>  
+
+  <!-- Message Detail Modal -->
+  <div id="message-detail-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center">
       <div class="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[80vh] flex flex-col">
         <!-- Modal Header -->
         <div class="p-4 border-b border-gray-200 flex justify-between items-center">
@@ -317,7 +362,6 @@ if (isset($_GET['action'])) {
         </div>
       </div>
     </div>
-  </div>  
 
   <script>
     // Employee Messaging JavaScript
@@ -345,10 +389,7 @@ document.addEventListener('DOMContentLoaded', function() {
   let currentChatRoomId = null;
   let currentReceiverId = null;
   
-  // Initial load
-  loadMessagesBtn.addEventListener('click', function() {
-    loadMessages();
-  });
+  loadMessages();
   
   // Refresh messages
   refreshBtn.addEventListener('click', function() {
@@ -440,45 +481,52 @@ document.addEventListener('DOMContentLoaded', function() {
     let html = '';
     
     conversations.forEach(conversation => {
-      const isUnread = conversation.unread_count > 0;
-      const date = new Date(conversation.timestamp);
-      const formattedDate = formatDate(date);
-      
-      html += `
-        <div class="conversation-item hover:bg-gray-50 p-4 cursor-pointer transition-colors duration-200 ${isUnread ? 'bg-blue-50' : ''}" 
-             data-chatroom="${conversation.chatRoomId}" 
-             data-receiver="${conversation.sender !== '<?php echo $_SESSION['user_id']; ?>' ? conversation.sender : conversation.receiver}">
-          <div class="flex items-start gap-3">
-            <div class="flex-shrink-0 w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center text-gray-600">
-              <i class="fas fa-user"></i>
-            </div>
-            <div class="flex-grow min-w-0">
-              <div class="flex justify-between items-start">
-                <h3 class="font-semibold text-gray-800 truncate ${isUnread ? 'font-bold' : ''}">${conversation.sender_name}</h3>
-                <span class="text-xs text-gray-500 whitespace-nowrap">${formattedDate}</span>
+        const isUnread = conversation.unread_count > 0;
+        const date = new Date(conversation.timestamp);
+        const formattedDate = formatDate(date);
+        
+        // Always use the customer_name instead of sender_name
+        const displayName = capitalizeWords(conversation.customer_name || 'Customer');
+                
+        html += `
+            <div class="conversation-item hover:bg-gray-50 p-4 cursor-pointer transition-colors duration-200 ${isUnread ? 'bg-blue-50' : ''}" 
+                 data-chatroom="${conversation.chatRoomId}" 
+                 data-receiver="${conversation.sender == '<?php echo $_SESSION['user_id']; ?>' ? conversation.receiver : conversation.sender}">
+              <div class="flex items-start gap-3">
+                <div class="flex-shrink-0 w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center text-gray-600">
+                  <i class="fas fa-user"></i>
+                </div>
+                <div class="flex-grow min-w-0">
+                  <div class="flex justify-between items-start">
+                    <h3 class="font-semibold text-gray-800 truncate ${isUnread ? 'font-bold' : ''}">${displayName}</h3>
+                    <span class="text-xs text-gray-500 whitespace-nowrap">${formattedDate}</span>
+                  </div>
+                  <div class="flex justify-between items-center mt-1">
+                    <p class="text-sm text-gray-600 truncate pr-4">${conversation.message}</p>
+                    ${isUnread ? `<span class="inline-flex items-center justify-center w-5 h-5 text-xs font-semibold text-white bg-[#008080] rounded-full">${conversation.unread_count}</span>` : ''}
+                  </div>
+                </div>
               </div>
-              <div class="flex justify-between items-center mt-1">
-                <p class="text-sm text-gray-600 truncate pr-4">${conversation.message}</p>
-                ${isUnread ? `<span class="inline-flex items-center justify-center w-5 h-5 text-xs font-semibold text-white bg-[#008080] rounded-full">${conversation.unread_count}</span>` : ''}
-              </div>
             </div>
-          </div>
-        </div>
-      `;
+        `;
     });
     
     messageList.innerHTML = html;
     
     // Add click event listeners to conversation items
     document.querySelectorAll('.conversation-item').forEach(item => {
-      item.addEventListener('click', function() {
-        const chatRoomId = this.dataset.chatroom;
-        const receiverId = this.dataset.receiver;
-        openConversation(chatRoomId, receiverId);
-      });
+        item.addEventListener('click', function() {
+            const chatRoomId = this.dataset.chatroom;
+            const receiverId = this.dataset.receiver;
+            openConversation(chatRoomId, receiverId);
+        });
     });
-  }
-  
+} 
+
+function capitalizeWords(str) {
+  return str.replace(/\b\w/g, char => char.toUpperCase());
+}
+
   // Open conversation function
   function openConversation(chatRoomId, receiverId) {
     currentChatRoomId = chatRoomId;
@@ -498,7 +546,7 @@ document.addEventListener('DOMContentLoaded', function() {
       .then(data => {
         if (data.success) {
           // Update modal header
-          modalCustomerName.textContent = data.userInfo.name;
+          modalCustomerName.textContent = capitalizeWords(data.userInfo.name);
           modalMessageDate.textContent = data.userInfo.email;
           
           // Render conversation
@@ -540,8 +588,8 @@ document.addEventListener('DOMContentLoaded', function() {
       
       // Add message
       html += `
-        <div class="mb-4 ${isEmployee ? 'flex justify-end' : ''}">
-          <div class="max-w-3/4 ${isEmployee ? 'bg-[#008080] text-white rounded-l-lg rounded-tr-lg' : 'bg-gray-100 text-gray-800 rounded-r-lg rounded-tl-lg'} px-4 py-2 shadow-sm">
+        <div class="mb-4 ${isEmployee ? 'flex justify-end' : 'flex justify-start'}">
+          <div class="${isEmployee ? 'max-w-[70%]' : 'max-w-[60%]'} ${isEmployee ? 'bg-[#008080] text-white rounded-l-lg rounded-tr-lg' : 'bg-gray-100 text-gray-800 rounded-r-lg rounded-tl-lg'} px-4 py-2 shadow-sm">
             <div class="text-sm mb-1">${message.message}</div>
             <div class="text-xs ${isEmployee ? 'text-teal-100' : 'text-gray-500'} text-right">${messageTime}</div>
           </div>

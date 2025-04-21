@@ -1,10 +1,7 @@
 <?php
-//messages/get_messages.php
+// messages/get_messages.php
 session_start();
 header('Content-Type: application/json');
-
-// Add this at the top of your get_messages.php file right after session_start()
-error_log("Employee ID: " . $_SESSION['user_id'] . ", User Type: " . $_SESSION['user_type']);
 
 // Check if user is logged in as employee
 if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] != 2) {
@@ -12,13 +9,9 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] != 2) {
     exit();
 }
 
-// Database connection
-require_once '../../db_connect.php'; // Adjust path as needed
+require_once '../../db_connect.php';
 
-// Get employee ID from session
 $employee_id = $_SESSION['user_id'];
-
-// Prepare filter conditions
 $filter_condition = "";
 $search_condition = "";
 
@@ -28,7 +21,7 @@ if (isset($_GET['filter'])) {
     
     switch ($filter) {
         case 'unread':
-            $filter_condition = " AND (cm.status = 'sent' AND (cm.receiver2 = '$employee_id' OR cm.receiver3 = '$employee_id'))";
+            $filter_condition = " AND cr.status IN ('sent', 'delivered')";
             break;
         case 'today':
             $filter_condition = " AND DATE(cm.timestamp) = CURDATE()";
@@ -40,7 +33,6 @@ if (isset($_GET['filter'])) {
             $filter_condition = " AND MONTH(cm.timestamp) = MONTH(CURDATE()) AND YEAR(cm.timestamp) = YEAR(CURDATE())";
             break;
         default:
-            // 'all' or invalid filter - no additional condition
             break;
     }
 }
@@ -51,35 +43,46 @@ if (isset($_GET['search']) && !empty($_GET['search'])) {
     $search_condition = " AND (u.first_name LIKE '%$search%' OR u.last_name LIKE '%$search%' OR u.email LIKE '%$search%')";
 }
 
-// Get the most recent message for each chat room where employee is a participant
-// Replace your existing query in get_messages.php with this:
 $query = "
     SELECT 
+        cm.chatId,
         cm.chatRoomId,
         cm.sender,
-        cm.receiver,
-        cm.receiver2,
-        cm.receiver3,
         cm.message,
         cm.timestamp,
-        cm.status,
+        cm.messageType,
+        cm.attachmentUrl,
+        cr.status AS recipient_status,
         CONCAT(u.first_name, ' ', u.last_name) AS sender_name,
         u.email AS sender_email,
         (
+            SELECT CONCAT(cust.first_name, ' ', cust.last_name)
+            FROM users cust
+            WHERE cust.id = (
+                SELECT DISTINCT sender 
+                FROM chat_messages 
+                WHERE chatRoomId = cm.chatRoomId AND sender != '$employee_id'
+                LIMIT 1
+            )
+        ) AS customer_name,
+        (
             SELECT COUNT(*) 
-            FROM chat_messages 
-            WHERE chatRoomId = cm.chatRoomId 
-            AND (receiver2 = '$employee_id' OR receiver3 = '$employee_id')
-            AND status = 'sent'
+            FROM chat_recipients 
+            WHERE chatId IN (SELECT chatId FROM chat_messages WHERE chatRoomId = cm.chatRoomId)
+            AND userId = '$employee_id'
+            AND status IN ('sent', 'delivered')
         ) AS unread_count
     FROM chat_messages cm
+    JOIN (
+        SELECT chatRoomId, MAX(timestamp) as latest_timestamp
+        FROM chat_messages
+        GROUP BY chatRoomId
+    ) latest ON cm.chatRoomId = latest.chatRoomId AND cm.timestamp = latest.latest_timestamp
+    JOIN chat_recipients cr ON cm.chatId = cr.chatId
     JOIN users u ON cm.sender = u.id
-    WHERE cm.sender != 'bot'
-    AND (
-        cm.receiver2 = '$employee_id' OR 
-        cm.receiver3 = '$employee_id'
-    )
-    GROUP BY cm.chatRoomId
+    WHERE cr.userId = '$employee_id'
+    $filter_condition
+    $search_condition
     ORDER BY cm.timestamp DESC
 ";
 
@@ -92,10 +95,9 @@ if ($result === false) {
 
 $conversations = [];
 while ($row = $result->fetch_assoc()) {
-    // Ensure the sender name is properly formatted
     if ($row['sender'] == $employee_id) {
         $row['sender_name'] = 'You (Employee)';
-        $row['sender_email'] = $_SESSION['email'] ?? 'employee@grievease.com'; // Use session email if available
+        $row['sender_email'] = $_SESSION['email'] ?? 'employee@grievease.com';
     }
     
     $conversations[] = $row;
