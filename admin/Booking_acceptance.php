@@ -864,46 +864,84 @@ document.getElementById('paymentForm').addEventListener('submit', function(e) {
         return;
     }
     
-    // Prepare the data to send
-    const formData = new FormData();
+    // Prepare the data to send - include all hidden fields
+    const formData = new FormData(this); // This will automatically include all form fields
+    
+    // Add additional data that might not be in the form
     formData.append('bookingId', currentBookingIdForPayment);
-    formData.append('amountPaid', amountPaid);
-    formData.append('paymentMethod', paymentMethod);
     formData.append('action', 'acceptBooking');
     
-    // Send the data via AJAX
-    fetch('bookingpage/process_booking.php', {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
+    // Calculate balance for display in confirmation
+    const initialPrice = parseFloat(document.getElementById('initialPrice').value) || 0;
+    const balance = initialPrice - parseFloat(amountPaid);
+    const paymentStatus = balance <= 0 ? 'Fully Paid' : 'With Balance';
+    
+    // Show confirmation dialog with payment summary
+    Swal.fire({
+        title: 'Confirm Payment Details',
+        html: `<div class="text-left">
+            <p><strong>Amount Paid:</strong> ₱${parseFloat(amountPaid).toFixed(2)}</p>
+            <p><strong>Payment Method:</strong> ${paymentMethod}</p>
+            <p><strong>Initial Price:</strong> ₱${initialPrice.toFixed(2)}</p>
+            <p><strong>Balance:</strong> ₱${balance.toFixed(2)}</p>
+            <p><strong>Payment Status:</strong> ${paymentStatus}</p>
+        </div>`,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Confirm Payment',
+        cancelButtonText: 'Cancel',
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Show loading indicator
             Swal.fire({
-                icon: 'success',
-                title: 'Success',
-                text: 'Booking accepted successfully!',
-            }).then(() => {
-                closePaymentModal();
-                closeModal();
-                // Refresh the page or update the table
-                window.location.reload();
+                title: 'Processing...',
+                html: 'Please wait while we process your payment',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
             });
-        } else {
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: data.message || 'Failed to accept booking',
+            
+            // Send the data via AJAX
+            fetch('bookingpage/process_booking.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success!',
+                        text: 'Booking accepted and sales record created successfully!',
+                        showConfirmButton: false,
+                        timer: 2000
+                    }).then(() => {
+                        closePaymentModal();
+                        closeModal();
+                        // Refresh the page to update the table
+                        window.location.reload();
+                    });
+                } else {
+                    throw new Error(data.message || 'Failed to process booking');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: error.message || 'An error occurred while processing your request',
+                });
             });
         }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: 'An error occurred while processing your request',
-        });
     });
 });
     </script>
