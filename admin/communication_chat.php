@@ -514,8 +514,7 @@ header("Pragma: no-cache");
                         </div>
                         <div class="flex-1 min-w-0">
                             <div class="flex justify-between items-start">
-                                <h4 class="text-sm font-medium text-gray-900 truncate">${conversation.sender_name}</h4>
-                                <span class="text-xs text-gray-500">${formattedDate}</span>
+                            <h4 class="text-sm font-medium text-gray-900 truncate">${conversation.sender_name.charAt(0).toUpperCase() + conversation.sender_name.slice(1).toLowerCase()}</h4>                                <span class="text-xs text-gray-500">${formattedDate}</span>
                             </div>
                             <p class="text-sm text-gray-600 truncate">${conversation.message}</p>
                             <div class="flex items-center mt-1">
@@ -548,6 +547,10 @@ header("Pragma: no-cache");
             // Load conversation messages
             loadConversation(chatRoomId);
         }
+
+        function capitalizeWords(str) {
+          return str.replace(/\b\w/g, char => char.toUpperCase());
+        }
         
         // Function to load conversation messages
         function loadConversation(chatRoomId) {
@@ -556,7 +559,7 @@ header("Pragma: no-cache");
                 .then(data => {
                     if (data.success) {
                         // Update modal header with user info
-                        modalCustomerName.textContent = data.userInfo.name;
+                        modalCustomerName.textContent = capitalizeWords(data.userInfo.name);
                         modalMessageDate.textContent = data.userInfo.email;
                         
                         // Display messages
