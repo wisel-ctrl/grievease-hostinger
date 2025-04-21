@@ -98,61 +98,103 @@ require_once '../db_connect.php'; // Database connection
   </div>
 
   <!-- Analytics Cards -->
-  <div class="mb-8">
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-      <div class="bg-white rounded-lg shadow-sidebar p-5 border border-sidebar-border hover:shadow-card transition-all duration-300">
-        <div class="flex items-center mb-3">
-          <div class="w-12 h-12 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center mr-3">
-            <i class="fas fa-calendar-alt text-lg"></i>
-          </div>
-          <span class="text-sidebar-text font-medium">Services This Month</span>
-        </div>
-        <div class="text-3xl font-bold mb-2 text-sidebar-text">42</div>
-        <div class="text-sm text-green-600 flex items-center">
-          <i class="fas fa-arrow-up mr-1"></i> 8% from last month
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+  <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
+    <!-- Card header with gradient background -->
+    <div class="bg-gradient-to-r from-blue-50 to-blue-100/30 px-6 py-4">
+      <div class="flex items-center justify-between mb-1">
+        <h3 class="text-sm font-medium text-gray-700">Services This Month</h3>
+        <div class="w-10 h-10 rounded-full bg-white/90 text-blue-600 flex items-center justify-center">
+          <i class="fas fa-calendar-alt"></i>
         </div>
       </div>
-      
-      <div class="bg-white rounded-lg shadow-sidebar p-5 border border-sidebar-border hover:shadow-card transition-all duration-300">
-        <div class="flex items-center mb-3">
-          <div class="w-12 h-12 rounded-lg bg-green-100 text-green-600 flex items-center justify-center mr-3">
-            <i class="fas fa-peso-sign text-lg"></i>
-          </div>
-          <span class="text-sidebar-text font-medium">Revenue</span>
-        </div>
-        <div class="text-3xl font-bold mb-2 text-sidebar-text">$87,320</div>
-        <div class="text-sm text-green-600 flex items-center">
-          <i class="fas fa-arrow-up mr-1"></i> 12% from last month
-        </div>
+      <div class="flex items-end">
+        <span class="text-2xl md:text-3xl font-bold text-gray-800">42</span>
       </div>
-      
-      <div class="bg-white rounded-lg shadow-sidebar p-5 border border-sidebar-border hover:shadow-card transition-all duration-300">
-        <div class="flex items-center mb-3">
-          <div class="w-12 h-12 rounded-lg bg-orange-100 text-orange-600 flex items-center justify-center mr-3">
-            <i class="fas fa-tasks text-lg"></i>
-          </div>
-          <span class="text-sidebar-text font-medium">Pending Services</span>
-        </div>
-        <div class="text-3xl font-bold mb-2 text-sidebar-text">14</div>
-        <div class="text-sm text-red-600 flex items-center">
-          <i class="fas fa-arrow-down mr-1"></i> 3% from last month
-        </div>
-      </div>
-      
-      <div class="bg-white rounded-lg shadow-sidebar p-5 border border-sidebar-border hover:shadow-card transition-all duration-300">
-        <div class="flex items-center mb-3">
-          <div class="w-12 h-12 rounded-lg bg-purple-100 text-purple-600 flex items-center justify-center mr-3">
-            <i class="fas fa-clipboard-check text-lg"></i>
-          </div>
-          <span class="text-sidebar-text font-medium">Completed Services</span>
-        </div>
-        <div class="text-3xl font-bold mb-2 text-sidebar-text">28</div>
-        <div class="text-sm text-green-600 flex items-center">
-          <i class="fas fa-arrow-up mr-1"></i> 15% from last month
-        </div>
+    </div>
+    
+    <!-- Card footer with change indicator -->
+    <div class="px-6 py-3 bg-white border-t border-gray-100">
+      <div class="flex items-center text-emerald-600">
+        <i class="fas fa-arrow-up mr-1.5 text-xs"></i>
+        <span class="font-medium text-xs">8% </span>
+        <span class="text-xs text-gray-500 ml-1">from last month</span>
       </div>
     </div>
   </div>
+  
+  <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
+    <!-- Card header with gradient background -->
+    <div class="bg-gradient-to-r from-green-50 to-green-100/30 px-6 py-4">
+      <div class="flex items-center justify-between mb-1">
+        <h3 class="text-sm font-medium text-gray-700">Revenue</h3>
+        <div class="w-10 h-10 rounded-full bg-white/90 text-green-600 flex items-center justify-center">
+          <i class="fas fa-peso-sign"></i>
+        </div>
+      </div>
+      <div class="flex items-end">
+        <span class="text-2xl md:text-3xl font-bold text-gray-800">$87,320</span>
+      </div>
+    </div>
+    
+    <!-- Card footer with change indicator -->
+    <div class="px-6 py-3 bg-white border-t border-gray-100">
+      <div class="flex items-center text-emerald-600">
+        <i class="fas fa-arrow-up mr-1.5 text-xs"></i>
+        <span class="font-medium text-xs">12% </span>
+        <span class="text-xs text-gray-500 ml-1">from last month</span>
+      </div>
+    </div>
+  </div>
+  
+  <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
+    <!-- Card header with gradient background -->
+    <div class="bg-gradient-to-r from-orange-50 to-orange-100/30 px-6 py-4">
+      <div class="flex items-center justify-between mb-1">
+        <h3 class="text-sm font-medium text-gray-700">Pending Services</h3>
+        <div class="w-10 h-10 rounded-full bg-white/90 text-orange-600 flex items-center justify-center">
+          <i class="fas fa-tasks"></i>
+        </div>
+      </div>
+      <div class="flex items-end">
+        <span class="text-2xl md:text-3xl font-bold text-gray-800">14</span>
+      </div>
+    </div>
+    
+    <!-- Card footer with change indicator -->
+    <div class="px-6 py-3 bg-white border-t border-gray-100">
+      <div class="flex items-center text-rose-600">
+        <i class="fas fa-arrow-down mr-1.5 text-xs"></i>
+        <span class="font-medium text-xs">3% </span>
+        <span class="text-xs text-gray-500 ml-1">from last month</span>
+      </div>
+    </div>
+  </div>
+  
+  <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
+    <!-- Card header with gradient background -->
+    <div class="bg-gradient-to-r from-purple-50 to-purple-100/30 px-6 py-4">
+      <div class="flex items-center justify-between mb-1">
+        <h3 class="text-sm font-medium text-gray-700">Completed Services</h3>
+        <div class="w-10 h-10 rounded-full bg-white/90 text-purple-600 flex items-center justify-center">
+          <i class="fas fa-clipboard-check"></i>
+        </div>
+      </div>
+      <div class="flex items-end">
+        <span class="text-2xl md:text-3xl font-bold text-gray-800">28</span>
+      </div>
+    </div>
+    
+    <!-- Card footer with change indicator -->
+    <div class="px-6 py-3 bg-white border-t border-gray-100">
+      <div class="flex items-center text-emerald-600">
+        <i class="fas fa-arrow-up mr-1.5 text-xs"></i>
+        <span class="font-medium text-xs">15% </span>
+        <span class="text-xs text-gray-500 ml-1">from last month</span>
+      </div>
+    </div>
+  </div>
+</div>
 
   <!-- Branch Comparison -->
   <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
