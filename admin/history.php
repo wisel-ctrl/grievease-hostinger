@@ -641,7 +641,7 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
   <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
   
   <!-- Modal Content -->
-  <div class="relative bg-white rounded-xl shadow-card w-full max-w-5xl mx-4 z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-3xl mx-4 z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
     <!-- Close Button -->
     <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeEditServiceModal()">
       <i class="fas fa-times"></i>
@@ -655,20 +655,20 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
       </h3>
     </div>
     
-    <!-- Modal Body - Improved 2 columns layout -->
+    <!-- Modal Body - Single Column Layout -->
     <div class="px-6 py-5">
-      <form id="serviceForm" class="grid md:grid-cols-2 gap-x-8">
+      <form id="serviceForm" class="space-y-6">
         <input type="hidden" id="salesId" name="sales_id">
         
-        <!-- Left Column - Customer Information -->
-        <div class="space-y-5">
-          <h4 class="text-lg font-semibold flex items-center text-gray-800 mb-2">
+        <!-- Customer Information Section -->
+        <div class="pb-4 border-b border-gray-200">
+          <h4 class="text-lg font-semibold flex items-center text-gray-800 mb-4">
             <i class="fas fa-user-circle mr-2 text-sidebar-accent"></i>
             Customer Information
           </h4>
 
           <!-- Customer Selection -->
-          <div class="form-group">
+          <div class="form-group mb-4">
             <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
               <i class="fas fa-search mr-2 text-sidebar-accent"></i>
               Search Customer
@@ -688,8 +688,8 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
             <input type="hidden" id="selectedCustomerId" name="customer_id">
           </div>
 
-          <!-- Customer Name Fields - Grouped in 2x2 grid for better layout -->
-          <div class="grid grid-cols-2 gap-4">
+          <!-- Customer Name Fields - 2x2 grid maintained for better layout -->
+          <div class="grid grid-cols-2 gap-4 mb-4">
             <div class="form-group">
               <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
                 <i class="fas fa-user mr-2 text-sidebar-accent"></i>
@@ -740,8 +740,8 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
             </div>
           </div>
 
-          <!-- Contact Information - Side by side for better space usage -->
-          <div class="grid grid-cols-2 gap-4">
+          <!-- Contact Information - 2 columns -->
+          <div class="grid grid-cols-2 gap-4 mb-4">
             <div class="form-group">
               <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
                 <i class="fas fa-envelope mr-2 text-sidebar-accent"></i>
@@ -768,8 +768,8 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
             </div>
           </div>
 
-          <!-- Service Selection & Price - Side by side -->
-          <div class="grid grid-cols-2 gap-4">
+          <!-- Service Selection & Price - 2 columns -->
+          <div class="grid grid-cols-2 gap-4 mb-4">
             <div class="form-group">
               <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
                 <i class="fas fa-briefcase mr-2 text-sidebar-accent"></i>
@@ -802,8 +802,8 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
             </div>
           </div>
 
-          <!-- Branch Selection - Visual Improvement -->
-          <div class="bg-gray-50 p-4 rounded-lg border-l-4 border-gold mt-6">
+          <!-- Branch Selection -->
+          <div class="bg-gray-50 p-4 rounded-lg border-l-4 border-gold">
             <label class="block text-xs font-medium text-gray-700 mb-2">Branch</label>
             <div class="flex flex-wrap gap-6">
               <label class="flex items-center space-x-2 cursor-pointer">
@@ -820,15 +820,15 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
           </div>
         </div>
         
-        <!-- Right Column - Deceased Information -->
-        <div class="space-y-5">
-          <h4 class="text-lg font-semibold flex items-center text-gray-800 mb-2">
+        <!-- Deceased Information Section -->
+        <div class="pt-2">
+          <h4 class="text-lg font-semibold flex items-center text-gray-800 mb-4">
             <i class="fas fa-file-medical mr-2 text-sidebar-accent"></i>
             Deceased Information
           </h4>
           
-          <!-- Deceased Name Fields - Grouped in 2x2 grid for better layout -->
-          <div class="grid grid-cols-2 gap-4">
+          <!-- Deceased Name Fields - 2x2 grid maintained for better layout -->
+          <div class="grid grid-cols-2 gap-4 mb-4">
             <div class="form-group">
               <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
                 <i class="fas fa-user mr-2 text-sidebar-accent"></i>
@@ -880,7 +880,7 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
           </div>
 
           <!-- Deceased Address -->
-          <div class="form-group">
+          <div class="form-group mb-4">
             <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
               <i class="fas fa-map-marker-alt mr-2 text-sidebar-accent"></i>
               Deceased Address
@@ -893,8 +893,8 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
             >
           </div>
 
-          <!-- Deceased Dates - Better aligned in columns -->
-          <div class="grid grid-cols-3 gap-4">
+          <!-- Deceased Dates - 3 columns for dates -->
+          <div class="grid grid-cols-3 gap-4 mb-4">
             <div class="form-group">
               <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
                 <i class="fas fa-calendar-alt mr-2 text-sidebar-accent"></i>
@@ -930,7 +930,7 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
             </div>
           </div>
 
-          <!-- Death Certificate Upload - Better spacing -->
+          <!-- Death Certificate Upload -->
           <div class="form-group mt-4">
             <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
               <i class="fas fa-file-upload mr-2 text-sidebar-accent"></i>
