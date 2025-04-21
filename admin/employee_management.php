@@ -618,7 +618,7 @@ $totalEmployees = $employeeCountResult->fetch_assoc()['total'] ?? 0; // Default 
         </div>
         
         <!-- Branch Selection -->
-<div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+< class="bg-gray-50 p-4 rounded-lg border border-gray-200">
   <p class="block text-xs font-medium text-gray-700 mb-2 flex items-center">
     <i class="fas fa-building mr-2 text-sidebar-accent"></i>
     Branch Location *
@@ -632,7 +632,6 @@ $totalEmployees = $employeeCountResult->fetch_assoc()['total'] ?? 0; // Default 
       </label>
     <?php endforeach; ?>
   </div>
-</div>
     
     <!-- Modal Footer --> 
     <div class="px-6 py-4 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
