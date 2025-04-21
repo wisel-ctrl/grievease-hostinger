@@ -101,6 +101,7 @@ header("Pragma: no-cache");
   </div>
 
   <!-- Inventory Overview Cards -->
+  <!-- Inventory Overview Cards -->
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
     <?php
     // Get total items count
@@ -148,16 +149,14 @@ header("Pragma: no-cache");
     $lowStockChange = $lastMonthData['last_month_low_stock'] > 0 ? 
                      (($lowStock - $lastMonthData['last_month_low_stock']) / $lastMonthData['last_month_low_stock']) * 100 : 0;
     
-    // Card data array with gradient backgrounds matching GrievEase dashboard
+    // Card data array
     $cards = [
         [
             'title' => 'Total Items',
             'value' => $totalItems,
             'change' => $itemsChange,
             'icon' => 'boxes',
-            'gradient' => 'bg-gradient-to-r from-blue-100 to-blue-200',
-            'icon_bg' => 'bg-white',
-            'icon_color' => 'text-blue-500',
+            'color' => 'blue',
             'prefix' => ''
         ],
         [
@@ -165,9 +164,7 @@ header("Pragma: no-cache");
             'value' => number_format($totalValue, 2),
             'change' => $valueChange,
             'icon' => 'peso-sign',
-            'gradient' => 'bg-gradient-to-r from-green-100 to-green-200',
-            'icon_bg' => 'bg-white',
-            'icon_color' => 'text-green-500',
+            'color' => 'green',
             'prefix' => '₱'
         ],
         [
@@ -175,57 +172,54 @@ header("Pragma: no-cache");
             'value' => $lowStock,
             'change' => $lowStockChange,
             'icon' => 'exclamation-triangle',
-            'gradient' => 'bg-gradient-to-r from-amber-100 to-amber-200',
-            'icon_bg' => 'bg-white',
-            'icon_color' => 'text-amber-500',
-            'prefix' => ''
+            'color' => 'orange',
+            'prefix' => '',
+            'inverse_change' => true // For low stock, increasing is bad
         ],
         [
             'title' => 'Turnover Rate',
             'value' => $turnoverRate,
             'change' => 3, // Hardcoded in original
             'icon' => 'sync-alt',
-            'gradient' => 'bg-gradient-to-r from-purple-100 to-purple-200',
-            'icon_bg' => 'bg-white',
-            'icon_color' => 'text-purple-500',
+            'color' => 'purple',
             'prefix' => '',
             'suffix' => '%'
         ]
     ];
     
     foreach ($cards as $card) {
-        // Determine if change is positive or negative
-        $isPositive = $card['change'] >= 0;
+        // Determine if change is positive (for display)
+        $isPositive = isset($card['inverse_change']) && $card['inverse_change'] ? 
+                    $card['change'] < 0 : $card['change'] >= 0;
+        
+        // Set color class for change indicator
+        $changeColorClass = $isPositive ? 'text-emerald-600' : 'text-rose-600';
         
         // Format the change value
         $changeValue = abs(round($card['change']));
-        
-        // Set change color based on positive/negative - matching GrievEase style
-        $changeColorClass = $isPositive ? 'text-green-500' : 'text-red-500';
-        $changeIcon = $isPositive ? 'up' : 'down';
         
         // Set suffix if present
         $suffix = isset($card['suffix']) ? $card['suffix'] : '';
     ?>
     
-    <div class="rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
-        <!-- Card header with gradient background - matching GrievEase style -->
-        <div class="<?php echo $card['gradient']; ?> px-6 py-6">
-            <div class="flex items-center justify-between mb-2">
+    <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
+        <!-- Card header with brighter gradient background -->
+        <div class="bg-gradient-to-r from-<?php echo $card['color']; ?>-100 to-<?php echo $card['color']; ?>-200 px-6 py-4">
+            <div class="flex items-center justify-between mb-1">
                 <h3 class="text-sm font-medium text-gray-700"><?php echo $card['title']; ?></h3>
-                <div class="w-10 h-10 rounded-full <?php echo $card['icon_bg']; ?> <?php echo $card['icon_color']; ?> flex items-center justify-center shadow-sm">
+                <div class="w-10 h-10 rounded-full bg-white/90 text-<?php echo $card['color']; ?>-600 flex items-center justify-center">
                     <i class="fas fa-<?php echo $card['icon']; ?>"></i>
                 </div>
             </div>
             <div class="flex items-end">
-                <span class="text-3xl md:text-4xl font-bold text-gray-800"><?php echo $card['prefix'] . $card['value'] . $suffix; ?></span>
+                <span class="text-2xl md:text-3xl font-bold text-gray-800"><?php echo $card['prefix'] . $card['value'] . $suffix; ?></span>
             </div>
         </div>
         
         <!-- Card footer with change indicator -->
-        <div class="px-6 py-3 bg-white">
+        <div class="px-6 py-3 bg-white border-t border-gray-100">
             <div class="flex items-center <?php echo $changeColorClass; ?>">
-                <i class="fas fa-arrow-<?php echo $changeIcon; ?> mr-1.5 text-xs"></i>
+                <i class="fas fa-arrow-<?php echo $isPositive ? 'up' : 'down'; ?> mr-1.5 text-xs"></i>
                 <span class="font-medium text-xs"><?php echo $changeValue; ?>% </span>
                 <span class="text-xs text-gray-500 ml-1">from last month</span>
             </div>
@@ -234,6 +228,7 @@ header("Pragma: no-cache");
     
     <?php } ?>
 </div>
+  
 
   <!-- Inventory Charts -->
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
