@@ -1,5 +1,6 @@
 <?php
 // save_message.php - Endpoint to save messages to the database
+// save_message.php - Endpoint to save messages to the database
 session_start();
 
 // Include database connection
@@ -55,13 +56,13 @@ $chatId = isset($data['chatId']) ? $data['chatId'] : uniqid('chat_');
 $chatRoomId = isset($data['chatRoomId']) ? $data['chatRoomId'] : $chatId;
 $messageType = isset($data['messageType']) ? $data['messageType'] : 'text';
 $attachmentUrl = isset($data['attachmentUrl']) ? $data['attachmentUrl'] : null;
-$status = 'sent';
 
 // Detect if it's an automated reply
 $isAutomatedReply = isset($data['automated']) && $data['automated'] === true;
 
-// Set the sender based on whether it's an automated reply or not
+// Set the sender and status based on whether it's an automated reply or not
 $sender = $isAutomatedReply ? 'bot' : $user_id;
+$status = $isAutomatedReply ? 'read' : 'sent'; // Use 'read' for bot messages, 'sent' for user messages
 
 // Check if this is an automated reply and if we should send it
 if ($isAutomatedReply) {
@@ -96,7 +97,7 @@ try {
         $chatId, 
         $sender, 
         $data['message'], 
-        $status, 
+        $status, // This will be 'read' for bot messages, 'sent' for user messages
         $chatRoomId, 
         $messageType, 
         $attachmentUrl
@@ -127,10 +128,12 @@ try {
     
     // Insert into chat_recipients table for each recipient
     if (!empty($recipients)) {
-        $recipientStmt = $conn->prepare("INSERT INTO chat_recipients (chatId, userId, status) VALUES (?, ?, 'sent')");
+        $recipientStmt = $conn->prepare("INSERT INTO chat_recipients (chatId, userId, status) VALUES (?, ?, ?)");
         
         foreach ($recipients as $recipient) {
-            $recipientStmt->bind_param("ss", $chatId, $recipient);
+            // Use 'read' status for bot messages, 'sent' for user messages
+            $recipientStatus = $isAutomatedReply ? 'read' : 'sent';
+            $recipientStmt->bind_param("sss", $chatId, $recipient, $recipientStatus);
             $recipientStmt->execute();
         }
         

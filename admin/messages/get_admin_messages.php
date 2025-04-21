@@ -95,7 +95,7 @@ $query = "
             WHERE cm2.chatRoomId = cm.chatRoomId 
             AND cr2.userId = '$admin_id' 
             AND cm2.sender != '$admin_id'
-            AND cr2.status = 'sent'
+            AND cm2.status = 'sent'
         ) AS unread_count
     FROM chat_messages cm
     JOIN chat_recipients cr ON cm.chatId = cr.chatId
@@ -124,10 +124,32 @@ if ($result === false) {
 
 $conversations = [];
 while ($row = $result->fetch_assoc()) {
-    // Ensure the sender name is properly formatted
     if ($row['sender'] == $admin_id) {
-        $row['sender_name'] = 'You (Admin)';
-        $row['sender_email'] = 'admin@grievease.com'; // Replace with actual admin email if needed
+        $row['is_admin'] = true;
+        
+        // Get the customer (user_type 3) info for this chat room
+        $customer_query = "
+            SELECT CONCAT(u.first_name, ' ', u.last_name) AS customer_name, u.email AS customer_email
+            FROM chat_recipients cr
+            JOIN users u ON cr.userId = u.id
+            WHERE cr.chatId IN (
+                SELECT chatId 
+                FROM chat_messages 
+                WHERE chatRoomId = '{$row['chatRoomId']}'
+            )
+            AND u.user_type = 3
+            LIMIT 1
+        ";
+        
+        $customer_result = $conn->query($customer_query);
+        if ($customer_result && $customer_info = $customer_result->fetch_assoc()) {
+            // Replace sender info with customer info
+            $row['sender_name'] = ucwords(strtolower($customer_info['customer_name']));
+            $row['sender_email'] = $customer_info['customer_email'];
+        }
+    } else {
+        // If sender is already the customer, just capitalize the name
+        $row['sender_name'] = ucwords(strtolower($row['sender_name']));
     }
     
     $conversations[] = $row;

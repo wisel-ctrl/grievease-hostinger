@@ -36,7 +36,7 @@ try {
     // Insert the message into chat_messages
     $message_query = "
         INSERT INTO chat_messages (chatId, sender, message, status, chatRoomId, messageType)
-        VALUES ('$chatId', '$admin_id', '$message', 'sent', '$chatRoomId', 'text')
+        VALUES ('$chatId', '$admin_id', '$message', 'read', '$chatRoomId', 'text')
     ";
     
     $conn->query($message_query);
@@ -49,7 +49,7 @@ try {
     
     $recipient_query_receiver = "
         INSERT INTO chat_recipients (chatId, userId, status)
-        VALUES ('$chatId', '$receiverId', 'sent')
+        VALUES ('$chatId', '$receiverId', 'read')
     ";
     
     $conn->query($recipient_query_sender);

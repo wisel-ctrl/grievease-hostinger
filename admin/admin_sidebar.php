@@ -27,6 +27,17 @@ if ($count_result->num_rows > 0) {
     $count_row = $count_result->fetch_assoc();
     $pending_count = $count_row['pending_count'];
 }
+
+// Get the count of unique chatRoomIds where status is 'sent'
+$sent_count = 0;
+$count_query = "SELECT COUNT(DISTINCT chatRoomId) AS sent_count FROM chat_messages WHERE status = 'sent'";
+$count_stmt = $conn->prepare($count_query);
+$count_stmt->execute();
+$count_result = $count_stmt->get_result();
+if ($count_result->num_rows > 0) {
+    $count_row = $count_result->fetch_assoc();
+    $sent_count = $count_row['sent_count'];
+}
 ?>
 <style>
   /* Custom scrollbar styles */
@@ -329,10 +340,16 @@ if ($count_result->num_rows > 0) {
           </a>
         </li>
         <li>
-          <a href="communication_chat.php" class="sidebar-link flex items-center px-5 py-3 text-sidebar-text opacity-80 hover:opacity-100 no-underline transition-all duration-300 hover:bg-sidebar-hover">
-            <i class="fas fa-comments w-5 text-center mr-3 text-sidebar-accent"></i>
-            <span>Chats</span>
-          </a>
+            <a href="communication_chat.php" class="sidebar-link flex items-center px-5 py-3 text-sidebar-text opacity-80 hover:opacity-100 no-underline transition-all duration-300 hover:bg-sidebar-hover relative">
+                <i class="fas fa-comments w-5 text-center mr-3 text-sidebar-accent"></i>
+                <span>Chats</span>
+                <!-- Notification Badge - Only show if there are sent messages -->
+                <?php if ($sent_count > 0): ?>
+                <span id="chat-badge" class="absolute right-4 bg-red-500 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full">
+                    <?php echo $sent_count; ?>
+                </span>
+                <?php endif; ?>
+            </a>
         </li>
       </ul>
         
