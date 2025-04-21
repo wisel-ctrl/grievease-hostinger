@@ -87,6 +87,7 @@ try {
     // Calculate payment status
     $balance = $initialPrice - $amountPaid;
     $paymentStatus = ($balance <= 0) ? 'Fully Paid' : 'With Balance';
+    $status = "Pending"; // Added missing semicolon here
 
     // Insert sales record
     $stmt = $conn->prepare("INSERT INTO sales_tb (
@@ -95,16 +96,16 @@ try {
         sold_by, branch_id, service_id, payment_method,
         initial_price, discounted_price, amount_paid, balance,
         status, payment_status, death_cert_image, deceased_address, with_cremate
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
     
-    // Correct type definition string (24 characters matching 24 parameters)
+    // Correct type definition string (23 parameters now)
     $stmt->bind_param(
-        "issssssssssiiiisddddssss",  // 24 type specifiers
+        "issssssssssiiisddddssss",  // 23 type specifiers
         $customerID, $firstName, $middleName, $lastName, $suffix, $phoneNumber, $email,
         $deceasedFname, $deceasedMname, $deceasedLname, $deceasedSuffix,
         $_SESSION['user_id'], $branchId, $serviceId, $paymentMethod,
         $initialPrice, $initialPrice, $amountPaid, $balance,
-        $paymentStatus, $deathCertUrl, $deceasedAddress, $withCremate
+        $status, $paymentStatus, $deathCertUrl, $deceasedAddress, $withCremate
     );
     
     $stmt->execute();
