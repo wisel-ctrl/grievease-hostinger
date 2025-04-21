@@ -202,8 +202,7 @@ header("Pragma: no-cache");
     ?>
     
     <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
-        <!-- Card header with gradient background -->
-        <div class="bg-gradient-to-r from-<?php echo $card['color']; ?>-50 to-<?php echo $card['color']; ?>-100/30 px-6 py-4">
+        <!-- Card header with brighter gradient background -->
             <div class="flex items-center justify-between mb-1">
                 <h3 class="text-sm font-medium text-gray-700"><?php echo $card['title']; ?></h3>
                 <div class="w-10 h-10 rounded-full bg-white/90 text-<?php echo $card['color']; ?>-600 flex items-center justify-center">
