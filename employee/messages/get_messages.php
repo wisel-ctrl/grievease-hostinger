@@ -55,16 +55,11 @@ $query = "
         cr.status AS recipient_status,
         CONCAT(u.first_name, ' ', u.last_name) AS sender_name,
         u.email AS sender_email,
-        (
-            SELECT CONCAT(cust.first_name, ' ', cust.last_name)
-            FROM users cust
-            WHERE cust.id = (
-                SELECT DISTINCT sender 
-                FROM chat_messages 
-                WHERE chatRoomId = cm.chatRoomId AND sender != '$employee_id'
-                LIMIT 1
-            )
-        ) AS customer_name,
+        CASE
+            WHEN u.user_type = 1 THEN 'Admin'
+            WHEN cm.sender = '$employee_id' THEN 'You (Employee)'
+            ELSE CONCAT(u.first_name, ' ', u.last_name)
+        END AS sender_name,
         (
             SELECT COUNT(*) 
             FROM chat_recipients 
@@ -78,13 +73,14 @@ $query = "
         FROM chat_messages
         GROUP BY chatRoomId
     ) latest ON cm.chatRoomId = latest.chatRoomId AND cm.timestamp = latest.latest_timestamp
-    JOIN chat_recipients cr ON cm.chatId = cr.chatId
+    LEFT JOIN chat_recipients cr ON cm.chatId = cr.chatId AND cr.userId = '$employee_id'
     JOIN users u ON cm.sender = u.id
-    WHERE cr.userId = '$employee_id'
+    WHERE (cr.userId = '$employee_id' OR u.user_type = 1)  -- Include admin messages
     $filter_condition
     $search_condition
     ORDER BY cm.timestamp DESC
 ";
+
 
 $result = $conn->query($query);
 
@@ -110,4 +106,5 @@ echo json_encode([
 ]);
 
 $conn->close();
+
 ?>

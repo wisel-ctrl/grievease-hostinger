@@ -19,12 +19,13 @@ if (!isset($_GET['chatRoomId']) || empty($_GET['chatRoomId'])) {
 
 $chatRoomId = $conn->real_escape_string($_GET['chatRoomId']);
 
-// Get the customer details from the first message where sender is not the employee
+// Get the other participant's details (customer or admin)
 $user_query = "
     SELECT 
         u.id,
         CONCAT(u.first_name, ' ', u.last_name) AS name,
-        u.email
+        u.email,
+        u.user_type
     FROM chat_messages cm
     JOIN users u ON cm.sender = u.id
     WHERE cm.chatRoomId = '$chatRoomId'
@@ -35,31 +36,35 @@ $user_query = "
 
 $user_result = $conn->query($user_query);
 
+// Fallback: If no messages from others, check recipients
 if ($user_result === false || $user_result->num_rows === 0) {
-    // If no messages from customer, try getting recipient info as fallback
     $user_query = "
         SELECT 
             u.id,
             CONCAT(u.first_name, ' ', u.last_name) AS name,
-            u.email
+            u.email,
+            u.user_type
         FROM chat_recipients cr
         JOIN users u ON cr.userId = u.id
         WHERE cr.chatRoomId = '$chatRoomId'
         AND cr.userId != '$employee_id'
         LIMIT 1
     ";
-    
     $user_result = $conn->query($user_query);
-    
-    if ($user_result === false || $user_result->num_rows === 0) {
-        echo json_encode(['success' => false, 'error' => 'Customer not found']);
-        exit();
-    }
+}
+
+if ($user_result === false || $user_result->num_rows === 0) {
+    echo json_encode(['success' => false, 'error' => 'No participant found']);
+    exit();
 }
 
 $userInfo = $user_result->fetch_assoc();
+// Label admins explicitly
+if ($userInfo['user_type'] == 1) {
+    $userInfo['name'] = '[Admin] ' . $userInfo['name'];
+}
 
-// Get all messages in the conversation
+// Get all messages in the conversation (including admin messages)
 $messages_query = "
     SELECT 
         cm.chatId,
@@ -68,11 +73,17 @@ $messages_query = "
         cm.timestamp,
         cm.messageType,
         cm.attachmentUrl,
-        cr.status AS recipient_status
+        cr.status AS recipient_status,
+        CASE
+            WHEN u.user_type = 1 THEN '[Admin] ' || CONCAT(u.first_name, ' ', u.last_name)
+            WHEN cm.sender = '$employee_id' THEN 'You (Employee)'
+            ELSE CONCAT(u.first_name, ' ', u.last_name)
+        END AS sender_name
     FROM chat_messages cm
-    JOIN chat_recipients cr ON cm.chatId = cr.chatId
+    LEFT JOIN chat_recipients cr ON cm.chatId = cr.chatId AND cr.userId = '$employee_id'
+    JOIN users u ON cm.sender = u.id
     WHERE cm.chatRoomId = '$chatRoomId'
-    AND cr.userId = '$employee_id'
+    AND (cr.userId = '$employee_id' OR u.user_type = 1)  -- Include admin messages
     ORDER BY cm.timestamp ASC
 ";
 
@@ -88,7 +99,7 @@ while ($row = $messages_result->fetch_assoc()) {
     $messages[] = $row;
 }
 
-// Mark all messages as read
+// Mark messages as read (only those where employee is recipient)
 $update_query = "
     UPDATE chat_recipients
     SET status = 'read'
@@ -96,7 +107,6 @@ $update_query = "
     AND userId = '$employee_id'
     AND status IN ('sent', 'delivered')
 ";
-
 $conn->query($update_query);
 
 echo json_encode([
