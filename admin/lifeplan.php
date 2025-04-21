@@ -231,13 +231,18 @@ header("Pragma: no-cache");
 
 <div id="main-content" class="p-6 bg-gray-50 min-h-screen transition-all duration-300 ml-64 w-[calc(100%-16rem)] main-content">
     <!-- Header Actions -->
-    <div class="flex justify-between items-center mb-6">
-      <h1 class="font-cinzel text-2xl font-bold text-slate-800">
-        <i class="fas fa-user-shield text-accent mr-2"></i> Life Plan Management
-      </h1>
-      <button class="bg-accent hover:bg-yellow-700 text-white px-4 py-2 rounded-md transition-colors flex items-center gap-2">
-        <i class="fas fa-plus"></i> New Plan
-      </button>
+    <div class="flex justify-between items-center mb-6 bg-white p-5 rounded-lg shadow-sidebar">
+      <div>
+        <h1 class="text-2xl font-bold text-sidebar-text">Lifeplan Subscriptions</h1>
+      </div>
+      <div class="flex space-x-3">
+        <button class="p-2 bg-white border border-sidebar-border rounded-lg shadow-input text-sidebar-text hover:bg-sidebar-hover transition-all duration-300">
+          <i class="fas fa-bell"></i>
+        </button>
+        <button class="p-2 bg-white border border-sidebar-border rounded-lg shadow-input text-sidebar-text hover:bg-sidebar-hover transition-all duration-300">
+          <i class="fas fa-cog"></i>
+        </button>
+      </div>
     </div>
     
     <!-- Stats Cards -->
