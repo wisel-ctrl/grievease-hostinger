@@ -173,29 +173,45 @@ $servicesJson = json_encode($allServices);
     </div>
 
     <!-- Branch Selection Section -->
-<div id="branch-selection" class="mb-8">
-  <h2 class="mb-5 text-gray-600 text-lg">Select a Branch Location</h2>
-  <div id="branches-container" class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-3xl mx-auto">
-    <!-- Branches will be dynamically added here based on database data -->
-  </div>
-</div>
+    <div id="branch-selection" class="mb-8">
+      <h2 class="mb-5 text-gray-600 text-lg">Select a Branch Location</h2>
+      <div id="branches-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <!-- Branches will be dynamically added here based on database data -->
+      </div>
+    </div>
 
-<!-- Services Section (Initially hidden) -->
-<div id="services-section" class="mb-8 hidden">
-  <div class="flex items-center mb-5">
-    <button onclick="goBackToBranches()" class="mr-3 p-2 bg-white border border-sidebar-border rounded-lg shadow-input text-sidebar-text hover:bg-sidebar-hover transition-all duration-300">
-      <i class="fas fa-arrow-left"></i>
-    </button>
-    <h2 class="text-gray-600 text-lg">
-      <span id="selected-category-name" class="font-semibold text-sidebar-accent"></span> Services at 
-      <span id="services-branch-name" class="font-semibold text-sidebar-accent"></span>
-    </h2>
+    <!-- Category Selection Section (Initially hidden)
+    <div id="category-selection" class="mb-8 hidden">
+      <div class="flex items-center mb-5">
+        <button onclick="goBackToBranches()" class="mr-3 p-2 bg-white border border-sidebar-border rounded-lg shadow-input text-sidebar-text hover:bg-sidebar-hover transition-all duration-300">
+          <i class="fas fa-arrow-left"></i>
+        </button>
+        <h2 class="text-gray-600 text-lg">Select a Service Category for <span id="selected-branch-name" class="font-semibold text-sidebar-accent"></span></h2>
+      </div>
+      <div id="categories-container" class="grid grid-cols-1 md:grid-cols-3 gap-5">
+        Categories will be dynamically added here based on database data 
+      </div>
+    </div> -->
+
+    <!-- Services Section (Initially hidden) -->
+    <div id="services-section" class="mb-8 hidden">
+      <div class="flex items-center mb-5">
+        <button onclick="goBackToBranches()" class="mr-3 p-2 bg-white border border-sidebar-border rounded-lg shadow-input text-sidebar-text hover:bg-sidebar-hover transition-all duration-300">
+          <i class="fas fa-arrow-left"></i>
+        </button>
+        <h2 class="text-gray-600 text-lg">
+          <span id="selected-category-name" class="font-semibold text-sidebar-accent"></span> Services at 
+          <span id="services-branch-name" class="font-semibold text-sidebar-accent"></span>
+        </h2>
+      </div>
+      
+      <div id="services-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+        <!-- Services will be dynamically added here based on branch and category selection -->
+      </div>
+    </div>
+
+
   </div>
-  
-  <div id="services-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-    <!-- Services will be dynamically added here based on branch and category selection -->
-  </div>
-</div>
 
     <!-- Package Modal -->
     <div id="package-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
