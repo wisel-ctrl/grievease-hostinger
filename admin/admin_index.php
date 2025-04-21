@@ -274,7 +274,7 @@ require_once '../db_connect.php'; // Database connection
   <!-- Paete Branch Card -->
   <div class="bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-200">
     <!-- Card header with subdued gradient background -->
-    <div class="bg-gradient-to-r from-gray-100 to-slate-200 p-5 border-b border-gray-200">
+    <div class="bg-gradient-to-r from-gray-100 to-slate-500 p-5 border-b border-gray-200">
       <div class="flex items-center justify-between">
         <div class="flex items-center space-x-3">
           <div class="w-10 h-10 rounded-full bg-white/90 text-slate-700 flex items-center justify-center shadow-sm">
