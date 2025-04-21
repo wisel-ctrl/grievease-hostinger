@@ -1337,7 +1337,7 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
   <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
   
   <!-- Modal Content -->
-  <div class="relative bg-white rounded-xl shadow-card w-full max-w-5xl mx-4 z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-2xl mx-4 z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
     <!-- Close Button -->
     <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeRecordPaymentModal()">
       <i class="fas fa-times"></i>
@@ -1353,126 +1353,120 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
     
     <!-- Modal Body -->
     <div class="px-6 py-5">
-      <form id="recordPaymentForm" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <!-- Left Column -->
-        <div class="space-y-4">
-          <input type="hidden" id="customerID" name="customerID">
-          <input type="hidden" id="branchID" name="branchID">
-          
-          <!-- Service ID -->
-          <div class="flex flex-col">
-            <label for="paymentServiceId" class="text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-hashtag mr-2 text-sidebar-accent w-4 text-center"></i>
-              Sales ID
-            </label>
-            <div class="relative">
-              <input type="text" id="paymentServiceId" name="paymentServiceId" readonly class="w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
-            </div>
-          </div>
-          
-          <!-- Client Name -->
-          <div class="flex flex-col">
-            <label for="paymentClientName" class="text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-user mr-2 text-sidebar-accent w-4 text-center"></i>
-              Client Name
-            </label>
-            <div class="relative">
-              <input type="text" id="paymentClientName" name="paymentClientName" readonly class="w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
-            </div>
-          </div>
-          
-          <!-- Outstanding Balance -->
-          <div class="flex flex-col">
-            <label for="currentBalance" class="text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-balance-scale mr-2 text-sidebar-accent w-4 text-center"></i>
-              Outstanding Balance
-            </label>
-            <div class="relative">
-              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <span class="text-gray-500">₱</span>
-              </div>
-              <input type="text" id="currentBalance" name="currentBalance" readonly class="w-full pl-8 px-3 py-2 bg-gray-100 border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
-            </div>
-          </div>
-          
-          <!-- Notes Section -->
-          <div class="flex flex-col">
-            <label for="paymentNotes" class="text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-sticky-note mr-2 text-sidebar-accent w-4 text-center"></i>
-              Notes
-            </label>
-            <div class="relative">
-              <textarea id="paymentNotes" name="paymentNotes" rows="5" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"></textarea>
-            </div>
+      <form id="recordPaymentForm" class="space-y-4">
+        <input type="hidden" id="customerID" name="customerID">
+        <input type="hidden" id="branchID" name="branchID">
+        
+        <!-- Service ID -->
+        <div class="flex flex-col">
+          <label for="paymentServiceId" class="text-xs font-medium text-gray-700 mb-1 flex items-center">
+            <i class="fas fa-hashtag mr-2 text-sidebar-accent w-4 text-center"></i>
+            Sales ID
+          </label>
+          <div class="relative">
+            <input type="text" id="paymentServiceId" name="paymentServiceId" readonly class="w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
           </div>
         </div>
         
-        <!-- Right Column -->
-        <div class="space-y-4">
-          <!-- Payment Amount -->
-          <div class="flex flex-col">
-            <label for="paymentAmount" class="text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-coins mr-2 text-sidebar-accent w-4 text-center"></i>
-              Payment Amount
-            </label>
-            <div class="relative">
-              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <span class="text-gray-500">₱</span>
-              </div>
-              <input type="number" id="paymentAmount" name="paymentAmount" required class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
-            </div>
+        <!-- Client Name -->
+        <div class="flex flex-col">
+          <label for="paymentClientName" class="text-xs font-medium text-gray-700 mb-1 flex items-center">
+            <i class="fas fa-user mr-2 text-sidebar-accent w-4 text-center"></i>
+            Client Name
+          </label>
+          <div class="relative">
+            <input type="text" id="paymentClientName" name="paymentClientName" readonly class="w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
           </div>
-          
-          <!-- Payment Method -->
-          <div class="flex flex-col">
-            <label for="paymentMethod" class="text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-credit-card mr-2 text-sidebar-accent w-4 text-center"></i>
-              Payment Method
-            </label>
-            <div class="relative">
-              <select id="paymentMethod" name="paymentMethod" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
-                <option value="" disabled selected>Select payment method</option>
-                <option value="Cash">Cash</option>
-                <option value="G Cash">G-Cash</option>
-                <option value="Credit Card">Credit Card</option>
-                <option value="Bank Transfer">Bank Transfer</option>
-              </select>
+        </div>
+        
+        <!-- Outstanding Balance -->
+        <div class="flex flex-col">
+          <label for="currentBalance" class="text-xs font-medium text-gray-700 mb-1 flex items-center">
+            <i class="fas fa-balance-scale mr-2 text-sidebar-accent w-4 text-center"></i>
+            Outstanding Balance
+          </label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <span class="text-gray-500">₱</span>
             </div>
+            <input type="text" id="currentBalance" name="currentBalance" readonly class="w-full pl-8 px-3 py-2 bg-gray-100 border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
           </div>
-          
-          <!-- Payment Date -->
-          <div class="flex flex-col">
-            <label for="paymentDate" class="text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-calendar-alt mr-2 text-sidebar-accent w-4 text-center"></i>
-              Payment Date
-            </label>
-            <div class="relative">
-              <input type="date" id="paymentDate" name="paymentDate" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+        </div>
+        
+        <!-- Payment Amount -->
+        <div class="flex flex-col">
+          <label for="paymentAmount" class="text-xs font-medium text-gray-700 mb-1 flex items-center">
+            <i class="fas fa-coins mr-2 text-sidebar-accent w-4 text-center"></i>
+            Payment Amount
+          </label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <span class="text-gray-500">₱</span>
             </div>
+            <input type="number" id="paymentAmount" name="paymentAmount" required class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
           </div>
-          
-          <!-- Summary Section -->
-          <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
-            <p class="block text-xs font-medium text-gray-700 mb-2 flex items-center">
-              <i class="fas fa-money-bill-wave mr-2 text-sidebar-accent w-4 text-center"></i>
-              Payment Summary
-            </p>
-            <div class="flex justify-between mb-2 text-gray-700">
-              <span>Current Balance:</span>
-              <span id="summary-current-balance" class="font-medium">₱0.00</span>
-            </div>
-            <div class="flex justify-between mb-2 text-gray-700">
-              <span>Payment Amount:</span>
-              <span id="summary-payment-amount" class="font-medium">₱0.00</span>
-            </div>
-            <div class="flex justify-between mb-2 text-gray-700">
-              <span>Total Paid:</span>
-              <span id="total-amount-paid" class="font-medium">₱0.00</span>
-            </div>
-            <div class="flex justify-between font-bold text-lg mt-4 pt-4 border-t border-dashed border-purple-200 text-sidebar-accent">
-              <span>New Balance:</span>
-              <span id="summary-new-balance">₱0.00</span>
-            </div>
+        </div>
+        
+        <!-- Payment Method -->
+        <div class="flex flex-col">
+          <label for="paymentMethod" class="text-xs font-medium text-gray-700 mb-1 flex items-center">
+            <i class="fas fa-credit-card mr-2 text-sidebar-accent w-4 text-center"></i>
+            Payment Method
+          </label>
+          <div class="relative">
+            <select id="paymentMethod" name="paymentMethod" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+              <option value="" disabled selected>Select payment method</option>
+              <option value="Cash">Cash</option>
+              <option value="G Cash">G-Cash</option>
+              <option value="Credit Card">Credit Card</option>
+              <option value="Bank Transfer">Bank Transfer</option>
+            </select>
+          </div>
+        </div>
+        
+        <!-- Payment Date -->
+        <div class="flex flex-col">
+          <label for="paymentDate" class="text-xs font-medium text-gray-700 mb-1 flex items-center">
+            <i class="fas fa-calendar-alt mr-2 text-sidebar-accent w-4 text-center"></i>
+            Payment Date
+          </label>
+          <div class="relative">
+            <input type="date" id="paymentDate" name="paymentDate" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+          </div>
+        </div>
+        
+        <!-- Notes Section -->
+        <div class="flex flex-col">
+          <label for="paymentNotes" class="text-xs font-medium text-gray-700 mb-1 flex items-center">
+            <i class="fas fa-sticky-note mr-2 text-sidebar-accent w-4 text-center"></i>
+            Notes
+          </label>
+          <div class="relative">
+            <textarea id="paymentNotes" name="paymentNotes" rows="3" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"></textarea>
+          </div>
+        </div>
+        
+        <!-- Summary Section -->
+        <div class="bg-gray-50 p-4 rounded-lg border border-gray-200 mt-6">
+          <p class="block text-xs font-medium text-gray-700 mb-2 flex items-center">
+            <i class="fas fa-money-bill-wave mr-2 text-sidebar-accent w-4 text-center"></i>
+            Payment Summary
+          </p>
+          <div class="flex justify-between mb-2 text-gray-700">
+            <span>Current Balance:</span>
+            <span id="summary-current-balance" class="font-medium">₱0.00</span>
+          </div>
+          <div class="flex justify-between mb-2 text-gray-700">
+            <span>Payment Amount:</span>
+            <span id="summary-payment-amount" class="font-medium">₱0.00</span>
+          </div>
+          <div class="flex justify-between mb-2 text-gray-700">
+            <span>Total Paid:</span>
+            <span id="total-amount-paid" class="font-medium">₱0.00</span>
+          </div>
+          <div class="flex justify-between font-bold text-lg mt-4 pt-4 border-t border-dashed border-purple-200 text-sidebar-accent">
+            <span>New Balance:</span>
+            <span id="summary-new-balance">₱0.00</span>
           </div>
         </div>
       </form>
