@@ -101,8 +101,7 @@ header("Pragma: no-cache");
   </div>
 
   <!-- Inventory Overview Cards -->
-  <!-- Inventory Overview Cards -->
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
     <?php
     // Get total items count
     $totalItemsQuery = "SELECT COUNT(*) as total_items FROM inventory_tb WHERE status = 1";
@@ -148,68 +147,86 @@ header("Pragma: no-cache");
                   (($totalValue - $lastMonthData['last_month_value']) / $lastMonthData['last_month_value']) * 100 : 0;
     $lowStockChange = $lastMonthData['last_month_low_stock'] > 0 ? 
                      (($lowStock - $lastMonthData['last_month_low_stock']) / $lastMonthData['last_month_low_stock']) * 100 : 0;
+    
+    // Card data array
+    $cards = [
+        [
+            'title' => 'Total Items',
+            'value' => $totalItems,
+            'change' => $itemsChange,
+            'icon' => 'boxes',
+            'color' => 'blue',
+            'prefix' => ''
+        ],
+        [
+            'title' => 'Total Value',
+            'value' => number_format($totalValue, 2),
+            'change' => $valueChange,
+            'icon' => 'peso-sign',
+            'color' => 'green',
+            'prefix' => '₱'
+        ],
+        [
+            'title' => 'Low Stock Items',
+            'value' => $lowStock,
+            'change' => $lowStockChange,
+            'icon' => 'exclamation-triangle',
+            'color' => 'orange',
+            'prefix' => '',
+            'inverse_change' => true // For low stock, increasing is bad
+        ],
+        [
+            'title' => 'Turnover Rate',
+            'value' => $turnoverRate,
+            'change' => 3, // Hardcoded in original
+            'icon' => 'sync-alt',
+            'color' => 'purple',
+            'prefix' => '',
+            'suffix' => '%'
+        ]
+    ];
+    
+    foreach ($cards as $card) {
+        // Determine if change is positive (for display)
+        $isPositive = isset($card['inverse_change']) && $card['inverse_change'] ? 
+                    $card['change'] < 0 : $card['change'] >= 0;
+        
+        // Set color class for change indicator
+        $changeColorClass = $isPositive ? 'text-emerald-600' : 'text-rose-600';
+        
+        // Format the change value
+        $changeValue = abs(round($card['change']));
+        
+        // Set suffix if present
+        $suffix = isset($card['suffix']) ? $card['suffix'] : '';
     ?>
     
-    <!-- Total Items Card -->
-    <div class="bg-white rounded-lg shadow-sidebar p-5 border border-sidebar-border hover:shadow-card transition-all duration-300">
-        <div class="flex items-center mb-3">
-            <div class="w-12 h-12 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center mr-3">
-                <i class="fas fa-boxes text-lg"></i>
+    <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
+        <!-- Card header with gradient background -->
+        <div class="bg-gradient-to-r from-<?php echo $card['color']; ?>-50 to-<?php echo $card['color']; ?>-100/30 px-6 py-4">
+            <div class="flex items-center justify-between mb-1">
+                <h3 class="text-sm font-medium text-gray-700"><?php echo $card['title']; ?></h3>
+                <div class="w-10 h-10 rounded-full bg-white/90 text-<?php echo $card['color']; ?>-600 flex items-center justify-center">
+                    <i class="fas fa-<?php echo $card['icon']; ?>"></i>
+                </div>
             </div>
-            <span class="text-sidebar-text font-medium">Total Items</span>
+            <div class="flex items-end">
+                <span class="text-2xl md:text-3xl font-bold text-gray-800"><?php echo $card['prefix'] . $card['value'] . $suffix; ?></span>
+            </div>
         </div>
-        <div class="text-3xl font-bold mb-2 text-sidebar-text"><?php echo $totalItems; ?></div>
-        <div class="text-sm <?php echo $itemsChange >= 0 ? 'text-green-600' : 'text-red-600'; ?> flex items-center">
-            <i class="fas fa-arrow-<?php echo $itemsChange >= 0 ? 'up' : 'down'; ?> mr-1"></i> 
-            <?php echo abs(round($itemsChange)) ?>% from last month
+        
+        <!-- Card footer with change indicator -->
+        <div class="px-6 py-3 bg-white border-t border-gray-100">
+            <div class="flex items-center <?php echo $changeColorClass; ?>">
+                <i class="fas fa-arrow-<?php echo $isPositive ? 'up' : 'down'; ?> mr-1.5 text-xs"></i>
+                <span class="font-medium text-xs"><?php echo $changeValue; ?>% </span>
+                <span class="text-xs text-gray-500 ml-1">from last month</span>
+            </div>
         </div>
     </div>
-
-    <!-- Total Value Card -->
-    <div class="bg-white rounded-lg shadow-sidebar p-5 border border-sidebar-border hover:shadow-card transition-all duration-300">
-        <div class="flex items-center mb-3">
-            <div class="w-12 h-12 rounded-lg bg-green-100 text-green-600 flex items-center justify-center mr-3">
-                <i class="fas fa-peso-sign text-lg"></i>
-            </div>
-            <span class="text-sidebar-text font-medium">Total Value</span>
-        </div>
-        <div class="text-3xl font-bold mb-2 text-sidebar-text">₱<?php echo number_format($totalValue, 2); ?></div>
-        <div class="text-sm <?php echo $valueChange >= 0 ? 'text-green-600' : 'text-red-600'; ?> flex items-center">
-            <i class="fas fa-arrow-<?php echo $valueChange >= 0 ? 'up' : 'down'; ?> mr-1"></i> 
-            <?php echo abs(round($valueChange)) ?>% from last month
-        </div>
-    </div>
-
-    <!-- Low Stock Items Card -->
-    <div class="bg-white rounded-lg shadow-sidebar p-5 border border-sidebar-border hover:shadow-card transition-all duration-300">
-        <div class="flex items-center mb-3">
-            <div class="w-12 h-12 rounded-lg bg-orange-100 text-orange-600 flex items-center justify-center mr-3">
-                <i class="fas fa-exclamation-triangle text-lg"></i>
-            </div>
-            <span class="text-sidebar-text font-medium">Low Stock Items</span>
-        </div>
-        <div class="text-3xl font-bold mb-2 text-sidebar-text"><?php echo $lowStock; ?></div>
-        <div class="text-sm <?php echo $lowStockChange >= 0 ? 'text-red-600' : 'text-green-600'; ?> flex items-center">
-            <i class="fas fa-arrow-<?php echo $lowStockChange >= 0 ? 'up' : 'down'; ?> mr-1"></i> 
-            <?php echo abs(round($lowStockChange)) ?>% from last month
-        </div>
-    </div>
-
-    <!-- Turnover Rate Card -->
-    <div class="bg-white rounded-lg shadow-sidebar p-5 border border-sidebar-border hover:shadow-card transition-all duration-300">
-        <div class="flex items-center mb-3">
-            <div class="w-12 h-12 rounded-lg bg-purple-100 text-purple-600 flex items-center justify-center mr-3">
-                <i class="fas fa-sync-alt text-lg"></i>
-            </div>
-            <span class="text-sidebar-text font-medium">Turnover Rate</span>
-        </div>
-        <div class="text-3xl font-bold mb-2 text-sidebar-text"><?php echo $turnoverRate; ?>%</div>
-        <div class="text-sm text-green-600 flex items-center">
-            <i class="fas fa-arrow-up mr-1"></i> 3% from last month
-        </div>
-    </div>
+    
+    <?php } ?>
 </div>
-  
 
   <!-- Inventory Charts -->
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
