@@ -506,6 +506,70 @@ $offset = ($current_page - 1) * $bookings_per_page;
       </button>
     </div>
   </div>
+
+  <!-- Payment Modal -->
+<div id="paymentModal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
+  <!-- Modal Backdrop -->
+  <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+  
+  <!-- Modal Content -->
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-md mx-4 z-10 transform transition-all duration-300">
+    <!-- Close Button -->
+    <button type="button" class="absolute top-4 right-4 text-gray-500 hover:text-sidebar-accent transition-colors" onclick="closePaymentModal()">
+      <i class="fas fa-times"></i>
+    </button>
+    
+    <!-- Modal Header -->
+    <div class="px-6 py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
+      <h3 class="text-xl font-bold text-white flex items-center">
+        <i class="fas fa-money-bill-wave mr-2"></i>
+        Payment Details
+      </h3>
+    </div>
+    
+    <!-- Modal Body -->
+    <div class="px-6 py-5">
+      <form id="paymentForm">
+        <input type="hidden" id="bookingIdForPayment" name="bookingId">
+        
+        <div class="mb-4">
+          <label for="amountPaidInput" class="block text-sm font-medium text-gray-700 mb-1">Amount Paid</label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <span class="text-gray-500">₱</span>
+            </div>
+            <input type="number" step="0.01" id="amountPaidInput" name="amountPaid" 
+                   class="pl-8 block w-full rounded-md border-gray-300 shadow-sm focus:border-sidebar-accent focus:ring focus:ring-sidebar-accent focus:ring-opacity-50 py-2 px-3 border" 
+                   placeholder="0.00" required>
+          </div>
+        </div>
+        
+        <div class="mb-4">
+          <label for="paymentMethod" class="block text-sm font-medium text-gray-700 mb-1">Payment Method</label>
+          <select id="paymentMethod" name="paymentMethod" 
+                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-sidebar-accent focus:ring focus:ring-sidebar-accent focus:ring-opacity-50 py-2 px-3 border" required>
+            <option value="">Select payment method</option>
+            <option value="Bank">Bank Transfer</option>
+            <option value="GCash">GCash</option>
+            <option value="PayMaya">PayMaya</option>
+            <option value="Cash">Cash</option>
+            <option value="Others">Others</option>
+          </select>
+        </div>
+        
+        <div class="flex justify-end gap-3 mt-6">
+          <button type="button" onclick="closePaymentModal()" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors">
+            Cancel
+          </button>
+          <button type="submit" class="px-4 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg hover:shadow-md transition-all">
+            Confirm Payment
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
 </div>
 
 
@@ -513,6 +577,8 @@ $offset = ($current_page - 1) * $bookings_per_page;
     <script src="tailwind.js"></script>
 
     <script>
+      let currentBookingIdForPayment = null;
+
     function openBookingDetails(bookingId) {
   // First, fetch booking details via AJAX
   fetch('bookingpage/get_booking_details.php?id=' + bookingId)
@@ -695,6 +761,91 @@ window.addEventListener("keydown", function (event) {
     }
 });
 
+function confirmAccept() {
+    // Get the booking ID from the modal
+    const bookingIdText = document.getElementById('bookingId').textContent;
+    const bookingId = bookingIdText.split('-')[2].trim();
+    currentBookingIdForPayment = bookingId;
+    
+    // Set the booking ID in the hidden field
+    document.getElementById('bookingIdForPayment').value = bookingId;
+    
+    // Show the payment modal
+    openPaymentModal();
+}
+
+function openPaymentModal() {
+    const modal = document.getElementById("paymentModal");
+    modal.classList.remove("hidden");
+    modal.classList.add("flex");
+    document.body.classList.add("overflow-hidden");
+}
+
+function closePaymentModal() {
+    const modal = document.getElementById("paymentModal");
+    modal.classList.add("hidden");
+    modal.classList.remove("flex");
+    document.body.classList.remove("overflow-hidden");
+}
+
+// Handle payment form submission
+document.getElementById('paymentForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const amountPaid = document.getElementById('amountPaidInput').value;
+    const paymentMethod = document.getElementById('paymentMethod').value;
+    
+    if (!amountPaid || !paymentMethod) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Please fill in all payment details',
+        });
+        return;
+    }
+    
+    // Prepare the data to send
+    const formData = new FormData();
+    formData.append('bookingId', currentBookingIdForPayment);
+    formData.append('amountPaid', amountPaid);
+    formData.append('paymentMethod', paymentMethod);
+    formData.append('action', 'acceptBooking');
+    
+    // Send the data via AJAX
+    fetch('bookingpage/process_booking.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: 'Booking accepted successfully!',
+            }).then(() => {
+                closePaymentModal();
+                closeModal();
+                // Refresh the page or update the table
+                window.location.reload();
+            });
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: data.message || 'Failed to accept booking',
+            });
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'An error occurred while processing your request',
+        });
+    });
+});
     </script>
 </body>
 </html>
