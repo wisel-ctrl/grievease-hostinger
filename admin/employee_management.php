@@ -622,22 +622,23 @@ $totalEmployees = $employeeCountResult->fetch_assoc()['total'] ?? 0; // Default 
         </div>
         
         <!-- Branch Selection -->
-        <!-- Branch Selection -->
-<div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
-  <p class="block text-xs font-medium text-gray-700 mb-2 flex items-center">
-    <i class="fas fa-building mr-2 text-sidebar-accent"></i>
-    Branch Location *
-  </p>
-  <div class="flex gap-4">
-    <?php foreach ($branches as $branch): ?>
-      <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200 flex-1 justify-center">
-        <input type="radio" name="branch" value="<?php echo $branch['branch_id']; ?>" required class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
-        <i class="fas fa-building mr-1 text-sidebar-accent"></i>
-        <?php echo htmlspecialchars($branch['branch_name']); ?>
-      </label>
-    <?php endforeach; ?>
-  </div>
-</div>
+        <div class="bg-gray-50 p-4 rounded-lg border-l-4 border-gold">
+          <label class="block text-xs font-medium text-gray-700 mb-2 flex items-center">
+            <i class="fas fa-building mr-2 text-sidebar-accent"></i>
+            Branch Location *
+          </label>
+          <div class="flex flex-wrap gap-4">
+            <?php foreach ($branches as $branch): ?>
+              <label class="flex items-center space-x-2 cursor-pointer">
+                <input type="radio" name="branch" value="<?php echo $branch['branch_id']; ?>" required class="hidden peer">
+                <div class="w-5 h-5 rounded-full border-2 border-gold flex items-center justify-center peer-checked:bg-gold peer-checked:border-darkgold transition-colors"></div>
+                <span class="text-gray-700 font-medium"><?php echo htmlspecialchars($branch['branch_name']); ?></span>
+              </label>
+            <?php endforeach; ?>
+          </div>
+        </div>
+      </form>
+    </div>
     
     <!-- Modal Footer --> 
     <div class="px-6 py-4 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
