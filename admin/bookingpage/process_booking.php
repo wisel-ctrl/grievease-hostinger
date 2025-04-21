@@ -95,10 +95,11 @@ try {
         sold_by, branch_id, service_id, payment_method,
         initial_price, discounted_price, amount_paid, balance,
         status, payment_status, death_cert_image, deceased_address, with_cremate
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Pending', ?, ?, ?, ?)");
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
     
+    // Correct type definition string (24 characters matching 24 parameters)
     $stmt->bind_param(
-        "issssssssssiiiisddddssss",  // Note the last 's' instead of 'i'
+        "issssssssssiiiisddddssss",  // 24 type specifiers
         $customerID, $firstName, $middleName, $lastName, $suffix, $phoneNumber, $email,
         $deceasedFname, $deceasedMname, $deceasedLname, $deceasedSuffix,
         $_SESSION['user_id'], $branchId, $serviceId, $paymentMethod,
