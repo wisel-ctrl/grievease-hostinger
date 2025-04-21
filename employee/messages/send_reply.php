@@ -1,21 +1,16 @@
 <?php
-//messages/send_reply.php
+// messages/send_reply.php
 session_start();
 header('Content-Type: application/json');
 
-// Check if user is logged in as employee
 if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] != 2) {
     echo json_encode(['success' => false, 'error' => 'Unauthorized access']);
     exit();
 }
 
-// Database connection
-require_once '../../db_connect.php'; // Adjust path as needed
+require_once '../../db_connect.php';
 
-// Get employee ID from session
 $employee_id = $_SESSION['user_id'];
-
-// Get request data
 $data = json_decode(file_get_contents('php://input'), true);
 
 if (!isset($data['chatRoomId']) || !isset($data['receiverId']) || !isset($data['message'])) {
@@ -26,91 +21,63 @@ if (!isset($data['chatRoomId']) || !isset($data['receiverId']) || !isset($data['
 $chatRoomId = $conn->real_escape_string($data['chatRoomId']);
 $receiverId = $conn->real_escape_string($data['receiverId']);
 $message = $conn->real_escape_string($data['message']);
-
-// Generate a unique chat ID
 $chatId = uniqid('chat_', true);
 
-// Determine if this user should be receiver2 or receiver3
-// First check if there are any messages in this chat room with receiver2 or receiver3
-$check_query = "
-    SELECT receiver2, receiver3 
-    FROM chat_messages 
-    WHERE chatRoomId = '$chatRoomId' 
-    AND (receiver2 IS NOT NULL OR receiver3 IS NOT NULL)
-    LIMIT 1
-";
+// Start transaction
+$conn->begin_transaction();
 
-$check_result = $conn->query($check_query);
-
-$receiver_field = "receiver"; // Default
-$other_receiver_field = null;
-$other_receiver_value = null;
-
-if ($check_result && $check_result->num_rows > 0) {
-    $row = $check_result->fetch_assoc();
+try {
+    // Insert into chat_messages
+    $query = "INSERT INTO chat_messages (chatId, sender, message, chatRoomId, messageType, status) 
+              VALUES (?, ?, ?, ?, 'text', 'sent')";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("ssss", $chatId, $employee_id, $message, $chatRoomId);
+    $stmt->execute();
     
-    // If this employee was previously receiver2, use receiver2
-    if ($row['receiver2'] == $employee_id) {
-        $receiver_field = "receiver2";
-        $other_receiver_field = "receiver3";
-        $other_receiver_value = $row['receiver3'];
-    } 
-    // If this employee was previously receiver3, use receiver3
-    elseif ($row['receiver3'] == $employee_id) {
-        $receiver_field = "receiver3";
-        $other_receiver_field = "receiver2";
-        $other_receiver_value = $row['receiver2'];
-    }
-    // If neither, but receiver2 is set, use receiver3
-    elseif ($row['receiver2'] !== null) {
-        $receiver_field = "receiver3";
-        $other_receiver_field = "receiver2";
-        $other_receiver_value = $row['receiver2'];
-    }
-    // If neither, but receiver3 is set, use receiver2
-    elseif ($row['receiver3'] !== null) {
-        $receiver_field = "receiver2";
-        $other_receiver_field = "receiver3";
-        $other_receiver_value = $row['receiver3'];
-    }
-    // Otherwise, use receiver2
-    else {
-        $receiver_field = "receiver2";
-    }
-} else {
-    // No previous messages with receiver2/3, so use receiver2
-    $receiver_field = "receiver2";
+    // Insert into chat_recipients for the sender (status = 'read')
+    $query = "INSERT INTO chat_recipients (chatId, userId, status) VALUES (?, ?, 'read')";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("ss", $chatId, $employee_id);
+    $stmt->execute();
+    
+    // Insert into chat_recipients for the receiver (status = 'sent')
+    $query = "INSERT INTO chat_recipients (chatId, userId, status) VALUES (?, ?, 'sent')";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("ss", $chatId, $receiverId);
+    $stmt->execute();
+
+    // Get admin user_id
+$admin_query = "SELECT id FROM users WHERE user_type = 1 LIMIT 1";
+$admin_result = $conn->query($admin_query);
+
+if ($admin_result && $admin_result->num_rows > 0) {
+    $admin = $admin_result->fetch_assoc();
+    $adminId = $admin['id'];
+
+    // Insert message for admin (status = 'sent')
+    $query = "INSERT INTO chat_recipients (chatId, userId, status) VALUES (?, ?, 'sent')";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("ss", $chatId, $adminId);
+    $stmt->execute();
 }
 
-// Prepare the SQL query with the correct receiver field
-if ($other_receiver_field && $other_receiver_value) {
-    $query = "
-        INSERT INTO chat_messages (chatId, sender, receiver, $receiver_field, $other_receiver_field, message, status, chatRoomId)
-        VALUES ('$chatId', '$employee_id', '$receiverId', '$employee_id', '$other_receiver_value', '$message', 'sent', '$chatRoomId')
-    ";
-} else {
-    $query = "
-        INSERT INTO chat_messages (chatId, sender, receiver, $receiver_field, message, status, chatRoomId)
-        VALUES ('$chatId', '$employee_id', '$receiverId', '$employee_id', '$message', 'sent', '$chatRoomId')
-    ";
-}
-
-if ($conn->query($query) === TRUE) {
+    
+    $conn->commit();
+    
     // Get the newly inserted message
     $new_message_query = "
         SELECT 
-            chatId,
-            sender,
-            receiver,
-            receiver2,
-            receiver3,
-            message,
-            timestamp,
-            status,
-            messageType,
-            attachmentUrl
-        FROM chat_messages
-        WHERE chatId = '$chatId'
+            cm.chatId,
+            cm.sender,
+            cm.message,
+            cm.timestamp,
+            cm.messageType,
+            cm.attachmentUrl,
+            cr.status AS recipient_status
+        FROM chat_messages cm
+        JOIN chat_recipients cr ON cm.chatId = cr.chatId
+        WHERE cm.chatId = '$chatId'
+        AND cr.userId = '$employee_id'
     ";
     
     $result = $conn->query($new_message_query);
@@ -121,10 +88,11 @@ if ($conn->query($query) === TRUE) {
         'message' => 'Reply sent successfully',
         'data' => $new_message
     ]);
-} else {
+} catch (Exception $e) {
+    $conn->rollback();
     echo json_encode([
         'success' => false,
-        'error' => 'Error sending reply: ' . $conn->error
+        'error' => 'Error sending reply: ' . $e->getMessage()
     ]);
 }
 
