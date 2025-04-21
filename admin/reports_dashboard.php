@@ -91,44 +91,80 @@ header("Pragma: no-cache");
   </div>
 
   <!-- Analytics Cards -->
-  <div class="mb-8">
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-  <div class="bg-white rounded-lg shadow-sidebar p-4 border border-sidebar-border hover:shadow-card transition-all duration-300">
-      <div class="flex items-center mb-3">
-        <div class="w-12 h-12 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center mr-3">
-          <i class="fas fa-chart-line text-lg"></i>
+<div class="mb-8">
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <!-- Sales Forecast Card -->
+    <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden border border-gray-200">
+      <!-- Card header with subdued gradient background -->
+      <div class="bg-gradient-to-r from-slate-100 to-slate-300 px-6 py-4">
+        <div class="flex items-center justify-between mb-1">
+          <h3 class="text-sm font-medium text-gray-700">Sales Forecast (Q2)</h3>
+          <div class="w-10 h-10 rounded-full bg-white/90 text-slate-600 flex items-center justify-center shadow-sm">
+            <i class="fas fa-chart-line"></i>
+          </div>
         </div>
-        <span class="text-sidebar-text font-medium">Sales Forecast (Q2)</span>
+        <div class="flex items-end">
+          <span class="text-2xl md:text-3xl font-bold text-gray-800">$142,850</span>
+        </div>
       </div>
-      <div class="text-3xl font-bold mb-2 text-sidebar-text">$142,850</div>
-      <div class="text-sm text-green-600 flex items-center">
-        <i class="fas fa-arrow-up mr-1"></i> 12% projected growth
+      
+      <!-- Card footer with change indicator -->
+      <div class="px-6 py-3 bg-white border-t border-gray-100">
+        <div class="flex items-center text-slate-600">
+          <i class="fas fa-arrow-up mr-1.5 text-xs"></i>
+          <span class="font-medium text-xs">12% </span>
+          <span class="text-xs text-gray-500 ml-1">projected growth</span>
+        </div>
       </div>
     </div>
     
-    <div class="bg-white rounded-lg shadow-sidebar p-5 border border-sidebar-border hover:shadow-card transition-all duration-300">
-      <div class="flex items-center mb-3">
-        <div class="w-12 h-12 rounded-lg bg-purple-100 text-purple-600 flex items-center justify-center mr-3">
-          <i class="fas fa-box text-lg"></i>
+    <!-- Projected Orders Card -->
+    <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden border border-gray-200">
+      <!-- Card header with subdued gradient background -->
+      <div class="bg-gradient-to-r from-gray-100 to-gray-300 px-6 py-4">
+        <div class="flex items-center justify-between mb-1">
+          <h3 class="text-sm font-medium text-gray-700">Projected Orders</h3>
+          <div class="w-10 h-10 rounded-full bg-white/90 text-gray-600 flex items-center justify-center shadow-sm">
+            <i class="fas fa-box"></i>
+          </div>
         </div>
-        <span class="text-sidebar-text font-medium">Projected Orders</span>
+        <div class="flex items-end">
+          <span class="text-2xl md:text-3xl font-bold text-gray-800">86</span>
+        </div>
       </div>
-      <div class="text-3xl font-bold mb-2 text-sidebar-text">86</div>
-      <div class="text-sm text-green-600 flex items-center">
-        <i class="fas fa-arrow-up mr-1"></i> 8% from this quarter
+      
+      <!-- Card footer with change indicator -->
+      <div class="px-6 py-3 bg-white border-t border-gray-100">
+        <div class="flex items-center text-slate-600">
+          <i class="fas fa-arrow-up mr-1.5 text-xs"></i>
+          <span class="font-medium text-xs">8% </span>
+          <span class="text-xs text-gray-500 ml-1">from this quarter</span>
+        </div>
       </div>
     </div>
     
-    <div class="bg-white rounded-lg shadow-sidebar p-5 border border-sidebar-border hover:shadow-card transition-all duration-300">
-      <div class="flex items-center mb-3">
-        <div class="w-12 h-12 rounded-lg bg-green-100 text-green-600 flex items-center justify-center mr-3">
-          <i class="fas fa-money-check-alt text-lg"></i>
+    <!-- Payment Rate Card -->
+    <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden border border-gray-200">
+      <!-- Card header with subdued gradient background -->
+      <div class="bg-gradient-to-r from-stone-100 to-stone-300 px-6 py-4">
+        <div class="flex items-center justify-between mb-1">
+          <h3 class="text-sm font-medium text-gray-700">Payment Rate</h3>
+          <div class="w-10 h-10 rounded-full bg-white/90 text-stone-600 flex items-center justify-center shadow-sm">
+            <i class="fas fa-money-check-alt"></i>
+          </div>
         </div>
-        <span class="text-sidebar-text font-medium">Payment Rate</span>
+        <div class="flex items-end">
+          <span class="text-2xl md:text-3xl font-bold text-gray-800">92.4%</span>
+        </div>
       </div>
-      <div class="text-3xl font-bold mb-2 text-sidebar-text">92.4%</div>
-      <div class="text-sm text-green-600 flex items-center">
-        <i class="fas fa-arrow-up mr-1"></i> 3.2% from last month
+      
+      <!-- Card footer with change indicator -->
+      <div class="px-6 py-3 bg-white border-t border-gray-100">
+        <div class="flex items-center text-slate-600">
+          <i class="fas fa-arrow-up mr-1.5 text-xs"></i>
+          <span class="font-medium text-xs">3.2% </span>
+          <span class="text-xs text-gray-500 ml-1">from last month</span>
+        </div>
       </div>
     </div>
   </div>
