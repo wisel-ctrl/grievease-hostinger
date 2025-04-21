@@ -1,4 +1,6 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 session_start();
 
 // Check if user is logged in
@@ -348,109 +350,115 @@ header("Pragma: no-cache");
           </thead>
           <tbody class="divide-y divide-gray-200">
             <?php
+            // Initialize fetchedData array before the database query
+            $fetchedData = array();
+
             // Include database connection
             require_once '../db_connect.php';
             
-            // Prepare and execute the query using MySQLi
-            $query = "SELECT 
-                          lp.lifeplan_id,
-                          lp.service_id,
-                          lp.customerID,
-                          CONCAT_WS(' ',
-                              lp.benefeciary_fname,
-                              NULLIF(lp.benefeciary_mname, ''),
-                              lp.benefeciary_lname,
-                              NULLIF(lp.benefeciary_suffix, '')
-                          ) AS benefeciary_fullname,
-                          lp.payment_duration,
-                          lp.custom_price,
-                          lp.payment_status,
-                          s.service_name
-                      FROM 
-                          lifeplan_tb lp
-                      JOIN 
-                          services_tb s ON lp.service_id = s.service_id
-                      LIMIT 6
-                      "; // Limit to 6 records for pagination
-            
-            $result = $mysqli->query($query);
-            
-            // Create an array to store all fetched data for logging
-            $fetchedData = array();
-            
-            // Check if query was successful
-            if ($result) {
-              // Loop through the results and display each row
-              while ($row = $result->fetch_assoc()) {
-                // Add row data to our logging array
-                $fetchedData[] = $row;
+            // Database connection check
+            if (!$mysqli) {
+                echo '<tr><td colspan="6" class="px-6 py-4 text-center text-red-500">Database connection failed</td></tr>';
+            } else {
+                // Prepare and execute the query using MySQLi
+                $query = "SELECT 
+                              lp.lifeplan_id,
+                              lp.service_id,
+                              lp.customerID,
+                              CONCAT_WS(' ',
+                                  lp.benefeciary_fname,
+                                  NULLIF(lp.benefeciary_mname, ''),
+                                  lp.benefeciary_lname,
+                                  NULLIF(lp.benefeciary_suffix, '')
+                              ) AS benefeciary_fullname,
+                              lp.payment_duration,
+                              lp.custom_price,
+                              lp.payment_status,
+                              s.service_name
+                          FROM 
+                              lifeplan_tb lp
+                          JOIN 
+                              services_tb s ON lp.service_id = s.service_id
+                          LIMIT 6
+                          "; // Limit to 6 records for pagination
                 
-                // Determine status badge class
-                $statusClass = '';
-                $statusIcon = '';
-                switch ($row['payment_status']) {
-                  case 'paid':
-                    $statusClass = 'bg-green-100 text-green-800';
-                    $statusIcon = 'fa-check-circle';
-                    break;
-                  case 'ongoing':
-                    $statusClass = 'bg-yellow-100 text-yellow-800';
-                    $statusIcon = 'fa-clock';
-                    break;
-                  case 'overdue':
-                    $statusClass = 'bg-red-100 text-red-800';
-                    $statusIcon = 'fa-exclamation-circle';
-                    break;
-                  default:
-                    $statusClass = 'bg-gray-100 text-gray-800';
-                    $statusIcon = 'fa-question-circle';
+                $result = $mysqli->query($query);
+                
+                // Check if query was successful
+                if (!$result) {
+                    echo '<tr><td colspan="6" class="px-6 py-4 text-center text-red-500">Query error: ' . $mysqli->error . '</td></tr>';
+                } else if ($result->num_rows == 0) {
+                    echo '<tr><td colspan="6" class="px-6 py-4 text-center text-gray-500">No records found</td></tr>';
+                } else {
+                    // Loop through the results and display each row
+                    while ($row = $result->fetch_assoc()) {
+                        // Add row data to our logging array
+                        $fetchedData[] = $row;
+                        
+                        // Determine status badge class
+                        $statusClass = '';
+                        $statusIcon = '';
+                        switch ($row['payment_status']) {
+                            case 'paid':
+                                $statusClass = 'bg-green-100 text-green-800';
+                                $statusIcon = 'fa-check-circle';
+                                break;
+                            case 'ongoing':
+                                $statusClass = 'bg-yellow-100 text-yellow-800';
+                                $statusIcon = 'fa-clock';
+                                break;
+                            case 'overdue':
+                                $statusClass = 'bg-red-100 text-red-800';
+                                $statusIcon = 'fa-exclamation-circle';
+                                break;
+                            default:
+                                $statusClass = 'bg-gray-100 text-gray-800';
+                                $statusIcon = 'fa-question-circle';
+                        }
+                        
+                        // Format price with PHP currency symbol
+                        $formattedPrice = '₱' . number_format($row['custom_price'], 2);
+                        
+                        echo '<tr class="hover:bg-gray-50 transition-colors">
+                                <td class="px-6 py-4 text-slate-800">
+                                  <div class="flex items-center">
+                                    <div class="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center text-accent mr-3">
+                                      <i class="fas fa-user"></i>
+                                    </div>
+                                    ' . htmlspecialchars($row['benefeciary_fullname']) . '
+                                  </div>
+                                </td>
+                                <td class="px-6 py-4 text-slate-800">' . htmlspecialchars($row['service_name']) . '</td>
+                                <td class="px-6 py-4 text-slate-800">' . htmlspecialchars($row['payment_duration']) . ' years</td>
+                                <td class="px-6 py-4 text-slate-800">' . $formattedPrice . '</td>
+                                <td class="px-6 py-4">
+                                  <span class="px-3 py-1 rounded-full text-xs font-medium ' . $statusClass . '">
+                                    <i class="fas ' . $statusIcon . ' mr-1"></i> ' . htmlspecialchars($row['payment_status']) . '
+                                  </span>
+                                </td>
+                                <td class="px-6 py-4">
+                                  <div class="flex gap-2">
+                                    <button class="p-1 hover:bg-gray-100 rounded text-gray-500 hover:text-slate-800 transition-colors" title="View Details">
+                                      <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="p-1 hover:bg-gray-100 rounded text-gray-500 hover:text-slate-800 transition-colors" title="Edit">
+                                      <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="p-1 hover:bg-gray-100 rounded text-gray-500 hover:text-slate-800 transition-colors" title="Delete">
+                                      <i class="fas fa-trash"></i>
+                                    </button>
+                                  </div>
+                                </td>
+                              </tr>';
+                    }
+                    
+                    // Free result set
+                    $result->free();
                 }
                 
-                // Format price with PHP currency symbol
-                $formattedPrice = '₱' . number_format($row['custom_price'], 2);
-                
-                echo '<tr class="hover:bg-gray-50 transition-colors">
-                        <td class="px-6 py-4 text-slate-800">
-                          <div class="flex items-center">
-                            <div class="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center text-accent mr-3">
-                              <i class="fas fa-user"></i>
-                            </div>
-                            ' . htmlspecialchars($row['benefeciary_fullname']) . '
-                          </div>
-                        </td>
-                        <td class="px-6 py-4 text-slate-800">' . htmlspecialchars($row['service_name']) . '</td>
-                        <td class="px-6 py-4 text-slate-800">' . htmlspecialchars($row['payment_duration']) . ' years</td>
-                        <td class="px-6 py-4 text-slate-800">' . $formattedPrice . '</td>
-                        <td class="px-6 py-4">
-                          <span class="px-3 py-1 rounded-full text-xs font-medium ' . $statusClass . '">
-                            <i class="fas ' . $statusIcon . ' mr-1"></i> ' . htmlspecialchars($row['payment_status']) . '
-                          </span>
-                        </td>
-                        <td class="px-6 py-4">
-                          <div class="flex gap-2">
-                            <button class="p-1 hover:bg-gray-100 rounded text-gray-500 hover:text-slate-800 transition-colors" title="View Details">
-                              <i class="fas fa-eye"></i>
-                            </button>
-                            <button class="p-1 hover:bg-gray-100 rounded text-gray-500 hover:text-slate-800 transition-colors" title="Edit">
-                              <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="p-1 hover:bg-gray-100 rounded text-gray-500 hover:text-slate-800 transition-colors" title="Delete">
-                              <i class="fas fa-trash"></i>
-                            </button>
-                          </div>
-                        </td>
-                      </tr>';
-              }
-              
-              // Free result set
-              $result->free();
-            } else {
-              // Handle query error
-              echo '<tr><td colspan="6" class="px-6 py-4 text-center text-red-500">Error loading data: ' . $mysqli->error . '</td></tr>';
+                // Close database connection
+                $mysqli->close();
             }
-            
-            // Close database connection
-            $mysqli->close();
             ?>
           </tbody>
         </table>
