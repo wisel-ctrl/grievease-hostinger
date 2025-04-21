@@ -91,83 +91,79 @@ header("Pragma: no-cache");
   </div>
 
   <!-- Analytics Cards -->
-<div class="mb-8">
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-    <!-- Sales Forecast Card -->
-    <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden border border-gray-200">
-      <!-- Card header with subdued gradient background -->
-      <div class="bg-gradient-to-r from-slate-100 to-slate-300 px-6 py-4">
-        <div class="flex items-center justify-between mb-1">
-          <h3 class="text-sm font-medium text-gray-700">Sales Forecast (Q2)</h3>
-          <div class="w-10 h-10 rounded-full bg-white/90 text-slate-600 flex items-center justify-center shadow-sm">
-            <i class="fas fa-chart-line"></i>
-          </div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+    <?php
+    // Card data array for analytics
+    $cards = [
+        [
+            'title' => 'Sales Forecast (Q2)',
+            'value' => '142,850',
+            'change' => 12,
+            'change_text' => 'projected growth',
+            'icon' => 'chart-line',
+            'color' => 'blue',
+            'prefix' => '$'
+        ],
+        [
+            'title' => 'Projected Orders',
+            'value' => '86',
+            'change' => 8,
+            'change_text' => 'from this quarter',
+            'icon' => 'box',
+            'color' => 'purple',
+            'prefix' => ''
+        ],
+        [
+            'title' => 'Payment Rate',
+            'value' => '92.4',
+            'change' => 3.2,
+            'change_text' => 'from last month',
+            'icon' => 'money-check-alt',
+            'color' => 'green',
+            'prefix' => '',
+            'suffix' => '%'
+        ]
+    ];
+    
+    foreach ($cards as $card) {
+        // Determine if change is positive (for display)
+        $isPositive = $card['change'] >= 0;
+        
+        // Set color class for change indicator
+        $changeColorClass = $isPositive ? 'text-emerald-600' : 'text-rose-600';
+        
+        // Format the change value
+        $changeValue = abs($card['change']);
+        
+        // Set suffix if present
+        $suffix = isset($card['suffix']) ? $card['suffix'] : '';
+    ?>
+    
+    <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
+        <!-- Card header with gradient background -->
+        <div class="bg-gradient-to-r from-<?php echo $card['color']; ?>-50 to-<?php echo $card['color']; ?>-100/30 px-6 py-4">
+            <div class="flex items-center justify-between mb-1">
+                <h3 class="text-sm font-medium text-gray-700"><?php echo $card['title']; ?></h3>
+                <div class="w-10 h-10 rounded-full bg-white/90 text-<?php echo $card['color']; ?>-600 flex items-center justify-center">
+                    <i class="fas fa-<?php echo $card['icon']; ?>"></i>
+                </div>
+            </div>
+            <div class="flex items-end">
+                <span class="text-2xl md:text-3xl font-bold text-gray-800"><?php echo $card['prefix'] . $card['value'] . $suffix; ?></span>
+            </div>
         </div>
-        <div class="flex items-end">
-          <span class="text-2xl md:text-3xl font-bold text-gray-800">$142,850</span>
+        
+        <!-- Card footer with change indicator -->
+        <div class="px-6 py-3 bg-white border-t border-gray-100">
+            <div class="flex items-center <?php echo $changeColorClass; ?>">
+                <i class="fas fa-arrow-<?php echo $isPositive ? 'up' : 'down'; ?> mr-1.5 text-xs"></i>
+                <span class="font-medium text-xs"><?php echo $changeValue; ?>% </span>
+                <span class="text-xs text-gray-500 ml-1"><?php echo $card['change_text']; ?></span>
+            </div>
         </div>
-      </div>
-      
-      <!-- Card footer with change indicator -->
-      <div class="px-6 py-3 bg-white border-t border-gray-100">
-        <div class="flex items-center text-slate-600">
-          <i class="fas fa-arrow-up mr-1.5 text-xs"></i>
-          <span class="font-medium text-xs">12% </span>
-          <span class="text-xs text-gray-500 ml-1">projected growth</span>
-        </div>
-      </div>
     </div>
     
-    <!-- Projected Orders Card -->
-    <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden border border-gray-200">
-      <!-- Card header with subdued gradient background -->
-      <div class="bg-gradient-to-r from-gray-100 to-gray-300 px-6 py-4">
-        <div class="flex items-center justify-between mb-1">
-          <h3 class="text-sm font-medium text-gray-700">Projected Orders</h3>
-          <div class="w-10 h-10 rounded-full bg-white/90 text-gray-600 flex items-center justify-center shadow-sm">
-            <i class="fas fa-box"></i>
-          </div>
-        </div>
-        <div class="flex items-end">
-          <span class="text-2xl md:text-3xl font-bold text-gray-800">86</span>
-        </div>
-      </div>
-      
-      <!-- Card footer with change indicator -->
-      <div class="px-6 py-3 bg-white border-t border-gray-100">
-        <div class="flex items-center text-slate-600">
-          <i class="fas fa-arrow-up mr-1.5 text-xs"></i>
-          <span class="font-medium text-xs">8% </span>
-          <span class="text-xs text-gray-500 ml-1">from this quarter</span>
-        </div>
-      </div>
-    </div>
-    
-    <!-- Payment Rate Card -->
-    <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden border border-gray-200">
-      <!-- Card header with subdued gradient background -->
-      <div class="bg-gradient-to-r from-stone-100 to-stone-300 px-6 py-4">
-        <div class="flex items-center justify-between mb-1">
-          <h3 class="text-sm font-medium text-gray-700">Payment Rate</h3>
-          <div class="w-10 h-10 rounded-full bg-white/90 text-stone-600 flex items-center justify-center shadow-sm">
-            <i class="fas fa-money-check-alt"></i>
-          </div>
-        </div>
-        <div class="flex items-end">
-          <span class="text-2xl md:text-3xl font-bold text-gray-800">92.4%</span>
-        </div>
-      </div>
-      
-      <!-- Card footer with change indicator -->
-      <div class="px-6 py-3 bg-white border-t border-gray-100">
-        <div class="flex items-center text-slate-600">
-          <i class="fas fa-arrow-up mr-1.5 text-xs"></i>
-          <span class="font-medium text-xs">3.2% </span>
-          <span class="text-xs text-gray-500 ml-1">from last month</span>
-        </div>
-      </div>
-    </div>
-  </div>
+    <?php } ?>
 </div>
 
 <!-- Main Analytics Section -->
