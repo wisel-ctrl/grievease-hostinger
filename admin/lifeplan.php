@@ -347,199 +347,110 @@ header("Pragma: no-cache");
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-200">
-            <tr class="hover:bg-gray-50 transition-colors">
-              <td class="px-6 py-4 text-slate-800">
-                <div class="flex items-center">
-                  <div class="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center text-accent mr-3">
-                    <i class="fas fa-user"></i>
-                  </div>
-                  Maria Santos
-                </div>
-              </td>
-              <td class="px-6 py-4 text-slate-800">Memorial Plan Plus</td>
-              <td class="px-6 py-4 text-slate-800">5 years</td>
-              <td class="px-6 py-4 text-slate-800">₱75,000</td>
-              <td class="px-6 py-4">
-                <span class="px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                  <i class="fas fa-check-circle mr-1"></i> Paid
-                </span>
-              </td>
-              <td class="px-6 py-4">
-                <div class="flex gap-2">
-                  <button class="p-1 hover:bg-gray-100 rounded text-gray-500 hover:text-slate-800 transition-colors" title="View Details">
-                    <i class="fas fa-eye"></i>
-                  </button>
-                  <button class="p-1 hover:bg-gray-100 rounded text-gray-500 hover:text-slate-800 transition-colors" title="Edit">
-                    <i class="fas fa-edit"></i>
-                  </button>
-                  <button class="p-1 hover:bg-gray-100 rounded text-gray-500 hover:text-slate-800 transition-colors" title="Delete">
-                    <i class="fas fa-trash"></i>
-                  </button>
-                </div>
-              </td>
-            </tr>
-            <tr class="hover:bg-gray-50 transition-colors">
-              <td class="px-6 py-4 text-slate-800">
-                <div class="flex items-center">
-                  <div class="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center text-accent mr-3">
-                    <i class="fas fa-user"></i>
-                  </div>
-                  Juan Dela Cruz
-                </div>
-              </td>
-              <td class="px-6 py-4 text-slate-800">Funeral Service Premium</td>
-              <td class="px-6 py-4 text-slate-800">3 years</td>
-              <td class="px-6 py-4 text-slate-800">₱120,000</td>
-              <td class="px-6 py-4">
-                <span class="px-3 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                  <i class="fas fa-clock mr-1"></i> Pending
-                </span>
-              </td>
-              <td class="px-6 py-4">
-                <div class="flex gap-2">
-                  <button class="p-1 hover:bg-gray-100 rounded text-gray-500 hover:text-slate-800 transition-colors" title="View Details">
-                    <i class="fas fa-eye"></i>
-                  </button>
-                  <button class="p-1 hover:bg-gray-100 rounded text-gray-500 hover:text-slate-800 transition-colors" title="Edit">
-                    <i class="fas fa-edit"></i>
-                  </button>
-                  <button class="p-1 hover:bg-gray-100 rounded text-gray-500 hover:text-slate-800 transition-colors" title="Delete">
-                    <i class="fas fa-trash"></i>
-                  </button>
-                </div>
-              </td>
-            </tr>
-            <tr class="hover:bg-gray-50 transition-colors">
-              <td class="px-6 py-4 text-slate-800">
-                <div class="flex items-center">
-                  <div class="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center text-accent mr-3">
-                    <i class="fas fa-user"></i>
-                  </div>
-                  Anna Rodriguez
-                </div>
-              </td>
-              <td class="px-6 py-4 text-slate-800">Cremation Plan</td>
-              <td class="px-6 py-4 text-slate-800">2 years</td>
-              <td class="px-6 py-4 text-slate-800">₱50,000</td>
-              <td class="px-6 py-4">
-                <span class="px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                  <i class="fas fa-exclamation-circle mr-1"></i> Overdue
-                </span>
-              </td>
-              <td class="px-6 py-4">
-                <div class="flex gap-2">
-                  <button class="p-1 hover:bg-gray-100 rounded text-gray-500 hover:text-slate-800 transition-colors" title="View Details">
-                    <i class="fas fa-eye"></i>
-                  </button>
-                  <button class="p-1 hover:bg-gray-100 rounded text-gray-500 hover:text-slate-800 transition-colors" title="Edit">
-                    <i class="fas fa-edit"></i>
-                  </button>
-                  <button class="p-1 hover:bg-gray-100 rounded text-gray-500 hover:text-slate-800 transition-colors" title="Delete">
-                    <i class="fas fa-trash"></i>
-                  </button>
-                </div>
-              </td>
-            </tr>
-            <tr class="hover:bg-gray-50 transition-colors">
-              <td class="px-6 py-4 text-slate-800">
-                <div class="flex items-center">
-                  <div class="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center text-accent mr-3">
-                    <i class="fas fa-user"></i>
-                  </div>
-                  Ricardo Dalisay
-                </div>
-              </td>
-              <td class="px-6 py-4 text-slate-800">Memorial Plan Standard</td>
-              <td class="px-6 py-4 text-slate-800">5 years</td>
-              <td class="px-6 py-4 text-slate-800">₱65,000</td>
-              <td class="px-6 py-4">
-                <span class="px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                  <i class="fas fa-check-circle mr-1"></i> Paid
-                </span>
-              </td>
-              <td class="px-6 py-4">
-                <div class="flex gap-2">
-                  <button class="p-1 hover:bg-gray-100 rounded text-gray-500 hover:text-slate-800 transition-colors" title="View Details">
-                    <i class="fas fa-eye"></i>
-                  </button>
-                  <button class="p-1 hover:bg-gray-100 rounded text-gray-500 hover:text-slate-800 transition-colors" title="Edit">
-                    <i class="fas fa-edit"></i>
-                  </button>
-                  <button class="p-1 hover:bg-gray-100 rounded text-gray-500 hover:text-slate-800 transition-colors" title="Delete">
-                    <i class="fas fa-trash"></i>
-                  </button>
-                </div>
-              </td>
-            </tr>
-            <tr class="hover:bg-gray-50 transition-colors">
-              <td class="px-6 py-4 text-slate-800">
-                <div class="flex items-center">
-                  <div class="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center text-accent mr-3">
-                    <i class="fas fa-user"></i>
-                  </div>
-                  Lorna Morales
-                </div>
-              </td>
-              <td class="px-6 py-4 text-slate-800">Funeral Service Basic</td>
-              <td class="px-6 py-4 text-slate-800">4 years</td>
-              <td class="px-6 py-4 text-slate-800">₱85,000</td>
-              <td class="px-6 py-4">
-                <span class="px-3 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                  <i class="fas fa-clock mr-1"></i> Pending
-                </span>
-              </td>
-              <td class="px-6 py-4">
-                <div class="flex gap-2">
-                  <button class="p-1 hover:bg-gray-100 rounded text-gray-500 hover:text-slate-800 transition-colors" title="View Details">
-                    <i class="fas fa-eye"></i>
-                  </button>
-                  <button class="p-1 hover:bg-gray-100 rounded text-gray-500 hover:text-slate-800 transition-colors" title="Edit">
-                    <i class="fas fa-edit"></i>
-                  </button>
-                  <button class="p-1 hover:bg-gray-100 rounded text-gray-500 hover:text-slate-800 transition-colors" title="Delete">
-                    <i class="fas fa-trash"></i>
-                  </button>
-                </div>
-              </td>
-            </tr>
-            <tr class="hover:bg-gray-50 transition-colors">
-              <td class="px-6 py-4 text-slate-800">
-                <div class="flex items-center">
-                  <div class="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center text-accent mr-3">
-                    <i class="fas fa-user"></i>
-                  </div>
-                  Gabriel Padilla
-                </div>
-              </td>
-              <td class="px-6 py-4 text-slate-800">Cremation Plan Premium</td>
-              <td class="px-6 py-4 text-slate-800">1 year</td>
-              <td class="px-6 py-4 text-slate-800">₱95,000</td>
-              <td class="px-6 py-4">
-                <span class="px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                  <i class="fas fa-check-circle mr-1"></i> Paid
-                </span>
-              </td>
-              <td class="px-6 py-4">
-                <div class="flex gap-2">
-                  <button class="p-1 hover:bg-gray-100 rounded text-gray-500 hover:text-slate-800 transition-colors" title="View Details">
-                    <i class="fas fa-eye"></i>
-                  </button>
-                  <button class="p-1 hover:bg-gray-100 rounded text-gray-500 hover:text-slate-800 transition-colors" title="Edit">
-                    <i class="fas fa-edit"></i>
-                  </button>
-                  <button class="p-1 hover:bg-gray-100 rounded text-gray-500 hover:text-slate-800 transition-colors" title="Delete">
-                    <i class="fas fa-trash"></i>
-                  </button>
-                </div>
-              </td>
-            </tr>
+            <?php
+            // Include database connection
+            require_once '../db_connect.php';
+            
+            // Prepare and execute the query
+            $query = "SELECT 
+                        lp.lifeplan_id,
+                        lp.service_id,
+                        lp.customerID,
+                        CONCAT(lp.benefeciary_fname, ' ', 
+                              COALESCE(lp.benefeciary_mname, ''), 
+                              CASE 
+                                  WHEN lp.benefeciary_mname IS NOT NULL AND lp.benefeciary_mname != '' THEN ' ' 
+                                  ELSE '' 
+                              END,
+                              lp.benefeciary_lname, 
+                              CASE 
+                                  WHEN lp.benefeciary_suffix IS NOT NULL AND lp.benefeciary_suffix != '' THEN CONCAT(' ', lp.benefeciary_suffix) 
+                                  ELSE '' 
+                              END) AS benefeciary_fullname,
+                        lp.payment_duration,
+                        lp.custom_price,
+                        lp.payment_status,
+                        s.service_name
+                      FROM 
+                        lifeplan_tb lp
+                      JOIN 
+                        services_tb s ON lp.service_id = s.service_id
+                      LIMIT 6"; // Limit to 6 records for pagination
+            
+            $result = $pdo->query($query);
+            
+            // Loop through the results and display each row
+            while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+              // Determine status badge class
+              $statusClass = '';
+              $statusIcon = '';
+              switch ($row['payment_status']) {
+                case 'Paid':
+                  $statusClass = 'bg-green-100 text-green-800';
+                  $statusIcon = 'fa-check-circle';
+                  break;
+                case 'Pending':
+                  $statusClass = 'bg-yellow-100 text-yellow-800';
+                  $statusIcon = 'fa-clock';
+                  break;
+                case 'Overdue':
+                  $statusClass = 'bg-red-100 text-red-800';
+                  $statusIcon = 'fa-exclamation-circle';
+                  break;
+                default:
+                  $statusClass = 'bg-gray-100 text-gray-800';
+                  $statusIcon = 'fa-question-circle';
+              }
+              
+              // Format price with PHP currency symbol
+              $formattedPrice = '₱' . number_format($row['custom_price'], 2);
+              
+              echo '<tr class="hover:bg-gray-50 transition-colors">
+                      <td class="px-6 py-4 text-slate-800">
+                        <div class="flex items-center">
+                          <div class="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center text-accent mr-3">
+                            <i class="fas fa-user"></i>
+                          </div>
+                          ' . htmlspecialchars($row['benefeciary_fullname']) . '
+                        </div>
+                      </td>
+                      <td class="px-6 py-4 text-slate-800">' . htmlspecialchars($row['service_name']) . '</td>
+                      <td class="px-6 py-4 text-slate-800">' . htmlspecialchars($row['payment_duration']) . ' years</td>
+                      <td class="px-6 py-4 text-slate-800">' . $formattedPrice . '</td>
+                      <td class="px-6 py-4">
+                        <span class="px-3 py-1 rounded-full text-xs font-medium ' . $statusClass . '">
+                          <i class="fas ' . $statusIcon . ' mr-1"></i> ' . htmlspecialchars($row['payment_status']) . '
+                        </span>
+                      </td>
+                      <td class="px-6 py-4">
+                        <div class="flex gap-2">
+                          <button class="p-1 hover:bg-gray-100 rounded text-gray-500 hover:text-slate-800 transition-colors" title="View Details">
+                            <i class="fas fa-eye"></i>
+                          </button>
+                          <button class="p-1 hover:bg-gray-100 rounded text-gray-500 hover:text-slate-800 transition-colors" title="Edit">
+                            <i class="fas fa-edit"></i>
+                          </button>
+                          <button class="p-1 hover:bg-gray-100 rounded text-gray-500 hover:text-slate-800 transition-colors" title="Delete">
+                            <i class="fas fa-trash"></i>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>';
+            }
+            ?>
           </tbody>
         </table>
       </div>
       
       <!-- Pagination -->
       <div class="flex justify-between items-center mt-6">
-        <div class="text-sm text-gray-500">Showing 1 to 6 of 24 entries</div>
+        <?php
+        // Get total count of records
+        $countQuery = "SELECT COUNT(*) as total FROM lifeplan_tb";
+        $countResult = $pdo->query($countQuery);
+        $totalRecords = $countResult->fetch(PDO::FETCH_ASSOC)['total'];
+        ?>
+        <div class="text-sm text-gray-500">Showing 1 to 6 of <?php echo $totalRecords; ?> entries</div>
         <div class="flex gap-2">
           <button class="px-3 py-1 border border-gray-300 rounded bg-white text-gray-500 hover:bg-gray-50 transition-colors">
             <i class="fas fa-chevron-left"></i>
@@ -556,7 +467,7 @@ header("Pragma: no-cache");
     
     <!-- Footer -->
     <div class="mt-8 text-center text-gray-500 text-sm">
-      <p>© 2025 Life Plan Management System. All rights reserved.</p>
+      <p>© 2025 Grievease. All rights reserved.</p>
     </div>
   </div>
 </body>
