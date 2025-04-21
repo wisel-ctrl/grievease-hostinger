@@ -349,9 +349,9 @@ header("Pragma: no-cache");
           <tbody class="divide-y divide-gray-200">
             <?php
             // Include database connection
-            require_once '../db_connect.php';
+            require_once '../includes/dbh.inc.php';
             
-            // Prepare and execute the query
+            // Prepare and execute the query using MySQLi
             $query = "SELECT 
                         lp.lifeplan_id,
                         lp.service_id,
@@ -377,65 +377,74 @@ header("Pragma: no-cache");
                         services_tb s ON lp.service_id = s.service_id
                       LIMIT 6"; // Limit to 6 records for pagination
             
-            $result = $pdo->query($query);
+            $result = $mysqli->query($query);
             
-            // Loop through the results and display each row
-            while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
-              // Determine status badge class
-              $statusClass = '';
-              $statusIcon = '';
-              switch ($row['payment_status']) {
-                case 'paid':
-                  $statusClass = 'bg-green-100 text-green-800';
-                  $statusIcon = 'fa-check-circle';
-                  break;
-                case 'pending':
-                  $statusClass = 'bg-yellow-100 text-yellow-800';
-                  $statusIcon = 'fa-clock';
-                  break;
-                case 'overdue':
-                  $statusClass = 'bg-red-100 text-red-800';
-                  $statusIcon = 'fa-exclamation-circle';
-                  break;
-                default:
-                  $statusClass = 'bg-gray-100 text-gray-800';
-                  $statusIcon = 'fa-question-circle';
+            // Check if query was successful
+            if ($result) {
+              // Loop through the results and display each row
+              while ($row = $result->fetch_assoc()) {
+                // Determine status badge class
+                $statusClass = '';
+                $statusIcon = '';
+                switch ($row['payment_status']) {
+                  case 'Paid':
+                    $statusClass = 'bg-green-100 text-green-800';
+                    $statusIcon = 'fa-check-circle';
+                    break;
+                  case 'Pending':
+                    $statusClass = 'bg-yellow-100 text-yellow-800';
+                    $statusIcon = 'fa-clock';
+                    break;
+                  case 'Overdue':
+                    $statusClass = 'bg-red-100 text-red-800';
+                    $statusIcon = 'fa-exclamation-circle';
+                    break;
+                  default:
+                    $statusClass = 'bg-gray-100 text-gray-800';
+                    $statusIcon = 'fa-question-circle';
+                }
+                
+                // Format price with PHP currency symbol
+                $formattedPrice = '₱' . number_format($row['custom_price'], 2);
+                
+                echo '<tr class="hover:bg-gray-50 transition-colors">
+                        <td class="px-6 py-4 text-slate-800">
+                          <div class="flex items-center">
+                            <div class="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center text-accent mr-3">
+                              <i class="fas fa-user"></i>
+                            </div>
+                            ' . htmlspecialchars($row['benefeciary_fullname']) . '
+                          </div>
+                        </td>
+                        <td class="px-6 py-4 text-slate-800">' . htmlspecialchars($row['service_name']) . '</td>
+                        <td class="px-6 py-4 text-slate-800">' . htmlspecialchars($row['payment_duration']) . ' years</td>
+                        <td class="px-6 py-4 text-slate-800">' . $formattedPrice . '</td>
+                        <td class="px-6 py-4">
+                          <span class="px-3 py-1 rounded-full text-xs font-medium ' . $statusClass . '">
+                            <i class="fas ' . $statusIcon . ' mr-1"></i> ' . htmlspecialchars($row['payment_status']) . '
+                          </span>
+                        </td>
+                        <td class="px-6 py-4">
+                          <div class="flex gap-2">
+                            <button class="p-1 hover:bg-gray-100 rounded text-gray-500 hover:text-slate-800 transition-colors" title="View Details">
+                              <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="p-1 hover:bg-gray-100 rounded text-gray-500 hover:text-slate-800 transition-colors" title="Edit">
+                              <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="p-1 hover:bg-gray-100 rounded text-gray-500 hover:text-slate-800 transition-colors" title="Delete">
+                              <i class="fas fa-trash"></i>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>';
               }
               
-              // Format price with PHP currency symbol
-              $formattedPrice = '₱' . number_format($row['custom_price'], 2);
-              
-              echo '<tr class="hover:bg-gray-50 transition-colors">
-                      <td class="px-6 py-4 text-slate-800">
-                        <div class="flex items-center">
-                          <div class="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center text-accent mr-3">
-                            <i class="fas fa-user"></i>
-                          </div>
-                          ' . htmlspecialchars($row['benefeciary_fullname']) . '
-                        </div>
-                      </td>
-                      <td class="px-6 py-4 text-slate-800">' . htmlspecialchars($row['service_name']) . '</td>
-                      <td class="px-6 py-4 text-slate-800">' . htmlspecialchars($row['payment_duration']) . ' years</td>
-                      <td class="px-6 py-4 text-slate-800">' . $formattedPrice . '</td>
-                      <td class="px-6 py-4">
-                        <span class="px-3 py-1 rounded-full text-xs font-medium ' . $statusClass . '">
-                          <i class="fas ' . $statusIcon . ' mr-1"></i> ' . htmlspecialchars($row['payment_status']) . '
-                        </span>
-                      </td>
-                      <td class="px-6 py-4">
-                        <div class="flex gap-2">
-                          <button class="p-1 hover:bg-gray-100 rounded text-gray-500 hover:text-slate-800 transition-colors" title="View Details">
-                            <i class="fas fa-eye"></i>
-                          </button>
-                          <button class="p-1 hover:bg-gray-100 rounded text-gray-500 hover:text-slate-800 transition-colors" title="Edit">
-                            <i class="fas fa-edit"></i>
-                          </button>
-                          <button class="p-1 hover:bg-gray-100 rounded text-gray-500 hover:text-slate-800 transition-colors" title="Delete">
-                            <i class="fas fa-trash"></i>
-                          </button>
-                        </div>
-                      </td>
-                    </tr>';
+              // Free result set
+              $result->free();
+            } else {
+              // Handle query error
+              echo '<tr><td colspan="6" class="px-6 py-4 text-center text-red-500">Error loading data: ' . $mysqli->error . '</td></tr>';
             }
             ?>
           </tbody>
@@ -445,10 +454,16 @@ header("Pragma: no-cache");
       <!-- Pagination -->
       <div class="flex justify-between items-center mt-6">
         <?php
-        // Get total count of records
+        // Get total count of records using MySQLi
         $countQuery = "SELECT COUNT(*) as total FROM lifeplan_tb";
-        $countResult = $pdo->query($countQuery);
-        $totalRecords = $countResult->fetch(PDO::FETCH_ASSOC)['total'];
+        $countResult = $mysqli->query($countQuery);
+        
+        if ($countResult) {
+          $totalRecords = $countResult->fetch_assoc()['total'];
+          $countResult->free();
+        } else {
+          $totalRecords = 0;
+        }
         ?>
         <div class="text-sm text-gray-500">Showing 1 to 6 of <?php echo $totalRecords; ?> entries</div>
         <div class="flex gap-2">
