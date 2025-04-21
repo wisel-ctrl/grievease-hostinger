@@ -444,7 +444,7 @@ $totalEmployees = $employeeCountResult->fetch_assoc()['total'] ?? 0; // Default 
     </div>
     
     <!-- Modal Footer -->
-    <div class="px-6 py-4 flex justify-end border-t border-gray-200 sticky bottom-0 bg-white">
+    <div class="px-6 py-4 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
       <button type="button" onclick="closeViewEmployeeModal()" class="w-full px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center">
         <i class="fas fa-times mr-2"></i>
         Close
