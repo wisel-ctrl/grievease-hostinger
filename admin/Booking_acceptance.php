@@ -529,8 +529,31 @@ $offset = ($current_page - 1) * $bookings_per_page;
     
     <!-- Modal Body -->
     <div class="px-6 py-5">
-      <form id="paymentForm">
+    <form id="paymentForm">
+        <!-- Booking Information -->
         <input type="hidden" id="bookingIdForPayment" name="bookingId">
+        
+        <!-- Customer Information -->
+        <input type="hidden" id="customerFirstName" name="first_name">
+        <input type="hidden" id="customerMiddleName" name="middle_name">
+        <input type="hidden" id="customerLastName" name="last_name">
+        <input type="hidden" id="customerSuffix" name="suffix">
+        <input type="hidden" id="customerEmail" name="email">
+        <input type="hidden" id="customerPhone" name="phone_number">
+        
+        <!-- Deceased Information -->
+        <input type="hidden" id="deceasedFname" name="deceased_fname">
+        <input type="hidden" id="deceasedMname" name="deceased_mname">
+        <input type="hidden" id="deceasedLname" name="deceased_lname">
+        <input type="hidden" id="deceasedSuffix" name="deceased_suffix">
+        <input type="hidden" id="deceasedAddress" name="deceased_address">
+        
+        <!-- Service Information -->
+        <input type="hidden" id="serviceId" name="service_id">
+        <input type="hidden" id="branchId" name="branch_id">
+        <input type="hidden" id="initialPrice" name="initial_price">
+        <input type="hidden" id="deathCertUrl" name="deathcert_url">
+        <input type="hidden" id="withCremate" name="with_cremate">
         
         <div class="mb-4">
           <label for="amountPaidInput" class="block text-sm font-medium text-gray-700 mb-1">Amount Paid</label>
@@ -767,11 +790,49 @@ function confirmAccept() {
     const bookingId = bookingIdText.split('-')[2].trim();
     currentBookingIdForPayment = bookingId;
     
-    // Set the booking ID in the hidden field
-    document.getElementById('bookingIdForPayment').value = bookingId;
-    
-    // Show the payment modal
-    openPaymentModal();
+    // Fetch booking details again to get all the required fields
+    fetch('bookingpage/get_booking_details.php?id=' + bookingId)
+        .then(response => response.json())
+        .then(data => {
+            // Set all the hidden fields
+            document.getElementById('bookingIdForPayment').value = bookingId;
+            
+            // Customer information
+            document.getElementById('customerFirstName').value = data.first_name || '';
+            document.getElementById('customerMiddleName').value = data.middle_name || '';
+            document.getElementById('customerLastName').value = data.last_name || '';
+            document.getElementById('customerSuffix').value = data.suffix || '';
+            document.getElementById('customerEmail').value = data.email || '';
+            document.getElementById('customerPhone').value = data.phone_number || '';
+            
+            // Deceased information
+            document.getElementById('deceasedFname').value = data.deceased_fname || '';
+            document.getElementById('deceasedMname').value = data.deceased_mname || '';
+            document.getElementById('deceasedLname').value = data.deceased_lname || '';
+            document.getElementById('deceasedSuffix').value = data.deceased_suffix || '';
+            document.getElementById('deceasedAddress').value = data.deceased_address || '';
+            
+            // Service information
+            document.getElementById('serviceId').value = data.service_id || '';
+            document.getElementById('branchId').value = data.branch_id || '';
+            document.getElementById('initialPrice').value = data.initial_price || '';
+            document.getElementById('deathCertUrl').value = data.deathcert_url || '';
+            document.getElementById('withCremate').value = data.with_cremate || '0';
+            
+            // Set the amount paid field to the initial price by default
+            document.getElementById('amountPaidInput').value = parseFloat(data.initial_price || 0).toFixed(2);
+            
+            // Show the payment modal
+            openPaymentModal();
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Failed to load booking details',
+            });
+        });
 }
 
 function openPaymentModal() {
