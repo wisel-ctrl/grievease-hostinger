@@ -245,32 +245,99 @@ header("Pragma: no-cache");
     </div>
     
     <!-- Stats Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-      <div class="bg-white rounded-lg shadow-sm p-5 border-l-4 border-accent">
-        <div class="text-gray-500 text-sm mb-1 flex items-center">
-          <i class="fas fa-folder-open mr-2"></i> Total Plans
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <!-- Total Plans Card -->
+    <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
+        <!-- Card header with gradient background -->
+        <div class="bg-gradient-to-r from-blue-100 to-blue-200 px-6 py-4">
+            <div class="flex items-center justify-between mb-1">
+                <h3 class="text-sm font-medium text-gray-700">Total Plans</h3>
+                <div class="w-10 h-10 rounded-full bg-white/90 text-blue-600 flex items-center justify-center">
+                    <i class="fas fa-folder-open"></i>
+                </div>
+            </div>
+            <div class="flex items-end">
+                <span class="text-2xl md:text-3xl font-bold font-cinzel text-gray-800">124</span>
+            </div>
         </div>
-        <div class="font-cinzel text-2xl font-semibold text-slate-800">124</div>
-      </div>
-      <div class="bg-white rounded-lg shadow-sm p-5 border-l-4 border-accent">
-        <div class="text-gray-500 text-sm mb-1 flex items-center">
-          <i class="fas fa-check-circle mr-2"></i> Active Plans
+        
+        <!-- Card footer with change indicator (simplified since no change data) -->
+        <div class="px-6 py-3 bg-white border-t border-gray-100">
+            <div class="flex items-center text-gray-500">
+                <span class="text-xs">Updated today</span>
+            </div>
         </div>
-        <div class="font-cinzel text-2xl font-semibold text-slate-800">98</div>
-      </div>
-      <div class="bg-white rounded-lg shadow-sm p-5 border-l-4 border-accent">
-        <div class="text-gray-500 text-sm mb-1 flex items-center">
-          <i class="fas fa-clock mr-2"></i> Pending Payments
-        </div>
-        <div class="font-cinzel text-2xl font-semibold text-slate-800">12</div>
-      </div>
-      <div class="bg-white rounded-lg shadow-sm p-5 border-l-4 border-accent">
-        <div class="text-gray-500 text-sm mb-1 flex items-center">
-          <i class="fas fa-money-bill-alt mr-2"></i> Total Revenue
-        </div>
-        <div class="font-cinzel text-2xl font-semibold text-slate-800">₱4.2M</div>
-      </div>
     </div>
+    
+    <!-- Active Plans Card -->
+    <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
+        <!-- Card header with gradient background -->
+        <div class="bg-gradient-to-r from-green-100 to-green-200 px-6 py-4">
+            <div class="flex items-center justify-between mb-1">
+                <h3 class="text-sm font-medium text-gray-700">Active Plans</h3>
+                <div class="w-10 h-10 rounded-full bg-white/90 text-green-600 flex items-center justify-center">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+            </div>
+            <div class="flex items-end">
+                <span class="text-2xl md:text-3xl font-bold font-cinzel text-gray-800">98</span>
+            </div>
+        </div>
+        
+        <!-- Card footer with change indicator -->
+        <div class="px-6 py-3 bg-white border-t border-gray-100">
+            <div class="flex items-center text-gray-500">
+                <span class="text-xs">Updated today</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Pending Payments Card -->
+    <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
+        <!-- Card header with gradient background -->
+        <div class="bg-gradient-to-r from-orange-100 to-orange-200 px-6 py-4">
+            <div class="flex items-center justify-between mb-1">
+                <h3 class="text-sm font-medium text-gray-700">Pending Payments</h3>
+                <div class="w-10 h-10 rounded-full bg-white/90 text-orange-600 flex items-center justify-center">
+                    <i class="fas fa-clock"></i>
+                </div>
+            </div>
+            <div class="flex items-end">
+                <span class="text-2xl md:text-3xl font-bold font-cinzel text-gray-800">12</span>
+            </div>
+        </div>
+        
+        <!-- Card footer with change indicator -->
+        <div class="px-6 py-3 bg-white border-t border-gray-100">
+            <div class="flex items-center text-gray-500">
+                <span class="text-xs">Updated today</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Total Revenue Card -->
+    <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
+        <!-- Card header with gradient background -->
+        <div class="bg-gradient-to-r from-purple-100 to-purple-200 px-6 py-4">
+            <div class="flex items-center justify-between mb-1">
+                <h3 class="text-sm font-medium text-gray-700">Total Revenue</h3>
+                <div class="w-10 h-10 rounded-full bg-white/90 text-purple-600 flex items-center justify-center">
+                    <i class="fas fa-money-bill-alt"></i>
+                </div>
+            </div>
+            <div class="flex items-end">
+                <span class="text-2xl md:text-3xl font-bold font-cinzel text-gray-800">₱4.2M</span>
+            </div>
+        </div>
+        
+        <!-- Card footer with change indicator -->
+        <div class="px-6 py-3 bg-white border-t border-gray-100">
+            <div class="flex items-center text-gray-500">
+                <span class="text-xs">Updated today</span>
+            </div>
+        </div>
+    </div>
+</div>
     
     <!-- Table Card -->
     <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
