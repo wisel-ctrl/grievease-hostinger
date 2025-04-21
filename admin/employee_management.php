@@ -675,56 +675,58 @@ $totalEmployees = $employeeCountResult->fetch_assoc()['total'] ?? 0; // Default 
     
     <!-- Modal Body -->
     <div class="px-6 py-5">
-      <form id="editEmployeeAccountForm" class="space-y-4">
+      <form id="editEmployeeAccountForm" class="space-y-5">
         <!-- Hidden field for employee ID -->
         <input type="hidden" id="editEmployeeId" name="employeeId">
         
         <!-- Name Fields -->
-        <div>
-          <label for="editFirstName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-user mr-2 text-sidebar-accent"></i>
-            First Name *
-          </label>
-          <div class="relative">
-            <input type="text" id="editFirstName" name="firstName" required
-                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                placeholder="First Name" pattern="[A-Za-z\s]+" title="Only letters and spaces allowed">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label for="editFirstName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+              <i class="fas fa-user mr-2 text-sidebar-accent"></i>
+              First Name *
+            </label>
+            <div class="relative">
+              <input type="text" id="editFirstName" name="firstName" required
+                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                  placeholder="First Name" pattern="[A-Za-z\s]+" title="Only letters and spaces allowed">
+            </div>
+          </div>
+          <div>
+            <label for="editLastName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+              <i class="fas fa-user mr-2 text-sidebar-accent"></i>
+              Last Name *
+            </label>
+            <div class="relative">
+              <input type="text" id="editLastName" name="lastName" required
+                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                  placeholder="Last Name" pattern="[A-Za-z\s]+" title="Only letters and spaces allowed">
+            </div>
           </div>
         </div>
         
-        <div>
-          <label for="editLastName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-user mr-2 text-sidebar-accent"></i>
-            Last Name *
-          </label>
-          <div class="relative">
-            <input type="text" id="editLastName" name="lastName" required
-                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                placeholder="Last Name" pattern="[A-Za-z\s]+" title="Only letters and spaces allowed">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label for="editMiddleName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+              <i class="fas fa-user mr-2 text-sidebar-accent"></i>
+              Middle Name
+            </label>
+            <div class="relative">
+              <input type="text" id="editMiddleName" name="middleName"
+                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                  placeholder="Middle Name" pattern="[A-Za-z\s]+" title="Only letters and spaces allowed">
+            </div>
           </div>
-        </div>
-        
-        <div>
-          <label for="editMiddleName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-user mr-2 text-sidebar-accent"></i>
-            Middle Name
-          </label>
-          <div class="relative">
-            <input type="text" id="editMiddleName" name="middleName"
-                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                placeholder="Middle Name" pattern="[A-Za-z\s]+" title="Only letters and spaces allowed">
-          </div>
-        </div>
-        
-        <div>
-          <label for="editSuffix" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-user-tag mr-2 text-sidebar-accent"></i>
-            Suffix <span class="text-xs text-gray-500">(Optional)</span>
-          </label>
-          <div class="relative">
-            <input type="text" id="editSuffix" name="suffix"
-                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                placeholder="e.g., Jr., Sr.">
+          <div>
+            <label for="editSuffix" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+              <i class="fas fa-user-tag mr-2 text-sidebar-accent"></i>
+              Suffix <span class="text-xs text-gray-500">(Optional)</span>
+            </label>
+            <div class="relative">
+              <input type="text" id="editSuffix" name="suffix"
+                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                  placeholder="e.g., Jr., Sr.">
+            </div>
           </div>
         </div>
 
@@ -742,62 +744,64 @@ $totalEmployees = $employeeCountResult->fetch_assoc()['total'] ?? 0; // Default 
         </div>
 
         <!-- Contact Information -->
-        <div>
-          <label for="editEmployeeEmail" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-envelope mr-2 text-sidebar-accent"></i>
-            Email Address *
-          </label>
-          <div class="relative">
-            <input type="email" id="editEmployeeEmail" name="employeeEmail" required
-                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                placeholder="Email">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label for="editEmployeeEmail" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+              <i class="fas fa-envelope mr-2 text-sidebar-accent"></i>
+              Email Address *
+            </label>
+            <div class="relative">
+              <input type="email" id="editEmployeeEmail" name="employeeEmail" required
+                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                  placeholder="Email">
+            </div>
           </div>
-        </div>
-        
-        <div>
-          <label for="editEmployeePhone" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-phone-alt mr-2 text-sidebar-accent"></i>
-            Phone Number *
-          </label>
-          <div class="relative">
-            <input type="tel" id="editEmployeePhone" name="employeePhone" required
-                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                placeholder="09XXXXXXXXX or +63XXXXXXXXXX" pattern="(\+63|0)\d{10}" title="Philippine phone number (09XXXXXXXXX or +63XXXXXXXXXX)">
+          <div>
+            <label for="editEmployeePhone" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+              <i class="fas fa-phone-alt mr-2 text-sidebar-accent"></i>
+              Phone Number *
+            </label>
+            <div class="relative">
+              <input type="tel" id="editEmployeePhone" name="employeePhone" required
+                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                  placeholder="09XXXXXXXXX or +63XXXXXXXXXX" pattern="(\+63|0)\d{10}" title="Philippine phone number (09XXXXXXXXX or +63XXXXXXXXXX)">
+            </div>
           </div>
         </div>
 
         <!-- Position and Salary -->
-        <div>
-          <label for="editEmployeePosition" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-briefcase mr-2 text-sidebar-accent"></i>
-            Position *
-          </label>
-          <div class="relative">
-            <select id="editEmployeePosition" name="employeePosition" required
-                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
-                <option value="">Select Position</option>
-                <option value="Embalmer">Embalmer</option>
-                <option value="Driver">Driver</option>
-                <option value="Secretary">Secretary</option>
-                <option value="Financial Manager">Financial Manager</option>
-                <option value="Operational Head">Operational Head</option>
-                <option value="Personnel">Personnel</option>
-            </select>
-          </div>
-        </div>
-        
-        <div>
-          <label for="editEmployeeSalary" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-money-bill-wave mr-2 text-sidebar-accent"></i>
-            Salary per Service (₱) *
-          </label>
-          <div class="relative">
-            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <span class="text-gray-500">₱</span>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label for="editEmployeePosition" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+              <i class="fas fa-briefcase mr-2 text-sidebar-accent"></i>
+              Position *
+            </label>
+            <div class="relative">
+              <select id="editEmployeePosition" name="employeePosition" required
+                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+                  <option value="">Select Position</option>
+                  <option value="Embalmer">Embalmer</option>
+                  <option value="Driver">Driver</option>
+                  <option value="Secretary">Secretary</option>
+                  <option value="Financial Manager">Financial Manager</option>
+                  <option value="Operational Head">Operational Head</option>
+                  <option value="Personnel">Personnel</option>
+              </select>
             </div>
-            <input type="number" id="editEmployeeSalary" name="employeeSalary" required step="0.01" min="0.01"
-                class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                placeholder="Amount">
+          </div>
+          <div>
+            <label for="editEmployeeSalary" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+              <i class="fas fa-money-bill-wave mr-2 text-sidebar-accent"></i>
+              Salary per Service (₱) *
+            </label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <span class="text-gray-500">₱</span>
+              </div>
+              <input type="number" id="editEmployeeSalary" name="employeeSalary" required step="0.01" min="0.01"
+                  class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                  placeholder="Amount">
+            </div>
           </div>
         </div>
         
@@ -807,7 +811,7 @@ $totalEmployees = $employeeCountResult->fetch_assoc()['total'] ?? 0; // Default 
             <i class="fas fa-venus-mars mr-2 text-sidebar-accent"></i>
             Gender *
           </p>
-          <div class="grid grid-cols-2 gap-3">
+          <div class="grid grid-cols-2 sm:grid-cols-2 gap-3">
             <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
               <input type="radio" name="gender" value="Male" required class="mr-2 text-sidebar-accent focus:ring-sidebar-accent" id="editGenderMale">
               <i class="fas fa-male mr-1 text-sidebar-accent"></i>
@@ -827,7 +831,7 @@ $totalEmployees = $employeeCountResult->fetch_assoc()['total'] ?? 0; // Default 
             <i class="fas fa-building mr-2 text-sidebar-accent"></i>
             Branch Location *
           </label>
-          <div class="flex flex-col gap-2">
+          <div class="flex flex-wrap gap-4">
             <?php foreach ($branches as $branch): ?>
               <label class="flex items-center space-x-2 cursor-pointer">
                 <input type="radio" name="branch" value="<?php echo $branch['branch_id']; ?>" required class="hidden peer editBranchRadio" id="editBranch<?php echo $branch['branch_id']; ?>">
@@ -841,8 +845,8 @@ $totalEmployees = $employeeCountResult->fetch_assoc()['total'] ?? 0; // Default 
     </div>
     
     <!-- Modal Footer --> 
-    <div class="px-6 py-4 flex flex-col sm:flex-row justify-end gap-3 border-t border-gray-200 sticky bottom-0 bg-white">
-      <button class="px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center" onclick="closeEditEmployeeModal()">
+    <div class="px-6 py-4 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
+      <button class="px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center" onclick="closeEditEmployeeModal()">
         <i class="fas fa-times mr-2"></i>
         Cancel
       </button>
