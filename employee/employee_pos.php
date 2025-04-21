@@ -228,9 +228,7 @@
       <button class="p-2 bg-white border border-sidebar-border rounded-lg shadow-input text-sidebar-text hover:bg-sidebar-hover transition-all duration-300">
         <i class="fas fa-bell"></i>
       </button>
-      <button class="p-2 bg-white border border-sidebar-border rounded-lg shadow-input text-sidebar-text hover:bg-sidebar-hover transition-all duration-300">
-        <i class="fas fa-cog"></i>
-      </button>
+       
     </div>
   </div>
 
