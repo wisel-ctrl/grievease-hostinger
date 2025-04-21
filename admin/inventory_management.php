@@ -172,8 +172,7 @@ header("Pragma: no-cache");
             'change' => $lowStockChange,
             'icon' => 'exclamation-triangle',
             'color' => 'orange',
-            'prefix' => '',
-            'inverse_change' => true // For low stock, increasing is bad
+            'prefix' => ''
         ],
         [
             'title' => 'Turnover Rate',
@@ -187,12 +186,8 @@ header("Pragma: no-cache");
     ];
     
     foreach ($cards as $card) {
-        // Determine if change is positive (for display)
-        $isPositive = isset($card['inverse_change']) && $card['inverse_change'] ? 
-                    $card['change'] < 0 : $card['change'] >= 0;
-        
-        // Set color class for change indicator
-        $changeColorClass = $isPositive ? 'text-emerald-600' : 'text-rose-600';
+        // Determine if change is positive or negative (without inverse logic)
+        $isPositive = $card['change'] >= 0;
         
         // Format the change value
         $changeValue = abs(round($card['change']));
@@ -202,11 +197,11 @@ header("Pragma: no-cache");
     ?>
     
     <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
-        <!-- Card header with gradient background -->
-        <div class="bg-gradient-to-r from-<?php echo $card['color']; ?>-50 to-<?php echo $card['color']; ?>-100/30 px-6 py-4">
+        <!-- Card header with gradient background - using more moderate color gradients -->
+        <div class="bg-gradient-to-r from-<?php echo $card['color']; ?>-200 to-<?php echo $card['color']; ?>-300 px-6 py-4">
             <div class="flex items-center justify-between mb-1">
                 <h3 class="text-sm font-medium text-gray-700"><?php echo $card['title']; ?></h3>
-                <div class="w-10 h-10 rounded-full bg-white/90 text-<?php echo $card['color']; ?>-600 flex items-center justify-center">
+                <div class="w-10 h-10 rounded-full bg-white/90 text-<?php echo $card['color']; ?>-500 flex items-center justify-center">
                     <i class="fas fa-<?php echo $card['icon']; ?>"></i>
                 </div>
             </div>
@@ -215,9 +210,9 @@ header("Pragma: no-cache");
             </div>
         </div>
         
-        <!-- Card footer with change indicator -->
+        <!-- Card footer with consistent change indicator colors -->
         <div class="px-6 py-3 bg-white border-t border-gray-100">
-            <div class="flex items-center <?php echo $changeColorClass; ?>">
+            <div class="flex items-center text-gray-600">
                 <i class="fas fa-arrow-<?php echo $isPositive ? 'up' : 'down'; ?> mr-1.5 text-xs"></i>
                 <span class="font-medium text-xs"><?php echo $changeValue; ?>% </span>
                 <span class="text-xs text-gray-500 ml-1">from last month</span>
