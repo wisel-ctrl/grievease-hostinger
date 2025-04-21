@@ -1,5 +1,5 @@
 <?php
-
+//get_admin_messages.php
 ob_start();
 ini_set('display_errors', 0);
 error_reporting(E_ALL);
@@ -86,8 +86,30 @@ $query = "
         cm.status,
         cm.messageType,
         cm.attachmentUrl,
-        CONCAT(u.first_name, ' ', u.last_name) AS sender_name,
-        u.email AS sender_email,
+        (
+            SELECT CONCAT(u.first_name, ' ', u.last_name)
+            FROM chat_recipients cr2
+            JOIN users u ON cr2.userId = u.id
+            WHERE cr2.chatId IN (
+                SELECT chatId 
+                FROM chat_messages 
+                WHERE chatRoomId = cm.chatRoomId
+            )
+            AND u.user_type = 3
+            LIMIT 1
+        ) AS sender_name,
+        (
+            SELECT u.email
+            FROM chat_recipients cr2
+            JOIN users u ON cr2.userId = u.id
+            WHERE cr2.chatId IN (
+                SELECT chatId 
+                FROM chat_messages 
+                WHERE chatRoomId = cm.chatRoomId
+            )
+            AND u.user_type = 3
+            LIMIT 1
+        ) AS sender_email,
         (
             SELECT COUNT(*) 
             FROM chat_messages cm2
@@ -99,7 +121,6 @@ $query = "
         ) AS unread_count
     FROM chat_messages cm
     JOIN chat_recipients cr ON cm.chatId = cr.chatId
-    JOIN users u ON cm.sender = u.id
     WHERE cr.userId = '$admin_id'
     AND cm.chatId IN (
         SELECT chatId 
@@ -124,33 +145,6 @@ if ($result === false) {
 
 $conversations = [];
 while ($row = $result->fetch_assoc()) {
-    if ($row['sender'] == $admin_id) {
-        $row['is_admin'] = true;
-        
-        // Get the customer (user_type 3) info for this chat room
-        $customer_query = "
-            SELECT CONCAT(u.first_name, ' ', u.last_name) AS customer_name, u.email AS customer_email
-            FROM chat_recipients cr
-            JOIN users u ON cr.userId = u.id
-            WHERE cr.chatId IN (
-                SELECT chatId 
-                FROM chat_messages 
-                WHERE chatRoomId = '{$row['chatRoomId']}'
-            )
-            AND u.user_type = 3
-            LIMIT 1
-        ";
-        
-        $customer_result = $conn->query($customer_query);
-        if ($customer_result && $customer_info = $customer_result->fetch_assoc()) {
-            // Replace sender info with customer info
-            $row['sender_name'] = ucwords(strtolower($customer_info['customer_name']));
-            $row['sender_email'] = $customer_info['customer_email'];
-        }
-    } else {
-        // If sender is already the customer, just capitalize the name
-        $row['sender_name'] = ucwords(strtolower($row['sender_name']));
-    }
     
     $conversations[] = $row;
 }
