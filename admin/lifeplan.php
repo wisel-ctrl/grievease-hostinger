@@ -230,7 +230,329 @@ header("Pragma: no-cache");
 <?php include 'admin_sidebar.php'; ?>
 
 <div id="main-content" class="p-6 bg-gray-50 min-h-screen transition-all duration-300 ml-64 w-[calc(100%-16rem)] main-content">
-    <p>LIFE PLAN</p>
-</div>
+    <!-- Header Actions -->
+    <div class="flex justify-between items-center mb-6">
+      <h1 class="font-cinzel text-2xl font-bold text-slate-800">
+        <i class="fas fa-user-shield text-accent mr-2"></i> Life Plan Management
+      </h1>
+      <button class="bg-accent hover:bg-yellow-700 text-white px-4 py-2 rounded-md transition-colors flex items-center gap-2">
+        <i class="fas fa-plus"></i> New Plan
+      </button>
+    </div>
+    
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div class="bg-white rounded-lg shadow-sm p-5 border-l-4 border-accent">
+        <div class="text-gray-500 text-sm mb-1 flex items-center">
+          <i class="fas fa-folder-open mr-2"></i> Total Plans
+        </div>
+        <div class="font-cinzel text-2xl font-semibold text-slate-800">124</div>
+      </div>
+      <div class="bg-white rounded-lg shadow-sm p-5 border-l-4 border-accent">
+        <div class="text-gray-500 text-sm mb-1 flex items-center">
+          <i class="fas fa-check-circle mr-2"></i> Active Plans
+        </div>
+        <div class="font-cinzel text-2xl font-semibold text-slate-800">98</div>
+      </div>
+      <div class="bg-white rounded-lg shadow-sm p-5 border-l-4 border-accent">
+        <div class="text-gray-500 text-sm mb-1 flex items-center">
+          <i class="fas fa-clock mr-2"></i> Pending Payments
+        </div>
+        <div class="font-cinzel text-2xl font-semibold text-slate-800">12</div>
+      </div>
+      <div class="bg-white rounded-lg shadow-sm p-5 border-l-4 border-accent">
+        <div class="text-gray-500 text-sm mb-1 flex items-center">
+          <i class="fas fa-money-bill-alt mr-2"></i> Total Revenue
+        </div>
+        <div class="font-cinzel text-2xl font-semibold text-slate-800">₱4.2M</div>
+      </div>
+    </div>
+    
+    <!-- Table Card -->
+    <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+      <!-- Search and Filter -->
+      <div class="flex flex-col md:flex-row gap-4 mb-6">
+        <div class="relative flex-1">
+          <span class="absolute inset-y-0 left-0 flex items-center pl-3">
+            <i class="fas fa-search text-gray-400"></i>
+          </span>
+          <input 
+            type="text" 
+            class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent" 
+            placeholder="Search beneficiaries..."
+          >
+        </div>
+        
+        <div class="flex gap-4">
+          <select class="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent bg-white">
+            <option value="">All Services</option>
+            <option value="memorial">Memorial Service</option>
+            <option value="funeral">Funeral Service</option>
+            <option value="cremation">Cremation</option>
+          </select>
+          
+          <select class="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent bg-white">
+            <option value="">All Status</option>
+            <option value="paid">Paid</option>
+            <option value="pending">Pending</option>
+            <option value="overdue">Overdue</option>
+          </select>
+          
+          <button class="px-4 py-2 bg-white border border-accent text-accent rounded-md hover:bg-yellow-50 transition-colors flex items-center gap-2">
+            <i class="fas fa-filter"></i> Filter
+          </button>
+        </div>
+      </div>
+      
+      <!-- Table -->
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead>
+            <tr class="bg-gray-50 text-left">
+              <th class="px-6 py-3 text-gray-700 font-semibold">
+                <div class="flex items-center">
+                  <i class="fas fa-user mr-2 text-accent"></i> Beneficiary Name
+                </div>
+              </th>
+              <th class="px-6 py-3 text-gray-700 font-semibold">
+                <div class="flex items-center">
+                  <i class="fas fa-hand-holding-heart mr-2 text-accent"></i> Service Name
+                </div>
+              </th>
+              <th class="px-6 py-3 text-gray-700 font-semibold">
+                <div class="flex items-center">
+                  <i class="fas fa-calendar-alt mr-2 text-accent"></i> Payment Duration
+                </div>
+              </th>
+              <th class="px-6 py-3 text-gray-700 font-semibold">
+                <div class="flex items-center">
+                  <i class="fas fa-tag mr-2 text-accent"></i> Price
+                </div>
+              </th>
+              <th class="px-6 py-3 text-gray-700 font-semibold">
+                <div class="flex items-center">
+                  <i class="fas fa-credit-card mr-2 text-accent"></i> Payment Status
+                </div>
+              </th>
+              <th class="px-6 py-3 text-gray-700 font-semibold">
+                <div class="flex items-center">
+                  <i class="fas fa-cogs mr-2 text-accent"></i> Actions
+                </div>
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200">
+            <tr class="hover:bg-gray-50 transition-colors">
+              <td class="px-6 py-4 text-slate-800">
+                <div class="flex items-center">
+                  <div class="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center text-accent mr-3">
+                    <i class="fas fa-user"></i>
+                  </div>
+                  Maria Santos
+                </div>
+              </td>
+              <td class="px-6 py-4 text-slate-800">Memorial Plan Plus</td>
+              <td class="px-6 py-4 text-slate-800">5 years</td>
+              <td class="px-6 py-4 text-slate-800">₱75,000</td>
+              <td class="px-6 py-4">
+                <span class="px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                  <i class="fas fa-check-circle mr-1"></i> Paid
+                </span>
+              </td>
+              <td class="px-6 py-4">
+                <div class="flex gap-2">
+                  <button class="p-1 hover:bg-gray-100 rounded text-gray-500 hover:text-slate-800 transition-colors" title="View Details">
+                    <i class="fas fa-eye"></i>
+                  </button>
+                  <button class="p-1 hover:bg-gray-100 rounded text-gray-500 hover:text-slate-800 transition-colors" title="Edit">
+                    <i class="fas fa-edit"></i>
+                  </button>
+                  <button class="p-1 hover:bg-gray-100 rounded text-gray-500 hover:text-slate-800 transition-colors" title="Delete">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr class="hover:bg-gray-50 transition-colors">
+              <td class="px-6 py-4 text-slate-800">
+                <div class="flex items-center">
+                  <div class="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center text-accent mr-3">
+                    <i class="fas fa-user"></i>
+                  </div>
+                  Juan Dela Cruz
+                </div>
+              </td>
+              <td class="px-6 py-4 text-slate-800">Funeral Service Premium</td>
+              <td class="px-6 py-4 text-slate-800">3 years</td>
+              <td class="px-6 py-4 text-slate-800">₱120,000</td>
+              <td class="px-6 py-4">
+                <span class="px-3 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                  <i class="fas fa-clock mr-1"></i> Pending
+                </span>
+              </td>
+              <td class="px-6 py-4">
+                <div class="flex gap-2">
+                  <button class="p-1 hover:bg-gray-100 rounded text-gray-500 hover:text-slate-800 transition-colors" title="View Details">
+                    <i class="fas fa-eye"></i>
+                  </button>
+                  <button class="p-1 hover:bg-gray-100 rounded text-gray-500 hover:text-slate-800 transition-colors" title="Edit">
+                    <i class="fas fa-edit"></i>
+                  </button>
+                  <button class="p-1 hover:bg-gray-100 rounded text-gray-500 hover:text-slate-800 transition-colors" title="Delete">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr class="hover:bg-gray-50 transition-colors">
+              <td class="px-6 py-4 text-slate-800">
+                <div class="flex items-center">
+                  <div class="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center text-accent mr-3">
+                    <i class="fas fa-user"></i>
+                  </div>
+                  Anna Rodriguez
+                </div>
+              </td>
+              <td class="px-6 py-4 text-slate-800">Cremation Plan</td>
+              <td class="px-6 py-4 text-slate-800">2 years</td>
+              <td class="px-6 py-4 text-slate-800">₱50,000</td>
+              <td class="px-6 py-4">
+                <span class="px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                  <i class="fas fa-exclamation-circle mr-1"></i> Overdue
+                </span>
+              </td>
+              <td class="px-6 py-4">
+                <div class="flex gap-2">
+                  <button class="p-1 hover:bg-gray-100 rounded text-gray-500 hover:text-slate-800 transition-colors" title="View Details">
+                    <i class="fas fa-eye"></i>
+                  </button>
+                  <button class="p-1 hover:bg-gray-100 rounded text-gray-500 hover:text-slate-800 transition-colors" title="Edit">
+                    <i class="fas fa-edit"></i>
+                  </button>
+                  <button class="p-1 hover:bg-gray-100 rounded text-gray-500 hover:text-slate-800 transition-colors" title="Delete">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr class="hover:bg-gray-50 transition-colors">
+              <td class="px-6 py-4 text-slate-800">
+                <div class="flex items-center">
+                  <div class="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center text-accent mr-3">
+                    <i class="fas fa-user"></i>
+                  </div>
+                  Ricardo Dalisay
+                </div>
+              </td>
+              <td class="px-6 py-4 text-slate-800">Memorial Plan Standard</td>
+              <td class="px-6 py-4 text-slate-800">5 years</td>
+              <td class="px-6 py-4 text-slate-800">₱65,000</td>
+              <td class="px-6 py-4">
+                <span class="px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                  <i class="fas fa-check-circle mr-1"></i> Paid
+                </span>
+              </td>
+              <td class="px-6 py-4">
+                <div class="flex gap-2">
+                  <button class="p-1 hover:bg-gray-100 rounded text-gray-500 hover:text-slate-800 transition-colors" title="View Details">
+                    <i class="fas fa-eye"></i>
+                  </button>
+                  <button class="p-1 hover:bg-gray-100 rounded text-gray-500 hover:text-slate-800 transition-colors" title="Edit">
+                    <i class="fas fa-edit"></i>
+                  </button>
+                  <button class="p-1 hover:bg-gray-100 rounded text-gray-500 hover:text-slate-800 transition-colors" title="Delete">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr class="hover:bg-gray-50 transition-colors">
+              <td class="px-6 py-4 text-slate-800">
+                <div class="flex items-center">
+                  <div class="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center text-accent mr-3">
+                    <i class="fas fa-user"></i>
+                  </div>
+                  Lorna Morales
+                </div>
+              </td>
+              <td class="px-6 py-4 text-slate-800">Funeral Service Basic</td>
+              <td class="px-6 py-4 text-slate-800">4 years</td>
+              <td class="px-6 py-4 text-slate-800">₱85,000</td>
+              <td class="px-6 py-4">
+                <span class="px-3 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                  <i class="fas fa-clock mr-1"></i> Pending
+                </span>
+              </td>
+              <td class="px-6 py-4">
+                <div class="flex gap-2">
+                  <button class="p-1 hover:bg-gray-100 rounded text-gray-500 hover:text-slate-800 transition-colors" title="View Details">
+                    <i class="fas fa-eye"></i>
+                  </button>
+                  <button class="p-1 hover:bg-gray-100 rounded text-gray-500 hover:text-slate-800 transition-colors" title="Edit">
+                    <i class="fas fa-edit"></i>
+                  </button>
+                  <button class="p-1 hover:bg-gray-100 rounded text-gray-500 hover:text-slate-800 transition-colors" title="Delete">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr class="hover:bg-gray-50 transition-colors">
+              <td class="px-6 py-4 text-slate-800">
+                <div class="flex items-center">
+                  <div class="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center text-accent mr-3">
+                    <i class="fas fa-user"></i>
+                  </div>
+                  Gabriel Padilla
+                </div>
+              </td>
+              <td class="px-6 py-4 text-slate-800">Cremation Plan Premium</td>
+              <td class="px-6 py-4 text-slate-800">1 year</td>
+              <td class="px-6 py-4 text-slate-800">₱95,000</td>
+              <td class="px-6 py-4">
+                <span class="px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                  <i class="fas fa-check-circle mr-1"></i> Paid
+                </span>
+              </td>
+              <td class="px-6 py-4">
+                <div class="flex gap-2">
+                  <button class="p-1 hover:bg-gray-100 rounded text-gray-500 hover:text-slate-800 transition-colors" title="View Details">
+                    <i class="fas fa-eye"></i>
+                  </button>
+                  <button class="p-1 hover:bg-gray-100 rounded text-gray-500 hover:text-slate-800 transition-colors" title="Edit">
+                    <i class="fas fa-edit"></i>
+                  </button>
+                  <button class="p-1 hover:bg-gray-100 rounded text-gray-500 hover:text-slate-800 transition-colors" title="Delete">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      
+      <!-- Pagination -->
+      <div class="flex justify-between items-center mt-6">
+        <div class="text-sm text-gray-500">Showing 1 to 6 of 24 entries</div>
+        <div class="flex gap-2">
+          <button class="px-3 py-1 border border-gray-300 rounded bg-white text-gray-500 hover:bg-gray-50 transition-colors">
+            <i class="fas fa-chevron-left"></i>
+          </button>
+          <button class="px-3 py-1 border border-accent bg-accent text-white rounded hover:bg-yellow-700 transition-colors">1</button>
+          <button class="px-3 py-1 border border-gray-300 rounded bg-white text-gray-500 hover:bg-gray-50 transition-colors">2</button>
+          <button class="px-3 py-1 border border-gray-300 rounded bg-white text-gray-500 hover:bg-gray-50 transition-colors">3</button>
+          <button class="px-3 py-1 border border-gray-300 rounded bg-white text-gray-500 hover:bg-gray-50 transition-colors">
+            <i class="fas fa-chevron-right"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Footer -->
+    <div class="mt-8 text-center text-gray-500 text-sm">
+      <p>© 2025 Life Plan Management System. All rights reserved.</p>
+    </div>
+  </div>
 </body>
 </html>
