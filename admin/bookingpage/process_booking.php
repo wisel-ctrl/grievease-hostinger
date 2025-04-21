@@ -25,7 +25,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     error_log("Received POST data: " . print_r($_POST, true));
 
     // Get all the form data with validation
-    $bookingId = filter_input(INPUT_POST, 'bookingId', FILTER_VALIDATE_INT);
+    // Get all the form data with validation
+    $rawBookingId = $_POST['bookingId'] ?? null;
+    $bookingId = filter_var($rawBookingId, FILTER_VALIDATE_INT);
+
+    // Handle cases where bookingId has leading zeros
+    if ($bookingId === false && $rawBookingId !== null) {
+        $cleaned = preg_replace('/[^0-9]/', '', $rawBookingId);
+        $bookingId = filter_var($cleaned, FILTER_VALIDATE_INT);
+    }
+
+    $amountPaid = filter_input(INPUT_POST, 'amountPaid', FILTER_VALIDATE_FLOAT);
+    $paymentMethod = filter_input(INPUT_POST, 'paymentMethod', FILTER_SANITIZE_STRING);
+
+    // Debug logging for the booking ID
+    error_log("Booking ID Debug - Raw: '$rawBookingId', Processed: '$bookingId'");
     $amountPaid = filter_input(INPUT_POST, 'amountPaid', FILTER_VALIDATE_FLOAT);
     $paymentMethod = filter_input(INPUT_POST, 'paymentMethod', FILTER_SANITIZE_STRING);
     
