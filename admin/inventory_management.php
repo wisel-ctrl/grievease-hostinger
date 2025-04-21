@@ -119,7 +119,6 @@ header("Pragma: no-cache");
     $lowStock = $lowStockResult->fetch_assoc()['low_stock'];
     
     // Calculate turnover rate (simplified - could be based on historical data)
-    // This is a placeholder - you might want to calculate this differently
     $turnoverQuery = "SELECT 
                         (SUM(CASE WHEN quantity < 10 THEN 1 ELSE 0 END) / COUNT(*)) * 100 as turnover_rate 
                       FROM inventory_tb 
@@ -148,7 +147,7 @@ header("Pragma: no-cache");
     $lowStockChange = $lastMonthData['last_month_low_stock'] > 0 ? 
                      (($lowStock - $lastMonthData['last_month_low_stock']) / $lastMonthData['last_month_low_stock']) * 100 : 0;
     
-    // Card data array
+    // Enhanced card data array with stronger colors
     $cards = [
         [
             'title' => 'Total Items',
@@ -156,6 +155,10 @@ header("Pragma: no-cache");
             'change' => $itemsChange,
             'icon' => 'boxes',
             'color' => 'blue',
+            'bg_color' => 'bg-blue-600',
+            'text_color' => 'text-white',
+            'icon_bg' => 'bg-blue-100',
+            'icon_color' => 'text-blue-700',
             'prefix' => ''
         ],
         [
@@ -164,6 +167,10 @@ header("Pragma: no-cache");
             'change' => $valueChange,
             'icon' => 'peso-sign',
             'color' => 'green',
+            'bg_color' => 'bg-emerald-600',
+            'text_color' => 'text-white',
+            'icon_bg' => 'bg-emerald-100',
+            'icon_color' => 'text-emerald-700',
             'prefix' => '₱'
         ],
         [
@@ -172,6 +179,10 @@ header("Pragma: no-cache");
             'change' => $lowStockChange,
             'icon' => 'exclamation-triangle',
             'color' => 'orange',
+            'bg_color' => 'bg-amber-500',
+            'text_color' => 'text-white',
+            'icon_bg' => 'bg-amber-100',
+            'icon_color' => 'text-amber-700',
             'prefix' => '',
             'inverse_change' => true // For low stock, increasing is bad
         ],
@@ -181,6 +192,10 @@ header("Pragma: no-cache");
             'change' => 3, // Hardcoded in original
             'icon' => 'sync-alt',
             'color' => 'purple',
+            'bg_color' => 'bg-purple-600',
+            'text_color' => 'text-white',
+            'icon_bg' => 'bg-purple-100',
+            'icon_color' => 'text-purple-700',
             'prefix' => '',
             'suffix' => '%'
         ]
@@ -201,17 +216,17 @@ header("Pragma: no-cache");
         $suffix = isset($card['suffix']) ? $card['suffix'] : '';
     ?>
     
-    <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
-        <!-- Card header with brighter gradient background -->
-        <div class="bg-gradient-to-r from-<?php echo $card['color']; ?>-100 to-<?php echo $card['color']; ?>-200 px-6 py-4">
-            <div class="flex items-center justify-between mb-1">
-                <h3 class="text-sm font-medium text-gray-700"><?php echo $card['title']; ?></h3>
-                <div class="w-10 h-10 rounded-full bg-white/90 text-<?php echo $card['color']; ?>-600 flex items-center justify-center">
+    <div class="bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden">
+        <!-- Card header with solid color background instead of gradient -->
+        <div class="<?php echo $card['bg_color']; ?> px-6 py-5">
+            <div class="flex items-center justify-between mb-2">
+                <h3 class="text-sm font-medium <?php echo $card['text_color']; ?>"><?php echo $card['title']; ?></h3>
+                <div class="w-10 h-10 rounded-full <?php echo $card['icon_bg']; ?> <?php echo $card['icon_color']; ?> flex items-center justify-center shadow-md">
                     <i class="fas fa-<?php echo $card['icon']; ?>"></i>
                 </div>
             </div>
             <div class="flex items-end">
-                <span class="text-2xl md:text-3xl font-bold text-gray-800"><?php echo $card['prefix'] . $card['value'] . $suffix; ?></span>
+                <span class="text-2xl md:text-3xl font-bold <?php echo $card['text_color']; ?>"><?php echo $card['prefix'] . $card['value'] . $suffix; ?></span>
             </div>
         </div>
         
