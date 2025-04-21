@@ -385,15 +385,15 @@ header("Pragma: no-cache");
               $statusClass = '';
               $statusIcon = '';
               switch ($row['payment_status']) {
-                case 'Paid':
+                case 'paid':
                   $statusClass = 'bg-green-100 text-green-800';
                   $statusIcon = 'fa-check-circle';
                   break;
-                case 'Pending':
+                case 'pending':
                   $statusClass = 'bg-yellow-100 text-yellow-800';
                   $statusIcon = 'fa-clock';
                   break;
-                case 'Overdue':
+                case 'overdue':
                   $statusClass = 'bg-red-100 text-red-800';
                   $statusIcon = 'fa-exclamation-circle';
                   break;
