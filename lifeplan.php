@@ -121,7 +121,7 @@
     <div class="container mx-auto px-6 max-w-6xl">
         <!-- Hero Section -->
         <div class="relative rounded-2xl overflow-hidden mb-16 shadow-xl">
-            <div class="h-64 bg-cover bg-center" style="background-image: url('Landing_page/Landing_images/black-bg-image.jpg')">
+            <div class="h-64 bg-cover bg-center" style="background-image: url('Landing_Page/Landing_images/black-bg-image.jpg');">
                 <div class="absolute inset-0 bg-black/50"></div>
                 <div class="absolute inset-0 flex flex-col justify-center items-center text-white p-8">
                     <h1 class="text-5xl font-hedvig text-center mb-6">Lifeplan</h1>
@@ -434,6 +434,7 @@
                         </div>
                     </div>
                 </div>
+    </div>
     </div>
 <!-- Footer -->
 <?php include 'footer.php'?>

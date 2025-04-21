@@ -111,7 +111,7 @@ function toggleMenu() {
     <div class="fixed inset-0 z-[-1] bg-black bg-opacity-70"></div>
     
     <!-- Background image -->
-    <div class="fixed inset-0 z-[-2] bg-[url('Landing_page/Landing_images/black-bg-image.jpg')] bg-cover bg-center bg-no-repeat"></div>
+    <div class="fixed inset-0 z-[-2] bg-[url('Landing_page/Landing_images/black-bg-image.jpg')] bg-cover bg-center bg-no-repeat" style="background-image: url('Landing_Page/Landing_images/black-bg-image.jpg');"></div>
     
 
     <main class="w-full max-w-7xl mx-auto px-4 py-8 pt-20  mt-[var(--navbar-height)]" >

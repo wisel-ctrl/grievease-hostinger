@@ -91,15 +91,12 @@ header("Pragma: no-cache");
   <div class="flex justify-between items-center mb-6 bg-white p-5 rounded-lg shadow-sidebar">
     <div>
       <h1 class="text-2xl font-bold text-sidebar-text">Inventory Management</h1>
-      <p class="text-sm text-gray-500">Manage your inventory efficiently</p>
     </div>
     <div class="flex space-x-3">
       <button class="p-2 bg-white border border-sidebar-border rounded-lg shadow-input text-sidebar-text hover:bg-sidebar-hover transition-all duration-300">
         <i class="fas fa-bell"></i>
       </button>
-      <button class="p-2 bg-white border border-sidebar-border rounded-lg shadow-input text-sidebar-text hover:bg-sidebar-hover transition-all duration-300">
-        <i class="fas fa-cog"></i>
-      </button>
+       
     </div>
   </div>
 
