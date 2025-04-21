@@ -96,11 +96,11 @@ try {
         sold_by, branch_id, service_id, payment_method,
         initial_price, discounted_price, amount_paid, balance,
         status, payment_status, death_cert_image, deceased_address, with_cremate
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
     
     // Correct type definition string (23 parameters now)
     $stmt->bind_param(
-        "issssssssssiiisddddssss",  // 23 type specifiers
+        "issssssssssiiisddddsssss",  // 23 type specifiers
         $customerID, $firstName, $middleName, $lastName, $suffix, $phoneNumber, $email,
         $deceasedFname, $deceasedMname, $deceasedLname, $deceasedSuffix,
         $_SESSION['user_id'], $branchId, $serviceId, $paymentMethod,
