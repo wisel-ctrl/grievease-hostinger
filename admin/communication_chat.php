@@ -105,68 +105,36 @@ header("Pragma: no-cache");
     </div>
 
     <!-- Customer Messages Interface -->
-<div class="bg-white rounded-lg shadow-md overflow-hidden">
-  <!-- Messages Header -->
-  <div class="border-b border-sidebar-border bg-gray-50 p-4">
-    <div class="flex justify-between items-center">
-      <h2 class="text-lg font-semibold text-gray-800">Incoming Customer Messages</h2>
-      <div class="text-sm text-gray-500">Showing <span id="message-count" class="font-medium">0</span> messages</div>
-    </div>
-  </div>
-  
-  <!-- Messages Content -->
-  <div>
-    <!-- Empty state - No messages -->
-    <div id="empty-state" class="py-12 flex flex-col items-center justify-center text-gray-500">
-      <div class="bg-gray-100 rounded-full p-4 mb-4">
-        <i class="fas fa-inbox text-3xl"></i>
+    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+      <!-- Messages Header -->
+      <div class="border-b border-gray-200 bg-gray-50 p-4">
+        <div class="flex justify-between items-center">
+          <h2 class="text-lg font-semibold text-gray-800">Incoming Customer Messages</h2>
+          <div class="text-sm text-gray-500">Showing <span id="message-count" class="font-medium">0</span> messages</div>
+        </div>
       </div>
-      <h3 class="text-lg font-medium mb-1">No customer messages</h3>
-      <p class="text-sm">Customer messages will appear here when received</p>
-      <button id="load-messages-btn" class="mt-4 bg-[#008080] text-white px-4 py-2 rounded-md hover:bg-opacity-90 transition-colors">
-        Load Messages
-      </button>
-    </div>
-    
-    <!-- Message list container as table -->
-    <div id="message-list" class="hidden overflow-x-auto scrollbar-thin">
-      <table class="w-full">
-        <thead>
-          <tr class="bg-gray-50 border-b border-sidebar-border">
-            <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortMessages(0)">
-              <div class="flex items-center">
-                <i class="fas fa-user mr-1.5 text-sidebar-accent"></i> Customer
-              </div>
-            </th>
-            <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortMessages(1)">
-              <div class="flex items-center">
-                <i class="fas fa-envelope mr-1.5 text-sidebar-accent"></i> Message
-              </div>
-            </th>
-            <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortMessages(2)">
-              <div class="flex items-center">
-                <i class="fas fa-calendar-alt mr-1.5 text-sidebar-accent"></i> Date/Time
-              </div>
-            </th>
-            <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortMessages(3)">
-              <div class="flex items-center">
-                <i class="fas fa-tag mr-1.5 text-sidebar-accent"></i> Status
-              </div>
-            </th>
-            <th class="p-4 text-left text-sm font-medium text-sidebar-text">
-              <div class="flex items-center">
-                <i class="fas fa-cogs mr-1.5 text-sidebar-accent"></i> Actions
-              </div>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
+      
+      <!-- Messages Content -->
+      <div class="divide-y divide-gray-200">
+        <!-- Empty state - No messages -->
+        <div id="empty-state" class="py-12 flex flex-col items-center justify-center text-gray-500">
+          <div class="bg-gray-100 rounded-full p-4 mb-4">
+            <i class="fas fa-inbox text-3xl"></i>
+          </div>
+          <h3 class="text-lg font-medium mb-1">No customer messages</h3>
+          <p class="text-sm">Customer messages will appear here when received</p>
+          <button id="load-messages-btn" class="mt-4 bg-[#008080] text-white px-4 py-2 rounded-md hover:bg-opacity-90 transition-colors">
+            Load Messages
+          </button>
+        </div>
+        
+        <!-- Message list container -->
+        <div id="message-list" class="hidden">
           <!-- Messages will be loaded here dynamically -->
-        </tbody>
-      </table>
+        </div>
+      </div>
     </div>
   </div>
-</div>
 
       <!-- Message Detail Modal -->
       <div id="message-detail-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center">
