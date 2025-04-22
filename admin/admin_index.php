@@ -720,192 +720,157 @@ require_once '../db_connect.php'; // Database connection
 </div>
 
   <!-- Recent Inventory Activity -->
-  <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 mb-8">
-    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 p-5 border-b border-sidebar-border">
-      <h3 class="font-medium text-sidebar-text">Recent Inventory Activity</h3>
-      <a href="inventory_management.php"><button class="px-4 py-2 bg-sidebar-accent text-white rounded-md text-sm flex items-center hover:bg-darkgold transition-all duration-300">
-        <i class="fas fa-box mr-2"></i> Manage Inventory
-      </button></a>
+<div class="bg-white rounded-lg shadow-md mb-8 border border-sidebar-border overflow-hidden">
+  <div class="bg-sidebar-hover p-4 border-b border-sidebar-border flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <div class="flex items-center gap-3">
+      <h3 class="text-lg font-bold text-sidebar-text">Recent Inventory Activity</h3>
+      
+      <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
+          <i class="fas fa-clipboard-list"></i>
+          18 Activities
+      </span>
     </div>
-    <div class="overflow-x-auto scrollbar-thin">
-      <table class="w-full">
-        <thead>
-          <tr class="bg-sidebar-hover">
-            <!-- <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(0)">
-              <div class="flex items-center">
-                Item <i class="fas fa-sort ml-1 text-gray-400"></i>
-              </div>
-            </th> -->
-            <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(0)">
-              <div class="flex items-center">
-                Item <i class="fas fa-sort ml-1 text-gray-400"></i>
-              </div>
-            </th>
-            <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(1)">
-              <div class="flex items-center">
-                SKU <i class="fas fa-sort ml-1 text-gray-400"></i>
-              </div>
-            </th>
-            <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(2)">
-              <div class="flex items-center">
-                Activity <i class="fas fa-sort ml-1 text-gray-400"></i>
-              </div>
-            </th>
-            <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(3)">
-              <div class="flex items-center">
-                Date <i class="fas fa-sort ml-1 text-gray-400"></i>
-              </div>
-            </th>
-            <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(4)">
-              <div class="flex items-center">
-                Quantity <i class="fas fa-sort ml-1 text-gray-400"></i>
-              </div>
-            </th>
-            <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(5)">
-              <div class="flex items-center">
-                Branch <i class="fas fa-sort ml-1 text-gray-400"></i>
-              </div>
-            </th>
-            <th class="p-4 text-left text-sm font-medium text-sidebar-text">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr class="border-b border-sidebar-border hover:bg-sidebar-hover">
-                        <td class="p-4 text-sm text-sidebar-text">Premium Casket</td>
-                        <td class="p-4 text-sm text-sidebar-text">CSK-001</td>
-                        <td class="p-4 text-sm">
-                          <span class="px-2 py-1 bg-red-100 text-red-800 rounded-full text-xs">Depleted</span>
-                        </td>
-                        <td class="p-4 text-sm text-sidebar-text">Mar 15, 2025</td>
-                        <td class="p-4 text-sm text-sidebar-text">0</td>
-                        <td class="p-4 text-sm text-sidebar-text">Downtown</td>
-                        <td class="p-4 text-sm">
-                          <div class="flex space-x-2">
-                            <button class="p-1.5 bg-purple-100 text-purple-600 rounded hover:bg-purple-200 transition-all">
-                              <i class="fas fa-plus"></i>
-                            </button>
-                            <button class="p-1.5 bg-blue-100 text-blue-600 rounded hover:bg-blue-200 transition-all">
-                              <i class="fas fa-eye"></i>
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                      <tr class="border-b border-sidebar-border hover:bg-sidebar-hover">
-                        <td class="p-4 text-sm text-sidebar-text">Prayer Cards</td>
-                        <td class="p-4 text-sm text-sidebar-text">PRC-011</td>
-                        <td class="p-4 text-sm">
-                          <span class="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs">Low Stock</span>
-                        </td>
-                        <td class="p-4 text-sm text-sidebar-text">Mar 14, 2025</td>
-                        <td class="p-4 text-sm text-sidebar-text">25</td>
-                        <td class="p-4 text-sm text-sidebar-text">Westside</td>
-                        <td class="p-4 text-sm">
-                          <div class="flex space-x-2">
-                            <button class="p-1.5 bg-purple-100 text-purple-600 rounded hover:bg-purple-200 transition-all">
-                              <i class="fas fa-plus"></i>
-                            </button>
-                            <button class="p-1.5 bg-blue-100 text-blue-600 rounded hover:bg-blue-200 transition-all">
-                              <i class="fas fa-eye"></i>
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                      <tr class="border-b border-sidebar-border hover:bg-sidebar-hover">
-                        <td class="p-4 text-sm text-sidebar-text">Cremation Urns</td>
-                        <td class="p-4 text-sm text-sidebar-text">URN-032</td>
-                        <td class="p-4 text-sm">
-                          <span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">Restocked</span>
-                        </td>
-                        <td class="p-4 text-sm text-sidebar-text">Mar 13, 2025</td>
-                        <td class="p-4 text-sm text-sidebar-text">+15</td>
-                        <td class="p-4 text-sm text-sidebar-text">Downtown</td>
-                        <td class="p-4 text-sm">
-                          <div class="flex space-x-2">
-                            <button class="p-1.5 bg-purple-100 text-purple-600 rounded hover:bg-purple-200 transition-all">
-                              <i class="fas fa-plus"></i>
-                            </button>
-                            <button class="p-1.5 bg-blue-100 text-blue-600 rounded hover:bg-blue-200 transition-all">
-                              <i class="fas fa-eye"></i>
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-                <div class="p-4 border-t border-sidebar-border flex justify-between items-center">
-                  <div class="text-sm text-gray-500">Showing 3 of 18 recent activities</div>
-                  <div class="flex space-x-1">
-                    <button class="px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">&laquo;</button>
-                    <button class="px-3 py-1 bg-sidebar-accent text-white rounded text-sm">1</button>
-                    <button class="px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">2</button>
-                    <button class="px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">3</button>
-                    <button class="px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">&raquo;</button>
-                  </div>
-                </div>
-              </div>
+    
+    <a href="inventory_management.php">
+      <button class="px-4 py-2.5 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm whitespace-nowrap">
+        <i class="fas fa-box"></i> Manage Inventory
+      </button>
+    </a>
+  </div>
+  
+  <div class="overflow-x-auto scrollbar-thin">
+    <table class="w-full">
+      <thead>
+        <tr class="bg-gray-50 border-b border-sidebar-border">
+          <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(0)">
+            <div class="flex items-center">
+              <i class="fas fa-box mr-1.5 text-sidebar-accent"></i> Item
+            </div>
+          </th>
+          <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(1)">
+            <div class="flex items-center">
+              <i class="fas fa-barcode mr-1.5 text-sidebar-accent"></i> SKU
+            </div>
+          </th>
+          <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(2)">
+            <div class="flex items-center">
+              <i class="fas fa-chart-line mr-1.5 text-sidebar-accent"></i> Activity
+            </div>
+          </th>
+          <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(3)">
+            <div class="flex items-center">
+              <i class="fas fa-calendar-alt mr-1.5 text-sidebar-accent"></i> Date
+            </div>
+          </th>
+          <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(4)">
+            <div class="flex items-center">
+              <i class="fas fa-cubes mr-1.5 text-sidebar-accent"></i> Quantity
+            </div>
+          </th>
+          <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(5)">
+            <div class="flex items-center">
+              <i class="fas fa-building mr-1.5 text-sidebar-accent"></i> Branch
+            </div>
+          </th>
+          <th class="p-4 text-left text-sm font-medium text-sidebar-text">
+            <div class="flex items-center">
+              <i class="fas fa-cogs mr-1.5 text-sidebar-accent"></i> Actions
+            </div>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
+          <td class="p-4 text-sm text-sidebar-text">Premium Casket</td>
+          <td class="p-4 text-sm text-sidebar-text font-medium">CSK-001</td>
+          <td class="p-4 text-sm">
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-600 border border-red-200">
+              <i class="fas fa-exclamation-circle mr-1"></i> Depleted
+            </span>
+          </td>
+          <td class="p-4 text-sm text-sidebar-text">Mar 15, 2025</td>
+          <td class="p-4 text-sm font-medium text-sidebar-text">0</td>
+          <td class="p-4 text-sm text-sidebar-text">Downtown</td>
+          <td class="p-4 text-sm">
+            <div class="flex space-x-2">
+              <button class="p-2 bg-purple-100 text-purple-600 rounded-lg hover:bg-purple-200 transition-all tooltip" title="Add Stock">
+                <i class="fas fa-plus"></i>
+              </button>
+              <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="View Details">
+                <i class="fas fa-eye"></i>
+              </button>
+            </div>
+          </td>
+        </tr>
+        <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
+          <td class="p-4 text-sm text-sidebar-text">Prayer Cards</td>
+          <td class="p-4 text-sm text-sidebar-text font-medium">PRC-011</td>
+          <td class="p-4 text-sm">
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-600 border border-yellow-200">
+              <i class="fas fa-exclamation-triangle mr-1"></i> Low Stock
+            </span>
+          </td>
+          <td class="p-4 text-sm text-sidebar-text">Mar 14, 2025</td>
+          <td class="p-4 text-sm font-medium text-sidebar-text">25</td>
+          <td class="p-4 text-sm text-sidebar-text">Westside</td>
+          <td class="p-4 text-sm">
+            <div class="flex space-x-2">
+              <button class="p-2 bg-purple-100 text-purple-600 rounded-lg hover:bg-purple-200 transition-all tooltip" title="Add Stock">
+                <i class="fas fa-plus"></i>
+              </button>
+              <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="View Details">
+                <i class="fas fa-eye"></i>
+              </button>
+            </div>
+          </td>
+        </tr>
+        <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
+          <td class="p-4 text-sm text-sidebar-text">Cremation Urns</td>
+          <td class="p-4 text-sm text-sidebar-text font-medium">URN-032</td>
+          <td class="p-4 text-sm">
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-600 border border-green-200">
+              <i class="fas fa-check-circle mr-1"></i> Restocked
+            </span>
+          </td>
+          <td class="p-4 text-sm text-sidebar-text">Mar 13, 2025</td>
+          <td class="p-4 text-sm font-medium text-sidebar-text">+15</td>
+          <td class="p-4 text-sm text-sidebar-text">Downtown</td>
+          <td class="p-4 text-sm">
+            <div class="flex space-x-2">
+              <button class="p-2 bg-purple-100 text-purple-600 rounded-lg hover:bg-purple-200 transition-all tooltip" title="Add Stock">
+                <i class="fas fa-plus"></i>
+              </button>
+              <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="View Details">
+                <i class="fas fa-eye"></i>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  
+  <!-- Pagination -->
+  <div class="p-4 border-t border-sidebar-border flex justify-between items-center">
+    <div class="text-sm text-gray-500">
+      Showing 1 - 3 of 18 activities
+    </div>
+    <div class="flex space-x-1">
+      <button class="px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover opacity-50 cursor-not-allowed" disabled>&laquo;</button>
+      
+      <button class="px-3 py-1 border border-sidebar-border rounded text-sm bg-sidebar-accent text-white">1</button>
+      <button class="px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">2</button>
+      <button class="px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">3</button>
+      
+      <button class="px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">&raquo;</button>
+    </div>
+  </div>
+</div>
             
               <!-- Footer -->
               <footer class="bg-white rounded-lg shadow-sidebar border border-sidebar-border p-4 text-center text-sm text-gray-500 mt-8">
                 <p>© 2025 GrievEase.</p>
               </footer>
-            </div>
-            
-            <!-- Add Service Modal -->
-            <div id="serviceModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
-              <div class="bg-white rounded-lg shadow-lg w-full max-w-2xl p-6 max-h-[90vh] overflow-y-auto">
-                <div class="flex justify-between items-center mb-6">
-                  <h2 class="text-xl font-semibold text-sidebar-text">Add New Service</h2>
-                  <button class="text-gray-400 hover:text-gray-600 transition-all" onclick="closeModal()">
-                    <i class="fas fa-times"></i>
-                  </button>
-                </div>
-                <form>
-                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                    <div>
-                      <label class="block text-sm font-medium text-sidebar-text mb-1">Client Name</label>
-                      <input type="text" class="w-full p-2 border border-sidebar-border rounded-md focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
-                    </div>
-                    <div>
-                      <label class="block text-sm font-medium text-sidebar-text mb-1">Service Type</label>
-                      <select class="w-full p-2 border border-sidebar-border rounded-md focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
-                        <option>Funeral Service</option>
-                        <option>Memorial Service</option>
-                        <option>Cremation Service</option>
-                        <option>Visitation</option>
-                        <option>Graveside Service</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label class="block text-sm font-medium text-sidebar-text mb-1">Date</label>
-                      <input type="date" class="w-full p-2 border border-sidebar-border rounded-md focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
-                    </div>
-                    <div>
-                      <label class="block text-sm font-medium text-sidebar-text mb-1">Time</label>
-                      <input type="time" class="w-full p-2 border border-sidebar-border rounded-md focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
-                    </div>
-                    <div>
-                      <label class="block text-sm font-medium text-sidebar-text mb-1">Location</label>
-                      <input type="text" class="w-full p-2 border border-sidebar-border rounded-md focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
-                    </div>
-                    <div>
-                      <label class="block text-sm font-medium text-sidebar-text mb-1">Branch</label>
-                      <select class="w-full p-2 border border-sidebar-border rounded-md focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
-                        <option>Downtown Branch</option>
-                        <option>Westside Branch</option>
-                      </select>
-                    </div>
-                  </div>
-                  <div class="mb-4">
-                    <label class="block text-sm font-medium text-sidebar-text mb-1">Additional Notes</label>
-                    <textarea rows="4" class="w-full p-2 border border-sidebar-border rounded-md focus:outline-none focus:ring-2 focus:ring-sidebar-accent"></textarea>
-                  </div>
-                  <div class="border-t border-sidebar-border pt-4 flex justify-end space-x-3">
-                    <button type="button" class="px-4 py-2 border border-sidebar-border rounded-md text-sm text-sidebar-text hover:bg-sidebar-hover transition-all" onclick="closeModal()">Cancel</button>
-                    <button type="submit" class="px-4 py-2 bg-sidebar-accent text-white rounded-md text-sm hover:bg-darkgold transition-all">Add Service</button>
-                  </div>
-                </form>
-              </div>
             </div>
             
             <!-- JavaScript for modal -->
