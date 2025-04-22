@@ -435,7 +435,7 @@ header("Pragma: no-cache");
                                       <h4 class="font-medium text-gray-700 mb-2">Payment Summary</h4>
                                       <div class="grid grid-cols-2 gap-2 text-sm">
                                           <div>Monthly Amount:</div>
-                                          <div class="font-medium" id="monthlyAmount">₱5,000.00</div>
+                                          <div class="font-medium" id="monthlyAmount">₱0</div>
                                           <div>Total Paid:</div>
                                           <div class="font-medium" id="totalPaid">₱15,000.00</div>
                                           <div>Remaining Balance:</div>
