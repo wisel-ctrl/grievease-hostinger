@@ -974,9 +974,32 @@ function loadServices() {
       const imageUrl = service.image_url && service.image_url.trim() !== '' ? 
         service.image_url : 'assets/images/service-default.png';
 
-      const inclusionsSummary = service.inclusions && service.inclusions.length > 100 
-        ? service.inclusions.substring(0, 100) + '...'
-        : service.inclusions || 'No inclusions specified';
+      // Process inclusions as a list
+      let inclusionsHtml = '';
+      if (service.inclusions && service.inclusions.trim() !== '') {
+        // Assuming inclusions might be comma separated
+        const inclusionsArray = service.inclusions.split(',').map(item => item.trim()).filter(item => item !== '');
+        
+        // Limit to 3 items for preview
+        const displayItems = inclusionsArray.slice(0, 3);
+        const remainingCount = inclusionsArray.length - displayItems.length;
+        
+        if (displayItems.length > 0) {
+          inclusionsHtml = `
+            <div class="text-gray-500 text-sm mb-4">
+              <div class="font-medium text-gray-600 mb-1">Inclusions:</div>
+              <ul class="list-disc pl-5 space-y-1">
+                ${displayItems.map(item => `<li>${item}</li>`).join('')}
+                ${remainingCount > 0 ? `<li class="text-gray-400">+${remainingCount} more...</li>` : ''}
+              </ul>
+            </div>
+          `;
+        } else {
+          inclusionsHtml = '<div class="text-gray-500 text-sm mb-4">No inclusions specified</div>';
+        }
+      } else {
+        inclusionsHtml = '<div class="text-gray-500 text-sm mb-4">No inclusions specified</div>';
+      }
 
       serviceCard.innerHTML = `
         <div class="h-48 bg-center bg-cover bg-no-repeat" style="background-image: url('${imageUrl}');">
@@ -989,8 +1012,8 @@ function loadServices() {
         <div class="p-5 flex-grow flex flex-col">
           <div class="text-lg font-bold mb-2 text-sidebar-text">${service.service_name}</div>
           ${service.flower_design ? `<div class="text-gray-600 text-sm mb-2"><i class="fas fa-leaf text-gray-400 mr-2"></i>${service.flower_design}</div>` : ''}
-          <div class="text-gray-500 text-sm mb-4 line-clamp-2">${inclusionsSummary}</div>
-          <div class="text-lg font-bold text-sidebar-accent mt-4">₱${parseFloat(service.selling_price).toLocaleString('en-PH', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+          ${inclusionsHtml}
+          <div class="text-lg font-bold text-sidebar-accent mt-auto">₱${parseFloat(service.selling_price).toLocaleString('en-PH', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
         </div>
         <div class="px-5 pb-5 flex justify-end">
           <button class="text-white bg-sidebar-accent px-4 py-2 rounded-lg hover:bg-opacity-90 transition-all duration-300">
