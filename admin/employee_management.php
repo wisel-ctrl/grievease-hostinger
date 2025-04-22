@@ -170,32 +170,27 @@ $totalEmployees = $employeeCountResult->fetch_assoc()['total'] ?? 0; // Default 
                     <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(0)">
                         <div class="flex items-center">
                             <i class="fas fa-hashtag mr-1.5 text-sidebar-accent"></i> ID 
-                            <i class="fas fa-sort ml-1 text-gray-400"></i>
-                        </div>
+                                       </div>
                     </th>
                     <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(1)">
                         <div class="flex items-center">
                             <i class="fas fa-user mr-1.5 text-sidebar-accent"></i> Name 
-                            <i class="fas fa-sort ml-1 text-gray-400"></i>
-                        </div>
+                                       </div>
                     </th>
                     <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(2)">
                         <div class="flex items-center">
                             <i class="fas fa-briefcase mr-1.5 text-sidebar-accent"></i> Position 
-                            <i class="fas fa-sort ml-1 text-gray-400"></i>
-                        </div>
+                                       </div>
                     </th>
                     <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(3)">
                         <div class="flex items-center">
                             <i class="fas fa-peso-sign mr-1.5 text-sidebar-accent"></i> Base Salary 
-                            <i class="fas fa-sort ml-1 text-gray-400"></i>
-                        </div>
+                                       </div>
                     </th>
                     <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(4)">
                         <div class="flex items-center">
                             <i class="fas fa-toggle-on mr-1.5 text-sidebar-accent"></i> Status 
-                            <i class="fas fa-sort ml-1 text-gray-400"></i>
-                        </div>
+                                       </div>
                     </th>
                     <th class="p-4 text-left text-sm font-medium text-sidebar-text">
                         <div class="flex items-center">

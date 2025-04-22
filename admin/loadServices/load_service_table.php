@@ -90,32 +90,27 @@ $result = $conn->query($sql);
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" onclick="sortTable(<?php echo $branchId; ?>, 0)">
                     <div class="flex items-center">
                         <i class="fas fa-hashtag mr-1.5 text-blue-500"></i> ID 
-                        <i class="fas fa-sort ml-1 text-gray-400"></i>
-                    </div>
+                               </div>
                 </th>
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" onclick="sortTable(<?php echo $branchId; ?>, 1)">
                     <div class="flex items-center">
                         <i class="fas fa-tag mr-1.5 text-blue-500"></i> Service Name 
-                        <i class="fas fa-sort ml-1 text-gray-400"></i>
-                    </div>
+                               </div>
                 </th>
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" onclick="sortTable(<?php echo $branchId; ?>, 2)">
                     <div class="flex items-center">
                         <i class="fas fa-th-list mr-1.5 text-blue-500"></i> Category 
-                        <i class="fas fa-sort ml-1 text-gray-400"></i>
-                    </div>
+                               </div>
                 </th>
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" onclick="sortTable(<?php echo $branchId; ?>, 3)">
                     <div class="flex items-center">
                         <i class="fas fa-peso-sign mr-1.5 text-blue-500"></i> Price 
-                        <i class="fas fa-sort ml-1 text-gray-400"></i>
-                    </div>
+                               </div>
                 </th>
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" onclick="sortTable(<?php echo $branchId; ?>, 4)">
                     <div class="flex items-center">
                         <i class="fas fa-toggle-on mr-1.5 text-blue-500"></i> Status 
-                        <i class="fas fa-sort ml-1 text-gray-400"></i>
-                    </div>
+                               </div>
                 </th>
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     <div class="flex items-center">
