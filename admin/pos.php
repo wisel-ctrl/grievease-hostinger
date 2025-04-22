@@ -265,62 +265,65 @@ $servicesJson = json_encode($allServices);
 </div>
 
     <!-- Checkout Modal -->
-    <div class="fixed top-0 left-0 w-full h-full bg-black bg-opacity-60 flex items-center justify-center z-50 hidden" id="checkoutModal">
-  <div class="bg-white rounded-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto shadow-xl">
-    <!-- Modal Header (Unchanged) -->
-    <div class="bg-gradient-to-r from-sidebar-accent to-white flex justify-between items-center p-6 flex-shrink-0">
-      <h3 id="modal-package-title" class="text-xl font-bold text-white">Complete Your Order</h3>
-      <button class="bg-black bg-opacity-20 hover:bg-opacity-30 rounded-full p-2 text-white hover:text-white transition-all duration-200" onclick="closeCheckoutModal()">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-          <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-        </svg>
-      </button>
+<div class="fixed inset-0 z-50 flex items-center justify-center hidden" id="checkoutModal">
+  <!-- Modal Backdrop -->
+  <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+  
+  <!-- Modal Content -->
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-4xl mx-4 z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+    <!-- Close Button -->
+    <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeCheckoutModal()">
+      <i class="fas fa-times"></i>
+    </button>
+    
+    <!-- Modal Header -->
+    <div class="px-6 py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
+      <h3 class="text-xl font-bold text-white flex items-center" id="modal-package-title">
+        <i class="fas fa-shopping-cart mr-2"></i>
+        Complete Your Order
+      </h3>
     </div>
-
+    
     <!-- Modal Body -->
-    <div class="p-6">
+    <div class="px-6 py-5">
       <form id="checkoutForm" class="space-y-8">
         <input type="hidden" id="service-id" name="service_id" value="">
         <input type="hidden" id="service-price" name="service_price">
-        <!-- In your checkout modal form, add this hidden input -->
         <input type="hidden" id="branch-id" name="branch_id" value="">
 
         <!-- Client Information Section -->
         <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
           <h4 class="text-lg font-bold text-gray-800 mb-4 pb-2 border-b border-gray-200 flex items-center">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 text-sidebar-accent">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-              <circle cx="12" cy="7" r="4"></circle>
-            </svg>
+            <i class="fas fa-user mr-2 text-sidebar-accent"></i>
             Client Information
           </h4>
           <div class="space-y-4">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div>
                 <label for="clientFirstName" class="block text-sm font-medium text-gray-700 mb-1">First Name</label>
-                <input type="text" id="clientFirstName" name="clientFirstName" required class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
+                <input type="text" id="clientFirstName" name="clientFirstName" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
               </div>
               <div>
                 <label for="clientMiddleName" class="block text-sm font-medium text-gray-700 mb-1">Middle Name <span class="text-xs text-gray-500">(Optional)</span></label>
-                <input type="text" id="clientMiddleName" name="clientMiddleName" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
+                <input type="text" id="clientMiddleName" name="clientMiddleName" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
               </div>
               <div>
                 <label for="clientLastName" class="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
-                <input type="text" id="clientLastName" name="clientLastName" required class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
+                <input type="text" id="clientLastName" name="clientLastName" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
               </div>
               <div>
                 <label for="clientSuffix" class="block text-sm font-medium text-gray-700 mb-1">Suffix <span class="text-xs text-gray-500">(Optional)</span></label>
-                <input type="text" id="clientSuffix" name="clientSuffix" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
+                <input type="text" id="clientSuffix" name="clientSuffix" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
               </div>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label for="clientPhone" class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
-                <input type="tel" id="clientPhone" name="clientPhone" required class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
+                <input type="tel" id="clientPhone" name="clientPhone" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
               </div>
               <div>
                 <label for="clientEmail" class="block text-sm font-medium text-gray-700 mb-1">Email Address <span class="text-xs text-gray-500">(Optional)</span></label>
-                <input type="email" id="clientEmail" name="clientEmail" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
+                <input type="email" id="clientEmail" name="clientEmail" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
               </div>
             </div>
           </div>
@@ -329,83 +332,69 @@ $servicesJson = json_encode($allServices);
         <!-- Deceased Information Section -->
         <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
           <h4 class="text-lg font-bold text-gray-800 mb-4 pb-2 border-b border-gray-200 flex items-center">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 text-sidebar-accent">
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-              <circle cx="9" cy="7" r="4"></circle>
-              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-            </svg>
+            <i class="fas fa-user-alt mr-2 text-sidebar-accent"></i>
             Deceased Information
           </h4>
           <div class="space-y-5">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div>
                 <label for="deceasedFirstName" class="block text-sm font-medium text-gray-700 mb-1">First Name</label>
-                <input type="text" id="deceasedFirstName" name="deceasedFirstName" required class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
+                <input type="text" id="deceasedFirstName" name="deceasedFirstName" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
               </div>
               <div>
                 <label for="deceasedMiddleName" class="block text-sm font-medium text-gray-700 mb-1">Middle Name <span class="text-xs text-gray-500">(Optional)</span></label>
-                <input type="text" id="deceasedMiddleName" name="deceasedMiddleName" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
+                <input type="text" id="deceasedMiddleName" name="deceasedMiddleName" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
               </div>
               <div>
                 <label for="deceasedLastName" class="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
-                <input type="text" id="deceasedLastName" name="deceasedLastName" required class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
+                <input type="text" id="deceasedLastName" name="deceasedLastName" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
               </div>
               <div>
                 <label for="deceasedSuffix" class="block text-sm font-medium text-gray-700 mb-1">Suffix <span class="text-xs text-gray-500">(Optional)</span></label>
-                <input type="text" id="deceasedSuffix" name="deceasedSuffix" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
+                <input type="text" id="deceasedSuffix" name="deceasedSuffix" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
               </div>
             </div>
             
-
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <label for="dateOfBirth" class="block text-sm font-medium text-gray-700 mb-1">Date of Birth <span class="text-xs text-gray-500">(Optional)</span></label>
-                <input type="date" id="dateOfBirth" name="dateOfBirth" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
+                <input type="date" id="dateOfBirth" name="dateOfBirth" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
               </div>
               <div>
                 <label for="dateOfDeath" class="block text-sm font-medium text-gray-700 mb-1">Date of Death</label>
-                <input type="date" id="dateOfDeath" name="dateOfDeath" required class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
+                <input type="date" id="dateOfDeath" name="dateOfDeath" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
               </div>
               <div>
-              <label for="dateOfBurial" class="block text-sm font-medium text-gray-700 mb-1">Date of Burial/Cremation <span class="text-xs text-gray-500">(Optional)</span></label>
-              <input type="date" id="dateOfBurial" name="dateOfBurial" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
+                <label for="dateOfBurial" class="block text-sm font-medium text-gray-700 mb-1">Date of Burial/Cremation <span class="text-xs text-gray-500">(Optional)</span></label>
+                <input type="date" id="dateOfBurial" name="dateOfBurial" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
               </div>
             </div>
             <div>
               <label for="deathCertificate" class="block text-sm font-medium text-gray-700 mb-1">Death Certificate <span class="text-xs text-gray-500">(If available)</span></label>
               <div class="relative">
-                <input type="file" id="deathCertificate" name="deathCertificate" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20">
-                <div class="w-full p-3 border border-dashed border-gray-300 rounded-lg bg-gray-50 text-gray-500 text-sm flex items-center justify-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                    <polyline points="17 8 12 3 7 8"></polyline>
-                    <line x1="12" y1="3" x2="12" y2="15"></line>
-                  </svg>
-                  Choose file or drag here
+                <div class="flex items-center border border-gray-300 rounded-lg px-3 py-2 focus-within:ring-1 focus-within:ring-sidebar-accent focus-within:border-sidebar-accent transition-all duration-200">
+                  <i class="fas fa-upload text-gray-400 mr-2"></i>
+                  <input type="file" id="deathCertificate" name="deathCertificate" class="w-full focus:outline-none">
                 </div>
               </div>
             </div>
             <div>
               <label for="deceasedAddress" class="block text-sm font-medium text-gray-700 mb-1">Address of the Deceased</label>
-              <textarea id="deceasedAddress" name="deceasedAddress" required class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent" rows="2"></textarea>
+              <textarea id="deceasedAddress" name="deceasedAddress" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" rows="2"></textarea>
             </div>
           </div>
         </div>
   
-        <!-- Payment Information (Unchanged) -->
+        <!-- Payment Information -->
         <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
           <h4 class="text-lg font-bold text-gray-800 mb-4 pb-2 border-b border-gray-200 flex items-center">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 text-sidebar-accent">
-              <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
-              <line x1="1" y1="10" x2="23" y2="10"></line>
-            </svg>
+            <i class="fas fa-credit-card mr-2 text-sidebar-accent"></i>
             Payment Information
           </h4>
           <div class="space-y-5">
             <div>
               <label for="paymentMethod" class="block text-sm font-medium text-gray-700 mb-1">Method of Payment</label>
-              <select id="paymentMethod" name="paymentMethod" required class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
+              <select id="paymentMethod" name="paymentMethod" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
                 <option value="" disabled selected>Select payment method</option>
                 <option value="Cash">Cash</option>
                 <option value="G-Cash">G-Cash</option>
@@ -413,25 +402,25 @@ $servicesJson = json_encode($allServices);
               </select>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label for="totalPrice" class="block text-sm font-medium text-gray-700 mb-1">
-                Total Price 
-                <span class="text-xs text-gray-500">(Minimum: <span id="min-price">₱0.00</span>)</span>
-              </label>
-              <div class="relative">
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <span class="text-gray-500">₱</span>
+              <div>
+                <label for="totalPrice" class="block text-sm font-medium text-gray-700 mb-1">
+                  Total Price 
+                  <span class="text-xs text-gray-500">(Minimum: <span id="min-price">₱0.00</span>)</span>
+                </label>
+                <div class="relative">
+                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <span class="text-gray-500">₱</span>
+                  </div>
+                  <input type="number" id="totalPrice" name="totalPrice" class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
                 </div>
-                <input type="number" id="totalPrice" name="totalPrice" class="w-full pl-8 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
               </div>
-            </div>
               <div>
                 <label for="amountPaid" class="block text-sm font-medium text-gray-700 mb-1">Amount Paid</label>
                 <div class="relative">
                   <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <span class="text-gray-500">₱</span>
                   </div>
-                  <input type="number" id="amountPaid" name="amountPaid" required class="w-full pl-8 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
+                  <input type="number" id="amountPaid" name="amountPaid" required class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
                 </div>
               </div>
             </div>
@@ -441,33 +430,32 @@ $servicesJson = json_encode($allServices);
         <!-- Cremation Checklist Section -->
         <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
           <h4 class="text-lg font-bold text-gray-800 mb-4 pb-2 border-b border-gray-200 flex items-center">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 text-sidebar-accent">
-              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
-            </svg>
+            <i class="fas fa-clipboard-check mr-2 text-sidebar-accent"></i>
             Additional Services
           </h4>
           <div class="space-y-3">
-          <label class="flex items-center space-x-3">
+            <label class="flex items-center space-x-3">
               <input type="checkbox" name="withCremation" id="withCremation" class="form-checkbox h-5 w-5 text-sidebar-accent rounded border-gray-300 focus:ring-sidebar-accent">
               <span class="text-gray-700 font-medium">With Cremation</span>
-          </label>
+            </label>
             <p class="text-sm text-gray-500 ml-8">Check this box if the service includes cremation</p>
           </div>
         </div>
       </form>
     </div>
 
-    <!-- Modal Footer (Unchanged) -->
-    <div class="p-6 flex justify-between items-center border-t border-gray-200 sticky bottom-0 bg-white">
+    <!-- Modal Footer -->
+    <div class="px-6 py-4 flex justify-between items-center border-t border-gray-200 sticky bottom-0 bg-white">
       <div class="text-gray-600">
         <p class="font-medium">Order Total: <span class="text-xl font-bold text-sidebar-accent" id="footer-total-price">₱0.00</span></p>
       </div>
       <div class="flex gap-4">
-        <button class="px-5 py-3 bg-white border border-sidebar-accent text-sidebar-accent rounded-lg font-semibold hover:bg-navy transition-colors" onclick="closeCheckoutModal()">Cancel</button>
-        <button class="px-6 py-3 bg-sidebar-accent text-white rounded-lg font-semibold hover:bg-darkgold transition-colors flex items-center" onclick="confirmCheckout()">
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
-            <polyline points="20 6 9 17 4 12"></polyline>
-          </svg>
+        <button class="px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center" onclick="closeCheckoutModal()">
+          <i class="fas fa-times mr-2"></i>
+          Cancel
+        </button>
+        <button class="px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="confirmCheckout()">
+          <i class="fas fa-check mr-2"></i>
           Confirm Order
         </button>
       </div>
