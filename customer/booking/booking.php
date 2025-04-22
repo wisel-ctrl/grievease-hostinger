@@ -1,6 +1,8 @@
 <?php
+//booking.php
 session_start();
 require_once '../../db_connect.php'; // Make sure this file contains your database connection
+require_once 'sms_notification.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Check if user is logged in
@@ -85,7 +87,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         );
 
         if ($stmt->execute()) {
-            echo json_encode(['success' => true, 'message' => 'Booking successfully submitted']);
+
+            $bookingId = $conn->insert_id;
+
+            // Prepare booking details for SMS
+            $bookingDetails = [
+                'deceased_fname' => $deceased_fname,
+                'deceased_lname' => $deceased_lname,
+                'service_id' => $service_id,
+                'branch_id' => $branch_id,
+                'initial_price' => $initial_price
+            ];
+
+            // Send SMS notification to admin
+            $smsResults = sendAdminSMSNotification($conn, $bookingDetails, $bookingId);
+            
+            echo json_encode([
+                'success' => true,
+                'message' => 'Booking successfully submitted',
+                'booking_id' => $bookingId,
+                'sms_results' => $smsResults
+            ]);
         } else {
             echo json_encode(['success' => false, 'message' => 'Database error: ' . $stmt->error]);
         }
@@ -95,4 +117,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 } else {
     echo json_encode(['success' => false, 'message' => 'Invalid request method']);
 }
+
 ?>

@@ -1,4 +1,5 @@
 <?php
+//packages.php
 session_start();
 
 require_once '../db_connect.php'; // Database connection
@@ -890,33 +891,42 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Replace the traditionalBookingForm submit event listener with this:
-document.getElementById('traditionalBookingForm').addEventListener('submit', function(e) {
+    document.getElementById('traditionalBookingForm').addEventListener('submit', function(e) {
     e.preventDefault();
     
     const formData = new FormData(this);
     const formElement = this;
 
-    // Show confirmation dialog
     Swal.fire({
         title: 'Confirm Booking',
         text: 'Are you sure you want to proceed with this booking?',
         icon: 'question',
         showCancelButton: true,
-        confirmButtonColor: '#d97706', // yellow-600
-        cancelButtonColor: '#6b7280',  // gray-500
+        confirmButtonColor: '#d97706',
+        cancelButtonColor: '#6b7280',
         confirmButtonText: 'Yes, book now',
         cancelButtonText: 'Cancel'
     }).then((result) => {
         if (result.isConfirmed) {
-            // User confirmed, proceed with booking
+            // Show loading indicator
+            Swal.fire({
+                title: 'Processing Booking',
+                html: 'Please wait while we process your booking...',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+            
             fetch('booking/booking.php', {
                 method: 'POST',
                 body: formData
             })
             .then(response => response.json())
             .then(data => {
+                Swal.close();
+                
                 if (data.success) {
-                    
                     // Close modal and reset form
                     document.getElementById('traditionalModal').classList.add('hidden');
                     formElement.reset();
@@ -933,6 +943,7 @@ document.getElementById('traditionalBookingForm').addEventListener('submit', fun
                 }
             })
             .catch(error => {
+                Swal.close();
                 console.error('Error:', error);
                 Swal.fire({
                     title: 'Error',
@@ -1422,7 +1433,5 @@ function toggleMenu() {
     mobileMenu.classList.toggle('hidden');
 }
 </script>
-
-
 </body>
 </html>
