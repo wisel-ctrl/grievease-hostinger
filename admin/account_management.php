@@ -123,21 +123,97 @@ $customersResult = mysqli_query($conn, $customersQuery);
 <!-- Customer Account Management Section -->
 <div id="customer-account-management" class="bg-white rounded-lg shadow-md mb-8 border border-sidebar-border overflow-hidden">
   <!-- Header Section - Made responsive with better stacking -->
-  <div class="bg-sidebar-hover p-4 border-b border-sidebar-border flex flex-col space-y-4">
-    <!-- Title and Counter -->
-    <div class="flex items-center gap-3">
-      <h4 class="text-lg font-bold text-sidebar-text">Customer Accounts</h4>
+  <div class="bg-sidebar-hover p-4 border-b border-sidebar-border">
+    <!-- Desktop layout for big screens - Title on left, controls on right -->
+    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+      <!-- Title and Counter -->
+      <div class="flex items-center gap-3 mb-4 lg:mb-0">
+        <h4 class="text-lg font-bold text-sidebar-text">Customer Accounts</h4>
+        
+        <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
+          <i class="fas fa-users"></i>
+          <?php echo $totalCustomers . " Customer" . ($totalCustomers != 1 ? "s" : ""); ?>
+        </span>
+      </div>
       
-      <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
-        <i class="fas fa-users"></i>
-        <?php echo $totalCustomers . " Customer" . ($totalCustomers != 1 ? "s" : ""); ?>
-      </span>
+      <!-- Controls for big screens - aligned right -->
+      <div class="hidden lg:flex items-center gap-3">
+        <!-- Search Input -->
+        <div class="relative">
+          <input type="text" id="customerSearchInputLg" placeholder="Search customers..." 
+                  class="pl-8 pr-3 py-2 w-64 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
+          <i class="fas fa-search absolute left-2.5 top-3 text-gray-400"></i>
+        </div>
+
+        <!-- Filter Dropdown -->
+        <div class="relative filter-dropdown">
+          <button id="customerFilterToggleLg" class="px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover">
+            <i class="fas fa-filter text-sidebar-accent"></i>
+            <span>Filters</span>
+            <span id="filterIndicatorLg" class="hidden h-2 w-2 bg-sidebar-accent rounded-full"></span>
+          </button>
+          
+          <!-- Filter Window -->
+          <div id="customerFilterDropdownLg" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-4">
+            <div class="space-y-4">
+              <!-- Sort Options -->
+              <div>
+                <h5 class="text-sm font-medium text-sidebar-text mb-2">Sort By</h5>
+                <div class="space-y-1">
+                  <div class="flex items-center cursor-pointer" data-sort="id_asc">
+                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                      ID: Ascending
+                    </span>
+                  </div>
+                  <div class="flex items-center cursor-pointer" data-sort="id_desc">
+                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                      ID: Descending
+                    </span>
+                  </div>
+                  <div class="flex items-center cursor-pointer" data-sort="name_asc">
+                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                      Name: A-Z
+                    </span>
+                  </div>
+                  <div class="flex items-center cursor-pointer" data-sort="name_desc">
+                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                      Name: Z-A
+                    </span>
+                  </div>
+                  <div class="flex items-center cursor-pointer" data-sort="email_asc">
+                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                      Email: A-Z
+                    </span>
+                  </div>
+                  <div class="flex items-center cursor-pointer" data-sort="email_desc">
+                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                      Email: Z-A
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Archive Button -->
+        <button class="px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover">
+          <i class="fas fa-archive text-sidebar-accent"></i>
+          <span>Archive</span>
+        </button>
+
+        <!-- Add Customer Button -->
+        <button class="px-4 py-2.5 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm whitespace-nowrap" 
+                onclick="openAddCustomerAccountModal()">
+          <i class="fas fa-plus-circle"></i> <span>Add Customer Account</span>
+        </button>
+      </div>
     </div>
     
-    <!-- Search and Filter Section - Improved for small screens -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:flex lg:flex-row gap-3 w-full">
+    <!-- Mobile/Tablet Controls - Only visible on smaller screens -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:hidden gap-3 w-full mt-4">
       <!-- Search Input - Full width on smaller screens -->
-      <div class="relative w-full lg:w-64">
+      <div class="relative w-full">
         <input type="text" id="customerSearchInput" 
                 placeholder="Search customers..." 
                 class="pl-8 pr-3 py-2 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
@@ -195,11 +271,21 @@ $customersResult = mysqli_query($conn, $customersQuery);
         </div>
       </div>
 
+      <!-- Archive Button - Mobile/Tablet -->
+      <div class="col-span-1">
+        <button class="px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover w-full justify-center">
+          <i class="fas fa-archive text-sidebar-accent"></i>
+          <span>Archive</span>
+        </button>
+      </div>
+
       <!-- Add Customer Button - Full width on mobile -->
-      <button class="px-4 py-2.5 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm whitespace-nowrap justify-center sm:justify-start" 
-              onclick="openAddCustomerAccountModal()">
-        <i class="fas fa-plus-circle"></i> <span>Add Customer Account</span>
-      </button>
+      <div class="col-span-1 sm:col-span-2">
+        <button class="px-4 py-2.5 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm whitespace-nowrap w-full justify-center" 
+                onclick="openAddCustomerAccountModal()">
+          <i class="fas fa-plus-circle"></i> <span>Add Customer Account</span>
+        </button>
+      </div>
     </div>
   </div>
   
