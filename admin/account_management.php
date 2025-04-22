@@ -122,238 +122,152 @@ $customersResult = mysqli_query($conn, $customersQuery);
 
 <!-- Customer Account Management Section -->
 <div id="customer-account-management" class="bg-white rounded-lg shadow-md mb-8 border border-sidebar-border overflow-hidden">
-  <!-- Header Section - Made responsive with better stacking -->
-  <div class="bg-sidebar-hover p-4 border-b border-sidebar-border">
-    <!-- Desktop layout for big screens - Title on left, controls on right -->
-    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
-      <!-- Title and Counter -->
-      <div class="flex items-center gap-3 mb-4 lg:mb-0">
-        <h4 class="text-lg font-bold text-sidebar-text whitespace-nowrap">Customer Accounts</h4>
-        
-        <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
-          <i class="fas fa-users"></i>
-          <?php echo $totalCustomers . " Customer" . ($totalCustomers != 1 ? "s" : ""); ?>
-        </span>
-      </div>
+  <div class="bg-sidebar-hover p-4 border-b border-sidebar-border flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <div class="flex items-center gap-3">
+      <h4 class="text-lg font-bold text-sidebar-text">Customer Accounts</h4>
       
-      <!-- Controls for big screens - aligned right -->
-      <div class="hidden lg:flex items-center gap-2">
-        <!-- Search Input -->
-        <div class="relative">
-          <input type="text" id="customerSearchInputLg" placeholder="Search customers..." 
-                  class="pl-8 pr-3 py-2 w-48 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
-          <i class="fas fa-search absolute left-2.5 top-2.5 text-gray-400"></i>
-        </div>
-
-        <!-- Filter Dropdown -->
-        <div class="relative filter-dropdown">
-          <button id="customerFilterToggleLg" class="px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover whitespace-nowrap">
-            <i class="fas fa-filter text-sidebar-accent"></i>
-            <span>Filters</span>
-            <span id="filterIndicatorLg" class="hidden h-2 w-2 bg-sidebar-accent rounded-full"></span>
-          </button>
-          
-          <!-- Filter Window -->
-          <div id="customerFilterDropdownLg" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-4">
-            <div class="space-y-4">
-              <!-- Sort Options -->
-              <div>
-                <h5 class="text-sm font-medium text-sidebar-text mb-2">Sort By</h5>
-                <div class="space-y-1">
-                  <div class="flex items-center cursor-pointer" data-sort="id_asc">
-                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                      ID: Ascending
-                    </span>
-                  </div>
-                  <div class="flex items-center cursor-pointer" data-sort="id_desc">
-                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                      ID: Descending
-                    </span>
-                  </div>
-                  <div class="flex items-center cursor-pointer" data-sort="name_asc">
-                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                      Name: A-Z
-                    </span>
-                  </div>
-                  <div class="flex items-center cursor-pointer" data-sort="name_desc">
-                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                      Name: Z-A
-                    </span>
-                  </div>
-                  <div class="flex items-center cursor-pointer" data-sort="email_asc">
-                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                      Email: A-Z
-                    </span>
-                  </div>
-                  <div class="flex items-center cursor-pointer" data-sort="email_desc">
-                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                      Email: Z-A
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Archive Button -->
-        <button class="px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover whitespace-nowrap">
-          <i class="fas fa-archive text-sidebar-accent"></i>
-          <span>Archive</span>
-        </button>
-
-        <!-- Add Customer Button -->
-        <button class="px-3 py-2 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm whitespace-nowrap" 
-                onclick="openAddCustomerAccountModal()">
-          <i class="fas fa-plus-circle"></i> <span>Add Customer</span>
-        </button>
-      </div>
+      <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
+        <i class="fas fa-users"></i>
+        <?php echo $totalCustomers . " Customer" . ($totalCustomers != 1 ? "s" : ""); ?>
+      </span>
     </div>
     
-    <!-- Mobile/Tablet Controls - Only visible on smaller screens -->
-    <div class="grid lg:hidden gap-3 w-full mt-4">
-      <!-- First row: Search Input with Filter and Archive buttons -->
-      <div class="grid grid-cols-12 gap-2">
-        <!-- Search Input -->
-        <div class="relative col-span-8 sm:col-span-10">
-          <input type="text" id="customerSearchInput" 
-                  placeholder="Search customers..." 
-                  class="pl-8 pr-3 py-2 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
-          <i class="fas fa-search absolute left-2.5 top-2.5 text-gray-400"></i>
-        </div>
+    <!-- Search and Filter Section -->
+    <div class="flex flex-col md:flex-row items-start md:items-center gap-3 w-full md:w-auto">
+      <!-- Search Input -->
+      <div class="relative w-full md:w-64">
+        <input type="text" id="customerSearchInput" 
+                placeholder="Search customers..." 
+                class="pl-8 pr-3 py-2 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
+        <i class="fas fa-search absolute left-2.5 top-3 text-gray-400"></i>
+      </div>
 
-        <!-- Filter Dropdown - Icon only on small screens -->
-        <div class="relative filter-dropdown col-span-2 sm:col-span-1">
-          <button id="customerFilterToggle" class="w-full h-full flex items-center justify-center border border-gray-300 rounded-lg text-sm hover:bg-sidebar-hover">
-            <i class="fas fa-filter text-sidebar-accent"></i>
-          </button>
-          
-          <!-- Filter Window - Positioned better for mobile -->
-          <div id="customerFilterDropdown" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-4">
-            <div class="space-y-4">
-              <!-- Sort Options -->
-              <div>
-                <h5 class="text-sm font-medium text-sidebar-text mb-2">Sort By</h5>
-                <div class="space-y-1">
-                  <div class="flex items-center cursor-pointer" data-sort="id_asc">
-                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                      ID: Ascending
-                    </span>
-                  </div>
-                  <div class="flex items-center cursor-pointer" data-sort="id_desc">
-                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                      ID: Descending
-                    </span>
-                  </div>
-                  <div class="flex items-center cursor-pointer" data-sort="name_asc">
-                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                      Name: A-Z
-                    </span>
-                  </div>
-                  <div class="flex items-center cursor-pointer" data-sort="name_desc">
-                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                      Name: Z-A
-                    </span>
-                  </div>
-                  <div class="flex items-center cursor-pointer" data-sort="email_asc">
-                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                      Email: A-Z
-                    </span>
-                  </div>
-                  <div class="flex items-center cursor-pointer" data-sort="email_desc">
-                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                      Email: Z-A
-                    </span>
-                  </div>
+      <!-- Filter Dropdown -->
+      <div class="relative filter-dropdown">
+        <button id="customerFilterToggle" class="px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover">
+          <i class="fas fa-filter text-sidebar-accent"></i>
+          <span>Filters</span>
+          <span id="filterIndicator" class="hidden h-2 w-2 bg-sidebar-accent rounded-full"></span>
+        </button>
+        
+        <!-- Filter Window -->
+        <div id="customerFilterDropdown" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-4">
+          <div class="space-y-4">
+            <!-- Sort Options -->
+            <div>
+              <h5 class="text-sm font-medium text-sidebar-text mb-2">Sort By</h5>
+              <div class="space-y-1">
+                <div class="flex items-center cursor-pointer" data-sort="id_asc">
+                  <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                    ID: Ascending
+                  </span>
+                </div>
+                <div class="flex items-center cursor-pointer" data-sort="id_desc">
+                  <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                    ID: Descending
+                  </span>
+                </div>
+                <div class="flex items-center cursor-pointer" data-sort="name_asc">
+                  <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                    Name: A-Z
+                  </span>
+                </div>
+                <div class="flex items-center cursor-pointer" data-sort="name_desc">
+                  <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                    Name: Z-A
+                  </span>
+                </div>
+                <div class="flex items-center cursor-pointer" data-sort="email_asc">
+                  <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                    Email: A-Z
+                  </span>
+                </div>
+                <div class="flex items-center cursor-pointer" data-sort="email_desc">
+                  <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                    Email: Z-A
+                  </span>
                 </div>
               </div>
             </div>
           </div>
         </div>
-
-        <!-- Archive Button - Icon only on small screens -->
-        <div class="col-span-2 sm:col-span-1">
-          <button class="w-full h-full flex items-center justify-center border border-gray-300 rounded-lg text-sm hover:bg-sidebar-hover">
-            <i class="fas fa-archive text-sidebar-accent"></i>
-          </button>
-        </div>
       </div>
 
-      <!-- Second row: Add Customer Button - Full width -->
-      <div class="mt-2">
-        <button class="px-3 py-2 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm w-full justify-center" 
-                onclick="openAddCustomerAccountModal()">
-          <i class="fas fa-plus-circle"></i> <span>Add Customer Account</span>
-        </button>
-      </div>
+      <button class="px-4 py-2.5 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm whitespace-nowrap" 
+              onclick="openAddCustomerAccountModal()">
+        <i class="fas fa-plus-circle"></i> Add Customer Account
+      </button>
     </div>
   </div>
   
-  <!-- Responsive Table Container -->
+  <!-- Customer Table -->
   <div class="overflow-x-auto scrollbar-thin" id="customerTableContainer">
     <div id="customerLoadingIndicator" class="hidden absolute inset-0 bg-white bg-opacity-50 flex items-center justify-center">
       <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-sidebar-accent"></div>
     </div>
     
-    <!-- Responsive Table with horizontal scroll for small screens -->
-    <div class="min-w-full">
-      <table class="w-full">
-        <thead>
-          <tr class="bg-gray-50 border-b border-sidebar-border">
-            <th class="p-3 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(0)">
-              <div class="flex items-center">
-                <i class="fas fa-hashtag mr-1.5 text-sidebar-accent"></i> ID 
-              </div>
-            </th>
-            <th class="p-3 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(1)">
-              <div class="flex items-center">
-                <i class="fas fa-user mr-1.5 text-sidebar-accent"></i> Name 
-              </div>
-            </th>
-            <th class="p-3 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(2)">
-              <div class="flex items-center">
-                <i class="fas fa-envelope mr-1.5 text-sidebar-accent"></i> Email 
-              </div>
-            </th>
-            <th class="p-3 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(3)">
-              <div class="flex items-center">
-                <i class="fas fa-user-tag mr-1.5 text-sidebar-accent"></i> Role 
-              </div>
-            </th>
-            <th class="p-3 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(4)">
-              <div class="flex items-center">
-                <i class="fas fa-toggle-on mr-1.5 text-sidebar-accent"></i> Status 
-              </div>
-            </th>
-            <th class="p-3 text-left text-sm font-medium text-sidebar-text whitespace-nowrap">
-              <div class="flex items-center">
-                <i class="fas fa-cogs mr-1.5 text-sidebar-accent"></i> Actions
-              </div>
-            </th>
-          </tr>
-        </thead>
-        <tbody id="customerTableBody">
-          <!-- Table content will be dynamically loaded -->
-        </tbody>
-      </table>
-    </div>
-  </div>
-  
-  <!-- Sticky Pagination Footer - Using CSS instead of JavaScript -->
-  <div class="sticky bottom-0 left-0 right-0 p-3 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-3">
-    <div id="paginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
-      Showing 0 - 0 of 0 customers
-    </div>
-    <div class="flex space-x-1">
-      <a href="<?php echo '?page=' . max(1, $page - 1); ?>" class="px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo $page <= 1 ? 'opacity-50 pointer-events-none' : ''; ?>">&laquo;</a>
-      
-      <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-        <a href="<?php echo '?page=' . $i; ?>" class="px-3 py-1 border border-sidebar-border rounded text-sm <?php echo $i == $page ? 'bg-sidebar-accent text-white' : 'hover:bg-sidebar-hover'; ?>">
-          <?php echo $i; ?>
-        </a>
-      <?php endfor; ?>
-      
-      <a href="<?php echo '?page=' . min($totalPages, $page + 1); ?>" class="px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo $page >= $totalPages ? 'opacity-50 pointer-events-none' : ''; ?>">&raquo;</a>
+    <table class="w-full">
+      <thead>
+        <tr class="bg-gray-50 border-b border-sidebar-border">
+          <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(0)">
+            <div class="flex items-center">
+              <i class="fas fa-hashtag mr-1.5 text-sidebar-accent"></i> ID 
+              <i class="fas fa-sort ml-1 text-gray-400"></i>
+            </div>
+          </th>
+          <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(1)">
+            <div class="flex items-center">
+              <i class="fas fa-user mr-1.5 text-sidebar-accent"></i> Name 
+              <i class="fas fa-sort ml-1 text-gray-400"></i>
+            </div>
+          </th>
+          <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(2)">
+            <div class="flex items-center">
+              <i class="fas fa-envelope mr-1.5 text-sidebar-accent"></i> Email 
+              <i class="fas fa-sort ml-1 text-gray-400"></i>
+            </div>
+          </th>
+          <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(3)">
+            <div class="flex items-center">
+              <i class="fas fa-user-tag mr-1.5 text-sidebar-accent"></i> Role 
+              <i class="fas fa-sort ml-1 text-gray-400"></i>
+            </div>
+          </th>
+          <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(4)">
+            <div class="flex items-center">
+              <i class="fas fa-toggle-on mr-1.5 text-sidebar-accent"></i> Status 
+              <i class="fas fa-sort ml-1 text-gray-400"></i>
+            </div>
+          </th>
+          <th class="p-4 text-left text-sm font-medium text-sidebar-text">
+            <div class="flex items-center">
+              <i class="fas fa-cogs mr-1.5 text-sidebar-accent"></i> Actions
+            </div>
+          </th>
+        </tr>
+      </thead>
+      <tbody id="customerTableBody">
+        <!-- Table content will be dynamically loaded -->
+      </tbody>
+    </table>
+    
+    <!-- Pagination -->
+    <div class="p-4 border-t border-sidebar-border flex justify-between items-center">
+      <div id="paginationInfo" class="text-sm text-gray-500">
+        Showing 0 - 0 of 0 customers
+      </div>
+      <div class="flex space-x-1">
+        <button class="px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover opacity-50 cursor-not-allowed" 
+                onclick="changePage(<?php echo $page - 1; ?>)" disabled>&laquo;</button>
+        
+        <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+          <button class="px-3 py-1 border border-sidebar-border rounded text-sm <?php echo $i == $page ? 'bg-sidebar-accent text-white' : 'hover:bg-sidebar-hover'; ?>" 
+                  onclick="changePage(<?php echo $i; ?>)"><?php echo $i; ?></button>
+        <?php endfor; ?>
+        
+        <button class="px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover opacity-50 cursor-not-allowed" 
+                onclick="changePage(<?php echo $page + 1; ?>)" disabled>&raquo;</button>
+      </div>
     </div>
   </div>
 </div>
@@ -1392,7 +1306,7 @@ if ($result->num_rows > 0) {
                   <i class="fas fa-edit"></i>
                 </button>
                 <button class="p-1.5 bg-red-100 text-red-600 rounded hover:bg-red-200 transition-all" onclick="deleteEmployeeAccount(' . $row['id'] . ')">
-                   <i class="fas fa-archive text-red"></i>
+                  <i class="fas fa-trash"></i>
                 </button>
               </div>
             </td>
@@ -1416,268 +1330,162 @@ if ($result->num_rows > 0) {
 
 <!-- Employee Account Management Section -->
 <div id="employee-account-management" class="bg-white rounded-lg shadow-md mb-8 border border-sidebar-border overflow-hidden">
-  <!-- Header Section - Made responsive with better stacking -->
-  <div class="bg-sidebar-hover p-4 border-b border-sidebar-border">
-    <!-- Desktop layout for big screens - Title on left, controls on right -->
-    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
-      <!-- Title and Counter -->
-      <div class="flex items-center gap-3 mb-4 lg:mb-0">
-        <h4 class="text-lg font-bold text-sidebar-text whitespace-nowrap">Employee Accounts</h4>
-        
-        <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
-          <i class="fas fa-user-tie"></i>
-          <?php echo $totalRows . " Employee" . ($totalRows != 1 ? "s" : ""); ?>
-        </span>
-      </div>
+  <div class="bg-sidebar-hover p-4 border-b border-sidebar-border flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <div class="flex items-center gap-3">
+      <h4 class="text-lg font-bold text-sidebar-text">Employee Accounts</h4>
       
-      <!-- Controls for big screens - aligned right -->
-      <div class="hidden lg:flex items-center gap-2">
-        <!-- Search Input -->
-        <div class="relative">
-          <input type="text" id="searchInputLg" 
-                  placeholder="Search employees..." 
-                  value="<?php echo htmlspecialchars($search); ?>"
-                  class="pl-8 pr-3 py-2 w-48 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
-          <i class="fas fa-search absolute left-2.5 top-2.5 text-gray-400"></i>
-        </div>
-
-        <!-- Filter Dropdown -->
-        <div class="relative filter-dropdown">
-          <button id="filterToggleLg" class="px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover whitespace-nowrap">
-            <i class="fas fa-filter text-sidebar-accent"></i>
-            <span>Filters</span>
-            <?php if(isset($sortFilter) && $sortFilter): ?>
-              <span id="filterIndicatorLg" class="h-2 w-2 bg-sidebar-accent rounded-full"></span>
-            <?php else: ?>
-              <span id="filterIndicatorLg" class="hidden h-2 w-2 bg-sidebar-accent rounded-full"></span>
-            <?php endif; ?>
-          </button>
-          
-          <!-- Filter Window -->
-          <div id="filterDropdownLg" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-4">
-            <div class="space-y-4">
-              <!-- Sort Options -->
-              <div>
-                <h5 class="text-sm font-medium text-sidebar-text mb-2">Sort By</h5>
-                <div class="space-y-1">
-                  <div class="flex items-center cursor-pointer" data-sort="id_asc">
-                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                      ID: Ascending
-                    </span>
-                  </div>
-                  <div class="flex items-center cursor-pointer" data-sort="id_desc">
-                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                      ID: Descending
-                    </span>
-                  </div>
-                  <div class="flex items-center cursor-pointer" data-sort="name_asc">
-                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                      Name: A-Z
-                    </span>
-                  </div>
-                  <div class="flex items-center cursor-pointer" data-sort="name_desc">
-                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                      Name: Z-A
-                    </span>
-                  </div>
-                  <div class="flex items-center cursor-pointer" data-sort="email_asc">
-                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                      Email: A-Z
-                    </span>
-                  </div>
-                  <div class="flex items-center cursor-pointer" data-sort="email_desc">
-                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                      Email: Z-A
-                    </span>
-                  </div>
-                  <div class="flex items-center cursor-pointer" data-sort="newest">
-                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                      Newest First
-                    </span>
-                  </div>
-                  <div class="flex items-center cursor-pointer" data-sort="oldest">
-                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                      Oldest First
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Archive Button -->
-        <button class="px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover whitespace-nowrap">
-          <i class="fas fa-archive text-sidebar-accent"></i>
-          <span>Archive</span>
-        </button>
-
-        <!-- Add Employee Button -->
-        <button class="px-3 py-2 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm whitespace-nowrap" 
-                onclick="openAddEmployeeAccountModal()">
-          <i class="fas fa-plus-circle"></i> <span>Add Employee</span>
-        </button>
-      </div>
+      <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
+        <i class="fas fa-user-tie"></i><?php echo $totalRows . " Employee" . ($totalRows != 1 ? "s" : ""); ?></span>
+      </span>
     </div>
     
-    <!-- Mobile/Tablet Controls - Only visible on smaller screens -->
-    <div class="grid lg:hidden gap-3 w-full mt-4">
-      <!-- First row: Search Input with Filter and Archive buttons -->
-      <div class="grid grid-cols-12 gap-2">
-        <!-- Search Input -->
-        <div class="relative col-span-6 sm:col-span-8">
-          <input type="text" id="searchInput" 
-                  placeholder="Search employees..." 
-                  value="<?php echo htmlspecialchars($search); ?>"
-                  class="pl-8 pr-3 py-2 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
-          <i class="fas fa-search absolute left-2.5 top-2.5 text-gray-400"></i>
-        </div>
+    <!-- Search and Filter Section -->
+    <div class="flex flex-col md:flex-row items-start md:items-center gap-3 w-full md:w-auto">
+      <!-- Search Input -->
+      <div class="relative w-full md:w-64">
+        <input type="text" id="searchInput" 
+                placeholder="Search employees..." 
+                value="<?php echo htmlspecialchars($search); ?>"
+                class="pl-8 pr-3 py-2 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
+        <i class="fas fa-search absolute left-2.5 top-3 text-gray-400"></i>
+      </div>
 
-        <!-- Filter Dropdown -->
-        <div class="relative filter-dropdown col-span-3 sm:col-span-2">
-          <button id="filterToggle" class="px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover w-full justify-center">
-            <i class="fas fa-filter text-sidebar-accent"></i>
-            <span class="hidden sm:inline">Filters</span>
-            <?php if(isset($sortFilter) && $sortFilter): ?>
-              <span id="filterIndicator" class="h-2 w-2 bg-sidebar-accent rounded-full"></span>
-            <?php endif; ?>
-          </button>
-          
-          <!-- Filter Window - Positioned better for mobile -->
-          <div id="filterDropdown" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-4">
-            <div class="space-y-4">
-              <!-- Sort Options -->
-              <div>
-                <h5 class="text-sm font-medium text-sidebar-text mb-2">Sort By</h5>
-                <div class="space-y-1">
-                  <div class="flex items-center cursor-pointer" data-sort="id_asc">
-                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                      ID: Ascending
-                    </span>
-                  </div>
-                  <div class="flex items-center cursor-pointer" data-sort="id_desc">
-                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                      ID: Descending
-                    </span>
-                  </div>
-                  <div class="flex items-center cursor-pointer" data-sort="name_asc">
-                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                      Name: A-Z
-                    </span>
-                  </div>
-                  <div class="flex items-center cursor-pointer" data-sort="name_desc">
-                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                      Name: Z-A
-                    </span>
-                  </div>
-                  <div class="flex items-center cursor-pointer" data-sort="email_asc">
-                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                      Email: A-Z
-                    </span>
-                  </div>
-                  <div class="flex items-center cursor-pointer" data-sort="email_desc">
-                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                      Email: Z-A
-                    </span>
-                  </div>
-                  <div class="flex items-center cursor-pointer" data-sort="newest">
-                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                      Newest First
-                    </span>
-                  </div>
-                  <div class="flex items-center cursor-pointer" data-sort="oldest">
-                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                      Oldest First
-                    </span>
-                  </div>
+      <!-- Filter Dropdown -->
+      <div class="relative filter-dropdown">
+        <button id="filterToggle" class="px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover">
+          <i class="fas fa-filter text-sidebar-accent"></i>
+          <span>Filters</span>
+          <?php if(isset($sortFilter) && $sortFilter): ?>
+            <span class="h-2 w-2 bg-sidebar-accent rounded-full"></span>
+          <?php endif; ?>
+        </button>
+        
+        <!-- Filter Window -->
+        <div id="filterDropdown" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-4">
+          <div class="space-y-4">
+            <!-- Sort Options -->
+            <div>
+              <h5 class="text-sm font-medium text-sidebar-text mb-2">Sort By</h5>
+              <div class="space-y-1">
+                <div class="flex items-center cursor-pointer" data-sort="id_asc">
+                  <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                    ID: Ascending
+                  </span>
+                </div>
+                <div class="flex items-center cursor-pointer" data-sort="id_desc">
+                  <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                    ID: Descending
+                  </span>
+                </div>
+                <div class="flex items-center cursor-pointer" data-sort="name_asc">
+                  <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                    Name: A-Z
+                  </span>
+                </div>
+                <div class="flex items-center cursor-pointer" data-sort="name_desc">
+                  <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                    Name: Z-A
+                  </span>
+                </div>
+                <div class="flex items-center cursor-pointer" data-sort="email_asc">
+                  <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                    Email: A-Z
+                  </span>
+                </div>
+                <div class="flex items-center cursor-pointer" data-sort="email_desc">
+                  <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                    Email: Z-A
+                  </span>
+                </div>
+                <div class="flex items-center cursor-pointer" data-sort="newest">
+                  <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                    Newest First
+                  </span>
+                </div>
+                <div class="flex items-center cursor-pointer" data-sort="oldest">
+                  <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                    Oldest First
+                  </span>
                 </div>
               </div>
             </div>
           </div>
         </div>
-
-        <!-- Archive Button - Mobile/Tablet -->
-        <button class="col-span-3 sm:col-span-2 px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover w-full justify-center">
-          <i class="fas fa-archive text-sidebar-accent"></i>
-          <span class="hidden sm:inline">Archive</span>
-        </button>
       </div>
 
-      <!-- Second row: Add Employee Button - Full width -->
-      <div class="mt-2">
-        <button class="px-3 py-2 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm w-full justify-center" 
-                onclick="openAddEmployeeAccountModal()">
-          <i class="fas fa-plus-circle"></i> <span>Add Employee Account</span>
-        </button>
-      </div>
+      <button class="px-4 py-2.5 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm whitespace-nowrap" 
+              onclick="openAddEmployeeAccountModal()">
+        <i class="fas fa-plus-circle"></i> Add Employee Account
+      </button>
     </div>
   </div>
   
-  <!-- Responsive Table Container -->
+  <!-- Employee Table -->
   <div class="overflow-x-auto scrollbar-thin" id="employeeTableContainer">
     <div id="employeeLoadingIndicator" class="hidden absolute inset-0 bg-white bg-opacity-50 flex items-center justify-center">
       <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-sidebar-accent"></div>
     </div>
     
-    <!-- Responsive Table with horizontal scroll for small screens -->
-    <div class="min-w-full">
-      <table class="w-full">
-        <thead>
-          <tr class="bg-gray-50 border-b border-sidebar-border">
-            <th class="p-3 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(0)">
-              <div class="flex items-center">
-                <i class="fas fa-hashtag mr-1.5 text-sidebar-accent"></i> ID 
-              </div>
-            </th>
-            <th class="p-3 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(1)">
-              <div class="flex items-center">
-                <i class="fas fa-user mr-1.5 text-sidebar-accent"></i> Name 
-              </div>
-            </th>
-            <th class="p-3 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(2)">
-              <div class="flex items-center">
-                <i class="fas fa-envelope mr-1.5 text-sidebar-accent"></i> Email 
-              </div>
-            </th>
-            <th class="p-3 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(3)">
-              <div class="flex items-center">
-                <i class="fas fa-user-tag mr-1.5 text-sidebar-accent"></i> Role 
-              </div>
-            </th>
-            <th class="p-3 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(4)">
-              <div class="flex items-center">
-                <i class="fas fa-toggle-on mr-1.5 text-sidebar-accent"></i> Status 
-              </div>
-            </th>
-            <th class="p-3 text-left text-sm font-medium text-sidebar-text whitespace-nowrap">
-              <div class="flex items-center">
-                <i class="fas fa-cogs mr-1.5 text-sidebar-accent"></i> Actions
-              </div>
-            </th>
-          </tr>
-        </thead>
-        <tbody id="employeeTableBody">
-          <?php echo $tableContent; ?>
-        </tbody>
-      </table>
-    </div>
-  </div>
-  
-  <!-- Sticky Pagination Footer - Using CSS instead of JavaScript -->
-  <div class="sticky bottom-0 left-0 right-0 p-3 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-3">
-    <div id="paginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
-      <?php echo $paginationInfo; ?>
-    </div>
-    <div class="flex space-x-1">
-      <a href="<?php echo '?page=' . max(1, $page - 1); ?>" class="px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo $page <= 1 ? 'opacity-50 pointer-events-none' : ''; ?>">&laquo;</a>
-      
-      <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-        <a href="<?php echo '?page=' . $i; ?>" class="px-3 py-1 border border-sidebar-border rounded text-sm <?php echo $i == $page ? 'bg-sidebar-accent text-white' : 'hover:bg-sidebar-hover'; ?>">
-          <?php echo $i; ?>
-        </a>
-      <?php endfor; ?>
-      
-      <a href="<?php echo '?page=' . min($totalPages, $page + 1); ?>" class="px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo $page >= $totalPages ? 'opacity-50 pointer-events-none' : ''; ?>">&raquo;</a>
+    <table class="w-full">
+      <thead>
+        <tr class="bg-gray-50 border-b border-sidebar-border">
+          <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(0)">
+            <div class="flex items-center">
+              <i class="fas fa-hashtag mr-1.5 text-sidebar-accent"></i> ID 
+              <i class="fas fa-sort ml-1 text-gray-400"></i>
+            </div>
+          </th>
+          <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(1)">
+            <div class="flex items-center">
+              <i class="fas fa-user mr-1.5 text-sidebar-accent"></i> Name 
+              <i class="fas fa-sort ml-1 text-gray-400"></i>
+            </div>
+          </th>
+          <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(2)">
+            <div class="flex items-center">
+              <i class="fas fa-envelope mr-1.5 text-sidebar-accent"></i> Email 
+              <i class="fas fa-sort ml-1 text-gray-400"></i>
+            </div>
+          </th>
+          <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(3)">
+            <div class="flex items-center">
+              <i class="fas fa-user-tag mr-1.5 text-sidebar-accent"></i> Role 
+              <i class="fas fa-sort ml-1 text-gray-400"></i>
+            </div>
+          </th>
+          <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(4)">
+            <div class="flex items-center">
+              <i class="fas fa-toggle-on mr-1.5 text-sidebar-accent"></i> Status 
+              <i class="fas fa-sort ml-1 text-gray-400"></i>
+            </div>
+          </th>
+          <th class="p-4 text-left text-sm font-medium text-sidebar-text">
+            <div class="flex items-center">
+              <i class="fas fa-cogs mr-1.5 text-sidebar-accent"></i> Actions
+            </div>
+          </th>
+        </tr>
+      </thead>
+      <tbody id="employeeTableBody">
+        <?php echo $tableContent; ?>
+      </tbody>
+    </table>
+    
+    <!-- Pagination -->
+    <div class="p-4 border-t border-sidebar-border flex justify-between items-center">
+      <div class="text-sm text-gray-500"><?php echo $paginationInfo; ?></div>
+      <div class="flex space-x-1">
+        <button class="px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo $page <= 1 ? 'opacity-50 cursor-not-allowed' : ''; ?>" 
+                onclick="changePage(<?php echo $page - 1; ?>)" <?php echo $page <= 1 ? 'disabled' : ''; ?>>&laquo;</button>
+        
+        <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+          <button class="px-3 py-1 border border-sidebar-border rounded text-sm <?php echo $i == $page ? 'bg-sidebar-accent text-white' : 'hover:bg-sidebar-hover'; ?> pagination-button" 
+                  onclick="changePage(<?php echo $i; ?>)"><?php echo $i; ?></button>
+        <?php endfor; ?>
+        
+        <button class="px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo $page >= $totalPages ? 'opacity-50 cursor-not-allowed' : ''; ?>" 
+                onclick="changePage(<?php echo $page + 1; ?>)" <?php echo $page >= $totalPages ? 'disabled' : ''; ?>>&raquo;</button>
+      </div>
     </div>
   </div>
 </div>
