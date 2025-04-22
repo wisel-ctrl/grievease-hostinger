@@ -198,7 +198,7 @@ $customersResult = mysqli_query($conn, $customersQuery);
 
         <!-- Archive Button -->
         <button class="px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover whitespace-nowrap">
-          <i class="fas fa-archive text-red"></i>
+          <i class="fas fa-archive text-sidebar-accent"></i>
           <span>Archive</span>
         </button>
 
@@ -274,7 +274,7 @@ $customersResult = mysqli_query($conn, $customersQuery);
 
         <!-- Archive Button - Mobile/Tablet -->
         <button class="col-span-3 sm:col-span-2 px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover w-full justify-center">
-          <i class="fas fa-archive text-sidebar-accent"></i>
+          <i class="fas fa-archive text-red"></i>
           <span class="hidden sm:inline">Archive</span>
         </button>
       </div>
