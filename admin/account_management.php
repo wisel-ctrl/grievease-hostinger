@@ -1602,6 +1602,13 @@ if ($result->num_rows > 0) {
         </div>
       </div>
 
+      <!-- Archive Button - Mobile/Tablet -->
+      <button class="col-span-3 sm:col-span-2 px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover w-full justify-center">
+          <i class="fas fa-archive text-sidebar-accent"></i>
+          <span class="hidden sm:inline">Archive</span>
+        </button>
+      </div>
+
       <!-- Second row: Add Employee Button - Full width -->
       <div class="mt-2">
         <button class="px-3 py-2 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm w-full justify-center" 
