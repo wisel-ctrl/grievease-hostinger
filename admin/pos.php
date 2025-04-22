@@ -199,21 +199,29 @@ $servicesJson = json_encode($allServices);
     </div> -->
 
     <!-- Services Section (Initially hidden) -->
-    <div id="services-section" class="mb-8 hidden">
-      <div class="flex items-center mb-5">
-        <button onclick="goBackToBranches()" class="mr-3 p-2 bg-white border border-sidebar-border rounded-lg shadow-input text-sidebar-text hover:bg-sidebar-hover transition-all duration-300">
-          <i class="fas fa-arrow-left"></i>
-        </button>
-        <h2 class="text-gray-600 text-lg">
-          <span id="selected-category-name" class="font-semibold text-sidebar-accent"></span> Services at 
-          <span id="services-branch-name" class="font-semibold text-sidebar-accent"></span>
-        </h2>
-      </div>
-      
-      <div id="services-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-        <!-- Services will be dynamically added here based on branch and category selection -->
+<div id="services-section" class="mb-8 hidden">
+  <div class="flex items-center justify-between mb-6 bg-white p-4 rounded-lg shadow-sm border border-sidebar-border">
+    <div class="flex items-center">
+      <button onclick="goBackToBranches()" class="mr-4 p-2 bg-white border border-sidebar-border rounded-lg shadow-input text-sidebar-text hover:bg-sidebar-hover transition-all duration-300 flex items-center justify-center">
+        <i class="fas fa-arrow-left"></i>
+      </button>
+      <h2 class="text-gray-700 text-lg">
+        <span id="selected-category-name" class="font-semibold text-sidebar-accent"></span> Services at 
+        <span id="services-branch-name" class="font-semibold text-sidebar-accent"></span>
+      </h2>
+    </div>
+    <div class="hidden md:flex">
+      <div class="relative">
+        <input type="text" id="service-search" placeholder="Search services..." class="pl-10 pr-4 py-2 border border-sidebar-border rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
+        <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
       </div>
     </div>
+  </div>
+  
+  <div id="services-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+    <!-- Services will be dynamically added here based on branch and category selection -->
+  </div>
+</div>
 
 
   </div>
@@ -912,7 +920,11 @@ function loadServices() {
   );
 
   if (filteredServices.length === 0) {
-    container.innerHTML = '<div class="col-span-full text-center py-8 text-gray-500">No services available for this branch.</div>';
+    container.innerHTML = `
+      <div class="col-span-full flex flex-col items-center justify-center py-16 text-gray-500">
+        <i class="fas fa-store-slash text-4xl mb-4 text-gray-400"></i>
+        <p class="text-lg">No services available for this branch.</p>
+      </div>`;
     return;
   }
 
@@ -929,18 +941,34 @@ function loadServices() {
     servicesByCategory[categoryName].push(service);
   });
 
+  // Add search functionality
+  const searchInput = document.getElementById('service-search') || document.createElement('input');
+  if (!document.getElementById('service-search')) {
+    searchInput.id = 'service-search';
+    searchInput.addEventListener('input', function() {
+      filterServices(this.value.toLowerCase());
+    });
+  }
+
   // Create sections for each category
   for (const [categoryName, services] of Object.entries(servicesByCategory)) {
-    // Add category heading
+    // Add category heading with count
     const categoryHeader = document.createElement('div');
-    categoryHeader.className = 'col-span-full mt-6 mb-3';
-    categoryHeader.innerHTML = `<h3 class="text-xl font-bold text-sidebar-text">${categoryName}</h3>`;
+    categoryHeader.className = 'col-span-full mt-8 mb-4 flex items-center justify-between';
+    categoryHeader.innerHTML = `
+      <div class="flex items-center">
+        <h3 class="text-xl font-bold text-sidebar-text">${categoryName}</h3>
+        <span class="ml-3 px-3 py-1 bg-gray-100 text-gray-600 text-sm rounded-full">${services.length} ${services.length === 1 ? 'service' : 'services'}</span>
+      </div>
+    `;
     container.appendChild(categoryHeader);
 
     // Add services for this category
     services.forEach(service => {
       const serviceCard = document.createElement('div');
-      serviceCard.className = 'bg-white rounded-lg overflow-hidden shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 cursor-pointer';
+      serviceCard.className = 'bg-white rounded-lg overflow-hidden shadow-sidebar border border-sidebar-border hover:shadow-card hover:border-sidebar-accent transition-all duration-300 cursor-pointer service-card';
+      serviceCard.dataset.name = service.service_name.toLowerCase();
+      serviceCard.dataset.category = categoryName.toLowerCase();
       serviceCard.onclick = () => showServiceDetails(service);
 
       const imageUrl = service.image_url && service.image_url.trim() !== '' ? 
@@ -951,16 +979,80 @@ function loadServices() {
         : service.inclusions || 'No inclusions specified';
 
       serviceCard.innerHTML = `
-        <div class="h-40 bg-center bg-cover bg-no-repeat" style="background-image: url('${imageUrl}');"></div>
+        <div class="h-48 bg-center bg-cover bg-no-repeat" style="background-image: url('${imageUrl}');">
+          <div class="w-full h-full bg-gradient-to-t from-black/30 to-transparent flex items-end">
+            <div class="p-3 text-white">
+              <span class="text-xs font-medium bg-sidebar-accent/80 px-2 py-1 rounded-full">${categoryName}</span>
+            </div>
+          </div>
+        </div>
         <div class="p-5">
-          <div class="text-lg font-bold mb-2.5 text-sidebar-text">${service.service_name}</div>
-          <div class="text-gray-500 text-sm mb-3">${service.flower_design}</div>
-          <div class="text-gray-500 text-sm mb-3">${inclusionsSummary}</div>
-          <div class="text-lg font-bold text-sidebar-accent">₱${parseFloat(service.selling_price).toLocaleString('en-PH', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+          <div class="text-lg font-bold mb-2 text-sidebar-text">${service.service_name}</div>
+          ${service.flower_design ? `<div class="text-gray-600 text-sm mb-2"><i class="fas fa-leaf text-gray-400 mr-2"></i>${service.flower_design}</div>` : ''}
+          <div class="text-gray-500 text-sm mb-4 line-clamp-2">${inclusionsSummary}</div>
+          <div class="flex justify-between items-center">
+            <div class="text-lg font-bold text-sidebar-accent">₱${parseFloat(service.selling_price).toLocaleString('en-PH', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+            <button class="text-white bg-sidebar-accent px-4 py-2 rounded-lg hover:bg-opacity-90 transition-all duration-300">
+              <i class="fas fa-plus mr-1"></i> Select
+            </button>
+          </div>
         </div>
       `;
       container.appendChild(serviceCard);
     });
+  }
+
+  // Function to filter services based on search input
+  function filterServices(searchText) {
+    const serviceCards = document.querySelectorAll('.service-card');
+    let visibleCount = 0;
+    
+    serviceCards.forEach(card => {
+      const serviceName = card.dataset.name;
+      const categoryName = card.dataset.category;
+      
+      if (serviceName.includes(searchText) || categoryName.includes(searchText)) {
+        card.style.display = 'block';
+        visibleCount++;
+      } else {
+        card.style.display = 'none';
+      }
+    });
+
+    // Show or hide category headers based on visible services
+    const categoryHeaders = document.querySelectorAll('.col-span-full');
+    categoryHeaders.forEach(header => {
+      const categoryName = header.querySelector('h3')?.textContent.toLowerCase();
+      const hasVisibleServices = Array.from(serviceCards).some(card => 
+        card.dataset.category === categoryName && card.style.display !== 'none'
+      );
+      
+      header.style.display = hasVisibleServices ? 'flex' : 'none';
+    });
+
+    // Show no results message if needed
+    const noResultsMsg = document.getElementById('no-results-message');
+    if (visibleCount === 0 && searchText) {
+      if (!noResultsMsg) {
+        const message = document.createElement('div');
+        message.id = 'no-results-message';
+        message.className = 'col-span-full text-center py-12 text-gray-500';
+        message.innerHTML = `
+          <i class="fas fa-search text-4xl mb-3 text-gray-300"></i>
+          <p class="text-lg">No services found matching "${searchText}"</p>
+          <button id="clear-search" class="mt-4 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-all">
+            Clear Search
+          </button>
+        `;
+        container.appendChild(message);
+        document.getElementById('clear-search').addEventListener('click', () => {
+          document.getElementById('service-search').value = '';
+          filterServices('');
+        });
+      }
+    } else if (noResultsMsg) {
+      noResultsMsg.remove();
+    }
   }
 }
 
