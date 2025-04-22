@@ -812,6 +812,7 @@ function toggleSidebar() {
 }
 
 // Function to load branches
+// Function to load branches
 function loadBranches() {
   const container = document.getElementById('branches-container');
   container.innerHTML = '';
@@ -820,10 +821,13 @@ function loadBranches() {
     const branchCard = document.createElement('div');
     branchCard.className = 'bg-white rounded-lg p-5 shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 cursor-pointer';
     branchCard.innerHTML = `
-      <div class="text-xl font-bold mb-3 text-sidebar-text">${branch.branch_name}</div>
+      <div class="mb-4 text-center">
+        <img src="/assets/images/branch-icon.png" alt="${branch.branch_name}" class="w-16 h-16 mx-auto rounded-full border-2 border-sidebar-accent">
+      </div>
+      <div class="text-xl font-bold mb-3 text-sidebar-text text-center">${branch.branch_name}</div>
       <div class="flex justify-between items-center">
         <div class="text-gray-500 text-sm"><i class="fas fa-map-marker-alt mr-1"></i> Branch Location</div>
-        <i class="fas fa-chevron-right text-sidebar-accent"></i>
+        <span class="text-sidebar-accent hover:underline text-sm">View Details <i class="fas fa-chevron-right ml-1"></i></span>
       </div>
     `;
     branchCard.onclick = () => selectBranch(branch.branch_id, branch.branch_name);
