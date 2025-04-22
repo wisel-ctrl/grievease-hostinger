@@ -126,11 +126,11 @@ $customersResult = mysqli_query($conn, $customersQuery);
   <div class="bg-sidebar-hover p-4 border-b border-sidebar-border">
     <!-- Desktop layout for big screens - Title on left, controls on right -->
     <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
-      <!-- Title and Counter - Improved alignment for small screens -->
-      <div class="flex flex-col xs:flex-row xs:items-center gap-2 xs:gap-3 mb-4 lg:mb-0">
+      <!-- Title and Counter -->
+      <div class="flex items-center gap-3 mb-4 lg:mb-0">
         <h4 class="text-lg font-bold text-sidebar-text whitespace-nowrap">Customer Accounts</h4>
         
-        <span class="inline-flex bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium items-center gap-1 self-start xs:self-auto">
+        <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
           <i class="fas fa-users"></i>
           <?php echo $totalCustomers . " Customer" . ($totalCustomers != 1 ? "s" : ""); ?>
         </span>
