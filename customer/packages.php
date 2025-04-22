@@ -95,12 +95,18 @@ function getImageUrl($image_path) {
 
 // Fetch packages from database
 $packages = [];
-$query = "SELECT s.service_id, s.service_name, s.description, s.selling_price, s.image_url 
-                 , i.item_name as casket_name, s.flower_design, s.inclusions
+$branch_id = $_SESSION['branch_loc'];
+
+$query = "SELECT s.service_id, s.service_name, s.description, s.selling_price, s.image_url, 
+                 i.item_name AS casket_name, s.flower_design, s.inclusions
           FROM services_tb s
           LEFT JOIN inventory_tb i ON s.casket_id = i.inventory_id
-          WHERE s.status = 'active'";
-$result = $conn->query($query);
+          WHERE s.status = 'active' AND s.branch_id = ?";
+
+$stmt = $conn->prepare($query);
+$stmt->bind_param("i", $branch_id); // "i" stands for integer
+$stmt->execute();
+$result = $stmt->get_result();
 
 if ($result) {
     while ($row = $result->fetch_assoc()) {
