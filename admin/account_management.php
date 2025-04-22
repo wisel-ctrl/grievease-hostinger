@@ -359,32 +359,21 @@ $customersResult = mysqli_query($conn, $customersQuery);
   </div>
   
   <!-- Sticky Pagination Footer with improved spacing -->
-<div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
-  <div id="paginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
-    Showing <?php echo ($totalItems > 0) ? (($page-1) * $itemsPerPage) + 1 : 0; ?> - 
-    <?php echo min($page * $itemsPerPage, $totalItems); ?> of <?php echo $totalItems; ?> customers
-  </div>
-  <div class="flex space-x-2">
-    <a href="<?php echo '?page=' . max(1, $page - 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo $page <= 1 ? 'opacity-50 pointer-events-none' : ''; ?>">&laquo;</a>
-    
-    <?php
-    // Logic for limited pagination display
-    $startPage = max(1, $page - 2);
-    $endPage = min($totalPages, $startPage + 4);
-    
-    // Adjust start page if we're near the end
-    if ($endPage - $startPage < 4 && $startPage > 1) {
-      $startPage = max(1, $endPage - 4);
-    }
-    
-    for ($i = $startPage; $i <= $endPage; $i++):
-    ?>
-      <a href="<?php echo '?page=' . $i; ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm <?php echo $i == $page ? 'bg-sidebar-accent text-white' : 'hover:bg-sidebar-hover'; ?>">
-        <?php echo $i; ?>
-      </a>
-    <?php endfor; ?>
-    
-    <a href="<?php echo '?page=' . min($totalPages, $page + 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo $page >= $totalPages ? 'opacity-50 pointer-events-none' : ''; ?>">&raquo;</a>
+  <div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
+    <div id="paginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
+      Showing 0 - 0 of 0 customers
+    </div>
+    <div class="flex space-x-2">
+      <a href="<?php echo '?page=' . max(1, $page - 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo $page <= 1 ? 'opacity-50 pointer-events-none' : ''; ?>">&laquo;</a>
+      
+      <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+        <a href="<?php echo '?page=' . $i; ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm <?php echo $i == $page ? 'bg-sidebar-accent text-white' : 'hover:bg-sidebar-hover'; ?>">
+          <?php echo $i; ?>
+        </a>
+      <?php endfor; ?>
+      
+      <a href="<?php echo '?page=' . min($totalPages, $page + 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo $page >= $totalPages ? 'opacity-50 pointer-events-none' : ''; ?>">&raquo;</a>
+    </div>
   </div>
 </div>
 
