@@ -338,8 +338,14 @@ header("Pragma: no-cache");
                             </td>
                             <td class="p-4 text-sm">
                               <div class="flex space-x-2">
-                                <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="View Details">
-                                  <i class="fas fa-eye"></i>
+                                <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip view-receipt-btn" 
+                                        title="View Receipt" 
+                                        data-id="' . $row['lifeplan_id'] . '"
+                                        data-name="' . htmlspecialchars($row['benefeciary_fullname']) . '"
+                                        data-monthly="' . number_format($row['custom_price'] / 12, 2) . '"
+                                        data-total="' . number_format($row['custom_price'] * 0.25, 2) . '"
+                                        data-balance="' . number_format($row['custom_price'] * 0.75, 2) . '">
+                                    <i class="fas fa-receipt"></i>
                                 </button>
                                 <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="Edit">
                                   <i class="fas fa-edit"></i>
@@ -351,11 +357,9 @@ header("Pragma: no-cache");
                             </td>
                           </tr>';
                 }
-                
                 // Free result set
                 $result->free();
             }
-            
             // Close database connection
             $conn->close();
         }
@@ -376,6 +380,107 @@ header("Pragma: no-cache");
       </div>
     </div>
   </div>
+
+  <!-- Receipt Modal -->
+  <div id="receiptModal" class="fixed inset-0 z-50 hidden overflow-y-auto">
+      <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+          <!-- Background overlay -->
+          <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+              <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+          </div>
+          
+          <!-- Modal container -->
+          <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
+              <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                  <div class="sm:flex sm:items-start">
+                      <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
+                          <h3 class="text-lg leading-6 font-medium text-gray-900 border-b pb-2">
+                              Payment Receipt for <span id="beneficiaryName"></span>
+                          </h3>
+                          
+                          <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-6">
+                              <!-- Left side - Payment Logs -->
+                              <div>
+                                  <h4 class="font-medium text-gray-700 mb-2">Payment History</h4>
+                                  <div class="bg-gray-50 p-4 rounded-lg max-h-96 overflow-y-auto">
+                                      <div class="space-y-4">
+                                          <!-- Static payment logs (replace with dynamic data later) -->
+                                          <div class="border-b pb-3">
+                                              <div class="flex justify-between">
+                                                  <span class="font-medium">Payment #1</span>
+                                                  <span class="text-green-600">₱5,000.00</span>
+                                              </div>
+                                              <div class="text-sm text-gray-500">June 15, 2023</div>
+                                              <div class="text-sm mt-1">Received by: Admin User</div>
+                                          </div>
+                                          <div class="border-b pb-3">
+                                              <div class="flex justify-between">
+                                                  <span class="font-medium">Payment #2</span>
+                                                  <span class="text-green-600">₱5,000.00</span>
+                                              </div>
+                                              <div class="text-sm text-gray-500">July 15, 2023</div>
+                                              <div class="text-sm mt-1">Received by: Admin User</div>
+                                          </div>
+                                          <div class="border-b pb-3">
+                                              <div class="flex justify-between">
+                                                  <span class="font-medium">Payment #3</span>
+                                                  <span class="text-green-600">₱5,000.00</span>
+                                              </div>
+                                              <div class="text-sm text-gray-500">August 15, 2023</div>
+                                              <div class="text-sm mt-1">Received by: Admin User</div>
+                                          </div>
+                                      </div>
+                                  </div>
+                              </div>
+                              
+                              <!-- Right side - Payment Input -->
+                              <div>
+                                  <div class="bg-blue-50 p-4 rounded-lg mb-4">
+                                      <h4 class="font-medium text-gray-700 mb-2">Payment Summary</h4>
+                                      <div class="grid grid-cols-2 gap-2 text-sm">
+                                          <div>Monthly Amount:</div>
+                                          <div class="font-medium" id="monthlyAmount">₱5,000.00</div>
+                                          <div>Total Paid:</div>
+                                          <div class="font-medium" id="totalPaid">₱15,000.00</div>
+                                          <div>Remaining Balance:</div>
+                                          <div class="font-medium" id="remainingBalance">₱45,000.00</div>
+                                      </div>
+                                  </div>
+                                  
+                                  <div class="mt-4">
+                                      <h4 class="font-medium text-gray-700 mb-2">Record New Payment</h4>
+                                      <div class="space-y-3">
+                                          <div>
+                                              <label for="paymentAmount" class="block text-sm font-medium text-gray-700">Amount</label>
+                                              <input type="number" id="paymentAmount" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Enter amount">
+                                          </div>
+                                          <div>
+                                              <label for="paymentDate" class="block text-sm font-medium text-gray-700">Date</label>
+                                              <input type="date" id="paymentDate" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                          </div>
+                                          <div>
+                                              <label for="paymentNotes" class="block text-sm font-medium text-gray-700">Notes</label>
+                                              <textarea id="paymentNotes" rows="2" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Optional notes"></textarea>
+                                          </div>
+                                          <button id="submitPayment" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                              Record Payment
+                                          </button>
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                  <button type="button" id="closeModal" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                      Close
+                  </button>
+              </div>
+          </div>
+      </div>
+  </div>     
+
 </div>
 
 
@@ -397,6 +502,79 @@ console.log("Fetched Lifeplan Data:", <?php echo json_encode($fetchedData); ?>);
 
 // Summary log
 console.log("Total records fetched: <?php echo count($fetchedData); ?>");
+</script>
+
+<script>
+// Modal functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const modal = document.getElementById('receiptModal');
+    const closeModalBtn = document.getElementById('closeModal');
+    const viewReceiptBtns = document.querySelectorAll('.view-receipt-btn');
+    
+    // Open modal when clicking View Receipt buttons
+    viewReceiptBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const beneficiaryName = this.getAttribute('data-name');
+            const monthlyAmount = this.getAttribute('data-monthly');
+            const totalPaid = this.getAttribute('data-total');
+            const remainingBalance = this.getAttribute('data-balance');
+            
+            // Update modal content
+            document.getElementById('beneficiaryName').textContent = beneficiaryName;
+            document.getElementById('monthlyAmount').textContent = '₱' + monthlyAmount;
+            document.getElementById('totalPaid').textContent = '₱' + totalPaid;
+            document.getElementById('remainingBalance').textContent = '₱' + remainingBalance;
+            
+            // Show modal
+            modal.classList.remove('hidden');
+        });
+    });
+    
+    // Close modal
+    closeModalBtn.addEventListener('click', function() {
+        modal.classList.add('hidden');
+    });
+    
+    // Close modal when clicking outside
+    window.addEventListener('click', function(event) {
+        if (event.target === modal) {
+            modal.classList.add('hidden');
+        }
+    });
+    
+    // Submit payment handler
+    document.getElementById('submitPayment').addEventListener('click', function() {
+        const amount = document.getElementById('paymentAmount').value;
+        const date = document.getElementById('paymentDate').value;
+        const notes = document.getElementById('paymentNotes').value;
+        
+        if (!amount || !date) {
+            alert('Please fill in all required fields');
+            return;
+        }
+        
+        // Here you would typically send the data to your server
+        console.log('Payment submitted:', {
+            amount: amount,
+            date: date,
+            notes: notes
+        });
+        
+        // For now, just show an alert
+        alert('Payment recorded successfully! (This is a demo - in a real app, this would update the database)');
+        
+        // Reset form
+        document.getElementById('paymentAmount').value = '';
+        document.getElementById('paymentDate').value = '';
+        document.getElementById('paymentNotes').value = '';
+        
+        // Close modal
+        modal.classList.add('hidden');
+    });
+    
+    // Set default date to today
+    document.getElementById('paymentDate').valueAsDate = new Date();
+});
 </script>
 </body>
 </html>
