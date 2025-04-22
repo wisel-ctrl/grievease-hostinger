@@ -350,60 +350,66 @@ require_once '../db_connect.php'; // Database connection
 </div>
 
   <!-- Charts -->
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-    <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300">
-      <div class="flex justify-between items-center p-5 border-b border-sidebar-border">
-        <h3 class="font-medium text-sidebar-text">Services by Type</h3>
-        <button class="px-3 py-2 border border-sidebar-border rounded-md text-sm flex items-center text-sidebar-text hover:bg-sidebar-hover transition-all duration-300">
-          <i class="fas fa-download mr-2"></i> Export
-        </button>
-      </div>
-      <div class="p-5">
-        <canvas id="servicesChart" class="h-64"></canvas>
-      </div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-6 md:mb-8">
+  <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 w-full">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 p-4 sm:p-5 border-b border-sidebar-border">
+      <h3 class="font-medium text-sidebar-text">Services by Type</h3>
+      <button class="px-3 py-2 border border-sidebar-border rounded-md text-sm flex items-center text-sidebar-text hover:bg-sidebar-hover transition-all duration-300">
+        <i class="fas fa-download mr-2"></i> Export
+      </button>
     </div>
-    
-    <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300">
-      <div class="flex justify-between items-center p-5 border-b border-sidebar-border">
-        <h3 class="font-medium text-sidebar-text">Monthly Revenue</h3>
-        <button class="px-3 py-2 border border-sidebar-border rounded-md text-sm flex items-center text-sidebar-text hover:bg-sidebar-hover transition-all duration-300">
-          <i class="fas fa-download mr-2"></i> Export
-        </button>
-      </div>
-      <div class="p-5">
-        <canvas id="revenueChart" class="h-64"></canvas>
+    <div class="p-4 sm:p-5">
+      <div class="w-full h-48 md:h-64">
+        <canvas id="servicesChart" style="width: 100%; height: 100%;"></canvas>
       </div>
     </div>
   </div>
+  
+  <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 w-full">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 p-4 sm:p-5 border-b border-sidebar-border">
+      <h3 class="font-medium text-sidebar-text">Monthly Revenue</h3>
+      <button class="px-3 py-2 border border-sidebar-border rounded-md text-sm flex items-center text-sidebar-text hover:bg-sidebar-hover transition-all duration-300">
+        <i class="fas fa-download mr-2"></i> Export
+      </button>
+    </div>
+    <div class="p-4 sm:p-5">
+      <div class="w-full h-48 md:h-64">
+        <canvas id="revenueChart" style="width: 100%; height: 100%;"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
 
-  
-  
-  <!-- Branch Comparison Charts -->
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-    <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300">
-      <div class="flex justify-between items-center p-5 border-b border-sidebar-border">
-        <h3 class="font-medium text-sidebar-text">Revenue by Branch</h3>
-        <button class="px-3 py-2 border border-sidebar-border rounded-md text-sm flex items-center text-sidebar-text hover:bg-sidebar-hover transition-all duration-300">
-          <i class="fas fa-download mr-2"></i> Export
-        </button>
-      </div>
-      <div class="p-5">
-        <canvas id="branchRevenueChart" class="h-64"></canvas>
-      </div>
+<!-- Branch Comparison Charts -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-6 md:mb-8">
+  <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 w-full">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 p-4 sm:p-5 border-b border-sidebar-border">
+      <h3 class="font-medium text-sidebar-text">Revenue by Branch</h3>
+      <button class="px-3 py-2 border border-sidebar-border rounded-md text-sm flex items-center text-sidebar-text hover:bg-sidebar-hover transition-all duration-300">
+        <i class="fas fa-download mr-2"></i> Export
+      </button>
     </div>
-    
-    <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300">
-      <div class="flex justify-between items-center p-5 border-b border-sidebar-border">
-        <h3 class="font-medium text-sidebar-text">Services by Type & Branch</h3>
-        <button class="px-3 py-2 border border-sidebar-border rounded-md text-sm flex items-center text-sidebar-text hover:bg-sidebar-hover transition-all duration-300">
-          <i class="fas fa-download mr-2"></i> Export
-        </button>
-      </div>
-      <div class="p-5">
-        <canvas id="branchServicesChart" class="h-64"></canvas>
+    <div class="p-4 sm:p-5">
+      <div class="w-full h-48 md:h-64">
+        <canvas id="branchRevenueChart" style="width: 100%; height: 100%;"></canvas>
       </div>
     </div>
   </div>
+  
+  <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 w-full">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 p-4 sm:p-5 border-b border-sidebar-border">
+      <h3 class="font-medium text-sidebar-text">Services by Type & Branch</h3>
+      <button class="px-3 py-2 border border-sidebar-border rounded-md text-sm flex items-center text-sidebar-text hover:bg-sidebar-hover transition-all duration-300">
+        <i class="fas fa-download mr-2"></i> Export
+      </button>
+    </div>
+    <div class="p-4 sm:p-5">
+      <div class="w-full h-48 md:h-64">
+        <canvas id="branchServicesChart" style="width: 100%; height: 100%;"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
   
   <!-- Branch Statistics -->
 <div class="bg-white rounded-lg shadow-md mb-8 border border-sidebar-border overflow-hidden">
@@ -865,7 +871,6 @@ require_once '../db_connect.php'; // Database connection
       <button class="px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">&raquo;</button>
     </div>
   </div>
-</div>
             
               <!-- Footer -->
               <footer class="bg-white rounded-lg shadow-sidebar border border-sidebar-border p-4 text-center text-sm text-gray-500 mt-8">
