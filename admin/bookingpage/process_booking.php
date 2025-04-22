@@ -54,6 +54,11 @@ $deceasedLname = $sanitizeText($_POST['deceased_lname']);
 $deceasedSuffix = $sanitizeText($_POST['deceased_suffix']);
 $deceasedAddress = $sanitizeText($_POST['deceased_address']);
 
+// Sanitize date fields
+$dateOfBirth = $sanitizeDate($_POST['deceased_birth']);
+$dateOfDeath = $sanitizeDate($_POST['deceased_dodeath']);
+$dateOfBurial = $sanitizeDate($_POST['deceased_dateOfBurial']);
+
 $serviceId = intval($_POST['service_id'] ?? 0);
 $branchId = intval($_POST['branch_id'] ?? 0);
 $initialPrice = floatval($_POST['initial_price'] ?? 0);
@@ -89,20 +94,22 @@ try {
     $paymentStatus = ($balance <= 0) ? 'Fully Paid' : 'With Balance';
     $status = "Pending"; // Added missing semicolon here
 
-    // Insert sales record
+    // Insert sales record with date fields
     $stmt = $conn->prepare("INSERT INTO sales_tb (
         customerID, fname, mname, lname, suffix, phone, email,
         fname_deceased, mname_deceased, lname_deceased, suffix_deceased,
+        date_of_birth, date_of_death, date_of_burial,
         sold_by, branch_id, service_id, payment_method,
         initial_price, discounted_price, amount_paid, balance,
         status, payment_status, death_cert_image, deceased_address, with_cremate
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
     
-    // Correct type definition string (23 parameters now)
+    // Correct type definition string (26 parameters now)
     $stmt->bind_param(
-        "issssssssssiiisddddsssss",  // 23 type specifiers
+        "isssssssssssssiiisddddsssss",  // 26 type specifiers
         $customerID, $firstName, $middleName, $lastName, $suffix, $phoneNumber, $email,
         $deceasedFname, $deceasedMname, $deceasedLname, $deceasedSuffix,
+        $dateOfBirth, $dateOfDeath, $dateOfBurial,
         $_SESSION['user_id'], $branchId, $serviceId, $paymentMethod,
         $initialPrice, $initialPrice, $amountPaid, $balance,
         $status, $paymentStatus, $deathCertUrl, $deceasedAddress, $withCremate

@@ -544,6 +544,12 @@ $offset = ($current_page - 1) * $bookings_per_page;
         <input type="hidden" id="deceasedSuffix" name="deceased_suffix">
         <input type="hidden" id="deceasedAddress" name="deceased_address">
         
+        <!-- Deceased Dates -->
+        <input type="hidden" id="deceasedBirth" name="deceased_birth">
+        <input type="hidden" id="deceasedDeath" name="deceased_dodeath">
+        <input type="hidden" id="deceasedBurial" name="deceased_dateOfBurial">
+       
+
         <!-- Service Information -->
         <input type="hidden" id="serviceId" name="service_id">
         <input type="hidden" id="branchId" name="branch_id">
@@ -803,10 +809,15 @@ function confirmAccept() {
             
             // Deceased information
             document.getElementById('deceasedFname').value = data.deceased_fname || '';
-            document.getElementById('deceasedMname').value = data.deceased_mname || '';
+            document.getElementById('deceasedMname').value = data.deceased_midname || '';
             document.getElementById('deceasedLname').value = data.deceased_lname || '';
             document.getElementById('deceasedSuffix').value = data.deceased_suffix || '';
             document.getElementById('deceasedAddress').value = data.deceased_address || '';
+
+            // Dates information
+            document.getElementById('deceasedBirth').value = data.deceased_birth || '';
+            document.getElementById('deceasedDeath').value = data.deceased_dodeath || '';
+            document.getElementById('deceasedBurial').value = data.deceased_dateOfBurial || '';            
             
             // Service information
             document.getElementById('serviceId').value = data.service_id || '';
