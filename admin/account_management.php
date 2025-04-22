@@ -215,18 +215,17 @@ $customersResult = mysqli_query($conn, $customersQuery);
       <!-- First row: Search Input with Filter and Archive buttons -->
       <div class="grid grid-cols-12 gap-2">
         <!-- Search Input -->
-        <div class="relative col-span-6 sm:col-span-8">
+        <div class="relative col-span-8 sm:col-span-10">
           <input type="text" id="customerSearchInput" 
                   placeholder="Search customers..." 
                   class="pl-8 pr-3 py-2 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
           <i class="fas fa-search absolute left-2.5 top-2.5 text-gray-400"></i>
         </div>
 
-        <!-- Filter Dropdown -->
-        <div class="relative filter-dropdown col-span-3 sm:col-span-2">
-          <button id="customerFilterToggle" class="px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover w-full justify-center">
+        <!-- Filter Dropdown - Icon only on small screens -->
+        <div class="relative filter-dropdown col-span-2 sm:col-span-1">
+          <button id="customerFilterToggle" class="w-full h-full flex items-center justify-center border border-gray-300 rounded-lg text-sm hover:bg-sidebar-hover">
             <i class="fas fa-filter text-sidebar-accent"></i>
-            <span class="hidden sm:inline">Filters</span>
           </button>
           
           <!-- Filter Window - Positioned better for mobile -->
@@ -272,11 +271,12 @@ $customersResult = mysqli_query($conn, $customersQuery);
           </div>
         </div>
 
-        <!-- Archive Button - Mobile/Tablet -->
-        <button class="col-span-3 sm:col-span-2 px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover w-full justify-center">
-          <i class="fas fa-archive text-sidebar-accent"></i>
-          <span class="hidden sm:inline">Archive</span>
-        </button>
+        <!-- Archive Button - Icon only on small screens -->
+        <div class="col-span-2 sm:col-span-1">
+          <button class="w-full h-full flex items-center justify-center border border-gray-300 rounded-lg text-sm hover:bg-sidebar-hover">
+            <i class="fas fa-archive text-sidebar-accent"></i>
+          </button>
+        </div>
       </div>
 
       <!-- Second row: Add Customer Button - Full width -->
