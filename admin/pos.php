@@ -175,7 +175,7 @@ $servicesJson = json_encode($allServices);
     <!-- Branch Selection Section -->
     <div id="branch-selection" class="mb-8">
       <h2 class="mb-5 text-gray-600 text-lg">Select a Branch Location</h2>
-      <div id="branches-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-5 bg-orange-200">
+      <div id="branches-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-5">
         <!-- Branches will be dynamically added here based on database data -->
       </div>
     </div>
