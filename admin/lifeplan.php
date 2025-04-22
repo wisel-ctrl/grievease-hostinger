@@ -66,7 +66,7 @@ header("Pragma: no-cache");
     <!-- Header with breadcrumb and welcome message -->
     <div class="flex justify-between items-center mb-6 bg-white p-5 rounded-lg shadow-sidebar">
       <div>
-        <h1 class="text-2xl font-bold text-sidebar-text">LifePlan Subscription</h1>
+        <h1 class="text-2xl font-bold text-sidebar-text">LifePlan Subscriptions</h1>
       </div>
       <div class="flex space-x-3">
         <button class="p-2 bg-white border border-sidebar-border rounded-lg shadow-input text-sidebar-text hover:bg-sidebar-hover transition-all duration-300">
