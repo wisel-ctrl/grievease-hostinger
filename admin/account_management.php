@@ -1513,7 +1513,7 @@ if ($result->num_rows > 0) {
 
         <!-- Archive Button -->
         <button class="px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover whitespace-nowrap">
-          <i class="fas fa-archive text-red"></i>
+          <i class="fas fa-archive text-sidebar-accent"></i>
           <span>Archive</span>
         </button>
 
