@@ -498,6 +498,76 @@ $offset = ($current_page - 1) * $bookings_per_page;
     </div>
   </div>
 
+<!-- Decline Reason Modal -->
+<div id="declineReasonModal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
+  <!-- Modal Backdrop -->
+  <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+  
+  <!-- Modal Content -->
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-md mx-4 z-10 transform transition-all duration-300">
+    <!-- Close Button -->
+    <button type="button" class="absolute top-4 right-4 text-gray-500 hover:text-sidebar-accent transition-colors" onclick="closeDeclineReasonModal()">
+      <i class="fas fa-times"></i>
+    </button>
+    
+    <!-- Modal Header -->
+    <div class="px-6 py-5 border-b bg-gradient-to-r from-red-600 to-red-800 border-gray-200">
+      <h3 class="text-xl font-bold text-white flex items-center">
+        <i class="fas fa-exclamation-circle mr-2"></i>
+        Decline Booking
+      </h3>
+    </div>
+    
+    <!-- Modal Body -->
+    <div class="px-6 py-5">
+      <form id="declineReasonForm">
+        <input type="hidden" id="bookingIdForDecline" name="bookingId">
+        
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Reason for Declining</label>
+          
+          <!-- Suggested Reasons -->
+          <div class="grid grid-cols-2 gap-2 mb-4">
+            <button type="button" onclick="selectDeclineReason('Invalid payment certificate')" 
+                    class="text-left p-2 border border-gray-300 rounded hover:bg-gray-100 text-sm">
+              <i class="fas fa-money-bill-wave text-red-500 mr-1"></i> Invalid payment certificate
+            </button>
+            <button type="button" onclick="selectDeclineReason('Incomplete documents')" 
+                    class="text-left p-2 border border-gray-300 rounded hover:bg-gray-100 text-sm">
+              <i class="fas fa-file-alt text-red-500 mr-1"></i> Incomplete documents
+            </button>
+            <button type="button" onclick="selectDeclineReason('Unavailable service date')" 
+                    class="text-left p-2 border border-gray-300 rounded hover:bg-gray-100 text-sm">
+              <i class="fas fa-calendar-times text-red-500 mr-1"></i> Unavailable service date
+            </button>
+            <button type="button" onclick="selectDeclineReason('Service not available')" 
+                    class="text-left p-2 border border-gray-300 rounded hover:bg-gray-100 text-sm">
+              <i class="fas fa-times-circle text-red-500 mr-1"></i> Service not available
+            </button>
+          </div>
+          
+          <!-- Custom Reason -->
+          <div>
+            <label for="customReason" class="block text-sm font-medium text-gray-700 mb-1">Or specify your own reason:</label>
+            <textarea id="customReason" name="customReason" rows="3" 
+                      class="block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring focus:ring-red-200 focus:ring-opacity-50 py-2 px-3 border"
+                      placeholder="Enter your reason for declining this booking..."></textarea>
+          </div>
+        </div>
+        
+        <div class="flex justify-end gap-3 mt-6">
+          <button type="button" onclick="closeDeclineReasonModal()" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors">
+            Cancel
+          </button>
+          <button type="submit" class="px-4 py-2 bg-gradient-to-r from-red-600 to-red-800 text-white rounded-lg hover:shadow-md transition-all">
+            Submit Decline
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
   <!-- Payment Modal -->
 <div id="paymentModal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
   <!-- Modal Backdrop -->
@@ -849,6 +919,114 @@ function closePaymentModal() {
     modal.classList.remove("flex");
     document.body.classList.remove("overflow-hidden");
 }
+
+function confirmDecline() {
+    // Get the booking ID from the modal
+    const bookingIdText = document.getElementById('bookingId').textContent;
+    const bookingId = bookingIdText.split('-')[2].trim();
+    
+    // Set the booking ID in the decline form
+    document.getElementById('bookingIdForDecline').value = bookingId;
+    
+    // Open the decline reason modal
+    openDeclineReasonModal();
+}
+
+function openDeclineReasonModal() {
+    const modal = document.getElementById("declineReasonModal");
+    modal.classList.remove("hidden");
+    modal.classList.add("flex");
+    document.body.classList.add("overflow-hidden");
+}
+
+function closeDeclineReasonModal() {
+    const modal = document.getElementById("declineReasonModal");
+    modal.classList.add("hidden");
+    modal.classList.remove("flex");
+    document.body.classList.remove("overflow-hidden");
+}
+
+function selectDeclineReason(reason) {
+    document.getElementById('customReason').value = reason;
+}
+
+// Handle decline form submission
+document.getElementById('declineReasonForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const bookingId = document.getElementById('bookingIdForDecline').value;
+    const customReason = document.getElementById('customReason').value;
+    
+    if (!customReason) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Please provide a reason for declining this booking',
+        });
+        return;
+    }
+    
+    Swal.fire({
+        title: 'Confirm Decline',
+        html: `<div class="text-left">
+            <p>Are you sure you want to decline this booking?</p>
+            <p><strong>Reason:</strong> ${customReason}</p>
+        </div>`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, Decline Booking',
+        cancelButtonText: 'Cancel',
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Show loading indicator
+            Swal.fire({
+                title: 'Processing...',
+                html: 'Please wait while we process your request',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+            
+            // Send the data via AJAX
+            fetch('bookingpage/process_booking.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `action=declineBooking&bookingId=${bookingId}&reason=${encodeURIComponent(customReason)}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success!',
+                        text: 'Booking has been declined',
+                        showConfirmButton: false,
+                        timer: 2000
+                    }).then(() => {
+                        closeDeclineReasonModal();
+                        closeModal();
+                        // Refresh the page to update the table
+                        window.location.reload();
+                    });
+                } else {
+                    throw new Error(data.message || 'Failed to decline booking');
+                }
+            })
+            .catch(error => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: error.message || 'An error occurred while processing your request',
+                });
+            });
+        }
+    });
+});
 
 // Handle payment form submission
 document.getElementById('paymentForm').addEventListener('submit', function(e) {
