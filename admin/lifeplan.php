@@ -325,8 +325,6 @@ header("Pragma: no-cache");
                     echo '<tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
                             <td class="p-4 text-sm text-sidebar-text">
                               <div class="flex items-center">
-                                <div class="w-8 h-8 rounded-full bg-sidebar-accent bg-opacity-10 flex items-center justify-center text-sidebar-accent mr-3">
-                                </div>
                                 ' . htmlspecialchars($row['benefeciary_fullname']) . '
                               </div>
                             </td>
