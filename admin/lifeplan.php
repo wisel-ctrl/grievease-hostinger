@@ -891,7 +891,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     document.getElementById('payment_status').value = data.payment_status || 'ongoing';
                     
                     // Fetch and populate services dropdown
-                    fetch('lifeplan_process/get_services.php')
+                    fetch('lifeplan_process/get_services.php?lifeplan_id=' + lifeplanId)
                         .then(response => response.json())
                         .then(services => {
                             const serviceSelect = document.getElementById('service_id');
