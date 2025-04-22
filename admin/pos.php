@@ -172,13 +172,18 @@ $servicesJson = json_encode($allServices);
       </div>
     </div>
 
-    <!-- Branch Selection Section -->
     <div id="branch-selection" class="mb-8">
-      <h2 class="mb-5 text-gray-600 text-lg">Select a Branch Location</h2>
-      <div id="branches-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-        <!-- Branches will be dynamically added here based on database data -->
-      </div>
-    </div>
+  <div class="flex justify-between items-center mb-5">
+    <h2 class="text-gray-600 text-lg">Select a Branch Location</h2>
+    <button id="add-branch-btn" class="flex items-center bg-sidebar-accent hover:bg-sidebar-accent/90 text-white py-2 px-4 rounded-lg transition-colors duration-300">
+      <i class="fas fa-plus-circle mr-2"></i>
+      Add New Branch
+    </button>
+  </div>
+  <div id="branches-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+    <!-- Branches will be dynamically added here based on database data -->
+  </div>
+</div>
 
     <!-- Category Selection Section (Initially hidden)
     <div id="category-selection" class="mb-8 hidden">
@@ -818,17 +823,62 @@ function loadBranches() {
   
   branches.forEach(branch => {
     const branchCard = document.createElement('div');
-    branchCard.className = 'bg-white rounded-lg p-5 shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 cursor-pointer';
+    branchCard.className = 'bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 cursor-pointer overflow-hidden';
     branchCard.innerHTML = `
-      <div class="text-xl font-bold mb-3 text-sidebar-text">${branch.branch_name}</div>
-      <div class="flex justify-between items-center">
-        <div class="text-gray-500 text-sm"><i class="fas fa-map-marker-alt mr-1"></i> Branch Location</div>
-        <i class="fas fa-chevron-right text-sidebar-accent"></i>
+      <div class="h-40 overflow-hidden bg-gray-100">
+        <img 
+          src="${branch.image_url || '/assets/images/branch-placeholder.jpg'}" 
+          alt="${branch.branch_name}" 
+          class="w-full h-full object-cover"
+          onerror="this.src='/assets/images/branch-placeholder.jpg';"
+        />
+      </div>
+      <div class="p-5">
+        <div class="text-xl font-bold mb-3 text-sidebar-text">${branch.branch_name}</div>
+        <div class="flex justify-between items-center">
+          <div class="text-gray-500 text-sm">
+            <i class="fas fa-map-marker-alt mr-1"></i> ${branch.address || 'Branch Location'}
+          </div>
+          <button class="select-branch-btn bg-sidebar-accent text-white py-1 px-3 rounded-md hover:bg-sidebar-accent/90 transition-colors duration-300">
+            Select
+          </button>
+        </div>
       </div>
     `;
-    branchCard.onclick = () => selectBranch(branch.branch_id, branch.branch_name);
+    
+    const selectBtn = branchCard.querySelector('.select-branch-btn');
+    selectBtn.addEventListener('click', (e) => {
+      e.stopPropagation(); // Prevent the card click event from firing
+      selectBranch(branch.branch_id, branch.branch_name);
+    });
+    
+    branchCard.addEventListener('click', () => {
+      selectBranch(branch.branch_id, branch.branch_name);
+    });
+    
     container.appendChild(branchCard);
   });
+}
+
+// Initialize Add Branch button functionality
+document.getElementById('add-branch-btn').addEventListener('click', () => {
+  // Show modal or navigate to add branch page
+  showAddBranchModal();
+});
+
+// Function to show the add branch modal
+function showAddBranchModal() {
+  // Implementation for showing the modal to add a new branch
+  // This could be implemented separately or use a modal library
+  console.log("Add branch modal triggered");
+  
+  // Example implementation:
+  const modal = document.getElementById('add-branch-modal');
+  if (modal) {
+    modal.classList.remove('hidden');
+  } else {
+    alert("Add branch functionality will be implemented here");
+  }
 }
 
 // Function to select a branch
