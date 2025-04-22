@@ -175,7 +175,7 @@ function handleDeclineBooking($conn) {
 
     try {
         // Update booking status to Declined and add reason
-        $stmt = $conn->prepare("UPDATE booking_tb SET status = 'Declined', reason_for_decline = ?, declined_date = NOW() WHERE booking_id = ?");
+        $stmt = $conn->prepare("UPDATE booking_tb SET status = 'Declined', reason_for_decline = ?, decline_date = NOW() WHERE booking_id = ?");
         $stmt->bind_param("si", $reason, $bookingId);
         $stmt->execute();
         
