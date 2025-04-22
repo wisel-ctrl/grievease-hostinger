@@ -354,9 +354,9 @@ header("Pragma: no-cache");
                             <p class="text-sm text-gray-600 truncate">${conversation.message}</p>
                             <div class="flex items-center mt-1">
                                 <span class="text-xs text-gray-500">${conversation.sender_email}</span>
-                                ${isUnread ? '<span class="ml-2 w-2 h-2 bg-teal-500 rounded-full"></span>' : ''}
+                                ${isUnread ? '<span class="ml-2 w-2 h-2 bg-sidebar-accent-500 rounded-full"></span>' : ''}
                                 ${conversation.unread_count > 0 ? 
-                                    `<span class="ml-auto bg-teal-500 text-white text-xs px-2 py-0.5 rounded-full">${conversation.unread_count}</span>` : ''}
+                                    `<span class="ml-auto bg-sidebar-accent-500 text-white text-xs px-2 py-0.5 rounded-full">${conversation.unread_count}</span>` : ''}
                             </div>
                         </div>
                     </div>
