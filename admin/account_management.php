@@ -211,22 +211,22 @@ $customersResult = mysqli_query($conn, $customersQuery);
     </div>
     
     <!-- Mobile/Tablet Controls - Only visible on smaller screens -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:hidden gap-3 w-full mt-4">
-      <!-- Search Input - Full width on smaller screens -->
-      <div class="relative w-full col-span-1 sm:col-span-2">
-        <input type="text" id="customerSearchInput" 
-                placeholder="Search customers..." 
-                class="pl-8 pr-3 py-2 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
-        <i class="fas fa-search absolute left-2.5 top-2.5 text-gray-400"></i>
-      </div>
+    <div class="grid lg:hidden gap-3 w-full mt-4">
+      <!-- First row: Search Input with Filter and Archive buttons -->
+      <div class="grid grid-cols-12 gap-2">
+        <!-- Search Input -->
+        <div class="relative col-span-6 sm:col-span-8">
+          <input type="text" id="customerSearchInput" 
+                  placeholder="Search customers..." 
+                  class="pl-8 pr-3 py-2 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
+          <i class="fas fa-search absolute left-2.5 top-2.5 text-gray-400"></i>
+        </div>
 
-      <!-- Button Row: Filter, Archive, Add - All in one row with equal sizing -->
-      <div class="grid grid-cols-3 col-span-1 sm:col-span-2 gap-2">
         <!-- Filter Dropdown -->
-        <div class="relative filter-dropdown">
+        <div class="relative filter-dropdown col-span-3 sm:col-span-2">
           <button id="customerFilterToggle" class="px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover w-full justify-center">
             <i class="fas fa-filter text-sidebar-accent"></i>
-            <span class="hidden xs:inline">Filters</span>
+            <span class="hidden sm:inline">Filters</span>
           </button>
           
           <!-- Filter Window - Positioned better for mobile -->
@@ -273,15 +273,17 @@ $customersResult = mysqli_query($conn, $customersQuery);
         </div>
 
         <!-- Archive Button - Mobile/Tablet -->
-        <button class="px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover w-full justify-center">
+        <button class="col-span-3 sm:col-span-2 px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover w-full justify-center">
           <i class="fas fa-archive text-sidebar-accent"></i>
-          <span class="hidden xs:inline">Archive</span>
+          <span class="hidden sm:inline">Archive</span>
         </button>
+      </div>
 
-        <!-- Add Customer Button -->
+      <!-- Second row: Add Customer Button - Full width -->
+      <div class="mt-2">
         <button class="px-3 py-2 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm w-full justify-center" 
                 onclick="openAddCustomerAccountModal()">
-          <i class="fas fa-plus-circle"></i> <span class="hidden xs:inline">Add</span>
+          <i class="fas fa-plus-circle"></i> <span>Add Customer Account</span>
         </button>
       </div>
     </div>
