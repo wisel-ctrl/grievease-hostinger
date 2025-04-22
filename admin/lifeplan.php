@@ -207,10 +207,6 @@ header("Pragma: no-cache");
         <option value="pending">Pending</option>
         <option value="overdue">Overdue</option>
       </select>
-
-      <button class="px-4 py-2.5 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm whitespace-nowrap">
-        <i class="fas fa-plus-circle"></i> Add New Beneficiary
-      </button>
     </div>
   </div>
   
