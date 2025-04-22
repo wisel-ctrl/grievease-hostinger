@@ -210,9 +210,7 @@ $customersResult = mysqli_query($conn, $customersQuery);
       <thead>
         <tr class="bg-gray-50 border-b border-sidebar-border">
           <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(0)">
-            <div class="flex items-center">
-              <i class="fas fa-hashtag mr-1.5 text-sidebar-accent"></i> ID 
-              <i class="fas fa-sort ml-1 text-gray-400"></i>
+            <div class="flex items-center"> ID 
             </div>
           </th>
           <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(1)">
