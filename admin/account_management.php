@@ -213,77 +213,75 @@ $customersResult = mysqli_query($conn, $customersQuery);
     <!-- Mobile/Tablet Controls - Only visible on smaller screens -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:hidden gap-3 w-full mt-4">
       <!-- Search Input - Full width on smaller screens -->
-      <div class="relative w-full">
+      <div class="relative w-full col-span-1 sm:col-span-2">
         <input type="text" id="customerSearchInput" 
                 placeholder="Search customers..." 
                 class="pl-8 pr-3 py-2 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
         <i class="fas fa-search absolute left-2.5 top-2.5 text-gray-400"></i>
       </div>
 
-      <!-- Filter Dropdown -->
-      <div class="relative filter-dropdown">
-        <button id="customerFilterToggle" class="px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover w-full sm:w-auto justify-center sm:justify-start">
-          <i class="fas fa-filter text-sidebar-accent"></i>
-          <span>Filters</span>
-          <span id="filterIndicator" class="hidden h-2 w-2 bg-sidebar-accent rounded-full"></span>
-        </button>
-        
-        <!-- Filter Window - Positioned better for mobile -->
-        <div id="customerFilterDropdown" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-4">
-          <div class="space-y-4">
-            <!-- Sort Options -->
-            <div>
-              <h5 class="text-sm font-medium text-sidebar-text mb-2">Sort By</h5>
-              <div class="space-y-1">
-                <div class="flex items-center cursor-pointer" data-sort="id_asc">
-                  <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                    ID: Ascending
-                  </span>
-                </div>
-                <div class="flex items-center cursor-pointer" data-sort="id_desc">
-                  <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                    ID: Descending
-                  </span>
-                </div>
-                <div class="flex items-center cursor-pointer" data-sort="name_asc">
-                  <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                    Name: A-Z
-                  </span>
-                </div>
-                <div class="flex items-center cursor-pointer" data-sort="name_desc">
-                  <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                    Name: Z-A
-                  </span>
-                </div>
-                <div class="flex items-center cursor-pointer" data-sort="email_asc">
-                  <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                    Email: A-Z
-                  </span>
-                </div>
-                <div class="flex items-center cursor-pointer" data-sort="email_desc">
-                  <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                    Email: Z-A
-                  </span>
+      <!-- Button Row: Filter, Archive, Add - All in one row with equal sizing -->
+      <div class="grid grid-cols-3 col-span-1 sm:col-span-2 gap-2">
+        <!-- Filter Dropdown -->
+        <div class="relative filter-dropdown">
+          <button id="customerFilterToggle" class="px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover w-full justify-center">
+            <i class="fas fa-filter text-sidebar-accent"></i>
+            <span class="hidden xs:inline">Filters</span>
+          </button>
+          
+          <!-- Filter Window - Positioned better for mobile -->
+          <div id="customerFilterDropdown" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-4">
+            <div class="space-y-4">
+              <!-- Sort Options -->
+              <div>
+                <h5 class="text-sm font-medium text-sidebar-text mb-2">Sort By</h5>
+                <div class="space-y-1">
+                  <div class="flex items-center cursor-pointer" data-sort="id_asc">
+                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                      ID: Ascending
+                    </span>
+                  </div>
+                  <div class="flex items-center cursor-pointer" data-sort="id_desc">
+                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                      ID: Descending
+                    </span>
+                  </div>
+                  <div class="flex items-center cursor-pointer" data-sort="name_asc">
+                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                      Name: A-Z
+                    </span>
+                  </div>
+                  <div class="flex items-center cursor-pointer" data-sort="name_desc">
+                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                      Name: Z-A
+                    </span>
+                  </div>
+                  <div class="flex items-center cursor-pointer" data-sort="email_asc">
+                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                      Email: A-Z
+                    </span>
+                  </div>
+                  <div class="flex items-center cursor-pointer" data-sort="email_desc">
+                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                      Email: Z-A
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- Archive Button - Mobile/Tablet -->
-      <div class="col-span-1">
+        <!-- Archive Button - Mobile/Tablet -->
         <button class="px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover w-full justify-center">
           <i class="fas fa-archive text-sidebar-accent"></i>
-          <span>Archive</span>
+          <span class="hidden xs:inline">Archive</span>
         </button>
-      </div>
 
-      <!-- Add Customer Button - Full width on mobile -->
-      <div class="col-span-1 sm:col-span-2">
-        <button class="px-3 py-2 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm whitespace-nowrap w-full justify-center" 
+        <!-- Add Customer Button -->
+        <button class="px-3 py-2 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm w-full justify-center" 
                 onclick="openAddCustomerAccountModal()">
-          <i class="fas fa-plus-circle"></i> <span>Add Customer Account</span>
+          <i class="fas fa-plus-circle"></i> <span class="hidden xs:inline">Add</span>
         </button>
       </div>
     </div>
