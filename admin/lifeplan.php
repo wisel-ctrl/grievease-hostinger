@@ -264,6 +264,8 @@ header("Pragma: no-cache");
                           lp.lifeplan_id,
                           lp.service_id,
                           lp.customerID,
+                          lp.amount_paid,
+                          lp.balance,
                           CONCAT_WS(' ',
                               lp.benefeciary_fname,
                               NULLIF(lp.benefeciary_mname, ''),
@@ -338,9 +340,9 @@ header("Pragma: no-cache");
                                         title="View Receipt" 
                                         data-id="' . $row['lifeplan_id'] . '"
                                         data-name="' . htmlspecialchars($row['benefeciary_fullname']) . '"
-                                        data-monthly="' . number_format($row['custom_price'] / 12, 2) . '"
-                                        data-total="' . number_format($row['custom_price'] * 0.25, 2) . '"
-                                        data-balance="' . number_format($row['custom_price'] * 0.75, 2) . '">
+                                        data-monthly="' . number_format($row['custom_price'] / ($row['payment_duration'] * 12), 2) . '"
+                                        data-total="' . number_format($row['amount_paid']) . '"
+                                        data-balance="' . number_format($row['balance']) . '">
                                     <i class="fas fa-receipt"></i>
                                 </button>
                                 <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="Edit">
