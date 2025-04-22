@@ -105,36 +105,68 @@ header("Pragma: no-cache");
     </div>
 
     <!-- Customer Messages Interface -->
-    <div class="bg-white rounded-lg shadow-md overflow-hidden">
-      <!-- Messages Header -->
-      <div class="border-b border-gray-200 bg-gray-50 p-4">
-        <div class="flex justify-between items-center">
-          <h2 class="text-lg font-semibold text-gray-800">Incoming Customer Messages</h2>
-          <div class="text-sm text-gray-500">Showing <span id="message-count" class="font-medium">0</span> messages</div>
-        </div>
-      </div>
-      
-      <!-- Messages Content -->
-      <div class="divide-y divide-gray-200">
-        <!-- Empty state - No messages -->
-        <div id="empty-state" class="py-12 flex flex-col items-center justify-center text-gray-500">
-          <div class="bg-gray-100 rounded-full p-4 mb-4">
-            <i class="fas fa-inbox text-3xl"></i>
-          </div>
-          <h3 class="text-lg font-medium mb-1">No customer messages</h3>
-          <p class="text-sm">Customer messages will appear here when received</p>
-          <button id="load-messages-btn" class="mt-4 bg-[#008080] text-white px-4 py-2 rounded-md hover:bg-opacity-90 transition-colors">
-            Load Messages
-          </button>
-        </div>
-        
-        <!-- Message list container -->
-        <div id="message-list" class="hidden">
-          <!-- Messages will be loaded here dynamically -->
-        </div>
-      </div>
+<div class="bg-white rounded-lg shadow-md overflow-hidden">
+  <!-- Messages Header -->
+  <div class="border-b border-sidebar-border bg-gray-50 p-4">
+    <div class="flex justify-between items-center">
+      <h2 class="text-lg font-semibold text-gray-800">Incoming Customer Messages</h2>
+      <div class="text-sm text-gray-500">Showing <span id="message-count" class="font-medium">0</span> messages</div>
     </div>
   </div>
+  
+  <!-- Messages Content -->
+  <div>
+    <!-- Empty state - No messages -->
+    <div id="empty-state" class="py-12 flex flex-col items-center justify-center text-gray-500">
+      <div class="bg-gray-100 rounded-full p-4 mb-4">
+        <i class="fas fa-inbox text-3xl"></i>
+      </div>
+      <h3 class="text-lg font-medium mb-1">No customer messages</h3>
+      <p class="text-sm">Customer messages will appear here when received</p>
+      <button id="load-messages-btn" class="mt-4 bg-[#008080] text-white px-4 py-2 rounded-md hover:bg-opacity-90 transition-colors">
+        Load Messages
+      </button>
+    </div>
+    
+    <!-- Message list container as table -->
+    <div id="message-list" class="hidden overflow-x-auto scrollbar-thin">
+      <table class="w-full">
+        <thead>
+          <tr class="bg-gray-50 border-b border-sidebar-border">
+            <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortMessages(0)">
+              <div class="flex items-center">
+                <i class="fas fa-user mr-1.5 text-sidebar-accent"></i> Customer
+              </div>
+            </th>
+            <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortMessages(1)">
+              <div class="flex items-center">
+                <i class="fas fa-envelope mr-1.5 text-sidebar-accent"></i> Message
+              </div>
+            </th>
+            <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortMessages(2)">
+              <div class="flex items-center">
+                <i class="fas fa-calendar-alt mr-1.5 text-sidebar-accent"></i> Date/Time
+              </div>
+            </th>
+            <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortMessages(3)">
+              <div class="flex items-center">
+                <i class="fas fa-tag mr-1.5 text-sidebar-accent"></i> Status
+              </div>
+            </th>
+            <th class="p-4 text-left text-sm font-medium text-sidebar-text">
+              <div class="flex items-center">
+                <i class="fas fa-cogs mr-1.5 text-sidebar-accent"></i> Actions
+              </div>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Messages will be loaded here dynamically -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
 
       <!-- Message Detail Modal -->
       <div id="message-detail-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center">
@@ -321,47 +353,81 @@ header("Pragma: no-cache");
         
         // Function to display messages in the list
         function displayMessages(conversations) {
-            messageList.innerHTML = '';
-            
-            conversations.forEach(conversation => {
-                const messageDate = new Date(conversation.timestamp);
-                const formattedDate = formatDateTime(messageDate);
-                const isUnread = conversation.status === 'sent' && conversation.receiver === '<?php echo $_SESSION["user_id"]; ?>';
-                
-                const messageItem = document.createElement('div');
-                messageItem.className = `message-item p-4 hover:bg-gray-50 cursor-pointer ${isUnread ? 'message-new' : 'message-read'}`;
-                messageItem.dataset.chatRoomId = conversation.chatRoomId;
-                messageItem.dataset.receiverId = conversation.sender;
-                
-                messageItem.innerHTML = `
-                    <div class="flex items-start">
-                        <div class="w-10 h-10 rounded-full bg-yellow-600 flex items-center justify-center text-white mr-3">
-                            ${conversation.sender_profile_picture ? 
-                                `<img src="${conversation.sender_profile_picture}" alt="${conversation.sender_name}" class="w-10 h-10 rounded-full object-cover">` : 
-                                `<span>${conversation.sender_name.charAt(0).toUpperCase()}</span>`}
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <div class="flex justify-between items-start">
-                            <h4 class="text-sm font-medium text-gray-900 truncate">${conversation.sender_name.charAt(0).toUpperCase() + conversation.sender_name.slice(1).toLowerCase()}</h4>                                <span class="text-xs text-gray-500">${formattedDate}</span>
-                            </div>
-                            <p class="text-sm text-gray-600 truncate">${conversation.message}</p>
-                            <div class="flex items-center mt-1">
-                                <span class="text-xs text-gray-500">${conversation.sender_email}</span>
-                                ${isUnread ? '<span class="ml-2 w-2 h-2 bg-teal-500 rounded-full"></span>' : ''}
-                                ${conversation.unread_count > 0 ? 
-                                    `<span class="ml-auto bg-teal-500 text-white text-xs px-2 py-0.5 rounded-full">${conversation.unread_count}</span>` : ''}
-                            </div>
-                        </div>
-                    </div>
-                `;
-                
-                messageItem.addEventListener('click', function() {
-                    openConversation(this.dataset.chatRoomId, this.dataset.receiverId);
-                });
-                
-                messageList.appendChild(messageItem);
-            });
+    const messageList = document.getElementById('message-list');
+    const tableBody = messageList.querySelector('tbody');
+    tableBody.innerHTML = '';
+    
+    conversations.forEach(conversation => {
+      const messageDate = new Date(conversation.timestamp);
+      const formattedDate = formatDateTime(messageDate);
+      const isUnread = conversation.status === 'sent' && conversation.receiver === '<?php echo $_SESSION["user_id"]; ?>';
+      
+      const row = document.createElement('tr');
+      row.className = `border-b border-sidebar-border hover:bg-sidebar-hover transition-colors ${isUnread ? 'bg-blue-50' : ''}`;
+      row.dataset.chatRoomId = conversation.chatRoomId;
+      row.dataset.receiverId = conversation.sender;
+      row.style.cursor = 'pointer';
+      
+      row.innerHTML = `
+        <td class="p-4 text-sm">
+          <div class="flex items-center">
+            <div class="w-10 h-10 rounded-full bg-yellow-600 flex items-center justify-center text-white mr-3">
+              ${conversation.sender_profile_picture ? 
+                `<img src="${conversation.sender_profile_picture}" alt="${conversation.sender_name}" class="w-10 h-10 rounded-full object-cover">` : 
+                `<span>${conversation.sender_name.charAt(0).toUpperCase()}</span>`}
+            </div>
+            <div>
+              <div class="font-medium text-gray-900">${conversation.sender_name.charAt(0).toUpperCase() + conversation.sender_name.slice(1).toLowerCase()}</div>
+              <div class="text-xs text-gray-500">${conversation.sender_email}</div>
+            </div>
+          </div>
+        </td>
+        <td class="p-4 text-sm text-gray-600">
+          <div class="max-w-xs truncate">${conversation.message}</div>
+        </td>
+        <td class="p-4 text-sm text-gray-600">${formattedDate}</td>
+        <td class="p-4 text-sm">
+          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+            ${isUnread ? 'bg-green-100 text-green-600 border border-green-200' : 'bg-gray-100 text-gray-600 border border-gray-200'}">
+            <i class="fas ${isUnread ? 'fa-envelope' : 'fa-envelope-open'} mr-1"></i>
+            ${isUnread ? 'Unread' : 'Read'}
+            ${conversation.unread_count > 0 ? 
+              `<span class="ml-1 bg-teal-500 text-white px-1.5 py-0.5 rounded-full text-xs">${conversation.unread_count}</span>` : ''}
+          </span>
+        </td>
+        <td class="p-4 text-sm">
+          <div class="flex space-x-2">
+            <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" 
+                    title="View & Reply" onclick="openConversation('${conversation.chatRoomId}', '${conversation.sender}')">
+              <i class="fas fa-reply"></i>
+            </button>
+            <button class="p-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-all tooltip"
+                    title="Mark as ${isUnread ? 'Read' : 'Unread'}">
+              <i class="fas ${isUnread ? 'fa-envelope-open' : 'fa-envelope'}"></i>
+            </button>
+          </div>
+        </td>
+      `;
+      
+      row.addEventListener('click', function(e) {
+        // Don't trigger row click if they clicked a button
+        if (!e.target.closest('button')) {
+          openConversation(this.dataset.chatRoomId, this.dataset.receiverId);
         }
+      });
+      
+      tableBody.appendChild(row);
+    });
+  }
+  
+  // Add sorting function
+  window.sortMessages = function(columnIndex) {
+    // Implement sorting logic here if needed
+    console.log("Sorting by column index:", columnIndex);
+    // This would require modifying your data structure and re-rendering
+    // For now just reload with current filter
+    loadAllMessages();
+  };
         
         // Function to open conversation modal
         function openConversation(chatRoomId, receiverId) {
