@@ -147,32 +147,27 @@ $offset = ($current_page - 1) * $bookings_per_page;
                     <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(0)">
                         <div class="flex items-center">
                             <i class="fas fa-hashtag mr-1.5 text-sidebar-accent"></i> Booking ID 
-                            <i class="fas fa-sort ml-1 text-gray-400"></i>
-                        </div>
+                                       </div>
                     </th>
                     <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(1)">
                         <div class="flex items-center">
                             <i class="fas fa-user mr-1.5 text-sidebar-accent"></i> Customer 
-                            <i class="fas fa-sort ml-1 text-gray-400"></i>
-                        </div>
+                                       </div>
                     </th>
                     <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(2)">
                         <div class="flex items-center">
                             <i class="fas fa-tag mr-1.5 text-sidebar-accent"></i> Service 
-                            <i class="fas fa-sort ml-1 text-gray-400"></i>
-                        </div>
+                                       </div>
                     </th>
                     <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(3)">
                         <div class="flex items-center">
                             <i class="fas fa-calendar mr-1.5 text-sidebar-accent"></i> Date Requested 
-                            <i class="fas fa-sort ml-1 text-gray-400"></i>
-                        </div>
+                                       </div>
                     </th>
                     <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(4)">
                         <div class="flex items-center">
                             <i class="fas fa-toggle-on mr-1.5 text-sidebar-accent"></i> Status 
-                            <i class="fas fa-sort ml-1 text-gray-400"></i>
-                        </div>
+                                       </div>
                     </th>
                     <th class="p-4 text-left text-sm font-medium text-sidebar-text">
                         <div class="flex items-center">

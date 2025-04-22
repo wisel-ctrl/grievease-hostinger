@@ -472,38 +472,32 @@ if ($branchResult->num_rows > 0) {
                     <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(<?php echo $branchId; ?>, 0)">
                         <div class="flex items-center">
                             <i class="fas fa-hashtag mr-1.5 text-sidebar-accent"></i> ID 
-                            <i class="fas fa-sort ml-1 text-gray-400"></i>
-                        </div>
+                                       </div>
                     </th>
                     <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(<?php echo $branchId; ?>, 1)">
                         <div class="flex items-center">
                             <i class="fas fa-box mr-1.5 text-sidebar-accent"></i> Item Name 
-                            <i class="fas fa-sort ml-1 text-gray-400"></i>
-                        </div>
+                                       </div>
                     </th>
                     <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(<?php echo $branchId; ?>, 2)">
                         <div class="flex items-center">
                             <i class="fas fa-th-list mr-1.5 text-sidebar-accent"></i> Category 
-                            <i class="fas fa-sort ml-1 text-gray-400"></i>
-                        </div>
+                                       </div>
                     </th>
                     <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(<?php echo $branchId; ?>, 3)">
                         <div class="flex items-center">
                             <i class="fas fa-cubes mr-1.5 text-sidebar-accent"></i> Quantity 
-                            <i class="fas fa-sort ml-1 text-gray-400"></i>
-                        </div>
+                                       </div>
                     </th>
                     <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(<?php echo $branchId; ?>, 4)">
                         <div class="flex items-center">
                             <i class="fas fa-tag mr-1.5 text-sidebar-accent"></i> Unit Price 
-                            <i class="fas fa-sort ml-1 text-gray-400"></i>
-                        </div>
+                                       </div>
                     </th>
                     <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(<?php echo $branchId; ?>, 5)">
                         <div class="flex items-center">
                             <i class="fas fa-peso-sign mr-1.5 text-sidebar-accent"></i> Total Value 
-                            <i class="fas fa-sort ml-1 text-gray-400"></i>
-                        </div>
+                                       </div>
                     </th>
                     <th class="p-4 text-left text-sm font-medium text-sidebar-text">
                         <div class="flex items-center">

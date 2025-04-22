@@ -149,44 +149,37 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
           <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(0)">
             <div class="flex items-center">
               <i class="fas fa-hashtag mr-1.5 text-sidebar-accent"></i> ID 
-              <i class="fas fa-sort ml-1 text-gray-400"></i>
-            </div>
+             </div>
           </th>
           <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(1)">
             <div class="flex items-center">
               <i class="fas fa-user mr-1.5 text-sidebar-accent"></i> Client
-              <i class="fas fa-sort ml-1 text-gray-400"></i>
-            </div>
+             </div>
           </th>
           <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(2)">
             <div class="flex items-center">
               <i class="fas fa-user-alt mr-1.5 text-sidebar-accent"></i> Deceased
-              <i class="fas fa-sort ml-1 text-gray-400"></i>
-            </div>
+             </div>
           </th>
           <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(3)">
             <div class="flex items-center">
               <i class="fas fa-tag mr-1.5 text-sidebar-accent"></i> Service Type 
-              <i class="fas fa-sort ml-1 text-gray-400"></i>
-            </div>
+             </div>
           </th>
           <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(4)">
             <div class="flex items-center">
               <i class="fas fa-calendar mr-1.5 text-sidebar-accent"></i> Date of Burial 
-              <i class="fas fa-sort ml-1 text-gray-400"></i>
-            </div>
+             </div>
           </th>
           <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(5)">
             <div class="flex items-center">
               <i class="fas fa-toggle-on mr-1.5 text-sidebar-accent"></i> Status 
-              <i class="fas fa-sort ml-1 text-gray-400"></i>
-            </div>
+             </div>
           </th>
           <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(6)">
             <div class="flex items-center">
               <i class="fas fa-peso-sign mr-1.5 text-sidebar-accent"></i> Outstanding Balance 
-              <i class="fas fa-sort ml-1 text-gray-400"></i>
-            </div>
+             </div>
           </th>
           <th class="p-4 text-left text-sm font-medium text-sidebar-text">
             <div class="flex items-center">
@@ -330,38 +323,32 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
           <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(0)">
             <div class="flex items-center">
               <i class="fas fa-hashtag mr-1.5 text-sidebar-accent"></i> ID 
-              <i class="fas fa-sort ml-1 text-gray-400"></i>
-            </div>
+             </div>
           </th>
           <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(1)">
             <div class="flex items-center">
               <i class="fas fa-user mr-1.5 text-sidebar-accent"></i> Client
-              <i class="fas fa-sort ml-1 text-gray-400"></i>
-            </div>
+             </div>
           </th>
           <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(2)">
             <div class="flex items-center">
               <i class="fas fa-user-alt mr-1.5 text-sidebar-accent"></i> Deceased
-              <i class="fas fa-sort ml-1 text-gray-400"></i>
-            </div>
+             </div>
           </th>
           <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(3)">
             <div class="flex items-center">
               <i class="fas fa-tag mr-1.5 text-sidebar-accent"></i> Service Type 
-              <i class="fas fa-sort ml-1 text-gray-400"></i>
-            </div>
+             </div>
           </th>
           <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(4)">
             <div class="flex items-center">
               <i class="fas fa-calendar mr-1.5 text-sidebar-accent"></i> Date of Burial 
-              <i class="fas fa-sort ml-1 text-gray-400"></i>
-            </div>
+             </div>
           </th>
           <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(5)">
             <div class="flex items-center">
               <i class="fas fa-toggle-on mr-1.5 text-sidebar-accent"></i> Status 
-              <i class="fas fa-sort ml-1 text-gray-400"></i>
-            </div>
+             </div>
           </th>
           <th class="p-4 text-left text-sm font-medium text-sidebar-text">
             <div class="flex items-center">
@@ -491,44 +478,37 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
                     <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortOutstandingTable(0)">
                         <div class="flex items-center">
                             <i class="fas fa-hashtag mr-1.5 text-sidebar-accent"></i> ID 
-                            <i class="fas fa-sort ml-1 text-gray-400"></i>
-                        </div>
+                                       </div>
                     </th>
                     <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortOutstandingTable(1)">
                         <div class="flex items-center">
                             <i class="fas fa-user mr-1.5 text-sidebar-accent"></i> Client
-                            <i class="fas fa-sort ml-1 text-gray-400"></i>
-                        </div>
+                                       </div>
                     </th>
                     <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortOutstandingTable(2)">
                         <div class="flex items-center">
                             <i class="fas fa-user-circle mr-1.5 text-sidebar-accent"></i> Deceased
-                            <i class="fas fa-sort ml-1 text-gray-400"></i>
-                        </div>
+                                       </div>
                     </th>
                     <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortOutstandingTable(3)">
                         <div class="flex items-center">
                             <i class="fas fa-tag mr-1.5 text-sidebar-accent"></i> Service Type 
-                            <i class="fas fa-sort ml-1 text-gray-400"></i>
-                        </div>
+                                       </div>
                     </th>
                     <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortOutstandingTable(4)">
                         <div class="flex items-center">
                             <i class="fas fa-calendar mr-1.5 text-sidebar-accent"></i> Date of Burial 
-                            <i class="fas fa-sort ml-1 text-gray-400"></i>
-                        </div>
+                                       </div>
                     </th>
                     <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortOutstandingTable(5)">
                         <div class="flex items-center">
                             <i class="fas fa-toggle-on mr-1.5 text-sidebar-accent"></i> Status 
-                            <i class="fas fa-sort ml-1 text-gray-400"></i>
-                        </div>
+                                       </div>
                     </th>
                     <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortOutstandingTable(6)">
                         <div class="flex items-center">
                             <i class="fas fa-peso-sign mr-1.5 text-sidebar-accent"></i> Outstanding Balance 
-                            <i class="fas fa-sort ml-1 text-gray-400"></i>
-                        </div>
+                                       </div>
                     </th>
                     <th class="p-4 text-left text-sm font-medium text-sidebar-text">
                         <div class="flex items-center">
