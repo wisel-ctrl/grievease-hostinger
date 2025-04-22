@@ -957,9 +957,6 @@ branchCard.innerHTML = `
   <div class="h-40 bg-gray-100"></div>
   <div class="p-5">
     <h3 class="text-lg font-bold mb-2">${branch.branch_name}</h3>
-    <button class="select-branch-btn bg-sidebar-accent text-white px-4 py-2 rounded-lg">
-      Select Branch
-    </button>
   </div>
    <div class="p-5">
         <div class="text-xl font-bold mb-3 text-sidebar-text">${branch.branch_name}</div>
