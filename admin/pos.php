@@ -227,23 +227,42 @@ $servicesJson = json_encode($allServices);
   </div>
 
     <!-- Package Modal -->
-    <div id="package-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-      <div class="bg-white rounded-lg w-full max-w-3xl overflow-hidden">
-        <div class="p-5 border-b border-sidebar-border flex justify-between items-center">
-          <h3 class="text-xl font-bold text-sidebar-text" id="modal-title">Package Details</h3>
-          <button onclick="closePackageModal()" class="text-gray-500 hover:text-gray-700">
-            <i class="fas fa-times"></i>
-          </button>
-        </div>
-        <div class="p-5" id="modal-content">
-          <!-- Content will be dynamically added here -->
-        </div>
-        <div class="p-5 border-t border-sidebar-border flex justify-end space-x-3">
-          <button onclick="closePackageModal()" class="px-4 py-2 border border-sidebar-border text-sidebar-text rounded font-semibold text-sm hover:bg-sidebar-hover transition-all duration-300">Cancel</button>
-          <button onclick="addToCart()" class="px-4 py-2 bg-sidebar-accent text-white rounded font-semibold text-sm hover:bg-darkgold transition-all duration-300">Buy Now</button>
-        </div>
-      </div>
+<div class="fixed inset-0 z-50 flex items-center justify-center hidden" id="package-modal">
+  <!-- Modal Backdrop -->
+  <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+  
+  <!-- Modal Content -->
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-3xl mx-4 z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+    <!-- Close Button -->
+    <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closePackageModal()">
+      <i class="fas fa-times"></i>
+    </button>
+    
+    <!-- Modal Header -->
+    <div class="px-6 py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
+      <h3 class="text-xl font-bold text-white flex items-center" id="modal-title">
+        Package Details
+      </h3>
     </div>
+    
+    <!-- Modal Body -->
+    <div class="px-6 py-5" id="modal-content">
+      <!-- Content will be dynamically added here -->
+    </div>
+    
+    <!-- Modal Footer --> 
+    <div class="px-6 py-4 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
+      <button class="px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center" onclick="closePackageModal()">
+        <i class="fas fa-times mr-2"></i>
+        Cancel
+      </button>
+      <button class="px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="addToCart()">
+        <i class="fas fa-shopping-cart mr-2"></i>
+        Buy Now
+      </button>
+    </div>
+  </div>
+</div>
 
     <!-- Checkout Modal -->
     <div class="fixed top-0 left-0 w-full h-full bg-black bg-opacity-60 flex items-center justify-center z-50 hidden" id="checkoutModal">
