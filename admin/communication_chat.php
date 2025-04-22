@@ -440,7 +440,7 @@ header("Pragma: no-cache");
                 
                 messageElement.innerHTML = `
                     <div class="flex ${isAdmin ? 'justify-end' : 'justify-start'}">
-                        <div class="rounded-lg py-2 px-4 max-w-[75%] ${isAdmin ? 'bg-[#008080] text-white' : 'bg-gray-100 text-gray-800'}">
+                        <div class="rounded-lg py-2 px-4 max-w-[75%] ${isAdmin ? 'bg-sidebar-accent text-white' : 'bg-gray-100 text-gray-800'}">
                             <div class="text-sm whitespace-pre-wrap">${message.message}</div>
                             <div class="text-xs mt-1 opacity-70 ${isAdmin ? 'text-gray-200' : 'text-gray-500'}">${formattedTime}</div>
                         </div>
