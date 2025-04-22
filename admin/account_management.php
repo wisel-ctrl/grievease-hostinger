@@ -122,20 +122,20 @@ $customersResult = mysqli_query($conn, $customersQuery);
 
 <!-- Customer Account Management Section -->
 <div id="customer-account-management" class="bg-white rounded-lg shadow-md mb-8 border border-sidebar-border overflow-hidden">
-  <div class="bg-sidebar-hover p-3 sm:p-4 border-b border-sidebar-border flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-    <div class="flex items-center gap-2 sm:gap-3">
-      <h4 class="text-base sm:text-lg font-bold text-sidebar-text">Customer Accounts</h4>
+  <div class="bg-sidebar-hover p-4 border-b border-sidebar-border flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <div class="flex items-center gap-3">
+      <h4 class="text-lg font-bold text-sidebar-text">Customer Accounts</h4>
       
-      <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-2 sm:px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
+      <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
         <i class="fas fa-users"></i>
         <?php echo $totalCustomers . " Customer" . ($totalCustomers != 1 ? "s" : ""); ?>
       </span>
     </div>
     
     <!-- Search and Filter Section -->
-    <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3 w-full md:w-auto">
+    <div class="flex flex-col md:flex-row items-start md:items-center gap-3 w-full md:w-auto">
       <!-- Search Input -->
-      <div class="relative w-full sm:w-64">
+      <div class="relative w-full md:w-64">
         <input type="text" id="customerSearchInput" 
                 placeholder="Search customers..." 
                 class="pl-8 pr-3 py-2 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
@@ -193,9 +193,9 @@ $customersResult = mysqli_query($conn, $customersQuery);
         </div>
       </div>
 
-      <button class="px-3 py-2 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm whitespace-nowrap w-full sm:w-auto justify-center sm:justify-start" 
+      <button class="px-4 py-2.5 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm whitespace-nowrap" 
               onclick="openAddCustomerAccountModal()">
-        <i class="fas fa-plus-circle"></i> <span>Add Customer</span>
+        <i class="fas fa-plus-circle"></i> Add Customer Account
       </button>
     </div>
   </div>
@@ -206,41 +206,40 @@ $customersResult = mysqli_query($conn, $customersQuery);
       <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-sidebar-accent"></div>
     </div>
     
-    <!-- Table for medium screens and up -->
-    <table class="w-full hidden sm:table">
+    <table class="w-full">
       <thead>
         <tr class="bg-gray-50 border-b border-sidebar-border">
-          <th class="p-3 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(0)">
+          <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(0)">
             <div class="flex items-center">
               <i class="fas fa-hashtag mr-1.5 text-sidebar-accent"></i> ID 
               <i class="fas fa-sort ml-1 text-gray-400"></i>
             </div>
           </th>
-          <th class="p-3 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(1)">
+          <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(1)">
             <div class="flex items-center">
               <i class="fas fa-user mr-1.5 text-sidebar-accent"></i> Name 
               <i class="fas fa-sort ml-1 text-gray-400"></i>
             </div>
           </th>
-          <th class="p-3 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(2)">
+          <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(2)">
             <div class="flex items-center">
               <i class="fas fa-envelope mr-1.5 text-sidebar-accent"></i> Email 
               <i class="fas fa-sort ml-1 text-gray-400"></i>
             </div>
           </th>
-          <th class="p-3 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(3)">
+          <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(3)">
             <div class="flex items-center">
               <i class="fas fa-user-tag mr-1.5 text-sidebar-accent"></i> Role 
               <i class="fas fa-sort ml-1 text-gray-400"></i>
             </div>
           </th>
-          <th class="p-3 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(4)">
+          <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(4)">
             <div class="flex items-center">
               <i class="fas fa-toggle-on mr-1.5 text-sidebar-accent"></i> Status 
               <i class="fas fa-sort ml-1 text-gray-400"></i>
             </div>
           </th>
-          <th class="p-3 text-left text-sm font-medium text-sidebar-text">
+          <th class="p-4 text-left text-sm font-medium text-sidebar-text">
             <div class="flex items-center">
               <i class="fas fa-cogs mr-1.5 text-sidebar-accent"></i> Actions
             </div>
@@ -252,164 +251,26 @@ $customersResult = mysqli_query($conn, $customersQuery);
       </tbody>
     </table>
     
-    <!-- Card view for small screens -->
-    <div class="sm:hidden divide-y divide-sidebar-border" id="customerCardView">
-      <!-- Sample card layout (will be populated by JS) -->
-      <!-- Cards will be dynamically generated to match table data -->
-    </div>
-  </div>
-  
-  <!-- Sticky Pagination Footer -->
-  <div class="sticky bottom-0 p-3 sm:p-4 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-2 sm:gap-0">
-    <div id="paginationInfo" class="text-xs sm:text-sm text-gray-500 order-2 sm:order-1">
-      Showing 0 - 0 of 0 customers
-    </div>
-    <div class="flex space-x-1 order-1 sm:order-2">
-      <button class="px-2 sm:px-3 py-1 border border-sidebar-border rounded text-xs sm:text-sm hover:bg-sidebar-hover opacity-50 cursor-not-allowed" 
-              onclick="changePage(<?php echo $page - 1; ?>)" disabled>&laquo;</button>
-      
-      <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-        <button class="px-2 sm:px-3 py-1 border border-sidebar-border rounded text-xs sm:text-sm <?php echo $i == $page ? 'bg-sidebar-accent text-white' : 'hover:bg-sidebar-hover'; ?>" 
-                onclick="changePage(<?php echo $i; ?>)"><?php echo $i; ?></button>
-      <?php endfor; ?>
-      
-      <button class="px-2 sm:px-3 py-1 border border-sidebar-border rounded text-xs sm:text-sm hover:bg-sidebar-hover opacity-50 cursor-not-allowed" 
-              onclick="changePage(<?php echo $page + 1; ?>)" disabled>&raquo;</button>
+    <!-- Pagination -->
+    <div class="p-4 border-t border-sidebar-border flex justify-between items-center">
+      <div id="paginationInfo" class="text-sm text-gray-500">
+        Showing 0 - 0 of 0 customers
+      </div>
+      <div class="flex space-x-1">
+        <button class="px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover opacity-50 cursor-not-allowed" 
+                onclick="changePage(<?php echo $page - 1; ?>)" disabled>&laquo;</button>
+        
+        <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+          <button class="px-3 py-1 border border-sidebar-border rounded text-sm <?php echo $i == $page ? 'bg-sidebar-accent text-white' : 'hover:bg-sidebar-hover'; ?>" 
+                  onclick="changePage(<?php echo $i; ?>)"><?php echo $i; ?></button>
+        <?php endfor; ?>
+        
+        <button class="px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover opacity-50 cursor-not-allowed" 
+                onclick="changePage(<?php echo $page + 1; ?>)" disabled>&raquo;</button>
+      </div>
     </div>
   </div>
 </div>
-
-<!-- Add this JavaScript to handle responsive behavior -->
-<script>
-// Function to generate card views for small screens
-function generateCustomerCards(data) {
-  const cardContainer = document.getElementById('customerCardView');
-  cardContainer.innerHTML = '';
-  
-  if (!data || data.length === 0) {
-    cardContainer.innerHTML = '<div class="p-4 text-center text-gray-500">No customers found</div>';
-    return;
-  }
-  
-  data.forEach(customer => {
-    const card = document.createElement('div');
-    card.className = 'p-4 flex flex-col gap-2';
-    
-    // Status indicator
-    const statusClass = customer.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
-    
-    card.innerHTML = `
-      <div class="flex justify-between items-start">
-        <div>
-          <h3 class="font-medium">${customer.name}</h3>
-          <div class="text-xs text-gray-500">${customer.email}</div>
-        </div>
-        <span class="${statusClass} px-2 py-0.5 rounded-full text-xs">${customer.status}</span>
-      </div>
-      <div class="flex justify-between items-center text-xs text-gray-500">
-        <div>
-          <span class="mr-2"><i class="fas fa-hashtag text-sidebar-accent"></i> ${customer.id}</span>
-          <span><i class="fas fa-user-tag text-sidebar-accent"></i> ${customer.role}</span>
-        </div>
-        <div class="flex gap-2">
-          <button class="p-1.5 bg-blue-50 text-blue-700 rounded" onclick="editCustomer(${customer.id})">
-            <i class="fas fa-edit"></i>
-          </button>
-          <button class="p-1.5 bg-red-50 text-red-700 rounded" onclick="deleteCustomer(${customer.id})">
-            <i class="fas fa-trash"></i>
-          </button>
-        </div>
-      </div>
-    `;
-    
-    cardContainer.appendChild(card);
-  });
-}
-
-// Modified loadCustomers function to handle both table and card view
-function loadCustomers(page, filters) {
-  const tableBody = document.getElementById('customerTableBody');
-  const loadingIndicator = document.getElementById('customerLoadingIndicator');
-  
-  loadingIndicator.classList.remove('hidden');
-  
-  // Your existing AJAX call to fetch customer data
-  // When data is received:
-  fetch('get_customers.php', {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({page: page, filters: filters})
-  })
-  .then(response => response.json())
-  .then(data => {
-    loadingIndicator.classList.add('hidden');
-    
-    // Update table
-    updateCustomerTable(data.customers);
-    
-    // Update card view for mobile
-    generateCustomerCards(data.customers);
-    
-    // Update pagination
-    updatePagination(data.currentPage, data.totalPages, data.totalCustomers);
-  })
-  .catch(error => {
-    console.error('Error loading customers:', error);
-    loadingIndicator.classList.add('hidden');
-  });
-}
-
-// Add responsive event listeners
-document.addEventListener('DOMContentLoaded', function() {
-  // Initialize everything
-  loadCustomers(1, {});
-  
-  // Add search functionality
-  const searchInput = document.getElementById('customerSearchInput');
-  searchInput.addEventListener('input', debounce(function() {
-    loadCustomers(1, {search: searchInput.value});
-  }, 300));
-  
-  // Filter dropdown toggle
-  const filterToggle = document.getElementById('customerFilterToggle');
-  const filterDropdown = document.getElementById('customerFilterDropdown');
-  
-  filterToggle.addEventListener('click', function() {
-    filterDropdown.classList.toggle('hidden');
-  });
-  
-  // Close filter dropdown when clicking outside
-  document.addEventListener('click', function(event) {
-    if (!filterToggle.contains(event.target) && !filterDropdown.contains(event.target)) {
-      filterDropdown.classList.add('hidden');
-    }
-  });
-  
-  // Filter option selection
-  const filterOptions = document.querySelectorAll('.filter-option');
-  filterOptions.forEach(option => {
-    option.addEventListener('click', function() {
-      const sortValue = this.parentElement.getAttribute('data-sort');
-      document.getElementById('filterIndicator').classList.remove('hidden');
-      filterDropdown.classList.add('hidden');
-      loadCustomers(1, {sort: sortValue});
-    });
-  });
-});
-
-// Utility debounce function
-function debounce(func, wait) {
-  let timeout;
-  return function() {
-    const context = this;
-    const args = arguments;
-    clearTimeout(timeout);
-    timeout = setTimeout(() => {
-      func.apply(context, args);
-    }, wait);
-  };
-}
-</script>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
