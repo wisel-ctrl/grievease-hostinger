@@ -279,7 +279,7 @@ $servicesJson = json_encode($allServices);
     <!-- Modal Header -->
     <div class="px-6 py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
       <h3 class="text-xl font-bold text-white flex items-center" id="modal-package-title">
-        <i class="fa-solid fa-file-invoice mr-2"></i>
+        <i class="fas fa-file-invoice-dollar mr-2"></i>
         Complete Your Order
       </h3>
     </div>
@@ -554,7 +554,7 @@ $servicesJson = json_encode($allServices);
     <!-- Modal Header -->
     <div class="px-6 py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
       <h3 class="text-xl font-bold text-white flex items-center">
-        <i class="fa-solid fa-file-invoice mr-2"></i>
+        <i class="fas fa-file-invoice-dollar mr-2"></i>
         Complete Your Lifeplan Order
       </h3>
     </div>
@@ -952,16 +952,16 @@ function loadBranches() {
   branches.forEach(branch => {
     const branchCard = document.createElement('div');
     branchCard.className = 'bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 cursor-pointer overflow-hidden';
-    branchCard.innerHTML = `
-      <div class="h-40 overflow-hidden bg-gray-100">
-        <img 
-          src="${branch.image_url || '/assets/images/branch-placeholder.jpg'}" 
-          alt="${branch.branch_name}" 
-          class="w-full h-full object-cover"
-          onerror="this.src='/assets/images/branch-placeholder.jpg';"
-        />
-      </div>
-      <div class="p-5">
+    
+branchCard.innerHTML = `
+  <div class="h-40 bg-gray-100"></div>
+  <div class="p-5">
+    <h3 class="text-lg font-bold mb-2">${branch.branch_name}</h3>
+    <button class="select-branch-btn bg-sidebar-accent text-white px-4 py-2 rounded-lg">
+      Select Branch
+    </button>
+  </div>
+   <div class="p-5">
         <div class="text-xl font-bold mb-3 text-sidebar-text">${branch.branch_name}</div>
         <div class="flex justify-between items-center">
           <div class="text-gray-500 text-sm">
@@ -972,13 +972,14 @@ function loadBranches() {
           </button>
         </div>
       </div>
-    `;
-    
+`;
     const selectBtn = branchCard.querySelector('.select-branch-btn');
-    selectBtn.addEventListener('click', (e) => {
-      e.stopPropagation(); // Prevent the card click event from firing
-      selectBranch(branch.branch_id, branch.branch_name);
-    });
+    if (selectBtn) {
+      selectBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        selectBranch(branch.branch_id, branch.branch_name);
+      });
+    }
     
     branchCard.addEventListener('click', () => {
       selectBranch(branch.branch_id, branch.branch_name);
@@ -1092,7 +1093,7 @@ function loadServices() {
       serviceCard.onclick = () => showServiceDetails(service);
 
       const imageUrl = service.image_url && service.image_url.trim() !== '' ? 
-        service.image_url : 'assets/images/service-default.png';
+  'servicesManagement/' + service.image_url : '';
 
       // Process inclusions as a list
       let inclusionsHtml = '';
@@ -1122,7 +1123,9 @@ function loadServices() {
       }
 
       serviceCard.innerHTML = `
-        <div class="h-48 bg-center bg-cover bg-no-repeat" style="background-image: url('${imageUrl}');">
+        <div class="h-48 ${imageUrl ? 'bg-center bg-cover bg-no-repeat' : 'bg-gray-100'} flex items-center justify-center" 
+             ${imageUrl ? `style="background-image: url('${imageUrl}');"` : ''}>
+          ${!imageUrl ? '<i class="fas fa-image text-4xl text-gray-300"></i>' : ''}
           <div class="w-full h-full bg-gradient-to-t from-black/30 to-transparent flex items-end">
             <div class="p-3 text-white">
               <span class="text-xs font-medium bg-sidebar-accent/80 px-2 py-1 rounded-full">${categoryName}</span>
@@ -1214,11 +1217,15 @@ function showServiceDetails(service) {
   }
 
   // Use a default image if none provided or if the URL is empty
-  const imageUrl = service.image_url && service.image_url.trim() !== '' ? service.image_url : 'assets/images/service-default.png';
+const imageUrl = service.image_url && service.image_url.trim() !== '' ? 
+  'servicesManagement/' + service.image_url : '';
 
   document.getElementById('modal-content').innerHTML = `
     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-      <div class="h-64 bg-center bg-cover bg-no-repeat rounded-lg" style="background-image: url('${imageUrl}');"></div>
+      <div class="${imageUrl ? 'h-64 bg-center bg-cover bg-no-repeat rounded-lg' : 'h-64 bg-gray-100 flex items-center justify-center rounded-lg'}" 
+             ${imageUrl ? `style="background-image: url('${imageUrl}');"` : ''}>
+          ${!imageUrl ? '<i class="fas fa-image text-5xl text-gray-300"></i>' : ''}
+        </div>
       <div>
         <div class="text-lg font-bold mb-2.5 text-sidebar-text">${service.service_name}</div>
         <div class="flex items-center mb-4">
@@ -1613,5 +1620,6 @@ function startNewOrder() {
 }
   </script>
   <script src = 'tailwind.js'></script>
+  
 </body>
 </html>
