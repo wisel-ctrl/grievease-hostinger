@@ -316,32 +316,27 @@ $customersResult = mysqli_query($conn, $customersQuery);
           <tr class="bg-gray-50 border-b border-sidebar-border">
             <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(0)">
               <div class="flex items-center gap-1.5">
-                <i class="fas fa-hashtag text-sidebar-accent"></i> ID 
-                <i class="fas fa-sort ml-1 text-gray-400"></i>
+                <i class="fas fa-hashtag text-sidebar-accent"></i> ID  
               </div>
             </th>
             <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(1)">
               <div class="flex items-center gap-1.5">
-                <i class="fas fa-user text-sidebar-accent"></i> Name 
-                <i class="fas fa-sort ml-1 text-gray-400"></i>
+                <i class="fas fa-user text-sidebar-accent"></i> Name  
               </div>
             </th>
             <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(2)">
               <div class="flex items-center gap-1.5">
-                <i class="fas fa-envelope text-sidebar-accent"></i> Email 
-                <i class="fas fa-sort ml-1 text-gray-400"></i>
+                <i class="fas fa-envelope text-sidebar-accent"></i> Email  
               </div>
             </th>
             <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(3)">
               <div class="flex items-center gap-1.5">
-                <i class="fas fa-user-tag text-sidebar-accent"></i> Role 
-                <i class="fas fa-sort ml-1 text-gray-400"></i>
+                <i class="fas fa-user-tag text-sidebar-accent"></i> Role  
               </div>
             </th>
             <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(4)">
               <div class="flex items-center gap-1.5">
-                <i class="fas fa-toggle-on text-sidebar-accent"></i> Status 
-                <i class="fas fa-sort ml-1 text-gray-400"></i>
+                <i class="fas fa-toggle-on text-sidebar-accent"></i> Status  
               </div>
             </th>
             <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text whitespace-nowrap">
@@ -1631,32 +1626,27 @@ if ($result->num_rows > 0) {
           <tr class="bg-gray-50 border-b border-sidebar-border">
             <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(0)">
               <div class="flex items-center gap-1.5">
-                <i class="fas fa-hashtag text-sidebar-accent"></i> ID 
-                <i class="fas fa-sort ml-1 text-gray-400"></i>
+                <i class="fas fa-hashtag text-sidebar-accent"></i> ID  
               </div>
             </th>
             <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(1)">
               <div class="flex items-center gap-1.5">
-                <i class="fas fa-user text-sidebar-accent"></i> Name 
-                <i class="fas fa-sort ml-1 text-gray-400"></i>
+                <i class="fas fa-user text-sidebar-accent"></i> Name  
               </div>
             </th>
             <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(2)">
               <div class="flex items-center gap-1.5">
-                <i class="fas fa-envelope text-sidebar-accent"></i> Email 
-                <i class="fas fa-sort ml-1 text-gray-400"></i>
+                <i class="fas fa-envelope text-sidebar-accent"></i> Email  
               </div>
             </th>
             <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(3)">
               <div class="flex items-center gap-1.5">
-                <i class="fas fa-user-tag text-sidebar-accent"></i> Role 
-                <i class="fas fa-sort ml-1 text-gray-400"></i>
+                <i class="fas fa-user-tag text-sidebar-accent"></i> Role  
               </div>
             </th>
             <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(4)">
               <div class="flex items-center gap-1.5">
-                <i class="fas fa-toggle-on text-sidebar-accent"></i> Status 
-                <i class="fas fa-sort ml-1 text-gray-400"></i>
+                <i class="fas fa-toggle-on text-sidebar-accent"></i> Status  
               </div>
             </th>
             <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text whitespace-nowrap">
