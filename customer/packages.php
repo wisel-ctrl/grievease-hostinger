@@ -95,7 +95,7 @@ function getImageUrl($image_path) {
 
 // Fetch packages from database
 $packages = [];
-$branch_id = $_SESSION['branch_loc'];
+$branch_id = $row['branch_loc'];
 
 $query = "SELECT s.service_id, s.service_name, s.description, s.selling_price, s.image_url, 
                  i.item_name AS casket_name, s.flower_design, s.inclusions
