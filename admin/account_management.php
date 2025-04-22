@@ -212,21 +212,19 @@ $customersResult = mysqli_query($conn, $customersQuery);
     
     <!-- Mobile/Tablet Controls - Only visible on smaller screens -->
     <div class="grid lg:hidden gap-3 w-full mt-4">
-      <!-- First row: Search Input with Filter and Archive buttons -->
-      <div class="grid grid-cols-12 gap-2">
+      <!-- First row: Search Input with Filter and Archive icons -->
+      <div class="flex items-center gap-3">
         <!-- Search Input -->
-        <div class="relative col-span-8 sm:col-span-10">
+        <div class="relative flex-grow">
           <input type="text" id="customerSearchInput" 
                   placeholder="Search customers..." 
                   class="pl-8 pr-3 py-2 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
           <i class="fas fa-search absolute left-2.5 top-2.5 text-gray-400"></i>
         </div>
 
-        <!-- Filter Dropdown - Icon only on small screens -->
-        <div class="relative filter-dropdown col-span-2 sm:col-span-1">
-          <button id="customerFilterToggle" class="w-full h-full flex items-center justify-center border border-gray-300 rounded-lg text-sm hover:bg-sidebar-hover">
-            <i class="fas fa-filter text-sidebar-accent"></i>
-          </button>
+        <!-- Filter Icon - Just the icon -->
+        <div class="relative filter-dropdown">
+          <i id="customerFilterToggle" class="fas fa-filter text-sidebar-accent text-lg p-2 cursor-pointer"></i>
           
           <!-- Filter Window - Positioned better for mobile -->
           <div id="customerFilterDropdown" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-4">
@@ -271,12 +269,8 @@ $customersResult = mysqli_query($conn, $customersQuery);
           </div>
         </div>
 
-        <!-- Archive Button - Icon only on small screens -->
-        <div class="col-span-2 sm:col-span-1">
-          <button class="w-full h-full flex items-center justify-center border border-gray-300 rounded-lg text-sm hover:bg-sidebar-hover">
-            <i class="fas fa-archive text-sidebar-accent"></i>
-          </button>
-        </div>
+        <!-- Archive Icon - Just the icon -->
+        <i class="fas fa-archive text-sidebar-accent text-lg p-2 cursor-pointer"></i>
       </div>
 
       <!-- Second row: Add Customer Button - Full width -->
