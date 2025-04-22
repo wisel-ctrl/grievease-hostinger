@@ -477,6 +477,142 @@ header("Pragma: no-cache");
       </div>
   </div>     
 
+  <!-- Edit LifePlan Modal -->
+  <div id="editLifePlanModal" class="fixed inset-0 z-50 hidden overflow-y-auto">
+      <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+          <!-- Background overlay -->
+          <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+              <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+          </div>
+          
+          <!-- Modal container -->
+          <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
+              <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                  <div class="sm:flex sm:items-start">
+                      <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
+                          <h3 class="text-lg leading-6 font-medium text-gray-900 border-b pb-2">
+                              Edit LifePlan Subscription
+                          </h3>
+                          
+                          <div class="mt-4 grid grid-cols-1 gap-4">
+                              <!-- Customer Search -->
+                              <div>
+                                  <label for="customerSearch" class="block text-sm font-medium text-gray-700">Search Customer</label>
+                                  <div class="mt-1 relative">
+                                      <input type="text" id="customerSearch" class="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Type customer name...">
+                                      <div id="customerSuggestions" class="absolute z-10 mt-1 w-full bg-white shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto hidden"></div>
+                                  </div>
+                                  <input type="hidden" id="customerID">
+                              </div>
+                              
+                              <!-- Customer Details -->
+                              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                  <div>
+                                      <label for="fname" class="block text-sm font-medium text-gray-700">First Name</label>
+                                      <input type="text" id="fname" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                  </div>
+                                  <div>
+                                      <label for="mname" class="block text-sm font-medium text-gray-700">Middle Name</label>
+                                      <input type="text" id="mname" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                  </div>
+                                  <div>
+                                      <label for="lname" class="block text-sm font-medium text-gray-700">Last Name</label>
+                                      <input type="text" id="lname" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                  </div>
+                                  <div>
+                                      <label for="suffix" class="block text-sm font-medium text-gray-700">Suffix</label>
+                                      <input type="text" id="suffix" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                  </div>
+                                  <div>
+                                      <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+                                      <input type="email" id="email" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                  </div>
+                                  <div>
+                                      <label for="phone" class="block text-sm font-medium text-gray-700">Phone</label>
+                                      <input type="text" id="phone" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                  </div>
+                              </div>
+                              
+                              <!-- Beneficiary Details -->
+                              <div class="border-t pt-4 mt-4">
+                                  <h4 class="text-md font-medium text-gray-700 mb-3">Beneficiary Information</h4>
+                                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                      <div>
+                                          <label for="benefeciary_fname" class="block text-sm font-medium text-gray-700">First Name</label>
+                                          <input type="text" id="benefeciary_fname" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                      </div>
+                                      <div>
+                                          <label for="benefeciary_mname" class="block text-sm font-medium text-gray-700">Middle Name</label>
+                                          <input type="text" id="benefeciary_mname" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                      </div>
+                                      <div>
+                                          <label for="benefeciary_lname" class="block text-sm font-medium text-gray-700">Last Name</label>
+                                          <input type="text" id="benefeciary_lname" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                      </div>
+                                      <div>
+                                          <label for="benefeciary_suffix" class="block text-sm font-medium text-gray-700">Suffix</label>
+                                          <input type="text" id="benefeciary_suffix" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                      </div>
+                                      <div>
+                                          <label for="benefeciary_dob" class="block text-sm font-medium text-gray-700">Date of Birth</label>
+                                          <input type="date" id="benefeciary_dob" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                      </div>
+                                      <div>
+                                          <label for="relationship_to_client" class="block text-sm font-medium text-gray-700">Relationship</label>
+                                          <input type="text" id="relationship_to_client" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                      </div>
+                                  </div>
+                                  <div class="mt-4">
+                                      <label for="benefeciary_address" class="block text-sm font-medium text-gray-700">Address</label>
+                                      <textarea id="benefeciary_address" rows="2" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"></textarea>
+                                  </div>
+                              </div>
+                              
+                              <!-- Plan Details -->
+                              <div class="border-t pt-4 mt-4">
+                                  <h4 class="text-md font-medium text-gray-700 mb-3">Plan Information</h4>
+                                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                      <div>
+                                          <label for="service_id" class="block text-sm font-medium text-gray-700">Service</label>
+                                          <select id="service_id" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                              <!-- Options will be populated via JavaScript -->
+                                          </select>
+                                      </div>
+                                      <div>
+                                          <label for="payment_duration" class="block text-sm font-medium text-gray-700">Payment Duration (years)</label>
+                                          <input type="number" id="payment_duration" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                      </div>
+                                      <div>
+                                          <label for="custom_price" class="block text-sm font-medium text-gray-700">Price</label>
+                                          <input type="number" step="0.01" id="custom_price" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                      </div>
+                                      <div>
+                                          <label for="payment_status" class="block text-sm font-medium text-gray-700">Payment Status</label>
+                                          <select id="payment_status" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                              <option value="ongoing">Ongoing</option>
+                                              <option value="paid">Paid</option>
+                                              <option value="canceled">Canceled</option>
+                                              <option value="overdue">Overdue</option>
+                                          </select>
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                  <button type="button" id="saveLifePlan" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm">
+                      Save Changes
+                  </button>
+                  <button type="button" id="closeEditModal" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                      Cancel
+                  </button>
+              </div>
+          </div>
+      </div>
+  </div>
+
 </div>
 
 
@@ -570,6 +706,211 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Set default date to today
     document.getElementById('paymentDate').valueAsDate = new Date();
+});
+</script>
+
+<script>
+  // Edit LifePlan Modal functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const editModal = document.getElementById('editLifePlanModal');
+    const closeEditModalBtn = document.getElementById('closeEditModal');
+    const editButtons = document.querySelectorAll('.fa-edit').forEach(btn => {
+        btn.closest('button').addEventListener('click', function() {
+            const row = this.closest('tr');
+            const lifeplanId = row.querySelector('.view-receipt-btn').getAttribute('data-id');
+            
+            // Fetch the LifePlan data
+            fetchLifePlanData(lifeplanId);
+            
+            // Show modal
+            editModal.classList.remove('hidden');
+        });
+    });
+    
+    // Close modal
+    closeEditModalBtn.addEventListener('click', function() {
+        editModal.classList.add('hidden');
+    });
+    
+    // Close modal when clicking outside
+    window.addEventListener('click', function(event) {
+        if (event.target === editModal) {
+            editModal.classList.add('hidden');
+        }
+    });
+    
+    // Customer search functionality
+    const customerSearch = document.getElementById('customerSearch');
+    const customerSuggestions = document.getElementById('customerSuggestions');
+    
+    customerSearch.addEventListener('input', function() {
+        const searchTerm = this.value.trim();
+        
+        if (searchTerm.length < 2) {
+            customerSuggestions.classList.add('hidden');
+            return;
+        }
+        
+        // Fetch customer suggestions
+        fetch('lifeplan_process/search_customers.php?term=' + encodeURIComponent(searchTerm))
+            .then(response => response.json())
+            .then(data => {
+                if (data.length > 0) {
+                    customerSuggestions.innerHTML = '';
+                    data.forEach(customer => {
+                        const suggestionItem = document.createElement('div');
+                        suggestionItem.className = 'px-4 py-2 hover:bg-gray-100 cursor-pointer';
+                        suggestionItem.textContent = `${customer.first_name} ${customer.last_name} (${customer.email})`;
+                        
+                        suggestionItem.addEventListener('click', function() {
+                            customerSearch.value = `${customer.first_name} ${customer.last_name}`;
+                            document.getElementById('customerID').value = customer.id;
+                            
+                            // Update the form fields with customer data
+                            document.getElementById('fname').value = customer.first_name || '';
+                            document.getElementById('mname').value = customer.middle_name || '';
+                            document.getElementById('lname').value = customer.last_name || '';
+                            document.getElementById('suffix').value = customer.suffix || '';
+                            document.getElementById('email').value = customer.email || '';
+                            document.getElementById('phone').value = customer.phone_number || '';
+                            
+                            customerSuggestions.classList.add('hidden');
+                        });
+                        
+                        customerSuggestions.appendChild(suggestionItem);
+                    });
+                    customerSuggestions.classList.remove('hidden');
+                } else {
+                    customerSuggestions.innerHTML = '<div class="px-4 py-2 text-gray-500">No customers found</div>';
+                    customerSuggestions.classList.remove('hidden');
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching customer suggestions:', error);
+            });
+    });
+    
+    // Save LifePlan changes
+    document.getElementById('saveLifePlan').addEventListener('click', function() {
+        const lifeplanId = document.getElementById('lifeplanId').value;
+        const formData = new FormData();
+        
+        // Add all form fields to FormData
+        formData.append('lifeplan_id', lifeplanId);
+        formData.append('customerID', document.getElementById('customerID').value);
+        formData.append('fname', document.getElementById('fname').value);
+        formData.append('mname', document.getElementById('mname').value);
+        formData.append('lname', document.getElementById('lname').value);
+        formData.append('suffix', document.getElementById('suffix').value);
+        formData.append('email', document.getElementById('email').value);
+        formData.append('phone', document.getElementById('phone').value);
+        
+        // Beneficiary fields
+        formData.append('benefeciary_fname', document.getElementById('benefeciary_fname').value);
+        formData.append('benefeciary_mname', document.getElementById('benefeciary_mname').value);
+        formData.append('benefeciary_lname', document.getElementById('benefeciary_lname').value);
+        formData.append('benefeciary_suffix', document.getElementById('benefeciary_suffix').value);
+        formData.append('benefeciary_dob', document.getElementById('benefeciary_dob').value);
+        formData.append('benefeciary_address', document.getElementById('benefeciary_address').value);
+        formData.append('relationship_to_client', document.getElementById('relationship_to_client').value);
+        
+        // Plan fields
+        formData.append('service_id', document.getElementById('service_id').value);
+        formData.append('payment_duration', document.getElementById('payment_duration').value);
+        formData.append('custom_price', document.getElementById('custom_price').value);
+        formData.append('payment_status', document.getElementById('payment_status').value);
+        
+        // Send the data to the server
+        fetch('lifeplan_process/update_lifeplan.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('LifePlan updated successfully!');
+                // Refresh the page or update the table row
+                location.reload();
+            } else {
+                alert('Error updating LifePlan: ' + (data.message || 'Unknown error'));
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while updating the LifePlan');
+        });
+    });
+    
+    // Function to fetch LifePlan data
+    function fetchLifePlanData(lifeplanId) {
+        fetch('lifeplan_process/get_lifeplan.php?id=' + lifeplanId)
+            .then(response => response.json())
+            .then(data => {
+                if (data) {
+                    // Store the lifeplan_id in a hidden field
+                    const hiddenId = document.createElement('input');
+                    hiddenId.type = 'hidden';
+                    hiddenId.id = 'lifeplanId';
+                    hiddenId.value = lifeplanId;
+                    document.getElementById('editLifePlanModal').querySelector('.bg-white').appendChild(hiddenId);
+                    
+                    // Populate customer fields if customerID exists
+                    if (data.customerID) {
+                        document.getElementById('customerID').value = data.customerID;
+                        // Fetch customer details
+                        fetch('lifeplan_process/get_customer.php?id=' + data.customerID)
+                            .then(response => response.json())
+                            .then(customer => {
+                                if (customer) {
+                                    document.getElementById('fname').value = customer.first_name || '';
+                                    document.getElementById('mname').value = customer.middle_name || '';
+                                    document.getElementById('lname').value = customer.last_name || '';
+                                    document.getElementById('suffix').value = customer.suffix || '';
+                                    document.getElementById('email').value = customer.email || '';
+                                    document.getElementById('phone').value = customer.phone_number || '';
+                                    
+                                    // Set the search input to the customer's name
+                                    document.getElementById('customerSearch').value = 
+                                        `${customer.first_name} ${customer.last_name}`;
+                                }
+                            });
+                    }
+                    
+                    // Populate beneficiary fields
+                    document.getElementById('benefeciary_fname').value = data.benefeciary_fname || '';
+                    document.getElementById('benefeciary_mname').value = data.benefeciary_mname || '';
+                    document.getElementById('benefeciary_lname').value = data.benefeciary_lname || '';
+                    document.getElementById('benefeciary_suffix').value = data.benefeciary_suffix || '';
+                    document.getElementById('benefeciary_dob').value = data.benefeciary_dob || '';
+                    document.getElementById('benefeciary_address').value = data.benefeciary_address || '';
+                    document.getElementById('relationship_to_client').value = data.relationship_to_client || '';
+                    
+                    // Populate plan fields
+                    document.getElementById('payment_duration').value = data.payment_duration || '';
+                    document.getElementById('custom_price').value = data.custom_price || '';
+                    document.getElementById('payment_status').value = data.payment_status || 'ongoing';
+                    
+                    // Fetch and populate services dropdown
+                    fetch('lifeplan_process/get_services.php')
+                        .then(response => response.json())
+                        .then(services => {
+                            const serviceSelect = document.getElementById('service_id');
+                            serviceSelect.innerHTML = '';
+                            services.forEach(service => {
+                                const option = document.createElement('option');
+                                option.value = service.service_id;
+                                option.textContent = service.service_name;
+                                option.selected = (service.service_id == data.service_id);
+                                serviceSelect.appendChild(option);
+                            });
+                        });
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching LifePlan data:', error);
+                alert('Error loading LifePlan data');
+            });
+    }
 });
 </script>
 </body>
