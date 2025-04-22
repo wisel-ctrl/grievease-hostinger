@@ -228,45 +228,62 @@ $customersResult = mysqli_query($conn, $customersQuery);
         <i class="fas fa-filter text-lg"></i>
       </button>
       
-      <!-- Filter Window - Positioned better for mobile -->
-      <div id="customerFilterDropdown" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-4">
+      <!-- Filter Window - Optimized for mobile -->
+      <div id="customerFilterDropdown" class="hidden fixed inset-x-0 bottom-0 bg-white rounded-t-lg shadow-lg z-20 border border-sidebar-border p-4 mx-2 mb-2 max-h-[80vh] overflow-y-auto">
+        <div class="flex justify-between items-center mb-3">
+          <h4 class="text-base font-medium text-sidebar-text">Filter Options</h4>
+          <button id="closeFilterBtn" class="text-gray-500 hover:text-gray-700">
+            <i class="fas fa-times text-lg"></i>
+          </button>
+        </div>
+        
         <div class="space-y-4">
           <!-- Sort Options -->
           <div>
             <h5 class="text-sm font-medium text-sidebar-text mb-2">Sort By</h5>
-            <div class="space-y-1">
-              <div class="flex items-center cursor-pointer" data-sort="id_asc">
-                <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+            <div class="space-y-2">
+              <div class="flex items-center cursor-pointer py-2 border-b border-gray-100" data-sort="id_asc">
+                <span class="filter-option hover:bg-sidebar-hover px-3 py-2 rounded text-sm w-full">
                   ID: Ascending
                 </span>
               </div>
-              <div class="flex items-center cursor-pointer" data-sort="id_desc">
-                <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+              <div class="flex items-center cursor-pointer py-2 border-b border-gray-100" data-sort="id_desc">
+                <span class="filter-option hover:bg-sidebar-hover px-3 py-2 rounded text-sm w-full">
                   ID: Descending
                 </span>
               </div>
-              <div class="flex items-center cursor-pointer" data-sort="name_asc">
-                <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+              <div class="flex items-center cursor-pointer py-2 border-b border-gray-100" data-sort="name_asc">
+                <span class="filter-option hover:bg-sidebar-hover px-3 py-2 rounded text-sm w-full">
                   Name: A-Z
                 </span>
               </div>
-              <div class="flex items-center cursor-pointer" data-sort="name_desc">
-                <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+              <div class="flex items-center cursor-pointer py-2 border-b border-gray-100" data-sort="name_desc">
+                <span class="filter-option hover:bg-sidebar-hover px-3 py-2 rounded text-sm w-full">
                   Name: Z-A
                 </span>
               </div>
-              <div class="flex items-center cursor-pointer" data-sort="email_asc">
-                <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+              <div class="flex items-center cursor-pointer py-2 border-b border-gray-100" data-sort="email_asc">
+                <span class="filter-option hover:bg-sidebar-hover px-3 py-2 rounded text-sm w-full">
                   Email: A-Z
                 </span>
               </div>
-              <div class="flex items-center cursor-pointer" data-sort="email_desc">
-                <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+              <div class="flex items-center cursor-pointer py-2" data-sort="email_desc">
+                <span class="filter-option hover:bg-sidebar-hover px-3 py-2 rounded text-sm w-full">
                   Email: Z-A
                 </span>
               </div>
             </div>
           </div>
+        </div>
+        
+        <!-- Apply/Reset Buttons -->
+        <div class="mt-6 flex gap-3">
+          <button class="flex-1 bg-sidebar-accent text-white py-2 rounded-lg text-sm font-medium">
+            Apply Filters
+          </button>
+          <button class="flex-1 border border-gray-300 text-gray-700 py-2 rounded-lg text-sm font-medium">
+            Reset
+          </button>
         </div>
       </div>
     </div>
