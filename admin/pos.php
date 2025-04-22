@@ -486,128 +486,164 @@ $servicesJson = json_encode($allServices);
     </div>
 </div>
 
-<!-- Lifeplan Checkout Modal (similar structure to checkoutModal but with beneficiary info) -->
-<div class="fixed top-0 left-0 w-full h-full bg-black bg-opacity-60 flex items-center justify-center z-50 hidden" id="lifeplanCheckoutModal">
-  <div class="bg-white rounded-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto shadow-xl">
+<!-- Lifeplan Checkout Modal -->
+<div class="fixed inset-0 z-50 flex items-center justify-center hidden" id="lifeplanCheckoutModal">
+  <!-- Modal Backdrop -->
+  <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+  
+  <!-- Modal Content -->
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-5xl mx-4 z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+    <!-- Close Button -->
+    <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeLifeplanCheckoutModal()">
+      <i class="fas fa-times"></i>
+    </button>
+    
     <!-- Modal Header -->
-    <div class="bg-gradient-to-r from-sidebar-accent to-white flex justify-between items-center p-6 flex-shrink-0">
-      <h3 class="text-xl font-bold text-white">Complete Your Lifeplan Order</h3>
-      <button class="bg-black bg-opacity-20 hover:bg-opacity-30 rounded-full p-2 text-white hover:text-white transition-all duration-200" onclick="closeLifeplanCheckoutModal()">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-          <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-        </svg>
-      </button>
+    <div class="px-6 py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
+      <h3 class="text-xl font-bold text-white flex items-center">
+        <i class="fas fa-file-invoice-dollar mr-2"></i>
+        Complete Your Lifeplan Order
+      </h3>
     </div>
-
+    
     <!-- Modal Body -->
-    <div class="p-6">
-    <form id="lifeplanCheckoutForm" class="space-y-8" onsubmit="event.preventDefault(); confirmLifeplanCheckout();">
+    <div class="px-6 py-5">
+      <form id="lifeplanCheckoutForm" class="space-y-6" onsubmit="event.preventDefault(); confirmLifeplanCheckout();">
         <input type="hidden" id="lp-service-id" name="service_id" value="">
         <input type="hidden" id="lp-service-price" name="service_price">
         <input type="hidden" id="lp-branch-id" name="branch_id" value="">
 
-        <!-- Client Information Section (Same as traditional) -->
+        <!-- Client Information Section -->
         <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
           <h4 class="text-lg font-bold text-gray-800 mb-4 pb-2 border-b border-gray-200 flex items-center">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 text-sidebar-accent">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-              <circle cx="12" cy="7" r="4"></circle>
-            </svg>
+            <i class="fas fa-user mr-2 text-sidebar-accent"></i>
             Client Information
           </h4>
           <div class="space-y-4">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div>
-                <label for="lp-clientFirstName" class="block text-sm font-medium text-gray-700 mb-1">First Name</label>
-                <input type="text" id="lp-clientFirstName" name="clientFirstName" required class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
+                <label for="lp-clientFirstName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                  <i class="fas fa-id-card mr-2 text-sidebar-accent"></i>
+                  First Name
+                </label>
+                <input type="text" id="lp-clientFirstName" name="clientFirstName" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
               </div>
               <div>
-                <label for="lp-clientMiddleName" class="block text-sm font-medium text-gray-700 mb-1">Middle Name <span class="text-xs text-gray-500">(Optional)</span></label>
-                <input type="text" id="lp-clientMiddleName" name="clientMiddleName" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
+                <label for="lp-clientMiddleName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                  <i class="fas fa-id-card mr-2 text-sidebar-accent"></i>
+                  Middle Name <span class="text-xs text-gray-500">(Optional)</span>
+                </label>
+                <input type="text" id="lp-clientMiddleName" name="clientMiddleName" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
               </div>
               <div>
-                <label for="lp-clientLastName" class="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
-                <input type="text" id="lp-clientLastName" name="clientLastName" required class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
+                <label for="lp-clientLastName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                  <i class="fas fa-id-card mr-2 text-sidebar-accent"></i>
+                  Last Name
+                </label>
+                <input type="text" id="lp-clientLastName" name="clientLastName" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
               </div>
               <div>
-                <label for="lp-clientSuffix" class="block text-sm font-medium text-gray-700 mb-1">Suffix <span class="text-xs text-gray-500">(Optional)</span></label>
-                <input type="text" id="lp-clientSuffix" name="clientSuffix" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
+                <label for="lp-clientSuffix" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                  <i class="fas fa-id-card mr-2 text-sidebar-accent"></i>
+                  Suffix <span class="text-xs text-gray-500">(Optional)</span>
+                </label>
+                <input type="text" id="lp-clientSuffix" name="clientSuffix" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
               </div>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label for="lp-clientPhone" class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
-                <input type="tel" id="lp-clientPhone" name="clientPhone" required class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
+                <label for="lp-clientPhone" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                  <i class="fas fa-phone mr-2 text-sidebar-accent"></i>
+                  Phone Number
+                </label>
+                <input type="tel" id="lp-clientPhone" name="clientPhone" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
               </div>
               <div>
-                <label for="lp-clientEmail" class="block text-sm font-medium text-gray-700 mb-1">Email Address <span class="text-xs text-gray-500">(Optional)</span></label>
-                <input type="email" id="lp-clientEmail" name="clientEmail" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
+                <label for="lp-clientEmail" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                  <i class="fas fa-envelope mr-2 text-sidebar-accent"></i>
+                  Email Address <span class="text-xs text-gray-500">(Optional)</span>
+                </label>
+                <input type="email" id="lp-clientEmail" name="clientEmail" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Beneficiary Information Section (Replaces Deceased Information) -->
+        <!-- Beneficiary Information Section -->
         <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
           <h4 class="text-lg font-bold text-gray-800 mb-4 pb-2 border-b border-gray-200 flex items-center">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 text-sidebar-accent">
-              <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-              <circle cx="8.5" cy="7" r="4"></circle>
-              <line x1="20" y1="8" x2="20" y2="14"></line>
-              <line x1="23" y1="11" x2="17" y2="11"></line>
-            </svg>
+            <i class="fas fa-user-plus mr-2 text-sidebar-accent"></i>
             Beneficiary Information
           </h4>
-          <div class="space-y-5">
+          <div class="space-y-4">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div>
-                <label for="beneficiaryFirstName" class="block text-sm font-medium text-gray-700 mb-1">First Name</label>
-                <input type="text" id="beneficiaryFirstName" name="beneficiaryFirstName" required class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
+                <label for="beneficiaryFirstName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                  <i class="fas fa-id-card mr-2 text-sidebar-accent"></i>
+                  First Name
+                </label>
+                <input type="text" id="beneficiaryFirstName" name="beneficiaryFirstName" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
               </div>
               <div>
-                <label for="beneficiaryMiddleName" class="block text-sm font-medium text-gray-700 mb-1">Middle Name <span class="text-xs text-gray-500">(Optional)</span></label>
-                <input type="text" id="beneficiaryMiddleName" name="beneficiaryMiddleName" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
+                <label for="beneficiaryMiddleName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                  <i class="fas fa-id-card mr-2 text-sidebar-accent"></i>
+                  Middle Name <span class="text-xs text-gray-500">(Optional)</span>
+                </label>
+                <input type="text" id="beneficiaryMiddleName" name="beneficiaryMiddleName" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
               </div>
               <div>
-                <label for="beneficiaryLastName" class="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
-                <input type="text" id="beneficiaryLastName" name="beneficiaryLastName" required class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
+                <label for="beneficiaryLastName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                  <i class="fas fa-id-card mr-2 text-sidebar-accent"></i>
+                  Last Name
+                </label>
+                <input type="text" id="beneficiaryLastName" name="beneficiaryLastName" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
               </div>
               <div>
-                <label for="beneficiarySuffix" class="block text-sm font-medium text-gray-700 mb-1">Suffix <span class="text-xs text-gray-500">(Optional)</span></label>
-                <input type="text" id="beneficiarySuffix" name="beneficiarySuffix" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
+                <label for="beneficiarySuffix" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                  <i class="fas fa-id-card mr-2 text-sidebar-accent"></i>
+                  Suffix <span class="text-xs text-gray-500">(Optional)</span>
+                </label>
+                <input type="text" id="beneficiarySuffix" name="beneficiarySuffix" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
               </div>
             </div>
             
-            <div class="grid grid-cols-1 gap-4">
-              <div>
-                <label for="beneficiaryDateOfBirth" class="block text-sm font-medium text-gray-700 mb-1">Date of Birth</label>
-                <input type="date" id="beneficiaryDateOfBirth" name="beneficiaryDateOfBirth" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
-              </div>
+            <div>
+              <label for="beneficiaryDateOfBirth" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                <i class="fas fa-calendar-alt mr-2 text-sidebar-accent"></i>
+                Date of Birth
+              </label>
+              <input type="date" id="beneficiaryDateOfBirth" name="beneficiaryDateOfBirth" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
             </div>
             <div>
-              <label for="beneficiaryAddress" class="block text-sm font-medium text-gray-700 mb-1">Address</label>
-              <textarea id="beneficiaryAddress" name="beneficiaryAddress" required class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent" rows="2"></textarea>
+              <label for="beneficiaryAddress" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                <i class="fas fa-map-marker-alt mr-2 text-sidebar-accent"></i>
+                Address
+              </label>
+              <textarea id="beneficiaryAddress" name="beneficiaryAddress" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" rows="2"></textarea>
             </div>
             <div>
-              <label for="beneficiaryRelationship" class="block text-sm font-medium text-gray-700 mb-1">Relationship to Client</label>
-              <input type="text" id="beneficiaryRelationship" name="beneficiaryRelationship" required class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
+              <label for="beneficiaryRelationship" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                <i class="fas fa-people-arrows mr-2 text-sidebar-accent"></i>
+                Relationship to Client
+              </label>
+              <input type="text" id="beneficiaryRelationship" name="beneficiaryRelationship" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
             </div>
           </div>
         </div>
   
-        <!-- Payment Information (Same as traditional) -->
+        <!-- Payment Information -->
         <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
           <h4 class="text-lg font-bold text-gray-800 mb-4 pb-2 border-b border-gray-200 flex items-center">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 text-sidebar-accent">
-              <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
-              <line x1="1" y1="10" x2="23" y2="10"></line>
-            </svg>
+            <i class="fas fa-credit-card mr-2 text-sidebar-accent"></i>
             Payment Information
           </h4>
-          <div class="space-y-5">
+          <div class="space-y-4">
             <div>
-              <label for="lp-paymentMethod" class="block text-sm font-medium text-gray-700 mb-1">Method of Payment</label>
-              <select id="lp-paymentMethod" name="paymentMethod" required class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
+              <label for="lp-paymentMethod" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                <i class="fas fa-wallet mr-2 text-sidebar-accent"></i>
+                Method of Payment
+              </label>
+              <select id="lp-paymentMethod" name="paymentMethod" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
                 <option value="" disabled selected>Select payment method</option>
                 <option value="Cash">Cash</option>
                 <option value="G-Cash">G-Cash</option>
@@ -616,8 +652,11 @@ $servicesJson = json_encode($allServices);
             </div>
 
             <div>
-              <label for="lp-paymentTerm" class="block text-sm font-medium text-gray-700 mb-1">Payment Term</label>
-              <select id="lp-paymentTerm" name="paymentTerm" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
+              <label for="lp-paymentTerm" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                <i class="fas fa-calendar mr-2 text-sidebar-accent"></i>
+                Payment Term
+              </label>
+              <select id="lp-paymentTerm" name="paymentTerm" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
                 <option value="1">1 Year (Full Payment)</option>
                 <option value="2">2 Years</option>
                 <option value="3">3 Years</option>
@@ -628,60 +667,66 @@ $servicesJson = json_encode($allServices);
               </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label for="lp-totalPrice" class="block text-sm font-medium text-gray-700 mb-1">
+                <label for="lp-totalPrice" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                  <i class="fas fa-tag mr-2 text-sidebar-accent"></i>
                   Total Price 
-                  <span class="text-xs text-gray-500">(Minimum: <span id="lp-min-price">₱0.00</span>)</span>
+                  <span class="text-xs text-gray-500 ml-1">(Minimum: <span id="lp-min-price">₱0.00</span>)</span>
                 </label>
                 <div class="relative">
                   <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <span class="text-gray-500">₱</span>
                   </div>
-                  <input type="number" id="lp-totalPrice" name="totalPrice" class="w-full pl-8 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
+                  <input type="number" id="lp-totalPrice" name="totalPrice" class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
                 </div>
               </div>
               <div>
-                <label for="lp-amountPaid" class="block text-sm font-medium text-gray-700 mb-1">Amount Paid</label>
+                <label for="lp-amountPaid" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                  <i class="fas fa-hand-holding-usd mr-2 text-sidebar-accent"></i>
+                  Amount Paid
+                </label>
                 <div class="relative">
                   <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <span class="text-gray-500">₱</span>
                   </div>
-                  <input type="number" id="lp-amountPaid" name="amountPaid" required class="w-full pl-8 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
+                  <input type="number" id="lp-amountPaid" name="amountPaid" required class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
                 </div>
               </div>
             </div>
           </div>
         </div>
-              <!-- Cremation Checklist Section (Added to match checkoutModal) -->
-              <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-                  <h4 class="text-lg font-bold text-gray-800 mb-4 pb-2 border-b border-gray-200 flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 text-sidebar-accent">
-                      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
-                    </svg>
-                    Additional Services
-                  </h4>
-                  <div class="space-y-3">
-                    <label class="flex items-center space-x-3">
-                      <input type="checkbox" name="withCremation" id="lp-withCremation" class="form-checkbox h-5 w-5 text-sidebar-accent rounded border-gray-300 focus:ring-sidebar-accent">
-                      <span class="text-gray-700 font-medium">With Cremation</span>
-                    </label>
-                    <p class="text-sm text-gray-500 ml-8">Check this box if the service includes cremation</p>
-                  </div>
-                </div>
-              </form>
+        
+        <!-- Additional Services (Cremation) -->
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+          <h4 class="text-lg font-bold text-gray-800 mb-4 pb-2 border-b border-gray-200 flex items-center">
+            <i class="fas fa-plus-circle mr-2 text-sidebar-accent"></i>
+            Additional Services
+          </h4>
+          <div class="space-y-3">
+            <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
+              <input type="checkbox" name="withCremation" id="lp-withCremation" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
+              <i class="fas fa-fire mr-2 text-sidebar-accent"></i>
+              With Cremation
+            </label>
+            <p class="text-sm text-gray-500 ml-8">Check this box if the service includes cremation</p>
+          </div>
         </div>
-
-    <!-- Modal Footer -->
-    <div class="p-6 flex justify-between items-center border-t border-gray-200 sticky bottom-0 bg-white">
+      </form>
+    </div>
+    
+    <!-- Modal Footer --> 
+    <div class="px-6 py-4 flex justify-between items-center border-t border-gray-200 sticky bottom-0 bg-white">
       <div class="text-gray-600">
         <p class="font-medium">Order Total: <span class="text-xl font-bold text-sidebar-accent" id="lp-footer-total-price">₱0.00</span></p>
       </div>
       <div class="flex gap-4">
-        <button class="px-5 py-3 bg-white border border-sidebar-accent text-sidebar-accent rounded-lg font-semibold hover:bg-navy transition-colors" onclick="closeLifeplanCheckoutModal()">Cancel</button>
-        <button id="lp-confirm-btn" class="px-6 py-3 bg-sidebar-accent text-white rounded-lg font-semibold hover:bg-darkgold transition-colors flex items-center" onclick="confirmLifeplanCheckout()" type="submit">          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
-            <polyline points="20 6 9 17 4 12"></polyline>
-          </svg>
+        <button class="px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center" onclick="closeLifeplanCheckoutModal()">
+          <i class="fas fa-times mr-2"></i>
+          Cancel
+        </button>
+        <button id="lp-confirm-btn" class="px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="confirmLifeplanCheckout()">
+          <i class="fas fa-check mr-2"></i>
           Confirm Order
         </button>
       </div>
