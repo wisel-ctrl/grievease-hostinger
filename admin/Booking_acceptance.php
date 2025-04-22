@@ -111,8 +111,9 @@ $offset = ($current_page - 1) * $bookings_per_page;
 
   <!-- Pending Bookings List -->
 <div class="bg-white rounded-lg shadow-md mb-8 border border-sidebar-border overflow-hidden branch-container">
-    <!-- Header with Search -->
-    <div class="bg-sidebar-hover p-4 border-b border-sidebar-border flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <!-- Header with Search - Made responsive with better stacking -->
+    <div class="bg-sidebar-hover p-4 border-b border-sidebar-border flex flex-col space-y-4">
+        <!-- Title and Counter -->
         <div class="flex items-center gap-3">
             <h4 class="text-lg font-bold text-sidebar-text">Pending Requests</h4>
             
@@ -128,10 +129,10 @@ $offset = ($current_page - 1) * $bookings_per_page;
             </span>
         </div>
         
-        <!-- Search Section -->
-        <div class="flex flex-col md:flex-row items-start md:items-center gap-3 w-full md:w-auto">
-            <!-- Search Input -->
-            <div class="relative w-full md:w-64">
+        <!-- Search Section - Improved for small screens -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:flex lg:flex-row gap-3 w-full">
+            <!-- Search Input - Full width on smaller screens -->
+            <div class="relative w-full lg:w-64">
                 <input type="text" placeholder="Search bookings..." 
                        class="pl-8 pr-3 py-2 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
                 <i class="fas fa-search absolute left-2.5 top-3 text-gray-400"></i>
@@ -139,126 +140,138 @@ $offset = ($current_page - 1) * $bookings_per_page;
         </div>
     </div>
     
-    <!-- Bookings Table -->
-    <div class="overflow-x-auto scrollbar-thin">
-        <table class="w-full">
-            <thead>
-                <tr class="bg-gray-50 border-b border-sidebar-border">
-                    <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(0)">
-                        <div class="flex items-center">
-                            <i class="fas fa-hashtag mr-1.5 text-sidebar-accent"></i> Booking ID 
-                                       </div>
-                    </th>
-                    <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(1)">
-                        <div class="flex items-center">
-                            <i class="fas fa-user mr-1.5 text-sidebar-accent"></i> Customer 
-                                       </div>
-                    </th>
-                    <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(2)">
-                        <div class="flex items-center">
-                            <i class="fas fa-tag mr-1.5 text-sidebar-accent"></i> Service 
-                                       </div>
-                    </th>
-                    <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(3)">
-                        <div class="flex items-center">
-                            <i class="fas fa-calendar mr-1.5 text-sidebar-accent"></i> Date Requested 
-                                       </div>
-                    </th>
-                    <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(4)">
-                        <div class="flex items-center">
-                            <i class="fas fa-toggle-on mr-1.5 text-sidebar-accent"></i> Status 
-                                       </div>
-                    </th>
-                    <th class="p-4 text-left text-sm font-medium text-sidebar-text">
-                        <div class="flex items-center">
-                            <i class="fas fa-cogs mr-1.5 text-sidebar-accent"></i> Actions
-                        </div>
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php
-                // Query to get booking data with joins and pagination
-                  $query = "SELECT b.booking_id, b.booking_date, b.status, 
-                          CONCAT(u.first_name, ' ', COALESCE(u.middle_name, ''), ' ', u.last_name, ' ', COALESCE(u.suffix, '')) AS customer_name,
-                          s.service_name
-                          FROM booking_tb b
-                          JOIN users u ON b.customerID = u.id
-                          JOIN services_tb s ON b.service_id = s.service_id
-                          WHERE b.status = 'Pending'
-                          ORDER BY b.booking_date DESC
-                          LIMIT ?, ?";
-
-                  $stmt = $conn->prepare($query);
-                  $stmt->bind_param("ii", $offset, $bookings_per_page);
-                  $stmt->execute();
-                  $result = $stmt->get_result();
-
-                  if ($result->num_rows > 0) {
-                    while ($row = $result->fetch_assoc()) {
-                      // Format booking ID
-                      $booking_id = "#BK-" . date('Y', strtotime($row['booking_date'])) . "-" . str_pad($row['booking_id'], 3, '0', STR_PAD_LEFT);
-
-                      // Format date
-                      $formatted_date = date('M j, Y', strtotime($row['booking_date']));
-
-                      // Status badge class
-                      $status_class = "bg-yellow-100 text-yellow-800 border border-yellow-200";
-                      $status_icon = "fa-clock";
-                      if ($row['status'] == 'Accepted') {
-                        $status_class = "bg-green-100 text-green-600 border border-green-200";
-                        $status_icon = "fa-check-circle";
-                      } elseif ($row['status'] == 'Declined') {
-                        $status_class = "bg-red-100 text-red-600 border border-red-200";
-                        $status_icon = "fa-times-circle";
-                      }
-                ?>
-                      <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
-                          <td class="p-4 text-sm text-sidebar-text font-medium"><?php echo htmlspecialchars($booking_id); ?></td>
-                          <td class="p-4 text-sm text-sidebar-text"><?php echo htmlspecialchars($row['customer_name']); ?></td>
-                          <td class="p-4 text-sm text-sidebar-text">
-                              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">
-                                  <?php echo htmlspecialchars($row['service_name']); ?>
-                              </span>
-                          </td>
-                          <td class="p-4 text-sm text-sidebar-text"><?php echo htmlspecialchars($formatted_date); ?></td>
-                          <td class="p-4 text-sm">
-                              <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium <?php echo $status_class; ?>">
-                                  <i class="fas <?php echo $status_icon; ?> mr-1"></i> <?php echo htmlspecialchars($row['status']); ?>
-                              </span>
-                          </td>
-                          <td class="p-4 text-sm">
-                              <div class="flex space-x-2">
-                                  <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" 
-                                          title="View Details" 
-                                          onclick="openBookingDetails(<?php echo $row['booking_id']; ?>)">
-                                      <i class="fas fa-eye"></i>
-                                  </button>
-                              </div>
-                          </td>
-                      </tr>
-                <?php
-                    }
-                  } else {
-                ?>
-                    <tr>
-                        <td colspan="6" class="p-6 text-sm text-center">
-                            <div class="flex flex-col items-center">
-                                <i class="fas fa-inbox text-gray-300 text-4xl mb-3"></i>
-                                <p class="text-gray-500">No pending bookings found</p>
+    <!-- Responsive Table Container -->
+    <div class="overflow-x-auto scrollbar-thin" id="bookingsTableContainer">
+        <div id="bookingsLoadingIndicator" class="hidden absolute inset-0 bg-white bg-opacity-50 flex items-center justify-center">
+          <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-sidebar-accent"></div>
+        </div>
+        
+        <!-- Responsive Table with horizontal scroll for small screens -->
+        <div class="min-w-full">
+            <table class="w-full">
+                <thead>
+                    <tr class="bg-gray-50 border-b border-sidebar-border">
+                        <th class="p-3 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(0)">
+                            <div class="flex items-center">
+                                <i class="fas fa-hashtag mr-1.5 text-sidebar-accent"></i> Booking ID 
+                                <i class="fas fa-sort ml-1 text-gray-400"></i>
                             </div>
-                        </td>
+                        </th>
+                        <th class="p-3 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(1)">
+                            <div class="flex items-center">
+                                <i class="fas fa-user mr-1.5 text-sidebar-accent"></i> Customer 
+                                <i class="fas fa-sort ml-1 text-gray-400"></i>
+                            </div>
+                        </th>
+                        <th class="p-3 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(2)">
+                            <div class="flex items-center">
+                                <i class="fas fa-tag mr-1.5 text-sidebar-accent"></i> Service 
+                                <i class="fas fa-sort ml-1 text-gray-400"></i>
+                            </div>
+                        </th>
+                        <th class="p-3 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(3)">
+                            <div class="flex items-center">
+                                <i class="fas fa-calendar mr-1.5 text-sidebar-accent"></i> Date Requested 
+                                <i class="fas fa-sort ml-1 text-gray-400"></i>
+                            </div>
+                        </th>
+                        <th class="p-3 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(4)">
+                            <div class="flex items-center">
+                                <i class="fas fa-toggle-on mr-1.5 text-sidebar-accent"></i> Status 
+                                <i class="fas fa-sort ml-1 text-gray-400"></i>
+                            </div>
+                        </th>
+                        <th class="p-3 text-left text-sm font-medium text-sidebar-text whitespace-nowrap">
+                            <div class="flex items-center">
+                                <i class="fas fa-cogs mr-1.5 text-sidebar-accent"></i> Actions
+                            </div>
+                        </th>
                     </tr>
-                <?php
-                  }
-                ?>
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    <?php
+                    // Query to get booking data with joins and pagination
+                      $query = "SELECT b.booking_id, b.booking_date, b.status, 
+                              CONCAT(u.first_name, ' ', COALESCE(u.middle_name, ''), ' ', u.last_name, ' ', COALESCE(u.suffix, '')) AS customer_name,
+                              s.service_name
+                              FROM booking_tb b
+                              JOIN users u ON b.customerID = u.id
+                              JOIN services_tb s ON b.service_id = s.service_id
+                              WHERE b.status = 'Pending'
+                              ORDER BY b.booking_date DESC
+                              LIMIT ?, ?";
+
+                      $stmt = $conn->prepare($query);
+                      $stmt->bind_param("ii", $offset, $bookings_per_page);
+                      $stmt->execute();
+                      $result = $stmt->get_result();
+
+                      if ($result->num_rows > 0) {
+                        while ($row = $result->fetch_assoc()) {
+                          // Format booking ID
+                          $booking_id = "#BK-" . date('Y', strtotime($row['booking_date'])) . "-" . str_pad($row['booking_id'], 3, '0', STR_PAD_LEFT);
+
+                          // Format date
+                          $formatted_date = date('M j, Y', strtotime($row['booking_date']));
+
+                          // Status badge class
+                          $status_class = "bg-yellow-100 text-yellow-800 border border-yellow-200";
+                          $status_icon = "fa-clock";
+                          if ($row['status'] == 'Accepted') {
+                            $status_class = "bg-green-100 text-green-600 border border-green-200";
+                            $status_icon = "fa-check-circle";
+                          } elseif ($row['status'] == 'Declined') {
+                            $status_class = "bg-red-100 text-red-600 border border-red-200";
+                            $status_icon = "fa-times-circle";
+                          }
+                    ?>
+                          <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
+                              <td class="p-3 text-sm text-sidebar-text font-medium"><?php echo htmlspecialchars($booking_id); ?></td>
+                              <td class="p-3 text-sm text-sidebar-text"><?php echo htmlspecialchars($row['customer_name']); ?></td>
+                              <td class="p-3 text-sm text-sidebar-text">
+                                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">
+                                      <?php echo htmlspecialchars($row['service_name']); ?>
+                                  </span>
+                              </td>
+                              <td class="p-3 text-sm text-sidebar-text"><?php echo htmlspecialchars($formatted_date); ?></td>
+                              <td class="p-3 text-sm">
+                                  <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium <?php echo $status_class; ?>">
+                                      <i class="fas <?php echo $status_icon; ?> mr-1"></i> <?php echo htmlspecialchars($row['status']); ?>
+                                  </span>
+                              </td>
+                              <td class="p-3 text-sm">
+                                  <div class="flex space-x-2">
+                                      <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" 
+                                              title="View Details" 
+                                              onclick="openBookingDetails(<?php echo $row['booking_id']; ?>)">
+                                          <i class="fas fa-eye"></i>
+                                      </button>
+                                  </div>
+                              </td>
+                          </tr>
+                    <?php
+                        }
+                      } else {
+                    ?>
+                        <tr>
+                            <td colspan="6" class="p-6 text-sm text-center">
+                                <div class="flex flex-col items-center">
+                                    <i class="fas fa-inbox text-gray-300 text-4xl mb-3"></i>
+                                    <p class="text-gray-500">No pending bookings found</p>
+                                </div>
+                            </td>
+                        </tr>
+                    <?php
+                      }
+                    ?>
+                </tbody>
+            </table>
+        </div>
     </div>
     
-    <!-- Pagination -->
-    <div class="p-4 border-t border-sidebar-border flex justify-between items-center">
-        <div class="text-sm text-gray-500">
+    <!-- Sticky Pagination Footer - Using CSS instead of JavaScript -->
+    <div class="sticky bottom-0 left-0 right-0 p-3 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-3">
+        <div class="text-sm text-gray-500 text-center sm:text-left">
             <?php 
             // Get the number of bookings on the current page
             $current_page_bookings = $result->num_rows;
