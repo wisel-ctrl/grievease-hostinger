@@ -820,16 +820,16 @@ function loadBranches() {
   
   branches.forEach(branch => {
     const branchCard = document.createElement('div');
-    branchCard.className = 'bg-white rounded-lg overflow-hidden shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 cursor-pointer flex flex-col';
+    branchCard.className = 'bg-white rounded-lg overflow-hidden shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 cursor-pointer flex flex-col h-96'; // Increased overall height
     branchCard.innerHTML = `
       <div class="w-full">
-        <img src="/assets/images/branch-icon.png" alt="${branch.branch_name}" class="w-full h-40 object-cover">
+        <img src="/assets/images/branch-icon.png" alt="${branch.branch_name}" class="w-full h-56 object-cover"> <!-- Taller image -->
       </div>
-      <div class="p-4 flex flex-col justify-between flex-grow">
-        <div class="text-xl font-bold mb-2 text-sidebar-text">${branch.branch_name}</div>
-        <div class="flex justify-between items-center mt-2">
+      <div class="p-6 flex flex-col justify-between flex-grow"> <!-- Increased padding -->
+        <div class="text-xl font-bold mb-4 text-sidebar-text">${branch.branch_name}</div> <!-- More margin-bottom -->
+        <div class="flex justify-between items-center mt-4"> <!-- Increased margin-top -->
           <div class="text-gray-500 text-sm"><i class="fas fa-map-marker-alt mr-1"></i> Branch Location</div>
-          <button class="px-3 py-1 bg-sidebar-accent text-white rounded-md hover:bg-opacity-90 text-sm">
+          <button class="px-4 py-2 bg-sidebar-accent text-white rounded-md hover:bg-opacity-90 text-sm"> <!-- Larger button -->
             View Details <i class="fas fa-chevron-right ml-1"></i>
           </button>
         </div>
