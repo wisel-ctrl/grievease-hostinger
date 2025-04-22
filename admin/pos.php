@@ -958,7 +958,7 @@ function loadServices() {
     categoryHeader.innerHTML = `
       <div class="flex items-center">
         <h3 class="text-xl font-bold text-sidebar-text">${categoryName}</h3>
-        <span class="ml-3 px-3 py-1 bg-gray-100 text-gray-600 text-sm rounded-full">${services.length} ${services.length === 1 ? 'service' : 'services'}</span>
+        <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">${services.length} ${services.length === 1 ? 'service' : 'services'}</span>
       </div>
     `;
     container.appendChild(categoryHeader);
