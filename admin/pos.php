@@ -479,18 +479,18 @@ $servicesJson = json_encode($allServices);
 <div id="serviceTypeModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4 hidden">
     <div class="w-full max-w-md bg-white rounded-2xl shadow-xl overflow-hidden">
         <div class="p-6">
-            <h2 class="text-2xl font-bold text-navy mb-6 text-center">Select Service Type</h2>
+            <h2 class="text-2xl font-hedvig text-navy mb-6 text-center">Select Service Type</h2>
             
             <div class="grid grid-cols-2 gap-4">
                 <button id="traditionalServiceBtn" class="bg-cream hover:bg-yellow-100 border-2 border-yellow-600 text-navy px-6 py-8 rounded-lg shadow-md transition-all duration-300 flex flex-col items-center">
                     <i class="fas fa-dove text-3xl text-yellow-600 mb-2"></i>
-                    <span class="font-bold text-lg">Traditional</span>
+                    <span class="font-hedvig text-lg">Traditional</span>
                     <span class="text-sm text-gray-600 mt-2 text-center">For immediate funeral needs</span>
                 </button>
                 
                 <button id="lifeplanServiceBtn" class="bg-cream hover:bg-yellow-100 border-2 border-yellow-600 text-navy px-6 py-8 rounded-lg shadow-md transition-all duration-300 flex flex-col items-center">
                     <i class="fas fa-seedling text-3xl text-yellow-600 mb-2"></i>
-                    <span class="font-bold text-lg">Lifeplan</span>
+                    <span class="font-hedvig text-lg">Lifeplan</span>
                     <span class="text-sm text-gray-600 mt-2 text-center">Pre-need funeral planning</span>
                 </button>
             </div>
