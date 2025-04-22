@@ -40,6 +40,7 @@ $paymentMethod = htmlspecialchars(trim($_POST['paymentMethod']), ENT_QUOTES, 'UT
 // Sanitize other inputs using htmlspecialchars
 $sanitizeText = fn($value) => htmlspecialchars(trim($value ?? ''), ENT_QUOTES, 'UTF-8');
 $sanitizeEmail = fn($value) => filter_var(trim($value ?? ''), FILTER_SANITIZE_EMAIL);
+$sanitizeDate = fn($value) => !empty($value) ? date('Y-m-d', strtotime($value)) : null;
 
 $firstName = $sanitizeText($_POST['first_name']);
 $middleName = $sanitizeText($_POST['middle_name']);
