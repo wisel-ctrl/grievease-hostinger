@@ -956,9 +956,9 @@ function loadServices() {
     const categoryHeader = document.createElement('div');
     categoryHeader.className = 'col-span-full mt-8 mb-4 flex items-center justify-between';
     categoryHeader.innerHTML = `
-      <div class="flex items-center gap-3">
+      <div class="flex items-center gap-2">
         <h3 class="text-xl font-bold text-sidebar-text">${categoryName}</h3>
-        <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">${services.length} ${services.length === 1 ? 'service' : 'services'}</span>
+        <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">${services.length} ${services.length === 1 ? 'Service' : 'Services'}</span>
       </div>
     `;
     container.appendChild(categoryHeader);
