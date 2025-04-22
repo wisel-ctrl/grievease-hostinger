@@ -347,7 +347,7 @@
                   <i class="fas fa-edit"></i>
                 </button>
                 <button class="p-1.5 bg-red-100 text-red-600 rounded hover:bg-red-200 transition-all">
-                  <i class="fas fa-trash"></i>
+                   <i class="fas fa-archive text-sidebar-accent"></i>
                 </button>
               </div>
             </td>
@@ -369,7 +369,7 @@
                   <i class="fas fa-edit"></i>
                 </button>
                 <button class="p-1.5 bg-red-100 text-red-600 rounded hover:bg-red-200 transition-all">
-                  <i class="fas fa-trash"></i>
+                   <i class="fas fa-archive text-sidebar-accent"></i>
                 </button>
               </div>
             </td>

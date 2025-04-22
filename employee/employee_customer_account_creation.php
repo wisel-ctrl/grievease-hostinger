@@ -347,7 +347,7 @@
                     <i class="fas fa-eye"></i>
                     </button>
                   <button onclick="confirmDeleteCustomer(1)" class="p-1.5 bg-red-100 text-red-600 rounded hover:bg-red-200 transition-all">
-                  <i class="fas fa-trash"></i>
+                   <i class="fas fa-archive text-sidebar-accent"></i>
                   </button>
                 </td>
               </tr>

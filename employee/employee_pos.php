@@ -834,7 +834,7 @@ function updateCartDisplay() {
       <td class="p-3 border-b border-gray-200">
         <button class="p-1.5 bg-red-100 text-red-600 rounded hover:bg-red-200 transition-all" 
                 onclick="removeFromCart(${item.id})">
-          <i class="fas fa-trash"></i> Remove
+           <i class="fas fa-archive text-sidebar-accent"></i> Remove
         </button>
       </td>
     `;
