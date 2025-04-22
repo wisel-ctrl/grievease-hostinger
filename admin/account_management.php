@@ -204,95 +204,98 @@ $customersResult = mysqli_query($conn, $customersQuery);
     </div>
   </div>
   
-  <!-- Customer Table with responsive design -->
-  <div class="overflow-x-auto scrollbar-thin" id="customerTableContainer">
+  <!-- Customer Table with responsive design and scroll container -->
+  <div class="overflow-hidden flex flex-col" id="customerTableContainer">
+    <!-- Loading indicator -->
     <div id="customerLoadingIndicator" class="hidden absolute inset-0 bg-white bg-opacity-50 flex items-center justify-center">
       <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-sidebar-accent"></div>
     </div>
     
-    <!-- Responsive table with CSS-only approach -->
-    <table class="w-full min-w-full table-auto">
-      <thead class="bg-gray-50 border-b border-sidebar-border">
-        <tr>
-          <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(0)">
-            <div class="flex items-center">
-              <i class="fas fa-hashtag mr-1.5 text-sidebar-accent"></i> 
-              <span class="hidden sm:inline">ID</span>
-            </div>
-          </th>
-          <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(1)">
-            <div class="flex items-center">
-              <i class="fas fa-user mr-1.5 text-sidebar-accent"></i> 
-              <span>Name</span>
-            </div>
-          </th>
-          <th class="hidden md:table-cell p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(2)">
-            <div class="flex items-center">
-              <i class="fas fa-envelope mr-1.5 text-sidebar-accent"></i> 
-              <span>Email</span>
-            </div>
-          </th>
-          <th class="hidden sm:table-cell p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(3)">
-            <div class="flex items-center">
-              <i class="fas fa-user-tag mr-1.5 text-sidebar-accent"></i> 
-              <span>Role</span>
-            </div>
-          </th>
-          <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(4)">
-            <div class="flex items-center">
-              <i class="fas fa-toggle-on mr-1.5 text-sidebar-accent"></i> 
-              <span class="hidden sm:inline">Status</span>
-            </div>
-          </th>
-          <th class="p-4 text-right sm:text-left text-sm font-medium text-sidebar-text">
-            <div class="flex items-center justify-end sm:justify-start">
-              <i class="fas fa-cogs mr-1.5 text-sidebar-accent"></i> 
-              <span class="hidden sm:inline">Actions</span>
-            </div>
-          </th>
-        </tr>
-      </thead>
-      <tbody id="customerTableBody" class="divide-y divide-sidebar-border">
-        <!-- Example row structure - Your PHP will dynamically generate these -->
-        <?php foreach ($customers as $customer): ?>
-        <tr class="hover:bg-gray-50">
-          <td class="p-4 text-sm text-gray-700"><?php echo $customer['id']; ?></td>
-          <td class="p-4">
-            <div class="flex flex-col">
-              <span class="text-sm font-medium text-sidebar-text"><?php echo $customer['name']; ?></span>
-              <!-- Mobile-only email display -->
-              <span class="text-xs text-gray-500 md:hidden"><?php echo $customer['email']; ?></span>
-              <!-- Mobile-only role display -->
-              <span class="text-xs bg-sidebar-hover px-2 py-0.5 rounded mt-1 inline-block sm:hidden"><?php echo $customer['role']; ?></span>
-            </div>
-          </td>
-          <td class="hidden md:table-cell p-4 text-sm text-gray-700"><?php echo $customer['email']; ?></td>
-          <td class="hidden sm:table-cell p-4 text-sm text-gray-700"><?php echo $customer['role']; ?></td>
-          <td class="p-4">
-            <span class="inline-flex px-2 py-1 text-xs font-medium rounded-full <?php echo $customer['status'] === 'Active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'; ?>">
-              <?php echo $customer['status']; ?>
-            </span>
-          </td>
-          <td class="p-4 text-right sm:text-left">
-            <div class="flex flex-row justify-end sm:justify-start gap-2">
-              <button class="p-1.5 rounded-lg hover:bg-sidebar-hover text-sidebar-accent" title="Edit">
-                <i class="fas fa-edit"></i>
-              </button>
-              <button class="p-1.5 rounded-lg hover:bg-sidebar-hover text-red-500" title="Delete">
-                <i class="fas fa-trash-alt"></i>
-              </button>
-              <button class="p-1.5 rounded-lg hover:bg-sidebar-hover text-sidebar-accent sm:inline-block" title="View Details">
-                <i class="fas fa-eye"></i>
-              </button>
-            </div>
-          </td>
-        </tr>
-        <?php endforeach; ?>
-      </tbody>
-    </table>
+    <!-- Table with scrollable area -->
+    <div class="overflow-x-auto overflow-y-auto scrollbar-thin" style="max-height: 60vh;">
+      <table class="w-full min-w-full table-auto">
+        <thead class="bg-gray-50 border-b border-sidebar-border sticky top-0 z-10">
+          <tr>
+            <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(0)">
+              <div class="flex items-center">
+                <i class="fas fa-hashtag mr-1.5 text-sidebar-accent"></i> 
+                <span class="hidden sm:inline">ID</span>
+              </div>
+            </th>
+            <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(1)">
+              <div class="flex items-center">
+                <i class="fas fa-user mr-1.5 text-sidebar-accent"></i> 
+                <span>Name</span>
+              </div>
+            </th>
+            <th class="hidden md:table-cell p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(2)">
+              <div class="flex items-center">
+                <i class="fas fa-envelope mr-1.5 text-sidebar-accent"></i> 
+                <span>Email</span>
+              </div>
+            </th>
+            <th class="hidden sm:table-cell p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(3)">
+              <div class="flex items-center">
+                <i class="fas fa-user-tag mr-1.5 text-sidebar-accent"></i> 
+                <span>Role</span>
+              </div>
+            </th>
+            <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(4)">
+              <div class="flex items-center">
+                <i class="fas fa-toggle-on mr-1.5 text-sidebar-accent"></i> 
+                <span class="hidden sm:inline">Status</span>
+              </div>
+            </th>
+            <th class="p-4 text-right sm:text-left text-sm font-medium text-sidebar-text">
+              <div class="flex items-center justify-end sm:justify-start">
+                <i class="fas fa-cogs mr-1.5 text-sidebar-accent"></i> 
+                <span class="hidden sm:inline">Actions</span>
+              </div>
+            </th>
+          </tr>
+        </thead>
+        <tbody id="customerTableBody" class="divide-y divide-sidebar-border">
+          <!-- Example row structure - Your PHP will dynamically generate these -->
+          <?php foreach ($customers as $customer): ?>
+          <tr class="hover:bg-gray-50">
+            <td class="p-4 text-sm text-gray-700"><?php echo $customer['id']; ?></td>
+            <td class="p-4">
+              <div class="flex flex-col">
+                <span class="text-sm font-medium text-sidebar-text"><?php echo $customer['name']; ?></span>
+                <!-- Mobile-only email display -->
+                <span class="text-xs text-gray-500 md:hidden"><?php echo $customer['email']; ?></span>
+                <!-- Mobile-only role display -->
+                <span class="text-xs bg-sidebar-hover px-2 py-0.5 rounded mt-1 inline-block sm:hidden"><?php echo $customer['role']; ?></span>
+              </div>
+            </td>
+            <td class="hidden md:table-cell p-4 text-sm text-gray-700"><?php echo $customer['email']; ?></td>
+            <td class="hidden sm:table-cell p-4 text-sm text-gray-700"><?php echo $customer['role']; ?></td>
+            <td class="p-4">
+              <span class="inline-flex px-2 py-1 text-xs font-medium rounded-full <?php echo $customer['status'] === 'Active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'; ?>">
+                <?php echo $customer['status']; ?>
+              </span>
+            </td>
+            <td class="p-4 text-right sm:text-left">
+              <div class="flex flex-row justify-end sm:justify-start gap-2">
+                <button class="p-1.5 rounded-lg hover:bg-sidebar-hover text-sidebar-accent" title="Edit">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="p-1.5 rounded-lg hover:bg-sidebar-hover text-red-500" title="Delete">
+                  <i class="fas fa-trash-alt"></i>
+                </button>
+                <button class="p-1.5 rounded-lg hover:bg-sidebar-hover text-sidebar-accent sm:inline-block" title="View Details">
+                  <i class="fas fa-eye"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+          <?php endforeach; ?>
+        </tbody>
+      </table>
+    </div>
     
-    <!-- Pagination - More touch-friendly -->
-    <div class="p-4 border-t border-sidebar-border flex flex-col sm:flex-row justify-between items-center gap-3">
+    <!-- Sticky pagination footer -->
+    <div class="sticky bottom-0 left-0 right-0 bg-white p-4 border-t border-sidebar-border flex flex-col sm:flex-row justify-between items-center gap-3 mt-auto shadow-md">
       <div id="paginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
         Showing 0 - 0 of 0 customers
       </div>
