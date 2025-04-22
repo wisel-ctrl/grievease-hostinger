@@ -990,12 +990,12 @@ function loadServices() {
           <div class="text-lg font-bold mb-2 text-sidebar-text">${service.service_name}</div>
           ${service.flower_design ? `<div class="text-gray-600 text-sm mb-2"><i class="fas fa-leaf text-gray-400 mr-2"></i>${service.flower_design}</div>` : ''}
           <div class="text-gray-500 text-sm mb-4 line-clamp-2">${inclusionsSummary}</div>
-          <div class="text-lg font-bold text-sidebar-accent mt-auto mb-4">₱${parseFloat(service.selling_price).toLocaleString('en-PH', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
-        </div>
-        <div class="px-5 pb-5 w-full">
-          <button class="right text-white bg-sidebar-accent px-4 py-2 rounded-lg hover:bg-opacity-90 transition-all duration-300">
-            <i class="fas fa-plus mr-1"></i> Select
-          </button>
+          <div class="mt-auto flex justify-between items-center">
+            <div class="text-lg font-bold text-sidebar-accent">₱${parseFloat(service.selling_price).toLocaleString('en-PH', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+            <button class="text-white bg-sidebar-accent px-4 py-2 rounded-lg hover:bg-opacity-90 transition-all duration-300">
+              <i class="fas fa-plus mr-1"></i> Select
+            </button>
+          </div>
         </div>
       `;
       container.appendChild(serviceCard);
