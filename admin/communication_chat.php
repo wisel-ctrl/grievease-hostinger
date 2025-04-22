@@ -123,7 +123,7 @@ header("Pragma: no-cache");
           </div>
           <h3 class="text-lg font-medium mb-1">No customer messages</h3>
           <p class="text-sm">Customer messages will appear here when received</p>
-          <button id="load-messages-btn" class="mt-4 bg-[#008080] text-white px-4 py-2 rounded-md hover:bg-opacity-90 transition-colors">
+          <button id="load-messages-btn" class="mt-4 bg-sidebar-accent text-white px-4 py-2 rounded-md hover:bg-opacity-90 transition-colors">
             Load Messages
           </button>
         </div>
