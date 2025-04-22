@@ -270,7 +270,7 @@ $servicesJson = json_encode($allServices);
   <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
   
   <!-- Modal Content -->
-  <div class="relative bg-white rounded-xl shadow-card w-full max-w-4xl mx-4 z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-5xl mx-4 z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
     <!-- Close Button -->
     <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeCheckoutModal()">
       <i class="fas fa-times"></i>
@@ -279,14 +279,14 @@ $servicesJson = json_encode($allServices);
     <!-- Modal Header -->
     <div class="px-6 py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
       <h3 class="text-xl font-bold text-white flex items-center" id="modal-package-title">
-        <i class="fas fa-shopping-cart mr-2"></i>
+        <i class="fas fa-file-invoice-dollar mr-2"></i>
         Complete Your Order
       </h3>
     </div>
     
     <!-- Modal Body -->
     <div class="px-6 py-5">
-      <form id="checkoutForm" class="space-y-8">
+      <form id="checkoutForm" class="space-y-6">
         <input type="hidden" id="service-id" name="service_id" value="">
         <input type="hidden" id="service-price" name="service_price">
         <input type="hidden" id="branch-id" name="branch_id" value="">
@@ -300,29 +300,47 @@ $servicesJson = json_encode($allServices);
           <div class="space-y-4">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div>
-                <label for="clientFirstName" class="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+                <label for="clientFirstName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                  <i class="fas fa-id-card mr-2 text-sidebar-accent"></i>
+                  First Name
+                </label>
                 <input type="text" id="clientFirstName" name="clientFirstName" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
               </div>
               <div>
-                <label for="clientMiddleName" class="block text-sm font-medium text-gray-700 mb-1">Middle Name <span class="text-xs text-gray-500">(Optional)</span></label>
+                <label for="clientMiddleName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                  <i class="fas fa-id-card mr-2 text-sidebar-accent"></i>
+                  Middle Name <span class="text-xs text-gray-500">(Optional)</span>
+                </label>
                 <input type="text" id="clientMiddleName" name="clientMiddleName" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
               </div>
               <div>
-                <label for="clientLastName" class="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+                <label for="clientLastName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                  <i class="fas fa-id-card mr-2 text-sidebar-accent"></i>
+                  Last Name
+                </label>
                 <input type="text" id="clientLastName" name="clientLastName" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
               </div>
               <div>
-                <label for="clientSuffix" class="block text-sm font-medium text-gray-700 mb-1">Suffix <span class="text-xs text-gray-500">(Optional)</span></label>
+                <label for="clientSuffix" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                  <i class="fas fa-id-card mr-2 text-sidebar-accent"></i>
+                  Suffix <span class="text-xs text-gray-500">(Optional)</span>
+                </label>
                 <input type="text" id="clientSuffix" name="clientSuffix" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
               </div>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label for="clientPhone" class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                <label for="clientPhone" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                  <i class="fas fa-phone mr-2 text-sidebar-accent"></i>
+                  Phone Number
+                </label>
                 <input type="tel" id="clientPhone" name="clientPhone" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
               </div>
               <div>
-                <label for="clientEmail" class="block text-sm font-medium text-gray-700 mb-1">Email Address <span class="text-xs text-gray-500">(Optional)</span></label>
+                <label for="clientEmail" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                  <i class="fas fa-envelope mr-2 text-sidebar-accent"></i>
+                  Email Address <span class="text-xs text-gray-500">(Optional)</span>
+                </label>
                 <input type="email" id="clientEmail" name="clientEmail" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
               </div>
             </div>
@@ -335,42 +353,66 @@ $servicesJson = json_encode($allServices);
             <i class="fas fa-user-alt mr-2 text-sidebar-accent"></i>
             Deceased Information
           </h4>
-          <div class="space-y-5">
+          <div class="space-y-4">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div>
-                <label for="deceasedFirstName" class="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+                <label for="deceasedFirstName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                  <i class="fas fa-id-card mr-2 text-sidebar-accent"></i>
+                  First Name
+                </label>
                 <input type="text" id="deceasedFirstName" name="deceasedFirstName" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
               </div>
               <div>
-                <label for="deceasedMiddleName" class="block text-sm font-medium text-gray-700 mb-1">Middle Name <span class="text-xs text-gray-500">(Optional)</span></label>
+                <label for="deceasedMiddleName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                  <i class="fas fa-id-card mr-2 text-sidebar-accent"></i>
+                  Middle Name <span class="text-xs text-gray-500">(Optional)</span>
+                </label>
                 <input type="text" id="deceasedMiddleName" name="deceasedMiddleName" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
               </div>
               <div>
-                <label for="deceasedLastName" class="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+                <label for="deceasedLastName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                  <i class="fas fa-id-card mr-2 text-sidebar-accent"></i>
+                  Last Name
+                </label>
                 <input type="text" id="deceasedLastName" name="deceasedLastName" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
               </div>
               <div>
-                <label for="deceasedSuffix" class="block text-sm font-medium text-gray-700 mb-1">Suffix <span class="text-xs text-gray-500">(Optional)</span></label>
+                <label for="deceasedSuffix" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                  <i class="fas fa-id-card mr-2 text-sidebar-accent"></i>
+                  Suffix <span class="text-xs text-gray-500">(Optional)</span>
+                </label>
                 <input type="text" id="deceasedSuffix" name="deceasedSuffix" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
               </div>
             </div>
             
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label for="dateOfBirth" class="block text-sm font-medium text-gray-700 mb-1">Date of Birth <span class="text-xs text-gray-500">(Optional)</span></label>
+                <label for="dateOfBirth" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                  <i class="fas fa-calendar-alt mr-2 text-sidebar-accent"></i>
+                  Date of Birth <span class="text-xs text-gray-500">(Optional)</span>
+                </label>
                 <input type="date" id="dateOfBirth" name="dateOfBirth" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
               </div>
               <div>
-                <label for="dateOfDeath" class="block text-sm font-medium text-gray-700 mb-1">Date of Death</label>
+                <label for="dateOfDeath" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                  <i class="fas fa-calendar-alt mr-2 text-sidebar-accent"></i>
+                  Date of Death
+                </label>
                 <input type="date" id="dateOfDeath" name="dateOfDeath" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
               </div>
               <div>
-                <label for="dateOfBurial" class="block text-sm font-medium text-gray-700 mb-1">Date of Burial/Cremation <span class="text-xs text-gray-500">(Optional)</span></label>
+                <label for="dateOfBurial" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                  <i class="fas fa-calendar-alt mr-2 text-sidebar-accent"></i>
+                  Date of Burial/Cremation <span class="text-xs text-gray-500">(Optional)</span>
+                </label>
                 <input type="date" id="dateOfBurial" name="dateOfBurial" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
               </div>
             </div>
             <div>
-              <label for="deathCertificate" class="block text-sm font-medium text-gray-700 mb-1">Death Certificate <span class="text-xs text-gray-500">(If available)</span></label>
+              <label for="deathCertificate" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                <i class="fas fa-file-alt mr-2 text-sidebar-accent"></i>
+                Death Certificate <span class="text-xs text-gray-500">(If available)</span>
+              </label>
               <div class="relative">
                 <div class="flex items-center border border-gray-300 rounded-lg px-3 py-2 focus-within:ring-1 focus-within:ring-sidebar-accent focus-within:border-sidebar-accent transition-all duration-200">
                   <i class="fas fa-upload text-gray-400 mr-2"></i>
@@ -379,7 +421,10 @@ $servicesJson = json_encode($allServices);
               </div>
             </div>
             <div>
-              <label for="deceasedAddress" class="block text-sm font-medium text-gray-700 mb-1">Address of the Deceased</label>
+              <label for="deceasedAddress" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                <i class="fas fa-map-marker-alt mr-2 text-sidebar-accent"></i>
+                Address of the Deceased
+              </label>
               <textarea id="deceasedAddress" name="deceasedAddress" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" rows="2"></textarea>
             </div>
           </div>
@@ -391,9 +436,12 @@ $servicesJson = json_encode($allServices);
             <i class="fas fa-credit-card mr-2 text-sidebar-accent"></i>
             Payment Information
           </h4>
-          <div class="space-y-5">
+          <div class="space-y-4">
             <div>
-              <label for="paymentMethod" class="block text-sm font-medium text-gray-700 mb-1">Method of Payment</label>
+              <label for="paymentMethod" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                <i class="fas fa-wallet mr-2 text-sidebar-accent"></i>
+                Method of Payment
+              </label>
               <select id="paymentMethod" name="paymentMethod" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
                 <option value="" disabled selected>Select payment method</option>
                 <option value="Cash">Cash</option>
@@ -401,11 +449,12 @@ $servicesJson = json_encode($allServices);
                 <option value="Bank Transfer">Bank Transfer</option>
               </select>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label for="totalPrice" class="block text-sm font-medium text-gray-700 mb-1">
+                <label for="totalPrice" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                  <i class="fas fa-tag mr-2 text-sidebar-accent"></i>
                   Total Price 
-                  <span class="text-xs text-gray-500">(Minimum: <span id="min-price">₱0.00</span>)</span>
+                  <span class="text-xs text-gray-500 ml-1">(Minimum: <span id="min-price">₱0.00</span>)</span>
                 </label>
                 <div class="relative">
                   <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -415,7 +464,10 @@ $servicesJson = json_encode($allServices);
                 </div>
               </div>
               <div>
-                <label for="amountPaid" class="block text-sm font-medium text-gray-700 mb-1">Amount Paid</label>
+                <label for="amountPaid" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                  <i class="fas fa-hand-holding-usd mr-2 text-sidebar-accent"></i>
+                  Amount Paid
+                </label>
                 <div class="relative">
                   <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <span class="text-gray-500">₱</span>
@@ -430,20 +482,21 @@ $servicesJson = json_encode($allServices);
         <!-- Cremation Checklist Section -->
         <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
           <h4 class="text-lg font-bold text-gray-800 mb-4 pb-2 border-b border-gray-200 flex items-center">
-            <i class="fas fa-clipboard-check mr-2 text-sidebar-accent"></i>
+            <i class="fas fa-plus-circle mr-2 text-sidebar-accent"></i>
             Additional Services
           </h4>
           <div class="space-y-3">
-            <label class="flex items-center space-x-3">
-              <input type="checkbox" name="withCremation" id="withCremation" class="form-checkbox h-5 w-5 text-sidebar-accent rounded border-gray-300 focus:ring-sidebar-accent">
-              <span class="text-gray-700 font-medium">With Cremation</span>
+            <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
+              <input type="checkbox" name="withCremation" id="withCremation" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
+              <i class="fas fa-fire mr-2 text-sidebar-accent"></i>
+              With Cremation
             </label>
             <p class="text-sm text-gray-500 ml-8">Check this box if the service includes cremation</p>
           </div>
         </div>
       </form>
     </div>
-
+    
     <!-- Modal Footer -->
     <div class="px-6 py-4 flex justify-between items-center border-t border-gray-200 sticky bottom-0 bg-white">
       <div class="text-gray-600">
