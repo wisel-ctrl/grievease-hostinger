@@ -210,33 +210,27 @@ $customersResult = mysqli_query($conn, $customersQuery);
       <thead>
         <tr class="bg-gray-50 border-b border-sidebar-border">
           <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(0)">
-            <div class="flex items-center">
-              <i class="fas fa-hashtag mr-1.5 text-sidebar-accent"></i> ID 
+            <div class="flex items-center"> ID 
              </div>
           </th>
           <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(1)">
-            <div class="flex items-center">
-              <i class="fas fa-user mr-1.5 text-sidebar-accent"></i> Name 
+            <div class="flex items-center"> Name 
              </div>
           </th>
           <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(2)">
-            <div class="flex items-center">
-              <i class="fas fa-envelope mr-1.5 text-sidebar-accent"></i> Email 
+            <div class="flex items-center"> Email 
              </div>
           </th>
           <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(3)">
-            <div class="flex items-center">
-              <i class="fas fa-user-tag mr-1.5 text-sidebar-accent"></i> Role 
+            <div class="flex items-center"> Role 
              </div>
           </th>
           <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(4)">
-            <div class="flex items-center">
-              <i class="fas fa-toggle-on mr-1.5 text-sidebar-accent"></i> Status 
+            <div class="flex items-center"> Status 
              </div>
           </th>
           <th class="p-4 text-left text-sm font-medium text-sidebar-text">
-            <div class="flex items-center">
-              <i class="fas fa-cogs mr-1.5 text-sidebar-accent"></i> Actions
+            <div class="flex items-center"> Actions
             </div>
           </th>
         </tr>
