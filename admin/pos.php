@@ -813,21 +813,26 @@ function toggleSidebar() {
 
 // Function to load branches
 // Function to load branches
+// Function to load branches
 function loadBranches() {
   const container = document.getElementById('branches-container');
   container.innerHTML = '';
   
   branches.forEach(branch => {
     const branchCard = document.createElement('div');
-    branchCard.className = 'bg-white rounded-lg p-5 shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 cursor-pointer';
+    branchCard.className = 'bg-white rounded-lg overflow-hidden shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 cursor-pointer flex flex-col';
     branchCard.innerHTML = `
-      <div class="mb-4 text-center">
-        <img src="/assets/images/branch-icon.png" alt="${branch.branch_name}" class="w-16 h-16 mx-auto rounded-full border-2 border-sidebar-accent">
+      <div class="w-full">
+        <img src="/assets/images/branch-icon.png" alt="${branch.branch_name}" class="w-full h-40 object-cover">
       </div>
-      <div class="text-xl font-bold mb-3 text-sidebar-text text-center">${branch.branch_name}</div>
-      <div class="flex justify-between items-center">
-        <div class="text-gray-500 text-sm"><i class="fas fa-map-marker-alt mr-1"></i> Branch Location</div>
-        <span class="text-sidebar-accent hover:underline text-sm">View Details <i class="fas fa-chevron-right ml-1"></i></span>
+      <div class="p-4 flex flex-col justify-between flex-grow">
+        <div class="text-xl font-bold mb-2 text-sidebar-text">${branch.branch_name}</div>
+        <div class="flex justify-between items-center mt-2">
+          <div class="text-gray-500 text-sm"><i class="fas fa-map-marker-alt mr-1"></i> Branch Location</div>
+          <button class="px-3 py-1 bg-sidebar-accent text-white rounded-md hover:bg-opacity-90 text-sm">
+            View Details <i class="fas fa-chevron-right ml-1"></i>
+          </button>
+        </div>
       </div>
     `;
     branchCard.onclick = () => selectBranch(branch.branch_id, branch.branch_name);
