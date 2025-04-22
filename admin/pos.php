@@ -279,7 +279,7 @@ $servicesJson = json_encode($allServices);
     <!-- Modal Header -->
     <div class="px-6 py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
       <h3 class="text-xl font-bold text-white flex items-center" id="modal-package-title">
-        <i class="fas fa-file-invoice-dollar mr-2"></i>
+        <i class="fa-solid fa-file-invoice mr-2"></i>
         Complete Your Order
       </h3>
     </div>
@@ -554,7 +554,7 @@ $servicesJson = json_encode($allServices);
     <!-- Modal Header -->
     <div class="px-6 py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
       <h3 class="text-xl font-bold text-white flex items-center">
-        <i class="fas fa-file-invoice-dollar mr-2"></i>
+        <i class="fa-solid fa-file-invoice mr-2"></i>
         Complete Your Lifeplan Order
       </h3>
     </div>

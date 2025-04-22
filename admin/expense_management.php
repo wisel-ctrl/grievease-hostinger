@@ -689,7 +689,7 @@ if ($branchResult->num_rows > 0) {
                     </th>
                     <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(<?php echo $branchId; ?>, 1)">
                         <div class="flex items-center">
-                            <i class="fas fa-file-invoice-peso mr-1.5 text-sidebar-accent"></i> Expense Name 
+                            <i class="fa-solid fa-file-invoice mr-1.5 text-sidebar-accent"></i> Expense Name 
                                        </div>
                     </th>
                     <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(<?php echo $branchId; ?>, 2)">
@@ -985,7 +985,7 @@ $conn->close();
         <!-- Receipt Upload -->
         <div>
           <label for="expenseReceipt" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-file-invoice mr-2 text-sidebar-accent"></i>
+            <i class="fa-solid fa-file-invoice mr-2 text-sidebar-accent"></i>
             Upload Receipt
           </label>
           <div class="flex items-center border border-gray-300 rounded-lg px-3 py-2 focus-within:ring-1 focus-within:ring-sidebar-accent focus-within:border-sidebar-accent transition-all duration-200">
