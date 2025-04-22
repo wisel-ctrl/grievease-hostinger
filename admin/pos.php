@@ -788,30 +788,45 @@ $servicesJson = json_encode($allServices);
 </div>
 
     <!-- Order Confirmation Modal -->
-    <div id="confirmation-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-      <div class="bg-white rounded-lg w-full max-w-md overflow-hidden">
-        <div class="p-5 border-b border-sidebar-border flex justify-between items-center">
-          <h3 class="text-xl font-bold text-green-600">Order Confirmed</h3>
-          <button onclick="closeConfirmationModal()" class="text-gray-500 hover:text-gray-700">
-            <i class="fas fa-times"></i>
-          </button>
-        </div>
-        <!-- Update your confirmation modal content -->
-        <div class="p-5 text-center">
-          <div class="w-16 h-16 mx-auto mb-4 bg-green-100 rounded-full flex items-center justify-center">
-            <i class="fas fa-check-circle text-3xl text-green-600"></i>
-          </div>
-          <h4 class="text-lg font-semibold mb-2 text-sidebar-text">Order Confirmed!</h4>
-          <p class="text-gray-600 mb-4">Your order has been successfully placed.</p>
-          <p class="text-gray-600 mb-2">Order ID: <span id="order-id" class="font-semibold">ORD-12345</span></p>
-          <p class="text-gray-600">A confirmation has been sent to your records.</p>
-        </div>
-        <div class="p-5 border-t border-sidebar-border flex justify-center">
-          <button onclick="startNewOrder()" class="px-4 py-2 bg-sidebar-accent text-white rounded font-semibold text-sm hover:bg-darkgold transition-all duration-300">Start New Order</button>
-        </div>
+<div id="confirmation-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
+  <!-- Modal Backdrop -->
+  <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+  
+  <!-- Modal Content -->
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-md mx-4 z-10 transform transition-all duration-300">
+    <!-- Close Button -->
+    <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeConfirmationModal()">
+      <i class="fas fa-times"></i>
+    </button>
+    
+    <!-- Modal Header -->
+    <div class="px-6 py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
+      <h3 class="text-xl font-bold text-white flex items-center">
+        <i class="fas fa-check-circle mr-2"></i>
+        Order Confirmed
+      </h3>
+    </div>
+    
+    <!-- Modal Body -->
+    <div class="px-6 py-5 text-center">
+      <div class="w-16 h-16 mx-auto mb-4 bg-green-100 rounded-full flex items-center justify-center">
+        <i class="fas fa-check-circle text-3xl text-green-600"></i>
       </div>
+      <h4 class="text-lg font-semibold mb-2 text-sidebar-text">Order Confirmed!</h4>
+      <p class="text-gray-600 mb-4">Your order has been successfully placed.</p>
+      <p class="text-gray-600 mb-2">Order ID: <span id="order-id" class="font-semibold">ORD-12345</span></p>
+      <p class="text-gray-600">A confirmation has been sent to your records.</p>
+    </div>
+    
+    <!-- Modal Footer --> 
+    <div class="px-6 py-4 flex justify-center border-t border-gray-200 sticky bottom-0 bg-white">
+      <button class="px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="startNewOrder()">
+        <i class="fas fa-plus mr-2"></i>
+        Start New Order
+      </button>
     </div>
   </div>
+</div>
 
   <script>
    // Initialize data from PHP
