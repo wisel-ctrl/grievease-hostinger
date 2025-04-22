@@ -364,6 +364,7 @@ $customersResult = mysqli_query($conn, $customersQuery);
     </div>
   </div>
 </div>
+      </div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
