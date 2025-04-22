@@ -1527,10 +1527,10 @@ if ($result->num_rows > 0) {
     
     <!-- Mobile/Tablet Controls - Only visible on smaller screens -->
     <div class="grid lg:hidden gap-3 w-full mt-4">
-      <!-- First row: Search Input with Filter -->
+      <!-- First row: Search Input with Filter and Archive buttons -->
       <div class="grid grid-cols-12 gap-2">
         <!-- Search Input -->
-        <div class="relative col-span-8">
+        <div class="relative col-span-6 sm:col-span-8">
           <input type="text" id="searchInput" 
                   placeholder="Search employees..." 
                   value="<?php echo htmlspecialchars($search); ?>"
