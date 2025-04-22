@@ -69,179 +69,7 @@ header("Pragma: no-cache");
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  
-  <style>
-     /* Base Typography */
-  body {
-    font-family: 'Hedvig Letters Serif', serif;
-  }
-  
-  /* Message status indicators */
-  .message-new {
-    border-left: 3px solid #CA8A04; /* Using your sidebar accent color */
-  }
-  
-  .message-read {
-    border-left: 3px solid transparent;
-  }
-  
-  /* Header Styles */
-  h1 {
-    font-family: 'Cinzel', serif;
-    font-size: 1.5rem; /* 24px */
-    font-weight: 700;
-    color: #1E293B; /* slate-800 */
-  }
-  
-  h2 {
-    font-family: 'Cinzel', serif;
-    font-size: 1.25rem; /* 20px */
-    font-weight: 600;
-    color: #1E293B; /* slate-800 */
-  }
-  
-  h3 {
-    font-family: 'Cinzel', serif;
-    font-size: 1.125rem; /* 18px */
-    font-weight: 600;
-    color: #1E293B; /* slate-800 */
-  }
-  
-  h5 {
-    font-family: 'Cinzel', serif;
-    font-size: 0.875rem; /* 14px */
-    font-weight: 500;
-    color: #CA8A04; /* sidebar accent color */
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-  }
-  
-  /* Text Colors */
-  .text-sidebar-accent {
-    color: #CA8A04;
-  }
-  
-  .text-sidebar-text {
-    color: #334155; /* slate-700 */
-  }
-  
-  /* Button Styles */
-  button {
-    font-family: 'Hedvig Letters Serif', serif;
-    font-size: 0.875rem; /* 14px */
-    transition: all 0.3s ease;
-  }
-  
-  /* Input Fields */
-  input, textarea {
-    font-family: 'Hedvig Letters Serif', serif;
-    font-size: 0.875rem; /* 14px */
-    border: 1px solid #CBD5E1; /* slate-300 */
-    border-radius: 0.375rem; /* 6px */
-  }
-  
-  /* Icons */
-  .fas {
-    color: #64748B; /* slate-500 */
-    transition: color 0.3s ease;
-  }
-  
-  /* Hover States */
-  button:hover .fas {
-    color: #1E293B; /* slate-800 */
-  }
-  
-  /* Message Bubbles */
-  .admin-message {
-    background-color: #CA8A04; /* sidebar accent */
-    color: white;
-  }
-  
-  .customer-message {
-    background-color: #F1F5F9; /* slate-100 */
-    color: #1E293B; /* slate-800 */
-  }
-  
-  /* Timestamp Text */
-  .message-time {
-    font-size: 0.75rem; /* 12px */
-    color: #64748B; /* slate-500 */
-  }
-  
-  /* Badges */
-  .badge {
-    font-size: 0.75rem; /* 12px */
-    background-color: #CA8A04; /* sidebar accent */
-    color: white;
-  }
-  
-  /* Ensure sidebar maintains styling */
-  #sidebar {
-    background-color: white !important;
-    z-index: 50 !important;
-    font-family: 'Hedvig Letters Serif', serif;
-  }
-  
-  /* Mobile Responsiveness */
-  @media (max-width: 768px) {
-    #sidebar.translate-x-0 {
-      background-color: white !important;
-      box-shadow: 2px 0 10px rgba(0,0,0,0.1);
-    }
-    
-    h1 {
-      font-size: 1.25rem; /* 20px */
-    }
-    
-    h2 {
-      font-size: 1.125rem; /* 18px */
-    }
-  }
-  
-  /* Custom scrollbar to match sidebar */
-  .scrollbar-thin::-webkit-scrollbar {
-    width: 4px;
-    height: 4px;
-  }
-  .scrollbar-thin::-webkit-scrollbar-track {
-    background: rgba(0, 0, 0, 0.05);
-  }
-  .scrollbar-thin::-webkit-scrollbar-thumb {
-    background: rgba(202, 138, 4, 0.6);
-    border-radius: 4px;
-  }
-  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-    background: rgba(202, 138, 4, 0.9);
-  }
-    /* Message status indicators */
-    .message-new {
-      border-left: 3px solid #008080;
-    }
-    
-    .message-read {
-      border-left: 3px solid transparent;
-    }
-    /* Ensure sidebar maintains background in all views */
-    #sidebar {
-      background-color: white !important;
-      z-index: 50 !important; /* Higher than chat content */
-    }
-
-    /* When sidebar is open on mobile, ensure it's above everything */
-    @media (max-width: 768px) {
-      #sidebar.translate-x-0 {
-        background-color: white !important;
-        box-shadow: 2px 0 10px rgba(0,0,0,0.1);
-      }
-    }
-    body.communication-chat #sidebar {
-      background-color: white !important;
-      z-index: 50 !important;
-    }
-    .main-content {
-      z-index: 40; /* Lower than sidebar's 50 */
-    }
-  </style>
+  <script src="tailwind.js"></script>
 </head>
 <body class="flex bg-gray-50 communication-chat">
 
@@ -309,46 +137,53 @@ header("Pragma: no-cache");
   </div>
 
       <!-- Message Detail Modal -->
-      <div id="message-detail-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center">
-      <div class="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[80vh] flex flex-col">
-        <!-- Modal Header -->
-        <div class="p-4 border-b border-gray-200 flex justify-between items-center">
-          <div>
-            <h3 class="text-lg font-semibold" id="modal-customer-name">Customer Name</h3>
-            <p class="text-sm text-gray-500" id="modal-message-date">Date</p>
-          </div>
-          <button id="close-modal" class="text-gray-500 hover:text-gray-700">
-            <i class="fas fa-times text-xl"></i>
-          </button>
-        </div>
-        
-        <!-- Modal Body - Conversation -->
-        <div class="p-4 overflow-y-auto flex-grow" id="modal-conversation">
-          <!-- Conversation messages will be loaded here -->
-        </div>
-        
-        <!-- Modal Footer - Reply Form -->
-        <div class="p-4 border-t border-gray-200">
-          <div class="flex gap-2 mb-2">
-            <button class="text-gray-500 hover:text-gray-700" title="Attach File">
-              <i class="fas fa-paperclip"></i>
-            </button>
-            <button class="text-gray-500 hover:text-gray-700" title="Quick Reply Template">
-              <i class="fas fa-reply-all"></i>
-            </button>
-            <button class="text-gray-500 hover:text-gray-700" title="Format Text">
-              <i class="fas fa-font"></i>
-            </button>
-          </div>
-          <div class="flex gap-2">
-            <textarea id="reply-input" class="flex-1 p-2.5 border border-gray-300 rounded text-sm" placeholder="Type your reply..."></textarea>
-            <button class="bg-[#008080] text-white px-4 py-2 rounded-md hover:bg-opacity-90" id="send-reply">
-              <i class="fas fa-paper-plane mr-2"></i> Send
-            </button>
-          </div>
-        </div>
+<div id="message-detail-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
+  <!-- Modal Backdrop -->
+  <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+  
+  <!-- Modal Content -->
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-4xl mx-4 z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+    <!-- Close Button -->
+    <button type="button" id="close-modal" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors">
+      <i class="fas fa-times"></i>
+    </button>
+    
+    <!-- Modal Header -->
+    <div class="px-6 py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
+      <div>
+        <h3 class="text-xl font-bold text-white flex items-center" id="modal-customer-name">Customer Name</h3>
+        <p class="text-sm text-white text-opacity-80" id="modal-message-date">Date</p>
       </div>
     </div>
+    
+    <!-- Modal Body - Conversation -->
+    <div class="px-6 py-5 overflow-y-auto flex-grow" id="modal-conversation">
+      <!-- Conversation messages will be loaded here -->
+    </div>
+    
+    <!-- Modal Footer - Reply Form -->
+    <div class="px-6 py-4 flex flex-col gap-3 border-t border-gray-200 sticky bottom-0 bg-white">
+      <div class="flex gap-3">
+        <button class="text-sidebar-accent hover:text-darkgold transition-colors" title="Attach File">
+          <i class="fas fa-paperclip"></i>
+        </button>
+        <button class="text-sidebar-accent hover:text-darkgold transition-colors" title="Quick Reply Template">
+          <i class="fas fa-reply-all"></i>
+        </button>
+        <button class="text-sidebar-accent hover:text-darkgold transition-colors" title="Format Text">
+          <i class="fas fa-font"></i>
+        </button>
+      </div>
+      <div class="flex gap-4">
+        <textarea id="reply-input" class="flex-1 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="Type your reply..."></textarea>
+        <button class="px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" id="send-reply">
+          <i class="fas fa-paper-plane mr-2"></i>
+          Send
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
 
 
     <script>
