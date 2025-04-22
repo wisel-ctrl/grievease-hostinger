@@ -199,14 +199,7 @@ header("Pragma: no-cache");
           <i class="fas fa-filter text-sidebar-accent"></i>
           <span>Filters</span>
         </button>
-      </div>
-
-      <select class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none">
-        <option value="">All Services</option>
-        <option value="memorial">Memorial Service</option>
-        <option value="funeral">Funeral Service</option>
-        <option value="cremation">Cremation</option>
-      </select>
+</div>
       
       <select class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none">
         <option value="">All Status</option>
