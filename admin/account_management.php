@@ -1527,10 +1527,10 @@ if ($result->num_rows > 0) {
     
     <!-- Mobile/Tablet Controls - Only visible on smaller screens -->
     <div class="grid lg:hidden gap-3 w-full mt-4">
-      <!-- First row: Search Input with Filter -->
+      <!-- First row: Search Input with Filter and Archive buttons -->
       <div class="grid grid-cols-12 gap-2">
         <!-- Search Input -->
-        <div class="relative col-span-8">
+        <div class="relative col-span-6 sm:col-span-8">
           <input type="text" id="searchInput" 
                   placeholder="Search employees..." 
                   value="<?php echo htmlspecialchars($search); ?>"
@@ -1539,7 +1539,7 @@ if ($result->num_rows > 0) {
         </div>
 
         <!-- Filter Dropdown -->
-        <div class="relative filter-dropdown col-span-4">
+        <div class="relative filter-dropdown col-span-3 sm:col-span-2">
           <button id="filterToggle" class="px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover w-full justify-center">
             <i class="fas fa-filter text-sidebar-accent"></i>
             <span class="hidden sm:inline">Filters</span>
@@ -1600,6 +1600,12 @@ if ($result->num_rows > 0) {
             </div>
           </div>
         </div>
+
+        <!-- Archive Button - Mobile/Tablet -->
+        <button class="col-span-3 sm:col-span-2 px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover w-full justify-center">
+          <i class="fas fa-archive text-sidebar-accent"></i>
+          <span class="hidden sm:inline">Archive</span>
+        </button>
       </div>
 
       <!-- Second row: Add Employee Button - Full width -->
