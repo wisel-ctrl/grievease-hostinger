@@ -782,7 +782,7 @@ if ($branchResult->num_rows > 0) {
                                         <?php echo htmlspecialchars($expense['category']); ?>
                                     </span>
                                 </td>
-                                <td class="px-4 py-3.5 text-sm font-medium text-sidebar-text">$<?php echo number_format($expense['price'], 2); ?></td>
+                                <td class="px-4 py-3.5 text-sm font-medium text-sidebar-text">₱<?php echo number_format($expense['price'], 2); ?></td>
                                 <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo $expense['date']; ?></td>
                                 <td class="px-4 py-3.5 text-sm">
                                     <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium <?php echo $statusClass; ?>">
