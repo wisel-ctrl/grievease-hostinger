@@ -381,7 +381,7 @@ if ($branchResult->num_rows > 0) {
         
         <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
           <i class="fas fa-box"></i>
-          <?php echo $totalItems . ($totalItems != 1 ? "" : ""); ?>
+          <?php echo $totalItems . " Item" . ($totalItems != 1 ? "s" : ""); ?>
         </span>
       </div>
       
@@ -681,6 +681,7 @@ if ($branchResult->num_rows > 0) {
     </div>
   </div>
 </div>
+
     
     <?php
         }
