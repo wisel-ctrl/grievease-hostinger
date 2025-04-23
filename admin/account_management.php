@@ -1,6 +1,4 @@
-mamamo 
- 
- <?php
+<?php
 
 session_start();
 
