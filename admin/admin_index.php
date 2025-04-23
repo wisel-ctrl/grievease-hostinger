@@ -1152,6 +1152,7 @@ require_once '../db_connect.php'; // Database connection
       <button class="px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">&raquo;</button>
     </div>
   </div>
+      </div>
             
               <!-- Footer -->
               <footer class="bg-white rounded-lg shadow-sidebar border border-sidebar-border p-4 text-center text-sm text-gray-500 mt-8">
