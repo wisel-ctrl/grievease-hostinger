@@ -680,7 +680,7 @@ if ($branchResult->num_rows > 0) {
       <?php endif; ?>
     </div>
   </div>
-</div>
+</div> 
  
     
     <?php
