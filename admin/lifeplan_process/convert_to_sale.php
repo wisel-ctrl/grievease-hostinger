@@ -56,7 +56,7 @@ try {
     ");
     
     $stmt->bind_param(
-        "isssssssssssssssddddisss",
+        "isssssssssssssssddddis",
         $data['customerID'],
         $data['fname'],
         $data['mname'],
