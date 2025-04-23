@@ -863,8 +863,8 @@ require_once '../db_connect.php'; // Database connection
             </td>
             <td class="px-4 py-3.5 text-sm">
               <div class="flex space-x-2">
-              <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="View Details" onclick="viewServiceDetails('<?php echo $row['sales_id']; ?>')">
-              <i class="fas fa-eye"></i>
+                <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="View Details">
+                  <i class="fas fa-eye"></i>
                 </button>
                 <button class="p-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition-all tooltip" title="Edit Service">
                   <i class="fas fa-edit"></i>
@@ -889,8 +889,8 @@ require_once '../db_connect.php'; // Database connection
             </td>
             <td class="px-4 py-3.5 text-sm">
               <div class="flex space-x-2">
-              <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="View Details" onclick="viewServiceDetails('<?php echo $row['sales_id']; ?>')">
-              <i class="fas fa-eye"></i>
+                <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="View Details">
+                  <i class="fas fa-eye"></i>
                 </button>
                 <button class="p-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition-all tooltip" title="Edit Service">
                   <i class="fas fa-edit"></i>
@@ -915,8 +915,8 @@ require_once '../db_connect.php'; // Database connection
             </td>
             <td class="px-4 py-3.5 text-sm">
               <div class="flex space-x-2">
-              <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="View Details" onclick="viewServiceDetails('<?php echo $row['sales_id']; ?>')">
-              <i class="fas fa-eye"></i>
+                <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="View Details">
+                  <i class="fas fa-eye"></i>
                 </button>
                 <button class="p-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition-all tooltip" title="Edit Service">
                   <i class="fas fa-edit"></i>
@@ -941,8 +941,8 @@ require_once '../db_connect.php'; // Database connection
             </td>
             <td class="px-4 py-3.5 text-sm">
               <div class="flex space-x-2">
-              <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="View Details" onclick="viewServiceDetails('<?php echo $row['sales_id']; ?>')">
-              <i class="fas fa-eye"></i>
+                <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="View Details">
+                  <i class="fas fa-eye"></i>
                 </button>
                 <button class="p-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition-all tooltip" title="Edit Service">
                   <i class="fas fa-edit"></i>
@@ -967,8 +967,8 @@ require_once '../db_connect.php'; // Database connection
             </td>
             <td class="px-4 py-3.5 text-sm">
               <div class="flex space-x-2">
-              <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="View Details" onclick="viewServiceDetails('<?php echo $row['sales_id']; ?>')">
-              <i class="fas fa-eye"></i>
+                <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="View Details">
+                  <i class="fas fa-eye"></i>
                 </button>
                 <button class="p-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition-all tooltip" title="Edit Service">
                   <i class="fas fa-edit"></i>
@@ -1107,8 +1107,8 @@ require_once '../db_connect.php'; // Database connection
                 <button class="p-2 bg-purple-100 text-purple-600 rounded-lg hover:bg-purple-200 transition-all tooltip" title="Add Stock">
                   <i class="fas fa-plus"></i>
                 </button>
-                <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="View Details" onclick="viewServiceDetails('<?php echo $row['sales_id']; ?>')">
-                      <i class="fas fa-eye"></i>
+                <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="View Details">
+                  <i class="fas fa-eye"></i>
                 </button>
               </div>
             </td>
@@ -1129,8 +1129,8 @@ require_once '../db_connect.php'; // Database connection
                 <button class="p-2 bg-purple-100 text-purple-600 rounded-lg hover:bg-purple-200 transition-all tooltip" title="Add Stock">
                   <i class="fas fa-plus"></i>
                 </button>
-                <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="View Details" onclick="viewServiceDetails('<?php echo $row['sales_id']; ?>')">
-                      <i class="fas fa-eye"></i>
+                <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="View Details">
+                  <i class="fas fa-eye"></i>
                 </button>
               </div>
             </td>
@@ -1151,8 +1151,8 @@ require_once '../db_connect.php'; // Database connection
                 <button class="p-2 bg-purple-100 text-purple-600 rounded-lg hover:bg-purple-200 transition-all tooltip" title="Add Stock">
                   <i class="fas fa-plus"></i>
                 </button>
-                <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="View Details" onclick="viewServiceDetails('<?php echo $row['sales_id']; ?>')">
-                      <i class="fas fa-eye"></i>
+                <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="View Details">
+                  <i class="fas fa-eye"></i>
                 </button>
               </div>
             </td>
