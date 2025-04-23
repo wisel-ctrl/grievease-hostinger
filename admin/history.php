@@ -371,7 +371,7 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
                       <i class="fas fa-edit"></i>
                     </button>
                     <?php if ($row['staff_assigned'] == 0): ?>
-                      <button class="p-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition-all tooltip assign-staff-btn" 
+                      <button class="p-2 bg-purple-100 text-purple-600 rounded-lg hover:bg-purple-200 transition-all tooltip assign-staff-btn" 
                               title="Assign Staff"
                               onclick="checkCustomerBeforeAssign('<?php echo $row['sales_id']; ?>', <?php echo $row['customerID'] ? 'true' : 'false'; ?>)"
                               <?php echo !$row['customerID'] ? 'disabled' : ''; ?>>
