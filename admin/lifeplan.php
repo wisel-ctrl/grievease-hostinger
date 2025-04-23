@@ -428,11 +428,7 @@ if ($conn) {
                                           data-name="'. htmlspecialchars($row['benefeciary_fullname']).'">
                                       <i class="fas fa-exchange-alt"></i>
                                   </button>
-                                //   <button class="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-all tooltip delete-btn" 
-                                //           title="Archive" 
-                                //           data-id="' . $row['lifeplan_id'] .'">
-                                //       <i class="fas fa-archive"></i>
-                                //   </button>
+                                  
                                   
                                 </div>
                               </td>
@@ -449,6 +445,12 @@ if ($conn) {
       </table>
     </div>
   </div>
+
+  <!-- <button class="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-all tooltip delete-btn" 
+                                          title="Archive" 
+                                          data-id="' . $row['lifeplan_id'] .'">
+                                      <i class="fas fa-archive"></i>
+                                  </button> -->
   
   <!-- Sticky Pagination Footer with improved spacing -->
   <div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
