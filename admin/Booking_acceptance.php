@@ -441,35 +441,34 @@ $offset = ($current_page - 1) * $bookings_per_page;
  
 
 <!-- Improved Booking Details Modal -->
-<div id="bookingDetailsModal" class="fixed inset-0 z-50 flex items-center justify-center hidden" >
+<div id="bookingDetailsModal" class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto">
   <!-- Modal Backdrop -->
   <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
   
   <!-- Modal Content -->
-  <div class="relative bg-white rounded-xl shadow-card w-full max-w-4xl mx-4 z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-4xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
     <!-- Close Button -->
     <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeModal()">
       <i class="fas fa-times"></i>
     </button>
     
     <!-- Modal Header -->
-    <div class="px-6 py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
-      <h3 id="modal-package-title" class="text-xl font-bold text-white flex items-center">
+    <div class="px-4 sm:px-6 py-4 sm:py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
+      <h3 id="modal-package-title" class="text-lg sm:text-xl font-bold text-white flex items-center">
         Booking Details
       </h3>
     </div>
     
     <!-- Modal Body -->
-    <div class="px-6 py-5">
+    <div class="px-4 sm:px-6 py-4 sm:py-5">
       <!-- Booking ID and Status Banner -->
-      <div class="flex justify-between items-center mb-6 bg-gray-50 p-4 rounded-lg">
+      <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 bg-gray-50 p-3 sm:p-4 rounded-lg gap-3 sm:gap-0">
         <div class="flex items-center">
           <div class="bg-navy rounded-full p-2 mr-3">
-          <i class="fas fa-hashtag text-sidebar-accent"></i>
+            <i class="fas fa-hashtag text-sidebar-accent"></i>
           </div>
           <div>
-            <p class="text-sm text-gray-500">
-              Booking ID</p>
+            <p class="text-sm text-gray-500">Booking ID</p>
             <p class="font-semibold text-gray-800" id="bookingId">#BK-2025-001</p>
           </div>
         </div>
@@ -484,15 +483,15 @@ $offset = ($current_page - 1) * $bookings_per_page;
       </div>
       
       <!-- Content Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
         <!-- Left Column -->
-        <div class="space-y-4">
+        <div class="space-y-3 sm:space-y-4">
           <!-- Customer Information -->
-          <div class="bg-white rounded-lg p-5 border border-gray-200 shadow-sm">
-            <h4 class="font-semibold text-gray-800 mb-4 flex items-center">
+          <div class="bg-white rounded-lg p-4 sm:p-5 border border-gray-200 shadow-sm">
+            <h4 class="font-semibold text-gray-800 mb-3 sm:mb-4 flex items-center">
               Customer Information
             </h4>
-            <div class="space-y-3">
+            <div class="space-y-2 sm:space-y-3">
               <div class="flex">
                 <div class="w-1/3 text-sm text-gray-500">Name</div>
                 <div class="w-2/3 font-medium text-gray-800" id="customerName">John Doe</div>
@@ -513,11 +512,11 @@ $offset = ($current_page - 1) * $bookings_per_page;
           </div>
 
           <!-- Service Details -->
-          <div class="bg-white rounded-lg p-5 border border-gray-200 shadow-sm">
-            <h4 class="font-semibold text-gray-800 mb-4 flex items-center">
+          <div class="bg-white rounded-lg p-4 sm:p-5 border border-gray-200 shadow-sm">
+            <h4 class="font-semibold text-gray-800 mb-3 sm:mb-4 flex items-center">
               Service Details
             </h4>
-            <div class="space-y-3">
+            <div class="space-y-2 sm:space-y-3">
               <div class="flex">
                 <div class="w-1/3 text-sm text-gray-500">Service Type</div>
                 <div class="w-2/3 font-medium text-gray-800" id="serviceType">Funeral Service Package A</div>
@@ -539,15 +538,15 @@ $offset = ($current_page - 1) * $bookings_per_page;
         </div>
         
         <!-- Right Column -->
-        <div class="space-y-4">
+        <div class="space-y-3 sm:space-y-4">
           <!-- Documents -->
-          <div class="bg-white rounded-lg p-5 border border-gray-200 shadow-sm">
-            <h4 class="font-semibold text-gray-800 mb-4 flex items-center">
+          <div class="bg-white rounded-lg p-4 sm:p-5 border border-gray-200 shadow-sm">
+            <h4 class="font-semibold text-gray-800 mb-3 sm:mb-4 flex items-center">
               Documents
             </h4>
             
             <!-- Death Certificate -->
-            <div id="deathCertificateSection" class="mb-5">
+            <div id="deathCertificateSection" class="mb-4 sm:mb-5">
               <h5 class="font-medium text-gray-700 mb-2 flex items-center">
                 Death Certificate
               </h5>
@@ -593,15 +592,16 @@ $offset = ($current_page - 1) * $bookings_per_page;
     </div>
     
     <!-- Modal Footer --> 
-    <div class="px-6 py-4 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
-      <button class="px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center" onclick="confirmDecline()">
+    <div class="px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row sm:justify-end gap-2 sm:gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
+      <button class="w-full sm:w-auto px-4 sm:px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center" onclick="confirmDecline()">
         Decline Booking
       </button>
-      <button class="px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="confirmAccept()">
+      <button class="w-full sm:w-auto px-5 sm:px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="confirmAccept()">
         Accept Booking
       </button>
     </div>
   </div>
+</div>
 
 <!-- Decline Reason Modal -->
 <div id="declineReasonModal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
