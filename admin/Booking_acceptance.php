@@ -104,7 +104,7 @@ $offset = ($current_page - 1) * $bookings_per_page;
     </div>
     <div class="flex space-x-3">
       <button class="p-2 bg-white border border-sidebar-border rounded-lg shadow-input text-sidebar-text hover:bg-sidebar-hover transition-all duration-300">
-        <i class="fas fa-bell"></i>
+        
       </button>
     </div>
   </div>
@@ -276,31 +276,26 @@ $offset = ($current_page - 1) * $bookings_per_page;
             <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(0)">
               <div class="flex items-center gap-1.5">
                 <i class="fas fa-hashtag text-sidebar-accent"></i> Booking ID 
-                <i class="fas fa-sort text-gray-400"></i>
               </div>
             </th>
             <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(1)">
               <div class="flex items-center gap-1.5">
                 <i class="fas fa-user text-sidebar-accent"></i> Customer 
-                <i class="fas fa-sort text-gray-400"></i>
               </div>
             </th>
             <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(2)">
               <div class="flex items-center gap-1.5">
                 <i class="fas fa-tag text-sidebar-accent"></i> Service 
-                <i class="fas fa-sort text-gray-400"></i>
               </div>
             </th>
             <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(3)">
               <div class="flex items-center gap-1.5">
                 <i class="fas fa-calendar text-sidebar-accent"></i> Date Requested 
-                <i class="fas fa-sort text-gray-400"></i>
               </div>
             </th>
             <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(4)">
               <div class="flex items-center gap-1.5">
                 <i class="fas fa-toggle-on text-sidebar-accent"></i> Status 
-                <i class="fas fa-sort text-gray-400"></i>
               </div>
             </th>
             <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text whitespace-nowrap">
@@ -465,7 +460,6 @@ $offset = ($current_page - 1) * $bookings_per_page;
     <!-- Modal Header -->
     <div class="px-6 py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
       <h3 id="modal-package-title" class="text-xl font-bold text-white flex items-center">
-        <i class="fas fa-info-circle mr-2"></i>
         Booking Details
       </h3>
     </div>
@@ -476,7 +470,6 @@ $offset = ($current_page - 1) * $bookings_per_page;
       <div class="flex justify-between items-center mb-6 bg-gray-50 p-4 rounded-lg">
         <div class="flex items-center">
           <div class="bg-navy rounded-full p-2 mr-3">
-            <i class="fas fa-hashtag text-sidebar-accent"></i>
           </div>
           <div>
             <p class="text-sm text-gray-500">Booking ID</p>
@@ -487,7 +480,6 @@ $offset = ($current_page - 1) * $bookings_per_page;
           <p class="text-sm text-gray-500 mb-1">Status</p>
           <div id="bookingStatus">
             <span class="px-3 py-1.5 text-sm font-medium rounded-full bg-yellow-100 text-sidebar-accent flex items-center">
-              <i class="fas fa-clock mr-1.5"></i>
               Pending
             </span>
           </div>
@@ -501,7 +493,6 @@ $offset = ($current_page - 1) * $bookings_per_page;
           <!-- Customer Information -->
           <div class="bg-white rounded-lg p-5 border border-gray-200 shadow-sm">
             <h4 class="font-semibold text-gray-800 mb-4 flex items-center">
-              <i class="fas fa-user text-sidebar-accent mr-2"></i>
               Customer Information
             </h4>
             <div class="space-y-3">
@@ -527,7 +518,6 @@ $offset = ($current_page - 1) * $bookings_per_page;
           <!-- Service Details -->
           <div class="bg-white rounded-lg p-5 border border-gray-200 shadow-sm">
             <h4 class="font-semibold text-gray-800 mb-4 flex items-center">
-              <i class="fas fa-hands-helping text-sidebar-accent mr-2"></i>
               Service Details
             </h4>
             <div class="space-y-3">
@@ -556,14 +546,12 @@ $offset = ($current_page - 1) * $bookings_per_page;
           <!-- Documents -->
           <div class="bg-white rounded-lg p-5 border border-gray-200 shadow-sm">
             <h4 class="font-semibold text-gray-800 mb-4 flex items-center">
-              <i class="fas fa-file-alt text-sidebar-accent mr-2"></i>
               Documents
             </h4>
             
             <!-- Death Certificate -->
             <div id="deathCertificateSection" class="mb-5">
               <h5 class="font-medium text-gray-700 mb-2 flex items-center">
-                <i class="fas fa-certificate text-gray-500 mr-2"></i>
                 Death Certificate
               </h5>
               <div class="border border-gray-200 rounded-lg overflow-hidden">
@@ -589,7 +577,6 @@ $offset = ($current_page - 1) * $bookings_per_page;
             <!-- Payment Proof -->
             <div>
               <h5 class="font-medium text-gray-700 mb-2 flex items-center">
-                <i class="fas fa-receipt text-gray-500 mr-2"></i>
                 Payment Proof
               </h5>
               <div class="border border-gray-200 rounded-lg overflow-hidden">
@@ -611,11 +598,9 @@ $offset = ($current_page - 1) * $bookings_per_page;
     <!-- Modal Footer --> 
     <div class="px-6 py-4 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
       <button class="px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center" onclick="confirmDecline()">
-        <i class="fas fa-times-circle mr-2"></i>
         Decline Booking
       </button>
       <button class="px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="confirmAccept()">
-        <i class="fas fa-check-circle mr-2"></i>
         Accept Booking
       </button>
     </div>
@@ -636,7 +621,6 @@ $offset = ($current_page - 1) * $bookings_per_page;
     <!-- Modal Header -->
     <div class="px-6 py-5 border-b bg-gradient-to-r from-red-600 to-red-800 border-gray-200">
       <h3 class="text-xl font-bold text-white flex items-center">
-        <i class="fas fa-exclamation-circle mr-2"></i>
         Decline Booking
       </h3>
     </div>
@@ -652,20 +636,16 @@ $offset = ($current_page - 1) * $bookings_per_page;
           <!-- Suggested Reasons -->
           <div class="grid grid-cols-2 gap-2 mb-4">
             <button type="button" onclick="selectDeclineReason('Invalid payment certificate')" 
-                    class="text-left p-2 border border-gray-300 rounded hover:bg-gray-100 text-sm">
-              <i class="fas fa-money-bill-wave text-red-500 mr-1"></i> Invalid payment certificate
+                    class="text-left p-2 border border-gray-300 rounded hover:bg-gray-100 text-sm"> Invalid payment certificate
             </button>
             <button type="button" onclick="selectDeclineReason('Incomplete documents')" 
-                    class="text-left p-2 border border-gray-300 rounded hover:bg-gray-100 text-sm">
-              <i class="fas fa-file-alt text-red-500 mr-1"></i> Incomplete documents
+                    class="text-left p-2 border border-gray-300 rounded hover:bg-gray-100 text-sm">Incomplete documents
             </button>
             <button type="button" onclick="selectDeclineReason('Unavailable service date')" 
-                    class="text-left p-2 border border-gray-300 rounded hover:bg-gray-100 text-sm">
-              <i class="fas fa-calendar-times text-red-500 mr-1"></i> Unavailable service date
+                    class="text-left p-2 border border-gray-300 rounded hover:bg-gray-100 text-sm">Unavailable service date
             </button>
             <button type="button" onclick="selectDeclineReason('Service not available')" 
-                    class="text-left p-2 border border-gray-300 rounded hover:bg-gray-100 text-sm">
-              <i class="fas fa-times-circle text-red-500 mr-1"></i> Service not available
+                    class="text-left p-2 border border-gray-300 rounded hover:bg-gray-100 text-sm">Service not available
             </button>
           </div>
           
@@ -700,13 +680,11 @@ $offset = ($current_page - 1) * $bookings_per_page;
   <div class="relative bg-white rounded-xl shadow-card w-full max-w-md mx-4 z-10 transform transition-all duration-300">
     <!-- Close Button -->
     <button type="button" class="absolute top-4 right-4 text-gray-500 hover:text-sidebar-accent transition-colors" onclick="closePaymentModal()">
-      <i class="fas fa-times"></i>
     </button>
     
     <!-- Modal Header -->
     <div class="px-6 py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
       <h3 class="text-xl font-bold text-white flex items-center">
-        <i class="fas fa-money-bill-wave mr-2"></i>
         Payment Details
       </h3>
     </div>
