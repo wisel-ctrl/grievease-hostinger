@@ -500,26 +500,48 @@ $servicesJson = json_encode($allServices);
 </div>
 
 <!-- Service Type Selection Modal -->
-<div id="serviceTypeModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4 hidden">
-    <div class="w-full max-w-md bg-white rounded-2xl shadow-xl overflow-hidden">
-        <div class="p-6">
-            <h2 class="text-2xl font-hedvig text-[#2D2B30] mb-6 text-center">Select Service Type</h2>
-            
-            <div class="grid grid-cols-2 gap-4">
-                <button id="traditionalServiceBtn" class="bg-[#F9F6F0] hover:bg-yellow-100 border-2 border-[#CA8A04] text-[#2D2B30] px-6 py-8 rounded-lg shadow-md transition-all duration-300 flex flex-col items-center">
-                    <i class="fas fa-dove text-3xl text-[#CA8A04] mb-2"></i>
-                    <span class="font-hedvig text-lg">Traditional</span>
-                    <span class="text-sm text-gray-600 mt-2 text-center">For immediate funeral needs</span>
-                </button>
-                
-                <button id="lifeplanServiceBtn" class="bg-[#F9F6F0] hover:bg-yellow-100 border-2 border-[#CA8A04] text-[#2D2B30] px-6 py-8 rounded-lg shadow-md transition-all duration-300 flex flex-col items-center">
-                    <i class="fas fa-seedling text-3xl text-[#CA8A04] mb-2"></i>
-                    <span class="font-hedvig text-lg">Lifeplan</span>
-                    <span class="text-sm text-gray-600 mt-2 text-center">Pre-need funeral planning</span>
-                </button>
-            </div>
-        </div>
+<div id="serviceTypeModal" class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto">
+  <!-- Modal Backdrop -->
+  <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+  
+  <!-- Modal Content -->
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-md mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+    <!-- Close Button -->
+    <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeServiceTypeModal()">
+      <i class="fas fa-times"></i>
+    </button>
+    
+    <!-- Modal Header -->
+    <div class="px-4 sm:px-6 py-4 sm:py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
+      <h3 class="text-lg sm:text-xl font-bold text-white flex items-center">
+        Select Service Type
+      </h3>
     </div>
+    
+    <!-- Modal Body -->
+    <div class="px-4 sm:px-6 py-4 sm:py-5">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <button id="traditionalServiceBtn" class="bg-[#F9F6F0] hover:bg-yellow-100 border-2 border-[#CA8A04] text-[#2D2B30] px-4 py-6 rounded-lg shadow-md transition-all duration-300 flex flex-col items-center">
+          <i class="fas fa-dove text-3xl text-[#CA8A04] mb-2"></i>
+          <span class="font-medium text-lg">Traditional</span>
+          <span class="text-sm text-gray-600 mt-2 text-center">For immediate funeral needs</span>
+        </button>
+        
+        <button id="lifeplanServiceBtn" class="bg-[#F9F6F0] hover:bg-yellow-100 border-2 border-[#CA8A04] text-[#2D2B30] px-4 py-6 rounded-lg shadow-md transition-all duration-300 flex flex-col items-center">
+          <i class="fas fa-seedling text-3xl text-[#CA8A04] mb-2"></i>
+          <span class="font-medium text-lg">Lifeplan</span>
+          <span class="text-sm text-gray-600 mt-2 text-center">Pre-need funeral planning</span>
+        </button>
+      </div>
+    </div>
+    
+    <!-- Modal Footer -->
+    <div class="px-4 sm:px-6 py-3 sm:py-4 flex justify-end border-t border-gray-200 sticky bottom-0 bg-white">
+      <button class="px-4 sm:px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center" onclick="closeServiceTypeModal()">
+        Cancel
+      </button>
+    </div>
+  </div>
 </div>
 
 <!-- Lifeplan Checkout Modal -->
