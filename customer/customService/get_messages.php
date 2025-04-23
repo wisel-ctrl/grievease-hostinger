@@ -22,15 +22,12 @@ if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
     exit;
 }
 
-// Get chatRoomId from query parameter
-$chatRoomId = isset($_GET['chatRoomId']) ? $_GET['chatRoomId'] : null;
+// Get user ID from session
+$user_id = $_SESSION['user_id'];
 
-// Validate chatRoomId
-if (!$chatRoomId) {
-    http_response_code(400);
-    echo json_encode(['error' => 'Missing chatRoomId parameter']);
-    exit;
-}
+// IMPORTANT: We need to use the same chat room ID format as in save_message.php
+// Always use user-based chat room ID (format: user_123)
+$chatRoomId = 'user_' . $user_id;
 
 // Prepare statement to retrieve messages
 $stmt = $conn->prepare("
@@ -69,4 +66,5 @@ echo json_encode([
 
 $stmt->close();
 $conn->close();
+
 ?>
