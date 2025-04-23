@@ -1445,7 +1445,7 @@ if ($result->num_rows > 0) {
         <h4 class="text-lg font-bold text-sidebar-text whitespace-nowrap">Employee Accounts</h4>
         
         <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
-          <!-- <i class="fas fa-user-tie"></i> -->
+          <i class="fas fa-user-tie"></i>
           <?php echo $totalRows . ($totalRows != 1 ? "" : ""); ?>
         </span>
       </div>
