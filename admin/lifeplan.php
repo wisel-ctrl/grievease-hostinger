@@ -45,6 +45,56 @@ $_SESSION['last_activity'] = time();
 header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Cache-Control: post-check=0, pre-check=0", false);
 header("Pragma: no-cache");
+
+// Include database connection
+require_once '../db_connect.php';
+
+// Get stats data
+$stats = [
+    'total_plans' => 0,
+    'active_plans' => 0,
+    'pending_payments' => 0,
+    'total_revenue' => 0
+];
+
+if ($conn) {
+    // Total Plans
+    $query = "SELECT COUNT(*) as total FROM lifeplan_tb WHERE archived = 'show'";
+    $result = $conn->query($query);
+    if ($result) {
+        $row = $result->fetch_assoc();
+        $stats['total_plans'] = $row['total'];
+        $result->free();
+    }
+
+    // Active Plans (status = 'paid' or 'ongoing')
+    $query = "SELECT COUNT(*) as total FROM lifeplan_tb WHERE archived = 'show' AND payment_status IN ('paid', 'ongoing')";
+    $result = $conn->query($query);
+    if ($result) {
+        $row = $result->fetch_assoc();
+        $stats['active_plans'] = $row['total'];
+        $result->free();
+    }
+
+    // Pending Payments (status = 'ongoing')
+    $query = "SELECT COUNT(*) as total FROM lifeplan_tb WHERE archived = 'show' AND payment_status = 'ongoing'";
+    $result = $conn->query($query);
+    if ($result) {
+        $row = $result->fetch_assoc();
+        $stats['pending_payments'] = $row['total'];
+        $result->free();
+    }
+
+    // Total Revenue (sum of amount_paid)
+    $query = "SELECT SUM(amount_paid) as total FROM lifeplan_tb WHERE archived = 'show'";
+    $result = $conn->query($query);
+    if ($result) {
+        $row = $result->fetch_assoc();
+        $stats['total_revenue'] = $row['total'] ? $row['total'] : 0;
+        $result->free();
+    }
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -68,18 +118,13 @@ header("Pragma: no-cache");
       <div>
         <h1 class="text-2xl font-bold text-sidebar-text">LifePlan Subscriptions</h1>
       </div>
-      <div class="flex space-x-3">
-        <button class="p-2 bg-white border border-sidebar-border rounded-lg shadow-input text-sidebar-text hover:bg-sidebar-hover transition-all duration-300">
-          <i class="fas fa-bell"></i>
-        </button>
-      </div>
     </div>
     
     <!-- Stats Cards -->
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+
     <!-- Total Plans Card -->
     <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
-        <!-- Card header with gradient background -->
         <div class="bg-gradient-to-r from-blue-100 to-blue-200 px-6 py-4">
             <div class="flex items-center justify-between mb-1">
                 <h3 class="text-sm font-medium text-gray-700">Total Plans</h3>
@@ -88,21 +133,18 @@ header("Pragma: no-cache");
                 </div>
             </div>
             <div class="flex items-end">
-                <span class="text-2xl md:text-3xl font-bold font-cinzel text-gray-800">124</span>
+                <span class="text-2xl md:text-3xl font-bold font-cinzel text-gray-800"><?php echo number_format($stats['total_plans']); ?></span>
             </div>
         </div>
-        
-        <!-- Card footer with change indicator (simplified since no change data) -->
         <div class="px-6 py-3 bg-white border-t border-gray-100">
             <div class="flex items-center text-gray-500">
                 <span class="text-xs">Updated today</span>
             </div>
         </div>
     </div>
-    
+
     <!-- Active Plans Card -->
     <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
-        <!-- Card header with gradient background -->
         <div class="bg-gradient-to-r from-green-100 to-green-200 px-6 py-4">
             <div class="flex items-center justify-between mb-1">
                 <h3 class="text-sm font-medium text-gray-700">Active Plans</h3>
@@ -111,21 +153,18 @@ header("Pragma: no-cache");
                 </div>
             </div>
             <div class="flex items-end">
-                <span class="text-2xl md:text-3xl font-bold font-cinzel text-gray-800">98</span>
+                <span class="text-2xl md:text-3xl font-bold font-cinzel text-gray-800"><?php echo number_format($stats['active_plans']); ?></span>
             </div>
         </div>
-        
-        <!-- Card footer with change indicator -->
         <div class="px-6 py-3 bg-white border-t border-gray-100">
             <div class="flex items-center text-gray-500">
                 <span class="text-xs">Updated today</span>
             </div>
         </div>
     </div>
-    
+
     <!-- Pending Payments Card -->
     <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
-        <!-- Card header with gradient background -->
         <div class="bg-gradient-to-r from-orange-100 to-orange-200 px-6 py-4">
             <div class="flex items-center justify-between mb-1">
                 <h3 class="text-sm font-medium text-gray-700">Pending Payments</h3>
@@ -134,21 +173,18 @@ header("Pragma: no-cache");
                 </div>
             </div>
             <div class="flex items-end">
-                <span class="text-2xl md:text-3xl font-bold font-cinzel text-gray-800">12</span>
+                <span class="text-2xl md:text-3xl font-bold font-cinzel text-gray-800"><?php echo number_format($stats['pending_payments']); ?></span>
             </div>
         </div>
-        
-        <!-- Card footer with change indicator -->
         <div class="px-6 py-3 bg-white border-t border-gray-100">
             <div class="flex items-center text-gray-500">
                 <span class="text-xs">Updated today</span>
             </div>
         </div>
     </div>
-    
+
     <!-- Total Revenue Card -->
     <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
-        <!-- Card header with gradient background -->
         <div class="bg-gradient-to-r from-purple-100 to-purple-200 px-6 py-4">
             <div class="flex items-center justify-between mb-1">
                 <h3 class="text-sm font-medium text-gray-700">Total Revenue</h3>
@@ -157,11 +193,9 @@ header("Pragma: no-cache");
                 </div>
             </div>
             <div class="flex items-end">
-                <span class="text-2xl md:text-3xl font-bold font-cinzel text-gray-800">₱4.2M</span>
+                <span class="text-2xl md:text-3xl font-bold font-cinzel text-gray-800">₱<?php echo number_format($stats['total_revenue'], 2); ?></span>
             </div>
         </div>
-        
-        <!-- Card footer with change indicator -->
         <div class="px-6 py-3 bg-white border-t border-gray-100">
             <div class="flex items-center text-gray-500">
                 <span class="text-xs">Updated today</span>
@@ -205,7 +239,7 @@ header("Pragma: no-cache");
         </select>
 
         <!-- Archive Button -->
-        <button class="px-4 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover whitespace-nowrap">
+        <button id="openArchiveModal" class="px-4 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover whitespace-nowrap">
           <i class="fas fa-archive text-sidebar-accent"></i>
           <span>Archive</span>
         </button>
@@ -245,9 +279,10 @@ header("Pragma: no-cache");
           </div>
 
           <!-- Archive Icon Button -->
-          <button class="w-10 h-10 flex items-center justify-center text-sidebar-accent">
-            <i class="fas fa-archive text-xl"></i>
-          </button>
+            <button id="openArchiveModalMobile" class="px-4 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover whitespace-nowrap">
+                <i class="fas fa-archive text-sidebar-accent"></i>
+                <span>Archive</span>
+            </button>
         </div>
       </div>
     </div>
@@ -518,6 +553,59 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
+    <!-- Archive Modal -->
+    <div id="archiveModal" class="fixed inset-0 z-50 hidden overflow-y-auto">
+        <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <!-- Background overlay -->
+            <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+                <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+            </div>
+            
+            <!-- Modal container -->
+            <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
+                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    <div class="sm:flex sm:items-start">
+                        <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
+                            <h3 class="text-lg leading-6 font-medium text-gray-900 border-b pb-2">
+                                Archived LifePlans
+                            </h3>
+                            
+                            <div class="mt-4">
+                                <div class="overflow-x-auto">
+                                    <table class="min-w-full divide-y divide-gray-200">
+                                        <thead class="bg-gray-50">
+                                            <tr>
+                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Beneficiary</th>
+                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Service</th>
+                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Duration</th>
+                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
+                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="archivedLifePlansBody" class="bg-white divide-y divide-gray-200">
+                                            <!-- Archived plans will be loaded here -->
+                                            <tr>
+                                                <td colspan="6" class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-500">
+                                                    Loading archived lifeplans...
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                    <button type="button" id="closeArchiveModal" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
   <!-- Receipt Modal -->
   <div id="receiptModal" class="fixed inset-0 z-50 hidden overflow-y-auto">
       <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
@@ -756,6 +844,30 @@ console.log("Fetched Lifeplan Data:", <?php echo json_encode($fetchedData); ?>);
 // Summary log
 console.log("Total records fetched: <?php echo count($fetchedData); ?>");
 </script>
+
+<script>
+// Function to update stats cards periodically
+function updateStats() {
+    fetch('lifeplan_process/get_stats.php')
+        .then(response => response.json())
+        .then(data => {
+            if (data) {
+                document.querySelector('.stats-card:nth-child(1) .text-2xl').textContent = data.total_plans;
+                document.querySelector('.stats-card:nth-child(2) .text-2xl').textContent = data.active_plans;
+                document.querySelector('.stats-card:nth-child(3) .text-2xl').textContent = data.pending_payments;
+                document.querySelector('.stats-card:nth-child(4) .text-2xl').textContent = '₱' + data.total_revenue.toLocaleString('en-US', {minimumFractionDigits: 2});
+            }
+        })
+        .catch(error => console.error('Error updating stats:', error));
+}
+
+// Update every 5 minutes (300000 ms)
+setInterval(updateStats, 300000);
+
+// Initial update
+updateStats();
+</script>
+
 <script>
 // Integrated Modal functionality with payment processing
 document.addEventListener('DOMContentLoaded', function() {
@@ -1263,5 +1375,172 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
+<script>
+    // Add this to your existing JavaScript
+document.addEventListener('DOMContentLoaded', function() {
+    const archiveModal = document.getElementById('archiveModal');
+    const openArchiveModalBtn = document.getElementById('openArchiveModal');
+    const openArchiveModalMobileBtn = document.getElementById('openArchiveModalMobile');
+    const closeArchiveModalBtn = document.getElementById('closeArchiveModal');
+    const archivedLifePlansBody = document.getElementById('archivedLifePlansBody');
+
+    // Open archive modal
+    openArchiveModalBtn.addEventListener('click', function() {
+        fetchArchivedLifePlans();
+        archiveModal.classList.remove('hidden');
+    });
+
+    openArchiveModalMobileBtn.addEventListener('click', function() {
+        fetchArchivedLifePlans();
+        archiveModal.classList.remove('hidden');
+    });
+
+    // Close archive modal
+    closeArchiveModalBtn.addEventListener('click', function() {
+        archiveModal.classList.add('hidden');
+    });
+
+    // Close modal when clicking outside
+    window.addEventListener('click', function(event) {
+        if (event.target === archiveModal) {
+            archiveModal.classList.add('hidden');
+        }
+    });
+
+    // Function to fetch archived lifeplans
+    function fetchArchivedLifePlans() {
+        archivedLifePlansBody.innerHTML = `
+            <tr>
+                <td colspan="6" class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-500">
+                    <i class="fas fa-spinner fa-spin"></i> Loading archived lifeplans...
+                </td>
+            </tr>
+        `;
+        
+        fetch('lifeplan_process/get_archived_lifeplans.php')
+            .then(response => response.json())
+            .then(data => {
+                if (data.length > 0) {
+                    let html = '';
+                    data.forEach(plan => {
+                        // Determine status badge class
+                        let statusClass = '';
+                        let statusIcon = '';
+                        switch (plan.payment_status) {
+                            case 'paid':
+                                statusClass = 'bg-green-100 text-green-600 border border-green-200';
+                                statusIcon = 'fa-check-circle';
+                                break;
+                            case 'ongoing':
+                                statusClass = 'bg-yellow-100 text-yellow-800 border border-yellow-200';
+                                statusIcon = 'fa-clock';
+                                break;
+                            case 'overdue':
+                                statusClass = 'bg-red-100 text-red-600 border border-red-200';
+                                statusIcon = 'fa-exclamation-circle';
+                                break;
+                            default:
+                                statusClass = 'bg-gray-100 text-gray-800 border border-gray-200';
+                                statusIcon = 'fa-question-circle';
+                        }
+                        
+                        html += `
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                    ${plan.benefeciary_fullname}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    ${plan.service_name}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    ${plan.payment_duration} years
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                    ₱${parseFloat(plan.custom_price).toFixed(2)}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${statusClass}">
+                                        <i class="fas ${statusIcon} mr-1"></i> ${plan.payment_status}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                    <button class="p-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition-all unarchive-btn" 
+                                            data-id="${plan.lifeplan_id}">
+                                        <i class="fas fa-undo"></i> Unarchive
+                                    </button>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                    archivedLifePlansBody.innerHTML = html;
+                    
+                    // Add event listeners to unarchive buttons
+                    document.querySelectorAll('.unarchive-btn').forEach(btn => {
+                        btn.addEventListener('click', function() {
+                            const lifeplanId = this.getAttribute('data-id');
+                            const beneficiaryName = this.closest('tr').querySelector('td:first-child').textContent.trim();
+                            
+                            if (confirm(`Are you sure you want to unarchive the lifeplan for ${beneficiaryName}?`)) {
+                                // Show loading indicator
+                                this.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                                
+                                // Send request to unarchive the record
+                                fetch('lifeplan_process/unarchive_lifeplan.php', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                    },
+                                    body: JSON.stringify({
+                                        lifeplan_id: lifeplanId
+                                    })
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.success) {
+                                        // Remove the row from the table
+                                        this.closest('tr').remove();
+                                        // Show success message
+                                        alert('LifePlan unarchived successfully!');
+                                        // Refresh the main table if needed
+                                        location.reload();
+                                    } else {
+                                        alert('Error unarchiving LifePlan: ' + (data.message || 'Unknown error'));
+                                        // Reset button
+                                        this.innerHTML = '<i class="fas fa-undo"></i> Unarchive';
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error('Error:', error);
+                                    alert('An error occurred while unarchiving the LifePlan');
+                                    // Reset button
+                                    this.innerHTML = '<i class="fas fa-undo"></i> Unarchive';
+                                });
+                            }
+                        });
+                    });
+                } else {
+                    archivedLifePlansBody.innerHTML = `
+                        <tr>
+                            <td colspan="6" class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-500">
+                                No archived lifeplans found
+                            </td>
+                        </tr>
+                    `;
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching archived lifeplans:', error);
+                archivedLifePlansBody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-500">
+                            Error loading archived lifeplans
+                        </td>
+                    </tr>
+                `;
+            });
+    }
+});
+</script>
+
 </body>
 </html>

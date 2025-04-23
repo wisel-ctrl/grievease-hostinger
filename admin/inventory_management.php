@@ -92,12 +92,6 @@ header("Pragma: no-cache");
     <div>
       <h1 class="text-2xl font-bold text-sidebar-text">Inventory Management</h1>
     </div>
-    <div class="flex space-x-3">
-      <button class="p-2 bg-white border border-sidebar-border rounded-lg shadow-input text-sidebar-text hover:bg-sidebar-hover transition-all duration-300">
-        <i class="fas fa-bell"></i>
-      </button>
-       
-    </div>
   </div>
 
   <!-- Inventory Overview Cards -->
@@ -459,9 +453,8 @@ if ($branchResult->num_rows > 0) {
         </button>
 
         <!-- Add Item Button -->
-        <button class="px-4 py-2 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm whitespace-nowrap" 
-                onclick="openAddInventoryModal(<?php echo $branchId; ?>)">
-          <i class="fas fa-plus-circle"></i> <span>Add Item</span>
+        <button class="px-4 py-2 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm whitespace-nowrap"
+                onclick="openAddInventoryModal(<?php echo $branchId; ?>)"> Add Item
         </button>
       </div>
     </div>
@@ -545,8 +538,7 @@ if ($branchResult->num_rows > 0) {
       <!-- Second row: Add Item Button - Full width -->
       <div class="w-full">
         <button class="px-4 py-2.5 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm whitespace-nowrap w-full justify-center" 
-                onclick="openAddInventoryModal(<?php echo $branchId; ?>)">
-          <i class="fas fa-plus-circle"></i> <span>Add Item</span>
+                onclick="openAddInventoryModal(<?php echo $branchId; ?>)"> Add Item
         </button>
       </div>
     </div>
@@ -715,7 +707,6 @@ if ($branchResult->num_rows > 0) {
     <!-- Modal Header -->
     <div class="px-6 py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
       <h3 class="text-xl font-bold text-white flex items-center">
-        <i class="fas fa-box mr-2"></i>
         Inventory Item Details
       </h3>
     </div>
@@ -731,11 +722,9 @@ if ($branchResult->num_rows > 0) {
     <!-- Modal Footer --> 
     <div class="px-6 py-4 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
       <button class="px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center" onclick="closeViewItemModal()">
-        <i class="fas fa-times mr-2"></i>
         Cancel
       </button>
       <button class="px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="saveItemChanges()">
-        <i class="fas fa-save mr-2"></i>
         Save Changes
       </button>
     </div>
@@ -758,7 +747,6 @@ if ($branchResult->num_rows > 0) {
     <!-- Modal Header -->
     <div class="px-6 py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
       <h3 class="text-xl font-bold text-white flex items-center">
-        <i class="fas fa-box mr-2"></i>
         Add New Inventory Item
       </h3>
     </div>
@@ -769,7 +757,6 @@ if ($branchResult->num_rows > 0) {
         <!-- Item Name -->
         <div>
           <label for="itemName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-tag mr-2 text-sidebar-accent"></i>
             Item Name
           </label>
           <div class="relative">
@@ -780,7 +767,6 @@ if ($branchResult->num_rows > 0) {
         <!-- Category -->
         <div>
           <label for="category" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-th-list mr-2 text-sidebar-accent"></i>
             Category
           </label>
           <div class="relative">
@@ -836,7 +822,6 @@ if ($branchResult->num_rows > 0) {
         <!-- Quantity -->
         <div>
           <label for="quantity" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-sort-amount-up mr-2 text-sidebar-accent"></i>
             Quantity
           </label>
           <div class="relative">
@@ -847,7 +832,6 @@ if ($branchResult->num_rows > 0) {
         <!-- Unit Price -->
         <div>
           <label for="unitPrice" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-coins mr-2 text-sidebar-accent"></i>
             Unit Price
           </label>
           <div class="relative">
@@ -861,12 +845,10 @@ if ($branchResult->num_rows > 0) {
         <!-- File Upload -->
         <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
           <label for="itemImage" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-image mr-2 text-sidebar-accent"></i>
             Upload Item Image
           </label>
           <div class="relative">
             <div class="flex items-center border border-gray-300 rounded-lg px-3 py-2 focus-within:ring-1 focus-within:ring-sidebar-accent focus-within:border-sidebar-accent transition-all duration-200">
-              <i class="fas fa-upload text-gray-400 mr-2"></i>
               <input type="file" id="itemImage" name="itemImage" accept="image/*" class="w-full focus:outline-none">
             </div>
           </div>
@@ -877,11 +859,9 @@ if ($branchResult->num_rows > 0) {
     <!-- Modal Footer --> 
     <div class="px-6 py-4 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
       <button class="px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center" onclick="closeAddInventoryModal()">
-        <i class="fas fa-times mr-2"></i>
         Cancel
       </button>
       <button type="submit" form="addInventoryForm" class="px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center">
-        <i class="fas fa-plus mr-2"></i>
         Add Item
       </button>
     </div>
@@ -894,7 +874,7 @@ if ($branchResult->num_rows > 0) {
   <div class="bg-white rounded-xl w-full max-w-md max-h-[90vh] overflow-y-auto shadow-xl">
     <!-- Modal Header -->
     <div class="bg-gradient-to-r from-sidebar-accent to-white flex justify-between items-center p-6 flex-shrink-0">
-      <h3 class="text-xl font-bold text-white"><i class="fas fa-edit"></i> Edit Inventory Item</h3>
+      <h3 class="text-xl font-bold text-white">Edit Inventory Item</h3>
       <button class="bg-black bg-opacity-20 hover:bg-opacity-30 rounded-full p-2 text-white hover:text-white transition-all duration-200" onclick="closeEditInventoryModal()">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
           <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
@@ -1012,7 +992,6 @@ if ($branchResult->num_rows > 0) {
     <!-- Modal Header -->
     <div class="px-6 py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
       <h3 class="text-xl font-bold text-white flex items-center">
-        <i class="fas fa-archive mr-2"></i>
         <span id="archivedItemsTitle">Archived Items</span>
       </h3>
     </div>
@@ -1036,7 +1015,6 @@ if ($branchResult->num_rows > 0) {
     <!-- Modal Footer --> 
     <div class="px-6 py-4 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
       <button class="px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center" onclick="closeArchivedModal()">
-        <i class="fas fa-times mr-2"></i>
         Close
       </button>
     </div>
