@@ -310,27 +310,28 @@ header("Pragma: no-cache");
           } else {
               // Prepare and execute the query using MySQLi
               $query = "SELECT 
-                            lp.lifeplan_id,
-                            lp.service_id,
-                            lp.customerID,
-                            lp.amount_paid,
-                            lp.balance,
-                            CONCAT_WS(' ',
-                                lp.benefeciary_fname,
-                                NULLIF(lp.benefeciary_mname, ''),
-                                lp.benefeciary_lname,
-                                NULLIF(lp.benefeciary_suffix, '')
-                            ) AS benefeciary_fullname,
-                            lp.payment_duration,
-                            lp.custom_price,
-                            lp.payment_status,
-                            s.service_name
-                        FROM 
-                            lifeplan_tb lp
-                        JOIN 
-                            services_tb s ON lp.service_id = s.service_id
-                        LIMIT 6
-                        "; // Limit to 6 records for pagination
+                        lp.lifeplan_id,
+                        lp.service_id,
+                        lp.customerID,
+                        lp.amount_paid,
+                        lp.balance,
+                        CONCAT_WS(' ',
+                            lp.benefeciary_fname,
+                            NULLIF(lp.benefeciary_mname, ''),
+                            lp.benefeciary_lname,
+                            NULLIF(lp.benefeciary_suffix, '')
+                        ) AS benefeciary_fullname,
+                        lp.payment_duration,
+                        lp.custom_price,
+                        lp.payment_status,
+                        s.service_name
+                    FROM 
+                        lifeplan_tb lp
+                    JOIN 
+                        services_tb s ON lp.service_id = s.service_id
+                    WHERE
+                        lp.archived = 'show'
+                    LIMIT 6"; // Limit to 6 records for pagination
               
               $result = $conn->query($query);
               
@@ -389,7 +390,8 @@ header("Pragma: no-cache");
                                           title="View Receipt" 
                                           data-id="' . $row['lifeplan_id'] . '"
                                           data-name="' . htmlspecialchars($row['benefeciary_fullname']) . '"
-                                          data-monthly="' . number_format($row['custom_price'] / ($row['payment_duration'] * 12), 2) . '"
+                                          data-custom-price="' . $row['custom_price'] . '"
+                                          data-duration="' . $row['payment_duration'] . '"
                                           data-total="' . number_format($row['amount_paid']) . '"
                                           data-balance="' . number_format($row['balance']) . '">
                                       <i class="fas fa-receipt"></i>
@@ -397,8 +399,10 @@ header("Pragma: no-cache");
                                   <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="Edit">
                                     <i class="fas fa-edit"></i>
                                   </button>
-                                  <button class="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-all tooltip" title="Delete">
-                                    <i class="fas fa-archive text-red"></i>
+                                  <button class="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-all tooltip delete-btn" 
+                                          title="Archive" 
+                                          data-id="' . $row['lifeplan_id'] .'">
+                                      <i class="fas fa-archive"></i>
                                   </button>
                                 </div>
                               </td>
@@ -533,37 +537,17 @@ document.addEventListener('DOMContentLoaded', function() {
                           
                           <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-6">
                               <!-- Left side - Payment Logs -->
+                            
                               <div>
-                                  <h4 class="font-medium text-gray-700 mb-2">Payment History</h4>
-                                  <div class="bg-gray-50 p-4 rounded-lg max-h-96 overflow-y-auto">
-                                      <div class="space-y-4">
-                                          <!-- Static payment logs (replace with dynamic data later) -->
-                                          <div class="border-b pb-3">
-                                              <div class="flex justify-between">
-                                                  <span class="font-medium">Payment #1</span>
-                                                  <span class="text-green-600">₱5,000.00</span>
-                                              </div>
-                                              <div class="text-sm text-gray-500">June 15, 2023</div>
-                                              <div class="text-sm mt-1">Received by: Admin User</div>
-                                          </div>
-                                          <div class="border-b pb-3">
-                                              <div class="flex justify-between">
-                                                  <span class="font-medium">Payment #2</span>
-                                                  <span class="text-green-600">₱5,000.00</span>
-                                              </div>
-                                              <div class="text-sm text-gray-500">July 15, 2023</div>
-                                              <div class="text-sm mt-1">Received by: Admin User</div>
-                                          </div>
-                                          <div class="border-b pb-3">
-                                              <div class="flex justify-between">
-                                                  <span class="font-medium">Payment #3</span>
-                                                  <span class="text-green-600">₱5,000.00</span>
-                                              </div>
-                                              <div class="text-sm text-gray-500">August 15, 2023</div>
-                                              <div class="text-sm mt-1">Received by: Admin User</div>
-                                          </div>
-                                      </div>
-                                  </div>
+                                <h4 class="font-medium text-gray-700 mb-2">Payment History</h4>
+                                <div class="bg-gray-50 p-4 rounded-lg max-h-96 overflow-y-auto">
+                                    <div class="space-y-4" id="paymentLogsContainer">
+                                        <!-- Payment logs will be loaded here dynamically -->
+                                        <div class="text-center py-4 text-gray-500">
+                                            <i class="fas fa-spinner fa-spin"></i> Loading payment history...
+                                        </div>
+                                    </div>
+                                </div>
                               </div>
                               
                               <!-- Right side - Payment Input -->
@@ -790,17 +774,105 @@ document.addEventListener('DOMContentLoaded', function() {
         btn.addEventListener('click', function() {
             currentLifeplanId = this.getAttribute('data-id');
             const beneficiaryName = this.getAttribute('data-name');
-            const monthlyAmount = this.getAttribute('data-monthly');
-            const totalPaid = this.getAttribute('data-total');
+            
+            // Get the raw values before formatting
+            const customPrice = parseFloat(this.getAttribute('data-custom-price'));
+            const paymentDuration = parseInt(this.getAttribute('data-duration'));
+            const totalPaid = parseFloat(this.getAttribute('data-total').replace(/,/g, ''));
             currentBalance = parseFloat(this.getAttribute('data-balance').replace(/,/g, ''));
-            currentAmountPaid = parseFloat(totalPaid.replace(/,/g, ''));
+            currentAmountPaid = totalPaid;
+            
+            // Calculate monthly amount properly
+            const monthlyAmount = (customPrice / (paymentDuration * 12)).toFixed(2);
             
             // Fetch customer ID associated with this lifeplan
             fetchCustomerId(currentLifeplanId);
             
             // Update modal content
             document.getElementById('beneficiaryName').textContent = beneficiaryName;
-            document.getElementById('monthlyAmount').textContent = '₱' + parseFloat(monthlyAmount).toFixed(2);
+            document.getElementById('monthlyAmount').textContent = '₱' + monthlyAmount;
+            document.getElementById('totalPaid').textContent = '₱' + currentAmountPaid.toFixed(2);
+            document.getElementById('remainingBalance').textContent = '₱' + currentBalance.toFixed(2);
+            
+            // Fetch and display payment logs
+            fetchPaymentLogs(currentLifeplanId);
+            
+            // Show modal
+            modal.classList.remove('hidden');
+        });
+    });
+
+    // Function to fetch payment logs
+    function fetchPaymentLogs(lifeplanId) {
+    const paymentLogsContainer = document.getElementById('paymentLogsContainer');
+    paymentLogsContainer.innerHTML = '<div class="text-center py-4 text-gray-500"><i class="fas fa-spinner fa-spin"></i> Loading payment history...</div>';
+    
+    fetch(`lifeplan_process/get_payment_logs.php?lifeplan_id=${lifeplanId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.length > 0) {
+                let html = '';
+                data.forEach((log, index) => {
+                    const paymentDate = new Date(log.log_date);
+                    const formattedDate = paymentDate.toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                    });
+                    
+                    // Construct customer name
+                    let customerName = log.first_name;
+                    if (log.middle_name) customerName += ' ' + log.middle_name;
+                    customerName += ' ' + log.last_name;
+                    if (log.suffix) customerName += ' ' + log.suffix;
+                    
+                    html += `
+                        <div class="border-b pb-3 mb-3">
+                            <div class="flex justify-between">
+                                <span class="font-medium">Payment #${index + 1}</span>
+                                <span class="text-green-600">₱${parseFloat(log.installment_amount).toFixed(2)}</span>
+                            </div>
+                            <div class="text-sm text-gray-500">${formattedDate}</div>
+                            <div class="text-sm mt-1">New Balance: ₱${parseFloat(log.new_balance).toFixed(2)}</div>
+                            <div class="text-sm mt-1 text-gray-600">Paid by: ${customerName}</div>
+                        </div>
+                    `;
+                });
+                paymentLogsContainer.innerHTML = html;
+            } else {
+                paymentLogsContainer.innerHTML = '<div class="text-center py-4 text-gray-500">No payment history found</div>';
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching payment logs:', error);
+            paymentLogsContainer.innerHTML = '<div class="text-center py-4 text-gray-500">Error loading payment history</div>';
+        });
+    }
+
+    // Open modal when clicking View Receipt buttons
+    // Open modal when clicking View Receipt buttons
+    viewReceiptBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            currentLifeplanId = this.getAttribute('data-id');
+            const beneficiaryName = this.getAttribute('data-name');
+            
+            // Get the raw values before formatting
+            const customPrice = parseFloat(this.getAttribute('data-custom-price'));
+            const paymentDuration = parseInt(this.getAttribute('data-duration'));
+            const totalPaid = parseFloat(this.getAttribute('data-total').replace(/,/g, ''));
+            currentBalance = parseFloat(this.getAttribute('data-balance').replace(/,/g, ''));
+            currentAmountPaid = totalPaid;
+            console.log(customPrice, paymentDuration);
+            // Calculate monthly amount properly
+            const monthlyAmount = (customPrice / (paymentDuration * 12)).toFixed(2);
+            console.log(monthlyAmount);
+            
+            // Fetch customer ID associated with this lifeplan
+            fetchCustomerId(currentLifeplanId);
+            
+            // Update modal content
+            document.getElementById('beneficiaryName').textContent = beneficiaryName;
+            document.getElementById('monthlyAmount').textContent = '₱' + monthlyAmount;
             document.getElementById('totalPaid').textContent = '₱' + currentAmountPaid.toFixed(2);
             document.getElementById('remainingBalance').textContent = '₱' + currentBalance.toFixed(2);
             
@@ -910,11 +982,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Set default date to today (from existing code)
                 document.getElementById('paymentDate').valueAsDate = new Date();
                 
-                // Keep modal open (from enhanced code) instead of closing it
-                // modal.classList.add('hidden');
+                
+                modal.classList.add('hidden');
                 
                 // Optionally refresh the table data
-                // location.reload();
+                location.reload();
             } else {
                 alert('Error recording payment: ' + (data.message || 'Unknown error'));
             }
@@ -938,6 +1010,53 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Set default date to today (from existing code)
     document.getElementById('paymentDate').valueAsDate = new Date();
+});
+</script>
+<script>
+    // Add this to your existing JavaScript
+document.addEventListener('DOMContentLoaded', function() {
+    // Archive/Delete button functionality
+    document.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const lifeplanId = this.getAttribute('data-id');
+            const beneficiaryName = this.closest('tr').querySelector('td:first-child').textContent.trim();
+            
+            if (confirm(`Are you sure you want to archive the lifeplan for ${beneficiaryName}?`)) {
+                // Show loading indicator
+                this.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                
+                // Send request to archive the record
+                fetch('lifeplan_process/archive_lifeplan.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        lifeplan_id: lifeplanId
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Remove the row from the table
+                        this.closest('tr').remove();
+                        // Optionally show a success message
+                        alert('LifePlan archived successfully!');
+                    } else {
+                        alert('Error archiving LifePlan: ' + (data.message || 'Unknown error'));
+                        // Reset button icon
+                        this.innerHTML = '<i class="fas fa-archive"></i>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while archiving the LifePlan');
+                    // Reset button icon
+                    this.innerHTML = '<i class="fas fa-archive"></i>';
+                });
+            }
+        });
+    });
 });
 </script>
 <script>

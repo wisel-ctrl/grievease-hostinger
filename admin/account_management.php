@@ -1,4 +1,4 @@
- <?php
+<?php
 
 session_start();
 
@@ -85,11 +85,6 @@ header("Pragma: no-cache");
     <div>
       <h1 class="text-2xl font-bold text-sidebar-text">Account Management</h1>
     </div>
-    <div class="flex space-x-3">
-      <button class="p-2 bg-white border border-sidebar-border rounded-lg shadow-input text-sidebar-text hover:bg-sidebar-hover transition-all duration-300">
-        <i class="fas fa-bell"></i>
-      </button>
-    </div>
   </div>
 
   <?php
@@ -132,7 +127,7 @@ $customersResult = mysqli_query($conn, $customersQuery);
         
         <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
           <i class="fas fa-users"></i>
-          <?php echo $totalCustomers . " Customer" . ($totalCustomers != 1 ? "s" : ""); ?>
+          <?php echo $totalCustomers . ($totalCustomers != 1 ? "" : ""); ?>
         </span>
       </div>
       
@@ -218,7 +213,7 @@ $customersResult = mysqli_query($conn, $customersQuery);
         <!-- Add Customer Button -->
         <button class="px-4 py-2 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm whitespace-nowrap" 
                 onclick="openAddCustomerAccountModal()">
-          <i class="fas fa-plus-circle"></i> <span>Add Customer</span>
+                <span>Add Customer</span>
         </button>
       </div>
     </div>
@@ -298,7 +293,7 @@ $customersResult = mysqli_query($conn, $customersQuery);
       <div class="w-full">
         <button class="px-4 py-2.5 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm whitespace-nowrap w-full justify-center" 
                 onclick="openAddCustomerAccountModal()">
-          <i class="fas fa-plus-circle"></i> <span>Add Customer Account</span>
+                <span>Add Customer Account</span>
         </button>
       </div>
     </div>
@@ -538,32 +533,30 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 <!-- Add Customer Account Modal -->
-<div id="addCustomerAccountModal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
+<div id="addCustomerAccountModal" class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto">
   <!-- Modal Backdrop -->
   <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
   
   <!-- Modal Content -->
-  <div class="relative bg-white rounded-xl shadow-card w-full max-w-xl mx-4 z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
     <!-- Close Button -->
     <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeAddCustomerAccountModal()">
       <i class="fas fa-times"></i>
     </button>
     
     <!-- Modal Header -->
-    <div class="px-6 py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
-      <h3 class="text-xl font-bold text-white flex items-center">
-        <i class="fas fa-user-plus mr-2"></i>
+    <div class="px-4 sm:px-6 py-4 sm:py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
+      <h3 class="text-lg sm:text-xl font-bold text-white flex items-center">
         Add Customer Account
       </h3>
     </div>
     
     <!-- Modal Body -->
-    <div class="px-6 py-5">
-      <form id="addCustomerAccountForm" method="post" action="addCustomer/add_customer.php" class="space-y-4">
+    <div class="px-4 sm:px-6 py-4 sm:py-5">
+      <form id="addCustomerAccountForm" method="post" action="addCustomer/add_customer.php" class="space-y-3 sm:space-y-4">
         <!-- Personal Information Section -->
         <div>
           <label for="firstName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-user mr-2 text-sidebar-accent"></i>
             First Name <span class="text-red-500">*</span>
           </label>
           <div class="relative">
@@ -574,7 +567,6 @@ document.addEventListener('DOMContentLoaded', function() {
         
         <div>
           <label for="lastName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-user mr-2 text-sidebar-accent"></i>
             Last Name <span class="text-red-500">*</span>
           </label>
           <div class="relative">
@@ -583,10 +575,9 @@ document.addEventListener('DOMContentLoaded', function() {
           <p id="lastNameError" class="text-red-500 text-xs mt-1 hidden"></p>
         </div>
         
-        <div class="flex gap-4">
-          <div class="flex-1">
+        <div class="flex flex-col sm:flex-row gap-2 sm:gap-4">
+          <div class="w-full sm:flex-1">
             <label for="middleName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-user mr-2 text-sidebar-accent"></i>
               Middle Name
             </label>
             <div class="relative">
@@ -595,9 +586,8 @@ document.addEventListener('DOMContentLoaded', function() {
             <p id="middleNameError" class="text-red-500 text-xs mt-1 hidden"></p>
           </div>
           
-          <div class="flex-1">
+          <div class="w-full sm:flex-1">
             <label for="suffix" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-user-tag mr-2 text-sidebar-accent"></i>
               Suffix
             </label>
             <div class="relative">
@@ -617,7 +607,6 @@ document.addEventListener('DOMContentLoaded', function() {
         
         <div>
           <label for="birthdate" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-calendar-alt mr-2 text-sidebar-accent"></i>
             Birthdate <span class="text-red-500">*</span>
           </label>
           <div class="relative">
@@ -630,7 +619,6 @@ document.addEventListener('DOMContentLoaded', function() {
         
         <div>
           <label for="branchLocation" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-map-marker-alt mr-2 text-sidebar-accent"></i>
             Branch Location <span class="text-red-500">*</span>
           </label>
           <div class="relative">
@@ -645,7 +633,6 @@ document.addEventListener('DOMContentLoaded', function() {
         <!-- Contact Information Section -->
         <div>
           <label for="customerEmail" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-envelope mr-2 text-sidebar-accent"></i>
             Email Address <span class="text-red-500">*</span>
           </label>
           <div class="relative">
@@ -656,7 +643,6 @@ document.addEventListener('DOMContentLoaded', function() {
         
         <div>
           <label for="customerPhone" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-phone mr-2 text-sidebar-accent"></i>
             Phone Number <span class="text-red-500">*</span>
           </label>
           <div class="relative">
@@ -667,13 +653,12 @@ document.addEventListener('DOMContentLoaded', function() {
         
         <div>
           <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-key mr-2 text-sidebar-accent"></i>
             Generated Password
           </label>
           <div class="relative">
             <input type="password" id="generatedPassword" name="password" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200 bg-gray-100" readonly>
             <button type="button" class="absolute right-2 top-2 text-gray-500 hover:text-gray-700" onclick="togglePassword()">
-              <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+              <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 sm:w-6 sm:h-6">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 12s2.947-5.455 8.02-5.455S20.02 12 20.02 12s-2.947 5.455-8.02 5.455S3.98 12 3.98 12z" />
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 15a3 3 0 100-6 3 3 0 000 6z" />
               </svg>
@@ -682,15 +667,15 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
         
         <!-- Additional Information Card -->
-        <div class="bg-gray-50 p-4 rounded-lg border-l-4 border-sidebar-accent mt-4">
-          <h4 class="text-sm font-medium text-gray-700 mb-2 flex items-center">
+        <div class="bg-gray-50 p-3 sm:p-4 rounded-lg border-l-4 border-sidebar-accent mt-3 sm:mt-4">
+          <h4 class="text-xs sm:text-sm font-medium text-gray-700 mb-2 flex items-center">
             <i class="fas fa-info-circle mr-2 text-sidebar-accent"></i>
             Account Information
           </h4>
-          <p class="text-sm text-gray-600">
+          <p class="text-xs sm:text-sm text-gray-600">
             An account will be created with the provided information. A temporary password will be generated automatically.
           </p>
-          <p class="text-sm text-gray-600 mt-2">
+          <p class="text-xs sm:text-sm text-gray-600 mt-2">
             The customer will be able to change their password after logging in for the first time.
           </p>
         </div>
@@ -701,13 +686,11 @@ document.addEventListener('DOMContentLoaded', function() {
     </div>
     
     <!-- Modal Footer -->
-    <div class="px-6 py-4 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
-      <button class="px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center" onclick="closeAddCustomerAccountModal()">
-        <i class="fas fa-times mr-2"></i>
+    <div class="px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row sm:justify-end gap-2 sm:gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
+      <button class="w-full sm:w-auto px-4 sm:px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center" onclick="closeAddCustomerAccountModal()">
         Cancel
       </button>
-      <button class="px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="submitCustomerForm()">
-        <i class="fas fa-user-plus mr-2"></i>
+      <button class="w-full sm:w-auto px-5 sm:px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="submitCustomerForm()">
         Create Account
       </button>
     </div>
@@ -729,7 +712,6 @@ document.addEventListener('DOMContentLoaded', function() {
     <!-- Modal Header -->
     <div class="px-6 py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
       <h3 class="text-xl font-bold text-white flex items-center">
-        <i class="fas fa-shield-alt mr-2"></i>
         Email Verification
       </h3>
     </div>
@@ -752,11 +734,9 @@ document.addEventListener('DOMContentLoaded', function() {
     <!-- Modal Footer -->
     <div class="px-6 py-4 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
       <button class="px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center" onclick="closeOtpModal()">
-        <i class="fas fa-times mr-2"></i>
         Cancel
       </button>
       <button class="px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="verifyOTP()">
-        <i class="fas fa-check-circle mr-2"></i>
         Verify
       </button>
     </div>
@@ -1445,7 +1425,7 @@ if ($result->num_rows > 0) {
         <h4 class="text-lg font-bold text-sidebar-text whitespace-nowrap">Employee Accounts</h4>
         
         <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
-          <!-- <i class="fas fa-user-tie"></i> -->
+          <i class="fas fa-user-tie"></i>
           <?php echo $totalRows . ($totalRows != 1 ? "" : ""); ?>
         </span>
       </div>
@@ -1532,7 +1512,7 @@ if ($result->num_rows > 0) {
         <!-- Add Employee Button -->
         <button class="px-4 py-2 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm whitespace-nowrap" 
                 onclick="openAddEmployeeAccountModal()">
-          <i class="fas fa-plus-circle"></i> <span>Add Employee</span>
+                <span>Add Employee</span>
         </button>
       </div>
     </div>
@@ -1613,7 +1593,7 @@ if ($result->num_rows > 0) {
       <div class="w-full">
         <button class="px-4 py-2.5 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm whitespace-nowrap w-full justify-center" 
                 onclick="openAddEmployeeAccountModal()">
-          <i class="fas fa-plus-circle"></i> <span>Add Employee Account</span>
+                <span>Add Employee Account</span>
         </button>
       </div>
     </div>
@@ -1630,39 +1610,33 @@ if ($result->num_rows > 0) {
       <table class="w-full">
         <thead>
           <tr class="bg-gray-50 border-b border-sidebar-border">
-            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(0)">
-              <div class="flex items-center gap-1.5">
-                <i class="fas fa-hashtag text-sidebar-accent"></i> ID 
-                <i class="fas fa-sort ml-1 text-gray-400"></i>
+            <th class="bg-red px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(0)">
+              <div class="flex items-center gap-1.5"> ID 
+                
               </div>
             </th>
             <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(1)">
-              <div class="flex items-center gap-1.5">
-                <i class="fas fa-user text-sidebar-accent"></i> Name 
-                <i class="fas fa-sort ml-1 text-gray-400"></i>
+              <div class="flex items-center gap-1.5"> Name 
+                
               </div>
             </th>
             <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(2)">
-              <div class="flex items-center gap-1.5">
-                <i class="fas fa-envelope text-sidebar-accent"></i> Email 
-                <i class="fas fa-sort ml-1 text-gray-400"></i>
+              <div class="flex items-center gap-1.5"> Email 
+                
               </div>
             </th>
             <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(3)">
-              <div class="flex items-center gap-1.5">
-                <i class="fas fa-user-tag text-sidebar-accent"></i> Role 
-                <i class="fas fa-sort ml-1 text-gray-400"></i>
+              <div class="flex items-center gap-1.5"> Role 
+                
               </div>
             </th>
             <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(4)">
-              <div class="flex items-center gap-1.5">
-                <i class="fas fa-toggle-on text-sidebar-accent"></i> Status 
-                <i class="fas fa-sort ml-1 text-gray-400"></i>
+              <div class="flex items-center gap-1.5"> Status 
+                
               </div>
             </th>
             <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text whitespace-nowrap">
-              <div class="flex items-center gap-1.5">
-                <i class="fas fa-cogs text-sidebar-accent"></i> Actions
+              <div class="flex items-center gap-1.5"> Actions
               </div>
             </th>
           </tr>
@@ -1845,27 +1819,25 @@ function closeAddEmployeeAccountModal() {
   <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
   
   <!-- Modal Content -->
-  <div class="relative bg-white rounded-xl shadow-card w-full max-w-xl mx-4 z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-xl mx-4 md:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
     <!-- Close Button -->
-    <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeAddEmployeeAccountModal()">
+    <button type="button" class="absolute top-2 md:top-4 right-2 md:right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeAddEmployeeAccountModal()">
       <i class="fas fa-times"></i>
     </button>
     
     <!-- Modal Header -->
-    <div class="px-6 py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
-      <h3 class="text-xl font-bold text-white flex items-center">
-        <i class="fas fa-user-plus mr-2"></i>
+    <div class="px-4 md:px-6 py-4 md:py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
+      <h3 class="text-lg md:text-xl font-bold text-white flex items-center">
         Add Employee Account
       </h3>
     </div>
     
     <!-- Modal Body -->
-    <div class="px-6 py-5">
-      <form id="addEmployeeAccountForm" method="post" action="addEmployee/add_employee.php" class="space-y-4">
+    <div class="px-4 md:px-6 py-4 md:py-5">
+      <form id="addEmployeeAccountForm" method="post" action="addEmployee/add_employee.php" class="space-y-3 md:space-y-4">
         <!-- Personal Information -->
         <div>
           <label for="empFirstName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-user mr-2 text-sidebar-accent"></i>
             First Name <span class="text-red-500">*</span>
           </label>
           <div class="relative">
@@ -1876,7 +1848,6 @@ function closeAddEmployeeAccountModal() {
         
         <div>
           <label for="empLastName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-user mr-2 text-sidebar-accent"></i>
             Last Name <span class="text-red-500">*</span>
           </label>
           <div class="relative">
@@ -1885,10 +1856,9 @@ function closeAddEmployeeAccountModal() {
           <p id="empLastNameError" class="text-red-500 text-xs mt-1 hidden">Last name is required</p>
         </div>
         
-        <div class="flex gap-4">
+        <div class="flex flex-col sm:flex-row gap-2 sm:gap-4">
           <div class="flex-1">
             <label for="empMiddleName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-user mr-2 text-sidebar-accent"></i>
               Middle Name
             </label>
             <div class="relative">
@@ -1898,7 +1868,6 @@ function closeAddEmployeeAccountModal() {
           
           <div class="flex-1">
             <label for="suffix" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-user-tag mr-2 text-sidebar-accent"></i>
               Suffix <span class="text-xs text-gray-500">(Optional)</span>
             </label>
             <div class="relative">
@@ -1918,7 +1887,6 @@ function closeAddEmployeeAccountModal() {
         
         <div>
           <label for="empBirthdate" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-calendar-alt mr-2 text-sidebar-accent"></i>
             Birthdate <span class="text-red-500">*</span>
           </label>
           <div class="relative">
@@ -1931,7 +1899,6 @@ function closeAddEmployeeAccountModal() {
         
         <div>
           <label for="empBranchLocation" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-map-marker-alt mr-2 text-sidebar-accent"></i>
             Branch Location <span class="text-red-500">*</span>
           </label>
           <div class="relative">
@@ -1946,7 +1913,6 @@ function closeAddEmployeeAccountModal() {
         <!-- Contact Information -->
         <div>
           <label for="employeeEmail" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-envelope mr-2 text-sidebar-accent"></i>
             Email Address <span class="text-red-500">*</span>
           </label>
           <div class="relative">
@@ -1956,7 +1922,6 @@ function closeAddEmployeeAccountModal() {
         
         <div>
           <label for="employeePhone" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-phone mr-2 text-sidebar-accent"></i>
             Phone Number <span class="text-red-500">*</span>
           </label>
           <div class="relative">
@@ -1972,7 +1937,7 @@ function closeAddEmployeeAccountModal() {
           <div class="relative">
             <input type="password" id="empGeneratedPassword" name="password" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200 bg-gray-100" readonly autocomplete="new-password">
             <button type="button" class="absolute right-2 top-2 text-gray-500 hover:text-gray-700" onclick="toggleEmpPassword()">
-              <svg id="empEyeIcon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+              <svg id="empEyeIcon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 md:w-6 md:h-6">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 12s2.947-5.455 8.02-5.455S20.02 12 20.02 12s-2.947 5.455-8.02 5.455S3.98 12 3.98 12z" />
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 15a3 3 0 100-6 3 3 0 000 6z" />
               </svg>
@@ -1981,15 +1946,15 @@ function closeAddEmployeeAccountModal() {
         </div>
         
         <!-- Additional Information Card -->
-        <div class="bg-gray-50 p-4 rounded-lg border-l-4 border-sidebar-accent mt-4">
-          <h4 class="text-sm font-medium text-gray-700 mb-2 flex items-center">
+        <div class="bg-gray-50 p-3 md:p-4 rounded-lg border-l-4 border-sidebar-accent mt-3 md:mt-4">
+          <h4 class="text-xs md:text-sm font-medium text-gray-700 mb-1 md:mb-2 flex items-center">
             <i class="fas fa-info-circle mr-2 text-sidebar-accent"></i>
             Account Information
           </h4>
-          <p class="text-sm text-gray-600">
+          <p class="text-xs md:text-sm text-gray-600">
             An employee account will be created with the provided information. A temporary password will be generated automatically.
           </p>
-          <p class="text-sm text-gray-600 mt-2">
+          <p class="text-xs md:text-sm text-gray-600 mt-1 md:mt-2">
             The employee will be able to change their password after logging in for the first time.
           </p>
         </div>
@@ -2000,13 +1965,11 @@ function closeAddEmployeeAccountModal() {
     </div>
     
     <!-- Modal Footer -->
-    <div class="px-6 py-4 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
-      <button class="px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center" onclick="closeAddEmployeeAccountModal()">
-        <i class="fas fa-times mr-2"></i>
+    <div class="px-4 md:px-6 py-3 md:py-4 flex flex-col sm:flex-row sm:justify-end gap-2 sm:gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
+      <button class="px-4 md:px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center sm:justify-start order-2 sm:order-1" onclick="closeAddEmployeeAccountModal()">
         Cancel
       </button>
-      <button class="px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="submitEmployeeForm()">
-        <i class="fas fa-user-plus mr-2"></i>
+      <button class="px-4 md:px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center order-1 sm:order-2" onclick="submitEmployeeForm()">
         Create Account
       </button>
     </div>
@@ -2028,7 +1991,6 @@ function closeAddEmployeeAccountModal() {
     <!-- Modal Header -->
     <div class="px-6 py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
       <h3 class="text-xl font-bold text-white flex items-center">
-        <i class="fas fa-shield-alt mr-2"></i>
         Email Verification
       </h3>
     </div>
@@ -2051,11 +2013,9 @@ function closeAddEmployeeAccountModal() {
     <!-- Modal Footer -->
     <div class="px-6 py-4 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
       <button class="px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center" onclick="closeEmpOtpModal()">
-        <i class="fas fa-times mr-2"></i>
         Cancel
       </button>
       <button class="px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="verifyEmpOTP()">
-        <i class="fas fa-check-circle mr-2"></i>
         Verify
       </button>
     </div>

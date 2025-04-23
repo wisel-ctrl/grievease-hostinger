@@ -381,7 +381,7 @@ if ($branchResult->num_rows > 0) {
         
         <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
           <i class="fas fa-box"></i>
-          <?php echo $totalItems . " Item" . ($totalItems != 1 ? "s" : ""); ?>
+          <?php echo $totalItems . ($totalItems != 1 ? "" : ""); ?>
         </span>
       </div>
       
@@ -566,37 +566,37 @@ if ($branchResult->num_rows > 0) {
             <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(<?php echo $branchId; ?>, 0)">
               <div class="flex items-center gap-1.5">
                 <i class="fas fa-hashtag text-sidebar-accent"></i> ID 
-                <i class="fas fa-sort text-gray-400"></i>
+                 
               </div>
             </th>
             <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(<?php echo $branchId; ?>, 1)">
               <div class="flex items-center gap-1.5">
                 <i class="fas fa-box text-sidebar-accent"></i> Item Name 
-                <i class="fas fa-sort text-gray-400"></i>
+                 
               </div>
             </th>
             <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(<?php echo $branchId; ?>, 2)">
               <div class="flex items-center gap-1.5">
                 <i class="fas fa-th-list text-sidebar-accent"></i> Category 
-                <i class="fas fa-sort text-gray-400"></i>
+                 
               </div>
             </th>
             <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(<?php echo $branchId; ?>, 3)">
               <div class="flex items-center gap-1.5">
                 <i class="fas fa-cubes text-sidebar-accent"></i> Quantity 
-                <i class="fas fa-sort text-gray-400"></i>
+                 
               </div>
             </th>
             <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(<?php echo $branchId; ?>, 4)">
               <div class="flex items-center gap-1.5">
                 <i class="fas fa-tag text-sidebar-accent"></i> Unit Price 
-                <i class="fas fa-sort text-gray-400"></i>
+                 
               </div>
             </th>
             <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(<?php echo $branchId; ?>, 5)">
               <div class="flex items-center gap-1.5">
                 <i class="fas fa-peso-sign text-sidebar-accent"></i> Total Value 
-                <i class="fas fa-sort text-gray-400"></i>
+                 
               </div>
             </th>
             <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text whitespace-nowrap">
@@ -680,7 +680,7 @@ if ($branchResult->num_rows > 0) {
       <?php endif; ?>
     </div>
   </div>
-</div>
+</div> 
  
     
     <?php

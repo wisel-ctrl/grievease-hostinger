@@ -413,464 +413,771 @@ require_once '../db_connect.php'; // Database connection
   
   <!-- Branch Statistics -->
 <div class="bg-white rounded-lg shadow-md mb-8 border border-sidebar-border overflow-hidden">
-    <div class="bg-sidebar-hover p-4 border-b border-sidebar-border flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div class="flex items-center gap-3">
-            <h4 class="text-lg font-bold text-sidebar-text">Branch Performance</h4>
+    <!-- Header Section - Made responsive with better stacking -->
+    <div class="bg-sidebar-hover p-4 border-b border-sidebar-border">
+        <!-- Desktop layout for big screens - Title on left, controls on right -->
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+            <!-- Title and Counter -->
+            <div class="flex items-center gap-3 mb-4 lg:mb-0">
+                <h4 class="text-lg font-bold text-sidebar-text whitespace-nowrap">Branch Performance</h4>
+            </div>
+            
+            <!-- Controls for big screens - aligned right -->
+            <div class="hidden lg:flex items-center gap-3">
+                <!-- Filter Dropdown -->
+                <div class="relative filter-dropdown">
+                    <button id="branchFilterToggle" class="px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover">
+                        <i class="fas fa-filter text-sidebar-accent"></i>
+                        <span>Filters</span>
+                        <?php if(isset($sortFilter) && $sortFilter): ?>
+                            <span class="h-2 w-2 bg-sidebar-accent rounded-full"></span>
+                        <?php endif; ?>
+                    </button>
+                    
+                    <!-- Filter Window -->
+                    <div id="branchFilterDropdown" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-4">
+                        <div class="space-y-4">
+                            <!-- Sort Options -->
+                            <div>
+                                <h5 class="text-sm font-medium text-sidebar-text mb-2">Sort By</h5>
+                                <div class="space-y-1">
+                                    <div class="flex items-center cursor-pointer" data-sort="branch_asc">
+                                        <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                                            Branch: A-Z
+                                        </span>
+                                    </div>
+                                    <div class="flex items-center cursor-pointer" data-sort="branch_desc">
+                                        <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                                            Branch: Z-A
+                                        </span>
+                                    </div>
+                                    <div class="flex items-center cursor-pointer" data-sort="revenue_high">
+                                        <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                                            Revenue: High to Low
+                                        </span>
+                                    </div>
+                                    <div class="flex items-center cursor-pointer" data-sort="revenue_low">
+                                        <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                                            Revenue: Low to High
+                                        </span>
+                                    </div>
+                                    <div class="flex items-center cursor-pointer" data-sort="profit_high">
+                                        <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                                            Profit: High to Low
+                                        </span>
+                                    </div>
+                                    <div class="flex items-center cursor-pointer" data-sort="profit_low">
+                                        <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                                            Profit: Low to High
+                                        </span>
+                                    </div>
+                                    <div class="flex items-center cursor-pointer" data-sort="growth_high">
+                                        <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                                            Growth: High to Low
+                                        </span>
+                                    </div>
+                                    <div class="flex items-center cursor-pointer" data-sort="growth_low">
+                                        <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                                            Growth: Low to High
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Export Button (styled like the Add button) -->
+                <button class="px-4 py-2 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm whitespace-nowrap" 
+                        onclick="exportBranchData()">
+                    <i class="fas fa-download"></i> <span>Export</span>
+                </button>
+            </div>
         </div>
         
-        <!-- Search Section -->
-        <div class="flex flex-col md:flex-row items-start md:items-center gap-3 w-full md:w-auto">
-            <!-- Search Input -->
-            <div class="relative w-full md:w-64">
-                <input type="text" placeholder="Search..." 
-                       class="pl-8 pr-3 py-2 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
-                <i class="fas fa-search absolute left-2.5 top-3 text-gray-400"></i>
+        <!-- Mobile/Tablet Controls - Only visible on smaller screens -->
+        <div class="lg:hidden w-full mt-4">
+            <!-- First row: Filter and Export icons -->
+            <div class="flex items-center w-full gap-3 mb-4">
+                <!-- Filter Dropdown - Takes most of the space -->
+                <div class="relative flex-grow filter-dropdown">
+                    <button id="mobileBranchFilterToggle" class="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm flex items-center justify-between hover:bg-sidebar-hover">
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-filter text-sidebar-accent"></i>
+                            <span>Filters</span>
+                        </div>
+                        <i class="fas fa-chevron-down text-gray-400"></i>
+                    </button>
+                    
+                    <!-- Filter Window - Positioned below the button -->
+                    <div id="mobileBranchFilterDropdown" class="hidden absolute left-0 right-0 mt-2 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-4">
+                        <div class="space-y-4">
+                            <!-- Sort Options -->
+                            <div>
+                                <h5 class="text-sm font-medium text-sidebar-text mb-2">Sort By</h5>
+                                <div class="space-y-2">
+                                    <div class="flex items-center cursor-pointer" data-sort="branch_asc">
+                                        <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full">
+                                            Branch: A-Z
+                                        </span>
+                                    </div>
+                                    <div class="flex items-center cursor-pointer" data-sort="branch_desc">
+                                        <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full">
+                                            Branch: Z-A
+                                        </span>
+                                    </div>
+                                    <div class="flex items-center cursor-pointer" data-sort="revenue_high">
+                                        <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full">
+                                            Revenue: High to Low
+                                        </span>
+                                    </div>
+                                    <div class="flex items-center cursor-pointer" data-sort="revenue_low">
+                                        <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full">
+                                            Revenue: Low to High
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Second row: Export Button - Full width -->
+            <div class="w-full">
+                <button class="px-4 py-2.5 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm whitespace-nowrap w-full justify-center" 
+                        onclick="exportBranchData()">
+                    <i class="fas fa-download"></i> <span>Export Branch Data</span>
+                </button>
             </div>
         </div>
     </div>
     
-    <!-- Branch Performance Table -->
-    <div class="overflow-x-auto scrollbar-thin">
-        <table class="w-full">
-            <thead>
-                <tr class="bg-gray-50 border-b border-sidebar-border">
-                    <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(0)">
-                        <div class="flex items-center">
-                            <i class="fas fa-building mr-1.5 text-sidebar-accent"></i> Branch
-                        </div>
-                    </th>
-                    <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(1)">
-                        <div class="flex items-center">
-                            <i class="fas fa-clipboard-list mr-1.5 text-sidebar-accent"></i> Services
-                        </div>
-                    </th>
-                    <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(2)">
-                        <div class="flex items-center">
-                            <i class="fas fa-dollar-sign mr-1.5 text-sidebar-accent"></i> Revenue
-                        </div>
-                    </th>
-                    <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(3)">
-                        <div class="flex items-center">
-                            <i class="fas fa-credit-card mr-1.5 text-sidebar-accent"></i> Expenses
-                        </div>
-                    </th>
-                    <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(4)">
-                        <div class="flex items-center">
-                            <i class="fas fa-chart-line mr-1.5 text-sidebar-accent"></i> Profit
-                        </div>
-                    </th>
-                    <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(5)">
-                        <div class="flex items-center">
-                            <i class="fas fa-percentage mr-1.5 text-sidebar-accent"></i> Growth
-                        </div>
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
-                    <td class="p-4 text-sm text-sidebar-text font-medium">Downtown Branch</td>
-                    <td class="p-4 text-sm text-sidebar-text">27</td>
-                    <td class="p-4 text-sm font-medium text-sidebar-text">$52,380</td>
-                    <td class="p-4 text-sm text-sidebar-text">$19,240</td>
-                    <td class="p-4 text-sm font-medium text-sidebar-text">$33,140</td>
-                    <td class="p-4 text-sm">
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-600 border border-green-200">
-                            <i class="fas fa-arrow-up mr-1"></i> 12%
-                        </span>
-                    </td>
-                </tr>
-                <tr class="hover:bg-sidebar-hover transition-colors">
-                    <td class="p-4 text-sm text-sidebar-text font-medium">Westside Branch</td>
-                    <td class="p-4 text-sm text-sidebar-text">15</td>
-                    <td class="p-4 text-sm font-medium text-sidebar-text">$34,940</td>
-                    <td class="p-4 text-sm text-sidebar-text">$15,280</td>
-                    <td class="p-4 text-sm font-medium text-sidebar-text">$19,660</td>
-                    <td class="p-4 text-sm">
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-600 border border-green-200">
-                            <i class="fas fa-arrow-up mr-1"></i> 8%
-                        </span>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+    <!-- Responsive Table Container with improved spacing -->
+    <div class="overflow-x-auto scrollbar-thin" id="branchTableContainer">
+        <div id="branchLoadingIndicator" class="hidden absolute inset-0 bg-white bg-opacity-50 flex items-center justify-center">
+            <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-sidebar-accent"></div>
+        </div>
+        
+        <!-- Responsive Table with improved spacing and horizontal scroll for small screens -->
+        <div class="min-w-full">
+            <table class="w-full">
+                <thead>
+                    <tr class="bg-gray-50 border-b border-sidebar-border">
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(0)">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fas fa-building text-sidebar-accent"></i> Branch
+                            </div>
+                        </th>
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(1)">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fas fa-clipboard-list text-sidebar-accent"></i> Services
+                            </div>
+                        </th>
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(2)">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fas fa-dollar-sign text-sidebar-accent"></i> Revenue
+                            </div>
+                        </th>
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(3)">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fas fa-credit-card text-sidebar-accent"></i> Expenses
+                            </div>
+                        </th>
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(4)">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fas fa-chart-line text-sidebar-accent"></i> Profit
+                            </div>
+                        </th>
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(5)">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fas fa-percentage text-sidebar-accent"></i> Growth
+                            </div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody id="branchTableBody">
+                    <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
+                        <td class="px-4 py-3.5 text-sm text-sidebar-text font-medium">Downtown Branch</td>
+                        <td class="px-4 py-3.5 text-sm text-sidebar-text">27</td>
+                        <td class="px-4 py-3.5 text-sm font-medium text-sidebar-text">$52,380</td>
+                        <td class="px-4 py-3.5 text-sm text-sidebar-text">$19,240</td>
+                        <td class="px-4 py-3.5 text-sm font-medium text-sidebar-text">$33,140</td>
+                        <td class="px-4 py-3.5 text-sm">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-600 border border-green-200">
+                                <i class="fas fa-arrow-up mr-1"></i> 12%
+                            </span>
+                        </td>
+                    </tr>
+                    <tr class="hover:bg-sidebar-hover transition-colors">
+                        <td class="px-4 py-3.5 text-sm text-sidebar-text font-medium">Westside Branch</td>
+                        <td class="px-4 py-3.5 text-sm text-sidebar-text">15</td>
+                        <td class="px-4 py-3.5 text-sm font-medium text-sidebar-text">$34,940</td>
+                        <td class="px-4 py-3.5 text-sm text-sidebar-text">$15,280</td>
+                        <td class="px-4 py-3.5 text-sm font-medium text-sidebar-text">$19,660</td>
+                        <td class="px-4 py-3.5 text-sm">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-600 border border-green-200">
+                                <i class="fas fa-arrow-up mr-1"></i> 8%
+                            </span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
     
-    <!-- Pagination (similar to first code) -->
-    <div class="p-4 border-t border-sidebar-border flex justify-between items-center">
-        <div class="text-sm text-gray-500">
+    <!-- Sticky Pagination Footer with improved spacing -->
+    <div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div id="paginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
             Showing 1 - 2 of 2 branches
         </div>
-        <div class="flex space-x-1">
-            <button class="px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover opacity-50 cursor-not-allowed" disabled>&laquo;</button>
-            <button class="px-3 py-1 border border-sidebar-border rounded text-sm bg-sidebar-accent text-white">1</button>
-            <button class="px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover opacity-50 cursor-not-allowed" disabled>&raquo;</button>
+        <div class="flex space-x-2">
+            <a href="<?php echo '?page=' . max(1, $page - 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover opacity-50 pointer-events-none">&laquo;</a>
+            
+            <a href="<?php echo '?page=1'; ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm bg-sidebar-accent text-white">
+                1
+            </a>
+            
+            <a href="<?php echo '?page=' . min($totalPages, $page + 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover opacity-50 pointer-events-none">&raquo;</a>
         </div>
     </div>
 </div>
 
   <!-- Upcoming Services Table -->
 <div class="bg-white rounded-lg shadow-md mb-8 border border-sidebar-border overflow-hidden">
-    <!-- Header with Search and Filters -->
-    <div class="bg-sidebar-hover p-4 border-b border-sidebar-border flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div class="flex items-center gap-3">
-            <h3 class="text-lg font-bold text-sidebar-text">Upcoming Services</h3>
-            
-            <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
-                <i class="fas fa-clipboard-list"></i>
-                25 Services
-            </span>
-        </div>
+  <!-- Header Section - Made responsive with better stacking -->
+  <div class="bg-sidebar-hover p-4 border-b border-sidebar-border">
+    <!-- Desktop layout for big screens - Title on left, controls on right -->
+    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+      <!-- Title and Counter -->
+      <div class="flex items-center gap-3 mb-4 lg:mb-0">
+        <h3 class="text-lg font-bold text-sidebar-text whitespace-nowrap">Upcoming Services</h3>
         
-        <!-- Search and Filter Section -->
-        <div class="flex flex-col md:flex-row items-start md:items-center gap-3 w-full md:w-auto">
-            <!-- Search Input -->
-            <div class="relative w-full md:w-64">
-                <input type="text" 
-                       placeholder="Search services..." 
-                       class="pl-8 pr-3 py-2 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
-                <i class="fas fa-search absolute left-2.5 top-3 text-gray-400"></i>
+        <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
+          <i class="fas fa-clipboard-list"></i>
+          25 Services
+        </span>
+      </div>
+      
+      <!-- Controls for big screens - aligned right -->
+      <div class="hidden lg:flex items-center gap-3">
+        <!-- Search Input -->
+        <div class="relative">
+          <input type="text" id="servicesSearchInput" 
+                placeholder="Search services..." 
+                class="pl-8 pr-3 py-2 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
+          <i class="fas fa-search absolute left-2.5 top-3 text-gray-400"></i>
+        </div>
+
+        <!-- Filter Dropdown -->
+        <div class="relative filter-dropdown">
+          <button id="servicesFilterToggle" class="px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover">
+            <i class="fas fa-filter text-sidebar-accent"></i>
+            <span>Filters</span>
+            <?php if(isset($sortFilter) && $sortFilter): ?>
+              <span class="h-2 w-2 bg-sidebar-accent rounded-full"></span>
+            <?php endif; ?>
+          </button>
+          
+          <!-- Filter Window -->
+          <div id="servicesFilterDropdown" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-4">
+            <div class="space-y-4">
+              <!-- Sort Options -->
+              <div>
+                <h5 class="text-sm font-medium text-sidebar-text mb-2">Sort By</h5>
+                <div class="space-y-1">
+                  <div class="flex items-center cursor-pointer" data-sort="id_asc">
+                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                      ID: Ascending
+                    </span>
+                  </div>
+                  <div class="flex items-center cursor-pointer" data-sort="id_desc">
+                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                      ID: Descending
+                    </span>
+                  </div>
+                  <div class="flex items-center cursor-pointer" data-sort="name_asc">
+                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                      Client: A-Z
+                    </span>
+                  </div>
+                  <div class="flex items-center cursor-pointer" data-sort="name_desc">
+                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                      Client: Z-A
+                    </span>
+                  </div>
+                  <div class="flex items-center cursor-pointer" data-sort="date_asc">
+                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                      Date: Earliest First
+                    </span>
+                  </div>
+                  <div class="flex items-center cursor-pointer" data-sort="date_desc">
+                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                      Date: Latest First
+                    </span>
+                  </div>
+                </div>
+              </div>
             </div>
+          </div>
         </div>
+      </div>
     </div>
     
-    <!-- Services Table -->
-    <div class="overflow-x-auto scrollbar-thin">
-        <table class="w-full">
-            <thead>
-                <tr class="bg-gray-50 border-b border-sidebar-border">
-                    <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(0)">
-                        <div class="flex items-center">
-                            <i class="fas fa-hashtag mr-1.5 text-sidebar-accent"></i> ID
-                        </div>
-                    </th>
-                    <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(1)">
-                        <div class="flex items-center">
-                            <i class="fas fa-user mr-1.5 text-sidebar-accent"></i> Client Name
-                        </div>
-                    </th>
-                    <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(2)">
-                        <div class="flex items-center">
-                            <i class="fas fa-th-list mr-1.5 text-sidebar-accent"></i> Service Type
-                        </div>
-                    </th>
-                    <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(3)">
-                        <div class="flex items-center">
-                            <i class="fas fa-calendar-alt mr-1.5 text-sidebar-accent"></i> Date
-                        </div>
-                    </th>
-                    <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(4)">
-                        <div class="flex items-center">
-                            <i class="fas fa-map-marker-alt mr-1.5 text-sidebar-accent"></i> Location
-                        </div>
-                    </th>
-                    <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(5)">
-                        <div class="flex items-center">
-                            <i class="fas fa-toggle-on mr-1.5 text-sidebar-accent"></i> Status
-                        </div>
-                    </th>
-                    <th class="p-4 text-left text-sm font-medium text-sidebar-text">
-                        <div class="flex items-center">
-                            <i class="fas fa-cogs mr-1.5 text-sidebar-accent"></i> Actions
-                        </div>
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
-                    <td class="p-4 text-sm text-sidebar-text font-medium">#FNS-2023001</td>
-                    <td class="p-4 text-sm text-sidebar-text">Robert Johnson</td>
-                    <td class="p-4 text-sm text-sidebar-text">
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">
-                            Memorial Service
-                        </span>
-                    </td>
-                    <td class="p-4 text-sm text-sidebar-text">Mar 8, 2025</td>
-                    <td class="p-4 text-sm text-sidebar-text">St. Mary's Chapel</td>
-                    <td class="p-4 text-sm">
-                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 border border-yellow-200">
-                            <i class="fas fa-clock mr-1"></i> Pending
-                        </span>
-                    </td>
-                    <td class="p-4 text-sm">
-                        <div class="flex space-x-2">
-                            <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="View Details">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                            <button class="p-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition-all tooltip" title="Edit Service">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-                <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
-                    <td class="p-4 text-sm text-sidebar-text font-medium">#FNS-2023002</td>
-                    <td class="p-4 text-sm text-sidebar-text">Emily Williams</td>
-                    <td class="p-4 text-sm text-sidebar-text">
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">
-                            Funeral Service
-                        </span>
-                    </td>
-                    <td class="p-4 text-sm text-sidebar-text">Mar 10, 2025</td>
-                    <td class="p-4 text-sm text-sidebar-text">Oak Hill Cemetery</td>
-                    <td class="p-4 text-sm">
-                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 border border-yellow-200">
-                            <i class="fas fa-clock mr-1"></i> Pending
-                        </span>
-                    </td>
-                    <td class="p-4 text-sm">
-                        <div class="flex space-x-2">
-                            <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="View Details">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                            <button class="p-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition-all tooltip" title="Edit Service">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-                <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
-                    <td class="p-4 text-sm text-sidebar-text font-medium">#FNS-2023003</td>
-                    <td class="p-4 text-sm text-sidebar-text">Michael Davis</td>
-                    <td class="p-4 text-sm text-sidebar-text">
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">
-                            Visitation
-                        </span>
-                    </td>
-                    <td class="p-4 text-sm text-sidebar-text">Mar 7, 2025</td>
-                    <td class="p-4 text-sm text-sidebar-text">Grace Funeral Home</td>
-                    <td class="p-4 text-sm">
-                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-600 border border-green-200">
-                            <i class="fas fa-check-circle mr-1"></i> Confirmed
-                        </span>
-                    </td>
-                    <td class="p-4 text-sm">
-                        <div class="flex space-x-2">
-                            <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="View Details">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                            <button class="p-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition-all tooltip" title="Edit Service">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-                <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
-                    <td class="p-4 text-sm text-sidebar-text font-medium">#FNS-2023004</td>
-                    <td class="p-4 text-sm text-sidebar-text">Sarah Thompson</td>
-                    <td class="p-4 text-sm text-sidebar-text">
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">
-                            Cremation Service
-                        </span>
-                    </td>
-                    <td class="p-4 text-sm text-sidebar-text">Mar 12, 2025</td>
-                    <td class="p-4 text-sm text-sidebar-text">Riverside Crematorium</td>
-                    <td class="p-4 text-sm">
-                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 border border-yellow-200">
-                            <i class="fas fa-clock mr-1"></i> Pending
-                        </span>
-                    </td>
-                    <td class="p-4 text-sm">
-                        <div class="flex space-x-2">
-                            <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="View Details">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                            <button class="p-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition-all tooltip" title="Edit Service">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-                <tr class="hover:bg-sidebar-hover transition-colors">
-                    <td class="p-4 text-sm text-sidebar-text font-medium">#FNS-2023005</td>
-                    <td class="p-4 text-sm text-sidebar-text">David Miller</td>
-                    <td class="p-4 text-sm text-sidebar-text">
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">
-                            Memorial Service
-                        </span>
-                    </td>
-                    <td class="p-4 text-sm text-sidebar-text">Mar 15, 2025</td>
-                    <td class="p-4 text-sm text-sidebar-text">Lakeside Gardens</td>
-                    <td class="p-4 text-sm">
-                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-red-100 text-red-600 border border-red-200">
-                            <i class="fas fa-times-circle mr-1"></i> Cancelled
-                        </span>
-                    </td>
-                    <td class="p-4 text-sm">
-                        <div class="flex space-x-2">
-                            <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="View Details">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                            <button class="p-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition-all tooltip" title="Edit Service">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+    <!-- Mobile/Tablet Controls - Only visible on smaller screens -->
+    <div class="lg:hidden w-full mt-4">
+      <!-- First row: Search bar with filter and archive icons on the right -->
+      <div class="flex items-center w-full gap-3 mb-4">
+        <!-- Search Input - Takes most of the space -->
+        <div class="relative flex-grow">
+          <input type="text" id="mobileServicesSearchInput" 
+                  placeholder="Search services..." 
+                  class="pl-8 pr-3 py-2.5 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
+          <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+        </div>
+
+        <!-- Icon-only buttons for filter and archive -->
+        <div class="flex items-center gap-3">
+          <!-- Filter Icon Button -->
+          <div class="relative filter-dropdown">
+            <button id="mobileServicesFilterToggle" class="w-10 h-10 flex items-center justify-center text-sidebar-accent">
+              <i class="fas fa-filter text-xl"></i>
+              <span id="filterIndicator" class="hidden absolute top-1 right-1 h-2 w-2 bg-sidebar-accent rounded-full"></span>
+            </button>
+            
+            <!-- Filter Window - Positioned below the icon -->
+            <div id="mobileServicesFilterDropdown" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-4">
+              <div class="space-y-4">
+                <!-- Sort Options -->
+                <div>
+                  <h5 class="text-sm font-medium text-sidebar-text mb-2">Sort By</h5>
+                  <div class="space-y-2">
+                    <div class="flex items-center cursor-pointer" data-sort="id_asc">
+                      <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full">
+                        ID: Ascending
+                      </span>
+                    </div>
+                    <div class="flex items-center cursor-pointer" data-sort="id_desc">
+                      <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full">
+                        ID: Descending
+                      </span>
+                    </div>
+                    <div class="flex items-center cursor-pointer" data-sort="name_asc">
+                      <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full">
+                        Client: A-Z
+                      </span>
+                    </div>
+                    <div class="flex items-center cursor-pointer" data-sort="name_desc">
+                      <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full">
+                        Client: Z-A
+                      </span>
+                    </div>
+                    <div class="flex items-center cursor-pointer" data-sort="date_asc">
+                      <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full">
+                        Date: Earliest First
+                      </span>
+                    </div>
+                    <div class="flex items-center cursor-pointer" data-sort="date_desc">
+                      <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full">
+                        Date: Latest First
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Archive Icon Button -->
+          <button class="w-10 h-10 flex items-center justify-center text-sidebar-accent">
+            <i class="fas fa-archive text-xl"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Responsive Table Container with improved spacing -->
+  <div class="overflow-x-auto scrollbar-thin" id="servicesTableContainer">
+    <div id="servicesLoadingIndicator" class="hidden absolute inset-0 bg-white bg-opacity-50 flex items-center justify-center">
+      <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-sidebar-accent"></div>
     </div>
     
-    <!-- Pagination -->
-    <div class="p-4 border-t border-sidebar-border flex justify-between items-center">
-        <div class="text-sm text-gray-500">
-            Showing 1 - 5 of 25 services
-        </div>
-        <div class="flex space-x-1">
-            <button class="px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover opacity-50 cursor-not-allowed" disabled>&laquo;</button>
-            <button class="px-3 py-1 border border-sidebar-border rounded text-sm bg-sidebar-accent text-white">1</button>
-            <button class="px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">2</button>
-            <button class="px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">3</button>
-            <button class="px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">&raquo;</button>
-        </div>
+    <!-- Responsive Table with improved spacing and horizontal scroll for small screens -->
+    <div class="min-w-full">
+      <table class="w-full">
+        <thead>
+          <tr class="bg-gray-50 border-b border-sidebar-border">
+            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(0)">
+              <div class="flex items-center gap-1.5">
+                <i class="fas fa-hashtag text-sidebar-accent"></i> ID
+              </div>
+            </th>
+            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(1)">
+              <div class="flex items-center gap-1.5">
+                <i class="fas fa-user text-sidebar-accent"></i> Client Name
+              </div>
+            </th>
+            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(2)">
+              <div class="flex items-center gap-1.5">
+                <i class="fas fa-th-list text-sidebar-accent"></i> Service Type
+              </div>
+            </th>
+            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(3)">
+              <div class="flex items-center gap-1.5">
+                <i class="fas fa-calendar-alt text-sidebar-accent"></i> Date
+              </div>
+            </th>
+            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(4)">
+              <div class="flex items-center gap-1.5">
+                <i class="fas fa-map-marker-alt text-sidebar-accent"></i> Location
+              </div>
+            </th>
+            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(5)">
+              <div class="flex items-center gap-1.5">
+                <i class="fas fa-toggle-on text-sidebar-accent"></i> Status
+              </div>
+            </th>
+            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text whitespace-nowrap">
+              <div class="flex items-center gap-1.5">
+                <i class="fas fa-cogs text-sidebar-accent"></i> Actions
+              </div>
+            </th>
+          </tr>
+        </thead>
+        <tbody id="servicesTableBody">
+          <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
+            <td class="px-4 py-3.5 text-sm text-sidebar-text font-medium">#FNS-2023001</td>
+            <td class="px-4 py-3.5 text-sm text-sidebar-text">Robert Johnson</td>
+            <td class="px-4 py-3.5 text-sm text-sidebar-text">
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">
+                Memorial Service
+              </span>
+            </td>
+            <td class="px-4 py-3.5 text-sm text-sidebar-text">Mar 8, 2025</td>
+            <td class="px-4 py-3.5 text-sm text-sidebar-text">St. Mary's Chapel</td>
+            <td class="px-4 py-3.5 text-sm">
+              <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 border border-yellow-200">
+                <i class="fas fa-clock mr-1"></i> Pending
+              </span>
+            </td>
+            <td class="px-4 py-3.5 text-sm">
+              <div class="flex space-x-2">
+                <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="View Details">
+                  <i class="fas fa-eye"></i>
+                </button>
+                <button class="p-1.5 bg-green-100 text-green-600 rounded hover:bg-blue-200 transition-all" title="Edit Service">
+                  <i class="fas fa-edit"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+          <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
+            <td class="px-4 py-3.5 text-sm text-sidebar-text font-medium">#FNS-2023002</td>
+            <td class="px-4 py-3.5 text-sm text-sidebar-text">Emily Williams</td>
+            <td class="px-4 py-3.5 text-sm text-sidebar-text">
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">
+                Funeral Service
+              </span>
+            </td>
+            <td class="px-4 py-3.5 text-sm text-sidebar-text">Mar 10, 2025</td>
+            <td class="px-4 py-3.5 text-sm text-sidebar-text">Oak Hill Cemetery</td>
+            <td class="px-4 py-3.5 text-sm">
+              <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 border border-yellow-200">
+                <i class="fas fa-clock mr-1"></i> Pending
+              </span>
+            </td>
+            <td class="px-4 py-3.5 text-sm">
+              <div class="flex space-x-2">
+                <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="View Details">
+                  <i class="fas fa-eye"></i>
+                </button>
+                <button class="p-1.5 bg-green-100 text-green-600 rounded hover:bg-blue-200 transition-all" title="Edit Service">
+                  <i class="fas fa-edit"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+          <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
+            <td class="px-4 py-3.5 text-sm text-sidebar-text font-medium">#FNS-2023003</td>
+            <td class="px-4 py-3.5 text-sm text-sidebar-text">Michael Davis</td>
+            <td class="px-4 py-3.5 text-sm text-sidebar-text">
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">
+                Visitation
+              </span>
+            </td>
+            <td class="px-4 py-3.5 text-sm text-sidebar-text">Mar 7, 2025</td>
+            <td class="px-4 py-3.5 text-sm text-sidebar-text">Grace Funeral Home</td>
+            <td class="px-4 py-3.5 text-sm">
+              <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-600 border border-green-200">
+                <i class="fas fa-check-circle mr-1"></i> Confirmed
+              </span>
+            </td>
+            <td class="px-4 py-3.5 text-sm">
+              <div class="flex space-x-2">
+                <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="View Details">
+                  <i class="fas fa-eye"></i>
+                </button>
+                <button class="p-1.5 bg-green-100 text-green-600 rounded hover:bg-blue-200 transition-all" title="Edit Service">
+                  <i class="fas fa-edit"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+          <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
+            <td class="px-4 py-3.5 text-sm text-sidebar-text font-medium">#FNS-2023004</td>
+            <td class="px-4 py-3.5 text-sm text-sidebar-text">Sarah Thompson</td>
+            <td class="px-4 py-3.5 text-sm text-sidebar-text">
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">
+                Cremation Service
+              </span>
+            </td>
+            <td class="px-4 py-3.5 text-sm text-sidebar-text">Mar 12, 2025</td>
+            <td class="px-4 py-3.5 text-sm text-sidebar-text">Riverside Crematorium</td>
+            <td class="px-4 py-3.5 text-sm">
+              <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 border border-yellow-200">
+                <i class="fas fa-clock mr-1"></i> Pending
+              </span>
+            </td>
+            <td class="px-4 py-3.5 text-sm">
+              <div class="flex space-x-2">
+                <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="View Details">
+                  <i class="fas fa-eye"></i>
+                </button>
+                <button class="p-1.5 bg-green-100 text-green-600 rounded hover:bg-blue-200 transition-all" title="Edit Service">
+                  <i class="fas fa-edit"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+          <tr class="hover:bg-sidebar-hover transition-colors">
+            <td class="px-4 py-3.5 text-sm text-sidebar-text font-medium">#FNS-2023005</td>
+            <td class="px-4 py-3.5 text-sm text-sidebar-text">David Miller</td>
+            <td class="px-4 py-3.5 text-sm text-sidebar-text">
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">
+                Memorial Service
+              </span>
+            </td>
+            <td class="px-4 py-3.5 text-sm text-sidebar-text">Mar 15, 2025</td>
+            <td class="px-4 py-3.5 text-sm text-sidebar-text">Lakeside Gardens</td>
+            <td class="px-4 py-3.5 text-sm">
+              <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-red-100 text-red-600 border border-red-200">
+                <i class="fas fa-times-circle mr-1"></i> Cancelled
+              </span>
+            </td>
+            <td class="px-4 py-3.5 text-sm">
+              <div class="flex space-x-2">
+                <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="View Details">
+                  <i class="fas fa-eye"></i>
+                </button>
+                <button class="p-1.5 bg-green-100 text-green-600 rounded hover:bg-blue-200 transition-all" title="Edit Service">
+                  <i class="fas fa-edit"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
+  </div>
+  
+  <!-- Sticky Pagination Footer with improved spacing -->
+  <div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
+    <div id="paginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
+      Showing 1 - 5 of 25 services
+    </div>
+    <div class="flex space-x-2">
+      <a href="<?php echo '?page=' . max(1, $page - 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo $page <= 1 ? 'opacity-50 pointer-events-none' : ''; ?>">&laquo;</a>
+      
+      <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+        <a href="<?php echo '?page=' . $i; ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm <?php echo $i == $page ? 'bg-sidebar-accent text-white' : 'hover:bg-sidebar-hover'; ?>">
+          <?php echo $i; ?>
+        </a>
+      <?php endfor; ?>
+      
+      <a href="<?php echo '?page=' . min($totalPages, $page + 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo $page >= $totalPages ? 'opacity-50 pointer-events-none' : ''; ?>">&raquo;</a>
+    </div>
+  </div>
 </div>
 
   <!-- Recent Inventory Activity -->
 <div class="bg-white rounded-lg shadow-md mb-8 border border-sidebar-border overflow-hidden">
-  <div class="bg-sidebar-hover p-4 border-b border-sidebar-border flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-    <div class="flex items-center gap-3">
-      <h3 class="text-lg font-bold text-sidebar-text">Recent Inventory Activity</h3>
-      
-      <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
+  <!-- Header Section - Made responsive with better stacking -->
+  <div class="bg-sidebar-hover p-4 border-b border-sidebar-border">
+    <!-- Desktop layout for big screens - Title on left, controls on right -->
+    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+      <!-- Title and Counter -->
+      <div class="flex items-center gap-3 mb-4 lg:mb-0">
+        <h3 class="text-lg font-bold text-sidebar-text whitespace-nowrap">Recent Inventory Activity</h3>
+        
+        <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
           <i class="fas fa-clipboard-list"></i>
           18 Activities
-      </span>
+        </span>
+      </div>
+      
+      <!-- Controls for big screens - aligned right -->
+      <div class="hidden lg:flex items-center gap-3">
+
+        <!-- Manage Inventory Button -->
+        <a href="inventory_management.php">
+          <button class="px-4 py-2 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm whitespace-nowrap">
+            <i class="fas fa-box"></i> <span>Manage Inventory</span>
+          </button>
+        </a>
+      </div>
     </div>
     
-    <a href="inventory_management.php">
-      <button class="px-4 py-2.5 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm whitespace-nowrap">
-        <i class="fas fa-box"></i> Manage Inventory
-      </button>
-    </a>
+    <!-- Mobile/Tablet Controls - Only visible on smaller screens -->
+    <div class="lg:hidden w-full mt-4">
+
+      <!-- Second row: Manage Inventory Button - Full width -->
+      <div class="w-full">
+        <a href="inventory_management.php" class="w-full block">
+          <button class="px-4 py-2.5 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm whitespace-nowrap w-full justify-center">
+            <i class="fas fa-box"></i> <span>Manage Inventory</span>
+          </button>
+        </a>
+      </div>
+    </div>
   </div>
   
-  <div class="overflow-x-auto scrollbar-thin">
-    <table class="w-full">
-      <thead>
-        <tr class="bg-gray-50 border-b border-sidebar-border">
-          <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(0)">
-            <div class="flex items-center">
-              <i class="fas fa-box mr-1.5 text-sidebar-accent"></i> Item
-            </div>
-          </th>
-          <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(1)">
-            <div class="flex items-center">
-              <i class="fas fa-barcode mr-1.5 text-sidebar-accent"></i> SKU
-            </div>
-          </th>
-          <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(2)">
-            <div class="flex items-center">
-              <i class="fas fa-chart-line mr-1.5 text-sidebar-accent"></i> Activity
-            </div>
-          </th>
-          <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(3)">
-            <div class="flex items-center">
-              <i class="fas fa-calendar-alt mr-1.5 text-sidebar-accent"></i> Date
-            </div>
-          </th>
-          <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(4)">
-            <div class="flex items-center">
-              <i class="fas fa-cubes mr-1.5 text-sidebar-accent"></i> Quantity
-            </div>
-          </th>
-          <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(5)">
-            <div class="flex items-center">
-              <i class="fas fa-building mr-1.5 text-sidebar-accent"></i> Branch
-            </div>
-          </th>
-          <th class="p-4 text-left text-sm font-medium text-sidebar-text">
-            <div class="flex items-center">
-              <i class="fas fa-cogs mr-1.5 text-sidebar-accent"></i> Actions
-            </div>
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
-          <td class="p-4 text-sm text-sidebar-text">Premium Casket</td>
-          <td class="p-4 text-sm text-sidebar-text font-medium">CSK-001</td>
-          <td class="p-4 text-sm">
-            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-600 border border-red-200">
-              <i class="fas fa-exclamation-circle mr-1"></i> Depleted
-            </span>
-          </td>
-          <td class="p-4 text-sm text-sidebar-text">Mar 15, 2025</td>
-          <td class="p-4 text-sm font-medium text-sidebar-text">0</td>
-          <td class="p-4 text-sm text-sidebar-text">Downtown</td>
-          <td class="p-4 text-sm">
-            <div class="flex space-x-2">
-              <button class="p-2 bg-purple-100 text-purple-600 rounded-lg hover:bg-purple-200 transition-all tooltip" title="Add Stock">
-                <i class="fas fa-plus"></i>
-              </button>
-              <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="View Details">
-                <i class="fas fa-eye"></i>
-              </button>
-            </div>
-          </td>
-        </tr>
-        <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
-          <td class="p-4 text-sm text-sidebar-text">Prayer Cards</td>
-          <td class="p-4 text-sm text-sidebar-text font-medium">PRC-011</td>
-          <td class="p-4 text-sm">
-            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-600 border border-yellow-200">
-              <i class="fas fa-exclamation-triangle mr-1"></i> Low Stock
-            </span>
-          </td>
-          <td class="p-4 text-sm text-sidebar-text">Mar 14, 2025</td>
-          <td class="p-4 text-sm font-medium text-sidebar-text">25</td>
-          <td class="p-4 text-sm text-sidebar-text">Westside</td>
-          <td class="p-4 text-sm">
-            <div class="flex space-x-2">
-              <button class="p-2 bg-purple-100 text-purple-600 rounded-lg hover:bg-purple-200 transition-all tooltip" title="Add Stock">
-                <i class="fas fa-plus"></i>
-              </button>
-              <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="View Details">
-                <i class="fas fa-eye"></i>
-              </button>
-            </div>
-          </td>
-        </tr>
-        <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
-          <td class="p-4 text-sm text-sidebar-text">Cremation Urns</td>
-          <td class="p-4 text-sm text-sidebar-text font-medium">URN-032</td>
-          <td class="p-4 text-sm">
-            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-600 border border-green-200">
-              <i class="fas fa-check-circle mr-1"></i> Restocked
-            </span>
-          </td>
-          <td class="p-4 text-sm text-sidebar-text">Mar 13, 2025</td>
-          <td class="p-4 text-sm font-medium text-sidebar-text">+15</td>
-          <td class="p-4 text-sm text-sidebar-text">Downtown</td>
-          <td class="p-4 text-sm">
-            <div class="flex space-x-2">
-              <button class="p-2 bg-purple-100 text-purple-600 rounded-lg hover:bg-purple-200 transition-all tooltip" title="Add Stock">
-                <i class="fas fa-plus"></i>
-              </button>
-              <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="View Details">
-                <i class="fas fa-eye"></i>
-              </button>
-            </div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+  <!-- Responsive Table Container with improved spacing -->
+  <div class="overflow-x-auto scrollbar-thin" id="inventoryTableContainer">
+    <div id="inventoryLoadingIndicator" class="hidden absolute inset-0 bg-white bg-opacity-50 flex items-center justify-center">
+      <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-sidebar-accent"></div>
+    </div>
+    
+    <!-- Responsive Table with improved spacing and horizontal scroll for small screens -->
+    <div class="min-w-full">
+      <table class="w-full">
+        <thead>
+          <tr class="bg-gray-50 border-b border-sidebar-border">
+            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(0)">
+              <div class="flex items-center gap-1.5">
+                <i class="fas fa-box text-sidebar-accent"></i> Item
+              </div>
+            </th>
+            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(1)">
+              <div class="flex items-center gap-1.5">
+                <i class="fas fa-barcode text-sidebar-accent"></i> SKU
+              </div>
+            </th>
+            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(2)">
+              <div class="flex items-center gap-1.5">
+                <i class="fas fa-chart-line text-sidebar-accent"></i> Activity
+              </div>
+            </th>
+            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(3)">
+              <div class="flex items-center gap-1.5">
+                <i class="fas fa-calendar-alt text-sidebar-accent"></i> Date
+              </div>
+            </th>
+            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(4)">
+              <div class="flex items-center gap-1.5">
+                <i class="fas fa-cubes text-sidebar-accent"></i> Quantity
+              </div>
+            </th>
+            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(5)">
+              <div class="flex items-center gap-1.5">
+                <i class="fas fa-building text-sidebar-accent"></i> Branch
+              </div>
+            </th>
+            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text whitespace-nowrap">
+              <div class="flex items-center gap-1.5">
+                <i class="fas fa-cogs text-sidebar-accent"></i> Actions
+              </div>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
+            <td class="px-4 py-3.5 text-sm text-sidebar-text">Premium Casket</td>
+            <td class="px-4 py-3.5 text-sm text-sidebar-text font-medium">CSK-001</td>
+            <td class="px-4 py-3.5 text-sm">
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-600 border border-red-200">
+                <i class="fas fa-exclamation-circle mr-1"></i> Depleted
+              </span>
+            </td>
+            <td class="px-4 py-3.5 text-sm text-sidebar-text">Mar 15, 2025</td>
+            <td class="px-4 py-3.5 text-sm font-medium text-sidebar-text">0</td>
+            <td class="px-4 py-3.5 text-sm text-sidebar-text">Downtown</td>
+            <td class="px-4 py-3.5 text-sm">
+              <div class="flex space-x-2">
+                <button class="p-2 bg-purple-100 text-purple-600 rounded-lg hover:bg-purple-200 transition-all tooltip" title="Add Stock">
+                  <i class="fas fa-plus"></i>
+                </button>
+                <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="View Details">
+                  <i class="fas fa-eye"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+          <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
+            <td class="px-4 py-3.5 text-sm text-sidebar-text">Prayer Cards</td>
+            <td class="px-4 py-3.5 text-sm text-sidebar-text font-medium">PRC-011</td>
+            <td class="px-4 py-3.5 text-sm">
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-600 border border-yellow-200">
+                <i class="fas fa-exclamation-triangle mr-1"></i> Low Stock
+              </span>
+            </td>
+            <td class="px-4 py-3.5 text-sm text-sidebar-text">Mar 14, 2025</td>
+            <td class="px-4 py-3.5 text-sm font-medium text-sidebar-text">25</td>
+            <td class="px-4 py-3.5 text-sm text-sidebar-text">Westside</td>
+            <td class="px-4 py-3.5 text-sm">
+              <div class="flex space-x-2">
+                <button class="p-2 bg-purple-100 text-purple-600 rounded-lg hover:bg-purple-200 transition-all tooltip" title="Add Stock">
+                  <i class="fas fa-plus"></i>
+                </button>
+                <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="View Details">
+                  <i class="fas fa-eye"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+          <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
+            <td class="px-4 py-3.5 text-sm text-sidebar-text">Cremation Urns</td>
+            <td class="px-4 py-3.5 text-sm text-sidebar-text font-medium">URN-032</td>
+            <td class="px-4 py-3.5 text-sm">
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-600 border border-green-200">
+                <i class="fas fa-check-circle mr-1"></i> Restocked
+              </span>
+            </td>
+            <td class="px-4 py-3.5 text-sm text-sidebar-text">Mar 13, 2025</td>
+            <td class="px-4 py-3.5 text-sm font-medium text-sidebar-text">+15</td>
+            <td class="px-4 py-3.5 text-sm text-sidebar-text">Downtown</td>
+            <td class="px-4 py-3.5 text-sm">
+              <div class="flex space-x-2">
+                <button class="p-2 bg-purple-100 text-purple-600 rounded-lg hover:bg-purple-200 transition-all tooltip" title="Add Stock">
+                  <i class="fas fa-plus"></i>
+                </button>
+                <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="View Details">
+                  <i class="fas fa-eye"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
   
-  <!-- Pagination -->
-  <div class="p-4 border-t border-sidebar-border flex justify-between items-center">
-    <div class="text-sm text-gray-500">
+  <!-- Sticky Pagination Footer with improved spacing -->
+  <div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
+    <div class="text-sm text-gray-500 text-center sm:text-left">
       Showing 1 - 3 of 18 activities
     </div>
-    <div class="flex space-x-1">
-      <button class="px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover opacity-50 cursor-not-allowed" disabled>&laquo;</button>
+    <div class="flex space-x-2">
+      <button class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover opacity-50 cursor-not-allowed" disabled>&laquo;</button>
       
-      <button class="px-3 py-1 border border-sidebar-border rounded text-sm bg-sidebar-accent text-white">1</button>
-      <button class="px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">2</button>
-      <button class="px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">3</button>
+      <button class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm bg-sidebar-accent text-white">1</button>
+      <button class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">2</button>
+      <button class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">3</button>
       
-      <button class="px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">&raquo;</button>
+      <button class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">&raquo;</button>
     </div>
   </div>
+</div>
             
               <!-- Footer -->
               <footer class="bg-white rounded-lg shadow-sidebar border border-sidebar-border p-4 text-center text-sm text-gray-500 mt-8">
