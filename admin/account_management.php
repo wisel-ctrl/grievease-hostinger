@@ -1606,7 +1606,7 @@ if ($result->num_rows > 0) {
     </div>
     
     <!-- Responsive Table with improved spacing and horizontal scroll for small screens -->
-    <div class="bg-red min-w-full">
+    <div class="min-w-full">
       <table class="w-full">
         <thead>
           <tr class="bg-gray-50 border-b border-sidebar-border">
