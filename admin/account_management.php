@@ -1820,27 +1820,27 @@ function closeAddEmployeeAccountModal() {
 </script>
 
 <!-- Employee Account Modal -->
-<div id="addEmployeeAccountModal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
+<div id="addEmployeeAccountModal" class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto">
   <!-- Modal Backdrop -->
   <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
   
   <!-- Modal Content -->
-  <div class="relative bg-white rounded-xl shadow-card w-full max-w-xl mx-4 md:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
     <!-- Close Button -->
-    <button type="button" class="absolute top-2 md:top-4 right-2 md:right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeAddEmployeeAccountModal()">
+    <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeAddEmployeeAccountModal()">
       <i class="fas fa-times"></i>
     </button>
     
     <!-- Modal Header -->
-    <div class="px-4 md:px-6 py-4 md:py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
-      <h3 class="text-lg md:text-xl font-bold text-white flex items-center">
+    <div class="px-4 sm:px-6 py-4 sm:py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
+      <h3 class="text-lg sm:text-xl font-bold text-white flex items-center">
         Add Employee Account
       </h3>
     </div>
     
     <!-- Modal Body -->
-    <div class="px-4 md:px-6 py-4 md:py-5">
-      <form id="addEmployeeAccountForm" method="post" action="addEmployee/add_employee.php" class="space-y-3 md:space-y-4">
+    <div class="px-4 sm:px-6 py-4 sm:py-5">
+      <form id="addEmployeeAccountForm" method="post" action="addEmployee/add_employee.php" class="space-y-3 sm:space-y-4">
         <!-- Personal Information -->
         <div>
           <label for="empFirstName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
@@ -1863,7 +1863,7 @@ function closeAddEmployeeAccountModal() {
         </div>
         
         <div class="flex flex-col sm:flex-row gap-2 sm:gap-4">
-          <div class="flex-1">
+          <div class="w-full sm:flex-1">
             <label for="empMiddleName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
               Middle Name
             </label>
@@ -1872,7 +1872,7 @@ function closeAddEmployeeAccountModal() {
             </div>
           </div>
           
-          <div class="flex-1">
+          <div class="w-full sm:flex-1">
             <label for="suffix" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
               Suffix <span class="text-xs text-gray-500">(Optional)</span>
             </label>
@@ -1937,13 +1937,12 @@ function closeAddEmployeeAccountModal() {
         
         <div>
           <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-key mr-2 text-sidebar-accent"></i>
             Generated Password
           </label>
           <div class="relative">
             <input type="password" id="empGeneratedPassword" name="password" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200 bg-gray-100" readonly autocomplete="new-password">
             <button type="button" class="absolute right-2 top-2 text-gray-500 hover:text-gray-700" onclick="toggleEmpPassword()">
-              <svg id="empEyeIcon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 md:w-6 md:h-6">
+              <svg id="empEyeIcon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 sm:w-6 sm:h-6">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 12s2.947-5.455 8.02-5.455S20.02 12 20.02 12s-2.947 5.455-8.02 5.455S3.98 12 3.98 12z" />
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 15a3 3 0 100-6 3 3 0 000 6z" />
               </svg>
@@ -1952,15 +1951,15 @@ function closeAddEmployeeAccountModal() {
         </div>
         
         <!-- Additional Information Card -->
-        <div class="bg-gray-50 p-3 md:p-4 rounded-lg border-l-4 border-sidebar-accent mt-3 md:mt-4">
-          <h4 class="text-xs md:text-sm font-medium text-gray-700 mb-1 md:mb-2 flex items-center">
+        <div class="bg-gray-50 p-3 sm:p-4 rounded-lg border-l-4 border-sidebar-accent mt-3 sm:mt-4">
+          <h4 class="text-xs sm:text-sm font-medium text-gray-700 mb-2 flex items-center">
             <i class="fas fa-info-circle mr-2 text-sidebar-accent"></i>
             Account Information
           </h4>
-          <p class="text-xs md:text-sm text-gray-600">
+          <p class="text-xs sm:text-sm text-gray-600">
             An employee account will be created with the provided information. A temporary password will be generated automatically.
           </p>
-          <p class="text-xs md:text-sm text-gray-600 mt-1 md:mt-2">
+          <p class="text-xs sm:text-sm text-gray-600 mt-2">
             The employee will be able to change their password after logging in for the first time.
           </p>
         </div>
@@ -1971,11 +1970,11 @@ function closeAddEmployeeAccountModal() {
     </div>
     
     <!-- Modal Footer -->
-    <div class="px-4 md:px-6 py-3 md:py-4 flex flex-col sm:flex-row sm:justify-end gap-2 sm:gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
-      <button class="px-4 md:px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center sm:justify-start order-2 sm:order-1" onclick="closeAddEmployeeAccountModal()">
+    <div class="px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row sm:justify-end gap-2 sm:gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
+      <button class="w-full sm:w-auto px-4 sm:px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center" onclick="closeAddEmployeeAccountModal()">
         Cancel
       </button>
-      <button class="px-4 md:px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center order-1 sm:order-2" onclick="submitEmployeeForm()">
+      <button class="w-full sm:w-auto px-5 sm:px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="submitEmployeeForm()">
         Create Account
       </button>
     </div>
