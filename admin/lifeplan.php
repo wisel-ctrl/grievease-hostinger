@@ -389,7 +389,8 @@ header("Pragma: no-cache");
                                           title="View Receipt" 
                                           data-id="' . $row['lifeplan_id'] . '"
                                           data-name="' . htmlspecialchars($row['benefeciary_fullname']) . '"
-                                          data-monthly="' . number_format($row['custom_price'] / ($row['payment_duration'] * 12), 2) . '"
+                                          data-monthly="' . number_format($row['custom_price']) . '"
+                                          data-duration="' . $row['payment_duration'] . '"
                                           data-total="' . number_format($row['amount_paid']) . '"
                                           data-balance="' . number_format($row['balance']) . '">
                                       <i class="fas fa-receipt"></i>
@@ -786,21 +787,28 @@ document.addEventListener('DOMContentLoaded', function() {
     let currentAmountPaid = 0;
 
     // Open modal when clicking View Receipt buttons
+    // Open modal when clicking View Receipt buttons
     viewReceiptBtns.forEach(btn => {
         btn.addEventListener('click', function() {
             currentLifeplanId = this.getAttribute('data-id');
             const beneficiaryName = this.getAttribute('data-name');
-            const monthlyAmount = this.getAttribute('data-monthly');
-            const totalPaid = this.getAttribute('data-total');
+            
+            // Get the raw values before formatting
+            const customPrice = parseFloat(this.getAttribute('data-custom-price'));
+            const paymentDuration = parseInt(this.getAttribute('data-duration'));
+            const totalPaid = parseFloat(this.getAttribute('data-total').replace(/,/g, ''));
             currentBalance = parseFloat(this.getAttribute('data-balance').replace(/,/g, ''));
-            currentAmountPaid = parseFloat(totalPaid.replace(/,/g, ''));
+            currentAmountPaid = totalPaid;
+            
+            // Calculate monthly amount properly
+            const monthlyAmount = (customPrice / (paymentDuration * 12)).toFixed(2);
             
             // Fetch customer ID associated with this lifeplan
             fetchCustomerId(currentLifeplanId);
             
             // Update modal content
             document.getElementById('beneficiaryName').textContent = beneficiaryName;
-            document.getElementById('monthlyAmount').textContent = '₱' + parseFloat(monthlyAmount).toFixed(2);
+            document.getElementById('monthlyAmount').textContent = '₱' + monthlyAmount;
             document.getElementById('totalPaid').textContent = '₱' + currentAmountPaid.toFixed(2);
             document.getElementById('remainingBalance').textContent = '₱' + currentBalance.toFixed(2);
             
