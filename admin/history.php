@@ -1094,12 +1094,12 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
             <label class="block text-xs font-medium text-gray-700 mb-2">Branch</label>
             <div class="flex flex-wrap gap-6">
               <label class="flex items-center space-x-2 cursor-pointer">
-                <input type="radio" name="branch" value="1" class="hidden peer">
+                <input type="radio" name="branch" value="2" class="hidden peer">
                 <div class="w-5 h-5 rounded-full border-2 border-gold flex items-center justify-center peer-checked:bg-gold peer-checked:border-darkgold transition-colors"></div>
                 <span class="text-gray-700 font-medium">Pila</span>
               </label>
               <label class="flex items-center space-x-2 cursor-pointer">
-                <input type="radio" name="branch" value="2" class="hidden peer">
+                <input type="radio" name="branch" value="1" class="hidden peer">
                 <div class="w-5 h-5 rounded-full border-2 border-gold flex items-center justify-center peer-checked:bg-gold peer-checked:border-darkgold transition-colors"></div>
                 <span class="text-gray-700 font-medium">Paete</span>
               </label>
