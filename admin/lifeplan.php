@@ -45,6 +45,56 @@ $_SESSION['last_activity'] = time();
 header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Cache-Control: post-check=0, pre-check=0", false);
 header("Pragma: no-cache");
+
+// Include database connection
+require_once '../db_connect.php';
+
+// Get stats data
+$stats = [
+    'total_plans' => 0,
+    'active_plans' => 0,
+    'pending_payments' => 0,
+    'total_revenue' => 0
+];
+
+if ($conn) {
+    // Total Plans
+    $query = "SELECT COUNT(*) as total FROM lifeplan_tb WHERE archived = 'show'";
+    $result = $conn->query($query);
+    if ($result) {
+        $row = $result->fetch_assoc();
+        $stats['total_plans'] = $row['total'];
+        $result->free();
+    }
+
+    // Active Plans (status = 'paid' or 'ongoing')
+    $query = "SELECT COUNT(*) as total FROM lifeplan_tb WHERE archived = 'show' AND payment_status IN ('paid', 'ongoing')";
+    $result = $conn->query($query);
+    if ($result) {
+        $row = $result->fetch_assoc();
+        $stats['active_plans'] = $row['total'];
+        $result->free();
+    }
+
+    // Pending Payments (status = 'ongoing')
+    $query = "SELECT COUNT(*) as total FROM lifeplan_tb WHERE archived = 'show' AND payment_status = 'ongoing'";
+    $result = $conn->query($query);
+    if ($result) {
+        $row = $result->fetch_assoc();
+        $stats['pending_payments'] = $row['total'];
+        $result->free();
+    }
+
+    // Total Revenue (sum of amount_paid)
+    $query = "SELECT SUM(amount_paid) as total FROM lifeplan_tb WHERE archived = 'show'";
+    $result = $conn->query($query);
+    if ($result) {
+        $row = $result->fetch_assoc();
+        $stats['total_revenue'] = $row['total'] ? $row['total'] : 0;
+        $result->free();
+    }
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -77,9 +127,9 @@ header("Pragma: no-cache");
     
     <!-- Stats Cards -->
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+
     <!-- Total Plans Card -->
     <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
-        <!-- Card header with gradient background -->
         <div class="bg-gradient-to-r from-blue-100 to-blue-200 px-6 py-4">
             <div class="flex items-center justify-between mb-1">
                 <h3 class="text-sm font-medium text-gray-700">Total Plans</h3>
@@ -88,21 +138,18 @@ header("Pragma: no-cache");
                 </div>
             </div>
             <div class="flex items-end">
-                <span class="text-2xl md:text-3xl font-bold font-cinzel text-gray-800">124</span>
+                <span class="text-2xl md:text-3xl font-bold font-cinzel text-gray-800"><?php echo number_format($stats['total_plans']); ?></span>
             </div>
         </div>
-        
-        <!-- Card footer with change indicator (simplified since no change data) -->
         <div class="px-6 py-3 bg-white border-t border-gray-100">
             <div class="flex items-center text-gray-500">
                 <span class="text-xs">Updated today</span>
             </div>
         </div>
     </div>
-    
+
     <!-- Active Plans Card -->
     <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
-        <!-- Card header with gradient background -->
         <div class="bg-gradient-to-r from-green-100 to-green-200 px-6 py-4">
             <div class="flex items-center justify-between mb-1">
                 <h3 class="text-sm font-medium text-gray-700">Active Plans</h3>
@@ -111,21 +158,18 @@ header("Pragma: no-cache");
                 </div>
             </div>
             <div class="flex items-end">
-                <span class="text-2xl md:text-3xl font-bold font-cinzel text-gray-800">98</span>
+                <span class="text-2xl md:text-3xl font-bold font-cinzel text-gray-800"><?php echo number_format($stats['active_plans']); ?></span>
             </div>
         </div>
-        
-        <!-- Card footer with change indicator -->
         <div class="px-6 py-3 bg-white border-t border-gray-100">
             <div class="flex items-center text-gray-500">
                 <span class="text-xs">Updated today</span>
             </div>
         </div>
     </div>
-    
+
     <!-- Pending Payments Card -->
     <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
-        <!-- Card header with gradient background -->
         <div class="bg-gradient-to-r from-orange-100 to-orange-200 px-6 py-4">
             <div class="flex items-center justify-between mb-1">
                 <h3 class="text-sm font-medium text-gray-700">Pending Payments</h3>
@@ -134,21 +178,18 @@ header("Pragma: no-cache");
                 </div>
             </div>
             <div class="flex items-end">
-                <span class="text-2xl md:text-3xl font-bold font-cinzel text-gray-800">12</span>
+                <span class="text-2xl md:text-3xl font-bold font-cinzel text-gray-800"><?php echo number_format($stats['pending_payments']); ?></span>
             </div>
         </div>
-        
-        <!-- Card footer with change indicator -->
         <div class="px-6 py-3 bg-white border-t border-gray-100">
             <div class="flex items-center text-gray-500">
                 <span class="text-xs">Updated today</span>
             </div>
         </div>
     </div>
-    
+
     <!-- Total Revenue Card -->
     <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
-        <!-- Card header with gradient background -->
         <div class="bg-gradient-to-r from-purple-100 to-purple-200 px-6 py-4">
             <div class="flex items-center justify-between mb-1">
                 <h3 class="text-sm font-medium text-gray-700">Total Revenue</h3>
@@ -157,11 +198,9 @@ header("Pragma: no-cache");
                 </div>
             </div>
             <div class="flex items-end">
-                <span class="text-2xl md:text-3xl font-bold font-cinzel text-gray-800">₱4.2M</span>
+                <span class="text-2xl md:text-3xl font-bold font-cinzel text-gray-800">₱<?php echo number_format($stats['total_revenue'], 2); ?></span>
             </div>
         </div>
-        
-        <!-- Card footer with change indicator -->
         <div class="px-6 py-3 bg-white border-t border-gray-100">
             <div class="flex items-center text-gray-500">
                 <span class="text-xs">Updated today</span>
@@ -810,6 +849,30 @@ console.log("Fetched Lifeplan Data:", <?php echo json_encode($fetchedData); ?>);
 // Summary log
 console.log("Total records fetched: <?php echo count($fetchedData); ?>");
 </script>
+
+<script>
+// Function to update stats cards periodically
+function updateStats() {
+    fetch('lifeplan_process/get_stats.php')
+        .then(response => response.json())
+        .then(data => {
+            if (data) {
+                document.querySelector('.stats-card:nth-child(1) .text-2xl').textContent = data.total_plans;
+                document.querySelector('.stats-card:nth-child(2) .text-2xl').textContent = data.active_plans;
+                document.querySelector('.stats-card:nth-child(3) .text-2xl').textContent = data.pending_payments;
+                document.querySelector('.stats-card:nth-child(4) .text-2xl').textContent = '₱' + data.total_revenue.toLocaleString('en-US', {minimumFractionDigits: 2});
+            }
+        })
+        .catch(error => console.error('Error updating stats:', error));
+}
+
+// Update every 5 minutes (300000 ms)
+setInterval(updateStats, 300000);
+
+// Initial update
+updateStats();
+</script>
+
 <script>
 // Integrated Modal functionality with payment processing
 document.addEventListener('DOMContentLoaded', function() {
