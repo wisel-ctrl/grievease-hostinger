@@ -1359,45 +1359,45 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
 </div>
 
 <!-- Complete Service Modal -->
-<div class="fixed inset-0 z-50 flex items-center justify-center hidden" id="completeServiceModal">
+<div id="completeServiceModal" class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto">
   <!-- Modal Backdrop -->
   <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
   
   <!-- Modal Content -->
-  <div class="relative bg-white rounded-xl shadow-card w-full max-w-xl mx-4 z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
     <!-- Close Button -->
     <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeCompleteModal()">
       <i class="fas fa-times"></i>
     </button>
     
     <!-- Modal Header -->
-    <div class="px-6 py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
-      <h3 class="text-xl font-bold text-white flex items-center">
+    <div class="px-4 sm:px-6 py-4 sm:py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
+      <h3 class="text-lg sm:text-xl font-bold text-white flex items-center">
         Complete Service
       </h3>
     </div>
     
     <!-- Modal Body -->
-    <div class="px-6 py-5">
-      <form id="completeServiceForm" class="space-y-6">
+    <div class="px-4 sm:px-6 py-4 sm:py-5">
+      <form id="completeServiceForm" class="space-y-3 sm:space-y-4">
         <input type="hidden" id="completeServiceId">
         
         <!-- Drivers Section -->
-        <div id="completeDriversSection" class="bg-gray-50 p-4 rounded-lg border border-gray-200">
-          <h4 class="text-sm font-medium text-gray-700 mb-2 flex items-center">
+        <div id="completeDriversSection" class="bg-gray-50 p-3 sm:p-4 rounded-lg border border-gray-200">
+          <h4 class="text-xs sm:text-sm font-medium text-gray-700 mb-2 flex items-center">
             Drivers
           </h4>
-          <div class="grid grid-cols-2 gap-4" id="completeDriversList">
+          <div class="grid grid-cols-2 gap-3 sm:gap-4" id="completeDriversList">
             <!-- Drivers will be populated here -->
           </div>
         </div>
         
         <!-- Personnel Section -->
-        <div id="completePersonnelSection" class="bg-gray-50 p-4 rounded-lg border border-gray-200">
-          <h4 class="text-sm font-medium text-gray-700 mb-2 flex items-center">
+        <div id="completePersonnelSection" class="bg-gray-50 p-3 sm:p-4 rounded-lg border border-gray-200">
+          <h4 class="text-xs sm:text-sm font-medium text-gray-700 mb-2 flex items-center">
             Personnel
           </h4>
-          <div class="grid grid-cols-2 gap-4" id="completePersonnelList">
+          <div class="grid grid-cols-2 gap-3 sm:gap-4" id="completePersonnelList">
             <!-- Personnel will be populated here -->
           </div>
         </div>
@@ -1420,21 +1420,21 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
           </div>
         </div>
         
-        <div class="bg-gray-50 p-4 rounded-lg border-l-4 border-gold">
+        <div class="bg-gray-50 p-3 sm:p-4 rounded-lg border-l-4 border-gold mt-3 sm:mt-4">
           <div class="flex items-center">
             <input type="checkbox" id="finalBalanceSettled" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
-            <label for="finalBalanceSettled" class="text-gray-700 font-medium">Confirm all balances are settled</label>
+            <label for="finalBalanceSettled" class="text-xs sm:text-sm text-gray-700 font-medium">Confirm all balances are settled</label>
           </div>
         </div>
       </form>
     </div>
     
     <!-- Modal Footer --> 
-    <div class="px-6 py-4 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
-      <button class="px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center" onclick="closeCompleteModal()">
+    <div class="px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row sm:justify-end gap-2 sm:gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
+      <button class="w-full sm:w-auto px-4 sm:px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center" onclick="closeCompleteModal()">
         Cancel
       </button>
-      <button class="px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="finalizeServiceCompletion()">
+      <button class="w-full sm:w-auto px-5 sm:px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="finalizeServiceCompletion()">
         Complete Service
       </button>
     </div>
