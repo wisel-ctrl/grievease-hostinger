@@ -132,7 +132,7 @@ $customersResult = mysqli_query($conn, $customersQuery);
         
         <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
           <i class="fas fa-users"></i>
-          <?php echo $totalCustomers . ($totalCustomers != 1 ? "" : ""); ?>
+          <?php echo $totalCustomers . " Customer" . ($totalCustomers != 1 ? "s" : ""); ?>
         </span>
       </div>
       
@@ -140,10 +140,11 @@ $customersResult = mysqli_query($conn, $customersQuery);
       <div class="hidden lg:flex items-center gap-3">
         <!-- Search Input -->
         <div class="relative">
-          <input type="text" id="customerSearchInputLg" placeholder="Search customers..." 
-                  class="pl-8 pr-3 py-2 w-52 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
-          <i class="fas fa-search absolute left-2.5 top-2.5 text-gray-400"></i>
-        </div>
+          <input type="text" id="customerSearchInput" 
+                placeholder="Search customers..." 
+                class="pl-8 pr-3 py-2 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
+        <i class="fas fa-search absolute left-2.5 top-3 text-gray-400"></i>
+      </div>
 
         <!-- Filter Dropdown -->
       <div class="relative filter-dropdown">
@@ -317,31 +318,31 @@ $customersResult = mysqli_query($conn, $customersQuery);
             <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(0)">
               <div class="flex items-center gap-1.5">
                 <i class="fas fa-hashtag text-sidebar-accent"></i> ID 
-                <i class="fas fa-sort ml-1 text-gray-400"></i>
+                
               </div>
             </th>
             <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(1)">
               <div class="flex items-center gap-1.5">
                 <i class="fas fa-user text-sidebar-accent"></i> Name 
-                <i class="fas fa-sort ml-1 text-gray-400"></i>
+                
               </div>
             </th>
             <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(2)">
               <div class="flex items-center gap-1.5">
                 <i class="fas fa-envelope text-sidebar-accent"></i> Email 
-                <i class="fas fa-sort ml-1 text-gray-400"></i>
+                
               </div>
             </th>
             <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(3)">
               <div class="flex items-center gap-1.5">
                 <i class="fas fa-user-tag text-sidebar-accent"></i> Role 
-                <i class="fas fa-sort ml-1 text-gray-400"></i>
+                
               </div>
             </th>
             <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(4)">
               <div class="flex items-center gap-1.5">
                 <i class="fas fa-toggle-on text-sidebar-accent"></i> Status 
-                <i class="fas fa-sort ml-1 text-gray-400"></i>
+                
               </div>
             </th>
             <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text whitespace-nowrap">
