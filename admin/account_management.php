@@ -1610,8 +1610,8 @@ if ($result->num_rows > 0) {
       <table class="w-full">
         <thead>
           <tr class="bg-gray-50 border-b border-sidebar-border">
-            <th class="bg-red px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(0)">
-              <div class="flex items-center gap-1.5"> ID 
+            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(0)">
+              <div class="bg-red flex items-center gap-1.5"> ID 
                 
               </div>
             </th>
