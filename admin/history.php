@@ -1582,33 +1582,33 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
 </div>
 
   <!-- Modal for Recording Payment -->
-<div class="fixed inset-0 z-50 flex items-center justify-center hidden" id="recordPaymentModal">
+<div id="recordPaymentModal" class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto">
   <!-- Modal Backdrop -->
   <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
   
   <!-- Modal Content -->
-  <div class="relative bg-white rounded-xl shadow-card w-full max-w-xl mx-4 z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
     <!-- Close Button -->
     <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeRecordPaymentModal()">
       <i class="fas fa-times"></i>
     </button>
     
     <!-- Modal Header -->
-    <div class="px-6 py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
-      <h3 class="text-xl font-bold text-white flex items-center">
+    <div class="px-4 sm:px-6 py-4 sm:py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
+      <h3 class="text-lg sm:text-xl font-bold text-white flex items-center">
         Record Payment
       </h3>
     </div>
     
     <!-- Modal Body -->
-    <div class="px-6 py-5">
-      <form id="recordPaymentForm" class="space-y-4">
+    <div class="px-4 sm:px-6 py-4 sm:py-5">
+      <form id="recordPaymentForm" class="space-y-3 sm:space-y-4">
         <input type="hidden" id="customerID" name="customerID">
         <input type="hidden" id="branchID" name="branchID">
         
         <!-- Service ID -->
-        <div class="flex flex-col">
-          <label for="paymentServiceId" class="text-xs font-medium text-gray-700 mb-1 flex items-center">
+        <div>
+          <label for="paymentServiceId" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
             Sales ID
           </label>
           <div class="relative">
@@ -1617,8 +1617,8 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
         </div>
         
         <!-- Client Name -->
-        <div class="flex flex-col">
-          <label for="paymentClientName" class="text-xs font-medium text-gray-700 mb-1 flex items-center">
+        <div>
+          <label for="paymentClientName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
             Client Name
           </label>
           <div class="relative">
@@ -1627,8 +1627,8 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
         </div>
         
         <!-- Outstanding Balance -->
-        <div class="flex flex-col">
-          <label for="currentBalance" class="text-xs font-medium text-gray-700 mb-1 flex items-center">
+        <div>
+          <label for="currentBalance" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
             Outstanding Balance
           </label>
           <div class="relative">
@@ -1640,8 +1640,8 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
         </div>
         
         <!-- Payment Amount -->
-        <div class="flex flex-col">
-          <label for="paymentAmount" class="text-xs font-medium text-gray-700 mb-1 flex items-center">
+        <div>
+          <label for="paymentAmount" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
             Payment Amount
           </label>
           <div class="relative">
@@ -1653,8 +1653,8 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
         </div>
         
         <!-- Payment Method -->
-        <div class="flex flex-col">
-          <label for="paymentMethod" class="text-xs font-medium text-gray-700 mb-1 flex items-center">
+        <div>
+          <label for="paymentMethod" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
             Payment Method
           </label>
           <div class="relative">
@@ -1669,8 +1669,8 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
         </div>
         
         <!-- Payment Date -->
-        <div class="flex flex-col">
-          <label for="paymentDate" class="text-xs font-medium text-gray-700 mb-1 flex items-center">
+        <div>
+          <label for="paymentDate" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
             Payment Date
           </label>
           <div class="relative">
@@ -1679,8 +1679,8 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
         </div>
         
         <!-- Notes Section -->
-        <div class="flex flex-col">
-          <label for="paymentNotes" class="text-xs font-medium text-gray-700 mb-1 flex items-center">
+        <div>
+          <label for="paymentNotes" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
             Notes
           </label>
           <div class="relative">
@@ -1689,7 +1689,7 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
         </div>
         
         <!-- Summary Section -->
-        <div class="bg-gray-50 p-4 rounded-lg border border-gray-200 mt-6">
+        <div class="bg-gray-50 p-3 sm:p-4 rounded-lg border border-gray-200 mt-3 sm:mt-4">
           <p class="block text-xs font-medium text-gray-700 mb-2 flex items-center">
             Payment Summary
           </p>
@@ -1714,11 +1714,11 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
     </div>
     
     <!-- Modal Footer --> 
-    <div class="px-6 py-4 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
-      <button class="px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center" onclick="closeRecordPaymentModal()">
+    <div class="px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row sm:justify-end gap-2 sm:gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
+      <button class="w-full sm:w-auto px-4 sm:px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center" onclick="closeRecordPaymentModal()">
         Cancel
       </button>
-      <button class="px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="savePayment()">
+      <button class="w-full sm:w-auto px-5 sm:px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="savePayment()">
         Record Payment
       </button>
     </div>
