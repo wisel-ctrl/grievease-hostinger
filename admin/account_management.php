@@ -1982,26 +1982,26 @@ function closeAddEmployeeAccountModal() {
 </div>
 
 <!-- Employee OTP Verification Modal -->
-<div id="empOtpVerificationModal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
+<div id="empOtpVerificationModal" class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto">
   <!-- Modal Backdrop -->
   <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
  
   <!-- Modal Content -->
-  <div class="relative bg-white rounded-xl shadow-card w-full max-w-md mx-4 z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
     <!-- Close Button -->
     <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeEmpOtpModal()">
       <i class="fas fa-times"></i>
     </button>
    
     <!-- Modal Header -->
-    <div class="px-6 py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
-      <h3 class="text-xl font-bold text-white flex items-center">
+    <div class="px-4 sm:px-6 py-4 sm:py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
+      <h3 class="text-lg sm:text-xl font-bold text-white flex items-center">
         Email Verification
       </h3>
     </div>
    
     <!-- Modal Body -->
-    <div class="px-6 py-5">
+    <div class="px-4 sm:px-6 py-4 sm:py-5">
       <p class="text-gray-700 mb-4">A verification code has been sent to <span id="empOtpEmail" class="font-medium"></span>. Please enter the code below.</p>
       <div class="flex justify-center gap-2 mb-4">
         <input type="text" class="emp-otp-input w-12 h-12 border border-gray-300 rounded-md text-center text-xl font-bold" maxlength="1" autocomplete="off">
@@ -2016,11 +2016,11 @@ function closeAddEmployeeAccountModal() {
     </div>
    
     <!-- Modal Footer -->
-    <div class="px-6 py-4 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
-      <button class="px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center" onclick="closeEmpOtpModal()">
+    <div class="px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row sm:justify-end gap-2 sm:gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
+      <button class="w-full sm:w-auto px-4 sm:px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center" onclick="closeEmpOtpModal()">
         Cancel
       </button>
-      <button class="px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="verifyEmpOTP()">
+      <button class="w-full sm:w-auto px-5 sm:px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="verifyEmpOTP()">
         Verify
       </button>
     </div>
