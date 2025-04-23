@@ -409,7 +409,7 @@ if ($conn) {
                               </td>
                               <td class="px-4 py-3.5 text-sm">
                                 <div class="flex space-x-2">
-                                  <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip view-receipt-btn" 
+                                  <button class="p-2 bg-orange-100 text-orange-600 rounded-lg hover:bg-orange-200 transition-all tooltip view-receipt-btn" 
                                           title="View Receipt" 
                                           data-id="' . $row['lifeplan_id'] . '"
                                           data-name="' . htmlspecialchars($row['benefeciary_fullname']) . '"
@@ -419,13 +419,8 @@ if ($conn) {
                                           data-balance="' . number_format($row['balance']) . '">
                                       <i class="fas fa-receipt"></i>
                                   </button>
-                                  <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="Edit">
+                                  <button class="p-2 bg-yellow-100 text-yellow-600 rounded-lg hover:bg-yellow-200 transition-all tooltip" title="Edit">
                                     <i class="fas fa-edit"></i>
-                                  </button>
-                                  <button class="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-all tooltip delete-btn" 
-                                          title="Archive" 
-                                          data-id="' . $row['lifeplan_id'] .'">
-                                      <i class="fas fa-archive"></i>
                                   </button>
                                   <button class="p-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition-all tooltip convert-to-sale-btn" 
                                           title="Convert to Sale" 
@@ -433,6 +428,12 @@ if ($conn) {
                                           data-name="'. htmlspecialchars($row['benefeciary_fullname']).'">
                                       <i class="fas fa-exchange-alt"></i>
                                   </button>
+                                  <button class="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-all tooltip delete-btn" 
+                                          title="Archive" 
+                                          data-id="' . $row['lifeplan_id'] .'">
+                                      <i class="fas fa-archive"></i>
+                                  </button>
+                                  
                                 </div>
                               </td>
                             </tr>';
