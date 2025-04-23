@@ -127,10 +127,25 @@ $query = "
         FROM chat_recipients 
         WHERE userId = '$admin_id'
     )
-    AND cm.timestamp = (
-        SELECT MAX(timestamp) 
-        FROM chat_messages 
-        WHERE chatRoomId = cm.chatRoomId
+    AND (
+        -- Either the latest message in the chat room
+        cm.timestamp = (
+            SELECT MAX(timestamp) 
+            FROM chat_messages 
+            WHERE chatRoomId = cm.chatRoomId
+        )
+        -- OR the first message from the customer (if only 2 messages exist)
+        OR (
+            SELECT COUNT(*) 
+            FROM chat_messages 
+            WHERE chatRoomId = cm.chatRoomId
+        ) = 2
+        AND cm.sender != '$admin_id'
+        AND cm.timestamp = (
+            SELECT MIN(timestamp) 
+            FROM chat_messages 
+            WHERE chatRoomId = cm.chatRoomId
+        )
     )
     $filter_condition $search_condition
     ORDER BY cm.timestamp DESC
@@ -168,4 +183,6 @@ echo json_encode([
 $conn->close();
 
 ob_end_flush();
+
+
 ?>
