@@ -389,7 +389,7 @@ header("Pragma: no-cache");
                                           title="View Receipt" 
                                           data-id="' . $row['lifeplan_id'] . '"
                                           data-name="' . htmlspecialchars($row['benefeciary_fullname']) . '"
-                                          data-monthly="' . $row['custom_price'] . '"
+                                          data-custom-price="' . $row['custom_price'] . '"
                                           data-duration="' . $row['payment_duration'] . '"
                                           data-total="' . number_format($row['amount_paid']) . '"
                                           data-balance="' . number_format($row['balance']) . '">
