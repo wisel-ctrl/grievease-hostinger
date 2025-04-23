@@ -33,6 +33,7 @@ try {
         INSERT INTO sales_tb (
             customerID,
             branch_id,
+            service_id
             fname,
             mname,
             lname,
@@ -57,13 +58,14 @@ try {
             status,
             payment_status,
             get_timestamp
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Pending', ?, NOW())
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Pending', ?, NOW())
     ");
     
     $stmt->bind_param(
-        "iisssssssssssssssddddiss",
+        "iiisssssssssssssssddddiss",
         $data['customerID'],
         $data['branch_id'],
+        $data['service_id'],
         $data['fname'],
         $data['mname'],
         $data['lname'],
