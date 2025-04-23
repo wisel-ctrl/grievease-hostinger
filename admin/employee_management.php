@@ -95,11 +95,6 @@ if ($branch_result->num_rows > 0) {
     <div>
       <h1 class="text-2xl font-bold text-sidebar-text">Employee Management</h1>
     </div>
-    <div class="flex space-x-3">
-      <button class="p-2 bg-white border border-sidebar-border rounded-lg shadow-input text-sidebar-text hover:bg-sidebar-hover transition-all duration-300">
-        <i class="fas fa-bell"></i>
-      </button>
-    </div>
   </div>
 
 <!-- View Employee Details Section -->
@@ -152,8 +147,7 @@ if ($branch_result->num_rows > 0) {
 
         <!-- Add Employee Button -->
         <button class="px-4 py-2 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm whitespace-nowrap" 
-              onclick="openAddEmployeeModal()">
-          <i class="fas fa-plus-circle"></i> <span>Add Employee</span>
+              onclick="openAddEmployeeModal()"><span>Add Employee</span>
         </button>
       </div>
     </div>
@@ -214,8 +208,7 @@ if ($branch_result->num_rows > 0) {
       <!-- Second row: Add Employee Button - Full width -->
       <div class="w-full">
         <button class="px-4 py-2.5 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm whitespace-nowrap w-full justify-center" 
-                onclick="openAddEmployeeModal()">
-          <i class="fas fa-plus-circle"></i> <span>Add Employee</span>
+                onclick="openAddEmployeeModal()"><span>Add Employee</span>
         </button>
       </div>
     </div>
@@ -422,7 +415,6 @@ echo "</tr>";
     <!-- Modal Header -->
     <div class="px-6 py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
       <h3 class="text-xl font-bold text-white flex items-center">
-        <i class="fas fa-money-bill-wave mr-2"></i>
         Employee Salary Details
       </h3>
     </div>
@@ -514,7 +506,6 @@ echo "</tr>";
     <!-- Modal Footer -->
     <div class="px-6 py-4 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
       <button type="button" onclick="closeViewEmployeeModal()" class="px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center">
-        <i class="fas fa-times mr-2"></i>
         Close
       </button>
     </div>
@@ -536,7 +527,6 @@ echo "</tr>";
     <!-- Modal Header -->
     <div class="px-6 py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
       <h3 class="text-xl font-bold text-white flex items-center">
-        <i class="fas fa-user-plus mr-2"></i>
         Add Employee Account
       </h3>
     </div>
@@ -548,7 +538,6 @@ echo "</tr>";
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <label for="firstName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-user mr-2 text-sidebar-accent"></i>
               First Name *
             </label>
             <div class="relative">
@@ -559,7 +548,6 @@ echo "</tr>";
           </div>
           <div>
             <label for="lastName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-user mr-2 text-sidebar-accent"></i>
               Last Name *
             </label>
             <div class="relative">
@@ -573,7 +561,6 @@ echo "</tr>";
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <label for="middleName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-user mr-2 text-sidebar-accent"></i>
               Middle Name
             </label>
             <div class="relative">
@@ -584,7 +571,6 @@ echo "</tr>";
           </div>
           <div>
             <label for="suffix" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-user-tag mr-2 text-sidebar-accent"></i>
               Suffix <span class="text-xs text-gray-500">(Optional)</span>
             </label>
             <div class="relative">
@@ -598,7 +584,6 @@ echo "</tr>";
         <!-- Date of Birth Field -->
         <div>
           <label for="dateOfBirth" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-calendar-alt mr-2 text-sidebar-accent"></i>
             Date of Birth *
           </label>
           <div class="relative">
@@ -612,7 +597,6 @@ echo "</tr>";
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <label for="employeeEmail" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-envelope mr-2 text-sidebar-accent"></i>
               Email Address *
             </label>
             <div class="relative">
@@ -623,7 +607,6 @@ echo "</tr>";
           </div>
           <div>
             <label for="employeePhone" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-phone-alt mr-2 text-sidebar-accent"></i>
               Phone Number *
             </label>
             <div class="relative">
@@ -638,7 +621,6 @@ echo "</tr>";
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <label for="employeePosition" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-briefcase mr-2 text-sidebar-accent"></i>
               Position *
             </label>
             <div class="relative">
@@ -656,7 +638,6 @@ echo "</tr>";
           </div>
           <div>
             <label for="employeeSalary" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-money-bill-wave mr-2 text-sidebar-accent"></i>
               Salary per Service (₱) *
             </label>
             <div class="relative">
@@ -673,7 +654,6 @@ echo "</tr>";
         <!-- Gender Selection -->
         <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
           <p class="block text-xs font-medium text-gray-700 mb-2 flex items-center">
-            <i class="fas fa-venus-mars mr-2 text-sidebar-accent"></i>
             Gender *
           </p>
           <div class="grid grid-cols-2 sm:grid-cols-2 gap-3">
@@ -693,7 +673,6 @@ echo "</tr>";
         <!-- Branch Selection -->
         <div class="bg-gray-50 p-4 rounded-lg border-l-4 border-gold">
           <label class="block text-xs font-medium text-gray-700 mb-2 flex items-center">
-            <i class="fas fa-building mr-2 text-sidebar-accent"></i>
             Branch Location *
           </label>
           <div class="flex flex-wrap gap-4">
@@ -712,11 +691,9 @@ echo "</tr>";
     <!-- Modal Footer --> 
     <div class="px-6 py-4 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
       <button class="px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center" onclick="closeAddEmployeeModal()">
-        <i class="fas fa-times mr-2"></i>
         Cancel
       </button>
       <button type="submit" form="addEmployeeAccountForm" class="px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center">
-        <i class="fas fa-user-plus mr-2"></i>
         Add Employee
       </button>
     </div>
@@ -737,7 +714,6 @@ echo "</tr>";
     <!-- Modal Header -->
     <div class="px-6 py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
       <h3 class="text-xl font-bold text-white flex items-center">
-        <i class="fas fa-user-edit mr-2"></i>
         Edit Employee Account
       </h3>
     </div>
@@ -752,7 +728,6 @@ echo "</tr>";
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <label for="editFirstName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-user mr-2 text-sidebar-accent"></i>
               First Name *
             </label>
             <div class="relative">
@@ -763,7 +738,6 @@ echo "</tr>";
           </div>
           <div>
             <label for="editLastName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-user mr-2 text-sidebar-accent"></i>
               Last Name *
             </label>
             <div class="relative">
@@ -777,7 +751,6 @@ echo "</tr>";
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <label for="editMiddleName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-user mr-2 text-sidebar-accent"></i>
               Middle Name
             </label>
             <div class="relative">
@@ -788,7 +761,6 @@ echo "</tr>";
           </div>
           <div>
             <label for="editSuffix" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-user-tag mr-2 text-sidebar-accent"></i>
               Suffix <span class="text-xs text-gray-500">(Optional)</span>
             </label>
             <div class="relative">
@@ -802,7 +774,6 @@ echo "</tr>";
         <!-- Date of Birth Field -->
         <div>
           <label for="editDateOfBirth" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-calendar-alt mr-2 text-sidebar-accent"></i>
             Date of Birth *
           </label>
           <div class="relative">
@@ -816,7 +787,6 @@ echo "</tr>";
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <label for="editEmployeeEmail" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-envelope mr-2 text-sidebar-accent"></i>
               Email Address *
             </label>
             <div class="relative">
@@ -827,7 +797,6 @@ echo "</tr>";
           </div>
           <div>
             <label for="editEmployeePhone" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-phone-alt mr-2 text-sidebar-accent"></i>
               Phone Number *
             </label>
             <div class="relative">
@@ -842,7 +811,6 @@ echo "</tr>";
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <label for="editEmployeePosition" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-briefcase mr-2 text-sidebar-accent"></i>
               Position *
             </label>
             <div class="relative">
@@ -860,7 +828,6 @@ echo "</tr>";
           </div>
           <div>
             <label for="editEmployeeSalary" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-money-bill-wave mr-2 text-sidebar-accent"></i>
               Salary per Service (₱) *
             </label>
             <div class="relative">
@@ -877,7 +844,6 @@ echo "</tr>";
         <!-- Gender Selection -->
         <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
           <p class="block text-xs font-medium text-gray-700 mb-2 flex items-center">
-            <i class="fas fa-venus-mars mr-2 text-sidebar-accent"></i>
             Gender *
           </p>
           <div class="grid grid-cols-2 sm:grid-cols-2 gap-3">
@@ -897,7 +863,6 @@ echo "</tr>";
         <!-- Branch Selection -->
         <div class="bg-gray-50 p-4 rounded-lg border-l-4 border-gold">
           <label class="block text-xs font-medium text-gray-700 mb-2 flex items-center">
-            <i class="fas fa-building mr-2 text-sidebar-accent"></i>
             Branch Location *
           </label>
           <div class="flex flex-wrap gap-4">
@@ -916,11 +881,9 @@ echo "</tr>";
     <!-- Modal Footer --> 
     <div class="px-6 py-4 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
       <button class="px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center" onclick="closeEditEmployeeModal()">
-        <i class="fas fa-times mr-2"></i>
         Cancel
       </button>
       <button type="submit" form="editEmployeeAccountForm" class="px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center">
-        <i class="fas fa-save mr-2"></i>
         Update Employee
       </button>
     </div>
