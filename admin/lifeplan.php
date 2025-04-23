@@ -232,7 +232,7 @@ if ($conn) {
 
         <!-- Status Dropdown Acting as Filter -->
         <select id="statusFilter" class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
-          <option value="">All Status</option>
+          <option value=""> <i class="fas fa-filter text-sidebar-accent"></i>Filter</option>
           <option value="paid">Paid</option>
           <option value="ongoing">Ongoing</option>
           <option value="overdue">Overdue</option>
