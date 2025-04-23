@@ -256,39 +256,39 @@ $servicesJson = json_encode($allServices);
   </div>
 </div>
 
-    <!-- Checkout Modal -->
-<div class="fixed inset-0 z-50 flex items-center justify-center hidden" id="checkoutModal">
+<!-- Checkout Modal -->
+<div class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto" id="checkoutModal">
   <!-- Modal Backdrop -->
   <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
   
   <!-- Modal Content -->
-  <div class="relative bg-white rounded-xl shadow-card w-full max-w-5xl mx-4 z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-5xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
     <!-- Close Button -->
     <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeCheckoutModal()">
       <i class="fas fa-times"></i>
     </button>
     
     <!-- Modal Header -->
-    <div class="px-6 py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
-      <h3 class="text-xl font-bold text-white flex items-center" id="modal-package-title">
+    <div class="px-4 sm:px-6 py-4 sm:py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
+      <h3 class="text-lg sm:text-xl font-bold text-white flex items-center" id="modal-package-title">
         Complete Your Order
       </h3>
     </div>
     
     <!-- Modal Body -->
-    <div class="px-6 py-5">
-      <form id="checkoutForm" class="space-y-6">
+    <div class="px-4 sm:px-6 py-4 sm:py-5">
+      <form id="checkoutForm" class="space-y-3 sm:space-y-4">
         <input type="hidden" id="service-id" name="service_id" value="">
         <input type="hidden" id="service-price" name="service_price">
         <input type="hidden" id="branch-id" name="branch_id" value="">
 
         <!-- Client Information Section -->
-        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-          <h4 class="text-lg font-bold text-gray-800 mb-4 pb-2 border-b border-gray-200 flex items-center">
+        <div class="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-200">
+          <h4 class="text-base sm:text-lg font-bold text-gray-800 mb-3 sm:mb-4 pb-2 border-b border-gray-200 flex items-center">
             Client Information
           </h4>
-          <div class="space-y-4">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div class="space-y-3 sm:space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-2 sm:gap-4">
               <div>
                 <label for="clientFirstName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
                   First Name
@@ -303,30 +303,26 @@ $servicesJson = json_encode($allServices);
               </div>
               <div>
                 <label for="clientLastName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                  
                   Last Name
                 </label>
                 <input type="text" id="clientLastName" name="clientLastName" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
               </div>
               <div>
                 <label for="clientSuffix" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                  
                   Suffix <span class="text-xs text-gray-500">(Optional)</span>
                 </label>
                 <input type="text" id="clientSuffix" name="clientSuffix" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
               </div>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-4">
               <div>
                 <label for="clientPhone" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                  
                   Phone Number
                 </label>
                 <input type="tel" id="clientPhone" name="clientPhone" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
               </div>
               <div>
                 <label for="clientEmail" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                  
                   Email Address <span class="text-xs text-gray-500">(Optional)</span>
                 </label>
                 <input type="email" id="clientEmail" name="clientEmail" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
@@ -336,13 +332,12 @@ $servicesJson = json_encode($allServices);
         </div>
 
         <!-- Deceased Information Section -->
-        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-          <h4 class="text-lg font-bold text-gray-800 mb-4 pb-2 border-b border-gray-200 flex items-center">
-            
+        <div class="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-200">
+          <h4 class="text-base sm:text-lg font-bold text-gray-800 mb-3 sm:mb-4 pb-2 border-b border-gray-200 flex items-center">
             Deceased Information
           </h4>
-          <div class="space-y-4">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div class="space-y-3 sm:space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-2 sm:gap-4">
               <div>
                 <label for="deceasedFirstName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
                   First Name
@@ -363,31 +358,27 @@ $servicesJson = json_encode($allServices);
               </div>
               <div>
                 <label for="deceasedSuffix" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                  
                   Suffix <span class="text-xs text-gray-500">(Optional)</span>
                 </label>
                 <input type="text" id="deceasedSuffix" name="deceasedSuffix" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
               </div>
             </div>
             
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-2 sm:gap-4">
               <div>
                 <label for="dateOfBirth" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                  
                   Date of Birth <span class="text-xs text-gray-500">(Optional)</span>
                 </label>
                 <input type="date" id="dateOfBirth" name="dateOfBirth" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
               </div>
               <div>
                 <label for="dateOfDeath" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                  
                   Date of Death
                 </label>
                 <input type="date" id="dateOfDeath" name="dateOfDeath" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
               </div>
               <div>
                 <label for="dateOfBurial" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                  
                   Date of Burial/Cremation <span class="text-xs text-gray-500">(Optional)</span>
                 </label>
                 <input type="date" id="dateOfBurial" name="dateOfBurial" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
@@ -395,19 +386,16 @@ $servicesJson = json_encode($allServices);
             </div>
             <div>
               <label for="deathCertificate" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              
                 Death Certificate <span class="text-xs text-gray-500">(If available)</span>
               </label>
               <div class="relative">
                 <div class="flex items-center border border-gray-300 rounded-lg px-3 py-2 focus-within:ring-1 focus-within:ring-sidebar-accent focus-within:border-sidebar-accent transition-all duration-200">
-                  
                   <input type="file" id="deathCertificate" name="deathCertificate" class="w-full focus:outline-none">
                 </div>
               </div>
             </div>
             <div>
               <label for="deceasedAddress" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                
                 Address of the Deceased
               </label>
               <textarea id="deceasedAddress" name="deceasedAddress" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" rows="2"></textarea>
@@ -416,15 +404,13 @@ $servicesJson = json_encode($allServices);
         </div>
   
         <!-- Payment Information -->
-        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-          <h4 class="text-lg font-bold text-gray-800 mb-4 pb-2 border-b border-gray-200 flex items-center">
-            
+        <div class="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-200">
+          <h4 class="text-base sm:text-lg font-bold text-gray-800 mb-3 sm:mb-4 pb-2 border-b border-gray-200 flex items-center">
             Payment Information
           </h4>
-          <div class="space-y-4">
+          <div class="space-y-3 sm:space-y-4">
             <div>
               <label for="paymentMethod" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                
                 Method of Payment
               </label>
               <select id="paymentMethod" name="paymentMethod" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
@@ -434,10 +420,9 @@ $servicesJson = json_encode($allServices);
                 <option value="Bank Transfer">Bank Transfer</option>
               </select>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-4">
               <div>
                 <label for="totalPrice" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                  
                   Total Price 
                   <span class="text-xs text-gray-500 ml-1">(Minimum: <span id="min-price">₱0.00</span>)</span>
                 </label>
@@ -450,7 +435,6 @@ $servicesJson = json_encode($allServices);
               </div>
               <div>
                 <label for="amountPaid" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                  
                   Amount Paid
                 </label>
                 <div class="relative">
@@ -465,9 +449,8 @@ $servicesJson = json_encode($allServices);
         </div>
 
         <!-- Cremation Checklist Section -->
-        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-          <h4 class="text-lg font-bold text-gray-800 mb-4 pb-2 border-b border-gray-200 flex items-center">
-            
+        <div class="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-200">
+          <h4 class="text-base sm:text-lg font-bold text-gray-800 mb-3 sm:mb-4 pb-2 border-b border-gray-200 flex items-center">
             Additional Services
           </h4>
           <div class="space-y-3">
@@ -482,16 +465,15 @@ $servicesJson = json_encode($allServices);
     </div>
     
     <!-- Modal Footer -->
-    <div class="px-6 py-4 flex justify-between items-center border-t border-gray-200 sticky bottom-0 bg-white">
-      <div class="text-gray-600">
+    <div class="px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row sm:justify-between items-center border-t border-gray-200 sticky bottom-0 bg-white">
+      <div class="text-gray-600 mb-2 sm:mb-0">
         <p class="font-medium">Order Total: <span class="text-xl font-bold text-sidebar-accent" id="footer-total-price">₱0.00</span></p>
       </div>
-      <div class="flex gap-4">
-        <button class="px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center" onclick="closeCheckoutModal()">
-          
+      <div class="flex flex-col sm:flex-row gap-2 sm:gap-4 w-full sm:w-auto">
+        <button class="w-full sm:w-auto px-4 sm:px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center" onclick="closeCheckoutModal()">
           Cancel
         </button>
-        <button class="px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="confirmCheckout()">
+        <button class="w-full sm:w-auto px-5 sm:px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="confirmCheckout()">
           Confirm Order
         </button>
       </div>
