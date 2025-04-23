@@ -140,64 +140,17 @@ $offset = ($current_page - 1) * $bookings_per_page;
           <i class="fas fa-search absolute left-2.5 top-3 text-gray-400"></i>
         </div>
 
-        <!-- Filter Dropdown -->
-        <div class="relative filter-dropdown">
-          <button id="filterToggle" class="px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover">
-            <i class="fas fa-filter text-sidebar-accent"></i>
-            <span>Filters</span>
-            <?php if(isset($sortFilter) && $sortFilter): ?>
-              <span class="h-2 w-2 bg-sidebar-accent rounded-full"></span>
-            <?php endif; ?>
-          </button>
-          
-          <!-- Filter Window -->
-          <div id="filterDropdown" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-4">
-            <div class="space-y-4">
-              <!-- Sort Options -->
-              <div>
-                <h5 class="text-sm font-medium text-sidebar-text mb-2">Sort By</h5>
-                <div class="space-y-1">
-                  <div class="flex items-center cursor-pointer" data-sort="id_asc">
-                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                      ID: Ascending
-                    </span>
-                  </div>
-                  <div class="flex items-center cursor-pointer" data-sort="id_desc">
-                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                      ID: Descending
-                    </span>
-                  </div>
-                  <div class="flex items-center cursor-pointer" data-sort="customer_asc">
-                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                      Customer: A-Z
-                    </span>
-                  </div>
-                  <div class="flex items-center cursor-pointer" data-sort="customer_desc">
-                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                      Customer: Z-A
-                    </span>
-                  </div>
-                  <div class="flex items-center cursor-pointer" data-sort="newest">
-                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                      Newest First
-                    </span>
-                  </div>
-                  <div class="flex items-center cursor-pointer" data-sort="oldest">
-                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                      Oldest First
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <!-- Archive Button -->
+        <button class="px-4 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover whitespace-nowrap">
+          <i class="fas fa-archive text-sidebar-accent"></i>
+          <span>Archive</span>
+        </button>
       </div>
     </div>
     
     <!-- Mobile/Tablet Controls - Only visible on smaller screens -->
     <div class="lg:hidden w-full mt-4">
-      <!-- First row: Search bar with filter icon on the right -->
+      <!-- First row: Search bar with archive icon on the right -->
       <div class="flex items-center w-full gap-3 mb-4">
         <!-- Search Input - Takes most of the space -->
         <div class="relative flex-grow">
@@ -206,69 +159,24 @@ $offset = ($current_page - 1) * $bookings_per_page;
           <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
         </div>
 
-        <!-- Icon-only button for filter -->
-        <div class="flex items-center">
-          <!-- Filter Icon Button -->
-          <div class="relative filter-dropdown">
-            <button id="bookingFilterToggle" class="w-10 h-10 flex items-center justify-center text-sidebar-accent">
-              <i class="fas fa-filter text-xl"></i>
-              <span id="filterIndicator" class="hidden absolute top-1 right-1 h-2 w-2 bg-sidebar-accent rounded-full"></span>
-            </button>
-            
-            <!-- Filter Window - Positioned below the icon -->
-            <div id="bookingFilterDropdown" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-4">
-              <div class="space-y-4">
-                <!-- Sort Options -->
-                <div>
-                  <h5 class="text-sm font-medium text-sidebar-text mb-2">Sort By</h5>
-                  <div class="space-y-2">
-                    <div class="flex items-center cursor-pointer" data-sort="id_asc">
-                      <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full">
-                        ID: Ascending
-                      </span>
-                    </div>
-                    <div class="flex items-center cursor-pointer" data-sort="id_desc">
-                      <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full">
-                        ID: Descending
-                      </span>
-                    </div>
-                    <div class="flex items-center cursor-pointer" data-sort="customer_asc">
-                      <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full">
-                        Customer: A-Z
-                      </span>
-                    </div>
-                    <div class="flex items-center cursor-pointer" data-sort="customer_desc">
-                      <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full">
-                        Customer: Z-A
-                      </span>
-                    </div>
-                    <div class="flex items-center cursor-pointer" data-sort="newest">
-                      <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full">
-                        Newest First
-                      </span>
-                    </div>
-                    <div class="flex items-center cursor-pointer" data-sort="oldest">
-                      <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full">
-                        Oldest First
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+        <!-- Icon-only button for archive -->
+        <div class="flex items-center gap-3">
+          <!-- Archive Icon Button -->
+          <button class="w-10 h-10 flex items-center justify-center text-sidebar-accent">
+            <i class="fas fa-archive text-xl"></i>
+          </button>
         </div>
       </div>
     </div>
   </div>
   
-  <!-- Responsive Table Container with improved spacing -->
+  <!-- Responsive Table Container -->
   <div class="overflow-x-auto scrollbar-thin" id="bookingsTableContainer">
     <div id="bookingsLoadingIndicator" class="hidden absolute inset-0 bg-white bg-opacity-50 flex items-center justify-center">
       <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-sidebar-accent"></div>
     </div>
     
-    <!-- Responsive Table with improved spacing and horizontal scroll for small screens -->
+    <!-- Responsive Table with horizontal scroll for small screens -->
     <div class="min-w-full">
       <table class="w-full">
         <thead>
@@ -411,8 +319,11 @@ $offset = ($current_page - 1) * $bookings_per_page;
     <div class="flex space-x-2">
       <?php if ($total_pages > 1): ?>
           <!-- First page and Previous page -->
-          <a href="<?php echo '?page=' . max(1, $current_page - 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($current_page == 1) ? 'opacity-50 pointer-events-none' : ''; ?>">&laquo;</a>
+          <a href="<?php echo '?page=' . 1; ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($current_page == 1) ? 'opacity-50 pointer-events-none' : ''; ?>">&laquo;</a>
           
+          <a href="<?php echo '?page=' . max(1, $current_page - 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($current_page == 1) ? 'opacity-50 pointer-events-none' : ''; ?>">&lsaquo;</a>
+          
+          <!-- Page numbers -->
           <?php
           // Determine the range of page numbers to show
           $range = 2; // Show 2 pages before and after the current page
@@ -442,8 +353,10 @@ $offset = ($current_page - 1) * $bookings_per_page;
           }
           ?>
           
-          <!-- Next page -->
-          <a href="<?php echo '?page=' . min($total_pages, $current_page + 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($current_page == $total_pages) ? 'opacity-50 pointer-events-none' : ''; ?>">&raquo;</a>
+          <!-- Next page and Last page -->
+          <a href="<?php echo '?page=' . min($total_pages, $current_page + 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($current_page == $total_pages) ? 'opacity-50 pointer-events-none' : ''; ?>">&rsaquo;</a>
+                  
+          <a href="<?php echo '?page=' . $total_pages; ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($current_page == $total_pages) ? 'opacity-50 pointer-events-none' : ''; ?>">&raquo;</a>
       <?php endif; ?>
     </div>
   </div>
