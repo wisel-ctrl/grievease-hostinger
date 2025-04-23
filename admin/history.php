@@ -1461,90 +1461,113 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
     
     <!-- Modal Body -->
     <div class="px-5 sm:px-6 py-4 sm:py-5">
-      <div class="bg-gray-50 p-4 sm:p-5 rounded-lg border border-gray-200">
-        <div class="space-y-3 sm:space-y-3">
-          <p class="flex flex-wrap justify-between gap-x-4">
-            <span class="font-medium text-gray-700 min-w-[120px]">ID:</span>
-            <span id="serviceId" class="text-gray-800 text-right ml-auto"></span>
-          </p>
-          <p class="flex flex-wrap justify-between gap-x-4">
-            <span class="font-medium text-gray-700 min-w-[120px]">Client Name:</span>
-            <span id="serviceClientName" class="text-gray-800 text-right ml-auto"></span>
-          </p>
-          <p class="flex flex-wrap justify-between gap-x-4">
-            <span class="font-medium text-gray-700 min-w-[120px]">Service Type:</span>
-            <span id="serviceServiceType" class="text-gray-800 text-right ml-auto"></span>
-          </p>
-          <p class="flex flex-wrap justify-between gap-x-4">
-            <span class="font-medium text-gray-700 min-w-[120px]">Branch:</span>
-            <span id="branchName" class="text-gray-800 text-right ml-auto"></span>
-          </p>
-          <p class="flex flex-wrap justify-between gap-x-4">
-            <span class="font-medium text-gray-700 min-w-[120px]">Date:</span>
-            <span id="serviceDate" class="text-gray-800 text-right ml-auto"></span>
-          </p>
-          <p class="flex flex-wrap justify-between gap-x-4">
-            <span class="font-medium text-gray-700 min-w-[120px]">Status:</span>
-            <span id="serviceStatus" class="text-gray-800 text-right ml-auto"></span>
-          </p>
-          <p class="flex flex-wrap justify-between gap-x-4">
-            <span class="font-medium text-gray-700 min-w-[120px]">Outstanding Balance:</span>
-            <span id="serviceOutstandingBalance" class="text-gray-800 font-bold text-sidebar-accent text-right ml-auto"></span>
-          </p>
+      <!-- Service Information -->
+      <div class="rounded-lg border border-gray-200 overflow-hidden mb-5">
+        <div class="bg-gray-50 px-4 py-2 border-b border-gray-200">
+          <h4 class="font-medium text-gray-700">Basic Information</h4>
+        </div>
+        <div class="p-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="space-y-1">
+              <label class="block text-xs font-medium text-gray-500">ID</label>
+              <div id="serviceId" class="text-sm font-medium text-gray-800">-</div>
+            </div>
+            
+            <div class="space-y-1">
+              <label class="block text-xs font-medium text-gray-500">Client Name</label>
+              <div id="serviceClientName" class="text-sm font-medium text-gray-800">-</div>
+            </div>
+            
+            <div class="space-y-1">
+              <label class="block text-xs font-medium text-gray-500">Service Type</label>
+              <div id="serviceServiceType" class="text-sm font-medium text-gray-800">-</div>
+            </div>
+            
+            <div class="space-y-1">
+              <label class="block text-xs font-medium text-gray-500">Branch</label>
+              <div id="branchName" class="text-sm font-medium text-gray-800">-</div>
+            </div>
+            
+            <div class="space-y-1">
+              <label class="block text-xs font-medium text-gray-500">Date</label>
+              <div id="serviceDate" class="text-sm font-medium text-gray-800">-</div>
+            </div>
+            
+            <div class="space-y-1">
+              <label class="block text-xs font-medium text-gray-500">Status</label>
+              <div id="serviceStatus" class="text-sm font-medium text-gray-800">-</div>
+            </div>
+            
+            <div class="space-y-1 col-span-1 sm:col-span-2">
+              <label class="block text-xs font-medium text-gray-500">Outstanding Balance</label>
+              <div id="serviceOutstandingBalance" class="text-base font-bold text-sidebar-accent">-</div>
+            </div>
+          </div>
         </div>
       </div>
       
       <!-- Initial Staff Section -->
-      <div class="bg-gray-50 p-4 sm:p-5 rounded-lg border border-gray-200 mt-4 sm:mt-5">
-        <h4 class="font-semibold text-gray-800 mb-3 sm:mb-4 flex items-center">
-          Initial Staff
-        </h4>
-        <div class="space-y-3 sm:space-y-3">
-          <p class="flex flex-wrap justify-between gap-x-4">
-            <span class="font-medium text-gray-700 min-w-[120px]">Date:</span>
-            <span id="initialDate" class="text-gray-800 text-right ml-auto"></span>
-          </p>
-          <p class="flex flex-wrap justify-between gap-x-4">
-            <span class="font-medium text-gray-700 min-w-[120px]">Embalmers:</span>
-            <span id="initialEmbalmers" class="text-gray-800 text-right ml-auto"></span>
-          </p>
-          <p class="flex flex-wrap justify-between gap-x-4">
-            <span class="font-medium text-gray-700 min-w-[120px]">Drivers:</span>
-            <span id="initialDrivers" class="text-gray-800 text-right ml-auto"></span>
-          </p>
-          <p class="flex flex-wrap justify-between gap-x-4">
-            <span class="font-medium text-gray-700 min-w-[120px]">Personnel:</span>
-            <span id="initialPersonnel" class="text-gray-800 text-right ml-auto"></span>
-          </p>
-          <p class="flex flex-wrap justify-between gap-x-4">
-            <span class="font-medium text-gray-700 min-w-[120px] self-start mt-1">Notes:</span>
-            <span id="initialNotes" class="text-gray-800 text-right ml-auto"></span>
-          </p>
+      <div class="rounded-lg border border-gray-200 overflow-hidden mb-5">
+        <div class="bg-gray-50 px-4 py-2 border-b border-gray-200">
+          <h4 class="font-medium text-gray-700">Initial Staff</h4>
+        </div>
+        <div class="p-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="space-y-1">
+              <label class="block text-xs font-medium text-gray-500">Date</label>
+              <div id="initialDate" class="text-sm font-medium text-gray-800">-</div>
+            </div>
+            
+            <div class="space-y-1">
+              <label class="block text-xs font-medium text-gray-500">Embalmers</label>
+              <div id="initialEmbalmers" class="text-sm font-medium text-gray-800">-</div>
+            </div>
+            
+            <div class="space-y-1">
+              <label class="block text-xs font-medium text-gray-500">Drivers</label>
+              <div id="initialDrivers" class="text-sm font-medium text-gray-800">-</div>
+            </div>
+            
+            <div class="space-y-1">
+              <label class="block text-xs font-medium text-gray-500">Personnel</label>
+              <div id="initialPersonnel" class="text-sm font-medium text-gray-800">-</div>
+            </div>
+            
+            <div class="space-y-1 col-span-1 sm:col-span-2">
+              <label class="block text-xs font-medium text-gray-500">Notes</label>
+              <div id="initialNotes" class="text-sm font-medium text-gray-800 whitespace-pre-line">-</div>
+            </div>
+          </div>
         </div>
       </div>
       
       <!-- Burial Staff Section -->
-      <div class="bg-gray-50 p-4 sm:p-5 rounded-lg border border-gray-200 mt-4 sm:mt-5">
-        <h4 class="font-semibold text-gray-800 mb-3 sm:mb-4 flex items-center">
-          Burial Staff
-        </h4>
-        <div class="space-y-3 sm:space-y-3">
-          <p class="flex flex-wrap justify-between gap-x-4">
-            <span class="font-medium text-gray-700 min-w-[120px]">Date:</span>
-            <span id="burialDate1" class="text-gray-800 text-right ml-auto"></span>
-          </p>
-          <p class="flex flex-wrap justify-between gap-x-4">
-            <span class="font-medium text-gray-700 min-w-[120px]">Drivers:</span>
-            <span id="burialDrivers" class="text-gray-800 text-right ml-auto"></span>
-          </p>
-          <p class="flex flex-wrap justify-between gap-x-4">
-            <span class="font-medium text-gray-700 min-w-[120px]">Personnel:</span>
-            <span id="burialPersonnel" class="text-gray-800 text-right ml-auto"></span>
-          </p>
-          <p class="flex flex-wrap justify-between gap-x-4">
-            <span class="font-medium text-gray-700 min-w-[120px] self-start mt-1">Notes:</span>
-            <span id="burialNotes" class="text-gray-800 text-right ml-auto"></span>
-          </p>
+      <div class="rounded-lg border border-gray-200 overflow-hidden">
+        <div class="bg-gray-50 px-4 py-2 border-b border-gray-200">
+          <h4 class="font-medium text-gray-700">Burial Staff</h4>
+        </div>
+        <div class="p-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="space-y-1">
+              <label class="block text-xs font-medium text-gray-500">Date</label>
+              <div id="burialDate1" class="text-sm font-medium text-gray-800">-</div>
+            </div>
+            
+            <div class="space-y-1">
+              <label class="block text-xs font-medium text-gray-500">Drivers</label>
+              <div id="burialDrivers" class="text-sm font-medium text-gray-800">-</div>
+            </div>
+            
+            <div class="space-y-1">
+              <label class="block text-xs font-medium text-gray-500">Personnel</label>
+              <div id="burialPersonnel" class="text-sm font-medium text-gray-800">-</div>
+            </div>
+            
+            <div class="space-y-1 col-span-1 sm:col-span-2">
+              <label class="block text-xs font-medium text-gray-500">Notes</label>
+              <div id="burialNotes" class="text-sm font-medium text-gray-800 whitespace-pre-line">-</div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
