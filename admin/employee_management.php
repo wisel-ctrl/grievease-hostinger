@@ -339,11 +339,11 @@ echo "<td class='px-4 py-4 text-sm'>";
 echo "<div class='flex space-x-2'>";
 
 // View button (first)
-echo "<button class='p-2 bg-purple-100 text-purple-600 rounded-lg hover:bg-purple-200 transition-all tooltip' title='View Details' onclick='viewEmployeeDetails(\"" . htmlspecialchars($row['EmployeeID']) . "\")'>";
+echo "<button class='p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip' title='View Details' onclick='viewEmployeeDetails(\"" . htmlspecialchars($row['EmployeeID']) . "\")'>";
 echo "<i class='fas fa-eye'></i></button>";
 
 // Edit button (second)
-echo "<button class='p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip' title='Edit Employee' onclick='openEditEmployeeModal(\"" . htmlspecialchars($row['EmployeeID']) . "\")'>";
+echo "<button class='p-2 bg-yellow-100 text-yellow-600 rounded-lg hover:bg-yellow-200 transition-all tooltip' title='Edit Employee' onclick='openEditEmployeeModal(\"" . htmlspecialchars($row['EmployeeID']) . "\")'>";
 echo "<i class='fas fa-edit'></i></button>";
 
 // Terminate/Reinstate button (third)
