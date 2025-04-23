@@ -747,27 +747,27 @@ document.addEventListener('DOMContentLoaded', function() {
 </div>
 
   <!-- Edit LifePlan Modal -->
-<div class="fixed inset-0 z-50 flex items-center justify-center hidden" id="editLifePlanModal">
+<div id="editLifePlanModal" class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto">
   <!-- Modal Backdrop -->
   <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
   
   <!-- Modal Content -->
-  <div class="relative bg-white rounded-xl shadow-card w-full max-w-4xl mx-4 z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-4xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
     <!-- Close Button -->
     <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" id="closeEditModal">
       <i class="fas fa-times"></i>
     </button>
     
     <!-- Modal Header -->
-    <div class="px-6 py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
-      <h3 class="text-xl font-bold text-white flex items-center">
+    <div class="px-4 sm:px-6 py-4 sm:py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
+      <h3 class="text-lg sm:text-xl font-bold text-white flex items-center">
         Edit LifePlan Subscription
       </h3>
     </div>
     
     <!-- Modal Body -->
-    <div class="px-6 py-5">
-      <div class="grid grid-cols-1 gap-6">
+    <div class="px-4 sm:px-6 py-4 sm:py-5">
+      <div class="grid grid-cols-1 gap-3 sm:gap-6">
         <!-- Customer Search -->
         <div>
           <label for="customerSearch" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">Search Customer</label>
@@ -779,7 +779,7 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
         
         <!-- Customer Details -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
           <div>
             <label for="fname" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">First Name</label>
             <div class="relative">
@@ -819,9 +819,9 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
         
         <!-- Beneficiary Details -->
-        <div class="border-t pt-4 mt-4">
-          <h4 class="text-md font-medium text-gray-700 mb-3">Beneficiary Information</h4>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="border-t pt-3 sm:pt-4 mt-3 sm:mt-4">
+          <h4 class="text-sm sm:text-md font-medium text-gray-700 mb-2 sm:mb-3">Beneficiary Information</h4>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
             <div>
               <label for="benefeciary_fname" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">First Name</label>
               <div class="relative">
@@ -859,7 +859,7 @@ document.addEventListener('DOMContentLoaded', function() {
               </div>
             </div>
           </div>
-          <div class="mt-4">
+          <div class="mt-3 sm:mt-4">
             <label for="benefeciary_address" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">Address</label>
             <div class="relative">
               <textarea id="benefeciary_address" rows="2" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"></textarea>
@@ -868,9 +868,9 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
         
         <!-- Plan Details -->
-        <div class="border-t pt-4 mt-4">
-          <h4 class="text-md font-medium text-gray-700 mb-3">Plan Information</h4>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="border-t pt-3 sm:pt-4 mt-3 sm:mt-4">
+          <h4 class="text-sm sm:text-md font-medium text-gray-700 mb-2 sm:mb-3">Plan Information</h4>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
             <div>
               <label for="service_id" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">Service</label>
               <div class="relative">
@@ -911,11 +911,11 @@ document.addEventListener('DOMContentLoaded', function() {
     </div>
     
     <!-- Modal Footer --> 
-    <div class="px-6 py-4 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
-      <button class="px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center" id="closeEditModal">
+    <div class="px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row sm:justify-end gap-2 sm:gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
+      <button class="w-full sm:w-auto px-4 sm:px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center" id="closeEditModal">
         Cancel
       </button>
-      <button class="px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" id="saveLifePlan">
+      <button class="w-full sm:w-auto px-5 sm:px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" id="saveLifePlan">
         Save Changes
       </button>
     </div>
