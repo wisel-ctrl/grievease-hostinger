@@ -42,7 +42,7 @@ try {
             date_of_birth,
             deceased_address,
             date_of_death,
-            burial_date,
+            date_of_burial,
             with_cremate,
             initial_price,
             discounted_price,
