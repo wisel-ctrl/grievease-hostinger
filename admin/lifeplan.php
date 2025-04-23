@@ -205,7 +205,7 @@ header("Pragma: no-cache");
         </select>
 
         <!-- Archive Button -->
-        <button class="px-4 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover whitespace-nowrap">
+        <button id="openArchiveModal" class="px-4 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover whitespace-nowrap">
           <i class="fas fa-archive text-sidebar-accent"></i>
           <span>Archive</span>
         </button>
@@ -245,7 +245,7 @@ header("Pragma: no-cache");
           </div>
 
           <!-- Archive Icon Button -->
-            <button id="openArchiveModal" class="px-4 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover whitespace-nowrap">
+            <button id="openArchiveModalMobile" class="px-4 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover whitespace-nowrap">
                 <i class="fas fa-archive text-sidebar-accent"></i>
                 <span>Archive</span>
             </button>
@@ -1322,11 +1322,17 @@ document.addEventListener('DOMContentLoaded', function() {
 document.addEventListener('DOMContentLoaded', function() {
     const archiveModal = document.getElementById('archiveModal');
     const openArchiveModalBtn = document.getElementById('openArchiveModal');
+    const openArchiveModalMobileBtn = document.getElementById('openArchiveModalMobile');
     const closeArchiveModalBtn = document.getElementById('closeArchiveModal');
     const archivedLifePlansBody = document.getElementById('archivedLifePlansBody');
 
     // Open archive modal
     openArchiveModalBtn.addEventListener('click', function() {
+        fetchArchivedLifePlans();
+        archiveModal.classList.remove('hidden');
+    });
+
+    openArchiveModalMobileBtn.addEventListener('click', function() {
         fetchArchivedLifePlans();
         archiveModal.classList.remove('hidden');
     });
