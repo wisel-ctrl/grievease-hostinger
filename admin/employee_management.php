@@ -356,7 +356,7 @@ echo "<i class='fas fa-edit'></i></button>";
 // Terminate/Reinstate button (third)
 if (strtolower($row['status']) == 'active') {
    echo "<button class='p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-all tooltip' title='Terminate Employee' onclick='terminateEmployee(\"" . htmlspecialchars($row['EmployeeID']) . "\")'>";
-   echo "<i class='fas fa-trash-alt'></i></button>";
+   echo "<i class='fas fa-archive text-red'></i></button>";
 } else {
    echo "<button class='p-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition-all tooltip' title='Reinstate Employee' onclick='reinstateEmployee(\"" . htmlspecialchars($row['EmployeeID']) . "\")'>";
    echo "<i class='fas fa-check'></i></button>";
