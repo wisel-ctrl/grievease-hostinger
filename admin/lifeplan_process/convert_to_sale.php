@@ -33,7 +33,7 @@ try {
         INSERT INTO sales_tb (
             customerID,
             branch_id,
-            service_id
+            service_id,
             fname,
             mname,
             lname,
