@@ -538,70 +538,70 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 <!-- Add Customer Account Modal -->
-<div id="addCustomerAccountModal" class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto overflow-x-hidden p-1 md:p-4">
+<div id="addCustomerAccountModal" class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto">
   <!-- Modal Backdrop -->
   <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
   
   <!-- Modal Content -->
-  <div class="relative bg-white rounded-lg md:rounded-xl shadow-card w-full max-w-xl mx-2 xs:mx-3 sm:mx-auto z-10 transform transition-all duration-300 max-h-[95vh] overflow-y-auto">
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
     <!-- Close Button -->
-    <button type="button" class="absolute top-3 right-3 md:top-4 md:right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeAddCustomerAccountModal()">
-      <i class="fas fa-times text-sm md:text-base"></i>
+    <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeAddCustomerAccountModal()">
+      <i class="fas fa-times"></i>
     </button>
     
     <!-- Modal Header -->
-    <div class="px-3 xs:px-4 md:px-6 py-3 md:py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
-      <h3 class="text-base xs:text-lg md:text-xl font-bold text-white flex items-center">
-        <i class="fas fa-user-plus mr-2 text-sm xs:text-base"></i>
+    <div class="px-4 sm:px-6 py-4 sm:py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
+      <h3 class="text-lg sm:text-xl font-bold text-white flex items-center">
+        <i class="fas fa-user-plus mr-2"></i>
         Add Customer Account
       </h3>
     </div>
     
     <!-- Modal Body -->
-    <div class="px-3 xs:px-4 md:px-6 py-3 md:py-5">
-      <form id="addCustomerAccountForm" method="post" action="addCustomer/add_customer.php" class="space-y-2 xs:space-y-3 md:space-y-4">
+    <div class="px-4 sm:px-6 py-4 sm:py-5">
+      <form id="addCustomerAccountForm" method="post" action="addCustomer/add_customer.php" class="space-y-3 sm:space-y-4">
         <!-- Personal Information Section -->
         <div>
           <label for="firstName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-user mr-2 text-sidebar-accent text-xs"></i>
+            <i class="fas fa-user mr-2 text-sidebar-accent"></i>
             First Name <span class="text-red-500">*</span>
           </label>
           <div class="relative">
-            <input type="text" id="firstName" name="firstName" class="w-full px-2 md:px-3 py-1 md:py-2 text-sm md:text-base bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="First Name" required>
+            <input type="text" id="firstName" name="firstName" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="First Name" required>
           </div>
           <p id="firstNameError" class="text-red-500 text-xs mt-1 hidden"></p>
         </div>
         
         <div>
           <label for="lastName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-user mr-2 text-sidebar-accent text-xs"></i>
+            <i class="fas fa-user mr-2 text-sidebar-accent"></i>
             Last Name <span class="text-red-500">*</span>
           </label>
           <div class="relative">
-            <input type="text" id="lastName" name="lastName" class="w-full px-2 md:px-3 py-1 md:py-2 text-sm md:text-base bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="Last Name" required>
+            <input type="text" id="lastName" name="lastName" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="Last Name" required>
           </div>
           <p id="lastNameError" class="text-red-500 text-xs mt-1 hidden"></p>
         </div>
         
-        <div class="grid grid-cols-1 xs:grid-cols-2 gap-2 md:gap-4">
-          <div>
+        <div class="flex flex-col sm:flex-row gap-2 sm:gap-4">
+          <div class="w-full sm:flex-1">
             <label for="middleName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-user mr-2 text-sidebar-accent text-xs"></i>
+              <i class="fas fa-user mr-2 text-sidebar-accent"></i>
               Middle Name
             </label>
             <div class="relative">
-              <input type="text" id="middleName" name="middleName" class="w-full px-2 md:px-3 py-1 md:py-2 text-sm md:text-base bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="Middle Name">
+              <input type="text" id="middleName" name="middleName" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="Middle Name">
             </div>
             <p id="middleNameError" class="text-red-500 text-xs mt-1 hidden"></p>
           </div>
           
-          <div>
+          <div class="w-full sm:flex-1">
             <label for="suffix" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-user-tag mr-2 text-sidebar-accent text-xs"></i>
+              <i class="fas fa-user-tag mr-2 text-sidebar-accent"></i>
               Suffix
             </label>
             <div class="relative">
-              <select id="suffix" name="suffix" class="w-full px-2 md:px-3 py-1 md:py-2 text-sm md:text-base bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+              <select id="suffix" name="suffix" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
                 <option value="">Select Suffix</option>
                 <option value="Jr">Jr</option>
                 <option value="Sr">Sr</option>
@@ -617,12 +617,12 @@ document.addEventListener('DOMContentLoaded', function() {
         
         <div>
           <label for="birthdate" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-calendar-alt mr-2 text-sidebar-accent text-xs"></i>
+            <i class="fas fa-calendar-alt mr-2 text-sidebar-accent"></i>
             Birthdate <span class="text-red-500">*</span>
           </label>
           <div class="relative">
             <input type="date" id="birthdate" name="birthdate" 
-              class="w-full px-2 md:px-3 py-1 md:py-2 text-sm md:text-base bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
+              class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
               max="<?php echo date('Y-m-d'); ?>" required>
           </div>
           <p id="birthdateError" class="text-red-500 text-xs mt-1 hidden"></p>
@@ -630,11 +630,11 @@ document.addEventListener('DOMContentLoaded', function() {
         
         <div>
           <label for="branchLocation" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-map-marker-alt mr-2 text-sidebar-accent text-xs"></i>
+            <i class="fas fa-map-marker-alt mr-2 text-sidebar-accent"></i>
             Branch Location <span class="text-red-500">*</span>
           </label>
           <div class="relative">
-            <select id="branchLocation" name="branchLocation" class="w-full px-2 md:px-3 py-1 md:py-2 text-sm md:text-base bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
+            <select id="branchLocation" name="branchLocation" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
               <option value="">Select Branch</option>
               <!-- Branch options will be populated by AJAX -->
             </select>
@@ -645,35 +645,35 @@ document.addEventListener('DOMContentLoaded', function() {
         <!-- Contact Information Section -->
         <div>
           <label for="customerEmail" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-envelope mr-2 text-sidebar-accent text-xs"></i>
+            <i class="fas fa-envelope mr-2 text-sidebar-accent"></i>
             Email Address <span class="text-red-500">*</span>
           </label>
           <div class="relative">
-            <input type="email" id="customerEmail" name="customerEmail" class="w-full px-2 md:px-3 py-1 md:py-2 text-sm md:text-base bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="example@email.com" required>
+            <input type="email" id="customerEmail" name="customerEmail" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="example@email.com" required>
           </div>
           <p id="emailError" class="text-red-500 text-xs mt-1 hidden"></p>
         </div>
         
         <div>
           <label for="customerPhone" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-phone mr-2 text-sidebar-accent text-xs"></i>
+            <i class="fas fa-phone mr-2 text-sidebar-accent"></i>
             Phone Number <span class="text-red-500">*</span>
           </label>
           <div class="relative">
-            <input type="tel" id="customerPhone" name="customerPhone" class="w-full px-2 md:px-3 py-1 md:py-2 text-sm md:text-base bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="Phone Number" required>
+            <input type="tel" id="customerPhone" name="customerPhone" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="Phone Number" required>
           </div>
           <p id="phoneError" class="text-red-500 text-xs mt-1 hidden"></p>
         </div>
         
         <div>
           <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-key mr-2 text-sidebar-accent text-xs"></i>
+            <i class="fas fa-key mr-2 text-sidebar-accent"></i>
             Generated Password
           </label>
           <div class="relative">
-            <input type="password" id="generatedPassword" name="password" class="w-full px-2 md:px-3 py-1 md:py-2 text-sm md:text-base bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200 bg-gray-100" readonly>
-            <button type="button" class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700" onclick="togglePassword()">
-              <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 xs:w-5 xs:h-5 md:w-6 md:h-6">
+            <input type="password" id="generatedPassword" name="password" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200 bg-gray-100" readonly>
+            <button type="button" class="absolute right-2 top-2 text-gray-500 hover:text-gray-700" onclick="togglePassword()">
+              <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 sm:w-6 sm:h-6">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 12s2.947-5.455 8.02-5.455S20.02 12 20.02 12s-2.947 5.455-8.02 5.455S3.98 12 3.98 12z" />
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 15a3 3 0 100-6 3 3 0 000 6z" />
               </svg>
@@ -682,15 +682,15 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
         
         <!-- Additional Information Card -->
-        <div class="bg-gray-50 p-2 xs:p-3 md:p-4 rounded-lg border-l-4 border-sidebar-accent mt-2 xs:mt-3 md:mt-4">
-          <h4 class="text-xs md:text-sm font-medium text-gray-700 mb-1 md:mb-2 flex items-center">
-            <i class="fas fa-info-circle mr-2 text-sidebar-accent text-xs"></i>
+        <div class="bg-gray-50 p-3 sm:p-4 rounded-lg border-l-4 border-sidebar-accent mt-3 sm:mt-4">
+          <h4 class="text-xs sm:text-sm font-medium text-gray-700 mb-2 flex items-center">
+            <i class="fas fa-info-circle mr-2 text-sidebar-accent"></i>
             Account Information
           </h4>
-          <p class="text-xs md:text-sm text-gray-600">
+          <p class="text-xs sm:text-sm text-gray-600">
             An account will be created with the provided information. A temporary password will be generated automatically.
           </p>
-          <p class="text-xs md:text-sm text-gray-600 mt-1 md:mt-2">
+          <p class="text-xs sm:text-sm text-gray-600 mt-2">
             The customer will be able to change their password after logging in for the first time.
           </p>
         </div>
@@ -701,13 +701,13 @@ document.addEventListener('DOMContentLoaded', function() {
     </div>
     
     <!-- Modal Footer -->
-    <div class="px-3 xs:px-4 md:px-6 py-2 xs:py-3 md:py-4 flex flex-col xs:flex-row xs:justify-end gap-2 md:gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
-      <button class="w-full xs:w-auto order-2 xs:order-1 px-4 py-1 xs:py-1.5 md:py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg text-sm md:text-base font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center" onclick="closeAddCustomerAccountModal()">
-        <i class="fas fa-times mr-2 text-xs md:text-sm"></i>
+    <div class="px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row sm:justify-end gap-2 sm:gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
+      <button class="w-full sm:w-auto px-4 sm:px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center" onclick="closeAddCustomerAccountModal()">
+        <i class="fas fa-times mr-2"></i>
         Cancel
       </button>
-      <button class="w-full xs:w-auto order-1 xs:order-2 px-4 py-1 xs:py-1.5 md:py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg text-sm md:text-base font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="submitCustomerForm()">
-        <i class="fas fa-user-plus mr-2 text-xs md:text-sm"></i>
+      <button class="w-full sm:w-auto px-5 sm:px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="submitCustomerForm()">
+        <i class="fas fa-user-plus mr-2"></i>
         Create Account
       </button>
     </div>
