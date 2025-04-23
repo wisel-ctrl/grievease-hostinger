@@ -1102,8 +1102,7 @@ function loadServices() {
           <div class="text-lg font-bold text-sidebar-accent mt-auto">₱${parseFloat(service.selling_price).toLocaleString('en-PH', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
         </div>
         <div class="px-5 pb-5 flex justify-end">
-          <button class="text-white bg-sidebar-accent px-4 py-2 rounded-lg hover:bg-opacity-90 transition-all duration-300">
-            <i class="fas fa-plus mr-1"></i> Select
+          <button class="text-white bg-sidebar-accent px-4 py-2 rounded-lg hover:bg-opacity-90 transition-all duration-300"> Select
           </button>
         </div>
       `;
