@@ -554,7 +554,7 @@ document.addEventListener('DOMContentLoaded', function() {
   <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
   
   <!-- Modal Content -->
-  <div class="relative bg-white rounded-xl shadow-card w-full max-w-xl mx-4 z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-lg mx-4 z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
     <!-- Close Button -->
     <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" id="closeConvertModal">
       <i class="fas fa-times"></i>
@@ -569,28 +569,26 @@ document.addEventListener('DOMContentLoaded', function() {
     
     <!-- Modal Body -->
     <div class="px-6 py-5">
-      <p class="text-gray-700 mb-4" id="convertBeneficiaryName">
+      <p class="text-gray-700 mb-4 text-center" id="convertBeneficiaryName">
         <!-- Beneficiary name will be inserted here -->
       </p>
       
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div class="space-y-4">
-          <div>
-            <label for="dateOfDeath" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              Date of Death
-            </label>
-            <div class="relative">
-              <input type="date" id="dateOfDeath" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
-            </div>
+      <div class="space-y-4">
+        <div>
+          <label for="dateOfDeath" class="block text-xs font-medium text-gray-700 mb-1">
+            Date of Death
+          </label>
+          <div class="relative">
+            <input type="date" id="dateOfDeath" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
           </div>
-          
-          <div>
-            <label for="burialDate" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              Burial Date
-            </label>
-            <div class="relative">
-              <input type="date" id="burialDate" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
-            </div>
+        </div>
+        
+        <div>
+          <label for="burialDate" class="block text-xs font-medium text-gray-700 mb-1">
+            Burial Date
+          </label>
+          <div class="relative">
+            <input type="date" id="burialDate" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
           </div>
         </div>
         
