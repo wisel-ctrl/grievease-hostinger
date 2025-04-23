@@ -1609,7 +1609,7 @@ if ($result->num_rows > 0) {
     <div class="min-w-full">
       <table class="w-full">
         <thead>
-          <tr class="bg-gray-50 border-b border-sidebar-border">
+          <tr class="bg-navy-50 border-b border-sidebar-border">
             <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(0)">
               <div class="flex items-center gap-1.5"> ID 
                 
