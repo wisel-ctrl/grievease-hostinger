@@ -1018,11 +1018,6 @@ require_once '../db_connect.php'; // Database connection
       
       <!-- Controls for big screens - aligned right -->
       <div class="hidden lg:flex items-center gap-3">
-        <!-- Archive Button -->
-        <button class="px-4 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover whitespace-nowrap">
-          <i class="fas fa-archive text-sidebar-accent"></i>
-          <span>Archive</span>
-        </button>
 
         <!-- Manage Inventory Button -->
         <a href="inventory_management.php">
@@ -1035,17 +1030,6 @@ require_once '../db_connect.php'; // Database connection
     
     <!-- Mobile/Tablet Controls - Only visible on smaller screens -->
     <div class="lg:hidden w-full mt-4">
-      <!-- First row: Archive button -->
-      <div class="flex items-center w-full gap-3 mb-4">
-        <!-- Icon-only buttons for archive -->
-        <div class="flex items-center w-full">
-          <!-- Archive Icon Button - Full width -->
-          <button class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-sidebar-hover">
-            <i class="fas fa-archive text-sidebar-accent"></i>
-            <span>Archive</span>
-          </button>
-        </div>
-      </div>
 
       <!-- Second row: Manage Inventory Button - Full width -->
       <div class="w-full">
