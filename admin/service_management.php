@@ -247,7 +247,7 @@ if ($branchResult->num_rows > 0) {
                 
                 <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
                     <i class="fas fa-clipboard-list"></i>
-                    <?php echo $totalServices . " Service" . ($totalServices != 1 ? "s" : ""); ?>
+                    <?php echo $totalServices . ($totalServices != 1 ? "" : ""); ?>
                 </span>
             </div>
             
@@ -453,7 +453,7 @@ if ($branchResult->num_rows > 0) {
                                             <i class="fas fa-edit"></i>
                                         </button>
                                         <button class="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-all tooltip" title="Delete Service" onclick="deleteService('<?php echo $row["service_id"]; ?>', '<?php echo $branchId; ?>')">
-                                            <i class="fas fa-trash-alt"></i>
+                                        <i class="fas fa-archive text-red"></i>
                                         </button>
                                     </div>
                                 </td>
