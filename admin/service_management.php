@@ -175,6 +175,7 @@ function formatPrice($price) {
     
     <?php } ?>
 </div>
+    </div>
 
   <?php
 // Pagination and Search/Filter Logic
