@@ -543,7 +543,7 @@ if ($branchResult->num_rows > 0) {
       <!-- Second row: Add Item Button - Full width -->
       <div class="w-full">
         <button class="px-4 py-2.5 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm whitespace-nowrap w-full justify-center" 
-                onclick="openAddInventoryModal(<?php echo $branchId; ?>)">
+                onclick="openAddInventoryModal(<?php echo $branchId; ?>)"> Add Item
         </button>
       </div>
     </div>
