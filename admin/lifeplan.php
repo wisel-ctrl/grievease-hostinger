@@ -799,7 +799,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const totalPaid = parseFloat(this.getAttribute('data-total').replace(/,/g, ''));
             currentBalance = parseFloat(this.getAttribute('data-balance').replace(/,/g, ''));
             currentAmountPaid = totalPaid;
-            
+            console.log(customPrice, paymentDuration);
             // Calculate monthly amount properly
             const monthlyAmount = (customPrice / (paymentDuration * 12)).toFixed(2);
             console.log(monthlyAmount);
