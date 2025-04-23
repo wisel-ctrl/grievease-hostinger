@@ -592,10 +592,8 @@ document.addEventListener('DOMContentLoaded', function() {
                                         <input type="date" id="burialDate" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
                                     </div>
                                     
-                                    <div>
-                                        <label for="notes" class="block text-sm font-medium text-gray-700">Notes</label>
-                                        <textarea id="notes" rows="3" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Additional notes about the service"></textarea>
-                                    </div>
+                                    <!-- Hidden inputs will be added here by JavaScript -->
+                                    <div id="hiddenInputsContainer"></div>
                                 </div>
                             </div>
                         </div>
@@ -1599,6 +1597,150 @@ document.addEventListener('DOMContentLoaded', function() {
                 `;
             });
     }
+});
+</script>
+
+<script>
+    // Add this to your existing JavaScript
+document.addEventListener('DOMContentLoaded', function() {
+    const convertModal = document.getElementById('convertToSaleModal');
+    const closeConvertModalBtn = document.getElementById('closeConvertModal');
+    const confirmConvertBtn = document.getElementById('confirmConvertToSale');
+    const convertBtns = document.querySelectorAll('.convert-to-sale-btn');
+    
+    let currentLifeplanId = null;
+    
+    // Open modal when clicking Convert to Sale buttons
+    // Update the click handler for convert buttons
+    convertBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            currentLifeplanId = this.getAttribute('data-id');
+            const beneficiaryName = this.getAttribute('data-name');
+            
+            // Update modal content
+            document.getElementById('convertBeneficiaryName').textContent = 
+                `Converting LifePlan for ${beneficiaryName} to completed sale`;
+            
+            // Set default dates to today
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('dateOfDeath').value = today;
+            document.getElementById('burialDate').value = today;
+            
+            // Fetch LifePlan data and populate hidden inputs
+            fetch(`lifeplan_process/get_lifeplan.php?id=${currentLifeplanId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data) {
+                        const container = document.getElementById('hiddenInputsContainer');
+                        container.innerHTML = '';
+                        
+                        // Create hidden inputs for all required fields
+                        const fields = [
+                            { name: 'customerID', value: data.customerID || '' },
+                            { name: 'fname', value: data.fname || '' },
+                            { name: 'mname', value: data.mname || '' },
+                            { name: 'lname', value: data.lname || '' },
+                            { name: 'suffix', value: data.suffix || '' },
+                            { name: 'email', value: data.email || '' },
+                            { name: 'phone', value: data.phone || '' },
+                            { name: 'fname_deceased', value: data.benefeciary_fname || '' },
+                            { name: 'mname_deceased', value: data.benefeciary_mname || '' },
+                            { name: 'lname_deceased', value: data.benefeciary_lname || '' },
+                            { name: 'suffix_deceased', value: data.benefeciary_suffix || '' },
+                            { name: 'date_of_birth', value: data.benefeciary_dob || '' },
+                            { name: 'deceased_address', value: data.benefeciary_address || '' },
+                            { name: 'with_cremate', value: data.with_cremate || '0' },
+                            { name: 'initial_price', value: data.initial_price || data.custom_price || '0' },
+                            { name: 'discounted_price', value: data.custom_price || '0' },
+                            { name: 'amount_paid', value: data.amount_paid || '0' },
+                            { name: 'balance', value: data.balance || '0' },
+                            { name: 'sold_by', value: <?php echo $_SESSION['user_id']; ?> },
+                            { name: 'payment_method', value: 'Lifeplan' }
+                        ];
+                        
+                        fields.forEach(field => {
+                            const input = document.createElement('input');
+                            input.type = 'hidden';
+                            input.name = field.name;
+                            input.value = field.value;
+                            input.id = `hidden_${field.name}`;
+                            container.appendChild(input);
+                        });
+                        
+                        // Show modal after inputs are populated
+                        convertModal.classList.remove('hidden');
+                    } else {
+                        alert('Error loading LifePlan data');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching LifePlan data:', error);
+                    alert('Error loading LifePlan data');
+                });
+        });
+    });
+    
+    // Close modal
+    closeConvertModalBtn.addEventListener('click', function() {
+        convertModal.classList.add('hidden');
+    });
+    
+    // Close modal when clicking outside
+    window.addEventListener('click', function(event) {
+        if (event.target === convertModal) {
+            convertModal.classList.add('hidden');
+        }
+    });
+    
+    // Confirm conversion
+    confirmConvertBtn.addEventListener('click', function() {
+        const dateOfDeath = document.getElementById('dateOfDeath').value;
+        const burialDate = document.getElementById('burialDate').value;
+        const notes = document.getElementById('notes').value;
+        
+        if (!dateOfDeath || !burialDate) {
+            alert('Please fill in all required dates');
+            return;
+        }
+        
+        // Disable button to prevent multiple submissions
+        confirmConvertBtn.disabled = true;
+        confirmConvertBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+        
+        // Send conversion data to server
+        fetch('lifeplan_process/convert_to_sale.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                lifeplan_id: currentLifeplanId,
+                date_of_death: dateOfDeath,
+                burial_date: burialDate,
+                notes: notes
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('LifePlan successfully converted to sale!');
+                // Close modal
+                convertModal.classList.add('hidden');
+                // Optionally refresh the page or update the table
+                location.reload();
+            } else {
+                alert('Error converting to sale: ' + (data.message || 'Unknown error'));
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred during conversion');
+        })
+        .finally(() => {
+            confirmConvertBtn.disabled = false;
+            confirmConvertBtn.textContent = 'Confirm Conversion';
+        });
+    });
 });
 </script>
 
