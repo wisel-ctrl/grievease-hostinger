@@ -811,7 +811,7 @@ $offset = ($current_page - 1) * $bookings_per_page;
       document.getElementById('serviceDate').textContent = 
         data.deceased_dateOfBurial ? new Date(data.deceased_dateOfBurial).toLocaleDateString('en-US', 
         { month: 'short', day: 'numeric', year: 'numeric' }) : "Not scheduled";
-      document.getElementById('amountPaid').textContent = "$" + parseFloat(data.amount_paid).toFixed(2);
+      document.getElementById('amountPaid').textContent = "₱" + parseFloat(data.amount_paid).toFixed(2);
       
       // Update booking status
       const statusElement = document.getElementById('bookingStatus');
