@@ -534,37 +534,17 @@ document.addEventListener('DOMContentLoaded', function() {
                           
                           <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-6">
                               <!-- Left side - Payment Logs -->
+                            
                               <div>
-                                  <h4 class="font-medium text-gray-700 mb-2">Payment History</h4>
-                                  <div class="bg-gray-50 p-4 rounded-lg max-h-96 overflow-y-auto">
-                                      <div class="space-y-4">
-                                          <!-- Static payment logs (replace with dynamic data later) -->
-                                          <div class="border-b pb-3">
-                                              <div class="flex justify-between">
-                                                  <span class="font-medium">Payment #1</span>
-                                                  <span class="text-green-600">₱5,000.00</span>
-                                              </div>
-                                              <div class="text-sm text-gray-500">June 15, 2023</div>
-                                              <div class="text-sm mt-1">Received by: Admin User</div>
-                                          </div>
-                                          <div class="border-b pb-3">
-                                              <div class="flex justify-between">
-                                                  <span class="font-medium">Payment #2</span>
-                                                  <span class="text-green-600">₱5,000.00</span>
-                                              </div>
-                                              <div class="text-sm text-gray-500">July 15, 2023</div>
-                                              <div class="text-sm mt-1">Received by: Admin User</div>
-                                          </div>
-                                          <div class="border-b pb-3">
-                                              <div class="flex justify-between">
-                                                  <span class="font-medium">Payment #3</span>
-                                                  <span class="text-green-600">₱5,000.00</span>
-                                              </div>
-                                              <div class="text-sm text-gray-500">August 15, 2023</div>
-                                              <div class="text-sm mt-1">Received by: Admin User</div>
-                                          </div>
-                                      </div>
-                                  </div>
+                                <h4 class="font-medium text-gray-700 mb-2">Payment History</h4>
+                                <div class="bg-gray-50 p-4 rounded-lg max-h-96 overflow-y-auto">
+                                    <div class="space-y-4" id="paymentLogsContainer">
+                                        <!-- Payment logs will be loaded here dynamically -->
+                                        <div class="text-center py-4 text-gray-500">
+                                            <i class="fas fa-spinner fa-spin"></i> Loading payment history...
+                                        </div>
+                                    </div>
+                                </div>
                               </div>
                               
                               <!-- Right side - Payment Input -->
@@ -785,6 +765,79 @@ document.addEventListener('DOMContentLoaded', function() {
     let currentCustomerId = null;
     let currentBalance = 0;
     let currentAmountPaid = 0;
+
+    // Open modal when clicking View Receipt buttons
+    viewReceiptBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            currentLifeplanId = this.getAttribute('data-id');
+            const beneficiaryName = this.getAttribute('data-name');
+            
+            // Get the raw values before formatting
+            const customPrice = parseFloat(this.getAttribute('data-custom-price'));
+            const paymentDuration = parseInt(this.getAttribute('data-duration'));
+            const totalPaid = parseFloat(this.getAttribute('data-total').replace(/,/g, ''));
+            currentBalance = parseFloat(this.getAttribute('data-balance').replace(/,/g, ''));
+            currentAmountPaid = totalPaid;
+            
+            // Calculate monthly amount properly
+            const monthlyAmount = (customPrice / (paymentDuration * 12)).toFixed(2);
+            
+            // Fetch customer ID associated with this lifeplan
+            fetchCustomerId(currentLifeplanId);
+            
+            // Update modal content
+            document.getElementById('beneficiaryName').textContent = beneficiaryName;
+            document.getElementById('monthlyAmount').textContent = '₱' + monthlyAmount;
+            document.getElementById('totalPaid').textContent = '₱' + currentAmountPaid.toFixed(2);
+            document.getElementById('remainingBalance').textContent = '₱' + currentBalance.toFixed(2);
+            
+            // Fetch and display payment logs
+            fetchPaymentLogs(currentLifeplanId);
+            
+            // Show modal
+            modal.classList.remove('hidden');
+        });
+    });
+
+    // Function to fetch payment logs
+    function fetchPaymentLogs(lifeplanId) {
+        const paymentLogsContainer = document.getElementById('paymentLogsContainer');
+        paymentLogsContainer.innerHTML = '<div class="text-center py-4 text-gray-500"><i class="fas fa-spinner fa-spin"></i> Loading payment history...</div>';
+        
+        fetch(`lifeplan_process/get_payment_logs.php?lifeplan_id=${lifeplanId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.length > 0) {
+                    let html = '';
+                    data.forEach((log, index) => {
+                        const paymentDate = new Date(log.payment_date);
+                        const formattedDate = paymentDate.toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                        });
+                        
+                        html += `
+                            <div class="border-b pb-3">
+                                <div class="flex justify-between">
+                                    <span class="font-medium">Payment #${index + 1}</span>
+                                    <span class="text-green-600">₱${parseFloat(log.installment_amount).toFixed(2)}</span>
+                                </div>
+                                <div class="text-sm text-gray-500">${formattedDate}</div>
+                                <div class="text-sm mt-1">New Balance: ₱${parseFloat(log.new_balance).toFixed(2)}</div>
+                            </div>
+                        `;
+                    });
+                    paymentLogsContainer.innerHTML = html;
+                } else {
+                    paymentLogsContainer.innerHTML = '<div class="text-center py-4 text-gray-500">No payment history found</div>';
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching payment logs:', error);
+                paymentLogsContainer.innerHTML = '<div class="text-center py-4 text-gray-500">Error loading payment history</div>';
+            });
+    }
 
     // Open modal when clicking View Receipt buttons
     // Open modal when clicking View Receipt buttons
