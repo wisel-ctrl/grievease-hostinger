@@ -6,7 +6,7 @@ require_once '../db_connect.php'; // Database connection
 
 // Get user's first name from database
 $user_id = $_SESSION['user_id'];
-$query = "SELECT first_name , last_name , email , birthdate FROM users WHERE id = ?";
+$query = SELECT first_name , last_name , email , birthdate FROM users WHERE id = ?";
 $stmt = $conn->prepare($query);
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
@@ -678,7 +678,7 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
                 </td>
                 <td class="px-4 py-3.5 text-sm">
                   <div class="flex space-x-2">
-                    <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="View Details" onclick="viewServiceDetails('<?php echo $row['sales_id']; ?>')">
+                    <button class="p-2 bg-purple-100 text-purple-600 rounded-lg hover:bg-purple-200 transition-all tooltip" title="View Details" onclick="viewServiceDetails('<?php echo $row['sales_id']; ?>')">
                       <i class="fas fa-eye"></i>
                     </button>
                   </div>
@@ -884,7 +884,7 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
                                 <td class="px-4 py-4 text-sm font-medium text-sidebar-text">₱<?php echo number_format($row['balance'], 2); ?></td>
                                 <td class="px-4 py-4 text-sm">
                                     <div class="flex space-x-2">
-                                        <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="View Details" onclick="viewServiceDetails('<?php echo $row['sales_id']; ?>')">
+                                        <button class="p-2 bg-purple-100 text-purple-600 rounded-lg hover:bg-purple-200 transition-all tooltip" title="View Details" onclick="viewServiceDetails('<?php echo $row['sales_id']; ?>')">
                                             <i class="fas fa-eye"></i>
                                         </button>
                                         <button class="p-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition-all tooltip" title="Record Payment" onclick="openRecordPaymentModal('<?php echo $row['sales_id']; ?>','<?php echo $clientName; ?>','<?php echo $row['balance']; ?>')">
