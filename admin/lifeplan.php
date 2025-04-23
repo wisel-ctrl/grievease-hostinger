@@ -802,6 +802,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Calculate monthly amount properly
             const monthlyAmount = (customPrice / (paymentDuration * 12)).toFixed(2);
+            console.log(monthlyAmount);
             
             // Fetch customer ID associated with this lifeplan
             fetchCustomerId(currentLifeplanId);
