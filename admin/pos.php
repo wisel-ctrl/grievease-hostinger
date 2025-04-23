@@ -165,10 +165,6 @@ $servicesJson = json_encode($allServices);
       <div>
         <h1 class="text-2xl font-bold text-sidebar-text">Point-Of-Sale (POS)</h1>
       </div>
-      <div class="flex space-x-3">
-        <button class="p-2 bg-white border border-sidebar-border rounded-lg shadow-input text-sidebar-text hover:bg-sidebar-hover transition-all duration-300">
-        </button>
-      </div>
     </div>
 
     <div id="branch-selection" class="mb-8">

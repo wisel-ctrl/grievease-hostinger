@@ -102,11 +102,6 @@ $offset = ($current_page - 1) * $bookings_per_page;
     <div>
       <h1 class="text-2xl font-bold text-sidebar-text">Bookings</h1>
     </div>
-    <div class="flex space-x-3">
-      <button class="p-2 bg-white border border-sidebar-border rounded-lg shadow-input text-sidebar-text hover:bg-sidebar-hover transition-all duration-300">
-        
-      </button>
-    </div>
   </div>
 
   <!-- Pending Bookings List -->
