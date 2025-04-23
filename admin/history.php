@@ -1250,27 +1250,27 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
 </div>
 
 <!-- Assign Staff Modal -->
-<div class="fixed inset-0 z-50 flex items-center justify-center hidden" id="assignStaffModal">
+<div id="assignStaffModal" class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto">
   <!-- Modal Backdrop -->
   <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
   
   <!-- Modal Content -->
-  <div class="relative bg-white rounded-xl shadow-card w-full max-w-xl mx-4 z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
     <!-- Close Button -->
     <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeAssignStaffModal()">
       <i class="fas fa-times"></i>
     </button>
     
     <!-- Modal Header -->
-    <div class="px-6 py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
-      <h3 class="text-xl font-bold text-white flex items-center">
+    <div class="px-4 sm:px-6 py-4 sm:py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
+      <h3 class="text-lg sm:text-xl font-bold text-white flex items-center">
         Assign Staff to Service
       </h3>
     </div>
     
     <!-- Modal Body -->
-    <div class="px-6 py-5">
-      <form id="assignStaffForm" class="space-y-6">
+    <div class="px-4 sm:px-6 py-4 sm:py-5">
+      <form id="assignStaffForm" class="space-y-3 sm:space-y-4">
         <input type="hidden" id="assignServiceId">
         
         <?php
@@ -1291,11 +1291,11 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
                 $icon = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="'.$iconClass.'"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>';
             }
             
-            echo '<div class="bg-gray-50 p-5 rounded-xl mb-4">';
-            echo '<h4 class="text-lg font-bold mb-4 text-gray-700 flex items-center">';
+            echo '<div class="bg-gray-50 p-3 sm:p-4 rounded-lg border border-gray-200 mb-4">';
+            echo '<h4 class="text-sm sm:text-lg font-bold mb-3 sm:mb-4 text-gray-700 flex items-center">';
             echo $icon . ucfirst($positionLower) . 's';
             echo '</h4>';
-            echo '<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">';
+            echo '<div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">';
             
             if (!empty($employees)) {
                 $count = 1;
@@ -1320,17 +1320,17 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
         // These sections will be populated via AJAX when the modal opens
         ?>
         
-        <!-- Changed to a single column layout -->
-        <div class="space-y-4">
-          <div id="embalmersSection" class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+        <!-- Changed to a single column layout with consistent spacing -->
+        <div class="space-y-3 sm:space-y-4">
+          <div id="embalmersSection" class="bg-gray-50 p-3 sm:p-4 rounded-lg border border-gray-200">
             <!-- Embalmers will be loaded here -->
           </div>
           
-          <div id="driversSection" class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+          <div id="driversSection" class="bg-gray-50 p-3 sm:p-4 rounded-lg border border-gray-200">
             <!-- Drivers will be loaded here -->
           </div>
           
-          <div id="personnelSection" class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+          <div id="personnelSection" class="bg-gray-50 p-3 sm:p-4 rounded-lg border border-gray-200">
             <!-- Personnel will be loaded here -->
           </div>
           
@@ -1347,11 +1347,11 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
     </div>
     
     <!-- Modal Footer --> 
-    <div class="px-6 py-4 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
-      <button class="px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center" onclick="closeAssignStaffModal()">
+    <div class="px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row sm:justify-end gap-2 sm:gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
+      <button class="w-full sm:w-auto px-4 sm:px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center" onclick="closeAssignStaffModal()">
         Cancel
       </button>
-      <button class="px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="saveStaffAssignment()">
+      <button class="w-full sm:w-auto px-5 sm:px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="saveStaffAssignment()">
         Save Assignment
       </button>
     </div>
