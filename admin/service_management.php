@@ -847,7 +847,6 @@ document.addEventListener('DOMContentLoaded', () => {
           <!-- Enhanced Essential Services Section -->
           <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
             <p class="block text-xs font-medium text-gray-700 mb-2 flex items-center">
-              <i class="fas fa-concierge-bell mr-2 text-sidebar-accent"></i>
               Other Essential Services
             </p>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
