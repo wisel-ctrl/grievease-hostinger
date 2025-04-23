@@ -654,84 +654,97 @@ document.addEventListener('DOMContentLoaded', function() {
     </div>
 
   <!-- Receipt Modal -->
-  <div id="receiptModal" class="fixed inset-0 z-50 hidden overflow-y-auto">
-      <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-          <!-- Background overlay -->
-          <div class="fixed inset-0 transition-opacity" aria-hidden="true">
-              <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+<div id="receiptModal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
+  <!-- Modal Backdrop -->
+  <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+  
+  <!-- Modal Content -->
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-4xl mx-4 z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+    <!-- Close Button -->
+    <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" id="closeModal">
+      <i class="fas fa-times"></i>
+    </button>
+    
+    <!-- Modal Header -->
+    <div class="px-6 py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
+      <h3 class="text-xl font-bold text-white flex items-center">
+        Payment Receipt for <span id="beneficiaryName"></span>
+      </h3>
+    </div>
+    
+    <!-- Modal Body -->
+    <div class="px-6 py-5">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Left side - Payment Logs -->
+        <div>
+          <h4 class="font-medium text-gray-700 mb-2">Payment History</h4>
+          <div class="bg-gray-50 p-4 rounded-lg max-h-96 overflow-y-auto">
+            <div class="space-y-4" id="paymentLogsContainer">
+              <!-- Payment logs will be loaded here dynamically -->
+              <div class="text-center py-4 text-gray-500">
+                <i class="fas fa-spinner fa-spin"></i> Loading payment history...
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Right side - Payment Input -->
+        <div class="space-y-4">
+          <div class="bg-gray-50 p-4 rounded-lg border-l-4 border-gold">
+            <h4 class="font-medium text-gray-700 mb-2">Payment Summary</h4>
+            <div class="grid grid-cols-2 gap-2 text-sm">
+              <div>Monthly Amount:</div>
+              <div class="font-medium" id="monthlyAmount">₱0</div>
+              <div>Total Paid:</div>
+              <div class="font-medium" id="totalPaid">₱15,000.00</div>
+              <div>Remaining Balance:</div>
+              <div class="font-medium" id="remainingBalance">₱45,000.00</div>
+            </div>
           </div>
           
-          <!-- Modal container -->
-          <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
-              <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                  <div class="sm:flex sm:items-start">
-                      <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
-                          <h3 class="text-lg leading-6 font-medium text-gray-900 border-b pb-2">
-                              Payment Receipt for <span id="beneficiaryName"></span>
-                          </h3>
-                          
-                          <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-6">
-                              <!-- Left side - Payment Logs -->
-                            
-                              <div>
-                                <h4 class="font-medium text-gray-700 mb-2">Payment History</h4>
-                                <div class="bg-gray-50 p-4 rounded-lg max-h-96 overflow-y-auto">
-                                    <div class="space-y-4" id="paymentLogsContainer">
-                                        <!-- Payment logs will be loaded here dynamically -->
-                                        <div class="text-center py-4 text-gray-500">
-                                            <i class="fas fa-spinner fa-spin"></i> Loading payment history...
-                                        </div>
-                                    </div>
-                                </div>
-                              </div>
-                              
-                              <!-- Right side - Payment Input -->
-                              <div>
-                                  <div class="bg-blue-50 p-4 rounded-lg mb-4">
-                                      <h4 class="font-medium text-gray-700 mb-2">Payment Summary</h4>
-                                      <div class="grid grid-cols-2 gap-2 text-sm">
-                                          <div>Monthly Amount:</div>
-                                          <div class="font-medium" id="monthlyAmount">₱0</div>
-                                          <div>Total Paid:</div>
-                                          <div class="font-medium" id="totalPaid">₱15,000.00</div>
-                                          <div>Remaining Balance:</div>
-                                          <div class="font-medium" id="remainingBalance">₱45,000.00</div>
-                                      </div>
-                                  </div>
-                                  
-                                  <div class="mt-4">
-                                      <h4 class="font-medium text-gray-700 mb-2">Record New Payment</h4>
-                                      <div class="space-y-3">
-                                          <div>
-                                              <label for="paymentAmount" class="block text-sm font-medium text-gray-700">Amount</label>
-                                              <input type="number" id="paymentAmount" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Enter amount">
-                                          </div>
-                                          <div>
-                                              <label for="paymentDate" class="block text-sm font-medium text-gray-700">Date</label>
-                                              <input type="date" id="paymentDate" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                                          </div>
-                                          <div>
-                                              <label for="paymentNotes" class="block text-sm font-medium text-gray-700">Notes</label>
-                                              <textarea id="paymentNotes" rows="2" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Optional notes"></textarea>
-                                          </div>
-                                          <button id="submitPayment" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                                              Record Payment
-                                          </button>
-                                      </div>
-                                  </div>
-                              </div>
-                          </div>
-                      </div>
+          <div>
+            <h4 class="font-medium text-gray-700 mb-2">Record New Payment</h4>
+            <div class="space-y-3">
+              <div>
+                <label for="paymentAmount" class="block text-xs font-medium text-gray-700 mb-1">Amount</label>
+                <div class="relative">
+                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <span class="text-gray-500">₱</span>
                   </div>
+                  <input type="number" id="paymentAmount" class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="Enter amount">
+                </div>
               </div>
-              <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                  <button type="button" id="closeModal" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
-                      Close
-                  </button>
+              
+              <div>
+                <label for="paymentDate" class="block text-xs font-medium text-gray-700 mb-1">Date</label>
+                <div class="relative">
+                  <input type="date" id="paymentDate" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+                </div>
               </div>
+              
+              <div>
+                <label for="paymentNotes" class="block text-xs font-medium text-gray-700 mb-1">Notes</label>
+                <div class="relative">
+                  <textarea id="paymentNotes" rows="2" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="Optional notes"></textarea>
+                </div>
+              </div>
+            </div>
           </div>
+        </div>
       </div>
-  </div>     
+    </div>
+    
+    <!-- Modal Footer --> 
+    <div class="px-6 py-4 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
+      <button type="button" class="px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center" id="closeModal">
+        Close
+      </button>
+      <button id="submitPayment" class="px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center">
+        Record Payment
+      </button>
+    </div>
+  </div>
+</div>
 
   <!-- Edit LifePlan Modal -->
   <div id="editLifePlanModal" class="fixed inset-0 z-50 hidden overflow-y-auto">
