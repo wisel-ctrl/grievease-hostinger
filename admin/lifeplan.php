@@ -772,80 +772,174 @@ console.log("Fetched Lifeplan Data:", <?php echo json_encode($fetchedData); ?>);
 // Summary log
 console.log("Total records fetched: <?php echo count($fetchedData); ?>");
 </script>
-
 <script>
-// Modal functionality
+// Integrated Modal functionality with payment processing
 document.addEventListener('DOMContentLoaded', function() {
     const modal = document.getElementById('receiptModal');
     const closeModalBtn = document.getElementById('closeModal');
     const viewReceiptBtns = document.querySelectorAll('.view-receipt-btn');
+    const submitPaymentBtn = document.getElementById('submitPayment');
     
+    let currentLifeplanId = null;
+    let currentCustomerId = null;
+    let currentBalance = 0;
+    let currentAmountPaid = 0;
+
     // Open modal when clicking View Receipt buttons
     viewReceiptBtns.forEach(btn => {
         btn.addEventListener('click', function() {
+            currentLifeplanId = this.getAttribute('data-id');
             const beneficiaryName = this.getAttribute('data-name');
             const monthlyAmount = this.getAttribute('data-monthly');
             const totalPaid = this.getAttribute('data-total');
-            const remainingBalance = this.getAttribute('data-balance');
+            currentBalance = parseFloat(this.getAttribute('data-balance').replace(/,/g, ''));
+            currentAmountPaid = parseFloat(totalPaid.replace(/,/g, ''));
+            
+            // Fetch customer ID associated with this lifeplan
+            fetchCustomerId(currentLifeplanId);
             
             // Update modal content
             document.getElementById('beneficiaryName').textContent = beneficiaryName;
-            document.getElementById('monthlyAmount').textContent = '₱' + monthlyAmount;
-            document.getElementById('totalPaid').textContent = '₱' + totalPaid;
-            document.getElementById('remainingBalance').textContent = '₱' + remainingBalance;
+            document.getElementById('monthlyAmount').textContent = '₱' + parseFloat(monthlyAmount).toFixed(2);
+            document.getElementById('totalPaid').textContent = '₱' + currentAmountPaid.toFixed(2);
+            document.getElementById('remainingBalance').textContent = '₱' + currentBalance.toFixed(2);
             
             // Show modal
             modal.classList.remove('hidden');
         });
     });
     
+    // Fetch customer ID associated with a lifeplan
+    function fetchCustomerId(lifeplanId) {
+        fetch(`lifeplan_process/get_lifeplan.php?id=${lifeplanId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data && data.customerID) {
+                    currentCustomerId = data.customerID;
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching customer ID:', error);
+            });
+    }
+    
     // Close modal
     closeModalBtn.addEventListener('click', function() {
+        resetPaymentForm();
         modal.classList.add('hidden');
     });
     
     // Close modal when clicking outside
     window.addEventListener('click', function(event) {
         if (event.target === modal) {
+            resetPaymentForm();
             modal.classList.add('hidden');
         }
     });
     
-    // Submit payment handler
-    document.getElementById('submitPayment').addEventListener('click', function() {
-        const amount = document.getElementById('paymentAmount').value;
+    // Submit payment handler - Integrated version
+    submitPaymentBtn.addEventListener('click', function() {
+        const amount = parseFloat(document.getElementById('paymentAmount').value);
         const date = document.getElementById('paymentDate').value;
         const notes = document.getElementById('paymentNotes').value;
         
+        // Validation from existing code
         if (!amount || !date) {
             alert('Please fill in all required fields');
             return;
         }
         
-        // Here you would typically send the data to your server
-        console.log('Payment submitted:', {
-            amount: amount,
-            date: date,
-            notes: notes
+        // Additional validation from enhanced code
+        if (isNaN(amount) || amount <= 0) {
+            alert('Please enter a valid payment amount');
+            return;
+        }
+        
+        if (!currentLifeplanId || !currentCustomerId) {
+            alert('Error: Missing required data. Please try again.');
+            return;
+        }
+        
+        // Calculate new values
+        const newAmountPaid = currentAmountPaid + amount;
+        const newBalance = Math.max(0, currentBalance - amount); // Ensure balance doesn't go negative
+        
+        // Prepare data for submission
+        const paymentData = {
+            lifeplan_id: currentLifeplanId,
+            customer_id: currentCustomerId,
+            installment_amount: amount,
+            current_balance: currentBalance,
+            new_balance: newBalance,
+            payment_date: date,
+            notes: notes,
+            amount_paid: newAmountPaid
+        };
+        
+        // Disable button to prevent multiple submissions (from enhanced code)
+        submitPaymentBtn.disabled = true;
+        submitPaymentBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+        
+        // Send payment data to server (enhanced functionality)
+        fetch('lifeplan_process/record_payment.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(paymentData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Success message from existing code
+                alert('Payment recorded successfully!');
+                
+                // Update the UI with new values (enhanced functionality)
+                document.getElementById('totalPaid').textContent = '₱' + newAmountPaid.toFixed(2);
+                document.getElementById('remainingBalance').textContent = '₱' + newBalance.toFixed(2);
+                
+                // Update current values in case user wants to make another payment
+                currentAmountPaid = newAmountPaid;
+                currentBalance = newBalance;
+                
+                // Reset form (from existing code)
+                document.getElementById('paymentAmount').value = '';
+                document.getElementById('paymentDate').value = '';
+                document.getElementById('paymentNotes').value = '';
+                
+                // Set default date to today (from existing code)
+                document.getElementById('paymentDate').valueAsDate = new Date();
+                
+                // Keep modal open (from enhanced code) instead of closing it
+                // modal.classList.add('hidden');
+                
+                // Optionally refresh the table data
+                // location.reload();
+            } else {
+                alert('Error recording payment: ' + (data.message || 'Unknown error'));
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while recording the payment');
+        })
+        .finally(() => {
+            submitPaymentBtn.disabled = false;
+            submitPaymentBtn.textContent = 'Record Payment';
         });
-        
-        // For now, just show an alert
-        alert('Payment recorded successfully! (This is a demo - in a real app, this would update the database)');
-        
-        // Reset form
+    });
+    
+    // Reset payment form (helper function)
+    function resetPaymentForm() {
         document.getElementById('paymentAmount').value = '';
         document.getElementById('paymentDate').value = '';
         document.getElementById('paymentNotes').value = '';
-        
-        // Close modal
-        modal.classList.add('hidden');
-    });
+    }
     
-    // Set default date to today
+    // Set default date to today (from existing code)
     document.getElementById('paymentDate').valueAsDate = new Date();
 });
 </script>
-
 <script>
   // Edit LifePlan Modal functionality
 document.addEventListener('DOMContentLoaded', function() {
@@ -1048,166 +1142,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 alert('Error loading LifePlan data');
             });
     }
-});
-</script>
-
-<script>
-    // Modal functionality for payment processing
-document.addEventListener('DOMContentLoaded', function() {
-    const modal = document.getElementById('receiptModal');
-    const closeModalBtn = document.getElementById('closeModal');
-    const viewReceiptBtns = document.querySelectorAll('.view-receipt-btn');
-    const submitPaymentBtn = document.getElementById('submitPayment');
-    
-    let currentLifeplanId = null;
-    let currentCustomerId = null;
-    let currentBalance = 0;
-    let currentAmountPaid = 0;
-
-    // Open modal when clicking View Receipt buttons
-    viewReceiptBtns.forEach(btn => {
-        btn.addEventListener('click', function() {
-            currentLifeplanId = this.getAttribute('data-id');
-            const beneficiaryName = this.getAttribute('data-name');
-            const monthlyAmount = this.getAttribute('data-monthly');
-            const totalPaid = this.getAttribute('data-total');
-            currentBalance = parseFloat(this.getAttribute('data-balance').replace(/,/g, ''));
-            currentAmountPaid = parseFloat(totalPaid.replace(/,/g, ''));
-            
-            // Fetch customer ID associated with this lifeplan
-            fetchCustomerId(currentLifeplanId);
-            
-            // Update modal content
-            document.getElementById('beneficiaryName').textContent = beneficiaryName;
-            document.getElementById('monthlyAmount').textContent = '₱' + parseFloat(monthlyAmount).toFixed(2);
-            document.getElementById('totalPaid').textContent = '₱' + parseFloat(totalPaid).toFixed(2);
-            document.getElementById('remainingBalance').textContent = '₱' + currentBalance.toFixed(2);
-            
-            // Show modal
-            modal.classList.remove('hidden');
-        });
-    });
-    
-    // Fetch customer ID associated with a lifeplan
-    function fetchCustomerId(lifeplanId) {
-        fetch(`lifeplan_process/get_lifeplan.php?id=${lifeplanId}`)
-            .then(response => response.json())
-            .then(data => {
-                if (data && data.customerID) {
-                    currentCustomerId = data.customerID;
-                }
-            })
-            .catch(error => {
-                console.error('Error fetching customer ID:', error);
-            });
-    }
-    
-    // Close modal
-    closeModalBtn.addEventListener('click', function() {
-        resetPaymentForm();
-        modal.classList.add('hidden');
-    });
-    
-    // Close modal when clicking outside
-    window.addEventListener('click', function(event) {
-        if (event.target === modal) {
-            resetPaymentForm();
-            modal.classList.add('hidden');
-        }
-    });
-    
-    // Submit payment handler
-    submitPaymentBtn.addEventListener('click', function() {
-        const amount = parseFloat(document.getElementById('paymentAmount').value);
-        const date = document.getElementById('paymentDate').value;
-        const notes = document.getElementById('paymentNotes').value;
-        
-        if (!amount || isNaN(amount) || amount <= 0) {
-            alert('Please enter a valid payment amount');
-            return;
-        }
-        
-        if (!date) {
-            alert('Please select a payment date');
-            return;
-        }
-        
-        if (!currentLifeplanId || !currentCustomerId) {
-            alert('Error: Missing required data. Please try again.');
-            return;
-        }
-        
-        // Calculate new values
-        const newAmountPaid = currentAmountPaid + amount;
-        const newBalance = Math.max(0, currentBalance - amount); // Ensure balance doesn't go negative
-        
-        // Prepare data for submission
-        const paymentData = {
-            lifeplan_id: currentLifeplanId,
-            customer_id: currentCustomerId,
-            installment_amount: amount,
-            current_balance: currentBalance,
-            new_balance: newBalance,
-            payment_date: date,
-            notes: notes,
-            amount_paid: newAmountPaid
-        };
-        
-        // Disable button to prevent multiple submissions
-        submitPaymentBtn.disabled = true;
-        submitPaymentBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
-        
-        // Send payment data to server
-        fetch('lifeplan_process/record_payment.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(paymentData)
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert('Payment recorded successfully!');
-                // Update the UI with new values
-                document.getElementById('totalPaid').textContent = '₱' + newAmountPaid.toFixed(2);
-                document.getElementById('remainingBalance').textContent = '₱' + newBalance.toFixed(2);
-                
-                // Update current values in case user wants to make another payment
-                currentAmountPaid = newAmountPaid;
-                currentBalance = newBalance;
-                
-                // Reset form
-                resetPaymentForm();
-                
-                // Optionally close the modal
-                // modal.classList.add('hidden');
-                
-                // Optionally refresh the table data
-                // location.reload();
-            } else {
-                alert('Error recording payment: ' + (data.message || 'Unknown error'));
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('An error occurred while recording the payment');
-        })
-        .finally(() => {
-            submitPaymentBtn.disabled = false;
-            submitPaymentBtn.textContent = 'Record Payment';
-        });
-    });
-    
-    // Reset payment form
-    function resetPaymentForm() {
-        document.getElementById('paymentAmount').value = '';
-        document.getElementById('paymentDate').value = '';
-        document.getElementById('paymentNotes').value = '';
-    }
-    
-    // Set default date to today
-    document.getElementById('paymentDate').valueAsDate = new Date();
 });
 </script>
 </body>
