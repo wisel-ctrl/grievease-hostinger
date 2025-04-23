@@ -928,7 +928,6 @@ document.addEventListener('DOMContentLoaded', () => {
     <!-- Modal Header -->
     <div class="px-6 py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
       <h3 class="text-xl font-bold text-white flex items-center">
-        <i class="fas fa-edit mr-2"></i>
         Edit Service
       </h3>
     </div>
@@ -942,7 +941,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="space-y-4">
           <div>
             <label for="editServiceName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-tag mr-2 text-sidebar-accent"></i>
+              
               Service Name
             </label>
             <div class="relative">
@@ -952,7 +951,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
           <div>
             <label for="editServiceDescription" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-align-left mr-2 text-sidebar-accent"></i>
               Description
             </label>
             <div class="relative">
@@ -964,7 +962,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <div class="grid grid-cols-2 gap-3">
             <div>
               <label for="editCapitalPrice" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                <i class="fas fa-coins mr-2 text-sidebar-accent"></i>
+                
                 Capital Price
               </label>
               <div class="relative">
@@ -976,7 +974,7 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
             <div>
               <label for="editSellingPrice" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                <i class="fas fa-tags mr-2 text-sidebar-accent"></i>
+                
                 Selling Price
               </label>
               <div class="relative">
@@ -990,7 +988,6 @@ document.addEventListener('DOMContentLoaded', () => {
           
           <div>
             <label for="editServiceCategory" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-th-list mr-2 text-sidebar-accent"></i>
               Category
             </label>
             <div class="relative">
@@ -1017,7 +1014,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <div class="grid grid-cols-2 gap-3">
             <div>
               <label for="editCasketType" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                <i class="fas fa-box mr-2 text-sidebar-accent"></i>
+                
                 Casket Type
               </label>
               <div class="relative">
@@ -1041,7 +1038,7 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
             <div>
               <label for="editUrnType" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                <i class="fas fa-urn mr-2 text-sidebar-accent"></i>
+                
                 Urn Type
               </label>
               <div class="relative">
@@ -1095,12 +1092,12 @@ document.addEventListener('DOMContentLoaded', () => {
           
           <div>
             <label for="editServiceImage" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-image mr-2 text-sidebar-accent"></i>
+              
               Update Image
             </label>
             <div class="relative">
               <div class="flex items-center border border-gray-300 rounded-lg px-3 py-2 focus-within:ring-1 focus-within:ring-sidebar-accent focus-within:border-sidebar-accent transition-all duration-200">
-                <i class="fas fa-upload text-gray-400 mr-2"></i>
+                
                 <input type="file" id="editServiceImage" name="serviceImage" class="w-full focus:outline-none">
               </div>
             </div>
@@ -1117,7 +1114,6 @@ document.addEventListener('DOMContentLoaded', () => {
           <!-- Flower Design Section -->
           <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
             <p class="block text-xs font-medium text-gray-700 mb-2 flex items-center">
-              <i class="fas fa-flower mr-2 text-sidebar-accent"></i>
               Flower Arrangement Sets
             </p>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -1136,28 +1132,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 <i class="fas fa-leaf mr-1 text-sidebar-accent"></i>
                 1 Floral Replacement
               </label>
-              <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
-                <input type="checkbox" name="flowerDesign" value="3 Premium Floral Replacement" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
-                <i class="fas fa-crown mr-1 text-sidebar-accent"></i>
-                3 Premium Floral Replacement
-              </label>
-              <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
-                <input type="checkbox" name="flowerDesign" value="2 Premium Floral Replacement" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
-                <i class="fas fa-crown mr-1 text-sidebar-accent"></i>
-                2 Premium Floral Replacement
-              </label>
-              <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
-                <input type="checkbox" name="flowerDesign" value="1 Premium Floral Replacement" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
-                <i class="fas fa-crown mr-1 text-sidebar-accent"></i>
-                1 Premium Floral Replacement
-              </label>
             </div>
           </div>
           
           <!-- Enhanced Essential Services Section -->
           <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
-            <p class="block text-xs font-medium text-gray-700 mb-2 flex items-center">
-              <i class="fas fa-concierge-bell mr-2 text-sidebar-accent"></i>
+            <p class="block text-xs font-medium text-gray-700 mb-2 flex items-center">\
               Other Essential Services
             </p>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-2" id="inclusionsContainer">
@@ -1206,7 +1186,6 @@ document.addEventListener('DOMContentLoaded', () => {
           
           <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
             <p class="block text-xs font-medium text-gray-700 mb-2 flex items-center">
-              <i class="fas fa-toggle-on mr-2 text-sidebar-accent"></i>
               Service Status
             </p>
             <div class="flex items-center space-x-4">
@@ -1229,11 +1208,9 @@ document.addEventListener('DOMContentLoaded', () => {
     <!-- Modal Footer --> 
     <div class="px-6 py-4 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
       <button class="px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center" onclick="closeEditServiceModal()">
-        <i class="fas fa-times mr-2"></i>
         Cancel
       </button>
       <button class="px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="updateService()">
-        <i class="fas fa-save mr-2"></i>
         Update Service
       </button>
     </div>
