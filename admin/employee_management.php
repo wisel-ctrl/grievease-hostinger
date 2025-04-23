@@ -114,7 +114,7 @@ if ($branch_result->num_rows > 0) {
         
         <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
           <i class="fas fa-users"></i>
-          <?php echo $totalEmployees . " Employee" . ($totalEmployees != 1 ? "s" : ""); ?>
+          <?php echo $totalEmployees . ($totalEmployees != 1 ? "" : ""); ?>
         </span>
       </div>
       
@@ -342,36 +342,40 @@ if ($branch_result->num_rows > 0) {
                   echo "</td>";
                   
                   // Actions column with styled buttons
-                  echo "<td class='px-4 py-4 text-sm'>";
-                  echo "<div class='flex space-x-2'>";
-                  echo "<button class='p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip' title='Edit Employee' onclick='openEditEmployeeModal(\"" . htmlspecialchars($row['EmployeeID']) . "\")'>";
-                  echo "<i class='fas fa-edit'></i></button>";
-                  
-                  if (strtolower($row['status']) == 'active') {
-                      echo "<button class='p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-all tooltip' title='Terminate Employee' onclick='terminateEmployee(\"" . htmlspecialchars($row['EmployeeID']) . "\")'>";
-                      echo "<i class='fas fa-trash-alt'></i></button>";
-                  } else {
-                      echo "<button class='p-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition-all tooltip' title='Reinstate Employee' onclick='reinstateEmployee(\"" . htmlspecialchars($row['EmployeeID']) . "\")'>";
-                      echo "<i class='fas fa-check'></i></button>";
-                  }
-                  
-                  echo "<button class='p-2 bg-purple-100 text-purple-600 rounded-lg hover:bg-purple-200 transition-all tooltip' title='View Details' onclick='viewEmployeeDetails(\"" . htmlspecialchars($row['EmployeeID']) . "\")'>";
-                  echo "<i class='fas fa-eye'></i></button>";
-                  echo "</div>";
-                  echo "</td>";
-                  echo "</tr>";
-              }
-          } else {
-              echo "<tr>";
-              echo "<td colspan='6' class='p-6 text-sm text-center'>";
-              echo "<div class='flex flex-col items-center'>";
-              echo "<i class='fas fa-users text-gray-300 text-4xl mb-3'></i>";
-              echo "<p class='text-gray-500'>No employees found</p>";
-              echo "</div>";
-              echo "</td>";
-              echo "</tr>";
-          }
+echo "<td class='px-4 py-4 text-sm'>";
+echo "<div class='flex space-x-2'>";
 
+// View button (first)
+echo "<button class='p-2 bg-purple-100 text-purple-600 rounded-lg hover:bg-purple-200 transition-all tooltip' title='View Details' onclick='viewEmployeeDetails(\"" . htmlspecialchars($row['EmployeeID']) . "\")'>";
+echo "<i class='fas fa-eye'></i></button>";
+
+// Edit button (second)
+echo "<button class='p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip' title='Edit Employee' onclick='openEditEmployeeModal(\"" . htmlspecialchars($row['EmployeeID']) . "\")'>";
+echo "<i class='fas fa-edit'></i></button>";
+
+// Terminate/Reinstate button (third)
+if (strtolower($row['status']) == 'active') {
+   echo "<button class='p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-all tooltip' title='Terminate Employee' onclick='terminateEmployee(\"" . htmlspecialchars($row['EmployeeID']) . "\")'>";
+   echo "<i class='fas fa-trash-alt'></i></button>";
+} else {
+   echo "<button class='p-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition-all tooltip' title='Reinstate Employee' onclick='reinstateEmployee(\"" . htmlspecialchars($row['EmployeeID']) . "\")'>";
+   echo "<i class='fas fa-check'></i></button>";
+}
+
+echo "</div>";
+echo "</td>";
+echo "</tr>";
+}
+} else {
+   echo "<tr>";
+   echo "<td colspan='6' class='p-6 text-sm text-center'>";
+   echo "<div class='flex flex-col items-center'>";
+   echo "<i class='fas fa-users text-gray-300 text-4xl mb-3'></i>";
+   echo "<p class='text-gray-500'>No employees found</p>";
+   echo "</div>";
+   echo "</td>";
+   echo "</tr>";
+}
           // Close connection
           $conn->close();
           ?>
