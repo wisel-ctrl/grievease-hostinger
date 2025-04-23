@@ -334,8 +334,7 @@ if ($branchResult->num_rows > 0) {
 
                 <!-- Add Service Button -->
                 <button class="px-4 py-2 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm whitespace-nowrap" 
-                        onclick="openAddServiceModal(<?php echo $branchId; ?>)">
-                    <i class="fas fa-plus-circle"></i> <span>Add New Service</span>
+                        onclick="openAddServiceModal(<?php echo $branchId; ?>)"><span>Add New Service</span>
                 </button>
             </div>
         </div>
@@ -375,8 +374,7 @@ if ($branchResult->num_rows > 0) {
             <!-- Second row: Add Service Button - Full width -->
             <div class="w-full">
                 <button class="px-4 py-2.5 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm whitespace-nowrap w-full justify-center" 
-                        onclick="openAddServiceModal(<?php echo $branchId; ?>)">
-                    <i class="fas fa-plus-circle"></i> <span>Add New Service</span>
+                        onclick="openAddServiceModal(<?php echo $branchId; ?>)"><span>Add New Service</span>
                 </button>
             </div>
         </div>
@@ -653,7 +651,6 @@ document.addEventListener('DOMContentLoaded', () => {
     <!-- Modal Header -->
     <div class="px-6 py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
       <h3 class="text-xl font-bold text-white flex items-center">
-        <i class="fas fa-plus-circle mr-2"></i>
         Add New Service
       </h3>
     </div>
@@ -665,7 +662,6 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="space-y-4">
           <div>
             <label for="serviceName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-tag mr-2 text-sidebar-accent"></i>
               Service Name
             </label>
             <div class="relative">
@@ -675,7 +671,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
           <div>
             <label for="serviceDescription" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-align-left mr-2 text-sidebar-accent"></i>
               Description
             </label>
             <div class="relative">
@@ -687,7 +682,6 @@ document.addEventListener('DOMContentLoaded', () => {
           <div class="grid grid-cols-2 gap-3">
             <div>
               <label for="capitalPrice" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                <i class="fas fa-coins mr-2 text-sidebar-accent"></i>
                 Capital Price
               </label>
               <div class="relative">
@@ -699,7 +693,6 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
             <div>
               <label for="sellingPrice" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                <i class="fas fa-tags mr-2 text-sidebar-accent"></i>
                 Selling Price
               </label>
               <div class="relative">
@@ -713,7 +706,6 @@ document.addEventListener('DOMContentLoaded', () => {
           
           <div>
             <label for="serviceCategory" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-th-list mr-2 text-sidebar-accent"></i>
               Category
             </label>
             <div class="relative">
@@ -740,7 +732,6 @@ document.addEventListener('DOMContentLoaded', () => {
           <div class="grid grid-cols-2 gap-3">
             <div>
               <label for="casketType" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                <i class="fas fa-box mr-2 text-sidebar-accent"></i>
                 Casket Type
               </label>
               <div class="relative">
@@ -764,7 +755,6 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
             <div>
               <label for="urnType" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                <i class="fas fa-urn mr-2 text-sidebar-accent"></i>
                 Urn Type
               </label>
               <div class="relative">
@@ -818,12 +808,10 @@ document.addEventListener('DOMContentLoaded', () => {
           
           <div>
             <label for="serviceImage" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-image mr-2 text-sidebar-accent"></i>
               Upload Image
             </label>
             <div class="relative">
               <div class="flex items-center border border-gray-300 rounded-lg px-3 py-2 focus-within:ring-1 focus-within:ring-sidebar-accent focus-within:border-sidebar-accent transition-all duration-200">
-                <i class="fas fa-upload text-gray-400 mr-2"></i>
                 <input type="file" id="serviceImage" name="serviceImage" class="w-full focus:outline-none">
               </div>
             </div>
@@ -835,38 +823,31 @@ document.addEventListener('DOMContentLoaded', () => {
           <!-- Flower Design Section -->
           <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
             <p class="block text-xs font-medium text-gray-700 mb-2 flex items-center">
-              <i class="fas fa-flower mr-2 text-sidebar-accent"></i>
               Flower Arrangement Sets
             </p>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
               <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
                 <input type="checkbox" name="flowerDesign" value="3 Floral Replacement" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
-                <i class="fas fa-leaf mr-1 text-sidebar-accent"></i>
                 3 Floral Replacement
               </label>
               <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
                 <input type="checkbox" name="flowerDesign" value="2 Floral Replacement" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
-                <i class="fas fa-leaf mr-1 text-sidebar-accent"></i>
                 2 Floral Replacement
               </label>
               <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
                 <input type="checkbox" name="flowerDesign" value="1 Floral Replacement" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
-                <i class="fas fa-leaf mr-1 text-sidebar-accent"></i>
                 1 Floral Replacement
               </label>
               <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
                 <input type="checkbox" name="flowerDesign" value="3 Premium Floral Replacement" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
-                <i class="fas fa-crown mr-1 text-sidebar-accent"></i>
                 3 Premium Floral Replacement
               </label>
               <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
                 <input type="checkbox" name="flowerDesign" value="2 Premium Floral Replacement" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
-                <i class="fas fa-crown mr-1 text-sidebar-accent"></i>
                 2 Premium Floral Replacement
               </label>
               <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
                 <input type="checkbox" name="flowerDesign" value="1 Premium Floral Replacement" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
-                <i class="fas fa-crown mr-1 text-sidebar-accent"></i>
                 1 Premium Floral Replacement
               </label>
             </div>
@@ -875,48 +856,39 @@ document.addEventListener('DOMContentLoaded', () => {
           <!-- Enhanced Essential Services Section -->
           <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
             <p class="block text-xs font-medium text-gray-700 mb-2 flex items-center">
-              <i class="fas fa-concierge-bell mr-2 text-sidebar-accent"></i>
               Other Essential Services
             </p>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
               <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
                 <input type="checkbox" name="essentialServices" value="Transportation" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
-                <i class="fas fa-car mr-2 text-sidebar-accent"></i>
                 Transportation Service
               </label>
               <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
                 <input type="checkbox" name="essentialServices" value="Embalming" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
-                <i class="fas fa-procedures mr-2 text-sidebar-accent"></i>
                 Embalming and Preparation
               </label>
               <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
                 <input type="checkbox" name="essentialServices" value="MemorialPrograms" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
-                <i class="fas fa-book-open mr-2 text-sidebar-accent"></i>
                 Memorial Programs
               </label>
               <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
                 <input type="checkbox" name="essentialServices" value="Videography" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
-                <i class="fas fa-video mr-2 text-sidebar-accent"></i>
                 Videography & Photography
               </label>
               <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
                 <input type="checkbox" name="essentialServices" value="LiveStreaming" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
-                <i class="fas fa-broadcast-tower mr-2 text-sidebar-accent"></i>
                 Live Streaming Service
               </label>
               <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
                 <input type="checkbox" name="essentialServices" value="GriefCounseling" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
-                <i class="fas fa-hands-helping mr-2 text-sidebar-accent"></i>
                 Grief Counseling
               </label>
               <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
                 <input type="checkbox" name="essentialServices" value="Catering" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
-                <i class="fas fa-utensils mr-2 text-sidebar-accent"></i>
                 Catering Service
               </label>
               <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
                 <input type="checkbox" name="essentialServices" value="MusicService" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
-                <i class="fas fa-music mr-2 text-sidebar-accent"></i>
                 Music Service
               </label>
             </div>
@@ -930,11 +902,9 @@ document.addEventListener('DOMContentLoaded', () => {
     <!-- Modal Footer --> 
     <div class="px-6 py-4 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
       <button class="px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center" onclick="closeAddServiceModal()">
-        <i class="fas fa-times mr-2"></i>
         Cancel
       </button>
       <button class="px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="addService()">
-        <i class="fas fa-plus mr-2"></i>
         Add Service
       </button>
     </div>
@@ -957,7 +927,6 @@ document.addEventListener('DOMContentLoaded', () => {
     <!-- Modal Header -->
     <div class="px-6 py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
       <h3 class="text-xl font-bold text-white flex items-center">
-        <i class="fas fa-edit mr-2"></i>
         Edit Service
       </h3>
     </div>
