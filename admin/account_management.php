@@ -1,6 +1,3 @@
-HAHSBABSAISNOAL 
- 
- 
  <?php
 
 session_start();
@@ -379,7 +376,7 @@ $customersResult = mysqli_query($conn, $customersQuery);
       <a href="<?php echo '?page=' . min($totalPages, $page + 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo $page >= $totalPages ? 'opacity-50 pointer-events-none' : ''; ?>">&raquo;</a>
     </div>
   </div>
-</div> 
+</div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
