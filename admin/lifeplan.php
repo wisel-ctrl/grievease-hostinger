@@ -1724,7 +1724,7 @@ document.addEventListener('DOMContentLoaded', function() {
     confirmConvertBtn.addEventListener('click', function() {
         const dateOfDeath = document.getElementById('dateOfDeath').value;
         const burialDate = document.getElementById('burialDate').value;
-        const notes = document.getElementById('notes').value;
+        
         
         if (!dateOfDeath || !burialDate) {
             alert('Please fill in all required dates');
@@ -1735,18 +1735,28 @@ document.addEventListener('DOMContentLoaded', function() {
         confirmConvertBtn.disabled = true;
         confirmConvertBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
         
+        // Collect all data to be sent
+        const submissionData = {
+            lifeplan_id: currentLifeplanId,
+            date_of_death: dateOfDeath,
+            burial_date: burialDate,
+        };
+        
+        // Add all hidden input values to the submission data
+        const hiddenInputs = document.querySelectorAll('#hiddenInputsContainer input');
+        hiddenInputs.forEach(input => {
+            submissionData[input.name] = input.value;
+        });
+        
+        console.log('Submitting data:', submissionData); // For debugging
+        
         // Send conversion data to server
         fetch('lifeplan_process/convert_to_sale.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({
-                lifeplan_id: currentLifeplanId,
-                date_of_death: dateOfDeath,
-                burial_date: burialDate,
-                notes: notes
-            })
+            body: JSON.stringify(submissionData)
         })
         .then(response => response.json())
         .then(data => {
