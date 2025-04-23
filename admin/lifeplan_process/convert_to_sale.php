@@ -25,6 +25,9 @@ try {
     // Begin transaction
     $conn->begin_transaction();
     
+    // Determine payment status based on amount_paid and balance
+    $payment_status = ($data['balance'] > 0) ? 'With Balance' : 'Fully Paid';
+    
     // 1. Create a new sale record with all fields
     $stmt = $conn->prepare("
         INSERT INTO sales_tb (
@@ -51,12 +54,13 @@ try {
             sold_by,
             payment_method,
             status,
+            payment_status,
             get_timestamp
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Pending', NOW())
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Pending', ?, NOW())
     ");
     
     $stmt->bind_param(
-        "isssssssssssssssddddis",
+        "isssssssssssssssddddiss",
         $data['customerID'],
         $data['fname'],
         $data['mname'],
@@ -78,7 +82,8 @@ try {
         $data['amount_paid'],
         $data['balance'],
         $data['sold_by'],
-        $data['payment_method']
+        $data['payment_method'],
+        $payment_status
     );
     
     if (!$stmt->execute()) {
@@ -86,8 +91,8 @@ try {
     }
     $stmt->close();
     
-    // 2. Update the LifePlan status to 'completed'
-    $stmt = $conn->prepare("UPDATE lifeplan_tb SET payment_status = 'completed' WHERE lifeplan_id = ?");
+    // 2. Update the LifePlan status to 'completed' and set archived to 'hidden'
+    $stmt = $conn->prepare("UPDATE lifeplan_tb SET archived = 'hidden' WHERE lifeplan_id = ?");
     $stmt->bind_param("i", $data['lifeplan_id']);
     
     if (!$stmt->execute()) {
