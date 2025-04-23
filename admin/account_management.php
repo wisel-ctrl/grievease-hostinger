@@ -1615,7 +1615,7 @@ if ($result->num_rows > 0) {
                 
               </div>
             </th>
-            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer " onclick="sortTable(1)">
+            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer bg-red" onclick="sortTable(1)">
               <div class="flex items-center gap-1.5"> Name 
                 
               </div>
