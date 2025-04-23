@@ -353,7 +353,7 @@ $offset = ($current_page - 1) * $bookings_per_page;
                     </td>
                     <td class="px-4 py-3.5 text-sm">
                         <div class="flex space-x-2">
-                            <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" 
+                            <button class="p-2 bg-purple-100 text-purple-600 rounded-lg hover:bg-purple-200 transition-all tooltip" 
                                     title="View Details" 
                                     onclick="openBookingDetails(<?php echo $row['booking_id']; ?>)">
                                 <i class="fas fa-eye"></i>
