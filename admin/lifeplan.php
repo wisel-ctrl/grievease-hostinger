@@ -230,22 +230,15 @@ if ($conn) {
           <i class="fas fa-search absolute left-2.5 top-3 text-gray-400"></i>
         </div>
 
-        <div class="flex items-center">
-  <div class="relative">
-    <button id="filterButton" class="flex items-center px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
-    <i class="fas fa-filter text-sidebar-accent"></i>
-    <span>Filters</span>
-    </button>
-    <div id="filterDropdown" class="hidden absolute mt-1 w-full bg-white border border-gray-300 rounded-lg shadow-lg z-10">
-      <div class="py-1">
-        <button class="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100" data-value="">All</button>
-        <button class="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100" data-value="paid">Paid</button>
-        <button class="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100" data-value="ongoing">Ongoing</button>
-        <button class="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100" data-value="overdue">Overdue</button>
+        <!-- Status Dropdown Acting as Filter -->
+        <select id="statusFilter" class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
+          <option value="">All Status</option>
+          <option value="paid">Paid</option>
+          <option value="ongoing">Ongoing</option>
+          <option value="overdue">Overdue</option>
+        </select>
       </div>
     </div>
-  </div>
-</div>
     
     <!-- Mobile/Tablet Controls - Only visible on smaller screens -->
     <div class="lg:hidden w-full mt-4">
