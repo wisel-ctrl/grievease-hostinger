@@ -451,7 +451,7 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
         
         <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
           <i class="fas fa-clipboard-list"></i>
-          <?php echo $totalServices . " Service" . ($totalServices != 1 ? "s" : ""); ?>
+          <?php echo $totalServices . ($totalServices != 1 ? "" : ""); ?>
         </span>
       </div>
       
@@ -742,7 +742,7 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
                 
                 <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
                   <i class="fas fa-clipboard-list"></i>
-                  <?php echo $totalWithBalance . " Record" . ($totalWithBalance != 1 ? "s" : ""); ?>
+                  <?php echo $totalWithBalance . ($totalWithBalance != 1 ? "" : ""); ?>
                 </span>
             </div>
             
