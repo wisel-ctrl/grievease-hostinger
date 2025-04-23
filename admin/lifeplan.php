@@ -668,7 +668,7 @@ document.addEventListener('DOMContentLoaded', function() {
     <!-- Modal Header -->
     <div class="px-4 sm:px-6 py-4 sm:py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
       <h3 class="text-lg sm:text-xl font-bold text-white flex items-center">
-        Payment Receipt for <span id="beneficiaryName"></span>
+        <span class="line-clamp-1">Payment Receipt for </span><span id="beneficiaryName" class="ml-1 line-clamp-1"></span>
       </h3>
     </div>
     
