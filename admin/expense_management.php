@@ -791,7 +791,7 @@ if ($branchResult->num_rows > 0) {
                                 </td>
                                 <td class="px-4 py-3.5 text-sm">
                                     <div class="flex space-x-2">
-                                        <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="Edit Expense" 
+                                        <button class="p-2 bg-yellow-100 text-yellow-600 rounded-lg hover:bg-yellow-200 transition-all tooltip" title="Edit Expense" 
                                                 onclick="openEditExpenseModal('#EXP-<?php echo str_pad($expense['expense_ID'], 3, '0', STR_PAD_LEFT); ?>', 
                                                     '<?php echo addslashes($expense['expense_name']); ?>', 
                                                     '<?php echo addslashes($expense['category']); ?>', 
