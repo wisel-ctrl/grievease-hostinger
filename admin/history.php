@@ -371,14 +371,14 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
                       <i class="fas fa-edit"></i>
                     </button>
                     <?php if ($row['staff_assigned'] == 0): ?>
-                      <button class="p-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition-all tooltip assign-staff-btn" 
+                      <button class="p-2 bg-purple-100 text-purple-600 rounded-lg hover:bg-purple-200 transition-all tooltip assign-staff-btn" 
                               title="Assign Staff"
                               onclick="checkCustomerBeforeAssign('<?php echo $row['sales_id']; ?>', <?php echo $row['customerID'] ? 'true' : 'false'; ?>)"
                               <?php echo !$row['customerID'] ? 'disabled' : ''; ?>>
                         <i class="fas fa-users"></i>
                       </button>
                     <?php endif; ?>
-                    <button class="p-2 bg-purple-100 text-purple-600 rounded-lg hover:bg-purple-200 transition-all tooltip complete-btn" 
+                    <button class="p-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition-all tooltip complete-btn" 
                             title="Complete Service"
                             onclick="checkCustomerBeforeComplete('<?php echo $row['sales_id']; ?>', <?php echo $row['customerID'] ? 'true' : 'false'; ?>)"
                             <?php echo !$row['customerID'] ? 'disabled' : ''; ?>>
@@ -678,7 +678,7 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
                 </td>
                 <td class="px-4 py-3.5 text-sm">
                   <div class="flex space-x-2">
-                    <button class="p-2 bg-purple-100 text-purple-600 rounded-lg hover:bg-purple-200 transition-all tooltip" title="View Details" onclick="viewServiceDetails('<?php echo $row['sales_id']; ?>')">
+                    <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="View Details" onclick="viewServiceDetails('<?php echo $row['sales_id']; ?>')">
                       <i class="fas fa-eye"></i>
                     </button>
                   </div>
@@ -884,10 +884,10 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
                                 <td class="px-4 py-4 text-sm font-medium text-sidebar-text">₱<?php echo number_format($row['balance'], 2); ?></td>
                                 <td class="px-4 py-4 text-sm">
                                     <div class="flex space-x-2">
-                                        <button class="p-2 bg-purple-100 text-purple-600 rounded-lg hover:bg-purple-200 transition-all tooltip" title="View Details" onclick="viewServiceDetails('<?php echo $row['sales_id']; ?>')">
+                                        <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="View Details" onclick="viewServiceDetails('<?php echo $row['sales_id']; ?>')">
                                             <i class="fas fa-eye"></i>
                                         </button>
-                                        <button class="p-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition-all tooltip" title="Record Payment" onclick="openRecordPaymentModal('<?php echo $row['sales_id']; ?>','<?php echo $clientName; ?>','<?php echo $row['balance']; ?>')">
+                                        <button class="p-2 bg-orange-100 text-orange-600 rounded-lg hover:bg-orange-200 transition-all tooltip" title="Record Payment" onclick="openRecordPaymentModal('<?php echo $row['sales_id']; ?>','<?php echo $clientName; ?>','<?php echo $row['balance']; ?>')">
                                             <i class="fas fa-money-bill-wave"></i>
                                         </button>
                                     </div>
