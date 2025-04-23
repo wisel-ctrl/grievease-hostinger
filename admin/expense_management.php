@@ -112,12 +112,6 @@ if ($lastMonth > 0) {
     <div>
       <h1 class="text-2xl font-bold text-sidebar-text">Expenses</h1>
     </div>
-    <div class="flex space-x-3">
-      <button class="p-2 bg-white border border-sidebar-border rounded-lg shadow-input text-sidebar-text hover:bg-sidebar-hover transition-all duration-300">
-        <i class="fas fa-bell"></i>
-      </button>
-       
-    </div>
   </div>
 
   <!-- Expense Overview Cards -->
@@ -677,8 +671,7 @@ if ($branchResult->num_rows > 0) {
 
                 <!-- Add Expense Button -->
                 <button class="px-4 py-2 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm whitespace-nowrap" 
-                        onclick="openAddExpenseModal(<?php echo $branchId; ?>)">
-                    <i class="fas fa-plus-circle"></i> <span>Add Expense</span>
+                        onclick="openAddExpenseModal(<?php echo $branchId; ?>)"><span>Add Expense</span>
                 </button>
             </div>
         </div>
@@ -717,8 +710,7 @@ if ($branchResult->num_rows > 0) {
             <!-- Second row: Add Expense Button - Full width -->
             <div class="w-full">
                 <button class="px-4 py-2.5 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm whitespace-nowrap w-full justify-center" 
-                        onclick="openAddExpenseModal(<?php echo $branchId; ?>)">
-                    <i class="fas fa-plus-circle"></i> <span>Add Expense</span>
+                        onclick="openAddExpenseModal(<?php echo $branchId; ?>)"><span>Add Expense</span>
                 </button>
             </div>
         </div>
@@ -790,7 +782,7 @@ if ($branchResult->num_rows > 0) {
                                         <?php echo htmlspecialchars($expense['category']); ?>
                                     </span>
                                 </td>
-                                <td class="px-4 py-3.5 text-sm font-medium text-sidebar-text">$<?php echo number_format($expense['price'], 2); ?></td>
+                                <td class="px-4 py-3.5 text-sm font-medium text-sidebar-text">₱<?php echo number_format($expense['price'], 2); ?></td>
                                 <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo $expense['date']; ?></td>
                                 <td class="px-4 py-3.5 text-sm">
                                     <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium <?php echo $statusClass; ?>">
@@ -884,7 +876,6 @@ $conn->close();
     <!-- Modal Header -->
     <div class="px-6 py-4 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
       <h3 class="text-xl font-bold text-white flex items-center">
-        <i class="fas fa-plus-circle mr-2"></i>
         Add New Expense
       </h3>
     </div>
@@ -895,7 +886,7 @@ $conn->close();
         <!-- Basic Information -->
         <div>
           <label for="expenseDescription" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-tag mr-2 text-sidebar-accent"></i>
+            
             Expense Name
           </label>
           <input type="text" id="expenseDescription" name="expenseDescription" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
@@ -904,7 +895,7 @@ $conn->close();
         <div class="grid grid-cols-2 gap-3">
           <div>
             <label for="expenseCategory" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-th-list mr-2 text-sidebar-accent"></i>
+              
               Category
             </label>
             <select id="expenseCategory" name="expenseCategory" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
@@ -919,7 +910,7 @@ $conn->close();
           
           <div>
             <label for="expenseDate" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-calendar mr-2 text-sidebar-accent"></i>
+              
               Date
             </label>
             <input type="date" id="expenseDate" name="expenseDate" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
@@ -928,7 +919,7 @@ $conn->close();
         
         <div>
           <label for="expenseAmount" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-coins mr-2 text-sidebar-accent"></i>
+            
             Amount
           </label>
           <div class="relative">
@@ -942,18 +933,16 @@ $conn->close();
         <!-- Status -->
         <div class="bg-gray-50 p-3 rounded-lg border border-gray-200">
           <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-check-circle mr-2 text-sidebar-accent"></i>
+            
             Status
           </label>
           <div class="grid grid-cols-2 gap-2">
             <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
               <input type="radio" id="statusPaid" name="expenseStatus" value="paid" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent" checked>
-              <i class="fas fa-check-circle mr-1 text-sidebar-accent"></i>
               Paid
             </label>
             <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
-              <input type="radio" id="statusToBePaid" name="expenseStatus" value="to be paid" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
-              <i class="fas fa-clock mr-1 text-sidebar-accent"></i>
+              <input type="radio" id="statusToBePaid" name="expenseStatus" value="to be paid" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">\
               To Be Paid
             </label>
           </div>
@@ -962,28 +951,23 @@ $conn->close();
         <!-- Payment Method -->
         <div class="bg-gray-50 p-3 rounded-lg border border-gray-200">
           <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-money-bill-wave mr-2 text-sidebar-accent"></i>
             Payment Method
           </label>
           <div class="grid grid-cols-2 gap-2">
             <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
               <input type="radio" id="methodCash" name="paymentMethod" value="cash" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent" checked>
-              <i class="fas fa-money-bill-alt mr-1 text-sidebar-accent"></i>
               Cash
             </label>
             <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
               <input type="radio" id="methodCredit" name="paymentMethod" value="credit" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
-              <i class="fas fa-credit-card mr-1 text-sidebar-accent"></i>
               Credit Card
             </label>
             <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
               <input type="radio" id="methodTransfer" name="paymentMethod" value="transfer" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
-              <i class="fas fa-exchange-alt mr-1 text-sidebar-accent"></i>
               Bank Transfer
             </label>
             <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
               <input type="radio" id="methodOther" name="paymentMethod" value="other" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
-              <i class="fas fa-ellipsis-h mr-1 text-sidebar-accent"></i>
               Other
             </label>
           </div>
@@ -1030,7 +1014,6 @@ $conn->close();
         <!-- Note -->
         <div>
           <label for="expenseNote" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-sticky-note mr-2 text-sidebar-accent"></i>
             Note
           </label>
           <textarea id="expenseNote" name="expenseNote" rows="3" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"></textarea>
@@ -1039,11 +1022,9 @@ $conn->close();
         <!-- Receipt Upload -->
         <div>
           <label for="expenseReceipt" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fa-solid fa-file-invoice mr-2 text-sidebar-accent"></i>
             Upload Receipt
           </label>
           <div class="flex items-center border border-gray-300 rounded-lg px-3 py-2 focus-within:ring-1 focus-within:ring-sidebar-accent focus-within:border-sidebar-accent transition-all duration-200">
-            <i class="fas fa-upload text-gray-400 mr-2"></i>
             <input type="file" id="expenseReceipt" name="expenseReceipt" class="w-full focus:outline-none">
           </div>
         </div>
@@ -1053,11 +1034,9 @@ $conn->close();
     <!-- Modal Footer -->
     <div class="px-6 py-3 flex justify-end gap-3 border-t border-gray-200 sticky bottom-0 bg-white">
       <button class="px-4 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center" onclick="closeAddExpenseModal()">
-        <i class="fas fa-times mr-2"></i>
         Cancel
       </button>
       <button class="px-5 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="addExpense()">
-        <i class="fas fa-plus mr-2"></i>
         Add Expense
       </button>
     </div>
@@ -1079,7 +1058,6 @@ $conn->close();
     <!-- Modal Header -->
     <div class="px-6 py-4 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
       <h3 class="text-xl font-bold text-white flex items-center">
-        <i class="fas fa-edit mr-2"></i>
         Edit Expense
       </h3>
     </div>
@@ -1091,7 +1069,6 @@ $conn->close();
         
         <div>
           <label for="editExpenseDescription" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-tag mr-2 text-sidebar-accent"></i>
             Expense Name
           </label>
           <input type="text" id="editExpenseDescription" name="editExpenseDescription" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
@@ -1100,7 +1077,6 @@ $conn->close();
         <div class="grid grid-cols-2 gap-3">
           <div>
             <label for="editExpenseCategory" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-th-list mr-2 text-sidebar-accent"></i>
               Category
             </label>
             <select id="editExpenseCategory" name="editExpenseCategory" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
@@ -1115,7 +1091,7 @@ $conn->close();
           
           <div>
             <label for="editExpenseDate" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-calendar mr-2 text-sidebar-accent"></i>
+              
               Date
             </label>
             <input type="date" id="editExpenseDate" name="editExpenseDate" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
@@ -1124,7 +1100,7 @@ $conn->close();
         
         <div>
           <label for="editExpenseAmount" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-coins mr-2 text-sidebar-accent"></i>
+            
             Amount
           </label>
           <div class="relative">
@@ -1137,18 +1113,15 @@ $conn->close();
         
         <div class="bg-gray-50 p-3 rounded-lg border border-gray-200">
           <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-check-circle mr-2 text-sidebar-accent"></i>
             Status
           </label>
           <div class="grid grid-cols-2 gap-2">
             <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
               <input type="radio" id="editStatusPaid" name="editExpenseStatus" value="paid" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
-              <i class="fas fa-check-circle mr-1 text-sidebar-accent"></i>
               Paid
             </label>
             <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
               <input type="radio" id="editStatusToBePaid" name="editExpenseStatus" value="to be paid" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
-              <i class="fas fa-clock mr-1 text-sidebar-accent"></i>
               To Be Paid
             </label>
           </div>
@@ -1192,7 +1165,7 @@ $conn->close();
         
         <div>
           <label for="editExpenseNote" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-sticky-note mr-2 text-sidebar-accent"></i>
+            
             Note
           </label>
           <textarea id="editExpenseNote" name="editExpenseNote" rows="3" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"></textarea>
@@ -1203,11 +1176,10 @@ $conn->close();
     <!-- Modal Footer -->
     <div class="px-6 py-3 flex justify-end gap-3 border-t border-gray-200 sticky bottom-0 bg-white">
       <button class="px-4 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center" onclick="closeEditExpenseModal()">
-        <i class="fas fa-times mr-2"></i>
+        
         Cancel
       </button>
       <button class="px-5 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="saveExpenseChanges()">
-        <i class="fas fa-save mr-2"></i>
         Save Changes
       </button>
     </div>

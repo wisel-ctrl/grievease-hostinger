@@ -102,12 +102,6 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
     <div>
       <h1 class="text-2xl font-bold text-sidebar-text">History</h1>
     </div>
-    <div class="flex space-x-3">
-      <button class="p-2 bg-white border border-sidebar-border rounded-lg shadow-input text-sidebar-text hover:bg-sidebar-hover transition-all duration-300">
-        <i class="fas fa-bell"></i>
-      </button>
-       
-    </div>
   </div>
 
   <!-- Ongoing Services Section -->
@@ -954,7 +948,6 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
     <!-- Modal Header -->
     <div class="px-6 py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
       <h3 class="text-xl font-bold text-white flex items-center">
-        <i class="fas fa-edit mr-3"></i>
         Edit Service
       </h3>
     </div>
@@ -967,14 +960,12 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
         <!-- Customer Information Section -->
         <div class="pb-4 border-b border-gray-200">
           <h4 class="text-lg font-semibold flex items-center text-gray-800 mb-4">
-            <i class="fas fa-user-circle mr-2 text-sidebar-accent"></i>
             Customer Information
           </h4>
 
           <!-- Customer Selection -->
           <div class="form-group mb-4">
             <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-search mr-2 text-sidebar-accent"></i>
               Search Customer
             </label>
             <div class="relative">
@@ -996,7 +987,6 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
           <div class="grid grid-cols-2 gap-4 mb-4">
             <div class="form-group">
               <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                <i class="fas fa-user mr-2 text-sidebar-accent"></i>
                 First Name
               </label>
               <input 
@@ -1008,7 +998,6 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
             </div>
             <div class="form-group">
               <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                <i class="fas fa-user mr-2 text-sidebar-accent"></i>
                 Last Name
               </label>
               <input 
@@ -1020,7 +1009,6 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
             </div>
             <div class="form-group">
               <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                <i class="fas fa-user mr-2 text-sidebar-accent"></i>
                 Middle Name
               </label>
               <input 
@@ -1032,7 +1020,6 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
             </div>
             <div class="form-group">
               <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                <i class="fas fa-user mr-2 text-sidebar-accent"></i>
                 Suffix
               </label>
               <input 
@@ -1048,7 +1035,6 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
           <div class="grid grid-cols-2 gap-4 mb-4">
             <div class="form-group">
               <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                <i class="fas fa-envelope mr-2 text-sidebar-accent"></i>
                 Email
               </label>
               <input 
@@ -1060,7 +1046,6 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
             </div>
             <div class="form-group">
               <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                <i class="fas fa-phone mr-2 text-sidebar-accent"></i>
                 Phone
               </label>
               <input 
@@ -1076,7 +1061,6 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
           <div class="grid grid-cols-2 gap-4 mb-4">
             <div class="form-group">
               <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                <i class="fas fa-briefcase mr-2 text-sidebar-accent"></i>
                 Select Service
               </label>
               <select 
@@ -1089,7 +1073,6 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
             </div>
             <div class="form-group">
               <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                <i class="fas fa-peso-sign mr-2 text-sidebar-accent"></i>
                 Service Price
               </label>
               <div class="relative">
@@ -1127,7 +1110,6 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
         <!-- Deceased Information Section -->
         <div class="pt-2">
           <h4 class="text-lg font-semibold flex items-center text-gray-800 mb-4">
-            <i class="fas fa-file-medical mr-2 text-sidebar-accent"></i>
             Deceased Information
           </h4>
           
@@ -1135,7 +1117,6 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
           <div class="grid grid-cols-2 gap-4 mb-4">
             <div class="form-group">
               <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                <i class="fas fa-user mr-2 text-sidebar-accent"></i>
                 First Name
               </label>
               <input 
@@ -1147,7 +1128,6 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
             </div>
             <div class="form-group">
               <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                <i class="fas fa-user mr-2 text-sidebar-accent"></i>
                 Last Name
               </label>
               <input 
@@ -1159,7 +1139,6 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
             </div>
             <div class="form-group">
               <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                <i class="fas fa-user mr-2 text-sidebar-accent"></i>
                 Middle Name
               </label>
               <input 
@@ -1171,7 +1150,6 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
             </div>
             <div class="form-group">
               <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                <i class="fas fa-user mr-2 text-sidebar-accent"></i>
                 Suffix
               </label>
               <input 
@@ -1186,7 +1164,6 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
           <!-- Deceased Address -->
           <div class="form-group mb-4">
             <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-map-marker-alt mr-2 text-sidebar-accent"></i>
               Deceased Address
             </label>
             <input 
@@ -1201,7 +1178,6 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
           <div class="grid grid-cols-3 gap-4 mb-4">
             <div class="form-group">
               <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                <i class="fas fa-calendar-alt mr-2 text-sidebar-accent"></i>
                 Birth Date
               </label>
               <input 
@@ -1212,7 +1188,6 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
             </div>
             <div class="form-group">
               <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                <i class="fas fa-calendar-times mr-2 text-sidebar-accent"></i>
                 Date of Death
               </label>
               <input 
@@ -1223,7 +1198,6 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
             </div>
             <div class="form-group">
               <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                <i class="fas fa-calendar-check mr-2 text-sidebar-accent"></i>
                 Date of Burial
               </label>
               <input 
@@ -1237,12 +1211,10 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
           <!-- Death Certificate Upload -->
           <div class="form-group mt-4">
             <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-file-upload mr-2 text-sidebar-accent"></i>
               Death Certificate
             </label>
             <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg">
               <div class="space-y-1 text-center">
-                <i class="fas fa-cloud-upload-alt text-4xl text-sidebar-accent mb-4"></i>
                 <div class="flex text-sm text-gray-600">
                   <label for="deathCertificate" class="relative cursor-pointer bg-white rounded-md font-medium text-sidebar-accent hover:text-opacity-80 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-sidebar-accent">
                     <span>Upload a file</span>
@@ -1268,11 +1240,9 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
     <!-- Modal Footer -->
     <div class="px-6 py-4 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
       <button class="px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center" onclick="closeEditServiceModal()">
-        <i class="fas fa-times mr-2"></i>
         Cancel
       </button>
       <button class="px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="saveServiceChanges()">
-        <i class="fas fa-save mr-2"></i>
         Save Changes
       </button>
     </div>
@@ -1294,7 +1264,6 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
     <!-- Modal Header -->
     <div class="px-6 py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
       <h3 class="text-xl font-bold text-white flex items-center">
-        <i class="fas fa-user-plus mr-2"></i>
         Assign Staff to Service
       </h3>
     </div>
@@ -1367,7 +1336,6 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
           
           <div>
             <label for="assignmentNotes" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-sticky-note mr-2 text-sidebar-accent"></i>
               Notes
             </label>
             <div class="relative">
@@ -1381,11 +1349,9 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
     <!-- Modal Footer --> 
     <div class="px-6 py-4 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
       <button class="px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center" onclick="closeAssignStaffModal()">
-        <i class="fas fa-times mr-2"></i>
         Cancel
       </button>
       <button class="px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="saveStaffAssignment()">
-        <i class="fas fa-save mr-2"></i>
         Save Assignment
       </button>
     </div>
@@ -1407,7 +1373,6 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
     <!-- Modal Header -->
     <div class="px-6 py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
       <h3 class="text-xl font-bold text-white flex items-center">
-        <i class="fas fa-check-circle mr-2"></i>
         Complete Service
       </h3>
     </div>
@@ -1420,7 +1385,6 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
         <!-- Drivers Section -->
         <div id="completeDriversSection" class="bg-gray-50 p-4 rounded-lg border border-gray-200">
           <h4 class="text-sm font-medium text-gray-700 mb-2 flex items-center">
-            <i class="fas fa-car mr-2 text-sidebar-accent"></i>
             Drivers
           </h4>
           <div class="grid grid-cols-2 gap-4" id="completeDriversList">
@@ -1431,7 +1395,6 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
         <!-- Personnel Section -->
         <div id="completePersonnelSection" class="bg-gray-50 p-4 rounded-lg border border-gray-200">
           <h4 class="text-sm font-medium text-gray-700 mb-2 flex items-center">
-            <i class="fas fa-users mr-2 text-sidebar-accent"></i>
             Personnel
           </h4>
           <div class="grid grid-cols-2 gap-4" id="completePersonnelList">
@@ -1441,7 +1404,6 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
         
         <div>
           <label for="completionDate" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-calendar mr-2 text-sidebar-accent"></i>
             Completion Date
           </label>
           <div class="relative">
@@ -1451,7 +1413,6 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
         
         <div>
           <label for="completionNotes" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-sticky-note mr-2 text-sidebar-accent"></i>
             Completion Notes
           </label>
           <div class="relative">
@@ -1471,11 +1432,9 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
     <!-- Modal Footer --> 
     <div class="px-6 py-4 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
       <button class="px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center" onclick="closeCompleteModal()">
-        <i class="fas fa-times mr-2"></i>
         Cancel
       </button>
       <button class="px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="finalizeServiceCompletion()">
-        <i class="fas fa-check mr-2"></i>
         Complete Service
       </button>
     </div>
@@ -1496,7 +1455,6 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
     <!-- Modal Header -->
     <div class="px-6 py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
       <h3 class="text-xl font-bold text-white flex items-center">
-        <i class="fas fa-info-circle mr-2"></i>
         Service Details
       </h3>
     </div>
@@ -1539,7 +1497,6 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
       <!-- Initial Staff Section -->
       <div class="bg-gray-50 p-5 rounded-lg border border-gray-200 mt-4">
         <h4 class="font-semibold text-gray-800 mb-3 flex items-center">
-          <i class="fas fa-user-friends mr-2 text-sidebar-accent"></i>
           Initial Staff
         </h4>
         <div class="space-y-3">
@@ -1569,7 +1526,6 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
       <!-- Burial Staff Section -->
       <div class="bg-gray-50 p-5 rounded-lg border border-gray-200 mt-4">
         <h4 class="font-semibold text-gray-800 mb-3 flex items-center">
-          <i class="fas fa-people-carry mr-2 text-sidebar-accent"></i>
           Burial Staff
         </h4>
         <div class="space-y-3">
@@ -1596,7 +1552,6 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
     <!-- Modal Footer -->
     <div class="px-6 py-4 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
       <button class="px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center" onclick="closeViewServiceModal()">
-        <i class="fas fa-times mr-2"></i>
         Close
       </button>
     </div>
@@ -1618,7 +1573,6 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
     <!-- Modal Header -->
     <div class="px-6 py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
       <h3 class="text-xl font-bold text-white flex items-center">
-        <i class="fas fa-money-bill-wave mr-2"></i>
         Record Payment
       </h3>
     </div>
@@ -1632,7 +1586,6 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
         <!-- Service ID -->
         <div class="flex flex-col">
           <label for="paymentServiceId" class="text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-hashtag mr-2 text-sidebar-accent w-4 text-center"></i>
             Sales ID
           </label>
           <div class="relative">
@@ -1643,7 +1596,6 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
         <!-- Client Name -->
         <div class="flex flex-col">
           <label for="paymentClientName" class="text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-user mr-2 text-sidebar-accent w-4 text-center"></i>
             Client Name
           </label>
           <div class="relative">
@@ -1654,7 +1606,6 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
         <!-- Outstanding Balance -->
         <div class="flex flex-col">
           <label for="currentBalance" class="text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-balance-scale mr-2 text-sidebar-accent w-4 text-center"></i>
             Outstanding Balance
           </label>
           <div class="relative">
@@ -1668,7 +1619,6 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
         <!-- Payment Amount -->
         <div class="flex flex-col">
           <label for="paymentAmount" class="text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-coins mr-2 text-sidebar-accent w-4 text-center"></i>
             Payment Amount
           </label>
           <div class="relative">
@@ -1682,7 +1632,6 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
         <!-- Payment Method -->
         <div class="flex flex-col">
           <label for="paymentMethod" class="text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-credit-card mr-2 text-sidebar-accent w-4 text-center"></i>
             Payment Method
           </label>
           <div class="relative">
@@ -1699,7 +1648,6 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
         <!-- Payment Date -->
         <div class="flex flex-col">
           <label for="paymentDate" class="text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-calendar-alt mr-2 text-sidebar-accent w-4 text-center"></i>
             Payment Date
           </label>
           <div class="relative">
@@ -1710,7 +1658,6 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
         <!-- Notes Section -->
         <div class="flex flex-col">
           <label for="paymentNotes" class="text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-sticky-note mr-2 text-sidebar-accent w-4 text-center"></i>
             Notes
           </label>
           <div class="relative">
@@ -1721,7 +1668,6 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
         <!-- Summary Section -->
         <div class="bg-gray-50 p-4 rounded-lg border border-gray-200 mt-6">
           <p class="block text-xs font-medium text-gray-700 mb-2 flex items-center">
-            <i class="fas fa-money-bill-wave mr-2 text-sidebar-accent w-4 text-center"></i>
             Payment Summary
           </p>
           <div class="flex justify-between mb-2 text-gray-700">
@@ -1747,11 +1693,9 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
     <!-- Modal Footer --> 
     <div class="px-6 py-4 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
       <button class="px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center" onclick="closeRecordPaymentModal()">
-        <i class="fas fa-times mr-2"></i>
         Cancel
       </button>
       <button class="px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="savePayment()">
-        <i class="fas fa-check mr-2"></i>
         Record Payment
       </button>
     </div>
