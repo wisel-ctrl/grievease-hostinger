@@ -919,11 +919,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Set default date to today (from existing code)
                 document.getElementById('paymentDate').valueAsDate = new Date();
                 
-                // Keep modal open (from enhanced code) instead of closing it
-                // modal.classList.add('hidden');
+                
+                modal.classList.add('hidden');
                 
                 // Optionally refresh the table data
-                // location.reload();
+                location.reload();
             } else {
                 alert('Error recording payment: ' + (data.message || 'Unknown error'));
             }
