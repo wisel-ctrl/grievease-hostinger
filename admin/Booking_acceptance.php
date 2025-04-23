@@ -492,21 +492,21 @@ $offset = ($current_page - 1) * $bookings_per_page;
               Customer Information
             </h4>
             <div class="space-y-2 sm:space-y-3">
-              <div class="flex">
+              <div class="flex flex-wrap">
                 <div class="w-1/3 text-sm text-gray-500">Name</div>
-                <div class="w-2/3 font-medium text-gray-800" id="customerName">John Doe</div>
+                <div class="w-2/3 font-medium text-gray-800 break-words" id="customerName">John Doe</div>
               </div>
-              <div class="flex">
+              <div class="flex flex-wrap">
                 <div class="w-1/3 text-sm text-gray-500">Contact</div>
-                <div class="w-2/3 font-medium text-gray-800" id="contactNumber">(555) 123-4567</div>
+                <div class="w-2/3 font-medium text-gray-800 break-words" id="contactNumber">(555) 123-4567</div>
               </div>
-              <div class="flex">
+              <div class="flex flex-wrap">
                 <div class="w-1/3 text-sm text-gray-500">Email</div>
-                <div class="w-2/3 font-medium text-gray-800" id="emailAddress">john.doe@example.com</div>
+                <div class="w-2/3 font-medium text-gray-800 break-words" id="emailAddress">john.doe@example.com</div>
               </div>
-              <div class="flex">
+              <div class="flex flex-wrap">
                 <div class="w-1/3 text-sm text-gray-500">Address</div>
-                <div class="w-2/3 font-medium text-gray-800" id="address">123 Main St, Anytown, CA 12345</div>
+                <div class="w-2/3 font-medium text-gray-800 break-words" id="address">123 Main St, Anytown, CA 12345</div>
               </div>
             </div>
           </div>
@@ -517,21 +517,21 @@ $offset = ($current_page - 1) * $bookings_per_page;
               Service Details
             </h4>
             <div class="space-y-2 sm:space-y-3">
-              <div class="flex">
+              <div class="flex flex-wrap">
                 <div class="w-1/3 text-sm text-gray-500">Service Type</div>
-                <div class="w-2/3 font-medium text-gray-800" id="serviceType">Funeral Service Package A</div>
+                <div class="w-2/3 font-medium text-gray-800 break-words" id="serviceType">Funeral Service Package A</div>
               </div>
-              <div class="flex">
+              <div class="flex flex-wrap">
                 <div class="w-1/3 text-sm text-gray-500">Date Requested</div>
-                <div class="w-2/3 font-medium text-gray-800" id="dateRequested">Mar 15, 2025</div>
+                <div class="w-2/3 font-medium text-gray-800 break-words" id="dateRequested">Mar 15, 2025</div>
               </div>
-              <div class="flex">
+              <div class="flex flex-wrap">
                 <div class="w-1/3 text-sm text-gray-500">Service Date</div>
-                <div class="w-2/3 font-medium text-gray-800" id="serviceDate">Mar 20, 2025</div>
+                <div class="w-2/3 font-medium text-gray-800 break-words" id="serviceDate">Mar 20, 2025</div>
               </div>
-              <div class="flex">
+              <div class="flex flex-wrap">
                 <div class="w-1/3 text-sm text-gray-500">Amount Paid</div>
-                <div class="w-2/3 font-medium text-gray-800" id="amountPaid">$3,500.00</div>
+                <div class="w-2/3 font-medium text-gray-800 break-words" id="amountPaid">$3,500.00</div>
               </div>
             </div>
           </div>
