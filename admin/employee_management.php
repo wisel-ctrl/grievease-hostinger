@@ -334,7 +334,7 @@ if ($branch_result->num_rows > 0) {
                   echo "<td class='px-4 py-4 text-sm text-sidebar-text'>";
                   echo "<span class='inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100'>" . htmlspecialchars($position) . "</span>";
                   echo "</td>";
-                  echo "<td class='px-4 py-4 text-sm font-medium text-sidebar-text'>$" . number_format($row['base_salary'], 2) . "</td>";
+                  echo "<td class='px-4 py-4 text-sm font-medium text-sidebar-text'>₱" . number_format($row['base_salary'], 2) . "</td>";
                   
                   echo "<td class='px-4 py-4 text-sm'>";
                   echo "<span class='inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium " . $statusClass . "'>";
