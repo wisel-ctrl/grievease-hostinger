@@ -172,212 +172,347 @@ header("Pragma: no-cache");
     
     <!-- Table Card -->
 <div class="bg-white rounded-lg shadow-md mb-8 border border-sidebar-border overflow-hidden">
-  <!-- Header with Search and Filters -->
-  <div class="bg-sidebar-hover p-4 border-b border-sidebar-border flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-    <div class="flex items-center gap-3">
-      <h4 class="text-lg font-bold text-sidebar-text">Beneficiaries</h4>
+  <!-- Header Section - Made responsive with better stacking -->
+  <div class="bg-sidebar-hover p-4 border-b border-sidebar-border">
+    <!-- Desktop layout for big screens - Title on left, controls on right -->
+    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+      <!-- Title and Counter -->
+      <div class="flex items-center gap-3 mb-4 lg:mb-0">
+        <h4 class="text-lg font-bold text-sidebar-text whitespace-nowrap">Beneficiaries</h4>
+        
+        <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
+          <i class="fas fa-clipboard-list"></i>
+          <?php echo isset($totalBeneficiaries) ? $totalBeneficiaries . " Beneficiar" . ($totalBeneficiaries != 1 ? "ies" : "y") : "Beneficiaries"; ?>
+        </span>
+      </div>
       
-      <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
-        <i class="fas fa-clipboard-list"></i>
-        <?php echo isset($totalBeneficiaries) ? $totalBeneficiaries . " Beneficiar" . ($totalBeneficiaries != 1 ? "ies" : "y") : "Beneficiaries"; ?>
-      </span>
+      <!-- Controls for big screens - aligned right -->
+      <div class="hidden lg:flex items-center gap-3">
+        <!-- Search Input -->
+        <div class="relative">
+          <input type="text" id="beneficiarySearchInput" 
+                placeholder="Search beneficiaries..." 
+                class="pl-8 pr-3 py-2 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
+          <i class="fas fa-search absolute left-2.5 top-3 text-gray-400"></i>
+        </div>
+
+        <!-- Status Dropdown Acting as Filter -->
+        <select id="statusFilter" class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
+          <option value="">All Status</option>
+          <option value="paid">Paid</option>
+          <option value="ongoing">Ongoing</option>
+          <option value="overdue">Overdue</option>
+        </select>
+
+        <!-- Archive Button -->
+        <button class="px-4 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover whitespace-nowrap">
+          <i class="fas fa-archive text-sidebar-accent"></i>
+          <span>Archive</span>
+        </button>
+      </div>
     </div>
     
-    <!-- Search and Filter Section -->
-    <div class="flex flex-col md:flex-row items-start md:items-center gap-3 w-full md:w-auto">
-      <!-- Search Input -->
-      <div class="relative w-full md:w-64">
-        <input type="text" 
-               placeholder="Search beneficiaries..." 
-               class="pl-8 pr-3 py-2 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
-        <i class="fas fa-search absolute left-2.5 top-3 text-gray-400"></i>
-      </div>
+    <!-- Mobile/Tablet Controls - Only visible on smaller screens -->
+    <div class="lg:hidden w-full mt-4">
+      <!-- First row: Search bar with filter and archive icons on the right -->
+      <div class="flex items-center w-full gap-3 mb-4">
+        <!-- Search Input - Takes most of the space -->
+        <div class="relative flex-grow">
+          <input type="text" id="mobileBeneficiarySearchInput" 
+                  placeholder="Search beneficiaries..." 
+                  class="pl-8 pr-3 py-2.5 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
+          <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+        </div>
 
-      <!-- Filter Dropdown -->
-      <div class="relative filter-dropdown">
-        <button class="px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover">
-          <i class="fas fa-filter text-sidebar-accent"></i>
-          <span>Filters</span>
-        </button>
-</div>
-      
-      <select class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none">
-        <option value="">All Status</option>
-        <option value="paid">Paid</option>
-        <option value="pending">Pending</option>
-        <option value="overdue">Overdue</option>
-      </select>
+        <!-- Icon-only buttons for filter and archive -->
+        <div class="flex items-center gap-3">
+          <!-- Filter Status Dropdown for Mobile -->
+          <div class="relative filter-dropdown">
+            <button id="mobileFilterToggle" class="w-10 h-10 flex items-center justify-center text-sidebar-accent">
+              <i class="fas fa-filter text-xl"></i>
+              <span id="filterIndicator" class="hidden absolute top-1 right-1 h-2 w-2 bg-sidebar-accent rounded-full"></span>
+            </button>
+            
+            <!-- Filter Options Dropdown -->
+            <div id="mobileFilterDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-2">
+              <select id="mobileStatusFilter" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
+                <option value="">All Status</option>
+                <option value="paid">Paid</option>
+                <option value="ongoing">Ongoing</option>
+                <option value="overdue">Overdue</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Archive Icon Button -->
+          <button class="w-10 h-10 flex items-center justify-center text-sidebar-accent">
+            <i class="fas fa-archive text-xl"></i>
+          </button>
+        </div>
+      </div>
     </div>
   </div>
   
-  <!-- Services Table for this branch -->
-  <div class="overflow-x-auto scrollbar-thin">
-    <table class="w-full">
-      <thead>
-        <tr class="bg-gray-50 border-b border-sidebar-border">
-          <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer">
-            <div class="flex items-center">
-              <i class="fas fa-user mr-1.5 text-sidebar-accent"></i> Beneficiary Name
-            </div>
-          </th>
-          <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer">
-            <div class="flex items-center">
-              <i class="fas fa-hand-holding-heart mr-1.5 text-sidebar-accent"></i> Service Name
-            </div>
-          </th>
-          <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer">
-            <div class="flex items-center">
-              <i class="fas fa-calendar-alt mr-1.5 text-sidebar-accent"></i> Payment Duration
-            </div>
-          </th>
-          <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer">
-            <div class="flex items-center">
-              <i class="fas fa-tag mr-1.5 text-sidebar-accent"></i> Price
-            </div>
-          </th>
-          <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer">
-            <div class="flex items-center">
-              <i class="fas fa-credit-card mr-1.5 text-sidebar-accent"></i> Payment Status
-            </div>
-          </th>
-          <th class="p-4 text-left text-sm font-medium text-sidebar-text">
-            <div class="flex items-center">
-              <i class="fas fa-cogs mr-1.5 text-sidebar-accent"></i> Actions
-            </div>
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <?php
-        // Initialize fetchedData array before the database query
-        $fetchedData = array();
-
-        // Include database connection
-        require_once '../db_connect.php';
-        
-        // Database connection check
-        if (!$conn) {
-            echo '<tr><td colspan="6" class="p-6 text-sm text-center"><div class="flex flex-col items-center"><i class="fas fa-exclamation-triangle text-red-500 text-4xl mb-3"></i><p class="text-red-500">Database connection failed</p></div></td></tr>';
-        } else {
-            // Prepare and execute the query using MySQLi
-            $query = "SELECT 
-                          lp.lifeplan_id,
-                          lp.service_id,
-                          lp.customerID,
-                          lp.amount_paid,
-                          lp.balance,
-                          CONCAT_WS(' ',
-                              lp.benefeciary_fname,
-                              NULLIF(lp.benefeciary_mname, ''),
-                              lp.benefeciary_lname,
-                              NULLIF(lp.benefeciary_suffix, '')
-                          ) AS benefeciary_fullname,
-                          lp.payment_duration,
-                          lp.custom_price,
-                          lp.payment_status,
-                          s.service_name
-                      FROM 
-                          lifeplan_tb lp
-                      JOIN 
-                          services_tb s ON lp.service_id = s.service_id
-                      LIMIT 6
-                      "; // Limit to 6 records for pagination
-            
-            $result = $conn->query($query);
-            
-            // Check if query was successful
-            if (!$result) {
-                echo '<tr><td colspan="6" class="p-6 text-sm text-center"><div class="flex flex-col items-center"><i class="fas fa-exclamation-triangle text-red-500 text-4xl mb-3"></i><p class="text-red-500">Query error: ' . $conn->error . '</p></div></td></tr>';
-            } else if ($result->num_rows == 0) {
-                echo '<tr><td colspan="6" class="p-6 text-sm text-center"><div class="flex flex-col items-center"><i class="fas fa-inbox text-gray-300 text-4xl mb-3"></i><p class="text-gray-500">No beneficiaries found</p></div></td></tr>';
-            } else {
-                // Loop through the results and display each row
-                while ($row = $result->fetch_assoc()) {
-                    // Add row data to our logging array
-                    $fetchedData[] = $row;
-                    
-                    // Determine status badge class
-                    $statusClass = '';
-                    $statusIcon = '';
-                    switch ($row['payment_status']) {
-                        case 'paid':
-                            $statusClass = 'bg-green-100 text-green-600 border border-green-200';
-                            $statusIcon = 'fa-check-circle';
-                            break;
-                        case 'ongoing':
-                            $statusClass = 'bg-yellow-100 text-yellow-800 border border-yellow-200';
-                            $statusIcon = 'fa-clock';
-                            break;
-                        case 'overdue':
-                            $statusClass = 'bg-red-100 text-red-600 border border-red-200';
-                            $statusIcon = 'fa-exclamation-circle';
-                            break;
-                        default:
-                            $statusClass = 'bg-gray-100 text-gray-800 border border-gray-200';
-                            $statusIcon = 'fa-question-circle';
-                    }
-                    
-                    // Format price with PHP currency symbol
-                    $formattedPrice = '₱' . number_format($row['custom_price'], 2);
-                    
-                    echo '<tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
-                            <td class="p-4 text-sm text-sidebar-text">
-                              <div class="flex items-center">
-                                ' . htmlspecialchars($row['benefeciary_fullname']) . '
-                              </div>
-                            </td>
-                            <td class="p-4 text-sm text-sidebar-text">' . htmlspecialchars($row['service_name']) . '</td>
-                            <td class="p-4 text-sm text-sidebar-text">' . htmlspecialchars($row['payment_duration']) . ' years</td>
-                            <td class="p-4 text-sm font-medium text-sidebar-text">' . $formattedPrice . '</td>
-                            <td class="p-4 text-sm">
-                              <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ' . $statusClass . '">
-                                <i class="fas ' . $statusIcon . ' mr-1"></i> ' . htmlspecialchars($row['payment_status']) . '
-                              </span>
-                            </td>
-                            <td class="p-4 text-sm">
-                              <div class="flex space-x-2">
-                                <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip view-receipt-btn" 
-                                        title="View Receipt" 
-                                        data-id="' . $row['lifeplan_id'] . '"
-                                        data-name="' . htmlspecialchars($row['benefeciary_fullname']) . '"
-                                        data-monthly="' . number_format($row['custom_price'] / ($row['payment_duration'] * 12), 2) . '"
-                                        data-total="' . number_format($row['amount_paid']) . '"
-                                        data-balance="' . number_format($row['balance']) . '">
-                                    <i class="fas fa-receipt"></i>
-                                </button>
-                                <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="Edit">
-                                  <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-all tooltip" title="Delete">
-                                  <i class="fas fa-trash-alt"></i>
-                                </button>
-                              </div>
-                            </td>
-                          </tr>';
-                }
-                // Free result set
-                $result->free();
-            }
-            // Close database connection
-            $conn->close();
-        }
-        ?>
-      </tbody>
-    </table>
+  <!-- Responsive Table Container with improved spacing -->
+  <div class="overflow-x-auto scrollbar-thin" id="beneficiaryTableContainer">
+    <div id="beneficiaryLoadingIndicator" class="hidden absolute inset-0 bg-white bg-opacity-50 flex items-center justify-center">
+      <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-sidebar-accent"></div>
+    </div>
     
-    <!-- Pagination -->
-    <div class="p-4 border-t border-sidebar-border flex justify-between items-center">
-      <div class="text-sm text-gray-500">
-        Showing <?php echo isset($offset) ? ($offset + 1) : '1'; ?> - <?php echo isset($offset) && isset($recordsPerPage) ? min($offset + $recordsPerPage, isset($totalBeneficiaries) ? $totalBeneficiaries : 6) : '6'; ?> 
-        of <?php echo isset($totalBeneficiaries) ? $totalBeneficiaries : '6'; ?> beneficiaries
-      </div>
-      <div class="flex space-x-1">
-        <button class="px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover opacity-50 cursor-not-allowed" disabled>&laquo;</button>
-        <button class="px-3 py-1 border border-sidebar-border rounded text-sm bg-sidebar-accent text-white">1</button>
-        <button class="px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover opacity-50 cursor-not-allowed" disabled>&raquo;</button>
-      </div>
+    <!-- Responsive Table with improved spacing and horizontal scroll for small screens -->
+    <div class="min-w-full">
+      <table class="w-full">
+        <thead>
+          <tr class="bg-gray-50 border-b border-sidebar-border">
+            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(0)">
+              <div class="flex items-center gap-1.5">
+                <i class="fas fa-user text-sidebar-accent"></i> Beneficiary Name
+              </div>
+            </th>
+            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(1)">
+              <div class="flex items-center gap-1.5">
+                <i class="fas fa-hand-holding-heart text-sidebar-accent"></i> Service Name
+              </div>
+            </th>
+            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(2)">
+              <div class="flex items-center gap-1.5">
+                <i class="fas fa-calendar-alt text-sidebar-accent"></i> Payment Duration
+              </div>
+            </th>
+            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(3)">
+              <div class="flex items-center gap-1.5">
+                <i class="fas fa-tag text-sidebar-accent"></i> Price
+              </div>
+            </th>
+            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(4)">
+              <div class="flex items-center gap-1.5">
+                <i class="fas fa-credit-card text-sidebar-accent"></i> Payment Status
+              </div>
+            </th>
+            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text whitespace-nowrap">
+              <div class="flex items-center gap-1.5">
+                <i class="fas fa-cogs text-sidebar-accent"></i> Actions
+              </div>
+            </th>
+          </tr>
+        </thead>
+        <tbody id="beneficiaryTableBody">
+          <?php
+          // Initialize fetchedData array before the database query
+          $fetchedData = array();
+
+          // Include database connection
+          require_once '../db_connect.php';
+          
+          // Database connection check
+          if (!$conn) {
+              echo '<tr><td colspan="6" class="p-6 text-sm text-center"><div class="flex flex-col items-center"><i class="fas fa-exclamation-triangle text-red-500 text-4xl mb-3"></i><p class="text-red-500">Database connection failed</p></div></td></tr>';
+          } else {
+              // Prepare and execute the query using MySQLi
+              $query = "SELECT 
+                            lp.lifeplan_id,
+                            lp.service_id,
+                            lp.customerID,
+                            lp.amount_paid,
+                            lp.balance,
+                            CONCAT_WS(' ',
+                                lp.benefeciary_fname,
+                                NULLIF(lp.benefeciary_mname, ''),
+                                lp.benefeciary_lname,
+                                NULLIF(lp.benefeciary_suffix, '')
+                            ) AS benefeciary_fullname,
+                            lp.payment_duration,
+                            lp.custom_price,
+                            lp.payment_status,
+                            s.service_name
+                        FROM 
+                            lifeplan_tb lp
+                        JOIN 
+                            services_tb s ON lp.service_id = s.service_id
+                        LIMIT 6
+                        "; // Limit to 6 records for pagination
+              
+              $result = $conn->query($query);
+              
+              // Check if query was successful
+              if (!$result) {
+                  echo '<tr><td colspan="6" class="p-6 text-sm text-center"><div class="flex flex-col items-center"><i class="fas fa-exclamation-triangle text-red-500 text-4xl mb-3"></i><p class="text-red-500">Query error: ' . $conn->error . '</p></div></td></tr>';
+              } else if ($result->num_rows == 0) {
+                  echo '<tr><td colspan="6" class="p-6 text-sm text-center"><div class="flex flex-col items-center"><i class="fas fa-inbox text-gray-300 text-4xl mb-3"></i><p class="text-gray-500">No beneficiaries found</p></div></td></tr>';
+              } else {
+                  // Loop through the results and display each row
+                  while ($row = $result->fetch_assoc()) {
+                      // Add row data to our logging array
+                      $fetchedData[] = $row;
+                      
+                      // Determine status badge class
+                      $statusClass = '';
+                      $statusIcon = '';
+                      switch ($row['payment_status']) {
+                          case 'paid':
+                              $statusClass = 'bg-green-100 text-green-600 border border-green-200';
+                              $statusIcon = 'fa-check-circle';
+                              break;
+                          case 'ongoing':
+                              $statusClass = 'bg-yellow-100 text-yellow-800 border border-yellow-200';
+                              $statusIcon = 'fa-clock';
+                              break;
+                          case 'overdue':
+                              $statusClass = 'bg-red-100 text-red-600 border border-red-200';
+                              $statusIcon = 'fa-exclamation-circle';
+                              break;
+                          default:
+                              $statusClass = 'bg-gray-100 text-gray-800 border border-gray-200';
+                              $statusIcon = 'fa-question-circle';
+                      }
+                      
+                      // Format price with PHP currency symbol
+                      $formattedPrice = '₱' . number_format($row['custom_price'], 2);
+                      
+                      echo '<tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
+                              <td class="px-4 py-3.5 text-sm text-sidebar-text">
+                                <div class="flex items-center">
+                                  ' . htmlspecialchars($row['benefeciary_fullname']) . '
+                                </div>
+                              </td>
+                              <td class="px-4 py-3.5 text-sm text-sidebar-text">' . htmlspecialchars($row['service_name']) . '</td>
+                              <td class="px-4 py-3.5 text-sm text-sidebar-text">' . htmlspecialchars($row['payment_duration']) . ' years</td>
+                              <td class="px-4 py-3.5 text-sm font-medium text-sidebar-text">' . $formattedPrice . '</td>
+                              <td class="px-4 py-3.5 text-sm">
+                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ' . $statusClass . '">
+                                  <i class="fas ' . $statusIcon . ' mr-1"></i> ' . htmlspecialchars($row['payment_status']) . '
+                                </span>
+                              </td>
+                              <td class="px-4 py-3.5 text-sm">
+                                <div class="flex space-x-2">
+                                  <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip view-receipt-btn" 
+                                          title="View Receipt" 
+                                          data-id="' . $row['lifeplan_id'] . '"
+                                          data-name="' . htmlspecialchars($row['benefeciary_fullname']) . '"
+                                          data-monthly="' . number_format($row['custom_price'] / ($row['payment_duration'] * 12), 2) . '"
+                                          data-total="' . number_format($row['amount_paid']) . '"
+                                          data-balance="' . number_format($row['balance']) . '">
+                                      <i class="fas fa-receipt"></i>
+                                  </button>
+                                  <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="Edit">
+                                    <i class="fas fa-edit"></i>
+                                  </button>
+                                  <button class="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-all tooltip" title="Delete">
+                                    <i class="fas fa-archive text-red"></i>
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>';
+                  }
+                  // Free result set
+                  $result->free();
+              }
+              // Close database connection
+              $conn->close();
+          }
+          ?>
+        </tbody>
+      </table>
     </div>
   </div>
+  
+  <!-- Sticky Pagination Footer with improved spacing -->
+  <div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
+    <div id="paginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
+      Showing <?php echo isset($offset) ? ($offset + 1) : '1'; ?> - <?php echo isset($offset) && isset($recordsPerPage) ? min($offset + $recordsPerPage, isset($totalBeneficiaries) ? $totalBeneficiaries : 6) : '6'; ?> 
+      of <?php echo isset($totalBeneficiaries) ? $totalBeneficiaries : '6'; ?> beneficiaries
+    </div>
+    <div class="flex space-x-2">
+      <a href="<?php echo '?page=' . (isset($page) ? max(1, $page - 1) : '1'); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo (!isset($page) || $page <= 1) ? 'opacity-50 pointer-events-none' : ''; ?>">&laquo;</a>
+      
+      <?php 
+      $totalPages = isset($totalPages) ? $totalPages : 1;
+      $page = isset($page) ? $page : 1;
+      
+      for ($i = 1; $i <= $totalPages; $i++): 
+      ?>
+        <a href="<?php echo '?page=' . $i; ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm <?php echo $i == $page ? 'bg-sidebar-accent text-white' : 'hover:bg-sidebar-hover'; ?>">
+          <?php echo $i; ?>
+        </a>
+      <?php endfor; ?>
+      
+      <a href="<?php echo '?page=' . (isset($page) ? min($totalPages, $page + 1) : '2'); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo (!isset($page) || $page >= $totalPages) ? 'opacity-50 pointer-events-none' : ''; ?>">&raquo;</a>
+    </div>
+  </div>
+</div>
+
+<!-- JavaScript for Dropdown Toggle Functionality -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Mobile filter toggle
+  const mobileFilterToggle = document.getElementById('mobileFilterToggle');
+  const mobileFilterDropdown = document.getElementById('mobileFilterDropdown');
+  
+  if (mobileFilterToggle && mobileFilterDropdown) {
+    mobileFilterToggle.addEventListener('click', function() {
+      mobileFilterDropdown.classList.toggle('hidden');
+    });
+    
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(event) {
+      if (!mobileFilterToggle.contains(event.target) && !mobileFilterDropdown.contains(event.target)) {
+        mobileFilterDropdown.classList.add('hidden');
+      }
+    });
+  }
+  
+  // Sync mobile and desktop filters
+  const statusFilter = document.getElementById('statusFilter');
+  const mobileStatusFilter = document.getElementById('mobileStatusFilter');
+  
+  if (statusFilter && mobileStatusFilter) {
+    statusFilter.addEventListener('change', function() {
+      mobileStatusFilter.value = this.value;
+      filterTable();
+    });
+    
+    mobileStatusFilter.addEventListener('change', function() {
+      statusFilter.value = this.value;
+      filterTable();
+      mobileFilterDropdown.classList.add('hidden');
+    });
+  }
+  
+  // Handle search functionality
+  const desktopSearchInput = document.getElementById('beneficiarySearchInput');
+  const mobileSearchInput = document.getElementById('mobileBeneficiarySearchInput');
+  
+  if (desktopSearchInput && mobileSearchInput) {
+    desktopSearchInput.addEventListener('input', function() {
+      mobileSearchInput.value = this.value;
+      filterTable();
+    });
+    
+    mobileSearchInput.addEventListener('input', function() {
+      desktopSearchInput.value = this.value;
+      filterTable();
+    });
+  }
+  
+  // Filter table based on search and status
+  function filterTable() {
+    const searchValue = (desktopSearchInput.value || '').toLowerCase();
+    const statusValue = statusFilter.value.toLowerCase();
+    const rows = document.querySelectorAll('#beneficiaryTableBody tr');
+    
+    rows.forEach(row => {
+      const nameCell = row.cells[0]?.textContent?.toLowerCase() || '';
+      const serviceCell = row.cells[1]?.textContent?.toLowerCase() || '';
+      const statusCell = row.cells[4]?.textContent?.toLowerCase() || '';
+      
+      const matchesSearch = nameCell.includes(searchValue) || serviceCell.includes(searchValue);
+      const matchesStatus = statusValue === '' || statusCell.includes(statusValue);
+      
+      row.style.display = (matchesSearch && matchesStatus) ? '' : 'none';
+    });
+  }
+});
+</script>
 
   <!-- Receipt Modal -->
   <div id="receiptModal" class="fixed inset-0 z-50 hidden overflow-y-auto">
