@@ -51,7 +51,7 @@ try {
             sold_by,
             payment_method,
             status,
-            created_at
+            get_timestamp
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Pending', NOW())
     ");
     
