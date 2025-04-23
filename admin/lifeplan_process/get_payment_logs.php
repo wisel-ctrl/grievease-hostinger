@@ -12,15 +12,22 @@ $lifeplanId = $_GET['lifeplan_id'];
 
 try {
     $query = "SELECT 
-                installment_amount, 
-                log_date, 
-                new_balance
+                l.installment_amount, 
+                l.log_date, 
+                l.new_balance,
+                l.customer_id,
+                u.first_name,
+                u.middle_name,
+                u.last_name,
+                u.suffix
               FROM 
-                lifeplan_logs_tb 
+                lifeplan_logs_tb l
+              JOIN 
+                users u ON l.customer_id = u.id
               WHERE 
-                lifeplan_id = ?
+                l.lifeplan_id = ?
               ORDER BY 
-                log_date DESC";
+                l.log_date ASC";
     
     $stmt = $conn->prepare($query);
     $stmt->bind_param("i", $lifeplanId);

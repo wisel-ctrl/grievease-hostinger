@@ -801,42 +801,49 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Function to fetch payment logs
     function fetchPaymentLogs(lifeplanId) {
-        const paymentLogsContainer = document.getElementById('paymentLogsContainer');
-        paymentLogsContainer.innerHTML = '<div class="text-center py-4 text-gray-500"><i class="fas fa-spinner fa-spin"></i> Loading payment history...</div>';
-        
-        fetch(`lifeplan_process/get_payment_logs.php?lifeplan_id=${lifeplanId}`)
-            .then(response => response.json())
-            .then(data => {
-                if (data.length > 0) {
-                    let html = '';
-                    data.forEach((log, index) => {
-                        const paymentDate = new Date(log.payment_date);
-                        const formattedDate = paymentDate.toLocaleDateString('en-US', {
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric'
-                        });
-                        
-                        html += `
-                            <div class="border-b pb-3">
-                                <div class="flex justify-between">
-                                    <span class="font-medium">Payment #${index + 1}</span>
-                                    <span class="text-green-600">₱${parseFloat(log.installment_amount).toFixed(2)}</span>
-                                </div>
-                                <div class="text-sm text-gray-500">${formattedDate}</div>
-                                <div class="text-sm mt-1">New Balance: ₱${parseFloat(log.new_balance).toFixed(2)}</div>
-                            </div>
-                        `;
+    const paymentLogsContainer = document.getElementById('paymentLogsContainer');
+    paymentLogsContainer.innerHTML = '<div class="text-center py-4 text-gray-500"><i class="fas fa-spinner fa-spin"></i> Loading payment history...</div>';
+    
+    fetch(`lifeplan_process/get_payment_logs.php?lifeplan_id=${lifeplanId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.length > 0) {
+                let html = '';
+                data.forEach((log, index) => {
+                    const paymentDate = new Date(log.log_date);
+                    const formattedDate = paymentDate.toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
                     });
-                    paymentLogsContainer.innerHTML = html;
-                } else {
-                    paymentLogsContainer.innerHTML = '<div class="text-center py-4 text-gray-500">No payment history found</div>';
-                }
-            })
-            .catch(error => {
-                console.error('Error fetching payment logs:', error);
-                paymentLogsContainer.innerHTML = '<div class="text-center py-4 text-gray-500">Error loading payment history</div>';
-            });
+                    
+                    // Construct customer name
+                    let customerName = log.first_name;
+                    if (log.middle_name) customerName += ' ' + log.middle_name;
+                    customerName += ' ' + log.last_name;
+                    if (log.suffix) customerName += ' ' + log.suffix;
+                    
+                    html += `
+                        <div class="border-b pb-3 mb-3">
+                            <div class="flex justify-between">
+                                <span class="font-medium">Payment #${index + 1}</span>
+                                <span class="text-green-600">₱${parseFloat(log.installment_amount).toFixed(2)}</span>
+                            </div>
+                            <div class="text-sm text-gray-500">${formattedDate}</div>
+                            <div class="text-sm mt-1">New Balance: ₱${parseFloat(log.new_balance).toFixed(2)}</div>
+                            <div class="text-sm mt-1 text-gray-600">Paid by: ${customerName}</div>
+                        </div>
+                    `;
+                });
+                paymentLogsContainer.innerHTML = html;
+            } else {
+                paymentLogsContainer.innerHTML = '<div class="text-center py-4 text-gray-500">No payment history found</div>';
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching payment logs:', error);
+            paymentLogsContainer.innerHTML = '<div class="text-center py-4 text-gray-500">Error loading payment history</div>';
+        });
     }
 
     // Open modal when clicking View Receipt buttons
