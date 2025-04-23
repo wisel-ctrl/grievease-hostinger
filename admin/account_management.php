@@ -563,7 +563,6 @@ document.addEventListener('DOMContentLoaded', function() {
         <!-- Personal Information Section -->
         <div>
           <label for="firstName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-user mr-2 text-sidebar-accent"></i>
             First Name <span class="text-red-500">*</span>
           </label>
           <div class="relative">
@@ -574,7 +573,6 @@ document.addEventListener('DOMContentLoaded', function() {
         
         <div>
           <label for="lastName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-user mr-2 text-sidebar-accent"></i>
             Last Name <span class="text-red-500">*</span>
           </label>
           <div class="relative">
@@ -586,7 +584,6 @@ document.addEventListener('DOMContentLoaded', function() {
         <div class="flex flex-col sm:flex-row gap-2 sm:gap-4">
           <div class="w-full sm:flex-1">
             <label for="middleName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-user mr-2 text-sidebar-accent"></i>
               Middle Name
             </label>
             <div class="relative">
@@ -597,7 +594,6 @@ document.addEventListener('DOMContentLoaded', function() {
           
           <div class="w-full sm:flex-1">
             <label for="suffix" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-user-tag mr-2 text-sidebar-accent"></i>
               Suffix
             </label>
             <div class="relative">
@@ -617,7 +613,6 @@ document.addEventListener('DOMContentLoaded', function() {
         
         <div>
           <label for="birthdate" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-calendar-alt mr-2 text-sidebar-accent"></i>
             Birthdate <span class="text-red-500">*</span>
           </label>
           <div class="relative">
@@ -630,7 +625,6 @@ document.addEventListener('DOMContentLoaded', function() {
         
         <div>
           <label for="branchLocation" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-map-marker-alt mr-2 text-sidebar-accent"></i>
             Branch Location <span class="text-red-500">*</span>
           </label>
           <div class="relative">
@@ -645,7 +639,6 @@ document.addEventListener('DOMContentLoaded', function() {
         <!-- Contact Information Section -->
         <div>
           <label for="customerEmail" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-envelope mr-2 text-sidebar-accent"></i>
             Email Address <span class="text-red-500">*</span>
           </label>
           <div class="relative">
@@ -656,7 +649,6 @@ document.addEventListener('DOMContentLoaded', function() {
         
         <div>
           <label for="customerPhone" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-phone mr-2 text-sidebar-accent"></i>
             Phone Number <span class="text-red-500">*</span>
           </label>
           <div class="relative">
@@ -667,7 +659,6 @@ document.addEventListener('DOMContentLoaded', function() {
         
         <div>
           <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-key mr-2 text-sidebar-accent"></i>
             Generated Password
           </label>
           <div class="relative">
