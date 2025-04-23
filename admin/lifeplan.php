@@ -747,141 +747,179 @@ document.addEventListener('DOMContentLoaded', function() {
 </div>
 
   <!-- Edit LifePlan Modal -->
-  <div id="editLifePlanModal" class="fixed inset-0 z-50 hidden overflow-y-auto">
-      <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-          <!-- Background overlay -->
-          <div class="fixed inset-0 transition-opacity" aria-hidden="true">
-              <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+<div class="fixed inset-0 z-50 flex items-center justify-center hidden" id="editLifePlanModal">
+  <!-- Modal Backdrop -->
+  <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+  
+  <!-- Modal Content -->
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-5xl mx-4 z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+    <!-- Close Button -->
+    <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" id="closeEditModal">
+      <i class="fas fa-times"></i>
+    </button>
+    
+    <!-- Modal Header -->
+    <div class="px-6 py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
+      <h3 class="text-xl font-bold text-white flex items-center">
+        Edit LifePlan Subscription
+      </h3>
+    </div>
+    
+    <!-- Modal Body -->
+    <div class="px-6 py-5">
+      <div class="grid grid-cols-1 gap-6">
+        <!-- Customer Search -->
+        <div>
+          <label for="customerSearch" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">Search Customer</label>
+          <div class="relative">
+            <input type="text" id="customerSearch" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="Type customer name...">
+            <div id="customerSuggestions" class="absolute z-10 mt-1 w-full bg-white shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto hidden"></div>
           </div>
-          
-          <!-- Modal container -->
-          <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
-              <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                  <div class="sm:flex sm:items-start">
-                      <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
-                          <h3 class="text-lg leading-6 font-medium text-gray-900 border-b pb-2">
-                              Edit LifePlan Subscription
-                          </h3>
-                          
-                          <div class="mt-4 grid grid-cols-1 gap-4">
-                              <!-- Customer Search -->
-                              <div>
-                                  <label for="customerSearch" class="block text-sm font-medium text-gray-700">Search Customer</label>
-                                  <div class="mt-1 relative">
-                                      <input type="text" id="customerSearch" class="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Type customer name...">
-                                      <div id="customerSuggestions" class="absolute z-10 mt-1 w-full bg-white shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto hidden"></div>
-                                  </div>
-                                  <input type="hidden" id="customerID">
-                              </div>
-                              
-                              <!-- Customer Details -->
-                              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                  <div>
-                                      <label for="fname" class="block text-sm font-medium text-gray-700">First Name</label>
-                                      <input type="text" id="fname" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                                  </div>
-                                  <div>
-                                      <label for="mname" class="block text-sm font-medium text-gray-700">Middle Name</label>
-                                      <input type="text" id="mname" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                                  </div>
-                                  <div>
-                                      <label for="lname" class="block text-sm font-medium text-gray-700">Last Name</label>
-                                      <input type="text" id="lname" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                                  </div>
-                                  <div>
-                                      <label for="suffix" class="block text-sm font-medium text-gray-700">Suffix</label>
-                                      <input type="text" id="suffix" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                                  </div>
-                                  <div>
-                                      <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
-                                      <input type="email" id="email" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                                  </div>
-                                  <div>
-                                      <label for="phone" class="block text-sm font-medium text-gray-700">Phone</label>
-                                      <input type="text" id="phone" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                                  </div>
-                              </div>
-                              
-                              <!-- Beneficiary Details -->
-                              <div class="border-t pt-4 mt-4">
-                                  <h4 class="text-md font-medium text-gray-700 mb-3">Beneficiary Information</h4>
-                                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                      <div>
-                                          <label for="benefeciary_fname" class="block text-sm font-medium text-gray-700">First Name</label>
-                                          <input type="text" id="benefeciary_fname" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                                      </div>
-                                      <div>
-                                          <label for="benefeciary_mname" class="block text-sm font-medium text-gray-700">Middle Name</label>
-                                          <input type="text" id="benefeciary_mname" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                                      </div>
-                                      <div>
-                                          <label for="benefeciary_lname" class="block text-sm font-medium text-gray-700">Last Name</label>
-                                          <input type="text" id="benefeciary_lname" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                                      </div>
-                                      <div>
-                                          <label for="benefeciary_suffix" class="block text-sm font-medium text-gray-700">Suffix</label>
-                                          <input type="text" id="benefeciary_suffix" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                                      </div>
-                                      <div>
-                                          <label for="benefeciary_dob" class="block text-sm font-medium text-gray-700">Date of Birth</label>
-                                          <input type="date" id="benefeciary_dob" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                                      </div>
-                                      <div>
-                                          <label for="relationship_to_client" class="block text-sm font-medium text-gray-700">Relationship</label>
-                                          <input type="text" id="relationship_to_client" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                                      </div>
-                                  </div>
-                                  <div class="mt-4">
-                                      <label for="benefeciary_address" class="block text-sm font-medium text-gray-700">Address</label>
-                                      <textarea id="benefeciary_address" rows="2" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"></textarea>
-                                  </div>
-                              </div>
-                              
-                              <!-- Plan Details -->
-                              <div class="border-t pt-4 mt-4">
-                                  <h4 class="text-md font-medium text-gray-700 mb-3">Plan Information</h4>
-                                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                      <div>
-                                          <label for="service_id" class="block text-sm font-medium text-gray-700">Service</label>
-                                          <select id="service_id" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                                              <!-- Options will be populated via JavaScript -->
-                                          </select>
-                                      </div>
-                                      <div>
-                                          <label for="payment_duration" class="block text-sm font-medium text-gray-700">Payment Duration (years)</label>
-                                          <input type="number" id="payment_duration" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                                      </div>
-                                      <div>
-                                          <label for="custom_price" class="block text-sm font-medium text-gray-700">Price</label>
-                                          <input type="number" step="0.01" id="custom_price" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                                      </div>
-                                      <div>
-                                          <label for="payment_status" class="block text-sm font-medium text-gray-700">Payment Status</label>
-                                          <select id="payment_status" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                                              <option value="ongoing">Ongoing</option>
-                                              <option value="paid">Paid</option>
-                                              <option value="canceled">Canceled</option>
-                                              <option value="overdue">Overdue</option>
-                                          </select>
-                                      </div>
-                                  </div>
-                              </div>
-                          </div>
-                      </div>
-                  </div>
-              </div>
-              <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                  <button type="button" id="saveLifePlan" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm">
-                      Save Changes
-                  </button>
-                  <button type="button" id="closeEditModal" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
-                      Cancel
-                  </button>
-              </div>
+          <input type="hidden" id="customerID">
+        </div>
+        
+        <!-- Customer Details -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label for="fname" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">First Name</label>
+            <div class="relative">
+              <input type="text" id="fname" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+            </div>
           </div>
+          <div>
+            <label for="mname" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">Middle Name</label>
+            <div class="relative">
+              <input type="text" id="mname" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+            </div>
+          </div>
+          <div>
+            <label for="lname" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">Last Name</label>
+            <div class="relative">
+              <input type="text" id="lname" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+            </div>
+          </div>
+          <div>
+            <label for="suffix" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">Suffix</label>
+            <div class="relative">
+              <input type="text" id="suffix" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+            </div>
+          </div>
+          <div>
+            <label for="email" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">Email</label>
+            <div class="relative">
+              <input type="email" id="email" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+            </div>
+          </div>
+          <div>
+            <label for="phone" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">Phone</label>
+            <div class="relative">
+              <input type="text" id="phone" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+            </div>
+          </div>
+        </div>
+        
+        <!-- Beneficiary Details -->
+        <div class="border-t pt-4 mt-4">
+          <h4 class="text-md font-medium text-gray-700 mb-3">Beneficiary Information</h4>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label for="benefeciary_fname" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">First Name</label>
+              <div class="relative">
+                <input type="text" id="benefeciary_fname" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+              </div>
+            </div>
+            <div>
+              <label for="benefeciary_mname" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">Middle Name</label>
+              <div class="relative">
+                <input type="text" id="benefeciary_mname" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+              </div>
+            </div>
+            <div>
+              <label for="benefeciary_lname" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">Last Name</label>
+              <div class="relative">
+                <input type="text" id="benefeciary_lname" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+              </div>
+            </div>
+            <div>
+              <label for="benefeciary_suffix" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">Suffix</label>
+              <div class="relative">
+                <input type="text" id="benefeciary_suffix" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+              </div>
+            </div>
+            <div>
+              <label for="benefeciary_dob" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">Date of Birth</label>
+              <div class="relative">
+                <input type="date" id="benefeciary_dob" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+              </div>
+            </div>
+            <div>
+              <label for="relationship_to_client" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">Relationship</label>
+              <div class="relative">
+                <input type="text" id="relationship_to_client" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+              </div>
+            </div>
+          </div>
+          <div class="mt-4">
+            <label for="benefeciary_address" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">Address</label>
+            <div class="relative">
+              <textarea id="benefeciary_address" rows="2" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"></textarea>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Plan Details -->
+        <div class="border-t pt-4 mt-4">
+          <h4 class="text-md font-medium text-gray-700 mb-3">Plan Information</h4>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label for="service_id" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">Service</label>
+              <div class="relative">
+                <select id="service_id" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+                  <!-- Options will be populated via JavaScript -->
+                </select>
+              </div>
+            </div>
+            <div>
+              <label for="payment_duration" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">Payment Duration (years)</label>
+              <div class="relative">
+                <input type="number" id="payment_duration" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+              </div>
+            </div>
+            <div>
+              <label for="custom_price" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">Price</label>
+              <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <span class="text-gray-500">₱</span>
+                </div>
+                <input type="number" step="0.01" id="custom_price" class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+              </div>
+            </div>
+            <div>
+              <label for="payment_status" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">Payment Status</label>
+              <div class="relative">
+                <select id="payment_status" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+                  <option value="ongoing">Ongoing</option>
+                  <option value="paid">Paid</option>
+                  <option value="canceled">Canceled</option>
+                  <option value="overdue">Overdue</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
+    </div>
+    
+    <!-- Modal Footer --> 
+    <div class="px-6 py-4 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
+      <button class="px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center" id="closeEditModal">
+        Cancel
+      </button>
+      <button class="px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" id="saveLifePlan">
+        Save Changes
+      </button>
+    </div>
   </div>
-
 </div>
 
 
