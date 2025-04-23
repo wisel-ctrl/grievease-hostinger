@@ -378,7 +378,7 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
                         <i class="fas fa-users"></i>
                       </button>
                     <?php endif; ?>
-                    <button class="p-2 bg-purple-100 text-purple-600 rounded-lg hover:bg-purple-200 transition-all tooltip complete-btn" 
+                    <button class="p-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition-all tooltip complete-btn" 
                             title="Complete Service"
                             onclick="checkCustomerBeforeComplete('<?php echo $row['sales_id']; ?>', <?php echo $row['customerID'] ? 'true' : 'false'; ?>)"
                             <?php echo !$row['customerID'] ? 'disabled' : ''; ?>>
