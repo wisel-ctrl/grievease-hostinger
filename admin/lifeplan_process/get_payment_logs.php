@@ -27,7 +27,7 @@ try {
               WHERE 
                 l.lifeplan_id = ?
               ORDER BY 
-                l.log_date DESC";
+                l.log_date ASC";
     
     $stmt = $conn->prepare($query);
     $stmt->bind_param("i", $lifeplanId);
