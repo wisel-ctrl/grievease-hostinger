@@ -428,11 +428,11 @@ if ($conn) {
                                           data-name="'. htmlspecialchars($row['benefeciary_fullname']).'">
                                       <i class="fas fa-exchange-alt"></i>
                                   </button>
-                                  <button class="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-all tooltip delete-btn" 
-                                          title="Archive" 
-                                          data-id="' . $row['lifeplan_id'] .'">
-                                      <i class="fas fa-archive"></i>
-                                  </button>
+                                //   <button class="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-all tooltip delete-btn" 
+                                //           title="Archive" 
+                                //           data-id="' . $row['lifeplan_id'] .'">
+                                //       <i class="fas fa-archive"></i>
+                                //   </button>
                                   
                                 </div>
                               </td>
@@ -610,15 +610,15 @@ document.addEventListener('DOMContentLoaded', function() {
 </div>
 
     <!-- Archive Modal -->
-    <div id="archiveModal" class="fixed inset-0 z-50 hidden overflow-y-auto">
+    <!-- <div id="archiveModal" class="fixed inset-0 z-50 hidden overflow-y-auto">
         <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-            <!-- Background overlay -->
-            <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+            Background overlay -->
+            <!-- <div class="fixed inset-0 transition-opacity" aria-hidden="true">
                 <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
-            </div>
+            </div> -->
             
             <!-- Modal container -->
-            <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
+            <!-- <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
                 <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                     <div class="sm:flex sm:items-start">
                         <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
@@ -639,9 +639,9 @@ document.addEventListener('DOMContentLoaded', function() {
                                                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                                             </tr>
                                         </thead>
-                                        <tbody id="archivedLifePlansBody" class="bg-white divide-y divide-gray-200">
+                                        <tbody id="archivedLifePlansBody" class="bg-white divide-y divide-gray-200"> -->
                                             <!-- Archived plans will be loaded here -->
-                                            <tr>
+                                            <!-- <tr>
                                                 <td colspan="6" class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-500">
                                                     Loading archived lifeplans...
                                                 </td>
@@ -660,7 +660,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
             </div>
         </div>
-    </div>
+    </div> -->
 
   <!-- Receipt Modal -->
 <div id="receiptModal" class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto">
@@ -1231,7 +1231,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('paymentDate').valueAsDate = new Date();
 });
 </script>
-<script>
+<!-- <script>
     // Add this to your existing JavaScript
 document.addEventListener('DOMContentLoaded', function() {
     // Archive/Delete button functionality
@@ -1277,7 +1277,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
-</script>
+</script> -->
 <script>
   // Edit LifePlan Modal functionality
 document.addEventListener('DOMContentLoaded', function() {
@@ -1482,7 +1482,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
-<script>
+<!-- <script>
     // Add this to your existing JavaScript
 document.addEventListener('DOMContentLoaded', function() {
     const archiveModal = document.getElementById('archiveModal');
@@ -1647,7 +1647,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
     }
 });
-</script>
+</script> -->
 
 <script>
     // Add this to your existing JavaScript
