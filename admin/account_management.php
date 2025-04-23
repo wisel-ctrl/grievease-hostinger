@@ -1611,38 +1611,32 @@ if ($result->num_rows > 0) {
         <thead>
           <tr class="bg-gray-50 border-b border-sidebar-border">
             <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(0)">
-              <div class="flex items-center gap-1.5">
-                <i class="fas fa-hashtag text-sidebar-accent"></i> ID 
+              <div class="flex items-center gap-1.5"> ID 
                 
               </div>
             </th>
             <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(1)">
-              <div class="flex items-center gap-1.5">
-                <i class="fas fa-user text-sidebar-accent"></i> Name 
+              <div class="flex items-center gap-1.5"> Name 
                 
               </div>
             </th>
             <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(2)">
-              <div class="flex items-center gap-1.5">
-                <i class="fas fa-envelope text-sidebar-accent"></i> Email 
+              <div class="flex items-center gap-1.5"> Email 
                 
               </div>
             </th>
             <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(3)">
-              <div class="flex items-center gap-1.5">
-                <i class="fas fa-user-tag text-sidebar-accent"></i> Role 
+              <div class="flex items-center gap-1.5"> Role 
                 
               </div>
             </th>
             <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(4)">
-              <div class="flex items-center gap-1.5">
-                <i class="fas fa-toggle-on text-sidebar-accent"></i> Status 
+              <div class="flex items-center gap-1.5"> Status 
                 
               </div>
             </th>
             <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text whitespace-nowrap">
-              <div class="flex items-center gap-1.5">
-                <i class="fas fa-cogs text-sidebar-accent"></i> Actions
+              <div class="flex items-center gap-1.5"> Actions
               </div>
             </th>
           </tr>
