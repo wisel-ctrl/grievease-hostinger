@@ -175,7 +175,6 @@ function formatPrice($price) {
     
     <?php } ?>
 </div>
-    </div>
 
   <?php
 // Pagination and Search/Filter Logic
@@ -1556,6 +1555,7 @@ function fetchItemsByBranch(branchId) {
   </script>
   
   <script src="tailwind.js"></script>
+  </div>
   
 </body>
 </html>
