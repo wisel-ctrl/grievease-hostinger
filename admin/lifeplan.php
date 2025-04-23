@@ -1613,72 +1613,100 @@ document.addEventListener('DOMContentLoaded', function() {
     // Open modal when clicking Convert to Sale buttons
     // Update the click handler for convert buttons
     convertBtns.forEach(btn => {
-        btn.addEventListener('click', function() {
-            currentLifeplanId = this.getAttribute('data-id');
-            const beneficiaryName = this.getAttribute('data-name');
-            
-            // Update modal content
-            document.getElementById('convertBeneficiaryName').textContent = 
-                `Converting LifePlan for ${beneficiaryName} to completed sale`;
-            
-            // Set default dates to today
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('dateOfDeath').value = today;
-            document.getElementById('burialDate').value = today;
-            
-            // Fetch LifePlan data and populate hidden inputs
-            fetch(`lifeplan_process/get_lifeplan.php?id=${currentLifeplanId}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data) {
-                        const container = document.getElementById('hiddenInputsContainer');
-                        container.innerHTML = '';
+    btn.addEventListener('click', function() {
+        console.log('Convert to Sale button clicked');
+        
+        currentLifeplanId = this.getAttribute('data-id');
+        const beneficiaryName = this.getAttribute('data-name');
+        
+        console.log('LifePlan ID:', currentLifeplanId);
+        console.log('Beneficiary Name:', beneficiaryName);
+        
+        // Update modal content
+        document.getElementById('convertBeneficiaryName').textContent = 
+            `Converting LifePlan for ${beneficiaryName} to completed sale`;
+        
+        // Set default dates to today
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('dateOfDeath').value = today;
+        document.getElementById('burialDate').value = today;
+        
+        console.log('Set default dates - Date of Death:', today, 'Burial Date:', today);
+        
+        // Fetch LifePlan data and populate hidden inputs
+        console.log('Fetching LifePlan data from:', `lifeplan_process/get_lifeplan.php?id=${currentLifeplanId}`);
+        
+        fetch(`lifeplan_process/get_lifeplan.php?id=${currentLifeplanId}`)
+            .then(response => {
+                console.log('Received response from server, parsing JSON...');
+                return response.json();
+            })
+            .then(data => {
+                if (data) {
+                    console.log('Successfully fetched LifePlan data:', data);
+                    
+                    const container = document.getElementById('hiddenInputsContainer');
+                    container.innerHTML = '';
+                    console.log('Cleared hidden inputs container');
+                    
+                    // Create hidden inputs for all required fields
+                    const fields = [
+                        { name: 'customerID', value: data.customerID || '' },
+                        { name: 'fname', value: data.fname || '' },
+                        { name: 'mname', value: data.mname || '' },
+                        { name: 'lname', value: data.lname || '' },
+                        { name: 'suffix', value: data.suffix || '' },
+                        { name: 'email', value: data.email || '' },
+                        { name: 'phone', value: data.phone || '' },
+                        { name: 'fname_deceased', value: data.benefeciary_fname || '' },
+                        { name: 'mname_deceased', value: data.benefeciary_mname || '' },
+                        { name: 'lname_deceased', value: data.benefeciary_lname || '' },
+                        { name: 'suffix_deceased', value: data.benefeciary_suffix || '' },
+                        { name: 'date_of_birth', value: data.benefeciary_dob || '' },
+                        { name: 'deceased_address', value: data.benefeciary_address || '' },
+                        { name: 'with_cremate', value: data.with_cremate || '0' },
+                        { name: 'initial_price', value: data.initial_price || data.custom_price || '0' },
+                        { name: 'discounted_price', value: data.custom_price || '0' },
+                        { name: 'amount_paid', value: data.amount_paid || '0' },
+                        { name: 'balance', value: data.balance || '0' },
+                        { name: 'sold_by', value: <?php echo $_SESSION['user_id']; ?> },
+                        { name: 'payment_method', value: 'Lifeplan' }
+                    ];
+                    
+                    console.log('Preparing to create hidden inputs for fields:', fields);
+                    
+                    fields.forEach(field => {
+                        const input = document.createElement('input');
+                        input.type = 'hidden';
+                        input.name = field.name;
+                        input.value = field.value;
+                        input.id = `hidden_${field.name}`;
+                        container.appendChild(input);
                         
-                        // Create hidden inputs for all required fields
-                        const fields = [
-                            { name: 'customerID', value: data.customerID || '' },
-                            { name: 'fname', value: data.fname || '' },
-                            { name: 'mname', value: data.mname || '' },
-                            { name: 'lname', value: data.lname || '' },
-                            { name: 'suffix', value: data.suffix || '' },
-                            { name: 'email', value: data.email || '' },
-                            { name: 'phone', value: data.phone || '' },
-                            { name: 'fname_deceased', value: data.benefeciary_fname || '' },
-                            { name: 'mname_deceased', value: data.benefeciary_mname || '' },
-                            { name: 'lname_deceased', value: data.benefeciary_lname || '' },
-                            { name: 'suffix_deceased', value: data.benefeciary_suffix || '' },
-                            { name: 'date_of_birth', value: data.benefeciary_dob || '' },
-                            { name: 'deceased_address', value: data.benefeciary_address || '' },
-                            { name: 'with_cremate', value: data.with_cremate || '0' },
-                            { name: 'initial_price', value: data.initial_price || data.custom_price || '0' },
-                            { name: 'discounted_price', value: data.custom_price || '0' },
-                            { name: 'amount_paid', value: data.amount_paid || '0' },
-                            { name: 'balance', value: data.balance || '0' },
-                            { name: 'sold_by', value: <?php echo $_SESSION['user_id']; ?> },
-                            { name: 'payment_method', value: 'Lifeplan' }
-                        ];
-                        
-                        fields.forEach(field => {
-                            const input = document.createElement('input');
-                            input.type = 'hidden';
-                            input.name = field.name;
-                            input.value = field.value;
-                            input.id = `hidden_${field.name}`;
-                            container.appendChild(input);
-                        });
-                        
-                        // Show modal after inputs are populated
-                        convertModal.classList.remove('hidden');
-                    } else {
-                        alert('Error loading LifePlan data');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error fetching LifePlan data:', error);
+                        console.log(`Created hidden input: ${field.name} = ${field.value}`);
+                    });
+                    
+                    // Verify all inputs were created
+                    console.log('All hidden inputs created. Current container content:', container.innerHTML);
+                    
+                    // Show modal after inputs are populated
+                    convertModal.classList.remove('hidden');
+                    console.log('Modal shown with all data populated');
+                } else {
+                    console.error('No data received from server');
                     alert('Error loading LifePlan data');
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching LifePlan data:', {
+                    error: error,
+                    message: error.message,
+                    stack: error.stack
                 });
-        });
+                alert('Error loading LifePlan data');
+            });
     });
+});
     
     // Close modal
     closeConvertModalBtn.addEventListener('click', function() {
