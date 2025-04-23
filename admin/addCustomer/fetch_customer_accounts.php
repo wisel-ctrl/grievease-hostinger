@@ -93,7 +93,7 @@ if ($result->num_rows > 0) {
             <td class="p-4 text-sm">' . $status . '</td>
             <td class="p-4 text-sm">
               <div class="flex space-x-2">
-                <button class="p-1.5 bg-blue-100 text-blue-600 rounded hover:bg-blue-200 transition-all" onclick="openEditCustomerAccountModal(' . $row['id'] . ')">
+                <button class="p-1.5 bg-yellow-100 text-yellow-600 rounded hover:bg-yellow-200 transition-all" onclick="openEditCustomerAccountModal(' . $row['id'] . ')">
                   <i class="fas fa-edit"></i>
                 </button>
                 <button class="p-1.5 bg-red-100 text-red-600 rounded hover:bg-red-200 transition-all" onclick="deleteCustomerAccount(' . $row['id'] . ')">
