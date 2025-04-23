@@ -768,7 +768,7 @@ console.log("Fetched Lifeplan Data:", <?php echo json_encode($fetchedData); ?>);
         status: "<?php echo $record['payment_status']; ?>"
     });
 <?php endforeach; ?>
-
+//github push test
 // Summary log
 console.log("Total records fetched: <?php echo count($fetchedData); ?>");
 </script>
