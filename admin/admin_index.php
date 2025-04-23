@@ -413,97 +413,142 @@ require_once '../db_connect.php'; // Database connection
   
   <!-- Branch Statistics -->
 <div class="bg-white rounded-lg shadow-md mb-8 border border-sidebar-border overflow-hidden">
-    <div class="bg-sidebar-hover p-4 border-b border-sidebar-border flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div class="flex items-center gap-3">
-            <h4 class="text-lg font-bold text-sidebar-text">Branch Performance</h4>
+    <!-- Header Section - Made responsive with better stacking -->
+    <div class="bg-sidebar-hover p-4 border-b border-sidebar-border">
+        <!-- Desktop layout for big screens - Title on left, controls on right -->
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+            <!-- Title and Counter -->
+            <div class="flex items-center gap-3 mb-4 lg:mb-0">
+                <h4 class="text-lg font-bold text-sidebar-text whitespace-nowrap">Branch Performance</h4>
+            </div>
+            
+            <!-- Controls for big screens - aligned right -->
+            <div class="hidden lg:flex items-center gap-3">
+                <!-- Search Input -->
+                <div class="relative">
+                    <input type="text" id="branchSearchInput" 
+                           placeholder="Search branches..." 
+                           class="pl-8 pr-3 py-2 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
+                    <i class="fas fa-search absolute left-2.5 top-3 text-gray-400"></i>
+                </div>
+
+                <!-- Archive Button -->
+                <button class="px-4 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover whitespace-nowrap">
+                    <i class="fas fa-archive text-sidebar-accent"></i>
+                    <span>Archive</span>
+                </button>
+            </div>
         </div>
         
-        <!-- Search Section -->
-        <div class="flex flex-col md:flex-row items-start md:items-center gap-3 w-full md:w-auto">
-            <!-- Search Input -->
-            <div class="relative w-full md:w-64">
-                <input type="text" placeholder="Search..." 
-                       class="pl-8 pr-3 py-2 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
-                <i class="fas fa-search absolute left-2.5 top-3 text-gray-400"></i>
+        <!-- Mobile/Tablet Controls - Only visible on smaller screens -->
+        <div class="lg:hidden w-full mt-4">
+            <!-- First row: Search bar with archive icon on the right -->
+            <div class="flex items-center w-full gap-3 mb-4">
+                <!-- Search Input - Takes most of the space -->
+                <div class="relative flex-grow">
+                    <input type="text" id="branchSearchInput" 
+                           placeholder="Search branches..." 
+                           class="pl-8 pr-3 py-2.5 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
+                    <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                </div>
+
+                <!-- Icon-only button for archive -->
+                <div class="flex items-center">
+                    <!-- Archive Icon Button -->
+                    <button class="w-10 h-10 flex items-center justify-center text-sidebar-accent">
+                        <i class="fas fa-archive text-xl"></i>
+                    </button>
+                </div>
             </div>
         </div>
     </div>
     
-    <!-- Branch Performance Table -->
-    <div class="overflow-x-auto scrollbar-thin">
-        <table class="w-full">
-            <thead>
-                <tr class="bg-gray-50 border-b border-sidebar-border">
-                    <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(0)">
-                        <div class="flex items-center">
-                            <i class="fas fa-building mr-1.5 text-sidebar-accent"></i> Branch
-                        </div>
-                    </th>
-                    <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(1)">
-                        <div class="flex items-center">
-                            <i class="fas fa-clipboard-list mr-1.5 text-sidebar-accent"></i> Services
-                        </div>
-                    </th>
-                    <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(2)">
-                        <div class="flex items-center">
-                            <i class="fas fa-dollar-sign mr-1.5 text-sidebar-accent"></i> Revenue
-                        </div>
-                    </th>
-                    <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(3)">
-                        <div class="flex items-center">
-                            <i class="fas fa-credit-card mr-1.5 text-sidebar-accent"></i> Expenses
-                        </div>
-                    </th>
-                    <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(4)">
-                        <div class="flex items-center">
-                            <i class="fas fa-chart-line mr-1.5 text-sidebar-accent"></i> Profit
-                        </div>
-                    </th>
-                    <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(5)">
-                        <div class="flex items-center">
-                            <i class="fas fa-percentage mr-1.5 text-sidebar-accent"></i> Growth
-                        </div>
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
-                    <td class="p-4 text-sm text-sidebar-text font-medium">Downtown Branch</td>
-                    <td class="p-4 text-sm text-sidebar-text">27</td>
-                    <td class="p-4 text-sm font-medium text-sidebar-text">$52,380</td>
-                    <td class="p-4 text-sm text-sidebar-text">$19,240</td>
-                    <td class="p-4 text-sm font-medium text-sidebar-text">$33,140</td>
-                    <td class="p-4 text-sm">
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-600 border border-green-200">
-                            <i class="fas fa-arrow-up mr-1"></i> 12%
-                        </span>
-                    </td>
-                </tr>
-                <tr class="hover:bg-sidebar-hover transition-colors">
-                    <td class="p-4 text-sm text-sidebar-text font-medium">Westside Branch</td>
-                    <td class="p-4 text-sm text-sidebar-text">15</td>
-                    <td class="p-4 text-sm font-medium text-sidebar-text">$34,940</td>
-                    <td class="p-4 text-sm text-sidebar-text">$15,280</td>
-                    <td class="p-4 text-sm font-medium text-sidebar-text">$19,660</td>
-                    <td class="p-4 text-sm">
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-600 border border-green-200">
-                            <i class="fas fa-arrow-up mr-1"></i> 8%
-                        </span>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+    <!-- Responsive Table Container with improved spacing -->
+    <div class="overflow-x-auto scrollbar-thin" id="branchTableContainer">
+        <div id="branchLoadingIndicator" class="hidden absolute inset-0 bg-white bg-opacity-50 flex items-center justify-center">
+            <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-sidebar-accent"></div>
+        </div>
+        
+        <!-- Responsive Table with improved spacing and horizontal scroll for small screens -->
+        <div class="min-w-full">
+            <table class="w-full">
+                <thead>
+                    <tr class="bg-gray-50 border-b border-sidebar-border">
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(0)">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fas fa-building text-sidebar-accent"></i> Branch
+                            </div>
+                        </th>
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(1)">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fas fa-clipboard-list text-sidebar-accent"></i> Services
+                            </div>
+                        </th>
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(2)">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fas fa-dollar-sign text-sidebar-accent"></i> Revenue
+                            </div>
+                        </th>
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(3)">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fas fa-credit-card text-sidebar-accent"></i> Expenses
+                            </div>
+                        </th>
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(4)">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fas fa-chart-line text-sidebar-accent"></i> Profit
+                            </div>
+                        </th>
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(5)">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fas fa-percentage text-sidebar-accent"></i> Growth
+                            </div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody id="branchTableBody">
+                    <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
+                        <td class="px-4 py-3.5 text-sm text-sidebar-text font-medium">Downtown Branch</td>
+                        <td class="px-4 py-3.5 text-sm text-sidebar-text">27</td>
+                        <td class="px-4 py-3.5 text-sm font-medium text-sidebar-text">$52,380</td>
+                        <td class="px-4 py-3.5 text-sm text-sidebar-text">$19,240</td>
+                        <td class="px-4 py-3.5 text-sm font-medium text-sidebar-text">$33,140</td>
+                        <td class="px-4 py-3.5 text-sm">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-600 border border-green-200">
+                                <i class="fas fa-arrow-up mr-1"></i> 12%
+                            </span>
+                        </td>
+                    </tr>
+                    <tr class="hover:bg-sidebar-hover transition-colors">
+                        <td class="px-4 py-3.5 text-sm text-sidebar-text font-medium">Westside Branch</td>
+                        <td class="px-4 py-3.5 text-sm text-sidebar-text">15</td>
+                        <td class="px-4 py-3.5 text-sm font-medium text-sidebar-text">$34,940</td>
+                        <td class="px-4 py-3.5 text-sm text-sidebar-text">$15,280</td>
+                        <td class="px-4 py-3.5 text-sm font-medium text-sidebar-text">$19,660</td>
+                        <td class="px-4 py-3.5 text-sm">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-600 border border-green-200">
+                                <i class="fas fa-arrow-up mr-1"></i> 8%
+                            </span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
     
-    <!-- Pagination (similar to first code) -->
-    <div class="p-4 border-t border-sidebar-border flex justify-between items-center">
-        <div class="text-sm text-gray-500">
+    <!-- Sticky Pagination Footer with improved spacing -->
+    <div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div id="paginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
             Showing 1 - 2 of 2 branches
         </div>
-        <div class="flex space-x-1">
-            <button class="px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover opacity-50 cursor-not-allowed" disabled>&laquo;</button>
-            <button class="px-3 py-1 border border-sidebar-border rounded text-sm bg-sidebar-accent text-white">1</button>
-            <button class="px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover opacity-50 cursor-not-allowed" disabled>&raquo;</button>
+        <div class="flex space-x-2">
+            <a href="<?php echo '?page=' . max(1, $page - 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover opacity-50 pointer-events-none">&laquo;</a>
+            
+            <a href="<?php echo '?page=1'; ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm bg-sidebar-accent text-white">
+                1
+            </a>
+            
+            <a href="<?php echo '?page=' . min($totalPages, $page + 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover opacity-50 pointer-events-none">&raquo;</a>
         </div>
     </div>
 </div>
