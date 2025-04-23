@@ -85,11 +85,6 @@ header("Pragma: no-cache");
     <div>
       <h1 class="text-2xl font-bold text-sidebar-text">Account Management</h1>
     </div>
-    <div class="flex space-x-3">
-      <button class="p-2 bg-white border border-sidebar-border rounded-lg shadow-input text-sidebar-text hover:bg-sidebar-hover transition-all duration-300">
-        <i class="fas fa-bell"></i>
-      </button>
-    </div>
   </div>
 
   <?php
@@ -218,7 +213,7 @@ $customersResult = mysqli_query($conn, $customersQuery);
         <!-- Add Customer Button -->
         <button class="px-4 py-2 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm whitespace-nowrap" 
                 onclick="openAddCustomerAccountModal()">
-          <i class="fas fa-plus-circle"></i> <span>Add Customer</span>
+                <span>Add Customer</span>
         </button>
       </div>
     </div>
@@ -298,7 +293,7 @@ $customersResult = mysqli_query($conn, $customersQuery);
       <div class="w-full">
         <button class="px-4 py-2.5 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm whitespace-nowrap w-full justify-center" 
                 onclick="openAddCustomerAccountModal()">
-          <i class="fas fa-plus-circle"></i> <span>Add Customer Account</span>
+                <span>Add Customer Account</span>
         </button>
       </div>
     </div>
@@ -552,7 +547,6 @@ document.addEventListener('DOMContentLoaded', function() {
     <!-- Modal Header -->
     <div class="px-4 sm:px-6 py-4 sm:py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
       <h3 class="text-lg sm:text-xl font-bold text-white flex items-center">
-        <i class="fas fa-user-plus mr-2"></i>
         Add Customer Account
       </h3>
     </div>
@@ -694,11 +688,9 @@ document.addEventListener('DOMContentLoaded', function() {
     <!-- Modal Footer -->
     <div class="px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row sm:justify-end gap-2 sm:gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
       <button class="w-full sm:w-auto px-4 sm:px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center" onclick="closeAddCustomerAccountModal()">
-        <i class="fas fa-times mr-2"></i>
         Cancel
       </button>
       <button class="w-full sm:w-auto px-5 sm:px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="submitCustomerForm()">
-        <i class="fas fa-user-plus mr-2"></i>
         Create Account
       </button>
     </div>
@@ -720,7 +712,6 @@ document.addEventListener('DOMContentLoaded', function() {
     <!-- Modal Header -->
     <div class="px-6 py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
       <h3 class="text-xl font-bold text-white flex items-center">
-        <i class="fas fa-shield-alt mr-2"></i>
         Email Verification
       </h3>
     </div>
@@ -743,11 +734,9 @@ document.addEventListener('DOMContentLoaded', function() {
     <!-- Modal Footer -->
     <div class="px-6 py-4 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
       <button class="px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center" onclick="closeOtpModal()">
-        <i class="fas fa-times mr-2"></i>
         Cancel
       </button>
       <button class="px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="verifyOTP()">
-        <i class="fas fa-check-circle mr-2"></i>
         Verify
       </button>
     </div>
@@ -1523,7 +1512,7 @@ if ($result->num_rows > 0) {
         <!-- Add Employee Button -->
         <button class="px-4 py-2 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm whitespace-nowrap" 
                 onclick="openAddEmployeeAccountModal()">
-          <i class="fas fa-plus-circle"></i> <span>Add Employee</span>
+                <span>Add Employee</span>
         </button>
       </div>
     </div>
@@ -1604,7 +1593,7 @@ if ($result->num_rows > 0) {
       <div class="w-full">
         <button class="px-4 py-2.5 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm whitespace-nowrap w-full justify-center" 
                 onclick="openAddEmployeeAccountModal()">
-          <i class="fas fa-plus-circle"></i> <span>Add Employee Account</span>
+                <span>Add Employee Account</span>
         </button>
       </div>
     </div>
@@ -1845,7 +1834,6 @@ function closeAddEmployeeAccountModal() {
     <!-- Modal Header -->
     <div class="px-4 md:px-6 py-4 md:py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
       <h3 class="text-lg md:text-xl font-bold text-white flex items-center">
-        <i class="fas fa-user-plus mr-2"></i>
         Add Employee Account
       </h3>
     </div>
@@ -1856,7 +1844,6 @@ function closeAddEmployeeAccountModal() {
         <!-- Personal Information -->
         <div>
           <label for="empFirstName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-user mr-2 text-sidebar-accent"></i>
             First Name <span class="text-red-500">*</span>
           </label>
           <div class="relative">
@@ -1867,7 +1854,6 @@ function closeAddEmployeeAccountModal() {
         
         <div>
           <label for="empLastName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-user mr-2 text-sidebar-accent"></i>
             Last Name <span class="text-red-500">*</span>
           </label>
           <div class="relative">
@@ -1879,7 +1865,6 @@ function closeAddEmployeeAccountModal() {
         <div class="flex flex-col sm:flex-row gap-2 sm:gap-4">
           <div class="flex-1">
             <label for="empMiddleName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-user mr-2 text-sidebar-accent"></i>
               Middle Name
             </label>
             <div class="relative">
@@ -1889,7 +1874,6 @@ function closeAddEmployeeAccountModal() {
           
           <div class="flex-1">
             <label for="suffix" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              <i class="fas fa-user-tag mr-2 text-sidebar-accent"></i>
               Suffix <span class="text-xs text-gray-500">(Optional)</span>
             </label>
             <div class="relative">
@@ -1909,7 +1893,6 @@ function closeAddEmployeeAccountModal() {
         
         <div>
           <label for="empBirthdate" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-calendar-alt mr-2 text-sidebar-accent"></i>
             Birthdate <span class="text-red-500">*</span>
           </label>
           <div class="relative">
@@ -1922,7 +1905,6 @@ function closeAddEmployeeAccountModal() {
         
         <div>
           <label for="empBranchLocation" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-map-marker-alt mr-2 text-sidebar-accent"></i>
             Branch Location <span class="text-red-500">*</span>
           </label>
           <div class="relative">
@@ -1937,7 +1919,6 @@ function closeAddEmployeeAccountModal() {
         <!-- Contact Information -->
         <div>
           <label for="employeeEmail" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-envelope mr-2 text-sidebar-accent"></i>
             Email Address <span class="text-red-500">*</span>
           </label>
           <div class="relative">
@@ -1947,7 +1928,6 @@ function closeAddEmployeeAccountModal() {
         
         <div>
           <label for="employeePhone" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            <i class="fas fa-phone mr-2 text-sidebar-accent"></i>
             Phone Number <span class="text-red-500">*</span>
           </label>
           <div class="relative">
@@ -1993,11 +1973,9 @@ function closeAddEmployeeAccountModal() {
     <!-- Modal Footer -->
     <div class="px-4 md:px-6 py-3 md:py-4 flex flex-col sm:flex-row sm:justify-end gap-2 sm:gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
       <button class="px-4 md:px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center sm:justify-start order-2 sm:order-1" onclick="closeAddEmployeeAccountModal()">
-        <i class="fas fa-times mr-2"></i>
         Cancel
       </button>
       <button class="px-4 md:px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center order-1 sm:order-2" onclick="submitEmployeeForm()">
-        <i class="fas fa-user-plus mr-2"></i>
         Create Account
       </button>
     </div>
@@ -2019,7 +1997,6 @@ function closeAddEmployeeAccountModal() {
     <!-- Modal Header -->
     <div class="px-6 py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
       <h3 class="text-xl font-bold text-white flex items-center">
-        <i class="fas fa-shield-alt mr-2"></i>
         Email Verification
       </h3>
     </div>
@@ -2042,11 +2019,9 @@ function closeAddEmployeeAccountModal() {
     <!-- Modal Footer -->
     <div class="px-6 py-4 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
       <button class="px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center" onclick="closeEmpOtpModal()">
-        <i class="fas fa-times mr-2"></i>
         Cancel
       </button>
       <button class="px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="verifyEmpOTP()">
-        <i class="fas fa-check-circle mr-2"></i>
         Verify
       </button>
     </div>
