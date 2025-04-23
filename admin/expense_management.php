@@ -862,64 +862,66 @@ $conn->close();
 
 
 <!-- Modal for Adding New Expense -->
-<div id="addExpenseModal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
+<div id="addExpenseModal" class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto">
   <!-- Modal Backdrop -->
   <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
   
   <!-- Modal Content -->
-  <div class="relative bg-white rounded-xl shadow-card w-full max-w-xl mx-4 z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
     <!-- Close Button -->
     <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeAddExpenseModal()">
       <i class="fas fa-times"></i>
     </button>
     
     <!-- Modal Header -->
-    <div class="px-6 py-4 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
-      <h3 class="text-xl font-bold text-white flex items-center">
+    <div class="px-4 sm:px-6 py-4 sm:py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
+      <h3 class="text-lg sm:text-xl font-bold text-white flex items-center">
         Add New Expense
       </h3>
     </div>
     
     <!-- Modal Body -->
-    <div class="px-6 py-4">
-      <form id="expenseForm" class="space-y-4">
+    <div class="px-4 sm:px-6 py-4 sm:py-5">
+      <form id="expenseForm" class="space-y-3 sm:space-y-4">
         <!-- Basic Information -->
         <div>
           <label for="expenseDescription" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            
             Expense Name
           </label>
-          <input type="text" id="expenseDescription" name="expenseDescription" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
+          <div class="relative">
+            <input type="text" id="expenseDescription" name="expenseDescription" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
+          </div>
         </div>
         
-        <div class="grid grid-cols-2 gap-3">
-          <div>
+        <div class="flex flex-col sm:flex-row gap-2 sm:gap-4">
+          <div class="w-full sm:flex-1">
             <label for="expenseCategory" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              
               Category
             </label>
-            <select id="expenseCategory" name="expenseCategory" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
-              <option value="" disabled selected>Select category</option>
-              <option value="Supplies">Supplies</option>
-              <option value="Utilities">Utilities</option>
-              <option value="Salaries">Salaries</option>
-              <option value="Maintenance">Maintenance</option>
-              <option value="Other">Other</option>
-            </select>
+            <div class="relative">
+              <select id="expenseCategory" name="expenseCategory" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
+                <option value="" disabled selected>Select category</option>
+                <option value="Supplies">Supplies</option>
+                <option value="Utilities">Utilities</option>
+                <option value="Salaries">Salaries</option>
+                <option value="Maintenance">Maintenance</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
           </div>
           
-          <div>
+          <div class="w-full sm:flex-1">
             <label for="expenseDate" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              
               Date
             </label>
-            <input type="date" id="expenseDate" name="expenseDate" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
+            <div class="relative">
+              <input type="date" id="expenseDate" name="expenseDate" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
+            </div>
           </div>
         </div>
         
         <div>
           <label for="expenseAmount" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            
             Amount
           </label>
           <div class="relative">
@@ -931,9 +933,8 @@ $conn->close();
         </div>
         
         <!-- Status -->
-        <div class="bg-gray-50 p-3 rounded-lg border border-gray-200">
+        <div class="bg-gray-50 p-3 sm:p-4 rounded-lg border border-gray-200">
           <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            
             Status
           </label>
           <div class="grid grid-cols-2 gap-2">
@@ -942,14 +943,14 @@ $conn->close();
               Paid
             </label>
             <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
-              <input type="radio" id="statusToBePaid" name="expenseStatus" value="to be paid" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">\
+              <input type="radio" id="statusToBePaid" name="expenseStatus" value="to be paid" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
               To Be Paid
             </label>
           </div>
         </div>
         
         <!-- Payment Method -->
-        <div class="bg-gray-50 p-3 rounded-lg border border-gray-200">
+        <div class="bg-gray-50 p-3 sm:p-4 rounded-lg border border-gray-200">
           <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
             Payment Method
           </label>
@@ -974,7 +975,7 @@ $conn->close();
         </div>
         
         <!-- Branch -->
-        <div class="bg-gray-50 p-3 rounded-lg border-l-4 border-gold">
+        <div class="bg-gray-50 p-3 sm:p-4 rounded-lg border-l-4 border-gold">
           <label class="block text-xs font-medium text-gray-700 mb-1">Branch</label>
           <div class="grid grid-cols-2 gap-2">
           <?php
@@ -1016,7 +1017,9 @@ $conn->close();
           <label for="expenseNote" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
             Note
           </label>
-          <textarea id="expenseNote" name="expenseNote" rows="3" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"></textarea>
+          <div class="relative">
+            <textarea id="expenseNote" name="expenseNote" rows="3" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"></textarea>
+          </div>
         </div>
         
         <!-- Receipt Upload -->
@@ -1024,7 +1027,7 @@ $conn->close();
           <label for="expenseReceipt" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
             Upload Receipt
           </label>
-          <div class="flex items-center border border-gray-300 rounded-lg px-3 py-2 focus-within:ring-1 focus-within:ring-sidebar-accent focus-within:border-sidebar-accent transition-all duration-200">
+          <div class="relative flex items-center border border-gray-300 rounded-lg px-3 py-2 focus-within:ring-1 focus-within:ring-sidebar-accent focus-within:border-sidebar-accent transition-all duration-200">
             <input type="file" id="expenseReceipt" name="expenseReceipt" class="w-full focus:outline-none">
           </div>
         </div>
@@ -1032,11 +1035,11 @@ $conn->close();
     </div>
     
     <!-- Modal Footer -->
-    <div class="px-6 py-3 flex justify-end gap-3 border-t border-gray-200 sticky bottom-0 bg-white">
-      <button class="px-4 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center" onclick="closeAddExpenseModal()">
+    <div class="px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row sm:justify-end gap-2 sm:gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
+      <button class="w-full sm:w-auto px-4 sm:px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center" onclick="closeAddExpenseModal()">
         Cancel
       </button>
-      <button class="px-5 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="addExpense()">
+      <button class="w-full sm:w-auto px-5 sm:px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="addExpense()">
         Add Expense
       </button>
     </div>
