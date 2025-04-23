@@ -1652,6 +1652,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Create hidden inputs for all required fields
                     const fields = [
                         { name: 'customerID', value: data.customerID || '' },
+                        { name: 'branch_id', value: data.branch_id || ''},
+                        { name: 'service_id', value: data.service_id || ''},
                         { name: 'fname', value: data.fname || '' },
                         { name: 'mname', value: data.mname || '' },
                         { name: 'lname', value: data.lname || '' },
