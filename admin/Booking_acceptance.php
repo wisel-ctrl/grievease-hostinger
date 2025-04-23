@@ -461,8 +461,8 @@ $offset = ($current_page - 1) * $bookings_per_page;
     
     <!-- Modal Body -->
     <div class="px-4 sm:px-6 py-4 sm:py-5">
-      <!-- Booking ID and Status Banner -->
-      <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 bg-gray-50 p-3 sm:p-4 rounded-lg gap-3 sm:gap-0">
+      <!-- Booking ID and Status Banner - Always in same row -->
+      <div class="flex justify-between items-center mb-6 bg-gray-50 p-3 sm:p-4 rounded-lg">
         <div class="flex items-center">
           <div class="bg-navy rounded-full p-2 mr-3">
             <i class="fas fa-hashtag text-sidebar-accent"></i>
