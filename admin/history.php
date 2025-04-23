@@ -1453,105 +1453,105 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
     </button>
     
     <!-- Modal Header -->
-    <div class="px-4 sm:px-6 py-4 sm:py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
+    <div class="px-5 sm:px-6 py-4 sm:py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
       <h3 class="text-lg sm:text-xl font-bold text-white flex items-center">
         Service Details
       </h3>
     </div>
     
     <!-- Modal Body -->
-    <div class="px-4 sm:px-6 py-4 sm:py-5">
-      <div class="bg-gray-50 p-3 sm:p-5 rounded-lg border border-gray-200">
-        <div class="space-y-3">
-          <p class="flex justify-between">
-            <span class="font-medium text-gray-700">ID:</span>
-            <span id="serviceId" class="text-gray-800"></span>
+    <div class="px-5 sm:px-6 py-4 sm:py-5">
+      <div class="bg-gray-50 p-4 sm:p-5 rounded-lg border border-gray-200">
+        <div class="space-y-3 sm:space-y-3">
+          <p class="flex flex-wrap justify-between gap-x-4">
+            <span class="font-medium text-gray-700 min-w-[120px]">ID:</span>
+            <span id="serviceId" class="text-gray-800 text-right ml-auto"></span>
           </p>
-          <p class="flex justify-between">
-            <span class="font-medium text-gray-700">Client Name:</span>
-            <span id="serviceClientName" class="text-gray-800"></span>
+          <p class="flex flex-wrap justify-between gap-x-4">
+            <span class="font-medium text-gray-700 min-w-[120px]">Client Name:</span>
+            <span id="serviceClientName" class="text-gray-800 text-right ml-auto"></span>
           </p>
-          <p class="flex justify-between">
-            <span class="font-medium text-gray-700">Service Type:</span>
-            <span id="serviceServiceType" class="text-gray-800"></span>
+          <p class="flex flex-wrap justify-between gap-x-4">
+            <span class="font-medium text-gray-700 min-w-[120px]">Service Type:</span>
+            <span id="serviceServiceType" class="text-gray-800 text-right ml-auto"></span>
           </p>
-          <p class="flex justify-between">
-            <span class="font-medium text-gray-700">Branch:</span>
-            <span id="branchName" class="text-gray-800"></span>
+          <p class="flex flex-wrap justify-between gap-x-4">
+            <span class="font-medium text-gray-700 min-w-[120px]">Branch:</span>
+            <span id="branchName" class="text-gray-800 text-right ml-auto"></span>
           </p>
-          <p class="flex justify-between">
-            <span class="font-medium text-gray-700">Date:</span>
-            <span id="serviceDate" class="text-gray-800"></span>
+          <p class="flex flex-wrap justify-between gap-x-4">
+            <span class="font-medium text-gray-700 min-w-[120px]">Date:</span>
+            <span id="serviceDate" class="text-gray-800 text-right ml-auto"></span>
           </p>
-          <p class="flex justify-between">
-            <span class="font-medium text-gray-700">Status:</span>
-            <span id="serviceStatus" class="text-gray-800"></span>
+          <p class="flex flex-wrap justify-between gap-x-4">
+            <span class="font-medium text-gray-700 min-w-[120px]">Status:</span>
+            <span id="serviceStatus" class="text-gray-800 text-right ml-auto"></span>
           </p>
-          <p class="flex justify-between">
-            <span class="font-medium text-gray-700">Outstanding Balance:</span>
-            <span id="serviceOutstandingBalance" class="text-gray-800 font-bold text-sidebar-accent"></span>
+          <p class="flex flex-wrap justify-between gap-x-4">
+            <span class="font-medium text-gray-700 min-w-[120px]">Outstanding Balance:</span>
+            <span id="serviceOutstandingBalance" class="text-gray-800 font-bold text-sidebar-accent text-right ml-auto"></span>
           </p>
         </div>
       </div>
       
       <!-- Initial Staff Section -->
-      <div class="bg-gray-50 p-3 sm:p-5 rounded-lg border border-gray-200 mt-3 sm:mt-4">
-        <h4 class="font-semibold text-gray-800 mb-2 sm:mb-3 flex items-center">
+      <div class="bg-gray-50 p-4 sm:p-5 rounded-lg border border-gray-200 mt-4 sm:mt-5">
+        <h4 class="font-semibold text-gray-800 mb-3 sm:mb-4 flex items-center">
           Initial Staff
         </h4>
-        <div class="space-y-3">
-          <p class="flex justify-between">
-            <span class="font-medium text-gray-700">Date:</span>
-            <span id="initialDate" class="text-gray-800"></span>
+        <div class="space-y-3 sm:space-y-3">
+          <p class="flex flex-wrap justify-between gap-x-4">
+            <span class="font-medium text-gray-700 min-w-[120px]">Date:</span>
+            <span id="initialDate" class="text-gray-800 text-right ml-auto"></span>
           </p>
-          <p class="flex justify-between">
-            <span class="font-medium text-gray-700">Embalmers:</span>
-            <span id="initialEmbalmers" class="text-gray-800"></span>
+          <p class="flex flex-wrap justify-between gap-x-4">
+            <span class="font-medium text-gray-700 min-w-[120px]">Embalmers:</span>
+            <span id="initialEmbalmers" class="text-gray-800 text-right ml-auto"></span>
           </p>
-          <p class="flex justify-between">
-            <span class="font-medium text-gray-700">Drivers:</span>
-            <span id="initialDrivers" class="text-gray-800"></span>
+          <p class="flex flex-wrap justify-between gap-x-4">
+            <span class="font-medium text-gray-700 min-w-[120px]">Drivers:</span>
+            <span id="initialDrivers" class="text-gray-800 text-right ml-auto"></span>
           </p>
-          <p class="flex justify-between">
-            <span class="font-medium text-gray-700">Personnel:</span>
-            <span id="initialPersonnel" class="text-gray-800"></span>
+          <p class="flex flex-wrap justify-between gap-x-4">
+            <span class="font-medium text-gray-700 min-w-[120px]">Personnel:</span>
+            <span id="initialPersonnel" class="text-gray-800 text-right ml-auto"></span>
           </p>
-          <p class="flex justify-between items-start">
-            <span class="font-medium text-gray-700">Notes:</span>
-            <span id="initialNotes" class="text-gray-800 text-right"></span>
+          <p class="flex flex-wrap justify-between gap-x-4">
+            <span class="font-medium text-gray-700 min-w-[120px] self-start mt-1">Notes:</span>
+            <span id="initialNotes" class="text-gray-800 text-right ml-auto"></span>
           </p>
         </div>
       </div>
       
       <!-- Burial Staff Section -->
-      <div class="bg-gray-50 p-3 sm:p-5 rounded-lg border border-gray-200 mt-3 sm:mt-4">
-        <h4 class="font-semibold text-gray-800 mb-2 sm:mb-3 flex items-center">
+      <div class="bg-gray-50 p-4 sm:p-5 rounded-lg border border-gray-200 mt-4 sm:mt-5">
+        <h4 class="font-semibold text-gray-800 mb-3 sm:mb-4 flex items-center">
           Burial Staff
         </h4>
-        <div class="space-y-3">
-          <p class="flex justify-between">
-            <span class="font-medium text-gray-700">Date:</span>
-            <span id="burialDate1" class="text-gray-800"></span>
+        <div class="space-y-3 sm:space-y-3">
+          <p class="flex flex-wrap justify-between gap-x-4">
+            <span class="font-medium text-gray-700 min-w-[120px]">Date:</span>
+            <span id="burialDate1" class="text-gray-800 text-right ml-auto"></span>
           </p>
-          <p class="flex justify-between">
-            <span class="font-medium text-gray-700">Drivers:</span>
-            <span id="burialDrivers" class="text-gray-800"></span>
+          <p class="flex flex-wrap justify-between gap-x-4">
+            <span class="font-medium text-gray-700 min-w-[120px]">Drivers:</span>
+            <span id="burialDrivers" class="text-gray-800 text-right ml-auto"></span>
           </p>
-          <p class="flex justify-between">
-            <span class="font-medium text-gray-700">Personnel:</span>
-            <span id="burialPersonnel" class="text-gray-800"></span>
+          <p class="flex flex-wrap justify-between gap-x-4">
+            <span class="font-medium text-gray-700 min-w-[120px]">Personnel:</span>
+            <span id="burialPersonnel" class="text-gray-800 text-right ml-auto"></span>
           </p>
-          <p class="flex justify-between items-start">
-            <span class="font-medium text-gray-700">Notes:</span>
-            <span id="burialNotes" class="text-gray-800 text-right"></span>
+          <p class="flex flex-wrap justify-between gap-x-4">
+            <span class="font-medium text-gray-700 min-w-[120px] self-start mt-1">Notes:</span>
+            <span id="burialNotes" class="text-gray-800 text-right ml-auto"></span>
           </p>
         </div>
       </div>
     </div>
     
     <!-- Modal Footer -->
-    <div class="px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row sm:justify-end gap-2 sm:gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
-      <button class="w-full sm:w-auto px-4 sm:px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center" onclick="closeViewServiceModal()">
+    <div class="px-5 sm:px-6 py-4 sm:py-5 flex flex-col sm:flex-row sm:justify-end gap-3 sm:gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
+      <button class="w-full sm:w-auto px-5 sm:px-6 py-2.5 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center" onclick="closeViewServiceModal()">
         Close
       </button>
     </div>
