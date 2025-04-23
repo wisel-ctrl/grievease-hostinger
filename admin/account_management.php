@@ -132,7 +132,7 @@ $customersResult = mysqli_query($conn, $customersQuery);
         
         <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
           <i class="fas fa-users"></i>
-          <?php echo $totalCustomers . " Customer" . ($totalCustomers != 1 ? "s" : ""); ?>
+          <?php echo $totalCustomers . ($totalCustomers != 1 ? "" : ""); ?>
         </span>
       </div>
       
