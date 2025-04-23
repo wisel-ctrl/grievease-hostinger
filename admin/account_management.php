@@ -132,7 +132,7 @@ $customersResult = mysqli_query($conn, $customersQuery);
         
         <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
           <i class="fas fa-users"></i>
-          <?php echo $totalCustomers . " Customer" . ($totalCustomers != 1 ? "s" : ""); ?>
+          <?php echo $totalCustomers . ($totalCustomers != 1 ? "" : ""); ?>
         </span>
       </div>
       
@@ -140,11 +140,10 @@ $customersResult = mysqli_query($conn, $customersQuery);
       <div class="hidden lg:flex items-center gap-3">
         <!-- Search Input -->
         <div class="relative">
-          <input type="text" id="customerSearchInput" 
-                placeholder="Search customers..." 
-                class="pl-8 pr-3 py-2 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
-        <i class="fas fa-search absolute left-2.5 top-3 text-gray-400"></i>
-      </div>
+          <input type="text" id="customerSearchInputLg" placeholder="Search customers..." 
+                  class="pl-8 pr-3 py-2 w-52 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
+          <i class="fas fa-search absolute left-2.5 top-2.5 text-gray-400"></i>
+        </div>
 
         <!-- Filter Dropdown -->
       <div class="relative filter-dropdown">
@@ -318,31 +317,31 @@ $customersResult = mysqli_query($conn, $customersQuery);
             <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(0)">
               <div class="flex items-center gap-1.5">
                 <i class="fas fa-hashtag text-sidebar-accent"></i> ID 
-                
+                <i class="fas fa-sort ml-1 text-gray-400"></i>
               </div>
             </th>
             <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(1)">
               <div class="flex items-center gap-1.5">
                 <i class="fas fa-user text-sidebar-accent"></i> Name 
-                
+                <i class="fas fa-sort ml-1 text-gray-400"></i>
               </div>
             </th>
             <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(2)">
               <div class="flex items-center gap-1.5">
                 <i class="fas fa-envelope text-sidebar-accent"></i> Email 
-                
+                <i class="fas fa-sort ml-1 text-gray-400"></i>
               </div>
             </th>
             <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(3)">
               <div class="flex items-center gap-1.5">
                 <i class="fas fa-user-tag text-sidebar-accent"></i> Role 
-                
+                <i class="fas fa-sort ml-1 text-gray-400"></i>
               </div>
             </th>
             <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(4)">
               <div class="flex items-center gap-1.5">
                 <i class="fas fa-toggle-on text-sidebar-accent"></i> Status 
-                
+                <i class="fas fa-sort ml-1 text-gray-400"></i>
               </div>
             </th>
             <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text whitespace-nowrap">
@@ -1446,7 +1445,7 @@ if ($result->num_rows > 0) {
         
         <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
           <i class="fas fa-user-tie"></i>
-          <?php echo $totalRows . " Employee" . ($totalRows != 1 ? "s" : ""); ?>
+          <?php echo $totalRows . ($totalRows != 1 ? "" : ""); ?>
         </span>
       </div>
       
@@ -1454,11 +1453,10 @@ if ($result->num_rows > 0) {
       <div class="hidden lg:flex items-center gap-3">
         <!-- Search Input -->
         <div class="relative">
-          <input type="text" id="employeeSearchInput" 
-                placeholder="Search employees..." 
-                value="<?php echo htmlspecialchars($search); ?>"
-                class="pl-8 pr-3 py-2 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
-          <i class="fas fa-search absolute left-2.5 top-3 text-gray-400"></i>
+          <input type="text" id="searchInputLg" placeholder="Search employees..." 
+                  value="<?php echo htmlspecialchars($search); ?>"
+                  class="pl-8 pr-3 py-2 w-52 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
+          <i class="fas fa-search absolute left-2.5 top-2.5 text-gray-400"></i>
         </div>
 
         <!-- Filter Dropdown -->
@@ -1544,7 +1542,7 @@ if ($result->num_rows > 0) {
       <div class="flex items-center w-full gap-3 mb-4">
         <!-- Search Input - Takes most of the space -->
         <div class="relative flex-grow">
-          <input type="text" id="employeeSearchInputMobile" 
+          <input type="text" id="searchInput" 
                   placeholder="Search employees..." 
                   value="<?php echo htmlspecialchars($search); ?>"
                   class="pl-8 pr-3 py-2.5 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
@@ -1634,31 +1632,31 @@ if ($result->num_rows > 0) {
             <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(0)">
               <div class="flex items-center gap-1.5">
                 <i class="fas fa-hashtag text-sidebar-accent"></i> ID 
-                
+                <i class="fas fa-sort ml-1 text-gray-400"></i>
               </div>
             </th>
             <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(1)">
               <div class="flex items-center gap-1.5">
                 <i class="fas fa-user text-sidebar-accent"></i> Name 
-                
+                <i class="fas fa-sort ml-1 text-gray-400"></i>
               </div>
             </th>
             <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(2)">
               <div class="flex items-center gap-1.5">
                 <i class="fas fa-envelope text-sidebar-accent"></i> Email 
-                
+                <i class="fas fa-sort ml-1 text-gray-400"></i>
               </div>
             </th>
             <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(3)">
               <div class="flex items-center gap-1.5">
                 <i class="fas fa-user-tag text-sidebar-accent"></i> Role 
-                
+                <i class="fas fa-sort ml-1 text-gray-400"></i>
               </div>
             </th>
             <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(4)">
               <div class="flex items-center gap-1.5">
                 <i class="fas fa-toggle-on text-sidebar-accent"></i> Status 
-                
+                <i class="fas fa-sort ml-1 text-gray-400"></i>
               </div>
             </th>
             <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text whitespace-nowrap">
@@ -1677,19 +1675,20 @@ if ($result->num_rows > 0) {
   
   <!-- Sticky Pagination Footer with improved spacing -->
   <div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
-    <div id="paginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
+    <div class="text-sm text-gray-500 text-center sm:text-left">
       <?php echo $paginationInfo; ?>
     </div>
     <div class="flex space-x-2">
-      <a href="<?php echo '?page=' . max(1, $page - 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo $page <= 1 ? 'opacity-50 pointer-events-none' : ''; ?>">&laquo;</a>
+      <button class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo $page <= 1 ? 'opacity-50 pointer-events-none' : ''; ?>"
+              onclick="changePage(<?php echo $page - 1; ?>)" <?php echo $page <= 1 ? 'disabled' : ''; ?>>&laquo;</button>
       
       <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-        <a href="<?php echo '?page=' . $i; ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm <?php echo $i == $page ? 'bg-sidebar-accent text-white' : 'hover:bg-sidebar-hover'; ?>">
-          <?php echo $i; ?>
-        </a>
+        <button class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm <?php echo $i == $page ? 'bg-sidebar-accent text-white' : 'hover:bg-sidebar-hover'; ?> pagination-button" 
+                onclick="changePage(<?php echo $i; ?>)"><?php echo $i; ?></button>
       <?php endfor; ?>
       
-      <a href="<?php echo '?page=' . min($totalPages, $page + 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo $page >= $totalPages ? 'opacity-50 pointer-events-none' : ''; ?>">&raquo;</a>
+      <button class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo $page >= $totalPages ? 'opacity-50 pointer-events-none' : ''; ?>"
+              onclick="changePage(<?php echo $page + 1; ?>)" <?php echo $page >= $totalPages ? 'disabled' : ''; ?>>&raquo;</button>
     </div>
   </div>
 </div>
