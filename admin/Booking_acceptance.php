@@ -470,11 +470,11 @@ $offset = ($current_page - 1) * $bookings_per_page;
       <div class="flex justify-between items-center mb-6 bg-gray-50 p-4 rounded-lg">
         <div class="flex items-center">
           <div class="bg-navy rounded-full p-2 mr-3">
+          <i class="fas fa-hashtag text-sidebar-accent"></i>
           </div>
           <div>
             <p class="text-sm text-gray-500">
-              
-            <i class="fas fa-hashtag text-sidebar-accent"></i>Booking ID</p>
+              Booking ID</p>
             <p class="font-semibold text-gray-800" id="bookingId">#BK-2025-001</p>
           </div>
         </div>
