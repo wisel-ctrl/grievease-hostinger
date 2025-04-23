@@ -123,7 +123,7 @@ $offset = ($current_page - 1) * $bookings_per_page;
           <i class="fas fa-list-ul"></i>
           <?php 
             if ($total_bookings > 0) {
-                echo $total_bookings . " booking" . ($total_bookings != 1 ? "s" : "");
+                echo $total_bookings . ($total_bookings != 1 ? "" : "");
             } else {
                 echo "No bookings";
             }
