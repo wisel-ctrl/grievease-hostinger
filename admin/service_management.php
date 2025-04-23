@@ -861,34 +861,42 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
               <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
                 <input type="checkbox" name="essentialServices" value="Transportation" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
+                <i class="fas fa-car mr-2 text-sidebar-accent"></i>
                 Transportation Service
               </label>
               <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
                 <input type="checkbox" name="essentialServices" value="Embalming" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
+                <i class="fas fa-procedures mr-2 text-sidebar-accent"></i>
                 Embalming and Preparation
               </label>
               <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
                 <input type="checkbox" name="essentialServices" value="MemorialPrograms" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
+                <i class="fas fa-book-open mr-2 text-sidebar-accent"></i>
                 Memorial Programs
               </label>
               <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
                 <input type="checkbox" name="essentialServices" value="Videography" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
+                <i class="fas fa-video mr-2 text-sidebar-accent"></i>
                 Videography & Photography
               </label>
               <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
                 <input type="checkbox" name="essentialServices" value="LiveStreaming" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
+                <i class="fas fa-broadcast-tower mr-2 text-sidebar-accent"></i>
                 Live Streaming Service
               </label>
               <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
                 <input type="checkbox" name="essentialServices" value="GriefCounseling" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
+                <i class="fas fa-hands-helping mr-2 text-sidebar-accent"></i>
                 Grief Counseling
               </label>
               <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
                 <input type="checkbox" name="essentialServices" value="Catering" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
+                <i class="fas fa-utensils mr-2 text-sidebar-accent"></i>
                 Catering Service
               </label>
               <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
                 <input type="checkbox" name="essentialServices" value="MusicService" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
+                <i class="fas fa-music mr-2 text-sidebar-accent"></i>
                 Music Service
               </label>
             </div>
@@ -902,9 +910,11 @@ document.addEventListener('DOMContentLoaded', () => {
     <!-- Modal Footer --> 
     <div class="px-6 py-4 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
       <button class="px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center" onclick="closeAddServiceModal()">
+        <i class="fas fa-times mr-2"></i>
         Cancel
       </button>
       <button class="px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="addService()">
+        <i class="fas fa-plus mr-2"></i>
         Add Service
       </button>
     </div>
@@ -927,6 +937,7 @@ document.addEventListener('DOMContentLoaded', () => {
     <!-- Modal Header -->
     <div class="px-6 py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
       <h3 class="text-xl font-bold text-white flex items-center">
+        <i class="fas fa-edit mr-2"></i>
         Edit Service
       </h3>
     </div>
