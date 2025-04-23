@@ -310,27 +310,28 @@ header("Pragma: no-cache");
           } else {
               // Prepare and execute the query using MySQLi
               $query = "SELECT 
-                            lp.lifeplan_id,
-                            lp.service_id,
-                            lp.customerID,
-                            lp.amount_paid,
-                            lp.balance,
-                            CONCAT_WS(' ',
-                                lp.benefeciary_fname,
-                                NULLIF(lp.benefeciary_mname, ''),
-                                lp.benefeciary_lname,
-                                NULLIF(lp.benefeciary_suffix, '')
-                            ) AS benefeciary_fullname,
-                            lp.payment_duration,
-                            lp.custom_price,
-                            lp.payment_status,
-                            s.service_name
-                        FROM 
-                            lifeplan_tb lp
-                        JOIN 
-                            services_tb s ON lp.service_id = s.service_id
-                        LIMIT 6
-                        "; // Limit to 6 records for pagination
+                        lp.lifeplan_id,
+                        lp.service_id,
+                        lp.customerID,
+                        lp.amount_paid,
+                        lp.balance,
+                        CONCAT_WS(' ',
+                            lp.benefeciary_fname,
+                            NULLIF(lp.benefeciary_mname, ''),
+                            lp.benefeciary_lname,
+                            NULLIF(lp.benefeciary_suffix, '')
+                        ) AS benefeciary_fullname,
+                        lp.payment_duration,
+                        lp.custom_price,
+                        lp.payment_status,
+                        s.service_name
+                    FROM 
+                        lifeplan_tb lp
+                    JOIN 
+                        services_tb s ON lp.service_id = s.service_id
+                    WHERE
+                        lp.archived = 'show'
+                    LIMIT 6"; // Limit to 6 records for pagination
               
               $result = $conn->query($query);
               
@@ -398,8 +399,10 @@ header("Pragma: no-cache");
                                   <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="Edit">
                                     <i class="fas fa-edit"></i>
                                   </button>
-                                  <button class="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-all tooltip" title="Delete">
-                                    <i class="fas fa-archive text-red"></i>
+                                  <button class="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-all tooltip delete-btn" 
+                                          title="Archive" 
+                                          data-id="' . $row['lifeplan_id'] .'">
+                                      <i class="fas fa-archive"></i>
                                   </button>
                                 </div>
                               </td>
@@ -1007,6 +1010,53 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Set default date to today (from existing code)
     document.getElementById('paymentDate').valueAsDate = new Date();
+});
+</script>
+<script>
+    // Add this to your existing JavaScript
+document.addEventListener('DOMContentLoaded', function() {
+    // Archive/Delete button functionality
+    document.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const lifeplanId = this.getAttribute('data-id');
+            const beneficiaryName = this.closest('tr').querySelector('td:first-child').textContent.trim();
+            
+            if (confirm(`Are you sure you want to archive the lifeplan for ${beneficiaryName}?`)) {
+                // Show loading indicator
+                this.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                
+                // Send request to archive the record
+                fetch('lifeplan_process/archive_lifeplan.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        lifeplan_id: lifeplanId
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Remove the row from the table
+                        this.closest('tr').remove();
+                        // Optionally show a success message
+                        alert('LifePlan archived successfully!');
+                    } else {
+                        alert('Error archiving LifePlan: ' + (data.message || 'Unknown error'));
+                        // Reset button icon
+                        this.innerHTML = '<i class="fas fa-archive"></i>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while archiving the LifePlan');
+                    // Reset button icon
+                    this.innerHTML = '<i class="fas fa-archive"></i>';
+                });
+            }
+        });
+    });
 });
 </script>
 <script>
