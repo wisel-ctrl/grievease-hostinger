@@ -39,7 +39,7 @@ if ($conn) {
     }
 
     // Total Revenue (sum of amount_paid)
-    $query = "SELECT SUM(amount_paid) as total FROM lifeplan_tb WHERE archived = 'show'";
+    $query = "SELECT SUM(custom_price) as total FROM lifeplan_tb WHERE archived = 'show'";
     $result = $conn->query($query);
     if ($result) {
         $row = $result->fetch_assoc();
