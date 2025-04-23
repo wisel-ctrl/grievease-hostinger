@@ -692,39 +692,39 @@ if ($branchResult->num_rows > 0) {
 
 
 </div>
-<!-- Add this modal HTML at the end of your file, before the closing PHP tag -->
-<div class="fixed inset-0 z-50 flex items-center justify-center hidden" id="viewItemModal">
+<!-- View Item Modal -->
+<div id="viewItemModal" class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto">
   <!-- Modal Backdrop -->
   <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
   
   <!-- Modal Content -->
-  <div class="relative bg-white rounded-xl shadow-card w-full max-w-xl mx-4 z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
     <!-- Close Button -->
     <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeViewItemModal()">
       <i class="fas fa-times"></i>
     </button>
     
     <!-- Modal Header -->
-    <div class="px-6 py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
-      <h3 class="text-xl font-bold text-white flex items-center">
+    <div class="px-4 sm:px-6 py-4 sm:py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
+      <h3 class="text-lg sm:text-xl font-bold text-white flex items-center">
         Inventory Item Details
       </h3>
     </div>
     
     <!-- Modal Body -->
-    <div class="px-6 py-5" id="itemDetailsContent">
+    <div class="px-4 sm:px-6 py-4 sm:py-5" id="itemDetailsContent">
       <!-- Item details will be loaded here via AJAX -->
       <div class="flex justify-center">
         <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-sidebar-accent"></div>
       </div>
     </div>
     
-    <!-- Modal Footer --> 
-    <div class="px-6 py-4 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
-      <button class="px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center" onclick="closeViewItemModal()">
+    <!-- Modal Footer -->
+    <div class="px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row sm:justify-end gap-2 sm:gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
+      <button class="w-full sm:w-auto px-4 sm:px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center" onclick="closeViewItemModal()">
         Cancel
       </button>
-      <button class="px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="saveItemChanges()">
+      <button class="w-full sm:w-auto px-5 sm:px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="saveItemChanges()">
         Save Changes
       </button>
     </div>
@@ -733,31 +733,31 @@ if ($branchResult->num_rows > 0) {
 
 
 <!-- Add Inventory Modal -->
-<div class="fixed inset-0 z-50 flex items-center justify-center hidden" id="addInventoryModal">
+<div id="addInventoryModal" class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto">
   <!-- Modal Backdrop -->
   <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
   
   <!-- Modal Content -->
-  <div class="relative bg-white rounded-xl shadow-card w-full max-w-xl mx-4 z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
     <!-- Close Button -->
     <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeAddInventoryModal()">
       <i class="fas fa-times"></i>
     </button>
     
     <!-- Modal Header -->
-    <div class="px-6 py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
-      <h3 class="text-xl font-bold text-white flex items-center">
+    <div class="px-4 sm:px-6 py-4 sm:py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
+      <h3 class="text-lg sm:text-xl font-bold text-white flex items-center">
         Add New Inventory Item
       </h3>
     </div>
     
     <!-- Modal Body -->
-    <div class="px-6 py-5">
-      <form id="addInventoryForm" class="grid grid-cols-1 gap-6">
+    <div class="px-4 sm:px-6 py-4 sm:py-5">
+      <form id="addInventoryForm" class="space-y-3 sm:space-y-4">
         <!-- Item Name -->
         <div>
           <label for="itemName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            Item Name
+            Item Name <span class="text-red-500">*</span>
           </label>
           <div class="relative">
             <input type="text" id="itemName" name="itemName" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="Item Name">
@@ -767,7 +767,7 @@ if ($branchResult->num_rows > 0) {
         <!-- Category -->
         <div>
           <label for="category" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            Category
+            Category <span class="text-red-500">*</span>
           </label>
           <div class="relative">
             <select id="category" name="category" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
@@ -793,9 +793,9 @@ if ($branchResult->num_rows > 0) {
         </div>
 
         <!-- Branch -->
-        <div class="bg-gray-50 p-4 rounded-lg border-l-4 border-gold">
-          <label class="block text-xs font-medium text-gray-700 mb-2">Branch</label>
-          <div class="flex flex-wrap gap-4">
+        <div class="bg-gray-50 p-3 sm:p-4 rounded-lg border-l-4 border-gold">
+          <label class="block text-xs font-medium text-gray-700 mb-2">Branch <span class="text-red-500">*</span></label>
+          <div class="flex flex-wrap gap-3 sm:gap-4">
             <?php
             // Include database connection
             include '../db_connect.php';
@@ -822,7 +822,7 @@ if ($branchResult->num_rows > 0) {
         <!-- Quantity -->
         <div>
           <label for="quantity" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            Quantity
+            Quantity <span class="text-red-500">*</span>
           </label>
           <div class="relative">
             <input type="number" id="quantity" name="quantity" min="1" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="Quantity">
@@ -832,7 +832,7 @@ if ($branchResult->num_rows > 0) {
         <!-- Unit Price -->
         <div>
           <label for="unitPrice" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            Unit Price
+            Unit Price <span class="text-red-500">*</span>
           </label>
           <div class="relative">
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -843,7 +843,7 @@ if ($branchResult->num_rows > 0) {
         </div>
         
         <!-- File Upload -->
-        <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+        <div class="bg-gray-50 p-3 sm:p-4 rounded-lg border border-gray-200">
           <label for="itemImage" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
             Upload Item Image
           </label>
@@ -857,11 +857,11 @@ if ($branchResult->num_rows > 0) {
     </div>
     
     <!-- Modal Footer --> 
-    <div class="px-6 py-4 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
-      <button class="px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center" onclick="closeAddInventoryModal()">
+    <div class="px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row sm:justify-end gap-2 sm:gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
+      <button class="w-full sm:w-auto px-4 sm:px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center" onclick="closeAddInventoryModal()">
         Cancel
       </button>
-      <button type="submit" form="addInventoryForm" class="px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center">
+      <button type="submit" form="addInventoryForm" class="w-full sm:w-auto px-5 sm:px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center">
         Add Item
       </button>
     </div>
