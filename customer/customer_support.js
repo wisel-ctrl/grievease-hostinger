@@ -294,77 +294,74 @@
     }
 
     // Initialize chat
-    async function initChat() {
-        // Get user ID from session
-        currentUser = document.getElementById('user-id').value || 'visitor_' + Math.random().toString(36).substr(2, 9);
-        
-        // Check if branch is already set in database
-        const userBranch = await getUserBranch();
-        
-        // Only show branch modal if branch is 'unknown'
-        if (userBranch === 'unknown') {
-            // If no branch is selected, show the branch selection modal
-            showBranchModal();
-            return; // Don't continue with chat initialization until branch is selected
-        } else {
-            // Use the branch from database
-            selectedBranch = userBranch;
-            localStorage.setItem('selectedBranch_' + currentUser, selectedBranch);
-        }
-        
-        // Try to load existing chat room ID from localStorage
-        const savedChatRoomId = localStorage.getItem('chatRoomId_' + currentUser);
-        
-        if (savedChatRoomId) {
-            currentChatRoomId = savedChatRoomId;
-            loadChatHistory(currentChatRoomId);
-        } else {
-            // Create new chat room ID if none exists
-            currentChatRoomId = 'room_' + currentUser + '_' + Math.random().toString(36).substr(2, 9);
-            localStorage.setItem('chatRoomId_' + currentUser, currentChatRoomId);
-            
-            // Get branch name for welcome message
-            let branchName = 'your selected branch';
-            try {
-                const response = await fetch(`customService/get_branch_name.php?branch_id=${selectedBranch}`);
-                const data = await response.json();
-                if (data.success) {
-                    branchName = data.branch_name;
-                }
-            } catch (error) {
-                console.error('Error fetching branch name:', error);
-            }
-            
-            // Only show chatbot type indicator in the initial welcome message
-            const welcomeMessage = `Hello, welcome to GrievEase ${branchName} customer support. How can I assist you today?`;
-            
-            // Add welcome message to UI with chatbot type indicator
-            const currentTime = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-            const welcomeHtml = `
-                <div class="flex items-start">
-                    <div class="bg-gray-200 rounded-lg p-2 max-w-[80%]">
-                        <p class="text-xs text-gray-500 mb-1">[Customer Support Bot]</p>
-                        <p class="text-sm">${welcomeMessage}</p>
-                        <span class="text-xs text-gray-500 mt-1">${currentTime}</span>
-                    </div>
-                </div>
-            `;
-            document.getElementById('chat-messages').innerHTML = welcomeHtml;
-            
-            // Use bot as sender for automated welcome message
-            const botSender = 'bot';
-            
-            // Save welcome message to database
-            saveMessage(
-                botSender,
-                welcomeMessage,
-                currentChatRoomId,
-                'text',  // messageType
-                null,    // attachmentUrl
-                true     // Mark as automated
-            );
-        }
+async function initChat() {
+    // Get user ID from session
+    currentUser = document.getElementById('user-id').value;
+    
+    if (!currentUser) {
+        console.error("No user ID found in session");
+        return;
     }
+
+    // Always use the same chat room ID based on user ID
+    currentChatRoomId = 'user_' + currentUser;
+    
+    // Check if branch is already set in database
+    const userBranch = await getUserBranch();
+    
+    // Show branch modal if needed
+    if (userBranch === 'unknown') {
+        showBranchModal();
+        return;
+    } else {
+        selectedBranch = userBranch;
+        localStorage.setItem('selectedBranch_' + currentUser, selectedBranch);
+    }
+    
+    // Load chat history for this chat room
+    await loadChatHistory(currentChatRoomId);
+    
+    // Check if this is a new chat (no messages yet)
+    const chatMessages = document.getElementById('chat-messages');
+    if (chatMessages.children.length === 0) {
+        // Get branch name for welcome message
+        let branchName = 'your selected branch';
+        try {
+            const response = await fetch(`customService/get_branch_name.php?branch_id=${selectedBranch}`);
+            const data = await response.json();
+            if (data.success) {
+                branchName = data.branch_name;
+            }
+        } catch (error) {
+            console.error('Error fetching branch name:', error);
+        }
+        
+        // Show welcome message
+        const welcomeMessage = `Hello, welcome to GrievEase ${branchName} customer support. How can I assist you today?`;
+        const currentTime = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        
+        const welcomeHtml = `
+            <div class="flex items-start">
+                <div class="bg-gray-200 rounded-lg p-2 max-w-[80%]">
+                    <p class="text-xs text-gray-500 mb-1">[Customer Support Bot]</p>
+                    <p class="text-sm">${welcomeMessage}</p>
+                    <span class="text-xs text-gray-500 mt-1">${currentTime}</span>
+                </div>
+            </div>
+        `;
+        chatMessages.innerHTML = welcomeHtml;
+        
+        // Save welcome message to database
+        await saveMessage(
+            'bot',
+            welcomeMessage,
+            currentChatRoomId,
+            'text',
+            null,
+            true
+        );
+    }
+}
 
     // Function to open chat
     function openChat() {
@@ -425,4 +422,5 @@
             }
         });
     });
+    
 })();
