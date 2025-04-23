@@ -1047,27 +1047,27 @@ $conn->close();
 </div>
 
 <!-- Modal for Editing Expense -->
-<div id="editExpenseModal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
+<div id="editExpenseModal" class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto">
   <!-- Modal Backdrop -->
   <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
   
   <!-- Modal Content -->
-  <div class="relative bg-white rounded-xl shadow-card w-full max-w-xl mx-4 z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
     <!-- Close Button -->
     <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeEditExpenseModal()">
       <i class="fas fa-times"></i>
     </button>
     
     <!-- Modal Header -->
-    <div class="px-6 py-4 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
-      <h3 class="text-xl font-bold text-white flex items-center">
+    <div class="px-4 sm:px-6 py-4 sm:py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
+      <h3 class="text-lg sm:text-xl font-bold text-white flex items-center">
         Edit Expense
       </h3>
     </div>
     
     <!-- Modal Body -->
-    <div class="px-6 py-4">
-      <form id="editExpenseForm" class="space-y-4">
+    <div class="px-4 sm:px-6 py-4 sm:py-5">
+      <form id="editExpenseForm" class="space-y-3 sm:space-y-4">
         <input type="hidden" id="editExpenseId" name="editExpenseId">
         
         <div>
@@ -1077,8 +1077,8 @@ $conn->close();
           <input type="text" id="editExpenseDescription" name="editExpenseDescription" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
         </div>
         
-        <div class="grid grid-cols-2 gap-3">
-          <div>
+        <div class="flex flex-col sm:flex-row gap-2 sm:gap-4">
+          <div class="w-full sm:flex-1">
             <label for="editExpenseCategory" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
               Category
             </label>
@@ -1092,9 +1092,8 @@ $conn->close();
             </select>
           </div>
           
-          <div>
+          <div class="w-full sm:flex-1">
             <label for="editExpenseDate" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              
               Date
             </label>
             <input type="date" id="editExpenseDate" name="editExpenseDate" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
@@ -1103,7 +1102,6 @@ $conn->close();
         
         <div>
           <label for="editExpenseAmount" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            
             Amount
           </label>
           <div class="relative">
@@ -1168,7 +1166,6 @@ $conn->close();
         
         <div>
           <label for="editExpenseNote" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            
             Note
           </label>
           <textarea id="editExpenseNote" name="editExpenseNote" rows="3" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"></textarea>
@@ -1177,12 +1174,11 @@ $conn->close();
     </div>
     
     <!-- Modal Footer -->
-    <div class="px-6 py-3 flex justify-end gap-3 border-t border-gray-200 sticky bottom-0 bg-white">
-      <button class="px-4 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center" onclick="closeEditExpenseModal()">
-        
+    <div class="px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row sm:justify-end gap-2 sm:gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
+      <button class="w-full sm:w-auto px-4 sm:px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center" onclick="closeEditExpenseModal()">
         Cancel
       </button>
-      <button class="px-5 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="saveExpenseChanges()">
+      <button class="w-full sm:w-auto px-5 sm:px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="saveExpenseChanges()">
         Save Changes
       </button>
     </div>
