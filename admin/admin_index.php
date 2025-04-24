@@ -176,136 +176,135 @@ $formattedRevenue = number_format($totalRevenue, 2);
 ?>
 <?php
 // Function to calculate branch metrics
+// Function to calculate branch metrics
 function getBranchMetrics($conn, $branchId) {
-    $metrics = [
-        'revenue' => 0,
-        'profit' => 0,
-        'margin' => 0,
-        'customers' => 0,
-        'revenue_change' => 0,
-        'profit_change' => 0,
-        'margin_change' => 0,
-        'customers_change' => 0
-    ];
+  $metrics = [
+      'revenue' => 0,
+      'profit' => 0,
+      'margin' => 0,
+      'customers' => 0,
+      'revenue_change' => 0,
+      'profit_change' => 0,
+      'margin_change' => 0,
+      'customers_change' => 0
+  ];
 
-    // Current month and year
-    $currentMonth = date('m');
-    $currentYear = date('Y');
-    
-    // Previous month and year (handling January case)
-    $prevMonth = $currentMonth == 1 ? 12 : $currentMonth - 1;
-    $prevYear = $currentMonth == 1 ? $currentYear - 1 : $currentYear;
+  // Current month and year
+  $currentMonth = date('m');
+  $currentYear = date('Y');
+  
+  // Previous month and year (handling January case)
+  $prevMonth = $currentMonth == 1 ? 12 : $currentMonth - 1;
+  $prevYear = $currentMonth == 1 ? $currentYear - 1 : $currentYear;
 
-    // Get current month revenue (sum of amount_paid)
-    $revenueQuery = "SELECT SUM(amount_paid) as total_revenue FROM sales_tb 
-                    WHERE branch_id = ? AND MONTH(get_timestamp) = ? AND YEAR(get_timestamp) = ?";
-    $stmt = $conn->prepare($revenueQuery);
-    $stmt->bind_param("iii", $branchId, $currentMonth, $currentYear);
-    $stmt->execute();
-    $revenueResult = $stmt->get_result();
-    $revenueData = $revenueResult->fetch_assoc();
-    $metrics['revenue'] = $revenueData['total_revenue'] ?? 0;
+  // Get current month revenue (sum of amount_paid)
+  $revenueQuery = "SELECT SUM(amount_paid) as total_revenue FROM sales_tb 
+                  WHERE branch_id = ? AND MONTH(get_timestamp) = ? AND YEAR(get_timestamp) = ?";
+  $stmt = $conn->prepare($revenueQuery);
+  $stmt->bind_param("iii", $branchId, $currentMonth, $currentYear);
+  $stmt->execute();
+  $revenueResult = $stmt->get_result();
+  $revenueData = $revenueResult->fetch_assoc();
+  $metrics['revenue'] = $revenueData['total_revenue'] ?? 0;
 
-    // Get previous month revenue for change calculation
-    $prevRevenueQuery = "SELECT SUM(amount_paid) as total_revenue FROM sales_tb 
-                        WHERE branch_id = ? AND MONTH(get_timestamp) = ? AND YEAR(get_timestamp) = ?";
-    $stmt = $conn->prepare($prevRevenueQuery);
-    $stmt->bind_param("iii", $branchId, $prevMonth, $prevYear);
-    $stmt->execute();
-    $prevRevenueResult = $stmt->get_result();
-    $prevRevenueData = $prevRevenueResult->fetch_assoc();
-    $prevRevenue = $prevRevenueData['total_revenue'] ?? 0;
+  // Get previous month revenue for change calculation
+  $prevRevenueQuery = "SELECT SUM(amount_paid) as total_revenue FROM sales_tb 
+                      WHERE branch_id = ? AND MONTH(get_timestamp) = ? AND YEAR(get_timestamp) = ?";
+  $stmt = $conn->prepare($prevRevenueQuery);
+  $stmt->bind_param("iii", $branchId, $prevMonth, $prevYear);
+  $stmt->execute();
+  $prevRevenueResult = $stmt->get_result();
+  $prevRevenueData = $prevRevenueResult->fetch_assoc();
+  $prevRevenue = $prevRevenueData['total_revenue'] ?? 0;
 
-    // Calculate revenue percentage change
-    if ($prevRevenue > 0) {
-        $metrics['revenue_change'] = (($metrics['revenue'] - $prevRevenue) / $prevRevenue) * 100;
-    }
+  // Calculate revenue percentage change
+  if ($prevRevenue > 0) {
+      $metrics['revenue_change'] = (($metrics['revenue'] - $prevRevenue) / $prevRevenue) * 100;
+  }
 
-    // Get current month profit (sum of amount_paid - (sum of capital_price + sum of expenses))
-    // First get sum of capital_price from services_tb for all sales this month
-    $capitalQuery = "SELECT SUM(s.capital_price) as total_capital 
-                    FROM services_tb s
-                    JOIN sales_tb sa ON s.service_id = sa.service_id
-                    WHERE sa.branch_id = ? AND MONTH(sa.get_timestamp) = ? AND YEAR(sa.get_timestamp) = ?";
-    $stmt = $conn->prepare($capitalQuery);
-    $stmt->bind_param("iii", $branchId, $currentMonth, $currentYear);
-    $stmt->execute();
-    $capitalResult = $stmt->get_result();
-    $capitalData = $capitalResult->fetch_assoc();
-    $totalCapital = $capitalData['total_capital'] ?? 0;
+  // Get current month capital price by joining sales_tb with services_tb
+  $capitalQuery = "SELECT SUM(s.capital_price) as total_capital 
+                  FROM sales_tb sa
+                  JOIN services_tb s ON sa.service_id = s.service_id
+                  WHERE sa.branch_id = ? AND MONTH(sa.get_timestamp) = ? AND YEAR(sa.get_timestamp) = ?";
+  $stmt = $conn->prepare($capitalQuery);
+  $stmt->bind_param("iii", $branchId, $currentMonth, $currentYear);
+  $stmt->execute();
+  $capitalResult = $stmt->get_result();
+  $capitalData = $capitalResult->fetch_assoc();
+  $totalCapital = $capitalData['total_capital'] ?? 0;
 
-    // Get sum of expenses for current month
-    $expensesQuery = "SELECT SUM(price) as total_expenses FROM expenses_tb 
-                     WHERE branch_id = ? AND MONTH(date) = ? AND YEAR(date) = ?";
-    $stmt = $conn->prepare($expensesQuery);
-    $stmt->bind_param("iii", $branchId, $currentMonth, $currentYear);
-    $stmt->execute();
-    $expensesResult = $stmt->get_result();
-    $expensesData = $expensesResult->fetch_assoc();
-    $totalExpenses = $expensesData['total_expenses'] ?? 0;
+  // Get sum of expenses for current month
+  $expensesQuery = "SELECT SUM(price) as total_expenses FROM expenses_tb 
+                   WHERE branch_id = ? AND MONTH(date) = ? AND YEAR(date) = ?";
+  $stmt = $conn->prepare($expensesQuery);
+  $stmt->bind_param("iii", $branchId, $currentMonth, $currentYear);
+  $stmt->execute();
+  $expensesResult = $stmt->get_result();
+  $expensesData = $expensesResult->fetch_assoc();
+  $totalExpenses = $expensesData['total_expenses'] ?? 0;
 
-    // Calculate current month profit
-    $metrics['profit'] = $metrics['revenue'] - ($totalCapital + $totalExpenses);
+  // Calculate current month profit
+  $metrics['profit'] = $metrics['revenue'] - ($totalCapital + $totalExpenses);
 
-    // Get previous month profit for change calculation
-    // Previous month capital
-    $prevCapitalQuery = "SELECT SUM(s.capital_price) as total_capital 
-                        FROM services_tb s
-                        JOIN sales_tb sa ON s.service_id = sa.service_id
-                        WHERE sa.branch_id = ? AND MONTH(sa.get_timestamp) = ? AND YEAR(sa.get_timestamp) = ?";
-    $stmt = $conn->prepare($prevCapitalQuery);
-    $stmt->bind_param("iii", $branchId, $prevMonth, $prevYear);
-    $stmt->execute();
-    $prevCapitalResult = $stmt->get_result();
-    $prevCapitalData = $prevCapitalResult->fetch_assoc();
-    $prevCapital = $prevCapitalData['total_capital'] ?? 0;
+  // Get previous month capital price
+  $prevCapitalQuery = "SELECT SUM(s.capital_price) as total_capital 
+                      FROM sales_tb sa
+                      JOIN services_tb s ON sa.service_id = s.service_id
+                      WHERE sa.branch_id = ? AND MONTH(sa.get_timestamp) = ? AND YEAR(sa.get_timestamp) = ?";
+  $stmt = $conn->prepare($prevCapitalQuery);
+  $stmt->bind_param("iii", $branchId, $prevMonth, $prevYear);
+  $stmt->execute();
+  $prevCapitalResult = $stmt->get_result();
+  $prevCapitalData = $prevCapitalResult->fetch_assoc();
+  $prevCapital = $prevCapitalData['total_capital'] ?? 0;
 
-    // Previous month expenses
-    $prevExpensesQuery = "SELECT SUM(price) as total_expenses FROM expenses_tb 
-                         WHERE branch_id = ? AND MONTH(date) = ? AND YEAR(date) = ?";
-    $stmt = $conn->prepare($prevExpensesQuery);
-    $stmt->bind_param("iii", $branchId, $prevMonth, $prevYear);
-    $stmt->execute();
-    $prevExpensesResult = $stmt->get_result();
-    $prevExpensesData = $prevExpensesResult->fetch_assoc();
-    $prevExpenses = $prevExpensesData['total_expenses'] ?? 0;
+  // Previous month expenses
+  $prevExpensesQuery = "SELECT SUM(price) as total_expenses FROM expenses_tb 
+                       WHERE branch_id = ? AND MONTH(date) = ? AND YEAR(date) = ?";
+  $stmt = $conn->prepare($prevExpensesQuery);
+  $stmt->bind_param("iii", $branchId, $prevMonth, $prevYear);
+  $stmt->execute();
+  $prevExpensesResult = $stmt->get_result();
+  $prevExpensesData = $prevExpensesResult->fetch_assoc();
+  $prevExpenses = $prevExpensesData['total_expenses'] ?? 0;
 
-    // Previous month revenue was already fetched earlier
-    $prevProfit = $prevRevenue - ($prevCapital + $prevExpenses);
+  // Previous month revenue was already fetched earlier
+  $prevProfit = $prevRevenue - ($prevCapital + $prevExpenses);
 
-    // Calculate profit percentage change
-    if ($prevProfit > 0) {
-        $metrics['profit_change'] = (($metrics['profit'] - $prevProfit) / $prevProfit) * 100;
-    }
+  // Calculate profit percentage change
+  if ($prevProfit > 0) {
+      $metrics['profit_change'] = (($metrics['profit'] - $prevProfit) / $prevProfit) * 100;
+  }
 
-    // Calculate margin (profit / revenue * 100)
-    if ($metrics['revenue'] > 0) {
-        $metrics['margin'] = ($metrics['profit'] / $metrics['revenue']) * 100;
-    }
+  // Calculate margin (profit / revenue * 100)
+  if ($metrics['revenue'] > 0) {
+      $metrics['margin'] = ($metrics['profit'] / $metrics['revenue']) * 100;
+  }
 
-    // Calculate previous month margin for change
-    if ($prevRevenue > 0) {
-        $prevMargin = ($prevProfit / $prevRevenue) * 100;
-        $metrics['margin_change'] = $metrics['margin'] - $prevMargin;
-    }
+  // Calculate previous month margin for change
+  if ($prevRevenue > 0) {
+      $prevMargin = ($prevProfit / $prevRevenue) * 100;
+      $metrics['margin_change'] = $metrics['margin'] - $prevMargin;
+  }
 
-    // Get current month customer count (users with user_type = 3 and branch_loc = branch_id)
-    $customersQuery = "SELECT COUNT(*) as customer_count FROM users 
-                      WHERE user_type = 3 AND branch_loc = ?";
-    $stmt = $conn->prepare($customersQuery);
-    $stmt->bind_param("i", $branchId);
-    $stmt->execute();
-    $customersResult = $stmt->get_result();
-    $customersData = $customersResult->fetch_assoc();
-    $metrics['customers'] = $customersData['customer_count'] ?? 0;
+  // Get current month customer count (users with user_type = 3 and branch_loc = branch_id)
+  $customersQuery = "SELECT COUNT(*) as customer_count FROM users 
+                    WHERE user_type = 3 AND branch_loc = ?";
+  $stmt = $conn->prepare($customersQuery);
+  $stmt->bind_param("i", $branchId);
+  $stmt->execute();
+  $customersResult = $stmt->get_result();
+  $customersData = $customersResult->fetch_assoc();
+  $metrics['customers'] = $customersData['customer_count'] ?? 0;
 
-    // Get previous month customer count for change calculation
-    // Note: This assumes customer count is for all time, not just the month
-    // If you want monthly customer counts, you'll need a timestamp column in users table
-    // For now, we'll just set change to 0 since we don't have historical data
-    $metrics['customers_change'] = 0;
+  // Get previous month customer count for change calculation
+  // Note: This assumes customer count is for all time, not just the month
+  // If you want monthly customer counts, you'll need a timestamp column in users table
+  // For now, we'll just set change to 0 since we don't have historical data
+  $metrics['customers_change'] = 0;
 
-    return $metrics;
+  return $metrics;
 }
 
 // Get metrics for both branches
