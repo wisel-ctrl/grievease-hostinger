@@ -401,29 +401,29 @@ echo "</tr>";
 </div>
 
 <!-- View Employee Salary Details Modal -->
-<div id="viewEmployeeModal" class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto">
+<div id="viewEmployeeModal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
   <!-- Modal Backdrop -->
   <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
   
   <!-- Modal Content -->
-  <div class="relative bg-white rounded-xl shadow-card w-full max-w-lg mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-lg mx-4 z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
     <!-- Close Button -->
     <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeViewEmployeeModal()">
       <i class="fas fa-times"></i>
     </button>
     
     <!-- Modal Header -->
-    <div class="px-4 sm:px-6 py-4 sm:py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
-      <h3 class="text-lg sm:text-xl font-bold text-white flex items-center">
+    <div class="px-6 py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
+      <h3 class="text-xl font-bold text-white flex items-center">
         Employee Salary Details
       </h3>
     </div>
     
     <!-- Modal Body -->
-    <div class="px-4 sm:px-6 py-4 sm:py-5">
+    <div class="px-6 py-5">
       <!-- Employee Information -->
       <div class="mb-6">
-        <div class="space-y-3 sm:space-y-4">
+        <div class="space-y-4">
           <div>
             <p class="text-xs font-medium text-gray-500">Employee ID</p>
             <p id="employeeId" class="text-sm font-medium text-gray-800">-</p>
@@ -439,9 +439,9 @@ echo "</tr>";
         </div>
         
         <!-- Date Range Picker -->
-        <div class="bg-gray-50 p-3 sm:p-4 rounded-lg border border-gray-200 mt-3 sm:mt-6">
-          <h4 class="text-xs sm:text-sm font-medium text-gray-700 mb-2 sm:mb-3">Select Date Range</h4>
-          <div class="space-y-3 sm:space-y-4">
+        <div class="bg-gray-50 p-4 rounded-lg border border-gray-200 mt-6">
+          <h4 class="text-sm font-medium text-gray-700 mb-3">Select Date Range</h4>
+          <div class="space-y-4">
             <div>
               <label for="startDate" class="block text-xs font-medium text-gray-700 mb-1">From Date</label>
               <input type="date" id="startDate" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
@@ -460,10 +460,10 @@ echo "</tr>";
       </div>
       
       <!-- Salary Summary -->
-      <div class="mb-3 sm:mb-6">
-        <h4 class="text-xs sm:text-sm font-medium text-gray-700 mb-2">Salary Summary</h4>
-        <div class="bg-gray-50 p-3 sm:p-4 rounded-lg border border-gray-200">
-          <div class="space-y-3 sm:space-y-4">
+      <div class="mb-6">
+        <h4 class="text-sm font-medium text-gray-700 mb-2">Salary Summary</h4>
+        <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+          <div class="space-y-4">
             <div>
               <p class="text-xs font-medium text-gray-500">Total Services</p>
               <p id="totalServices" class="text-lg font-bold text-gray-800">0</p>
@@ -482,20 +482,20 @@ echo "</tr>";
       
       <!-- Service Details Table -->
       <div>
-        <h4 class="text-xs sm:text-sm font-medium text-gray-700 mb-2">Service Details</h4>
+        <h4 class="text-sm font-medium text-gray-700 mb-2">Service Details</h4>
         <div class="overflow-x-auto">
           <table class="w-full border-collapse">
             <thead>
               <tr class="bg-gray-100">
-                <th class="p-2 sm:p-3 text-left text-xs font-medium text-gray-700">Date</th>
-                <th class="p-2 sm:p-3 text-left text-xs font-medium text-gray-700">Service</th>
-                <th class="p-2 sm:p-3 text-left text-xs font-medium text-gray-700">Income</th>
+                <th class="p-3 text-left text-xs font-medium text-gray-700">Date</th>
+                <th class="p-3 text-left text-xs font-medium text-gray-700">Service</th>
+                <th class="p-3 text-left text-xs font-medium text-gray-700">Income</th>
               </tr>
             </thead>
             <tbody id="serviceDetailsBody">
               <!-- Service details will be populated here -->
               <tr>
-                <td colspan="3" class="text-center p-3 sm:p-4 text-gray-500">Select a date range to view service details</td>
+                <td colspan="3" class="text-center p-4 text-gray-500">Select a date range to view service details</td>
               </tr>
             </tbody>
           </table>
@@ -504,8 +504,8 @@ echo "</tr>";
     </div>
     
     <!-- Modal Footer -->
-    <div class="px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row sm:justify-end gap-2 sm:gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
-      <button type="button" onclick="closeViewEmployeeModal()" class="w-full sm:w-auto px-5 sm:px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center">
+    <div class="px-6 py-4 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
+      <button type="button" onclick="closeViewEmployeeModal()" class="px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center">
         Close
       </button>
     </div>
