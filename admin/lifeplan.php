@@ -276,14 +276,13 @@ if ($conn) {
                 <option value="overdue">Overdue</option>
               </select>
               
-            </div>
-            <!-- Archive Icon Button -->
-            <button class="w-10 h-10 flex items-center justify-center text-sidebar-accent">
-                        <i class="fas fa-archive text-xl"></i>
-                    </button>
-            
+            </div>      
           </div>
         </div>
+        <!-- Archive Icon Button -->
+        <button class="w-10 h-10 flex items-center justify-center text-sidebar-accent">
+                        <i class="fas fa-archive text-xl"></i>
+                    </button>
       </div>
     </div>
   </div>
