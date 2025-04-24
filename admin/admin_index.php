@@ -58,6 +58,120 @@ require_once '../db_connect.php'; // Database connection
                 $last_name = $row['last_name'];
                 $email = $row['email'];
                 
+// Get current month and year
+$currentMonth = date('m');
+$currentYear = date('Y');
+
+// Calculate previous month and year (handling January case)
+$prevMonth = $currentMonth == 1 ? 12 : $currentMonth - 1;
+$prevYear = $currentMonth == 1 ? $currentYear - 1 : $currentYear;
+
+// Get services this month count
+$servicesQuery = "SELECT COUNT(*) as services_count FROM sales_tb 
+                 WHERE MONTH(get_timestamp) = ? AND YEAR(get_timestamp) = ?";
+$stmt = $conn->prepare($servicesQuery);
+$stmt->bind_param("ii", $currentMonth, $currentYear);
+$stmt->execute();
+$servicesResult = $stmt->get_result();
+$servicesData = $servicesResult->fetch_assoc();
+$servicesCount = $servicesData['services_count'] ?? 0;
+
+// Get services last month count
+$prevServicesQuery = "SELECT COUNT(*) as services_count FROM sales_tb 
+                     WHERE MONTH(get_timestamp) = ? AND YEAR(get_timestamp) = ?";
+$stmt = $conn->prepare($prevServicesQuery);
+$stmt->bind_param("ii", $prevMonth, $prevYear);
+$stmt->execute();
+$prevServicesResult = $stmt->get_result();
+$prevServicesData = $prevServicesResult->fetch_assoc();
+$prevServicesCount = $prevServicesData['services_count'] ?? 0;
+
+// Calculate services percentage change
+$servicesChange = 0;
+if ($prevServicesCount > 0) {
+    $servicesChange = (($servicesCount - $prevServicesCount) / $prevServicesCount) * 100;
+}
+
+// Get revenue this month
+$revenueQuery = "SELECT SUM(amount_paid) as total_revenue FROM sales_tb 
+                WHERE MONTH(get_timestamp) = ? AND YEAR(get_timestamp) = ?";
+$stmt = $conn->prepare($revenueQuery);
+$stmt->bind_param("ii", $currentMonth, $currentYear);
+$stmt->execute();
+$revenueResult = $stmt->get_result();
+$revenueData = $revenueResult->fetch_assoc();
+$totalRevenue = $revenueData['total_revenue'] ?? 0;
+
+// Get revenue last month
+$prevRevenueQuery = "SELECT SUM(amount_paid) as total_revenue FROM sales_tb 
+                    WHERE MONTH(get_timestamp) = ? AND YEAR(get_timestamp) = ?";
+$stmt = $conn->prepare($prevRevenueQuery);
+$stmt->bind_param("ii", $prevMonth, $prevYear);
+$stmt->execute();
+$prevRevenueResult = $stmt->get_result();
+$prevRevenueData = $prevRevenueResult->fetch_assoc();
+$prevTotalRevenue = $prevRevenueData['total_revenue'] ?? 0;
+
+// Calculate revenue percentage change
+$revenueChange = 0;
+if ($prevTotalRevenue > 0) {
+    $revenueChange = (($totalRevenue - $prevTotalRevenue) / $prevTotalRevenue) * 100;
+}
+
+// Get pending services count this month
+$pendingQuery = "SELECT COUNT(*) as pending_count FROM sales_tb 
+                WHERE status = 'Pending' AND MONTH(get_timestamp) = ? AND YEAR(get_timestamp) = ?";
+$stmt = $conn->prepare($pendingQuery);
+$stmt->bind_param("ii", $currentMonth, $currentYear);
+$stmt->execute();
+$pendingResult = $stmt->get_result();
+$pendingData = $pendingResult->fetch_assoc();
+$pendingCount = $pendingData['pending_count'] ?? 0;
+
+// Get pending services count last month
+$prevPendingQuery = "SELECT COUNT(*) as pending_count FROM sales_tb 
+                    WHERE status = 'Pending' AND MONTH(get_timestamp) = ? AND YEAR(get_timestamp) = ?";
+$stmt = $conn->prepare($prevPendingQuery);
+$stmt->bind_param("ii", $prevMonth, $prevYear);
+$stmt->execute();
+$prevPendingResult = $stmt->get_result();
+$prevPendingData = $prevPendingResult->fetch_assoc();
+$prevPendingCount = $prevPendingData['pending_count'] ?? 0;
+
+// Calculate pending percentage change
+$pendingChange = 0;
+if ($prevPendingCount > 0) {
+    $pendingChange = (($pendingCount - $prevPendingCount) / $prevPendingCount) * 100;
+}
+
+// Get completed services count this month
+$completedQuery = "SELECT COUNT(*) as completed_count FROM sales_tb 
+                  WHERE status = 'Completed' AND MONTH(get_timestamp) = ? AND YEAR(get_timestamp) = ?";
+$stmt = $conn->prepare($completedQuery);
+$stmt->bind_param("ii", $currentMonth, $currentYear);
+$stmt->execute();
+$completedResult = $stmt->get_result();
+$completedData = $completedResult->fetch_assoc();
+$completedCount = $completedData['completed_count'] ?? 0;
+
+// Get completed services count last month
+$prevCompletedQuery = "SELECT COUNT(*) as completed_count FROM sales_tb 
+                      WHERE status = 'Completed' AND MONTH(get_timestamp) = ? AND YEAR(get_timestamp) = ?";
+$stmt = $conn->prepare($prevCompletedQuery);
+$stmt->bind_param("ii", $prevMonth, $prevYear);
+$stmt->execute();
+$prevCompletedResult = $stmt->get_result();
+$prevCompletedData = $prevCompletedResult->fetch_assoc();
+$prevCompletedCount = $prevCompletedData['completed_count'] ?? 0;
+
+// Calculate completed percentage change
+$completedChange = 0;
+if ($prevCompletedCount > 0) {
+    $completedChange = (($completedCount - $prevCompletedCount) / $prevCompletedCount) * 100;
+}
+
+// Format the revenue with PHP's number_format
+$formattedRevenue = number_format($totalRevenue, 2);
 
 ?>
 
@@ -110,7 +224,7 @@ require_once '../db_connect.php'; // Database connection
         </div>
       </div>
       <div class="flex items-end">
-        <span class="text-2xl md:text-3xl font-bold text-gray-800">42</span>
+       <span class="text-2xl md:text-3xl font-bold text-gray-800"><?php echo $servicesCount; ?></span>
       </div>
     </div>
     
@@ -135,7 +249,7 @@ require_once '../db_connect.php'; // Database connection
         </div>
       </div>
       <div class="flex items-end">
-        <span class="text-2xl md:text-3xl font-bold text-gray-800">$87,320</span>
+      <span class="text-2xl md:text-3xl font-bold text-gray-800">₱<?php echo $formattedRevenue; ?></span>
       </div>
     </div>
     
@@ -160,7 +274,7 @@ require_once '../db_connect.php'; // Database connection
         </div>
       </div>
       <div class="flex items-end">
-        <span class="text-2xl md:text-3xl font-bold text-gray-800">14</span>
+        <span class="text-2xl md:text-3xl font-bold text-gray-800"><?php echo $pendingCount; ?></span>
       </div>
     </div>
     
@@ -185,7 +299,7 @@ require_once '../db_connect.php'; // Database connection
         </div>
       </div>
       <div class="flex items-end">
-        <span class="text-2xl md:text-3xl font-bold text-gray-800">28</span>
+        <span class="text-2xl md:text-3xl font-bold text-gray-800"><?php echo $completedCount; ?></span>
       </div>
     </div>
     
@@ -1177,6 +1291,7 @@ require_once '../db_connect.php'; // Database connection
       <button class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">&raquo;</button>
     </div>
   </div>
+
 </div>
             
               <!-- Footer -->
@@ -1185,22 +1300,7 @@ require_once '../db_connect.php'; // Database connection
               </footer>
             </div>
             
-            <!-- JavaScript for modal -->
-            <script>
-              function openModal() {
-                document.getElementById('serviceModal').classList.remove('hidden');
-              }
-              
-              function closeModal() {
-                document.getElementById('serviceModal').classList.add('hidden');
-              }
-              
-              function sortTable(columnIndex) {
-                // Implement sorting functionality here
-                console.log('Sorting by column', columnIndex);
-              }
-            </script>
             <script src="tailwind.js"></script>
             <script src="script.js"></script>
-            </body>
-            </html>
+  </body>
+</html>
