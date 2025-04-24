@@ -85,6 +85,7 @@ header("Pragma: no-cache");
     <div>
       <h1 class="text-2xl font-bold text-sidebar-text">Account Management</h1>
     </div>
+
   </div>
 
   <?php
@@ -326,62 +327,75 @@ $customersResult = mysqli_query($conn, $customersQuery);
     </div>
     
     <!-- Sticky Pagination Footer with improved spacing -->
-<div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
-    <div id="paginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
-        Showing <?php echo ($offset + 1) . ' - ' . min($offset + $recordsPerPage, $totalCustomers); ?> 
-        of <?php echo $totalCustomers; ?> customers
-    </div>
-    <div class="flex space-x-1">
-        <button class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo $page <= 1 ? 'opacity-50 cursor-not-allowed' : ''; ?>" 
-                onclick="changePage(<?php echo $page - 1; ?>)" <?php echo $page <= 1 ? 'disabled' : ''; ?>>&laquo;</button>
-        
-        <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-            <button class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm <?php echo $i == $page ? 'bg-sidebar-accent text-white' : 'hover:bg-sidebar-hover'; ?>" 
-                    onclick="changePage(<?php echo $i; ?>)"><?php echo $i; ?></button>
-        <?php endfor; ?>
-        
-        <button class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo $page >= $totalPages ? 'opacity-50 cursor-not-allowed' : ''; ?>" 
-                onclick="changePage(<?php echo $page + 1; ?>)" <?php echo $page >= $totalPages ? 'disabled' : ''; ?>>&raquo;</button>
+    <div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div id="paginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
+            Showing <span id="showingFrom">0</span> - <span id="showingTo">0</span> 
+            of <span id="totalCount">0</span> customers
+        </div>
+        <div id="paginationContainer" class="flex space-x-1">
+            <!-- Pagination buttons will be inserted here by JavaScript -->
+        </div>
     </div>
 </div>
-        </div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Elements for both desktop and mobile
     const searchInput = document.getElementById('customerSearchInput');
+    const searchInputMobile = document.getElementById('customerSearchInputMobile');
     const filterToggle = document.getElementById('customerFilterToggle');
+    const filterToggleMobile = document.getElementById('customerFilterToggleMobile');
     const filterDropdown = document.getElementById('customerFilterDropdown');
+    const filterDropdownMobile = document.getElementById('customerFilterDropdownMobile');
     const filterOptions = document.querySelectorAll('#customerFilterDropdown .filter-option');
+    const filterOptionsMobile = document.querySelectorAll('#customerFilterDropdownMobile .filter-option-mobile');
+    const filterIndicator = document.getElementById('filterIndicator');
+    const filterIndicatorMobile = document.getElementById('filterIndicatorMobile');
+    
     const customerTableBody = document.getElementById('customerTableBody');
     const paginationInfoElement = document.getElementById('paginationInfo');
-    const paginationContainer = document.querySelector('#customer-account-management .flex.space-x-1');
+    const paginationContainer = document.getElementById('paginationContainer');
+    const showingFrom = document.getElementById('showingFrom');
+    const showingTo = document.getElementById('showingTo');
+    const totalCount = document.getElementById('totalCount');
+    
+    let currentSearch = '';
+    let currentSort = 'id_asc';
+    let currentPage = 1;
+    let totalPages = 1;
 
     // Function to create pagination buttons
-    function createPaginationButtons(currentPage, totalPages, search, sort) {
+    function createPaginationButtons() {
         paginationContainer.innerHTML = ''; // Clear existing buttons
+        
         // Previous button
         const prevButton = document.createElement('button');
         prevButton.innerHTML = '&laquo;';
-        prevButton.className = 'px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover' + 
+        prevButton.className = 'px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover' + 
             (currentPage === 1 ? ' opacity-50 cursor-not-allowed' : '');
         prevButton.disabled = currentPage === 1;
         prevButton.addEventListener('click', () => {
             if (currentPage > 1) {
-                fetchCustomerAccounts(search, sort, currentPage - 1);
+                currentPage--;
+                fetchCustomerAccounts();
             }
         });
         paginationContainer.appendChild(prevButton);
         
-        // Page number buttons
-        for (let i = 1; i <= totalPages; i++) {
+        // Page number buttons - show up to 5 pages around current page
+        const startPage = Math.max(1, currentPage - 2);
+        const endPage = Math.min(totalPages, currentPage + 2);
+        
+        for (let i = startPage; i <= endPage; i++) {
             const pageButton = document.createElement('button');
             pageButton.textContent = i;
-            pageButton.className = 'px-3 py-1 ' + 
+            pageButton.className = 'px-3.5 py-1.5 border border-sidebar-border rounded text-sm ' + 
                 (i === currentPage 
-                    ? 'bg-sidebar-accent text-white rounded text-sm' 
-                    : 'border border-sidebar-border rounded text-sm hover:bg-sidebar-hover');
+                    ? 'bg-sidebar-accent text-white' 
+                    : 'hover:bg-sidebar-hover');
             pageButton.addEventListener('click', () => {
-                fetchCustomerAccounts(search, sort, i);
+                currentPage = i;
+                fetchCustomerAccounts();
             });
             paginationContainer.appendChild(pageButton);
         }
@@ -389,18 +403,20 @@ document.addEventListener('DOMContentLoaded', function() {
         // Next button
         const nextButton = document.createElement('button');
         nextButton.innerHTML = '&raquo;';
-        nextButton.className = 'px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover' + 
+        nextButton.className = 'px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover' + 
             (currentPage === totalPages ? ' opacity-50 cursor-not-allowed' : '');
         nextButton.disabled = currentPage === totalPages;
         nextButton.addEventListener('click', () => {
             if (currentPage < totalPages) {
-                fetchCustomerAccounts(search, sort, currentPage + 1);
+                currentPage++;
+                fetchCustomerAccounts();
             }
         });
         paginationContainer.appendChild(nextButton);
     }
+
     // Function to fetch customer accounts via AJAX
-    function fetchCustomerAccounts(search = '', sort = 'id_asc', page = 1) {
+    function fetchCustomerAccounts() {
         // Show loading state
         customerTableBody.innerHTML = `
             <tr>
@@ -415,23 +431,55 @@ document.addEventListener('DOMContentLoaded', function() {
         const xhr = new XMLHttpRequest();
         
         // Prepare the URL with search, sort, and page parameters
-        const url = `addCustomer/fetch_customer_accounts.php?search=${encodeURIComponent(search)}&sort=${encodeURIComponent(sort)}&page=${page}`;
+        const url = `addCustomer/fetch_customer_accounts.php?search=${encodeURIComponent(currentSearch)}&sort=${encodeURIComponent(currentSort)}&page=${currentPage}`;
         
         xhr.open('GET', url, true);
         
         xhr.onload = function() {
             if (xhr.status === 200) {
-                // Parse the JSON response
-                const response = JSON.parse(xhr.responseText);
-                
-                // Update table body
-                customerTableBody.innerHTML = response.tableContent;
-                
-                // Update pagination info
-                paginationInfoElement.textContent = response.paginationInfo;
-                
-                // Create pagination buttons
-                createPaginationButtons(response.currentPage, response.totalPages, search, sort);
+                try {
+                    // Parse the JSON response
+                    const response = JSON.parse(xhr.responseText);
+                    
+                    // Update table body
+                    customerTableBody.innerHTML = response.tableContent || `
+                        <tr>
+                            <td colspan="6" class="text-center p-4 text-gray-500">
+                                No customer accounts found.
+                            </td>
+                        </tr>
+                    `;
+                    
+                    // Update pagination info
+                    showingFrom.textContent = response.showingFrom || '0';
+                    showingTo.textContent = response.showingTo || '0';
+                    totalCount.textContent = response.totalCount || '0';
+                    
+                    // Update total pages and current page
+                    totalPages = response.totalPages || 1;
+                    currentPage = response.currentPage || 1;
+                    
+                    // Create pagination buttons
+                    createPaginationButtons();
+                    
+                    // Update filter indicators if a sort is applied
+                    if (currentSort !== 'id_asc') {
+                        filterIndicator.classList.remove('hidden');
+                        filterIndicatorMobile.classList.remove('hidden');
+                    } else {
+                        filterIndicator.classList.add('hidden');
+                        filterIndicatorMobile.classList.add('hidden');
+                    }
+                } catch (e) {
+                    console.error('Error parsing response:', e);
+                    customerTableBody.innerHTML = `
+                        <tr>
+                            <td colspan="6" class="text-center p-4 text-red-500">
+                                Error loading data. Please try again.
+                            </td>
+                        </tr>
+                    `;
+                }
             } else {
                 console.error('Error fetching customer accounts:', xhr.statusText);
                 customerTableBody.innerHTML = `
@@ -461,45 +509,74 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initial load of customer accounts
     fetchCustomerAccounts();
 
-    // Filter dropdown toggle
-    filterToggle.addEventListener('click', function() {
+    // Filter dropdown toggle for desktop
+    filterToggle.addEventListener('click', function(e) {
+        e.stopPropagation();
         filterDropdown.classList.toggle('hidden');
+        filterDropdownMobile.classList.add('hidden');
     });
 
-    // Close dropdown when clicking outside
-    document.addEventListener('click', function(event) {
-        if (!filterToggle.contains(event.target) && !filterDropdown.contains(event.target)) {
-            filterDropdown.classList.add('hidden');
-        }
+    // Filter dropdown toggle for mobile
+    filterToggleMobile.addEventListener('click', function(e) {
+        e.stopPropagation();
+        filterDropdownMobile.classList.toggle('hidden');
+        filterDropdown.classList.add('hidden');
     });
 
-    // Search functionality with debounce
-    let searchTimeout;
-    searchInput.addEventListener('input', function() {
-        const searchTerm = this.value;
-        
-        // Clear previous timeout
-        clearTimeout(searchTimeout);
-        
-        // Set new timeout to reduce unnecessary API calls
-        searchTimeout = setTimeout(() => {
-            fetchCustomerAccounts(searchTerm);
-        }, 300); // 300ms delay
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', function() {
+        filterDropdown.classList.add('hidden');
+        filterDropdownMobile.classList.add('hidden');
     });
 
-    // Filter option selection
-    filterOptions.forEach(option => {
-        option.addEventListener('click', function(e) {
-            e.preventDefault();
-            const sortValue = this.getAttribute('data-sort');
+    // Prevent dropdown from closing when clicking inside
+    filterDropdown.addEventListener('click', function(e) {
+        e.stopPropagation();
+    });
+    
+    filterDropdownMobile.addEventListener('click', function(e) {
+        e.stopPropagation();
+    });
+
+    // Search functionality with debounce for both desktop and mobile
+    function setupSearchInput(inputElement) {
+        let searchTimeout;
+        inputElement.addEventListener('input', function() {
+            currentSearch = this.value;
+            currentPage = 1; // Reset to first page when searching
             
-            // Close dropdown
-            filterDropdown.classList.add('hidden');
+            // Clear previous timeout
+            clearTimeout(searchTimeout);
             
-            // Fetch customer accounts with selected sort
-            fetchCustomerAccounts(searchInput.value, sortValue);
+            // Set new timeout to reduce unnecessary API calls
+            searchTimeout = setTimeout(() => {
+                fetchCustomerAccounts();
+            }, 300); // 300ms delay
         });
-    });
+    }
+    
+    setupSearchInput(searchInput);
+    setupSearchInput(searchInputMobile);
+
+    // Filter option selection for both desktop and mobile
+    function setupFilterOptions(options, dropdown) {
+        options.forEach(option => {
+            option.addEventListener('click', function(e) {
+                e.preventDefault();
+                currentSort = this.getAttribute('data-sort');
+                currentPage = 1; // Reset to first page when changing sort
+                
+                // Close dropdown
+                dropdown.classList.add('hidden');
+                
+                // Fetch customer accounts with selected sort
+                fetchCustomerAccounts();
+            });
+        });
+    }
+    
+    setupFilterOptions(filterOptions, filterDropdown);
+    setupFilterOptions(filterOptionsMobile, filterDropdownMobile);
 });
 </script>
 
