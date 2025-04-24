@@ -698,56 +698,55 @@ echo "</tr>";
   </div>
 </div>
 
-<div class="fixed inset-0 z-50 flex items-center justify-center hidden" id="editEmployeeModal">
+<div class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto" id="editEmployeeModal">
   <!-- Modal Backdrop -->
   <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
   
   <!-- Modal Content -->
-  <div class="relative bg-white rounded-xl shadow-card w-full max-w-xl mx-4 z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
     <!-- Close Button -->
     <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeEditEmployeeModal()">
       <i class="fas fa-times"></i>
     </button>
     
     <!-- Modal Header -->
-    <div class="px-6 py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
-      <h3 class="text-xl font-bold text-white flex items-center">
+    <div class="px-4 sm:px-6 py-4 sm:py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
+      <h3 class="text-lg sm:text-xl font-bold text-white flex items-center">
         Edit Employee Account
       </h3>
     </div>
     
     <!-- Modal Body -->
-    <div class="px-6 py-5">
-      <form id="editEmployeeAccountForm" class="space-y-5">
+    <div class="px-4 sm:px-6 py-4 sm:py-5">
+      <form id="editEmployeeAccountForm" class="space-y-3 sm:space-y-4">
         <!-- Hidden field for employee ID -->
         <input type="hidden" id="editEmployeeId" name="employeeId">
         
         <!-- Name Fields -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div>
-            <label for="editFirstName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              First Name *
-            </label>
-            <div class="relative">
-              <input type="text" id="editFirstName" name="firstName" required
-                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                  placeholder="First Name" pattern="[A-Za-z\s]+" title="Only letters and spaces allowed">
-            </div>
-          </div>
-          <div>
-            <label for="editLastName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              Last Name *
-            </label>
-            <div class="relative">
-              <input type="text" id="editLastName" name="lastName" required
-                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                  placeholder="Last Name" pattern="[A-Za-z\s]+" title="Only letters and spaces allowed">
-            </div>
+        <div>
+          <label for="editFirstName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            First Name <span class="text-red-500">*</span>
+          </label>
+          <div class="relative">
+            <input type="text" id="editFirstName" name="firstName" required
+                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                placeholder="First Name" pattern="[A-Za-z\s]+" title="Only letters and spaces allowed">
           </div>
         </div>
         
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div>
+        <div>
+          <label for="editLastName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            Last Name <span class="text-red-500">*</span>
+          </label>
+          <div class="relative">
+            <input type="text" id="editLastName" name="lastName" required
+                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                placeholder="Last Name" pattern="[A-Za-z\s]+" title="Only letters and spaces allowed">
+          </div>
+        </div>
+        
+        <div class="flex flex-col sm:flex-row gap-2 sm:gap-4">
+          <div class="w-full sm:flex-1">
             <label for="editMiddleName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
               Middle Name
             </label>
@@ -757,9 +756,9 @@ echo "</tr>";
                   placeholder="Middle Name" pattern="[A-Za-z\s]+" title="Only letters and spaces allowed">
             </div>
           </div>
-          <div>
+          <div class="w-full sm:flex-1">
             <label for="editSuffix" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              Suffix <span class="text-xs text-gray-500">(Optional)</span>
+              Suffix
             </label>
             <div class="relative">
               <input type="text" id="editSuffix" name="suffix"
@@ -772,7 +771,7 @@ echo "</tr>";
         <!-- Date of Birth Field -->
         <div>
           <label for="editDateOfBirth" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            Date of Birth *
+            Date of Birth <span class="text-red-500">*</span>
           </label>
           <div class="relative">
             <input type="date" id="editDateOfBirth" name="dateOfBirth" required
@@ -782,67 +781,65 @@ echo "</tr>";
         </div>
 
         <!-- Contact Information -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div>
-            <label for="editEmployeeEmail" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              Email Address *
-            </label>
-            <div class="relative">
-              <input type="email" id="editEmployeeEmail" name="employeeEmail" required
-                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                  placeholder="Email">
-            </div>
+        <div>
+          <label for="editEmployeeEmail" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            Email Address <span class="text-red-500">*</span>
+          </label>
+          <div class="relative">
+            <input type="email" id="editEmployeeEmail" name="employeeEmail" required
+                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                placeholder="Email">
           </div>
-          <div>
-            <label for="editEmployeePhone" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              Phone Number *
-            </label>
-            <div class="relative">
-              <input type="tel" id="editEmployeePhone" name="employeePhone" required
-                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                  placeholder="09XXXXXXXXX or +63XXXXXXXXXX" pattern="(\+63|0)\d{10}" title="Philippine phone number (09XXXXXXXXX or +63XXXXXXXXXX)">
-            </div>
+        </div>
+        
+        <div>
+          <label for="editEmployeePhone" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            Phone Number <span class="text-red-500">*</span>
+          </label>
+          <div class="relative">
+            <input type="tel" id="editEmployeePhone" name="employeePhone" required
+                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                placeholder="09XXXXXXXXX or +63XXXXXXXXXX" pattern="(\+63|0)\d{10}" title="Philippine phone number (09XXXXXXXXX or +63XXXXXXXXXX)">
           </div>
         </div>
 
         <!-- Position and Salary -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div>
-            <label for="editEmployeePosition" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              Position *
-            </label>
-            <div class="relative">
-              <select id="editEmployeePosition" name="employeePosition" required
-                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
-                  <option value="">Select Position</option>
-                  <option value="Embalmer">Embalmer</option>
-                  <option value="Driver">Driver</option>
-                  <option value="Secretary">Secretary</option>
-                  <option value="Financial Manager">Financial Manager</option>
-                  <option value="Operational Head">Operational Head</option>
-                  <option value="Personnel">Personnel</option>
-              </select>
-            </div>
+        <div>
+          <label for="editEmployeePosition" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            Position <span class="text-red-500">*</span>
+          </label>
+          <div class="relative">
+            <select id="editEmployeePosition" name="employeePosition" required
+                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+                <option value="">Select Position</option>
+                <option value="Embalmer">Embalmer</option>
+                <option value="Driver">Driver</option>
+                <option value="Secretary">Secretary</option>
+                <option value="Financial Manager">Financial Manager</option>
+                <option value="Operational Head">Operational Head</option>
+                <option value="Personnel">Personnel</option>
+            </select>
           </div>
-          <div>
-            <label for="editEmployeeSalary" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              Salary per Service (₱) *
-            </label>
-            <div class="relative">
-              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <span class="text-gray-500">₱</span>
-              </div>
-              <input type="number" id="editEmployeeSalary" name="employeeSalary" required step="0.01" min="0.01"
-                  class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                  placeholder="Amount">
+        </div>
+        
+        <div>
+          <label for="editEmployeeSalary" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            Salary per Service (₱) <span class="text-red-500">*</span>
+          </label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <span class="text-gray-500">₱</span>
             </div>
+            <input type="number" id="editEmployeeSalary" name="employeeSalary" required step="0.01" min="0.01"
+                class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                placeholder="Amount">
           </div>
         </div>
         
         <!-- Gender Selection -->
-        <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+        <div class="bg-gray-50 p-3 sm:p-4 rounded-lg border border-gray-200">
           <p class="block text-xs font-medium text-gray-700 mb-2 flex items-center">
-            Gender *
+            Gender <span class="text-red-500">*</span>
           </p>
           <div class="grid grid-cols-2 sm:grid-cols-2 gap-3">
             <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
@@ -859,9 +856,9 @@ echo "</tr>";
         </div>
         
         <!-- Branch Selection -->
-        <div class="bg-gray-50 p-4 rounded-lg border-l-4 border-gold">
+        <div class="bg-gray-50 p-3 sm:p-4 rounded-lg border-l-4 border-gold">
           <label class="block text-xs font-medium text-gray-700 mb-2 flex items-center">
-            Branch Location *
+            Branch Location <span class="text-red-500">*</span>
           </label>
           <div class="flex flex-wrap gap-4">
             <?php foreach ($branches as $branch): ?>
@@ -877,11 +874,11 @@ echo "</tr>";
     </div>
     
     <!-- Modal Footer --> 
-    <div class="px-6 py-4 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
-      <button class="px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center" onclick="closeEditEmployeeModal()">
+    <div class="px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row sm:justify-end gap-2 sm:gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
+      <button class="w-full sm:w-auto px-4 sm:px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center" onclick="closeEditEmployeeModal()">
         Cancel
       </button>
-      <button type="submit" form="editEmployeeAccountForm" class="px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center">
+      <button type="submit" form="editEmployeeAccountForm" class="w-full sm:w-auto px-5 sm:px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center">
         Update Employee
       </button>
     </div>
