@@ -123,74 +123,211 @@ $customersQuery = "SELECT * FROM users LIMIT $offset, $itemsPerPage";
 $customersResult = mysqli_query($conn, $customersQuery);
 ?>
 
-<!-- Customer Account Management Section -->
-<div id="customer-account-management" class="bg-white rounded-lg shadow-sidebar p-5 border border-sidebar-border hover:shadow-card transition-all duration-300 mb-8">
-  <div class="flex justify-between items-center mb-4">
-    <h3 class="text-base font-semibold text-sidebar-text">Customer Accounts</h3>
-    <div class="flex items-center space-x-4">
-      <!-- Search Input -->
-      <div class="relative flex-grow max-w-md">
-        <input type="text" id="customerSearchInput" placeholder="Search customers..." 
-               class="w-full px-3 py-2 pl-10 border border-sidebar-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
-        <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-      </div>
-
-      <!-- Filter Dropdown -->
-      <div class="relative">
-        <button id="customerFilterToggle" class="p-2 bg-gray-100 rounded-md hover:bg-gray-200 transition-all">
-          <i class="fas fa-filter text-sidebar-text"></i>
-        </button>
-        
-        <div id="customerFilterDropdown" class="hidden absolute z-10 right-0 mt-2 w-56 bg-white border border-sidebar-border rounded-md shadow-lg">
-          <div class="py-1">
-            <a href="#" data-sort="id_asc" class="filter-option block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">ID: Ascending</a>
-            <a href="#" data-sort="id_desc" class="filter-option block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">ID: Descending</a>
-            <a href="#" data-sort="name_asc" class="filter-option block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Name: A-Z</a>
-            <a href="#" data-sort="name_desc" class="filter-option block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Name: Z-A</a>
-            <a href="#" data-sort="email_asc" class="filter-option block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Email: A-Z</a>
-            <a href="#" data-sort="email_desc" class="filter-option block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Email: Z-A</a>
-          </div>
+<!-- Branch Card -->
+<div class="bg-white rounded-lg shadow-sidebar p-5 border border-sidebar-border hover:shadow-card transition-all duration-300 mb-8 branch-container" data-branch-id="<?php echo $branchId; ?>">
+    <!-- Branch Header with Search and Filters -->
+    <div class="flex justify-between items-center mb-4">
+        <!-- Title and Counter -->
+        <div class="flex items-center gap-3">
+            <h3 class="text-base font-semibold text-sidebar-text">Branch: <?php echo $branchName; ?></h3>
+            
+            <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
+                <i class="fas fa-clipboard-list"></i>
+                <?php echo $totalServices . ($totalServices != 1 ? "" : ""); ?>
+            </span>
         </div>
-      </div>
+        
+        <!-- Controls -->
+        <div class="flex items-center space-x-4">
+            <!-- Search Input -->
+            <div class="relative flex-grow max-w-md">
+                <input type="text" id="searchInput<?php echo $branchId; ?>" 
+                       placeholder="Search services..." 
+                       value="<?php echo htmlspecialchars($searchQuery); ?>"
+                       class="w-full px-3 py-2 pl-10 border border-sidebar-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent"
+                       oninput="debouncedFilter(<?php echo $branchId; ?>)">
+                <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+            </div>
 
-      <!-- Add Customer Account Button -->
-      <button class="px-4 py-2 bg-sidebar-accent text-white rounded-md text-sm flex items-center hover:bg-darkgold transition-all duration-300" onclick="openAddCustomerAccountModal()">
-        <i class="fas fa-plus mr-2"></i> Add Customer Account
-      </button>
+            <!-- Filter Dropdown -->
+            <div class="relative">
+                <button id="filterToggle<?php echo $branchId; ?>" class="p-2 bg-gray-100 rounded-md hover:bg-gray-200 transition-all"
+                        onclick="toggleFilterWindow(<?php echo $branchId; ?>)">
+                    <i class="fas fa-filter text-sidebar-accent"></i> Filter
+                    <?php if($categoryFilter || $statusFilter): ?>
+                        <span class="h-2 w-2 bg-sidebar-accent rounded-full ml-1"></span>
+                    <?php endif; ?>
+                </button>
+                
+                <!-- Filter Window -->
+                <div id="filterWindow<?php echo $branchId; ?>" class="hidden absolute z-10 right-0 mt-2 w-56 bg-white border border-sidebar-border rounded-md shadow-lg">
+                    <div class="py-1">
+                        <!-- Category Filter -->
+                        <div class="px-4 py-2">
+                            <h5 class="text-sm font-medium text-sidebar-text mb-2">Category</h5>
+                            <div class="space-y-1">
+                                <div class="flex items-center cursor-pointer" onclick="setFilter(<?php echo $branchId; ?>, 'category', '')">
+                                    <span class="filter-option <?php echo !$categoryFilter ? 'bg-sidebar-accent text-white' : 'hover:bg-sidebar-hover'; ?> px-2 py-1 rounded text-sm w-full">
+                                        All Categories
+                                    </span>
+                                </div>
+                                <?php 
+                                $categoriesResult->data_seek(0);
+                                while($category = $categoriesResult->fetch_assoc()): 
+                                    $isActive = $categoryFilter === $category['service_category_name'];
+                                ?>
+                                    <div class="flex items-center cursor-pointer" onclick="setFilter(<?php echo $branchId; ?>, 'category', '<?php echo urlencode($category['service_category_name']); ?>')">
+                                        <span class="filter-option <?php echo $isActive ? 'bg-sidebar-accent text-white' : 'hover:bg-sidebar-hover'; ?> px-2 py-1 rounded text-sm w-full">
+                                            <?php echo htmlspecialchars($category['service_category_name']); ?>
+                                        </span>
+                                    </div>
+                                <?php endwhile; ?>
+                            </div>
+                        </div>
+                        
+                        <!-- Status Filter -->
+                        <div class="px-4 py-2">
+                            <h5 class="text-sm font-medium text-sidebar-text mb-2">Status</h5>
+                            <div class="space-y-1">
+                                <div class="flex items-center cursor-pointer" onclick="setFilter(<?php echo $branchId; ?>, 'status', '')">
+                                    <span class="filter-option <?php echo !$statusFilter ? 'bg-sidebar-accent text-white' : 'hover:bg-sidebar-hover'; ?> px-2 py-1 rounded text-sm w-full">
+                                        All Statuses
+                                    </span>
+                                </div>
+                                <?php 
+                                $statusesResult->data_seek(0);
+                                while($status = $statusesResult->fetch_assoc()): 
+                                    $isActive = $statusFilter === $status['status'];
+                                ?>
+                                    <div class="flex items-center cursor-pointer" onclick="setFilter(<?php echo $branchId; ?>, 'status', '<?php echo urlencode($status['status']); ?>')">
+                                        <span class="filter-option <?php echo $isActive ? 'bg-sidebar-accent text-white' : 'hover:bg-sidebar-hover'; ?> px-2 py-1 rounded text-sm w-full">
+                                            <?php echo htmlspecialchars($status['status']); ?>
+                                        </span>
+                                    </div>
+                                <?php endwhile; ?>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add Service Button -->
+            <button class="px-4 py-2 bg-sidebar-accent text-white rounded-md text-sm flex items-center hover:bg-darkgold transition-all duration-300" 
+                    onclick="openAddServiceModal(<?php echo $branchId; ?>)">
+                <i class="fas fa-plus mr-2"></i> Add New Service
+            </button>
+        </div>
     </div>
-  </div>
-
-  <div class="overflow-x-auto scrollbar-thin">
-    <table class="w-full">
-      <thead>
-        <tr class="bg-sidebar-hover">
-          <th class="p-4 text-left text-sm font-medium text-sidebar-text">ID</th>
-          <th class="p-4 text-left text-sm font-medium text-sidebar-text">Name</th>
-          <th class="p-4 text-left text-sm font-medium text-sidebar-text">Email</th>
-          <th class="p-4 text-left text-sm font-medium text-sidebar-text">Role</th>
-          <th class="p-4 text-left text-sm font-medium text-sidebar-text">Status</th>
-          <th class="p-4 text-left text-sm font-medium text-sidebar-text">Actions</th>
-        </tr>
-      </thead>
-      <tbody id="customerTableBody">
-        <!-- Table content will be dynamically loaded -->
-      </tbody>
-    </table>
-  </div>
-  <div class="p-4 border-t border-sidebar-border flex justify-between items-center">
-    <div id="paginationInfo" class="text-sm text-gray-500"></div>
-    <div class="flex space-x-1">
-    <button class="px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo $page <= 1 ? 'opacity-50 cursor-not-allowed' : ''; ?>" 
-              onclick="changePage(<?php echo $page - 1; ?>)" <?php echo $page <= 1 ? 'disabled' : ''; ?>>&laquo;</button>
-      
-      <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-          <button class="px-3 py-1 border border-sidebar-border rounded text-sm <?php echo $i == $page ? 'bg-sidebar-accent text-white' : 'hover:bg-sidebar-hover'; ?>" 
-                  onclick="changePage(<?php echo $i; ?>)"><?php echo $i; ?></button>
-      <?php endfor; ?>
-      
-      <button class="px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo $page >= $totalPages ? 'opacity-50 cursor-not-allowed' : ''; ?>" 
-              onclick="changePage(<?php echo $page + 1; ?>)" <?php echo $page >= $totalPages ? 'disabled' : ''; ?>>&raquo;</button>    </div>
-  </div>
+    
+    <!-- Responsive Table Container -->
+    <div class="overflow-x-auto scrollbar-thin" id="tableContainer<?php echo $branchId; ?>">
+        <div id="loadingIndicator<?php echo $branchId; ?>" class="hidden absolute inset-0 bg-white bg-opacity-50 flex items-center justify-center">
+            <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-sidebar-accent"></div>
+        </div>
+        
+        <!-- Table with styling from customer account management -->
+        <table class="w-full">
+            <thead>
+                <tr class="bg-sidebar-hover">
+                    <th class="p-4 text-left text-sm font-medium text-sidebar-text" onclick="sortTable(<?php echo $branchId; ?>, 0)">
+                        <div class="flex items-center gap-1.5">
+                            <i class="fas fa-hashtag text-sidebar-accent"></i> ID 
+                        </div>
+                    </th>
+                    <th class="p-4 text-left text-sm font-medium text-sidebar-text" onclick="sortTable(<?php echo $branchId; ?>, 1)">
+                        <div class="flex items-center gap-1.5">
+                            <i class="fas fa-tag text-sidebar-accent"></i> Service Name 
+                        </div>
+                    </th>
+                    <th class="p-4 text-left text-sm font-medium text-sidebar-text" onclick="sortTable(<?php echo $branchId; ?>, 2)">
+                        <div class="flex items-center gap-1.5">
+                            <i class="fas fa-th-list text-sidebar-accent"></i> Category 
+                        </div>
+                    </th>
+                    <th class="p-4 text-left text-sm font-medium text-sidebar-text" onclick="sortTable(<?php echo $branchId; ?>, 3)">
+                        <div class="flex items-center gap-1.5">
+                            <i class="fas fa-peso-sign text-sidebar-accent"></i> Price 
+                        </div>
+                    </th>
+                    <th class="p-4 text-left text-sm font-medium text-sidebar-text" onclick="sortTable(<?php echo $branchId; ?>, 4)">
+                        <div class="flex items-center gap-1.5">
+                            <i class="fas fa-toggle-on text-sidebar-accent"></i> Status 
+                        </div>
+                    </th>
+                    <th class="p-4 text-left text-sm font-medium text-sidebar-text">
+                        <div class="flex items-center gap-1.5">
+                            <i class="fas fa-cogs text-sidebar-accent"></i> Actions
+                        </div>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php if ($result->num_rows > 0): ?>
+                    <?php while($row = $result->fetch_assoc()): ?>
+                        <?php
+                        $statusClass = $row["status"] == "Active" 
+                            ? "bg-green-100 text-green-600 border border-green-200" 
+                            : "bg-orange-100 text-orange-500 border border-orange-200";
+                        $statusIcon = $row["status"] == "Active" ? "fa-check-circle" : "fa-pause-circle";
+                        ?>
+                        <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
+                            <td class="p-4 text-sm text-sidebar-text font-medium">#SVC-<?php echo str_pad($row['service_id'], 3, "0", STR_PAD_LEFT); ?></td>
+                            <td class="p-4 text-sm text-sidebar-text"><?php echo htmlspecialchars($row["service_name"]); ?></td>
+                            <td class="p-4 text-sm text-sidebar-text">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100"> <?php echo htmlspecialchars($row["service_category_name"]); ?>
+                                </span>
+                            </td>
+                            <td class="p-4 text-sm font-medium text-sidebar-text"><?php echo formatPrice($row["selling_price"]); ?></td>
+                            <td class="p-4 text-sm">
+                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium <?php echo $statusClass; ?>">
+                                    <i class="fas <?php echo $statusIcon; ?> mr-1"></i> <?php echo htmlspecialchars($row["status"]); ?>
+                                </span>
+                            </td>
+                            <td class="p-4 text-sm">
+                                <div class="flex space-x-2">
+                                    <button class="p-2 bg-yellow-100 text-yellow-600 rounded-lg hover:bg-yellow-200 transition-all tooltip" title="Edit Service" onclick="openEditServiceModal('<?php echo $row["service_id"]; ?>', '<?php echo $branchId; ?>')">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-all tooltip" title="Delete Service" onclick="deleteService('<?php echo $row["service_id"]; ?>', '<?php echo $branchId; ?>')">
+                                    <i class="fas fa-archive text-red"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    <?php endwhile; ?>
+                <?php else: ?>
+                    <tr>
+                        <td colspan="6" class="p-4 text-sm text-center">
+                            <div class="flex flex-col items-center">
+                                <i class="fas fa-inbox text-gray-300 text-4xl mb-3"></i>
+                                <p class="text-gray-500">No services found for this branch</p>
+                            </div>
+                        </td>
+                    </tr>
+                <?php endif; ?>
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- Pagination Footer styled like the customer account management -->
+    <div class="p-4 border-t border-sidebar-border flex justify-between items-center">
+        <div id="paginationInfo" class="text-sm text-gray-500">
+            Showing <?php echo ($offset + 1) . ' - ' . min($offset + $recordsPerPage, $totalServices); ?> 
+            of <?php echo $totalServices; ?> services
+        </div>
+        <div class="flex space-x-1">
+            <button class="px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo $page <= 1 ? 'opacity-50 cursor-not-allowed' : ''; ?>" 
+                    onclick="changePage(<?php echo $branchId; ?>, <?php echo max(1, $page - 1); ?>)" <?php echo $page <= 1 ? 'disabled' : ''; ?>>&laquo;</button>
+            
+            <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                <button class="px-3 py-1 border border-sidebar-border rounded text-sm <?php echo $i == $page ? 'bg-sidebar-accent text-white' : 'hover:bg-sidebar-hover'; ?>" 
+                        onclick="changePage(<?php echo $branchId; ?>, <?php echo $i; ?>)"><?php echo $i; ?></button>
+            <?php endfor; ?>
+            
+            <button class="px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo $page >= $totalPages ? 'opacity-50 cursor-not-allowed' : ''; ?>" 
+                    onclick="changePage(<?php echo $branchId; ?>, <?php echo $page + 1; ?>)" <?php echo $page >= $totalPages ? 'disabled' : ''; ?>>&raquo;</button>
+        </div>
+    </div>
 </div>
 
 <script>
