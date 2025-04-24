@@ -176,140 +176,76 @@ $formattedRevenue = number_format($totalRevenue, 2);
 ?>
 <?php
 // Function to calculate branch metrics
-// // Function to calculate branch metrics
-// function getBranchMetrics($conn, $branchId) {
-//   $metrics = [
-//       'revenue' => 0,
-//       'profit' => 0,
-//       'margin' => 0,
-//       'customers' => 0,
-//       'revenue_change' => 0,
-//       'profit_change' => 0,
-//       'margin_change' => 0,
-//       'customers_change' => 0
-//   ];
+// Function to calculate branch metrics
+// Function to calculate branch metrics
+function getBranchMetrics($conn, $branchId) {
+  $metrics = [
+      'revenue' => 0,
+      'profit' => 0,
+      'margin' => 0,
+      'customers' => 0
+  ];
 
-//   // Current month and year
-//   $currentMonth = date('m');
-//   $currentYear = date('Y');
-  
-//   // Previous month and year (handling January case)
-//   $prevMonth = $currentMonth == 1 ? 12 : $currentMonth - 1;
-//   $prevYear = $currentMonth == 1 ? $currentYear - 1 : $currentYear;
+  // Current month and year
+  $currentMonth = date('m');
+  $currentYear = date('Y');
 
-//   // Get current month revenue (sum of amount_paid)
-//   $revenueQuery = "SELECT SUM(amount_paid) as total_revenue FROM sales_tb 
-//                   WHERE branch_id = ? AND MONTH(get_timestamp) = ? AND YEAR(get_timestamp) = ?";
-//   $stmt = $conn->prepare($revenueQuery);
-//   $stmt->bind_param("iii", $branchId, $currentMonth, $currentYear);
-//   $stmt->execute();
-//   $revenueResult = $stmt->get_result();
-//   $revenueData = $revenueResult->fetch_assoc();
-//   $metrics['revenue'] = $revenueData['total_revenue'] ?? 0;
+  // Get current month revenue (sum of amount_paid)
+  $revenueQuery = "SELECT SUM(amount_paid) as total_revenue FROM sales_tb 
+                  WHERE branch_id = ? AND MONTH(get_timestamp) = ? AND YEAR(get_timestamp) = ?";
+  $stmt = $conn->prepare($revenueQuery);
+  $stmt->bind_param("iii", $branchId, $currentMonth, $currentYear);
+  $stmt->execute();
+  $revenueResult = $stmt->get_result();
+  $revenueData = $revenueResult->fetch_assoc();
+  $metrics['revenue'] = $revenueData['total_revenue'] ?? 0;
 
-//   // Get previous month revenue for change calculation
-//   $prevRevenueQuery = "SELECT SUM(amount_paid) as total_revenue FROM sales_tb 
-//                       WHERE branch_id = ? AND MONTH(get_timestamp) = ? AND YEAR(get_timestamp) = ?";
-//   $stmt = $conn->prepare($prevRevenueQuery);
-//   $stmt->bind_param("iii", $branchId, $prevMonth, $prevYear);
-//   $stmt->execute();
-//   $prevRevenueResult = $stmt->get_result();
-//   $prevRevenueData = $prevRevenueResult->fetch_assoc();
-//   $prevRevenue = $prevRevenueData['total_revenue'] ?? 0;
+  // Get current month capital price by joining sales_tb with services_tb
+  $capitalQuery = "SELECT SUM(s.capital_price) as total_capital 
+                  FROM sales_tb sa
+                  JOIN services_tb s ON sa.service_id = s.service_id
+                  WHERE sa.branch_id = ? AND MONTH(sa.get_timestamp) = ? AND YEAR(sa.get_timestamp) = ?";
+  $stmt = $conn->prepare($capitalQuery);
+  $stmt->bind_param("iii", $branchId, $currentMonth, $currentYear);
+  $stmt->execute();
+  $capitalResult = $stmt->get_result();
+  $capitalData = $capitalResult->fetch_assoc();
+  $totalCapital = $capitalData['total_capital'] ?? 0;
 
-//   // Calculate revenue percentage change
-//   if ($prevRevenue > 0) {
-//       $metrics['revenue_change'] = (($metrics['revenue'] - $prevRevenue) / $prevRevenue) * 100;
-//   }
+  // Get sum of expenses for current month
+  $expensesQuery = "SELECT SUM(price) as total_expenses FROM expenses_tb 
+                   WHERE branch_id = ? AND MONTH(date) = ? AND YEAR(date) = ?";
+  $stmt = $conn->prepare($expensesQuery);
+  $stmt->bind_param("iii", $branchId, $currentMonth, $currentYear);
+  $stmt->execute();
+  $expensesResult = $stmt->get_result();
+  $expensesData = $expensesResult->fetch_assoc();
+  $totalExpenses = $expensesData['total_expenses'] ?? 0;
 
-//   // Get current month capital price by joining sales_tb with services_tb
-//   $capitalQuery = "SELECT SUM(s.capital_price) as total_capital 
-//                   FROM sales_tb sa
-//                   JOIN services_tb s ON sa.service_id = s.service_id
-//                   WHERE sa.branch_id = ? AND MONTH(sa.get_timestamp) = ? AND YEAR(sa.get_timestamp) = ?";
-//   $stmt = $conn->prepare($capitalQuery);
-//   $stmt->bind_param("iii", $branchId, $currentMonth, $currentYear);
-//   $stmt->execute();
-//   $capitalResult = $stmt->get_result();
-//   $capitalData = $capitalResult->fetch_assoc();
-//   $totalCapital = $capitalData['total_capital'] ?? 0;
+  // Calculate current month profit
+  $metrics['profit'] = $metrics['revenue'] - ($totalCapital + $totalExpenses);
 
-//   // Get sum of expenses for current month
-//   $expensesQuery = "SELECT SUM(price) as total_expenses FROM expenses_tb 
-//                    WHERE branch_id = ? AND MONTH(date) = ? AND YEAR(date) = ?";
-//   $stmt = $conn->prepare($expensesQuery);
-//   $stmt->bind_param("iii", $branchId, $currentMonth, $currentYear);
-//   $stmt->execute();
-//   $expensesResult = $stmt->get_result();
-//   $expensesData = $expensesResult->fetch_assoc();
-//   $totalExpenses = $expensesData['total_expenses'] ?? 0;
+  // Calculate margin (profit / revenue * 100)
+  if ($metrics['revenue'] > 0) {
+      $metrics['margin'] = ($metrics['profit'] / $metrics['revenue']) * 100;
+  }
 
-//   // Calculate current month profit
-//   $metrics['profit'] = $metrics['revenue'] - ($totalCapital + $totalExpenses);
+  // Get current month customer count (users with user_type = 3 and branch_loc = branch_id)
+  $customersQuery = "SELECT COUNT(*) as customer_count FROM users 
+                    WHERE user_type = 3 AND branch_loc = ?";
+  $stmt = $conn->prepare($customersQuery);
+  $stmt->bind_param("i", $branchId);
+  $stmt->execute();
+  $customersResult = $stmt->get_result();
+  $customersData = $customersResult->fetch_assoc();
+  $metrics['customers'] = $customersData['customer_count'] ?? 0;
 
-//   // Get previous month capital price
-//   $prevCapitalQuery = "SELECT SUM(s.capital_price) as total_capital 
-//                       FROM sales_tb sa
-//                       JOIN services_tb s ON sa.service_id = s.service_id
-//                       WHERE sa.branch_id = ? AND MONTH(sa.get_timestamp) = ? AND YEAR(sa.get_timestamp) = ?";
-//   $stmt = $conn->prepare($prevCapitalQuery);
-//   $stmt->bind_param("iii", $branchId, $prevMonth, $prevYear);
-//   $stmt->execute();
-//   $prevCapitalResult = $stmt->get_result();
-//   $prevCapitalData = $prevCapitalResult->fetch_assoc();
-//   $prevCapital = $prevCapitalData['total_capital'] ?? 0;
+  return $metrics;
+}
 
-//   // Previous month expenses
-//   $prevExpensesQuery = "SELECT SUM(price) as total_expenses FROM expenses_tb 
-//                        WHERE branch_id = ? AND MONTH(date) = ? AND YEAR(date) = ?";
-//   $stmt = $conn->prepare($prevExpensesQuery);
-//   $stmt->bind_param("iii", $branchId, $prevMonth, $prevYear);
-//   $stmt->execute();
-//   $prevExpensesResult = $stmt->get_result();
-//   $prevExpensesData = $prevExpensesResult->fetch_assoc();
-//   $prevExpenses = $prevExpensesData['total_expenses'] ?? 0;
-
-//   // Previous month revenue was already fetched earlier
-//   $prevProfit = $prevRevenue - ($prevCapital + $prevExpenses);
-
-//   // Calculate profit percentage change
-//   if ($prevProfit > 0) {
-//       $metrics['profit_change'] = (($metrics['profit'] - $prevProfit) / $prevProfit) * 100;
-//   }
-
-//   // Calculate margin (profit / revenue * 100)
-//   if ($metrics['revenue'] > 0) {
-//       $metrics['margin'] = ($metrics['profit'] / $metrics['revenue']) * 100;
-//   }
-
-//   // Calculate previous month margin for change
-//   if ($prevRevenue > 0) {
-//       $prevMargin = ($prevProfit / $prevRevenue) * 100;
-//       $metrics['margin_change'] = $metrics['margin'] - $prevMargin;
-//   }
-
-//   // Get current month customer count (users with user_type = 3 and branch_loc = branch_id)
-//   $customersQuery = "SELECT COUNT(*) as customer_count FROM users 
-//                     WHERE user_type = 3 AND branch_loc = ?";
-//   $stmt = $conn->prepare($customersQuery);
-//   $stmt->bind_param("i", $branchId);
-//   $stmt->execute();
-//   $customersResult = $stmt->get_result();
-//   $customersData = $customersResult->fetch_assoc();
-//   $metrics['customers'] = $customersData['customer_count'] ?? 0;
-
-//   // Get previous month customer count for change calculation
-//   // Note: This assumes customer count is for all time, not just the month
-//   // If you want monthly customer counts, you'll need a timestamp column in users table
-//   // For now, we'll just set change to 0 since we don't have historical data
-//   $metrics['customers_change'] = 0;
-
-//   return $metrics;
-// }
-
-// // Get metrics for both branches
-// $pilaMetrics = getBranchMetrics($conn, 2); // Pila branch_id = 2
-// $paeteMetrics = getBranchMetrics($conn, 1); // Paete branch_id = 1
+// Get metrics for both branches
+$pilaMetrics = getBranchMetrics($conn, 2); // Pila branch_id = 2
+$paeteMetrics = getBranchMetrics($conn, 1); // Paete branch_id = 1
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -451,6 +387,145 @@ $formattedRevenue = number_format($totalRevenue, 2);
 </div>
 
  <!-- Branch Comparison -->
+ <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+  <!-- Pila Branch Card -->
+  <div class="bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-200">
+    <!-- Card header with subdued gradient background -->
+    <div class="bg-gradient-to-r from-gray-100 to-slate-500 p-5 border-b border-gray-200">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 rounded-full bg-white/90 text-slate-700 flex items-center justify-center shadow-sm">
+            <i class="fas fa-building"></i>
+          </div>
+          <h3 class="text-lg font-semibold text-gray-800">Pila Branch</h3>
+        </div>
+        <span class="px-3 py-1 text-xs font-medium bg-slate-100 text-slate-700 rounded-full">Main Branch</span>
+      </div>
+    </div>
+    
+    <!-- Card content -->
+    <div class="p-6">
+      <div class="grid grid-cols-2 gap-6">
+        <!-- Revenue -->
+        <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+          <div class="flex items-center mb-1 text-gray-600 text-sm">
+            <i class="fas fa-chart-line mr-2"></i>
+            <span>Revenue</span>
+          </div>
+          <div class="text-xl font-bold text-gray-800">₱<?php echo number_format($pilaMetrics['revenue'], 2); ?></div>
+          <div class="mt-2 text-xs text-gray-500">
+  Current month
+</div>
+        </div>
+        
+        <!-- Profit -->
+        <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+          <div class="flex items-center mb-1 text-gray-600 text-sm">
+            <i class="fas fa-wallet mr-2"></i>
+            <span>Profit</span>
+          </div>
+          <div class="text-xl font-bold text-gray-800">₱<?php echo number_format($pilaMetrics['profit'], 2); ?></div>
+          <div class="mt-2 text-xs text-gray-500">
+  Current month
+</div>
+        </div>
+        
+        <!-- Margin -->
+        <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+          <div class="flex items-center mb-1 text-gray-600 text-sm">
+            <i class="fas fa-percentage mr-2"></i>
+            <span>Margin</span>
+          </div>
+          <div class="text-xl font-bold text-gray-800"><?php echo number_format($pilaMetrics['margin'], 1); ?>%</div>
+          <div class="mt-2 text-xs text-gray-500">
+  Current month
+</div>
+        </div>
+        
+        <!-- Customers -->
+        <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+          <div class="flex items-center mb-1 text-gray-600 text-sm">
+            <i class="fas fa-users mr-2"></i>
+            <span>Customers</span>
+          </div>
+          <div class="text-xl font-bold text-gray-800"><?php echo $pilaMetrics['customers']; ?></div>
+          <div class="mt-2 text-xs text-gray-500">
+  Current month
+</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Paete Branch Card -->
+  <div class="bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-200">
+    <!-- Card header with subdued gradient background -->
+    <div class="bg-gradient-to-r from-gray-100 to-slate-500 p-5 border-b border-gray-200">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 rounded-full bg-white/90 text-slate-700 flex items-center justify-center shadow-sm">
+            <i class="fas fa-store"></i>
+          </div>
+          <h3 class="text-lg font-semibold text-gray-800">Paete Branch</h3>
+        </div>
+        <span class="px-3 py-1 text-xs font-medium bg-slate-100 text-slate-700 rounded-full">Secondary Branch</span>
+      </div>
+    </div>
+    
+    <!-- Card content -->
+    <div class="p-6">
+      <div class="grid grid-cols-2 gap-6">
+        <!-- Revenue -->
+        <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+          <div class="flex items-center mb-1 text-gray-600 text-sm">
+            <i class="fas fa-chart-line mr-2"></i>
+            <span>Revenue</span>
+          </div>
+          <div class="text-xl font-bold text-gray-800">₱<?php echo number_format($paeteMetrics['revenue'], 2); ?></div>
+          <div class="mt-2 text-xs text-gray-500">
+  Current month
+</div>
+        </div>
+        
+        <!-- Profit -->
+        <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+          <div class="flex items-center mb-1 text-gray-600 text-sm">
+            <i class="fas fa-wallet mr-2"></i>
+            <span>Profit</span>
+          </div>
+          <div class="text-xl font-bold text-gray-800">₱<?php echo number_format($paeteMetrics['profit'], 2); ?></div>
+          <div class="mt-2 text-xs text-gray-500">
+  Current month
+</div>
+        </div>
+        
+        <!-- Margin -->
+        <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+          <div class="flex items-center mb-1 text-gray-600 text-sm">
+            <i class="fas fa-percentage mr-2"></i>
+            <span>Margin</span>
+          </div>
+          <div class="text-xl font-bold text-gray-800"><?php echo number_format($paeteMetrics['margin'], 1); ?>%</div>
+          <div class="mt-2 text-xs text-gray-500">
+  Current month
+</div>
+        </div>
+        
+        <!-- Customers -->
+        <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+          <div class="flex items-center mb-1 text-gray-600 text-sm">
+            <i class="fas fa-users mr-2"></i>
+            <span>Customers</span>
+          </div>
+          <div class="text-xl font-bold text-gray-800"><?php echo $paeteMetrics['customers']; ?></div>
+          <div class="mt-2 text-xs text-gray-500">
+  Current month
+</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
 
   <!-- Charts -->
