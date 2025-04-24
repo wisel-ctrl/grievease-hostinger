@@ -26,6 +26,7 @@ if (!$branchId) {
     exit;
 }
 
+
 // Construct SQL query with search and filter
 $sql = "SELECT 
     s.service_id, 
