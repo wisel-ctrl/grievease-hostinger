@@ -34,7 +34,7 @@ $sql = "SELECT
     s.selling_price, 
     s.status,
     b.branch_name
-FROM Services_tb s
+FROM services_tb s
 JOIN service_category sc ON s.service_categoryID = sc.service_categoryID
 JOIN branch_tb b ON s.branch_id = b.branch_id
 WHERE s.branch_id = $branchId
@@ -50,7 +50,7 @@ WHERE s.branch_id = $branchId
 ($statusFilter ? "AND s.status = '$statusFilter' " : '');
 
 // Update the count query similarly
-$countSql = "SELECT COUNT(*) as count FROM Services_tb s
+$countSql = "SELECT COUNT(*) as count FROM services_tb s
 JOIN service_category sc ON s.service_categoryID = sc.service_categoryID
 WHERE s.branch_id = $branchId
 " . 

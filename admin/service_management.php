@@ -472,26 +472,28 @@ if ($branchResult->num_rows > 0) {
         </div>
     </div>
     
+    <?php include 'loadServices/load_service_table'?>
+    
     <!-- Sticky Pagination Footer with improved spacing -->
     <div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
         <div class="text-sm text-gray-500 text-center sm:text-left">
-            Showing <?php echo ($offset + 1) . ' - ' . min($offset + $recordsPerPage, $totalServices); ?> 
-            of <?php echo $totalServices; ?> services
-        </div>
-        <div class="flex space-x-2">
-            <a href="javascript:void(0)" onclick="changePage(<?php echo $branchId; ?>, <?php echo max(1, $page - 1); ?>)" 
-               class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo $page <= 1 ? 'opacity-50 pointer-events-none' : ''; ?>">&laquo;</a>
-            
-            <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-                <a href="javascript:void(0)" onclick="changePage(<?php echo $branchId; ?>, <?php echo $i; ?>)"
-                   class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm <?php echo $i == $page ? 'bg-sidebar-accent text-white' : 'hover:bg-sidebar-hover'; ?>">
-                    <?php echo $i; ?>
-                </a>
-            <?php endfor; ?>
-            
-            <a href="javascript:void(0)" onclick="changePage(<?php echo $branchId; ?>, <?php echo min($totalPages, $page + 1); ?>)" 
-               class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo $page >= $totalPages ? 'opacity-50 pointer-events-none' : ''; ?>">&raquo;</a>
-        </div>
+        Showing <?php echo ($offset + 1) . ' - ' . min($offset + $recordsPerPage, $totalServices); ?> 
+        of <?php echo $totalServices; ?> services
+    </div>
+    <div class="flex space-x-2">
+        <a href="javascript:void(0)" onclick="changePage(<?php echo $branchId; ?>, <?php echo max(1, $page - 1); ?>)" 
+           class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo $page <= 1 ? 'opacity-50 pointer-events-none' : ''; ?>">&laquo;</a>
+        
+        <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+            <a href="javascript:void(0)" onclick="changePage(<?php echo $branchId; ?>, <?php echo $i; ?>)"
+               class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm <?php echo $i == $page ? 'bg-sidebar-accent text-white' : 'hover:bg-sidebar-hover'; ?>">
+                <?php echo $i; ?>
+            </a>
+        <?php endfor; ?>
+        
+        <a href="javascript:void(0)" onclick="changePage(<?php echo $branchId; ?>, <?php echo min($totalPages, $page + 1); ?>)" 
+           class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo $page >= $totalPages ? 'opacity-50 pointer-events-none' : ''; ?>">&raquo;</a>
+    </div>
     </div>
 </div>
 
