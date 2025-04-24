@@ -423,16 +423,16 @@ echo "</tr>";
     <div class="px-4 sm:px-6 py-4 sm:py-5">
       <!-- Employee Information -->
       <div class="mb-4 sm:mb-6">
-        <div class="flex flex-row justify-between sm:space-y-4 sm:block">
-          <div class="flex-1">
+        <div class="flex flex-row justify-between">
+          <div class="flex-1 px-1">
             <p class="text-xs font-medium text-gray-500">Employee ID</p>
             <p id="employeeId" class="text-sm font-medium text-gray-800">-</p>
           </div>
-          <div class="flex-1">
+          <div class="flex-1 px-1">
             <p class="text-xs font-medium text-gray-500">Employee Name</p>
             <p id="employeeName" class="text-sm font-medium text-gray-800">-</p>
           </div>
-          <div class="flex-1">
+          <div class="flex-1 px-1">
             <p class="text-xs font-medium text-gray-500">Base Salary</p>
             <p id="employeeBaseSalary" class="text-sm font-medium text-gray-800">-</p>
           </div>
@@ -463,16 +463,16 @@ echo "</tr>";
       <div class="mb-4 sm:mb-6">
         <h4 class="text-xs sm:text-sm font-medium text-gray-700 mb-2">Salary Summary</h4>
         <div class="bg-gray-50 p-3 sm:p-4 rounded-lg border border-gray-200">
-          <div class="flex flex-row justify-between sm:space-y-4 sm:block">
-            <div class="flex-1">
+          <div class="flex flex-row justify-between">
+            <div class="flex-1 px-1">
               <p class="text-xs font-medium text-gray-500">Total Services</p>
               <p id="totalServices" class="text-lg font-bold text-gray-800">0</p>
             </div>
-            <div class="flex-1">
+            <div class="flex-1 px-1">
               <p class="text-xs font-medium text-gray-500">Total Earnings</p>
               <p id="totalEarnings" class="text-lg font-bold text-green-600">₱0.00</p>
             </div>
-            <div class="flex-1">
+            <div class="flex-1 px-1">
               <p class="text-xs font-medium text-gray-500">Base Salary</p>
               <p id="modalBaseSalary" class="text-lg font-bold text-blue-600">₱0.00</p>
             </div>
