@@ -124,73 +124,236 @@ $customersResult = mysqli_query($conn, $customersQuery);
 ?>
 
 <!-- Customer Account Management Section -->
-<div id="customer-account-management" class="bg-white rounded-lg shadow-sidebar p-5 border border-sidebar-border hover:shadow-card transition-all duration-300 mb-8">
-  <div class="flex justify-between items-center mb-4">
-    <h3 class="text-base font-semibold text-sidebar-text">Customer Accounts</h3>
-    <div class="flex items-center space-x-4">
-      <!-- Search Input -->
-      <div class="relative flex-grow max-w-md">
-        <input type="text" id="customerSearchInput" placeholder="Search customers..." 
-               class="w-full px-3 py-2 pl-10 border border-sidebar-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
-        <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-      </div>
+<div id="customer-account-management" class="bg-white rounded-lg shadow-md mb-8 border border-sidebar-border overflow-hidden">
+    <!-- Account Header with Search and Filters -->
+    <div class="bg-sidebar-hover p-4 border-b border-sidebar-border">
+        <!-- Desktop layout for big screens - Title on left, controls on right -->
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+            <!-- Title and Counter -->
+            <div class="flex items-center gap-3 mb-4 lg:mb-0">
+                <h3 class="text-lg font-bold text-sidebar-text whitespace-nowrap">Customer Accounts</h3>
+                
+                <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
+                    <i class="fas fa-user-circle"></i>
+                    <span id="totalCustomers"></span>
+                </span>
+            </div>
+            
+            <!-- Controls for big screens - aligned right -->
+            <div class="hidden lg:flex items-center gap-3">
+                <!-- Search Input -->
+                <div class="relative">
+                    <input type="text" id="customerSearchInput" 
+                           placeholder="Search customers..." 
+                           class="pl-8 pr-3 py-2 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
+                    <i class="fas fa-search absolute left-2.5 top-3 text-gray-400"></i>
+                </div>
 
-      <!-- Filter Dropdown -->
-      <div class="relative">
-        <button id="customerFilterToggle" class="p-2 bg-gray-100 rounded-md hover:bg-gray-200 transition-all">
-          <i class="fas fa-filter text-sidebar-text"></i>
-        </button>
-        
-        <div id="customerFilterDropdown" class="hidden absolute z-10 right-0 mt-2 w-56 bg-white border border-sidebar-border rounded-md shadow-lg">
-          <div class="py-1">
-            <a href="#" data-sort="id_asc" class="filter-option block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">ID: Ascending</a>
-            <a href="#" data-sort="id_desc" class="filter-option block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">ID: Descending</a>
-            <a href="#" data-sort="name_asc" class="filter-option block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Name: A-Z</a>
-            <a href="#" data-sort="name_desc" class="filter-option block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Name: Z-A</a>
-            <a href="#" data-sort="email_asc" class="filter-option block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Email: A-Z</a>
-            <a href="#" data-sort="email_desc" class="filter-option block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Email: Z-A</a>
-          </div>
+                <!-- Filter Dropdown -->
+                <div class="relative filter-dropdown">
+                    <button id="customerFilterToggle" class="px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover">
+                        <i class="fas fa-filter text-sidebar-accent"></i>
+                        <span>Filters</span>
+                        <span id="filterIndicator" class="hidden h-2 w-2 bg-sidebar-accent rounded-full"></span>
+                    </button>
+                    
+                    <!-- Filter Window -->
+                    <div id="customerFilterDropdown" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-4">
+                        <div class="space-y-4">
+                            <!-- Sort Options -->
+                            <div>
+                                <h5 class="text-sm font-medium text-sidebar-text mb-2">Sort By</h5>
+                                <div class="space-y-1">
+                                    <div class="flex items-center cursor-pointer filter-option" data-sort="id_asc">
+                                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                                            ID: Ascending
+                                        </span>
+                                    </div>
+                                    <div class="flex items-center cursor-pointer filter-option" data-sort="id_desc">
+                                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                                            ID: Descending
+                                        </span>
+                                    </div>
+                                    <div class="flex items-center cursor-pointer filter-option" data-sort="name_asc">
+                                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                                            Name: A-Z
+                                        </span>
+                                    </div>
+                                    <div class="flex items-center cursor-pointer filter-option" data-sort="name_desc">
+                                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                                            Name: Z-A
+                                        </span>
+                                    </div>
+                                    <div class="flex items-center cursor-pointer filter-option" data-sort="email_asc">
+                                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                                            Email: A-Z
+                                        </span>
+                                    </div>
+                                    <div class="flex items-center cursor-pointer filter-option" data-sort="email_desc">
+                                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                                            Email: Z-A
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Add Customer Account Button -->
+                <button class="px-4 py-2 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm whitespace-nowrap" 
+                        onclick="openAddCustomerAccountModal()">
+                    <i class="fas fa-plus"></i>
+                    <span>Add Customer Account</span>
+                </button>
+            </div>
         </div>
-      </div>
+        
+        <!-- Mobile/Tablet Controls - Only visible on smaller screens -->
+        <div class="lg:hidden w-full mt-4">
+            <!-- First row: Search bar with filter icon on the right -->
+            <div class="flex items-center w-full gap-3 mb-4">
+                <!-- Search Input - Takes most of the space -->
+                <div class="relative flex-grow">
+                    <input type="text" id="customerSearchInputMobile" 
+                            placeholder="Search customers..." 
+                            class="pl-8 pr-3 py-2.5 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
+                    <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                </div>
 
-      <!-- Add Customer Account Button -->
-      <button class="px-4 py-2 bg-sidebar-accent text-white rounded-md text-sm flex items-center hover:bg-darkgold transition-all duration-300" onclick="openAddCustomerAccountModal()">
-        <i class="fas fa-plus mr-2"></i> Add Customer Account
-      </button>
+                <!-- Icon-only button for filter -->
+                <div class="flex items-center">
+                    <!-- Filter Icon Button -->
+                    <div class="relative filter-dropdown">
+                        <button id="customerFilterToggleMobile" class="w-10 h-10 flex items-center justify-center text-sidebar-accent">
+                            <i class="fas fa-filter text-xl"></i>
+                            <span id="filterIndicatorMobile" class="hidden absolute top-1 right-1 h-2 w-2 bg-sidebar-accent rounded-full"></span>
+                        </button>
+                        
+                        <!-- Mobile Filter Dropdown -->
+                        <div id="customerFilterDropdownMobile" class="hidden absolute right-0 mt-2 w-56 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-4">
+                            <div class="space-y-2">
+                                <h5 class="text-sm font-medium text-sidebar-text mb-2">Sort By</h5>
+                                <div class="space-y-1">
+                                    <div class="flex items-center cursor-pointer filter-option-mobile" data-sort="id_asc">
+                                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                                            ID: Ascending
+                                        </span>
+                                    </div>
+                                    <div class="flex items-center cursor-pointer filter-option-mobile" data-sort="id_desc">
+                                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                                            ID: Descending
+                                        </span>
+                                    </div>
+                                    <div class="flex items-center cursor-pointer filter-option-mobile" data-sort="name_asc">
+                                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                                            Name: A-Z
+                                        </span>
+                                    </div>
+                                    <div class="flex items-center cursor-pointer filter-option-mobile" data-sort="name_desc">
+                                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                                            Name: Z-A
+                                        </span>
+                                    </div>
+                                    <div class="flex items-center cursor-pointer filter-option-mobile" data-sort="email_asc">
+                                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                                            Email: A-Z
+                                        </span>
+                                    </div>
+                                    <div class="flex items-center cursor-pointer filter-option-mobile" data-sort="email_desc">
+                                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                                            Email: Z-A
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Second row: Add Customer Account Button - Full width -->
+            <div class="w-full">
+                <button class="px-4 py-2.5 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm whitespace-nowrap w-full justify-center" 
+                        onclick="openAddCustomerAccountModal()">
+                    <i class="fas fa-plus mr-2"></i>
+                    <span>Add Customer Account</span>
+                </button>
+            </div>
+        </div>
     </div>
-  </div>
-
-  <div class="overflow-x-auto scrollbar-thin">
-    <table class="w-full">
-      <thead>
-        <tr class="bg-sidebar-hover">
-          <th class="p-4 text-left text-sm font-medium text-sidebar-text">ID</th>
-          <th class="p-4 text-left text-sm font-medium text-sidebar-text">Name</th>
-          <th class="p-4 text-left text-sm font-medium text-sidebar-text">Email</th>
-          <th class="p-4 text-left text-sm font-medium text-sidebar-text">Role</th>
-          <th class="p-4 text-left text-sm font-medium text-sidebar-text">Status</th>
-          <th class="p-4 text-left text-sm font-medium text-sidebar-text">Actions</th>
-        </tr>
-      </thead>
-      <tbody id="customerTableBody">
-        <!-- Table content will be dynamically loaded -->
-      </tbody>
-    </table>
-  </div>
-  <div class="p-4 border-t border-sidebar-border flex justify-between items-center">
-    <div id="paginationInfo" class="text-sm text-gray-500"></div>
-    <div class="flex space-x-1">
-    <button class="px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo $page <= 1 ? 'opacity-50 cursor-not-allowed' : ''; ?>" 
-              onclick="changePage(<?php echo $page - 1; ?>)" <?php echo $page <= 1 ? 'disabled' : ''; ?>>&laquo;</button>
-      
-      <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-          <button class="px-3 py-1 border border-sidebar-border rounded text-sm <?php echo $i == $page ? 'bg-sidebar-accent text-white' : 'hover:bg-sidebar-hover'; ?>" 
-                  onclick="changePage(<?php echo $i; ?>)"><?php echo $i; ?></button>
-      <?php endfor; ?>
-      
-      <button class="px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo $page >= $totalPages ? 'opacity-50 cursor-not-allowed' : ''; ?>" 
-              onclick="changePage(<?php echo $page + 1; ?>)" <?php echo $page >= $totalPages ? 'disabled' : ''; ?>>&raquo;</button>    </div>
-  </div>
+    
+    <!-- Responsive Table Container with improved spacing -->
+    <div class="overflow-x-auto scrollbar-thin" id="customerTableContainer">
+        <div id="loadingIndicator" class="hidden absolute inset-0 bg-white bg-opacity-50 flex items-center justify-center">
+            <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-sidebar-accent"></div>
+        </div>
+        
+        <!-- Responsive Table with improved spacing and horizontal scroll for small screens -->
+        <div class="min-w-full">
+            <table class="w-full">
+                <thead>
+                    <tr class="bg-gray-50 border-b border-sidebar-border">
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable('id')">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fas fa-hashtag text-sidebar-accent"></i> ID 
+                            </div>
+                        </th>
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable('name')">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fas fa-user text-sidebar-accent"></i> Name 
+                            </div>
+                        </th>
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable('email')">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fas fa-envelope text-sidebar-accent"></i> Email 
+                            </div>
+                        </th>
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable('role')">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fas fa-id-badge text-sidebar-accent"></i> Role 
+                            </div>
+                        </th>
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable('status')">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fas fa-toggle-on text-sidebar-accent"></i> Status 
+                            </div>
+                        </th>
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text whitespace-nowrap">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fas fa-cogs text-sidebar-accent"></i> Actions
+                            </div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody id="customerTableBody">
+                    <!-- Table content will be dynamically loaded -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <!-- Sticky Pagination Footer with improved spacing -->
+    <div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div id="paginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
+            Showing <?php echo ($offset + 1) . ' - ' . min($offset + $recordsPerPage, $totalCustomers); ?> 
+            of <?php echo $totalCustomers; ?> customers
+        </div>
+        <div class="flex space-x-2">
+            <a href="javascript:void(0)" onclick="changePage(<?php echo max(1, $page - 1); ?>)" 
+               class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo $page <= 1 ? 'opacity-50 pointer-events-none' : ''; ?>">&laquo;</a>
+            
+            <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                <a href="javascript:void(0)" onclick="changePage(<?php echo $i; ?>)"
+                   class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm <?php echo $i == $page ? 'bg-sidebar-accent text-white' : 'hover:bg-sidebar-hover'; ?>">
+                    <?php echo $i; ?>
+                </a>
+            <?php endfor; ?>
+            
+            <a href="javascript:void(0)" onclick="changePage(<?php echo min($totalPages, $page + 1); ?>)" 
+               class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo $page >= $totalPages ? 'opacity-50 pointer-events-none' : ''; ?>">&raquo;</a>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -353,92 +516,151 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 <!-- Add Customer Account Modal -->
-<div id="addCustomerAccountModal" class="fixed inset-0 bg-black bg-opacity-60 z-50 hidden overflow-y-auto flex items-center justify-center p-4 w-full h-full">
-  <div class="bg-white rounded-xl shadow-xl w-full max-w-lg mx-2">
+<div id="addCustomerAccountModal" class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto">
+  <!-- Modal Backdrop -->
+  <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+  
+  <!-- Modal Content -->
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+    <!-- Close Button -->
+    <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeAddCustomerAccountModal()">
+      <i class="fas fa-times"></i>
+    </button>
+    
     <!-- Modal Header -->
-    <div class="bg-gradient-to-r from-sidebar-accent to-white flex justify-between items-center p-6 flex-shrink-0 rounded-t-xl">
-      <h3 class="text-xl font-bold text-white"><i class="fas fa-user-plus"></i> Add Customer Account</h3>
-      <button onclick="closeAddCustomerAccountModal()" class="bg-black bg-opacity-20 hover:bg-opacity-30 rounded-full p-2 text-white hover:text-white transition-all duration-200">
-        <i class="fas fa-times"></i>
-      </button>
+    <div class="px-4 sm:px-6 py-4 sm:py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
+      <h3 class="text-lg sm:text-xl font-bold text-white flex items-center">
+        Add Customer Account
+      </h3>
     </div>
     
-    <div class="p-6">
-      <form id="addCustomerAccountForm" method="post" action="addCustomer/add_customer.php">
-        <div class="grid grid-cols-2 gap-4">
-          <div>
-            <label for="firstName" class="block text-sm font-medium text-gray-700 mb-1">First Name <span class="text-red-500">*</span></label>
-            <input type="text" id="firstName" name="firstName" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent" placeholder="First Name" required>
-            <p id="firstNameError" class="text-red-500 text-xs mt-1 hidden"></p>
+    <!-- Modal Body -->
+    <div class="px-4 sm:px-6 py-4 sm:py-5">
+      <form id="addCustomerAccountForm" method="post" action="addCustomer/add_customer.php" class="space-y-3 sm:space-y-4">
+        <!-- Personal Information Section -->
+        <div>
+          <label for="firstName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            First Name <span class="text-red-500">*</span>
+          </label>
+          <div class="relative">
+            <input type="text" id="firstName" name="firstName" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="First Name" required>
           </div>
-          
-          <div>
-            <label for="middleName" class="block text-sm font-medium text-gray-700 mb-1">Middle Name</label>
-            <input type="text" id="middleName" name="middleName" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent" placeholder="Middle Name">
+          <p id="firstNameError" class="text-red-500 text-xs mt-1 hidden"></p>
+        </div>
+        
+        <div>
+          <label for="lastName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            Last Name <span class="text-red-500">*</span>
+          </label>
+          <div class="relative">
+            <input type="text" id="lastName" name="lastName" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="Last Name" required>
+          </div>
+          <p id="lastNameError" class="text-red-500 text-xs mt-1 hidden"></p>
+        </div>
+        
+        <div class="flex flex-col sm:flex-row gap-2 sm:gap-4">
+          <div class="w-full sm:flex-1">
+            <label for="middleName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+              Middle Name
+            </label>
+            <div class="relative">
+              <input type="text" id="middleName" name="middleName" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="Middle Name">
+            </div>
             <p id="middleNameError" class="text-red-500 text-xs mt-1 hidden"></p>
           </div>
           
-          <div>
-            <label for="lastName" class="block text-sm font-medium text-gray-700 mb-1">Last Name <span class="text-red-500">*</span></label>
-            <input type="text" id="lastName" name="lastName" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent" placeholder="Last Name" required>
-            <p id="lastNameError" class="text-red-500 text-xs mt-1 hidden"></p>
-          </div>
-          
-          <div>
-            <label for="suffix" class="block text-sm font-medium text-gray-700 mb-1">Suffix <span class="text-xs text-gray-500">(Optional)</span></label>
-            <select id="suffix" name="suffix" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
-              <option value="">Select Suffix <option>
-              <option value="Jr">Jr</option>
-              <option value="Sr">Sr</option>
-              <option value="I">I</option>
-              <option value="II">II</option>
-              <option value="III">III</option>
-              <option value="IV">IV</option>
-              <option value="V">V</option>
-            </select>
+          <div class="w-full sm:flex-1">
+            <label for="suffix" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+              Suffix
+            </label>
+            <div class="relative">
+              <select id="suffix" name="suffix" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+                <option value="">Select Suffix</option>
+                <option value="Jr">Jr</option>
+                <option value="Sr">Sr</option>
+                <option value="I">I</option>
+                <option value="II">II</option>
+                <option value="III">III</option>
+                <option value="IV">IV</option>
+                <option value="V">V</option>
+              </select>
+            </div>
           </div>
         </div>
         
-        <div class="mt-4">
-          <label for="birthdate" class="block text-sm font-medium text-gray-700 mb-1">Birthdate <span class="text-red-500">*</span></label>
-          <input type="date" id="birthdate" name="birthdate" 
-            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent" 
-            max="<?php echo date('Y-m-d'); ?>" required>
+        <div>
+          <label for="birthdate" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            Birthdate <span class="text-red-500">*</span>
+          </label>
+          <div class="relative">
+            <input type="date" id="birthdate" name="birthdate" 
+              class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
+              max="<?php echo date('Y-m-d'); ?>" required>
+          </div>
           <p id="birthdateError" class="text-red-500 text-xs mt-1 hidden"></p>
         </div>
         
-        <div class="mt-4">
-          <label for="customerEmail" class="block text-sm font-medium text-gray-700 mb-1">Email <span class="text-red-500">*</span></label>
-          <input type="email" id="customerEmail" name="customerEmail" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent" placeholder="Email" required>
-          <p id="emailError" class="text-red-500 text-xs mt-1 hidden"></p>
-        </div>
-        
-        <div class="mt-4">
-          <label for="customerPhone" class="block text-sm font-medium text-gray-700 mb-1">Phone Number <span class="text-red-500">*</span></label>
-          <input type="tel" id="customerPhone" name="customerPhone" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent" placeholder="Phone Number" required>
-          <p id="phoneError" class="text-red-500 text-xs mt-1 hidden"></p>
-        </div>
-        
-        <div class="mt-4">
-          <label for="branchLocation" class="block text-sm font-medium text-gray-700 mb-1">Branch Location <span class="text-red-500">*</span></label>
-          <select id="branchLocation" name="branchLocation" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent" required>
-            <option value="">Select Branch</option>
-            <!-- Branch options will be populated by AJAX -->
-          </select>
+        <div>
+          <label for="branchLocation" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            Branch Location <span class="text-red-500">*</span>
+          </label>
+          <div class="relative">
+            <select id="branchLocation" name="branchLocation" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
+              <option value="">Select Branch</option>
+              <!-- Branch options will be populated by AJAX -->
+            </select>
+          </div>
           <p id="branchError" class="text-red-500 text-xs mt-1 hidden">Please select a branch</p>
         </div>
         
-        <div class="mt-4">
-          <label class="block text-sm font-medium text-gray-700 mb-1">Generated Password</label>
+        <!-- Contact Information Section -->
+        <div>
+          <label for="customerEmail" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            Email Address <span class="text-red-500">*</span>
+          </label>
           <div class="relative">
-            <input type="password" id="generatedPassword" name="password" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent bg-gray-100" readonly>
+            <input type="email" id="customerEmail" name="customerEmail" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="example@email.com" required>
+          </div>
+          <p id="emailError" class="text-red-500 text-xs mt-1 hidden"></p>
+        </div>
+        
+        <div>
+          <label for="customerPhone" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            Phone Number <span class="text-red-500">*</span>
+          </label>
+          <div class="relative">
+            <input type="tel" id="customerPhone" name="customerPhone" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="Phone Number" required>
+          </div>
+          <p id="phoneError" class="text-red-500 text-xs mt-1 hidden"></p>
+        </div>
+        
+        <div>
+          <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            Generated Password
+          </label>
+          <div class="relative">
+            <input type="password" id="generatedPassword" name="password" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200 bg-gray-100" readonly>
             <button type="button" class="absolute right-2 top-2 text-gray-500 hover:text-gray-700" onclick="togglePassword()">
-              <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+              <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 sm:w-6 sm:h-6">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 12s2.947-5.455 8.02-5.455S20.02 12 20.02 12s-2.947 5.455-8.02 5.455S3.98 12 3.98 12z" />
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 15a3 3 0 100-6 3 3 0 000 6z" />
               </svg>
             </button>
           </div>
+        </div>
+        
+        <!-- Additional Information Card -->
+        <div class="bg-gray-50 p-3 sm:p-4 rounded-lg border-l-4 border-sidebar-accent mt-3 sm:mt-4">
+          <h4 class="text-xs sm:text-sm font-medium text-gray-700 mb-2 flex items-center">
+            <i class="fas fa-info-circle mr-2 text-sidebar-accent"></i>
+            Account Information
+          </h4>
+          <p class="text-xs sm:text-sm text-gray-600">
+            An account will be created with the provided information. A temporary password will be generated automatically.
+          </p>
+          <p class="text-xs sm:text-sm text-gray-600 mt-2">
+            The customer will be able to change their password after logging in for the first time.
+          </p>
         </div>
         
         <input type="hidden" name="user_type" value="3">
@@ -447,12 +669,12 @@ document.addEventListener('DOMContentLoaded', function() {
     </div>
     
     <!-- Modal Footer -->
-    <div class="p-6 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white rounded-b-xl">
-      <button onclick="closeAddCustomerAccountModal()" class="px-5 py-3 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-semibold hover:bg-navy transition-colors">
+    <div class="px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row sm:justify-end gap-2 sm:gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
+      <button class="w-full sm:w-auto px-4 sm:px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center" onclick="closeAddCustomerAccountModal()">
         Cancel
       </button>
-      <button onclick="submitCustomerForm()" class="px-6 py-3 bg-sidebar-accent text-white rounded-lg font-semibold hover:bg-darkgold transition-colors flex items-center">
-        <i class="fas fa-user-plus mr-2"></i> Create Account
+      <button class="w-full sm:w-auto px-5 sm:px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="submitCustomerForm()">
+        Create Account
       </button>
     </div>
   </div>
