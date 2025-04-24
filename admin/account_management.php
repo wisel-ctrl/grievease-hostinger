@@ -334,25 +334,22 @@ $customersResult = mysqli_query($conn, $customersQuery);
     </div>
     
     <!-- Sticky Pagination Footer with improved spacing -->
-    <div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
-        <div id="paginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
-            Showing <?php echo ($offset + 1) . ' - ' . min($offset + $recordsPerPage, $totalCustomers); ?> 
-            of <?php echo $totalCustomers; ?> customers
-        </div>
-        <div class="flex space-x-2">
-            <a href="javascript:void(0)" onclick="changePage(<?php echo max(1, $page - 1); ?>)" 
-               class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo $page <= 1 ? 'opacity-50 pointer-events-none' : ''; ?>">&laquo;</a>
-            
-            <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-                <a href="javascript:void(0)" onclick="changePage(<?php echo $i; ?>)"
-                   class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm <?php echo $i == $page ? 'bg-sidebar-accent text-white' : 'hover:bg-sidebar-hover'; ?>">
-                    <?php echo $i; ?>
-                </a>
-            <?php endfor; ?>
-            
-            <a href="javascript:void(0)" onclick="changePage(<?php echo min($totalPages, $page + 1); ?>)" 
-               class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo $page >= $totalPages ? 'opacity-50 pointer-events-none' : ''; ?>">&raquo;</a>
-        </div>
+<div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
+    <div id="paginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
+        Showing <?php echo ($offset + 1) . ' - ' . min($offset + $recordsPerPage, $totalCustomers); ?> 
+        of <?php echo $totalCustomers; ?> customers
+    </div>
+    <div class="flex space-x-1">
+        <button class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo $page <= 1 ? 'opacity-50 cursor-not-allowed' : ''; ?>" 
+                onclick="changePage(<?php echo $page - 1; ?>)" <?php echo $page <= 1 ? 'disabled' : ''; ?>>&laquo;</button>
+        
+        <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+            <button class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm <?php echo $i == $page ? 'bg-sidebar-accent text-white' : 'hover:bg-sidebar-hover'; ?>" 
+                    onclick="changePage(<?php echo $i; ?>)"><?php echo $i; ?></button>
+        <?php endfor; ?>
+        
+        <button class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo $page >= $totalPages ? 'opacity-50 cursor-not-allowed' : ''; ?>" 
+                onclick="changePage(<?php echo $page + 1; ?>)" <?php echo $page >= $totalPages ? 'disabled' : ''; ?>>&raquo;</button>
     </div>
 </div>
 
