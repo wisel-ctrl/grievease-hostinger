@@ -58,6 +58,38 @@ require_once '../db_connect.php'; // Database connection
                 $last_name = $row['last_name'];
                 $email = $row['email'];
                 
+// Get revenue data
+$revenueQuery = "SELECT SUM(amount_paid) as total_revenue FROM sales";
+$revenueResult = $conn->query($revenueQuery);
+$revenueData = $revenueResult->fetch_assoc();
+$totalRevenue = $revenueData['total_revenue'] ?? 0;
+
+// Format the revenue with PHP's number_format
+$formattedRevenue = number_format($totalRevenue, 2);
+
+// Get services this month count
+$currentMonth = date('m');
+$currentYear = date('Y');
+$servicesQuery = "SELECT COUNT(*) as services_count FROM sales 
+                 WHERE MONTH(get_timestamp) = ? AND YEAR(get_timestamp) = ?";
+$stmt = $conn->prepare($servicesQuery);
+$stmt->bind_param("ii", $currentMonth, $currentYear);
+$stmt->execute();
+$servicesResult = $stmt->get_result();
+$servicesData = $servicesResult->fetch_assoc();
+$servicesCount = $servicesData['services_count'] ?? 0;
+
+// Get pending services count
+$pendingQuery = "SELECT COUNT(*) as pending_count FROM sales WHERE status = 'Pending'";
+$pendingResult = $conn->query($pendingQuery);
+$pendingData = $pendingResult->fetch_assoc();
+$pendingCount = $pendingData['pending_count'] ?? 0;
+
+// Get completed services count
+$completedQuery = "SELECT COUNT(*) as completed_count FROM sales WHERE status = 'Completed'";
+$completedResult = $conn->query($completedQuery);
+$completedData = $completedResult->fetch_assoc();
+$completedCount = $completedData['completed_count'] ?? 0;
 
 ?>
 
@@ -110,7 +142,7 @@ require_once '../db_connect.php'; // Database connection
         </div>
       </div>
       <div class="flex items-end">
-        <span class="text-2xl md:text-3xl font-bold text-gray-800">42</span>
+       <span class="text-2xl md:text-3xl font-bold text-gray-800"><?php echo $servicesCount; ?></span>
       </div>
     </div>
     
@@ -135,7 +167,7 @@ require_once '../db_connect.php'; // Database connection
         </div>
       </div>
       <div class="flex items-end">
-        <span class="text-2xl md:text-3xl font-bold text-gray-800">$87,320</span>
+      <span class="text-2xl md:text-3xl font-bold text-gray-800">₱<?php echo $formattedRevenue; ?></span>
       </div>
     </div>
     
@@ -160,7 +192,7 @@ require_once '../db_connect.php'; // Database connection
         </div>
       </div>
       <div class="flex items-end">
-        <span class="text-2xl md:text-3xl font-bold text-gray-800">14</span>
+        <span class="text-2xl md:text-3xl font-bold text-gray-800"><?php echo $pendingCount; ?></span>
       </div>
     </div>
     
@@ -185,7 +217,7 @@ require_once '../db_connect.php'; // Database connection
         </div>
       </div>
       <div class="flex items-end">
-        <span class="text-2xl md:text-3xl font-bold text-gray-800">28</span>
+        <span class="text-2xl md:text-3xl font-bold text-gray-800"><?php echo $completedCount; ?></span>
       </div>
     </div>
     
@@ -1177,6 +1209,7 @@ require_once '../db_connect.php'; // Database connection
       <button class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">&raquo;</button>
     </div>
   </div>
+
 </div>
             
               <!-- Footer -->
@@ -1185,22 +1218,7 @@ require_once '../db_connect.php'; // Database connection
               </footer>
             </div>
             
-            <!-- JavaScript for modal -->
-            <script>
-              function openModal() {
-                document.getElementById('serviceModal').classList.remove('hidden');
-              }
-              
-              function closeModal() {
-                document.getElementById('serviceModal').classList.add('hidden');
-              }
-              
-              function sortTable(columnIndex) {
-                // Implement sorting functionality here
-                console.log('Sorting by column', columnIndex);
-              }
-            </script>
             <script src="tailwind.js"></script>
             <script src="script.js"></script>
-            </body>
-            </html>
+  </body>
+</html>
