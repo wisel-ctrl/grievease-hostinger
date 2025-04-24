@@ -637,29 +637,29 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 
 <!-- ADD SERVICE MODAL -->
-<div class="fixed inset-0 z-50 flex items-center justify-center hidden" id="addServiceModal">
+<div class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto" id="addServiceModal">
   <!-- Modal Backdrop -->
   <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
   
   <!-- Modal Content -->
-  <div class="relative bg-white rounded-xl shadow-card w-full max-w-5xl mx-4 z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-5xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
     <!-- Close Button -->
     <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeAddServiceModal()">
       <i class="fas fa-times"></i>
     </button>
     
     <!-- Modal Header -->
-    <div class="px-6 py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
-      <h3 class="text-xl font-bold text-white flex items-center">
+    <div class="px-4 sm:px-6 py-4 sm:py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
+      <h3 class="text-lg sm:text-xl font-bold text-white flex items-center">
         Add New Service
       </h3>
     </div>
     
     <!-- Modal Body -->
-    <div class="px-6 py-5">
-      <form id="serviceForm" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div class="px-4 sm:px-6 py-4 sm:py-5">
+      <form id="serviceForm" class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
         <!-- Left Column -->
-        <div class="space-y-4">
+        <div class="space-y-3 sm:space-y-4">
           <div>
             <label for="serviceName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
               Service Name
@@ -679,7 +679,7 @@ document.addEventListener('DOMContentLoaded', () => {
           </div>
           
           <!-- Price Section -->
-          <div class="grid grid-cols-2 gap-3">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
             <div>
               <label for="capitalPrice" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
                 Capital Price
@@ -729,7 +729,7 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
           </div>
           
-          <div class="grid grid-cols-2 gap-3">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
             <div>
               <label for="casketType" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
                 Casket Type
@@ -787,9 +787,9 @@ document.addEventListener('DOMContentLoaded', () => {
           $result = $conn->query($sql);
           ?>
 
-          <div class="bg-gray-50 p-4 rounded-lg border-l-4 border-gold">
+          <div class="bg-gray-50 p-3 sm:p-4 rounded-lg border-l-4 border-gold">
             <label class="block text-xs font-medium text-gray-700 mb-2">Branch</label>
-            <div class="flex flex-wrap gap-4">
+            <div class="flex flex-wrap gap-3 sm:gap-4">
               <?php
               if ($result->num_rows > 0) {
                   while ($row = $result->fetch_assoc()) {
@@ -819,13 +819,13 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
         
         <!-- Right Column -->
-        <div class="space-y-4">
+        <div class="space-y-3 sm:space-y-4">
           <!-- Flower Design Section -->
-          <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+          <div class="bg-gray-50 p-3 sm:p-4 rounded-lg border border-gray-200">
             <p class="block text-xs font-medium text-gray-700 mb-2 flex items-center">
               Flower Arrangement Sets
             </p>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-3">
               <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
                 <input type="checkbox" name="flowerDesign" value="3 Floral Replacement" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
                 <i class="fas fa-leaf mr-1 text-sidebar-accent"></i>
@@ -845,7 +845,7 @@ document.addEventListener('DOMContentLoaded', () => {
           </div>
           
           <!-- Enhanced Essential Services Section -->
-          <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+          <div class="bg-gray-50 p-3 sm:p-4 rounded-lg border border-gray-200">
             <p class="block text-xs font-medium text-gray-700 mb-2 flex items-center">
               Other Essential Services
             </p>
@@ -899,11 +899,11 @@ document.addEventListener('DOMContentLoaded', () => {
     </div>
     
     <!-- Modal Footer --> 
-    <div class="px-6 py-4 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
-      <button class="px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center" onclick="closeAddServiceModal()">
+    <div class="px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row sm:justify-end gap-2 sm:gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
+      <button class="w-full sm:w-auto px-4 sm:px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center" onclick="closeAddServiceModal()">
         Cancel
       </button>
-      <button class="px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="addService()">
+      <button class="w-full sm:w-auto px-5 sm:px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="addService()">
         Add Service
       </button>
     </div>
