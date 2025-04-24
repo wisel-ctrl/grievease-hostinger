@@ -124,73 +124,221 @@ $customersResult = mysqli_query($conn, $customersQuery);
 ?>
 
 <!-- Customer Account Management Section -->
-<div id="customer-account-management" class="bg-white rounded-lg shadow-sidebar p-5 border border-sidebar-border hover:shadow-card transition-all duration-300 mb-8">
-  <div class="flex justify-between items-center mb-4">
-    <h3 class="text-base font-semibold text-sidebar-text">Customer Accounts</h3>
-    <div class="flex items-center space-x-4">
-      <!-- Search Input -->
-      <div class="relative flex-grow max-w-md">
-        <input type="text" id="customerSearchInput" placeholder="Search customers..." 
-               class="w-full px-3 py-2 pl-10 border border-sidebar-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
-        <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-      </div>
+<div id="customer-account-management" class="bg-white rounded-lg shadow-md mb-8 border border-sidebar-border overflow-hidden">
+    <!-- Header with Search and Filters -->
+    <div class="bg-sidebar-hover p-4 border-b border-sidebar-border">
+        <!-- Desktop layout for big screens - Title on left, controls on right -->
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+            <!-- Title and Counter -->
+            <div class="flex items-center gap-3 mb-4 lg:mb-0">
+                <h3 class="text-lg font-bold text-sidebar-text whitespace-nowrap">Customer Accounts</h3>
+                
+                <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
+                    <i class="fas fa-users"></i>
+                    <?php echo $totalCustomers . ($totalCustomers != 1 ? " Customers" : " Customer"); ?>
+                </span>
+            </div>
+            
+            <!-- Controls for big screens - aligned right -->
+            <div class="hidden lg:flex items-center gap-3">
+                <!-- Search Input -->
+                <div class="relative">
+                    <input type="text" id="customerSearchInput" 
+                           placeholder="Search customers..." 
+                           class="pl-8 pr-3 py-2 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
+                    <i class="fas fa-search absolute left-2.5 top-3 text-gray-400"></i>
+                </div>
 
-      <!-- Filter Dropdown -->
-      <div class="relative">
-        <button id="customerFilterToggle" class="p-2 bg-gray-100 rounded-md hover:bg-gray-200 transition-all">
-          <i class="fas fa-filter text-sidebar-text"></i>
-        </button>
-        
-        <div id="customerFilterDropdown" class="hidden absolute z-10 right-0 mt-2 w-56 bg-white border border-sidebar-border rounded-md shadow-lg">
-          <div class="py-1">
-            <a href="#" data-sort="id_asc" class="filter-option block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">ID: Ascending</a>
-            <a href="#" data-sort="id_desc" class="filter-option block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">ID: Descending</a>
-            <a href="#" data-sort="name_asc" class="filter-option block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Name: A-Z</a>
-            <a href="#" data-sort="name_desc" class="filter-option block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Name: Z-A</a>
-            <a href="#" data-sort="email_asc" class="filter-option block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Email: A-Z</a>
-            <a href="#" data-sort="email_desc" class="filter-option block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Email: Z-A</a>
-          </div>
+                <!-- Filter Dropdown -->
+                <div class="relative filter-dropdown">
+                    <button id="customerFilterToggle" class="px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover"
+                            onclick="toggleFilterWindow('customer')">
+                        <i class="fas fa-filter text-sidebar-accent"></i>
+                        <span>Filters</span>
+                        <span id="filterIndicator" class="hidden h-2 w-2 bg-sidebar-accent rounded-full"></span>
+                    </button>
+                    
+                    <!-- Filter Window -->
+                    <div id="customerFilterWindow" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-4">
+                        <div class="space-y-4">
+                            <div>
+                                <h5 class="text-sm font-medium text-sidebar-text mb-2">Sort By</h5>
+                                <div class="space-y-1">
+                                    <div class="flex items-center cursor-pointer" onclick="setCustomerFilter('sort', 'id_asc')">
+                                        <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                                            ID: Ascending
+                                        </span>
+                                    </div>
+                                    <div class="flex items-center cursor-pointer" onclick="setCustomerFilter('sort', 'id_desc')">
+                                        <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                                            ID: Descending
+                                        </span>
+                                    </div>
+                                    <div class="flex items-center cursor-pointer" onclick="setCustomerFilter('sort', 'name_asc')">
+                                        <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                                            Name: A-Z
+                                        </span>
+                                    </div>
+                                    <div class="flex items-center cursor-pointer" onclick="setCustomerFilter('sort', 'name_desc')">
+                                        <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                                            Name: Z-A
+                                        </span>
+                                    </div>
+                                    <div class="flex items-center cursor-pointer" onclick="setCustomerFilter('sort', 'email_asc')">
+                                        <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                                            Email: A-Z
+                                        </span>
+                                    </div>
+                                    <div class="flex items-center cursor-pointer" onclick="setCustomerFilter('sort', 'email_desc')">
+                                        <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                                            Email: Z-A
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Add Customer Account Button -->
+                <button class="px-4 py-2 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm whitespace-nowrap" 
+                        onclick="openAddCustomerAccountModal()">
+                    <span>Add Customer Account</span>
+                </button>
+            </div>
         </div>
-      </div>
+        
+        <!-- Mobile/Tablet Controls - Only visible on smaller screens -->
+        <div class="lg:hidden w-full mt-4">
+            <!-- First row: Search bar with filter icon on the right -->
+            <div class="flex items-center w-full gap-3 mb-4">
+                <!-- Search Input - Takes most of the space -->
+                <div class="relative flex-grow">
+                    <input type="text" id="customerSearchInputMobile" 
+                            placeholder="Search customers..." 
+                            class="pl-8 pr-3 py-2.5 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
+                    <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                </div>
 
-      <!-- Add Customer Account Button -->
-      <button class="px-4 py-2 bg-sidebar-accent text-white rounded-md text-sm flex items-center hover:bg-darkgold transition-all duration-300" onclick="openAddCustomerAccountModal()">
-        <i class="fas fa-plus mr-2"></i> Add Customer Account
-      </button>
+                <!-- Icon-only button for filter -->
+                <div class="flex items-center gap-3">
+                    <!-- Filter Icon Button -->
+                    <div class="relative filter-dropdown">
+                        <button id="customerFilterToggleMobile" class="w-10 h-10 flex items-center justify-center text-sidebar-accent"
+                                onclick="toggleFilterWindow('customer')">
+                            <i class="fas fa-filter text-xl"></i>
+                            <span id="filterIndicatorMobile" class="hidden absolute top-1 right-1 h-2 w-2 bg-sidebar-accent rounded-full"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Second row: Add Customer Account Button - Full width -->
+            <div class="w-full">
+                <button class="px-4 py-2.5 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm whitespace-nowrap w-full justify-center" 
+                        onclick="openAddCustomerAccountModal()">
+                    <span>Add Customer Account</span>
+                </button>
+            </div>
+        </div>
     </div>
-  </div>
-
-  <div class="overflow-x-auto scrollbar-thin">
-    <table class="w-full">
-      <thead>
-        <tr class="bg-sidebar-hover">
-          <th class="p-4 text-left text-sm font-medium text-sidebar-text">ID</th>
-          <th class="p-4 text-left text-sm font-medium text-sidebar-text">Name</th>
-          <th class="p-4 text-left text-sm font-medium text-sidebar-text">Email</th>
-          <th class="p-4 text-left text-sm font-medium text-sidebar-text">Role</th>
-          <th class="p-4 text-left text-sm font-medium text-sidebar-text">Status</th>
-          <th class="p-4 text-left text-sm font-medium text-sidebar-text">Actions</th>
-        </tr>
-      </thead>
-      <tbody id="customerTableBody">
-        <!-- Table content will be dynamically loaded -->
-      </tbody>
-    </table>
-  </div>
-  <div class="p-4 border-t border-sidebar-border flex justify-between items-center">
-    <div id="paginationInfo" class="text-sm text-gray-500"></div>
-    <div class="flex space-x-1">
-    <button class="px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo $page <= 1 ? 'opacity-50 cursor-not-allowed' : ''; ?>" 
-              onclick="changePage(<?php echo $page - 1; ?>)" <?php echo $page <= 1 ? 'disabled' : ''; ?>>&laquo;</button>
-      
-      <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-          <button class="px-3 py-1 border border-sidebar-border rounded text-sm <?php echo $i == $page ? 'bg-sidebar-accent text-white' : 'hover:bg-sidebar-hover'; ?>" 
-                  onclick="changePage(<?php echo $i; ?>)"><?php echo $i; ?></button>
-      <?php endfor; ?>
-      
-      <button class="px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo $page >= $totalPages ? 'opacity-50 cursor-not-allowed' : ''; ?>" 
-              onclick="changePage(<?php echo $page + 1; ?>)" <?php echo $page >= $totalPages ? 'disabled' : ''; ?>>&raquo;</button>    </div>
-  </div>
+    
+    <!-- Responsive Table Container with improved spacing -->
+    <div class="overflow-x-auto scrollbar-thin" id="customerTableContainer">
+        <div id="customerLoadingIndicator" class="hidden absolute inset-0 bg-white bg-opacity-50 flex items-center justify-center">
+            <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-sidebar-accent"></div>
+        </div>
+        
+        <!-- Responsive Table with improved spacing and horizontal scroll for small screens -->
+        <div class="min-w-full">
+            <table class="w-full">
+                <thead>
+                    <tr class="bg-gray-50 border-b border-sidebar-border">
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortCustomerTable(0)">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fas fa-hashtag text-sidebar-accent"></i> ID 
+                            </div>
+                        </th>
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortCustomerTable(1)">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fas fa-user text-sidebar-accent"></i> Name 
+                            </div>
+                        </th>
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortCustomerTable(2)">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fas fa-envelope text-sidebar-accent"></i> Email 
+                            </div>
+                        </th>
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortCustomerTable(3)">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fas fa-user-tag text-sidebar-accent"></i> Role 
+                            </div>
+                        </th>
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortCustomerTable(4)">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fas fa-toggle-on text-sidebar-accent"></i> Status 
+                            </div>
+                        </th>
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text whitespace-nowrap">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fas fa-cogs text-sidebar-accent"></i> Actions
+                            </div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody id="customerTableBody">
+                    <!-- Table content will be dynamically loaded -->
+                    <!-- Example row format:
+                    <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
+                        <td class="px-4 py-3.5 text-sm text-sidebar-text font-medium">#CUST-001</td>
+                        <td class="px-4 py-3.5 text-sm text-sidebar-text">John Doe</td>
+                        <td class="px-4 py-3.5 text-sm text-sidebar-text">john.doe@example.com</td>
+                        <td class="px-4 py-3.5 text-sm text-sidebar-text">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">Customer</span>
+                        </td>
+                        <td class="px-4 py-3.5 text-sm">
+                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-600 border border-green-200">
+                                <i class="fas fa-check-circle mr-1"></i> Active
+                            </span>
+                        </td>
+                        <td class="px-4 py-3.5 text-sm">
+                            <div class="flex space-x-2">
+                                <button class="p-2 bg-yellow-100 text-yellow-600 rounded-lg hover:bg-yellow-200 transition-all tooltip" title="Edit Customer">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-all tooltip" title="Delete Customer">
+                                    <i class="fas fa-archive"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <!-- Sticky Pagination Footer with improved spacing -->
+    <div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div id="paginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
+            Showing <?php echo ($offset + 1) . ' - ' . min($offset + $recordsPerPage, $totalCustomers); ?> 
+            of <?php echo $totalCustomers; ?> customers
+        </div>
+        <div class="flex space-x-2">
+            <a href="javascript:void(0)" onclick="changePage(<?php echo max(1, $page - 1); ?>)" 
+               class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo $page <= 1 ? 'opacity-50 pointer-events-none' : ''; ?>">&laquo;</a>
+            
+            <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                <a href="javascript:void(0)" onclick="changePage(<?php echo $i; ?>)"
+                   class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm <?php echo $i == $page ? 'bg-sidebar-accent text-white' : 'hover:bg-sidebar-hover'; ?>">
+                    <?php echo $i; ?>
+                </a>
+            <?php endfor; ?>
+            
+            <a href="javascript:void(0)" onclick="changePage(<?php echo min($totalPages, $page + 1); ?>)" 
+               class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo $page >= $totalPages ? 'opacity-50 pointer-events-none' : ''; ?>">&raquo;</a>
+        </div>
+    </div>
 </div>
 
 <script>
