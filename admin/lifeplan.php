@@ -237,6 +237,12 @@ if ($conn) {
           <option value="ongoing">Ongoing</option>
           <option value="overdue">Overdue</option>
         </select>
+
+        <!-- Archive Button -->
+        <button class="px-4 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover whitespace-nowrap">
+          <i class="fas fa-archive text-sidebar-accent"></i>
+          <span>Archive</span>
+        </button>
       </div>
     </div>
     
@@ -270,6 +276,11 @@ if ($conn) {
                 <option value="overdue">Overdue</option>
               </select>
             </div>
+            <!-- Archive Button -->
+        <button class="px-4 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover whitespace-nowrap">
+          <i class="fas fa-archive text-sidebar-accent"></i>
+          <span>Archive</span>
+        </button>
           </div>
         </div>
       </div>
