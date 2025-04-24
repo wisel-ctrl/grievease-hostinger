@@ -213,7 +213,7 @@ function getBranchMetrics($conn, $branchId) {
   $totalCapital = $capitalData['total_capital'] ?? 0;
 
   // Get sum of expenses for current month
-  $expensesQuery = "SELECT SUM(price) as total_expenses FROM expenses_tb 
+  $expensesQuery = "SELECT SUM(price) as total_expenses FROM expense_tb 
                    WHERE branch_id = ? AND MONTH(date) = ? AND YEAR(date) = ?";
   $stmt = $conn->prepare($expensesQuery);
   $stmt->bind_param("iii", $branchId, $currentMonth, $currentYear);
