@@ -513,53 +513,52 @@ echo "</tr>";
 </div>
 
 <!-- Add Employee Modal -->
-<div class="fixed inset-0 z-50 flex items-center justify-center hidden" id="addEmployeeModal">
+<div id="addEmployeeModal" class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto">
   <!-- Modal Backdrop -->
   <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
   
   <!-- Modal Content -->
-  <div class="relative bg-white rounded-xl shadow-card w-full max-w-xl mx-4 z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
     <!-- Close Button -->
     <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeAddEmployeeModal()">
       <i class="fas fa-times"></i>
     </button>
     
     <!-- Modal Header -->
-    <div class="px-6 py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
-      <h3 class="text-xl font-bold text-white flex items-center">
+    <div class="px-4 sm:px-6 py-4 sm:py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
+      <h3 class="text-lg sm:text-xl font-bold text-white flex items-center">
         Add Employee Account
       </h3>
     </div>
     
     <!-- Modal Body -->
-    <div class="px-6 py-5">
-      <form id="addEmployeeAccountForm" class="space-y-5">
+    <div class="px-4 sm:px-6 py-4 sm:py-5">
+      <form id="addEmployeeAccountForm" class="space-y-3 sm:space-y-4">
         <!-- Name Fields -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div>
-            <label for="firstName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              First Name *
-            </label>
-            <div class="relative">
-              <input type="text" id="firstName" name="firstName" required
-                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                  placeholder="First Name" pattern="[A-Za-z\s]+" title="Only letters and spaces allowed">
-            </div>
-          </div>
-          <div>
-            <label for="lastName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              Last Name *
-            </label>
-            <div class="relative">
-              <input type="text" id="lastName" name="lastName" required
-                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                  placeholder="Last Name" pattern="[A-Za-z\s]+" title="Only letters and spaces allowed">
-            </div>
+        <div>
+          <label for="firstName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            First Name <span class="text-red-500">*</span>
+          </label>
+          <div class="relative">
+            <input type="text" id="firstName" name="firstName" required
+                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                placeholder="First Name" pattern="[A-Za-z\s]+" title="Only letters and spaces allowed">
           </div>
         </div>
         
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div>
+        <div>
+          <label for="lastName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            Last Name <span class="text-red-500">*</span>
+          </label>
+          <div class="relative">
+            <input type="text" id="lastName" name="lastName" required
+                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                placeholder="Last Name" pattern="[A-Za-z\s]+" title="Only letters and spaces allowed">
+          </div>
+        </div>
+        
+        <div class="flex flex-col sm:flex-row gap-2 sm:gap-4">
+          <div class="w-full sm:flex-1">
             <label for="middleName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
               Middle Name
             </label>
@@ -569,7 +568,7 @@ echo "</tr>";
                   placeholder="Middle Name" pattern="[A-Za-z\s]+" title="Only letters and spaces allowed">
             </div>
           </div>
-          <div>
+          <div class="w-full sm:flex-1">
             <label for="suffix" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
               Suffix <span class="text-xs text-gray-500">(Optional)</span>
             </label>
@@ -584,7 +583,7 @@ echo "</tr>";
         <!-- Date of Birth Field -->
         <div>
           <label for="dateOfBirth" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            Date of Birth *
+            Date of Birth <span class="text-red-500">*</span>
           </label>
           <div class="relative">
             <input type="date" id="dateOfBirth" name="dateOfBirth" required
@@ -594,34 +593,33 @@ echo "</tr>";
         </div>
 
         <!-- Contact Information -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div>
-            <label for="employeeEmail" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              Email Address *
-            </label>
-            <div class="relative">
-              <input type="email" id="employeeEmail" name="employeeEmail" required
-                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                  placeholder="Email">
-            </div>
+        <div>
+          <label for="employeeEmail" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            Email Address <span class="text-red-500">*</span>
+          </label>
+          <div class="relative">
+            <input type="email" id="employeeEmail" name="employeeEmail" required
+                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                placeholder="Email">
           </div>
-          <div>
-            <label for="employeePhone" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              Phone Number *
-            </label>
-            <div class="relative">
-              <input type="tel" id="employeePhone" name="employeePhone" required
-                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                  placeholder="09XXXXXXXXX or +63XXXXXXXXXX" pattern="(\+63|0)\d{10}" title="Philippine phone number (09XXXXXXXXX or +63XXXXXXXXXX)">
-            </div>
+        </div>
+        
+        <div>
+          <label for="employeePhone" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            Phone Number <span class="text-red-500">*</span>
+          </label>
+          <div class="relative">
+            <input type="tel" id="employeePhone" name="employeePhone" required
+                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                placeholder="09XXXXXXXXX or +63XXXXXXXXXX" pattern="(\+63|0)\d{10}" title="Philippine phone number (09XXXXXXXXX or +63XXXXXXXXXX)">
           </div>
         </div>
 
         <!-- Position and Salary -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div>
+        <div class="flex flex-col sm:flex-row gap-2 sm:gap-4">
+          <div class="w-full sm:flex-1">
             <label for="employeePosition" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              Position *
+              Position <span class="text-red-500">*</span>
             </label>
             <div class="relative">
               <select id="employeePosition" name="employeePosition" required
@@ -636,9 +634,9 @@ echo "</tr>";
               </select>
             </div>
           </div>
-          <div>
+          <div class="w-full sm:flex-1">
             <label for="employeeSalary" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              Salary per Service (₱) *
+              Salary per Service (₱) <span class="text-red-500">*</span>
             </label>
             <div class="relative">
               <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -652,9 +650,9 @@ echo "</tr>";
         </div>
 
         <!-- Gender Selection -->
-        <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+        <div class="bg-gray-50 p-3 sm:p-4 rounded-lg border border-gray-200">
           <p class="block text-xs font-medium text-gray-700 mb-2 flex items-center">
-            Gender *
+            Gender <span class="text-red-500">*</span>
           </p>
           <div class="grid grid-cols-2 sm:grid-cols-2 gap-3">
             <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
@@ -671,9 +669,9 @@ echo "</tr>";
         </div>
         
         <!-- Branch Selection -->
-        <div class="bg-gray-50 p-4 rounded-lg border-l-4 border-gold">
+        <div class="bg-gray-50 p-3 sm:p-4 rounded-lg border-l-4 border-gold">
           <label class="block text-xs font-medium text-gray-700 mb-2 flex items-center">
-            Branch Location *
+            Branch Location <span class="text-red-500">*</span>
           </label>
           <div class="flex flex-wrap gap-4">
             <?php foreach ($branches as $branch): ?>
@@ -689,11 +687,11 @@ echo "</tr>";
     </div>
     
     <!-- Modal Footer --> 
-    <div class="px-6 py-4 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
-      <button class="px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center" onclick="closeAddEmployeeModal()">
+    <div class="px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row sm:justify-end gap-2 sm:gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
+      <button class="w-full sm:w-auto px-4 sm:px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center" onclick="closeAddEmployeeModal()">
         Cancel
       </button>
-      <button type="submit" form="addEmployeeAccountForm" class="px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center">
+      <button type="submit" form="addEmployeeAccountForm" class="w-full sm:w-auto px-5 sm:px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center">
         Add Employee
       </button>
     </div>
