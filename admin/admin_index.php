@@ -232,7 +232,7 @@ $formattedRevenue = number_format($totalRevenue, 2);
     <div class="px-6 py-3 bg-white border-t border-gray-100">
       <div class="flex items-center text-emerald-600">
         <i class="fas fa-arrow-up mr-1.5 text-xs"></i>
-        <span class="font-medium text-xs">8% </span>
+        <span class="font-medium text-xs"><?php echo number_format(abs($servicesChange), 1); ?>% </span>
         <span class="text-xs text-gray-500 ml-1">from last month</span>
       </div>
     </div>
@@ -257,7 +257,7 @@ $formattedRevenue = number_format($totalRevenue, 2);
     <div class="px-6 py-3 bg-white border-t border-gray-100">
       <div class="flex items-center text-emerald-600">
         <i class="fas fa-arrow-up mr-1.5 text-xs"></i>
-        <span class="font-medium text-xs">12% </span>
+        <span class="font-medium text-xs"><?php echo number_format(abs($revenueChange), 1); ?>% </span>
         <span class="text-xs text-gray-500 ml-1">from last month</span>
       </div>
     </div>
@@ -282,7 +282,7 @@ $formattedRevenue = number_format($totalRevenue, 2);
     <div class="px-6 py-3 bg-white border-t border-gray-100">
       <div class="flex items-center text-rose-600">
         <i class="fas fa-arrow-down mr-1.5 text-xs"></i>
-        <span class="font-medium text-xs">3% </span>
+        <span class="font-medium text-xs"><?php echo number_format(abs($pendingChange), 1); ?>% </span>
         <span class="text-xs text-gray-500 ml-1">from last month</span>
       </div>
     </div>
@@ -307,7 +307,7 @@ $formattedRevenue = number_format($totalRevenue, 2);
     <div class="px-6 py-3 bg-white border-t border-gray-100">
       <div class="flex items-center text-emerald-600">
         <i class="fas fa-arrow-up mr-1.5 text-xs"></i>
-        <span class="font-medium text-xs">15% </span>
+        <span class="font-medium text-xs"><?php echo number_format(abs($completedChange), 1); ?>% </span>
         <span class="text-xs text-gray-500 ml-1">from last month</span>
       </div>
     </div>
