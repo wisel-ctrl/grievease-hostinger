@@ -1,5 +1,9 @@
 <?php
 // messages/get_messages_details.php
+
+// Set timezone to Philippines first
+date_default_timezone_set('Asia/Manila');
+
 session_start();
 header('Content-Type: application/json');
 
@@ -64,18 +68,18 @@ if ($userInfo['user_type'] == 1) {
     $userInfo['name'] = '[Admin] ' . $userInfo['name'];
 }
 
-// Get all messages in the conversation (including admin messages)
+// Get all messages in the conversation with timezone conversion
 $messages_query = "
     SELECT 
         cm.chatId,
         cm.sender,
         cm.message,
-        cm.timestamp,
+        CONVERT_TZ(cm.timestamp, '+00:00', '+08:00') as timestamp,
         cm.messageType,
         cm.attachmentUrl,
         cr.status AS recipient_status,
         CASE
-            WHEN u.user_type = 1 THEN '[Admin] ' || CONCAT(u.first_name, ' ', u.last_name)
+            WHEN u.user_type = 1 THEN CONCAT('[Admin] ', u.first_name, ' ', u.last_name)
             WHEN cm.sender = '$employee_id' THEN 'You (Employee)'
             ELSE CONCAT(u.first_name, ' ', u.last_name)
         END AS sender_name
@@ -96,6 +100,21 @@ if ($messages_result === false) {
 
 $messages = [];
 while ($row = $messages_result->fetch_assoc()) {
+    // Validate and format timestamp
+    if (!empty($row['timestamp'])) {
+        $timestamp = strtotime($row['timestamp']);
+        if ($timestamp === false) {
+            // Invalid timestamp, use current time instead
+            $row['timestamp'] = date('Y-m-d H:i:s');
+        } else {
+            // Format the timestamp for display
+            $row['timestamp'] = date('Y-m-d H:i:s', $timestamp);
+        }
+    } else {
+        // Empty timestamp, use current time
+        $row['timestamp'] = date('Y-m-d H:i:s');
+    }
+    
     $messages[] = $row;
 }
 
