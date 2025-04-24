@@ -59,6 +59,34 @@ header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Cache-Control: post-check=0, pre-check=0", false);
 header("Pragma: no-cache");
 
+function generateInventoryRow($row) {
+    $html = '<tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">';
+    $html .= '<td class="p-4 text-sm text-sidebar-text font-medium">#INV-' . str_pad($row["inventory_id"], 3, '0', STR_PAD_LEFT) . '</td>';
+    $html .= '<td class="p-4 text-sm text-sidebar-text">' . htmlspecialchars($row["item_name"]) . '</td>';
+    $html .= '<td class="p-4 text-sm text-sidebar-text">';
+    $html .= '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">';
+    $html .= htmlspecialchars($row["category_name"]) . '</span>';
+    $html .= '</td>';
+    $html .= '<td class="p-4 text-sm text-sidebar-text" data-sort-value="' . $row["quantity"] . '">' . $row["quantity"] . '</td>';
+    $html .= '<td class="p-4 text-sm font-medium text-sidebar-text" data-sort-value="' . $row["price"] . '">₱' . number_format($row["price"], 2) . '</td>';
+    $html .= '<td class="p-4 text-sm font-medium text-sidebar-text" data-sort-value="' . $row["total_value"] . '">₱' . number_format($row["total_value"], 2) . '</td>';
+    $html .= '<td class="p-4 text-sm">';
+    $html .= '<div class="flex space-x-2">';
+    $html .= '<button class="p-2 bg-yellow-100 text-yellow-600 rounded-lg hover:bg-yellow-200 transition-all tooltip" title="Edit Item" onclick="openViewItemModal(' . $row["inventory_id"] . ')">';
+    $html .= '<i class="fas fa-edit"></i>';
+    $html .= '</button>';
+    $html .= '<form method="POST" action="inventory/delete_inventory_item.php" onsubmit="return false;" style="display:inline;" class="delete-form">';
+    $html .= '<input type="hidden" name="inventory_id" value="' . $row["inventory_id"] . '">';
+    $html .= '<button type="submit" class="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-all tooltip" title="Archive Item">';
+    $html .= '<i class="fas fa-archive"></i>';
+    $html .= '</button>';
+    $html .= '</form>';
+    $html .= '</div>';
+    $html .= '</td>';
+    $html .= '</tr>';
+    
+    return $html;
+}
 
 ?>
 
@@ -545,11 +573,11 @@ if ($branchResult->num_rows > 0) {
   </div>
   
   <!-- Responsive Table Container with improved spacing -->
-  <div class="overflow-x-auto scrollbar-thin" id="tableContainer<?php echo $branchId; ?>">
-    <div id="loadingIndicator<?php echo $branchId; ?>" class="hidden absolute inset-0 bg-white bg-opacity-50 flex items-center justify-center">
-      <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-sidebar-accent"></div>
+  <div class="overflow-x-auto scrollbar-thin relative" id="tableContainer<?php echo $branchId; ?>">
+    <div id="loadingIndicator<?php echo $branchId; ?>" class="hidden absolute inset-0 bg-white bg-opacity-50 flex items-center justify-center z-10">
+      <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-sidebar-accent"></div>
     </div>
-    
+
     <!-- Responsive Table with improved spacing and horizontal scroll for small screens -->
     <div class="min-w-full">
       <table class="w-full">
@@ -598,49 +626,25 @@ if ($branchResult->num_rows > 0) {
             </th>
           </tr>
         </thead>
-        <tbody id="inventoryTable_<?php echo $branchId; ?>">
-          <?php
-          if ($paginatedResult->num_rows > 0) {
-              // Output data of each row
-              while($row = $paginatedResult->fetch_assoc()) {
-                  echo '<tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">';
-                  echo '<td class="p-4 text-sm text-sidebar-text font-medium">#INV-' . str_pad($row["inventory_id"], 3, '0', STR_PAD_LEFT) . '</td>';
-                  echo '<td class="p-4 text-sm text-sidebar-text">' . htmlspecialchars($row["item_name"]) . '</td>';
-                  echo '<td class="p-4 text-sm text-sidebar-text">';
-                  echo '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">';
-                  echo  htmlspecialchars($row["category_name"]) . '</span>';
-                  echo '</td>';
-                  echo '<td class="p-4 text-sm text-sidebar-text" data-sort-value="' . $row["quantity"] . '">' . $row["quantity"] . '</td>';
-                  echo '<td class="p-4 text-sm font-medium text-sidebar-text" data-sort-value="' . $row["price"] . '">₱' . number_format($row["price"], 2) . '</td>';
-                  echo '<td class="p-4 text-sm font-medium text-sidebar-text" data-sort-value="' . $row["total_value"] . '">₱' . number_format($row["total_value"], 2) . '</td>';
-                  echo '<td class="p-4 text-sm">';
-                  echo '<div class="flex space-x-2">';
-                  echo '<button class="p-2 bg-yellow-100 text-yellow-600 rounded-lg hover:bg-yellow-200 transition-all tooltip" title="Edit Item" onclick="openViewItemModal(' . $row["inventory_id"] . ')">';
-                  echo '<i class="fas fa-edit"></i>';
-                  echo '</button>';
-                  echo '<form method="POST" action="inventory/delete_inventory_item.php" onsubmit="return false;" style="display:inline;" class="delete-form">';
-                  echo '<input type="hidden" name="inventory_id" value="' . $row["inventory_id"] . '">';
-                  echo '<button type="submit" class="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-all tooltip" title="Archive Item">';
-                  echo '<i class="fas fa-archive"></i>';
-                  echo '</button>';
-                  echo '</form>';
+            <tbody id="inventoryTable_<?php echo $branchId; ?>">
+              <?php
+              if ($paginatedResult->num_rows > 0) {
+                  while($row = $paginatedResult->fetch_assoc()) {
+                      echo generateInventoryRow($row);
+                  }
+              } else {
+                  echo '<tr>';
+                  echo '<td colspan="7" class="p-6 text-sm text-center">';
+                  echo '<div class="flex flex-col items-center">';
+                  echo '<i class="fas fa-box-open text-gray-300 text-4xl mb-3"></i>';
+                  echo '<p class="text-gray-500">No inventory items found for this branch</p>';
                   echo '</div>';
                   echo '</td>';
                   echo '</tr>';
               }
-          } else {
-              echo '<tr>';
-              echo '<td colspan="7" class="p-6 text-sm text-center">';
-              echo '<div class="flex flex-col items-center">';
-              echo '<i class="fas fa-box-open text-gray-300 text-4xl mb-3"></i>';
-              echo '<p class="text-gray-500">No inventory items found for this branch</p>';
-              echo '</div>';
-              echo '</td>';
-              echo '</tr>';
-          }
-          ?>
-        </tbody>
-      </table>
+              ?>
+            </tbody>
+        </table>
     </div>
   </div>
   
@@ -650,28 +654,28 @@ if ($branchResult->num_rows > 0) {
       Showing <?php echo min(($currentPage - 1) * $itemsPerPage + 1, $totalItems) . ' - ' . min($currentPage * $itemsPerPage, $totalItems); ?> 
       of <?php echo $totalItems; ?> items
     </div>
-    <div class="flex space-x-2">
-      <?php if ($currentPage > 1): ?>
-        <a href="?page_<?php echo $branchId; ?>=<?php echo $currentPage - 1 ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">&laquo;</a>
-      <?php else: ?>
-        <button disabled class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm opacity-50 cursor-not-allowed">&laquo;</button>
-      <?php endif; ?>
-      
-      <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-        <?php if ($i == $currentPage): ?>
-          <button class="px-3.5 py-1.5 bg-sidebar-accent text-white rounded text-sm"><?php echo $i ?></button>
-        <?php else: ?>
-          <a href="?page_<?php echo $branchId; ?>=<?php echo $i ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover"><?php echo $i ?></a>
-        <?php endif; ?>
-      <?php endfor; ?>
-      
-      <?php if ($currentPage < $totalPages): ?>
-        <a href="?page_<?php echo $branchId; ?>=<?php echo $currentPage + 1 ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">&raquo;</a>
-      <?php else: ?>
-        <button disabled class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm opacity-50 cursor-not-allowed">&raquo;</button>
-      <?php endif; ?>
+        <div class="flex space-x-2">
+            <?php if ($currentPage > 1): ?>
+                <button onclick="loadPage(<?php echo $branchId; ?>, <?php echo $currentPage - 1 ?>)" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">&laquo;</button>
+            <?php else: ?>
+                <button disabled class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm opacity-50 cursor-not-allowed">&laquo;</button>
+            <?php endif; ?>
+            
+            <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                <?php if ($i == $currentPage): ?>
+                    <button class="px-3.5 py-1.5 bg-sidebar-accent text-white rounded text-sm"><?php echo $i ?></button>
+                <?php else: ?>
+                    <button onclick="loadPage(<?php echo $branchId; ?>, <?php echo $i ?>)" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover"><?php echo $i ?></button>
+                <?php endif; ?>
+            <?php endfor; ?>
+            
+            <?php if ($currentPage < $totalPages): ?>
+                <button onclick="loadPage(<?php echo $branchId; ?>, <?php echo $currentPage + 1 ?>)" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">&raquo;</button>
+            <?php else: ?>
+                <button disabled class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm opacity-50 cursor-not-allowed">&raquo;</button>
+            <?php endif; ?>
+        </div>
     </div>
-  </div>
 </div> 
  
     
@@ -1090,6 +1094,76 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
+function loadPage(branchId, page) {
+    // Show loading indicator
+    const loadingIndicator = document.getElementById(`loadingIndicator${branchId}`);
+    const tableContainer = document.getElementById(`tableContainer${branchId}`);
+    
+    loadingIndicator.classList.remove('hidden');
+    tableContainer.style.opacity = '0.5';
+    
+    // Make AJAX request
+    fetch(`inventory/load_inventory_table.php?branch_id=${branchId}&page=${page}`)
+        .then(response => response.text())
+        .then(data => {
+            // Update the table content
+            document.getElementById(`inventoryTable_${branchId}`).innerHTML = data;
+            
+            // Update pagination info
+            const totalItems = <?php echo $totalItems; ?>;
+            const itemsPerPage = <?php echo $itemsPerPage; ?>;
+            const startItem = (page - 1) * itemsPerPage + 1;
+            const endItem = Math.min(page * itemsPerPage, totalItems);
+            
+            document.getElementById(`paginationInfo_${branchId}`).innerHTML = 
+                `Showing ${startItem} - ${endItem} of ${totalItems} items`;
+            
+            // Update pagination buttons active state
+            updatePaginationActiveState(branchId, page);
+            
+            // Hide loading indicator
+            loadingIndicator.classList.add('hidden');
+            tableContainer.style.opacity = '1';
+            
+            // Re-attach event listeners for edit buttons
+            document.querySelectorAll(`#inventoryTable_${branchId} button[onclick^="openViewItemModal"]`).forEach(button => {
+                button.onclick = function() {
+                    const inventoryId = this.getAttribute('onclick').match(/openViewItemModal\((\d+)\)/)[1];
+                    openViewItemModal(inventoryId);
+                };
+            });
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            loadingIndicator.classList.add('hidden');
+            tableContainer.style.opacity = '1';
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Failed to load inventory data. Please try again.'
+            });
+        });
+}
+
+// Helper function to update pagination active state
+function updatePaginationActiveState(branchId, currentPage) {
+    const paginationContainer = document.querySelector(`#paginationInfo_${branchId}`).nextElementSibling;
+    const pageButtons = paginationContainer.querySelectorAll('button');
+    
+    pageButtons.forEach(button => {
+        // Remove active class from all buttons
+        button.classList.remove('bg-sidebar-accent', 'text-white');
+        button.classList.add('border', 'border-sidebar-border', 'hover:bg-sidebar-hover');
+        
+        // Check if this button is the current page
+        const pageNumber = parseInt(button.textContent);
+        if (!isNaN(pageNumber) && pageNumber === currentPage) {
+            button.classList.remove('border', 'border-sidebar-border', 'hover:bg-sidebar-hover');
+            button.classList.add('bg-sidebar-accent', 'text-white');
+        }
+    });
+}
 </script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
