@@ -59,7 +59,7 @@ require_once '../db_connect.php'; // Database connection
                 $email = $row['email'];
                 
 // Get revenue data
-$revenueQuery = "SELECT SUM(amount_paid) as total_revenue FROM sales";
+$revenueQuery = "SELECT SUM(amount_paid) as total_revenue FROM sales_tb";
 $revenueResult = $conn->query($revenueQuery);
 $revenueData = $revenueResult->fetch_assoc();
 $totalRevenue = $revenueData['total_revenue'] ?? 0;
@@ -70,7 +70,7 @@ $formattedRevenue = number_format($totalRevenue, 2);
 // Get services this month count
 $currentMonth = date('m');
 $currentYear = date('Y');
-$servicesQuery = "SELECT COUNT(*) as services_count FROM sales 
+$servicesQuery = "SELECT COUNT(*) as services_count FROM sales_tb 
                  WHERE MONTH(get_timestamp) = ? AND YEAR(get_timestamp) = ?";
 $stmt = $conn->prepare($servicesQuery);
 $stmt->bind_param("ii", $currentMonth, $currentYear);
@@ -80,13 +80,13 @@ $servicesData = $servicesResult->fetch_assoc();
 $servicesCount = $servicesData['services_count'] ?? 0;
 
 // Get pending services count
-$pendingQuery = "SELECT COUNT(*) as pending_count FROM sales WHERE status = 'Pending'";
+$pendingQuery = "SELECT COUNT(*) as pending_count FROM sales_tb WHERE status = 'Pending'";
 $pendingResult = $conn->query($pendingQuery);
 $pendingData = $pendingResult->fetch_assoc();
 $pendingCount = $pendingData['pending_count'] ?? 0;
 
 // Get completed services count
-$completedQuery = "SELECT COUNT(*) as completed_count FROM sales WHERE status = 'Completed'";
+$completedQuery = "SELECT COUNT(*) as completed_count FROM sales_tb WHERE status = 'Completed'";
 $completedResult = $conn->query($completedQuery);
 $completedData = $completedResult->fetch_assoc();
 $completedCount = $completedData['completed_count'] ?? 0;
