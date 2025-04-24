@@ -1215,6 +1215,13 @@ function closePackageModal() {
   selectedService = null;
 }
 
+function closeServiceTypeModal() {
+  const modal = document.getElementById('serviceTypeModal');
+  if (modal) {
+    modal.classList.add('hidden');
+  }
+}
+
 // Function to handle adding to cart and immediately proceed to checkout
 // Modify the addToCart function to show service type selection first
 function addToCart() {

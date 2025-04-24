@@ -601,7 +601,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     <!-- Modal Footer -->
     <div class="px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row sm:justify-end gap-2 sm:gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
-      <button class="w-full sm:w-auto px-4 sm:px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center" id="closeConvertModal">
+      <button class="w-full sm:w-auto px-4 sm:px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center" id="cancelConvertModal">
         Cancel
       </button>
       <button class="w-full sm:w-auto px-5 sm:px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" id="confirmConvertToSale">
@@ -747,7 +747,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     <!-- Modal Footer --> 
     <div class="px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row sm:justify-end gap-2 sm:gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
-      <button type="button" class="w-full sm:w-auto px-4 sm:px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center" id="closeModal">
+      <button type="button" class="w-full sm:w-auto px-4 sm:px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center" id="cancelModal">
         Close
       </button>
       <button id="submitPayment" class="w-full sm:w-auto px-5 sm:px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center">
@@ -923,9 +923,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     <!-- Modal Footer --> 
     <div class="px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row sm:justify-end gap-2 sm:gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
-      <button class="w-full sm:w-auto px-4 sm:px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center" id="closeEditModal">
-        Cancel
-      </button>
+    <button class="w-full sm:w-auto px-4 sm:px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center" id="cancelEditModal">
+  Cancel
+</button>
       <button class="w-full sm:w-auto px-5 sm:px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" id="saveLifePlan">
         Save Changes
       </button>
@@ -982,6 +982,7 @@ updateStats();
 document.addEventListener('DOMContentLoaded', function() {
     const modal = document.getElementById('receiptModal');
     const closeModalBtn = document.getElementById('closeModal');
+    const cancelModalBtn = document.getElementById('cancelModal');
     const viewReceiptBtns = document.querySelectorAll('.view-receipt-btn');
     const submitPaymentBtn = document.getElementById('submitPayment');
     
@@ -1118,6 +1119,12 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Close modal
     closeModalBtn.addEventListener('click', function() {
+        resetPaymentForm();
+        modal.classList.add('hidden');
+    });
+
+    // Close modal
+    cancelModalBtn.addEventListener('click', function() {
         resetPaymentForm();
         modal.classList.add('hidden');
     });
@@ -1285,6 +1292,7 @@ document.addEventListener('DOMContentLoaded', function() {
 document.addEventListener('DOMContentLoaded', function() {
     const editModal = document.getElementById('editLifePlanModal');
     const closeEditModalBtn = document.getElementById('closeEditModal');
+    const cancelEditModalBtn = document.getElementById('cancelEditModal');
     const editButtons = document.querySelectorAll('.fa-edit').forEach(btn => {
         btn.closest('button').addEventListener('click', function() {
             const row = this.closest('tr');
@@ -1298,17 +1306,21 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Close modal
-    closeEditModalBtn.addEventListener('click', function() {
+    // Add event listeners to both buttons
+closeEditModalBtn.addEventListener('click', function() {
+    editModal.classList.add('hidden');
+});
+
+cancelEditModalBtn.addEventListener('click', function() {
+    editModal.classList.add('hidden');
+});
+
+// Close modal when clicking outside
+window.addEventListener('click', function(event) {
+    if (event.target === editModal) {
         editModal.classList.add('hidden');
-    });
-    
-    // Close modal when clicking outside
-    window.addEventListener('click', function(event) {
-        if (event.target === editModal) {
-            editModal.classList.add('hidden');
-        }
-    });
+    }
+});
     
     // Customer search functionality
     const customerSearch = document.getElementById('customerSearch');
@@ -1656,6 +1668,7 @@ document.addEventListener('DOMContentLoaded', function() {
 document.addEventListener('DOMContentLoaded', function() {
     const convertModal = document.getElementById('convertToSaleModal');
     const closeConvertModalBtn = document.getElementById('closeConvertModal');
+    const cancelConvertModalBtn = document.getElementById('cancelConvertModal');
     const confirmConvertBtn = document.getElementById('confirmConvertToSale');
     const convertBtns = document.querySelectorAll('.convert-to-sale-btn');
     
@@ -1763,6 +1776,11 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Close modal
     closeConvertModalBtn.addEventListener('click', function() {
+        convertModal.classList.add('hidden');
+    });
+
+    // Close modal
+    cancelConvertModalBtn.addEventListener('click', function() {
         convertModal.classList.add('hidden');
     });
     
