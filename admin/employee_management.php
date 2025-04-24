@@ -504,8 +504,8 @@ echo "</tr>";
     </div>
     
     <!-- Modal Footer -->
-    <div class="px-4 sm:px-6 py-3 sm:py-4 flex justify-end gap-2 sm:gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
-      <button type="button" onclick="closeViewEmployeeModal()" class="px-4 sm:px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center">
+    <div class="px-4 sm:px-6 py-3 sm:py-4 flex justify-center border-t border-gray-200 sticky bottom-0 bg-white">
+      <button type="button" onclick="closeViewEmployeeModal()" class="w-full sm:w-auto px-4 sm:px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center">
         Close
       </button>
     </div>
