@@ -352,6 +352,7 @@ $customersResult = mysqli_query($conn, $customersQuery);
                 onclick="changePage(<?php echo $page + 1; ?>)" <?php echo $page >= $totalPages ? 'disabled' : ''; ?>>&raquo;</button>
     </div>
 </div>
+        </div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
