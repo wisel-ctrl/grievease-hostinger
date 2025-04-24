@@ -164,33 +164,33 @@ $customersResult = mysqli_query($conn, $customersQuery);
                             <div>
                                 <h5 class="text-sm font-medium text-sidebar-text mb-2">Sort By</h5>
                                 <div class="space-y-1">
-                                    <div class="flex items-center cursor-pointer" data-sort="id_asc">
-                                        <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                                    <div class="flex items-center cursor-pointer filter-option" data-sort="id_asc">
+                                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
                                             ID: Ascending
                                         </span>
                                     </div>
-                                    <div class="flex items-center cursor-pointer" data-sort="id_desc">
-                                        <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                                    <div class="flex items-center cursor-pointer filter-option" data-sort="id_desc">
+                                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
                                             ID: Descending
                                         </span>
                                     </div>
-                                    <div class="flex items-center cursor-pointer" data-sort="name_asc">
-                                        <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                                    <div class="flex items-center cursor-pointer filter-option" data-sort="name_asc">
+                                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
                                             Name: A-Z
                                         </span>
                                     </div>
-                                    <div class="flex items-center cursor-pointer" data-sort="name_desc">
-                                        <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                                    <div class="flex items-center cursor-pointer filter-option" data-sort="name_desc">
+                                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
                                             Name: Z-A
                                         </span>
                                     </div>
-                                    <div class="flex items-center cursor-pointer" data-sort="email_asc">
-                                        <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                                    <div class="flex items-center cursor-pointer filter-option" data-sort="email_asc">
+                                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
                                             Email: A-Z
                                         </span>
                                     </div>
-                                    <div class="flex items-center cursor-pointer" data-sort="email_desc">
-                                        <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                                    <div class="flex items-center cursor-pointer filter-option" data-sort="email_desc">
+                                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
                                             Email: Z-A
                                         </span>
                                     </div>
@@ -229,6 +229,45 @@ $customersResult = mysqli_query($conn, $customersQuery);
                             <i class="fas fa-filter text-xl"></i>
                             <span id="filterIndicatorMobile" class="hidden absolute top-1 right-1 h-2 w-2 bg-sidebar-accent rounded-full"></span>
                         </button>
+                        
+                        <!-- Mobile Filter Dropdown -->
+                        <div id="customerFilterDropdownMobile" class="hidden absolute right-0 mt-2 w-56 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-4">
+                            <div class="space-y-2">
+                                <h5 class="text-sm font-medium text-sidebar-text mb-2">Sort By</h5>
+                                <div class="space-y-1">
+                                    <div class="flex items-center cursor-pointer filter-option-mobile" data-sort="id_asc">
+                                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                                            ID: Ascending
+                                        </span>
+                                    </div>
+                                    <div class="flex items-center cursor-pointer filter-option-mobile" data-sort="id_desc">
+                                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                                            ID: Descending
+                                        </span>
+                                    </div>
+                                    <div class="flex items-center cursor-pointer filter-option-mobile" data-sort="name_asc">
+                                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                                            Name: A-Z
+                                        </span>
+                                    </div>
+                                    <div class="flex items-center cursor-pointer filter-option-mobile" data-sort="name_desc">
+                                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                                            Name: Z-A
+                                        </span>
+                                    </div>
+                                    <div class="flex items-center cursor-pointer filter-option-mobile" data-sort="email_asc">
+                                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                                            Email: A-Z
+                                        </span>
+                                    </div>
+                                    <div class="flex items-center cursor-pointer filter-option-mobile" data-sort="email_desc">
+                                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                                            Email: Z-A
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -255,27 +294,27 @@ $customersResult = mysqli_query($conn, $customersQuery);
             <table class="w-full">
                 <thead>
                     <tr class="bg-gray-50 border-b border-sidebar-border">
-                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(0)">
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable('id')">
                             <div class="flex items-center gap-1.5">
                                 <i class="fas fa-hashtag text-sidebar-accent"></i> ID 
                             </div>
                         </th>
-                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(1)">
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable('name')">
                             <div class="flex items-center gap-1.5">
                                 <i class="fas fa-user text-sidebar-accent"></i> Name 
                             </div>
                         </th>
-                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(2)">
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable('email')">
                             <div class="flex items-center gap-1.5">
                                 <i class="fas fa-envelope text-sidebar-accent"></i> Email 
                             </div>
                         </th>
-                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(3)">
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable('role')">
                             <div class="flex items-center gap-1.5">
                                 <i class="fas fa-id-badge text-sidebar-accent"></i> Role 
                             </div>
                         </th>
-                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(4)">
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable('status')">
                             <div class="flex items-center gap-1.5">
                                 <i class="fas fa-toggle-on text-sidebar-accent"></i> Status 
                             </div>
@@ -289,30 +328,6 @@ $customersResult = mysqli_query($conn, $customersQuery);
                 </thead>
                 <tbody id="customerTableBody">
                     <!-- Table content will be dynamically loaded -->
-                    <!-- Example row (will be replaced by actual data) -->
-                    <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
-                        <td class="px-4 py-3.5 text-sm text-sidebar-text font-medium">#CUST-001</td>
-                        <td class="px-4 py-3.5 text-sm text-sidebar-text">John Doe</td>
-                        <td class="px-4 py-3.5 text-sm text-sidebar-text">john.doe@example.com</td>
-                        <td class="px-4 py-3.5 text-sm text-sidebar-text">
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">Customer</span>
-                        </td>
-                        <td class="px-4 py-3.5 text-sm">
-                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-600 border border-green-200">
-                                <i class="fas fa-check-circle mr-1"></i> Active
-                            </span>
-                        </td>
-                        <td class="px-4 py-3.5 text-sm">
-                            <div class="flex space-x-2">
-                                <button class="p-2 bg-yellow-100 text-yellow-600 rounded-lg hover:bg-yellow-200 transition-all tooltip" title="Edit Customer">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-all tooltip" title="Delete Customer">
-                                    <i class="fas fa-trash-alt"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
                 </tbody>
             </table>
         </div>
@@ -321,7 +336,8 @@ $customersResult = mysqli_query($conn, $customersQuery);
     <!-- Sticky Pagination Footer with improved spacing -->
     <div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
         <div id="paginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
-            Showing 1 - 10 of 100 customers
+            Showing <?php echo ($offset + 1) . ' - ' . min($offset + $recordsPerPage, $totalCustomers); ?> 
+            of <?php echo $totalCustomers; ?> customers
         </div>
         <div class="flex space-x-2">
             <a href="javascript:void(0)" onclick="changePage(<?php echo max(1, $page - 1); ?>)" 
