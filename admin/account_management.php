@@ -193,6 +193,13 @@ $customersResult = mysqli_query($conn, $customersQuery);
                     </div>
                 </div>
 
+                <!-- Archive Button -->
+        <button class="px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover whitespace-nowrap"
+                onclick="showArchivedItems(<?php echo $branchId; ?>)">
+          <i class="fas fa-archive text-sidebar-accent"></i>
+          <span>Archived</span>
+        </button>
+
                 <!-- Add Customer Account Button -->
                 <button class="px-4 py-2 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm whitespace-nowrap" 
                         onclick="openAddCustomerAccountModal()">
