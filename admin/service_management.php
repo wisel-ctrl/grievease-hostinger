@@ -70,6 +70,10 @@ header("Pragma: no-cache");
   <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   
 </head>
 <body class="flex bg-gray-50">
@@ -450,8 +454,10 @@ if ($branchResult->num_rows > 0) {
                                         <button class="p-2 bg-yellow-100 text-yellow-600 rounded-lg hover:bg-yellow-200 transition-all tooltip" title="Edit Service" onclick="openEditServiceModal('<?php echo $row["service_id"]; ?>', '<?php echo $branchId; ?>')">
                                             <i class="fas fa-edit"></i>
                                         </button>
-                                        <button class="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-all tooltip" title="Delete Service" onclick="deleteService('<?php echo $row["service_id"]; ?>', '<?php echo $branchId; ?>')">
-                                        <i class="fas fa-archive text-red"></i>
+                                        <button class="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-all tooltip" 
+                                                title="Archive Service" 
+                                                onclick="archiveService('<?php echo htmlspecialchars($row['service_id'], ENT_QUOTES); ?>', '<?php echo htmlspecialchars($branchId, ENT_QUOTES); ?>')">
+                                            <i class="fas fa-archive"></i>
                                         </button>
                                     </div>
                                 </td>
@@ -537,6 +543,69 @@ if ($branchResult->num_rows > 0) {
 <script>
 // Global variable to track active filters
 const activeFilters = {};
+
+
+// Function to archive a service
+// Function to archive a service
+function archiveService(serviceId, branchId) {
+  Swal.fire({
+    title: 'Archive Service',
+    text: 'Are you sure you want to archive this service?',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Yes, archive it!'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      // Send AJAX request to update service status to 'Inactive'
+      $.ajax({
+        url: 'servicesManagement/archive_service.php',
+        type: 'POST',
+        data: {
+          service_id: serviceId,
+          branch_id: branchId
+        },
+        success: function(response) {
+          try {
+            var data = JSON.parse(response);
+            if (data.status === 'success') {
+              Swal.fire(
+                'Archived!',
+                'Service has been archived successfully.',
+                'success'
+              ).then(() => {
+                // Reload the page to reflect changes
+                location.reload();
+              });
+            } else {
+              Swal.fire(
+                'Error!',
+                'Failed to archive service: ' + data.message,
+                'error'
+              );
+            }
+          } catch (e) {
+            console.error("Error parsing JSON response:", response);
+            Swal.fire(
+              'Error!',
+              'Invalid response from server.',
+              'error'
+            );
+          }
+        },
+        error: function(xhr, status, error) {
+          console.error("AJAX Error:", error);
+          Swal.fire(
+            'Error!',
+            'There was an error connecting to the server.',
+            'error'
+          );
+        }
+      });
+    }
+  });
+}
 
 // Debounce function to limit how often a function is called
 function debounce(func, wait) {
@@ -1596,14 +1665,7 @@ function fetchItemsByBranch(branchId) {
       }
     }
 
-    // Function to delete a service
-    function deleteService() {
-      if (confirm('Are you sure you want to delete this service?')) {
-        // Delete service logic here
-        alert('Service deleted successfully!');
-      }
-    }
-  </script>
+</script>
   
   <script src="tailwind.js"></script>
   
