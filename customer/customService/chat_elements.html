@@ -1,5 +1,3 @@
-<!-- chat_elements.html - Copy and include this HTML structure in your pages -->
-
 <!-- Overlay for blur effect (initially hidden) -->
 <div id="overlay" class="fixed inset-0 bg-black bg-opacity-40 backdrop-blur-sm z-40 hidden"></div>
 
@@ -11,9 +9,9 @@
     </button>
 
     <!-- Chat Window Modal (Initially Hidden) -->
-    <div id="chat-window" class="fixed bottom-12 right-20 z-50 bg-white rounded-lg shadow-xl w-80 hidden">
+    <div id="chat-window" class="fixed bottom-0 right-0 md:bottom-12 md:right-20 z-50 bg-white rounded-lg shadow-xl w-full md:w-80 h-full md:h-auto max-h-screen md:max-h-96 hidden">
         <!-- Chat Header -->
-        <div class="bg-black text-white p-3 rounded-t-lg flex justify-between items-center">
+        <div class="bg-black text-white p-3 rounded-t-lg flex justify-between items-center sticky top-0">
             <div class="flex items-center">
                 <div class="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
                 <span>Customer Support</span>
@@ -32,7 +30,7 @@
         <input type="hidden" id="user-id" value="<?php echo isset($_SESSION['user_id']) ? $_SESSION['user_id'] : ''; ?>">
 
         <!-- Chat Messages -->
-        <div id="chat-messages" class="p-3 h-80 overflow-y-auto space-y-3 bg-gray-50">
+        <div id="chat-messages" class="p-3 h-80 overflow-y-auto space-y-3 bg-gray-50 flex-grow">
             <div class="flex items-start">
                 <div class="bg-gray-200 rounded-lg p-2 max-w-[80%]">
                     <p class="text-sm">Hello, welcome to GrievEase customer support. How can I assist you today?</p>
@@ -41,7 +39,7 @@
         </div>
 
         <!-- Chat Input -->
-        <div class="p-3 border-t">
+        <div class="p-3 border-t sticky bottom-0 bg-white">
             <div class="flex">
                 <input type="text" id="chat-input" placeholder="Type your message..." class="flex-1 p-2 border border-gray-300 rounded-l-md focus:outline-none focus:border-gold">
                 <button id="send-message" class="bg-yellow-600 text-black px-4 rounded-r-md hover:bg-darkgold transition">
@@ -55,11 +53,11 @@
 <!-- Branch Selection Modal (Initially Hidden) -->
 <div id="branch-modal" class="fixed inset-0 flex items-center justify-center z-50 hidden">
     <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
-    <div class="bg-white rounded-lg shadow-xl w-80 z-10 p-5">
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-xs md:max-w-sm mx-4 z-10 p-5">
         <h3 class="text-lg font-semibold mb-4">Select Branch Location</h3>
         <p class="text-sm text-gray-600 mb-4">Please select which branch you'd like to contact:</p>
 
-        <div id="branch-options" class="space-y-3">
+        <div id="branch-options" class="space-y-3 max-h-60 overflow-y-auto">
             <!-- Branch options will be dynamically inserted here -->
             <div class="text-center py-4">
                 <i class="fas fa-spinner fa-spin"></i> Loading branches...
@@ -67,3 +65,65 @@
         </div>
     </div>
 </div>
+
+<!-- Add responsive CSS for mobile devices -->
+<style>
+    @media (max-width: 768px) {
+        #chat-window {
+            transition: all 0.3s ease;
+        }
+        #chat-window.active {
+            display: flex !important;
+            flex-direction: column;
+        }
+        #chat-messages {
+            height: calc(100vh - 120px);
+        }
+    }
+</style>
+
+<!-- Add JavaScript to handle responsive behavior -->
+<script>
+    // Original chat functionality remains unchanged
+    document.addEventListener('DOMContentLoaded', function() {
+        const csButton = document.getElementById('cs-button');
+        const chatWindow = document.getElementById('chat-window');
+        const minimizeChat = document.getElementById('minimize-chat');
+        const closeChat = document.getElementById('close-chat');
+        const overlay = document.getElementById('overlay');
+        
+        // Responsive handling
+        function toggleChat() {
+            chatWindow.classList.toggle('hidden');
+            chatWindow.classList.toggle('active');
+            
+            // On mobile, show overlay when chat is open
+            if (window.innerWidth < 768) {
+                if (!chatWindow.classList.contains('hidden')) {
+                    overlay.classList.remove('hidden');
+                } else {
+                    overlay.classList.add('hidden');
+                }
+            }
+        }
+        
+        csButton.addEventListener('click', toggleChat);
+        closeChat.addEventListener('click', toggleChat);
+        minimizeChat.addEventListener('click', toggleChat);
+        
+        // Close chat when clicking overlay (mobile only)
+        overlay.addEventListener('click', function() {
+            chatWindow.classList.add('hidden');
+            chatWindow.classList.remove('active');
+            overlay.classList.add('hidden');
+        });
+        
+        // Adjust on window resize
+        window.addEventListener('resize', function() {
+            if (window.innerWidth >= 768) {
+                overlay.classList.add('hidden');
+                chatWindow.style.height = '';
+            }
+        });
+    });
+</script>
