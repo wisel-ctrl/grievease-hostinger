@@ -29,7 +29,7 @@ if ($result->num_rows > 0) {
             ? "#EMP-" . str_pad($row['id'], 3, '0', STR_PAD_LEFT)
             : "#CUST-" . str_pad($row['id'], 3, '0', STR_PAD_LEFT);
         
-        $fullName = htmlspecialchars($row['first_name'] . ' ' . $row['last_name']);
+        $fullName = htmlspecialchars(ucfirst($row['first_name']) . ' ' . ucfirst($row['last_name']));
         $email = htmlspecialchars($row['email']);
         $userTypeText = ($userType == 2) ? 'Employee' : 'Customer';
         

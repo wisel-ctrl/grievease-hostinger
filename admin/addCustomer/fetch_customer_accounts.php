@@ -82,7 +82,7 @@ if ($result->num_rows > 0) {
         $customerId = "#CUST-" . str_pad($row['id'], 3, '0', STR_PAD_LEFT);
         
         // Format full name
-        $fullName = $row['first_name'] . ' ' . $row['last_name'];
+        $fullName = ucfirst(strtolower($row['first_name'])) . ' ' . ucfirst(strtolower($row['last_name']));
         
         // Create table row
         $tableContent .= '<tr class="border-b border-sidebar-border hover:bg-sidebar-hover">
