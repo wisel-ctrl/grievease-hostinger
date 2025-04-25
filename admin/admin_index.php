@@ -1408,14 +1408,14 @@ for ($i = 5; $i >= 0; $i--) {
 
     // Calculate revenue for the last 6 months (this is a simplified example)
     // In a real application, you would query the database for monthly revenue
-    const monthlyRevenue = [
-        Math.round(prevRevenue * 0.7), // 3 months ago
-        Math.round(prevRevenue * 0.8), // 2 months ago
-        Math.round(prevRevenue * 0.9), // last month
-        currentRevenue,                // current month
-        Math.round(currentRevenue * 1.1), // next month projection
-        Math.round(currentRevenue * 1.2)  // following month projection
-    ];
+    // const monthlyRevenue = [
+    //     Math.round(prevRevenue * 0.7), // 3 months ago
+    //     Math.round(prevRevenue * 0.8), // 2 months ago
+    //     Math.round(prevRevenue * 0.9), // last month
+    //     currentRevenue,                // current month
+    //     Math.round(currentRevenue * 1.1), // next month projection
+    //     Math.round(currentRevenue * 1.2)  // following month projection
+    // ];
     const monthlyRevenue = <?php echo json_encode($monthlyRevenueData); ?>;
 
     const revenueCtx = document.getElementById('revenueChart').getContext('2d');
