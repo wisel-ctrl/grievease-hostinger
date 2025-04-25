@@ -746,41 +746,76 @@ $conn->close();
 
 <!-- Lifeplan Modal (Hidden by Default) -->
 <div id="lifeplanModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4 hidden">
-    <div class="w-full max-w-5xl bg-white rounded-2xl shadow-xl overflow-hidden max-h-[80vh]">
+    <div class="w-full max-w-5xl bg-white rounded-2xl shadow-xl overflow-hidden max-h-[90vh] md:max-h-[80vh]">
         <!-- Scroll container for both columns -->
-        <div class="modal-scroll-container grid grid-cols-1 md:grid-cols-2 overflow-y-auto max-h-[80vh]">
+        <div class="modal-scroll-container grid grid-cols-1 md:grid-cols-2 overflow-y-auto max-h-[90vh] md:max-h-[80vh]">
             <!-- Left Side: Package Details -->
-            <div class="bg-cream p-8">
+            <div class="bg-cream p-4 md:p-8 details-section">
+                <!-- Header and Close Button for Mobile -->
+                <div class="flex justify-between items-center mb-4 md:hidden">
+                    <h2 class="text-xl font-hedvig text-navy">Package Details</h2>
+                    <button class="closeModalBtn text-gray-500 hover:text-navy">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+                
                 <!-- Package Image -->
-                <div class="mb-6">
-                    <img id="lifeplanPackageImage" src="" alt="" class="w-full h-64 object-cover rounded-lg mb-4">
+                <div class="mb-4 md:mb-6">
+                    <img id="lifeplanPackageImage" src="" alt="" class="w-full h-48 md:h-64 object-cover rounded-lg mb-4">
                 </div>
 
                 <!-- Package Header -->
-                <div class="flex justify-between items-center mb-6">
-                    <h2 id="lifeplanPackageName" class="text-3xl font-hedvig text-navy"></h2>
-                    <div id="lifeplanPackagePrice" class="text-3xl font-hedvig text-yellow-600"></div>
+                <div class="flex justify-between items-center mb-4 md:mb-6">
+                    <h2 id="lifeplanPackageName" class="text-2xl md:text-3xl font-hedvig text-navy"></h2>
+                    <div id="lifeplanPackagePrice" class="text-2xl md:text-3xl font-hedvig text-yellow-600"></div>
                 </div>
 
                 <!-- Package Description -->
-                <p id="lifeplanPackageDesc" class="text-dark mb-6"></p>
+                <p id="lifeplanPackageDesc" class="text-dark mb-4 md:mb-6 text-sm md:text-base"></p>
 
                 <!-- Main Package Details -->
                 <div class="border-t border-gray-200 pt-4">
-                    <h3 class="text-xl font-hedvig text-navy mb-4">Package Includes:</h3>
-                    <ul id="lifeplanPackageFeatures" class="space-y-2">
+                    <h3 class="text-lg md:text-xl font-hedvig text-navy mb-3 md:mb-4">Package Includes:</h3>
+                    <ul id="lifeplanPackageFeatures" class="space-y-1 md:space-y-2">
                         <!-- Features will be inserted here by JavaScript -->
                     </ul>
+                </div>
+
+                <!-- Mobile-only summary and navigation button -->
+                <div class="mt-6 border-t border-gray-200 pt-4 md:hidden">
+                    <div class="bg-white p-4 rounded-lg shadow-sm">
+                        <div class="flex justify-between text-sm mb-2">
+                            <span class="text-navy">Package Total</span>
+                            <span id="lifeplanTotalPriceMobile" class="text-yellow-600">₱0</span>
+                        </div>
+                        <div class="flex justify-between text-sm mb-2">
+                            <span class="text-navy">Payment Term</span>
+                            <span id="lifeplanPaymentTermDisplayMobile" class="text-yellow-600">5 Years (60 Monthly Payments)</span>
+                        </div>
+                        <div class="flex justify-between font-bold mt-2 pt-2 border-t border-gray-300">
+                            <span class="text-navy">Monthly Payment</span>
+                            <span id="lifeplanMonthlyPaymentMobile" class="text-yellow-600">₱0</span>
+                        </div>
+                    </div>
+                    <button id="continueToLifeplanFormBtn" class="mt-4 w-full bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg shadow-md transition-all duration-300">
+                        Continue to Booking
+                    </button>
                 </div>
             </div>
 
             <!-- Right Side: Booking Form -->
-            <div class="bg-white p-8 border-l border-gray-200 overflow-y-auto">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-2xl font-hedvig text-navy">Book Your Lifeplan</h2>
-                    <button class="closeModalBtn text-gray-500 hover:text-navy">
-                        <i class="fas fa-times text-2xl"></i>
-                    </button>
+            <div class="bg-white p-4 md:p-8 border-t md:border-t-0 md:border-l border-gray-200 overflow-y-auto form-section hidden md:block">
+                <!-- Header and back button for mobile -->
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl md:text-2xl font-hedvig text-navy">Book Your Lifeplan</h2>
+                    <div class="flex items-center">
+                        <button id="backToLifeplanDetailsBtn" class="mr-2 text-gray-500 hover:text-navy md:hidden">
+                            <i class="fas fa-arrow-left text-lg"></i>
+                        </button>
+                        <button class="closeModalBtn text-gray-500 hover:text-navy">
+                            <i class="fas fa-times text-xl md:text-2xl"></i>
+                        </button>
+                    </div>
                 </div>
 
                 <form id="lifeplanBookingForm" class="space-y-4">
@@ -788,51 +823,51 @@ $conn->close();
                     <input type="hidden" id="lifeplanSelectedPackagePrice" name="packagePrice">
                     
                     <div class="border-b border-gray-200 pb-4 mb-4">
-                        <h3 class="text-lg font-hedvig text-navy mb-4">Plan Holder Information</h3>
-                        <div class="grid grid-cols-2 gap-4 mb-4">
+                        <h3 class="text-base md:text-lg font-hedvig text-navy mb-3 md:mb-4">Plan Holder Information</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 mb-3 md:mb-4">
                             <div>
-                                <label for="lifeplanHolderFirstName" class="block text-sm font-medium text-navy mb-2">First Name *</label>
+                                <label for="lifeplanHolderFirstName" class="block text-xs md:text-sm font-medium text-navy mb-1 md:mb-2">First Name *</label>
                                 <input type="text" id="lifeplanHolderFirstName" name="holderFirstName" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                             </div>
                             <div>
-                                <label for="lifeplanHolderMiddleName" class="block text-sm font-medium text-navy mb-2">Middle Name</label>
+                                <label for="lifeplanHolderMiddleName" class="block text-xs md:text-sm font-medium text-navy mb-1 md:mb-2">Middle Name</label>
                                 <input type="text" id="lifeplanHolderMiddleName" name="holderMiddleName" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                             </div>
                         </div>
-                        <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 mb-3 md:mb-4">
                             <div>
-                                <label for="lifeplanHolderLastName" class="block text-sm font-medium text-navy mb-2">Last Name *</label>
+                                <label for="lifeplanHolderLastName" class="block text-xs md:text-sm font-medium text-navy mb-1 md:mb-2">Last Name *</label>
                                 <input type="text" id="lifeplanHolderLastName" name="holderLastName" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                             </div>
                             <div>
-                                <label for="lifeplanHolderSuffix" class="block text-sm font-medium text-navy mb-2">Suffix</label>
+                                <label for="lifeplanHolderSuffix" class="block text-xs md:text-sm font-medium text-navy mb-1 md:mb-2">Suffix</label>
                                 <input type="text" id="lifeplanHolderSuffix" name="holderSuffix" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                             </div>
                         </div>
-                        <div class="grid grid-cols-2 gap-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
                             <div>
-                                <label for="lifeplanDateOfBirth" class="block text-sm font-medium text-navy mb-2">Date of Birth *</label>
+                                <label for="lifeplanDateOfBirth" class="block text-xs md:text-sm font-medium text-navy mb-1 md:mb-2">Date of Birth *</label>
                                 <input type="date" id="lifeplanDateOfBirth" name="dateOfBirth" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                             </div>
                             <div>
-                                <label for="lifeplanContactNumber" class="block text-sm font-medium text-navy mb-2">Contact Number *</label>
+                                <label for="lifeplanContactNumber" class="block text-xs md:text-sm font-medium text-navy mb-1 md:mb-2">Contact Number *</label>
                                 <input type="tel" id="lifeplanContactNumber" name="contactNumber" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                             </div>
                         </div>
-                        <div class="mt-4">
-                            <label for="lifeplanEmailAddress" class="block text-sm font-medium text-navy mb-2">Email Address *</label>
+                        <div class="mt-3 md:mt-4">
+                            <label for="lifeplanEmailAddress" class="block text-xs md:text-sm font-medium text-navy mb-1 md:mb-2">Email Address *</label>
                             <input type="email" id="lifeplanEmailAddress" name="emailAddress" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                         </div>
-                        <div class="mt-4">
-                            <label for="lifeplanHolderAddress" class="block text-sm font-medium text-navy mb-2">Current Address *</label>
-                            <textarea id="lifeplanHolderAddress" name="holderAddress" rows="3" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600"></textarea>
+                        <div class="mt-3 md:mt-4">
+                            <label for="lifeplanHolderAddress" class="block text-xs md:text-sm font-medium text-navy mb-1 md:mb-2">Current Address *</label>
+                            <textarea id="lifeplanHolderAddress" name="holderAddress" rows="2" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600"></textarea>
                         </div>
                     </div>
 
                     <div class="border-b border-gray-200 pb-4 mb-4">
-                        <h3 class="text-lg font-hedvig text-navy mb-4">Payment Plan</h3>
-                        <div class="flex items-center mb-4">
-                            <label class="block text-sm font-medium text-navy mb-2 mr-4">Payment Term:</label>
+                        <h3 class="text-base md:text-lg font-hedvig text-navy mb-3 md:mb-4">Payment Plan</h3>
+                        <div class="flex items-center mb-3 md:mb-4">
+                            <label class="block text-xs md:text-sm font-medium text-navy mb-1 md:mb-2 mr-4">Payment Term:</label>
                             <select id="lifeplanPaymentTerm" name="paymentTerm" class="px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                                 <option value="60">5 Years (60 Monthly Payments)</option>
                                 <option value="36">3 Years (36 Monthly Payments)</option>
@@ -840,24 +875,24 @@ $conn->close();
                                 <option value="12">1 Year (12 Monthly Payments)</option>
                             </select>
                         </div>
-                        <div class="grid grid-cols-2 gap-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
                             <div>
-                                <label for="lifeplanGcashReceipt" class="block text-sm font-medium text-navy mb-2">First Payment Receipt *</label>
-                                <input type="file" id="lifeplanGcashReceipt" name="gcashReceipt" accept=".pdf,.jpg,.jpeg,.png" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                                <label for="lifeplanGcashReceipt" class="block text-xs md:text-sm font-medium text-navy mb-1 md:mb-2">First Payment Receipt *</label>
+                                <input type="file" id="lifeplanGcashReceipt" name="gcashReceipt" accept=".pdf,.jpg,.jpeg,.png" class="w-full text-xs md:text-sm px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                             </div>
                             <div>
-                                <label for="lifeplanReferenceNumber" class="block text-sm font-medium text-navy mb-2">GCash Reference Number *</label>
+                                <label for="lifeplanReferenceNumber" class="block text-xs md:text-sm font-medium text-navy mb-1 md:mb-2">GCash Reference Number *</label>
                                 <input type="text" id="lifeplanReferenceNumber" name="referenceNumber" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                             </div>
                         </div>
                     </div>
 
-                    <div class="bg-cream p-4 rounded-lg">
-                        <div class="flex justify-between text-sm mb-2">
+                    <div class="bg-cream p-3 md:p-4 rounded-lg">
+                        <div class="flex justify-between text-xs md:text-sm mb-2">
                             <span class="text-navy">Package Total</span>
                             <span id="lifeplanTotalPrice" class="text-yellow-600">₱0</span>
                         </div>
-                        <div class="flex justify-between text-sm mb-2">
+                        <div class="flex justify-between text-xs md:text-sm mb-2">
                             <span class="text-navy">Payment Term</span>
                             <span id="lifeplanPaymentTermDisplay" class="text-yellow-600">5 Years (60 Monthly Payments)</span>
                         </div>
