@@ -1,5 +1,5 @@
 <?php
-// Include the database connection
+// Fetch empoyee accounts
 require_once('../../db_connect.php');
 
 // Initialize variables
@@ -9,57 +9,55 @@ $page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
 $perPage = 5;
 $offset = ($page - 1) * $perPage;
 
-// Construct the SQL query with search and sorting
-$sql = "SELECT id, first_name, last_name, email, is_verified, created_at FROM users WHERE user_type = 2";
+// Base SQL query - matching the customer script structure
+$baseSql = "FROM users WHERE user_type = 2 AND is_verified = 1";
 
 // Add search condition if search term is provided
 if (!empty($search)) {
-    $sql .= " AND (first_name LIKE '%$search%' OR last_name LIKE '%$search%' OR email LIKE '%$search%')";
+    $baseSql .= " AND (first_name LIKE '%$search%' OR last_name LIKE '%$search%' OR email LIKE '%$search%')";
 }
 
 // Add sorting based on selected option
 switch ($sort) {
     case 'id_asc':
-        $sql .= " ORDER BY id ASC";
+        $orderBy = " ORDER BY id ASC";
         break;
     case 'id_desc':
-        $sql .= " ORDER BY id DESC";
+        $orderBy = " ORDER BY id DESC";
         break;
     case 'name_asc':
-        $sql .= " ORDER BY first_name ASC, last_name ASC";
+        $orderBy = " ORDER BY first_name ASC, last_name ASC";
         break;
     case 'name_desc':
-        $sql .= " ORDER BY first_name DESC, last_name DESC";
+        $orderBy = " ORDER BY first_name DESC, last_name DESC";
         break;
     case 'email_asc':
-        $sql .= " ORDER BY email ASC";
+        $orderBy = " ORDER BY email ASC";
         break;
     case 'email_desc':
-        $sql .= " ORDER BY email DESC";
+        $orderBy = " ORDER BY email DESC";
         break;
     case 'newest':
-        $sql .= " ORDER BY created_at DESC";
+        $orderBy = " ORDER BY created_at DESC";
         break;
     case 'oldest':
-        $sql .= " ORDER BY created_at ASC";
+        $orderBy = " ORDER BY created_at ASC";
         break;
     default:
-        $sql .= " ORDER BY id ASC";
+        $orderBy = " ORDER BY id ASC";
 }
 
-// Add pagination to the query
-$sql .= " LIMIT $perPage OFFSET $offset";
-
-$result = $conn->query($sql);
-
-// Get total count for pagination
-$countSql = "SELECT COUNT(*) as total FROM users WHERE user_type = 2";
-if (!empty($search)) {
-    $countSql .= " AND (first_name LIKE '%$search%' OR last_name LIKE '%$search%' OR email LIKE '%$search%')";
-}
-$countResult = $conn->query($countSql);
+// Count total rows
+$countQuery = "SELECT COUNT(*) as total $baseSql";
+$countResult = $conn->query($countQuery);
 $totalRows = $countResult->fetch_assoc()['total'];
+
+// Calculate total pages
 $totalPages = ceil($totalRows / $perPage);
+
+// Modify base SQL to include pagination
+$sql = "SELECT id, first_name, last_name, email, is_verified, created_at $baseSql $orderBy LIMIT $perPage OFFSET $offset";
+$result = $conn->query($sql);
 
 // Initialize empty table content
 $tableContent = '';
@@ -68,11 +66,6 @@ $tableContent = '';
 if ($result->num_rows > 0) {
     // Create table rows with actual data
     while($row = $result->fetch_assoc()) {
-        // Determine status based on is_verified
-        $status = $row['is_verified'] == 1 ? 
-            '<span class="px-2 py-1 bg-green-100 text-green-600 rounded-full text-xs">Active</span>' : 
-            '<span class="px-2 py-1 bg-yellow-100 text-yellow-600 rounded-full text-xs">Pending</span>';
-        
         // Format employee ID
         $employeeId = "#EMP-" . str_pad($row['id'], 3, '0', STR_PAD_LEFT);
         
@@ -85,7 +78,9 @@ if ($result->num_rows > 0) {
             <td class="p-4 text-sm text-sidebar-text">' . htmlspecialchars($fullName) . '</td>
             <td class="p-4 text-sm text-sidebar-text">' . htmlspecialchars($row['email']) . '</td>
             <td class="p-4 text-sm text-sidebar-text">Employee</td>
-            <td class="p-4 text-sm">' . $status . '</td>
+            <td class="p-4 text-sm">
+                <span class="px-2 py-1 bg-green-100 text-green-600 rounded-full text-xs">Active</span>
+            </td>
             <td class="p-4 text-sm">
               <div class="flex space-x-2">
                 <button class="p-1.5 bg-blue-100 text-blue-600 rounded hover:bg-blue-200 transition-all" onclick="openEditEmployeeAccountModal(' . $row['id'] . ')">
@@ -99,10 +94,12 @@ if ($result->num_rows > 0) {
           </tr>';
     }
     
+    // Calculate start and end for current page
+    $start = ($page - 1) * $perPage + 1;
+    $end = min($start + $perPage - 1, $totalRows);
+    
     // Update pagination info
-    $startCount = min($offset + 1, $totalRows);
-    $endCount = min($offset + $perPage, $totalRows);
-    $paginationInfo = "Showing {$startCount}-{$endCount} of {$totalRows} employee accounts";
+    $paginationInfo = "Showing $start - $end of $totalRows employee accounts";
 } else {
     // If no employees found, display a message
     $tableContent = '<tr class="border-b border-sidebar-border">

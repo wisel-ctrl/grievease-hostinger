@@ -1375,7 +1375,7 @@ $perPage = 5;
 $offset = ($page - 1) * $perPage;
 
 // Construct the SQL query with search and sorting
-$sql = "SELECT id, first_name, last_name, email, is_verified, created_at FROM users WHERE user_type = 2";
+$sql = "SELECT id, first_name, last_name, email, is_verified, created_at FROM users WHERE user_type = 2 AND is_verified = 1";
 
 // Add search condition if search term is provided
 if (!empty($search)) {
@@ -1418,7 +1418,7 @@ $sql .= " LIMIT $perPage OFFSET $offset";
 $result = $conn->query($sql);
 
 // Get total count for pagination
-$countSql = "SELECT COUNT(*) as total FROM users WHERE user_type = 2";
+$countSql = "SELECT COUNT(*) as total FROM users WHERE user_type = 2 AND is_verified = 1";
 if (!empty($search)) {
     $countSql .= " AND (first_name LIKE '%$search%' OR last_name LIKE '%$search%' OR email LIKE '%$search%')";
 }
@@ -1433,7 +1433,7 @@ $tableContent = '';
 if ($result->num_rows > 0) {
     // Create table rows with actual data
     while($row = $result->fetch_assoc()) {
-        // Determine status based on is_verified
+       // Determine status based on is_verified
         $status = $row['is_verified'] == 1 ? 
             '<span class="px-2 py-1 bg-green-100 text-green-600 rounded-full text-xs">Active</span>' : 
             '<span class="px-2 py-1 bg-yellow-100 text-yellow-600 rounded-full text-xs">Pending</span>';
@@ -1789,8 +1789,8 @@ function updateUserStatus(userId, userType, status) {
                 
                 if (response.success) {
                     Swal.fire(
-                        'Deleted!',
-                        'The account has been deleted successfully.',
+                        'Archived!',
+                        'The account has been Archived successfully.',
                         'success'
                     ).then(() => {
                         // Reload the page to reflect changes
