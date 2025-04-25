@@ -1777,6 +1777,64 @@ function toggleMenu() {
     const mobileMenu = document.getElementById('mobile-menu');
     mobileMenu.classList.toggle('hidden');
 }
+
+// Date validation for traditional booking form
+document.addEventListener('DOMContentLoaded', function() {
+    // Get today's date in YYYY-MM-DD format
+    const today = new Date();
+    const todayFormatted = today.toISOString().split('T')[0];
+    
+    // Set max date for date of birth and date of death to today
+    document.getElementById('traditionalDateOfBirth').max = todayFormatted;
+    document.getElementById('traditionalDateOfDeath').max = todayFormatted;
+    
+    // Set min date for date of burial to tomorrow
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const tomorrowFormatted = tomorrow.toISOString().split('T')[0];
+    document.getElementById('traditionalDateOfBurial').min = tomorrowFormatted;
+    
+    // Validate date of birth is before date of death
+    document.getElementById('traditionalDateOfBirth').addEventListener('change', function() {
+        const dob = this.value;
+        const dod = document.getElementById('traditionalDateOfDeath').value;
+        
+        if (dob && dod && dob > dod) {
+            alert('Date of birth must be before date of death');
+            this.value = '';
+        }
+    });
+    
+    // Validate date of death is after date of birth and before date of burial
+    document.getElementById('traditionalDateOfDeath').addEventListener('change', function() {
+        const dod = this.value;
+        const dob = document.getElementById('traditionalDateOfBirth').value;
+        const dobInput = document.getElementById('traditionalDateOfBirth');
+        
+        if (dob && dod < dob) {
+            alert('Date of death must be after date of birth');
+            this.value = '';
+            return;
+        }
+        
+        const burialDate = document.getElementById('traditionalDateOfBurial').value;
+        if (burialDate && dod > burialDate) {
+            alert('Date of death must be before date of burial');
+            this.value = '';
+        }
+    });
+    
+    // Validate date of burial is after date of death
+    document.getElementById('traditionalDateOfBurial').addEventListener('change', function() {
+        const burialDate = this.value;
+        const dod = document.getElementById('traditionalDateOfDeath').value;
+        
+        if (dod && burialDate < dod) {
+            alert('Date of burial must be after date of death');
+            this.value = '';
+        }
+    });
+});
 </script>
 </body>
 </html>
