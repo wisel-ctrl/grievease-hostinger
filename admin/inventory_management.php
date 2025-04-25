@@ -390,7 +390,9 @@ if ($branchResult->num_rows > 0) {
     $paginatedResult = $conn->query($paginatedSql);
     ?>
     
-    <div class="bg-white rounded-lg shadow-md mb-8 border border-sidebar-border overflow-hidden branch-container" data-branch-id="<?php echo $branchId; ?>">
+    <div class="bg-white rounded-lg shadow-md mb-8 border border-sidebar-border overflow-hidden branch-container" 
+     data-branch-id="<?php echo $branchId; ?>" 
+     data-total-items="<?php echo $totalItems; ?>">
   <!-- Branch Header with Search and Filters -->
   <div class="bg-sidebar-hover p-4 border-b border-sidebar-border">
     <!-- Desktop layout for big screens - Title on left, controls on right -->
@@ -654,7 +656,7 @@ if ($branchResult->num_rows > 0) {
       Showing <?php echo min(($currentPage - 1) * $itemsPerPage + 1, $totalItems) . ' - ' . min($currentPage * $itemsPerPage, $totalItems); ?> 
       of <?php echo $totalItems; ?> items
     </div>
-        <div class="flex space-x-2">
+          <div class="flex space-x-2">
             <?php if ($currentPage > 1): ?>
                 <button onclick="loadPage(<?php echo $branchId; ?>, <?php echo $currentPage - 1 ?>)" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">&laquo;</button>
             <?php else: ?>
@@ -662,11 +664,7 @@ if ($branchResult->num_rows > 0) {
             <?php endif; ?>
             
             <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-                <?php if ($i == $currentPage): ?>
-                    <button class="px-3.5 py-1.5 bg-sidebar-accent text-white rounded text-sm"><?php echo $i ?></button>
-                <?php else: ?>
-                    <button onclick="loadPage(<?php echo $branchId; ?>, <?php echo $i ?>)" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover"><?php echo $i ?></button>
-                <?php endif; ?>
+                <button onclick="loadPage(<?php echo $branchId; ?>, <?php echo $i ?>)" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover"><?php echo $i ?></button>
             <?php endfor; ?>
             
             <?php if ($currentPage < $totalPages): ?>
@@ -674,7 +672,7 @@ if ($branchResult->num_rows > 0) {
             <?php else: ?>
                 <button disabled class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm opacity-50 cursor-not-allowed">&raquo;</button>
             <?php endif; ?>
-        </div>
+          </div>
     </div>
 </div> 
  
@@ -1095,6 +1093,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
+// Update the loadPage function
 function loadPage(branchId, page) {
     // Show loading indicator
     const loadingIndicator = document.getElementById(`loadingIndicator${branchId}`);
@@ -1105,24 +1104,23 @@ function loadPage(branchId, page) {
     
     // Make AJAX request
     fetch(`inventory/load_inventory_table.php?branch_id=${branchId}&page=${page}`)
-        .then(response => response.text())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.text();
+        })
         .then(data => {
             // Update the table content
             document.getElementById(`inventoryTable_${branchId}`).innerHTML = data;
             
-            // Update pagination info
-            const totalItems = <?php echo $totalItems; ?>;
-            const itemsPerPage = <?php echo $itemsPerPage; ?>;
-            const startItem = (page - 1) * itemsPerPage + 1;
-            const endItem = Math.min(page * itemsPerPage, totalItems);
-            
-            document.getElementById(`paginationInfo_${branchId}`).innerHTML = 
-                `Showing ${startItem} - ${endItem} of ${totalItems} items`;
-            
             // Update URL without reloading
             const url = new URL(window.location);
             url.searchParams.set(`page_${branchId}`, page);
-            window.history.pushState({}, '', url);
+            window.history.pushState({ branchId, page }, '', url);
+            
+            // Update pagination info text
+            updatePaginationInfo(branchId, page);
             
             // Update pagination buttons active state
             updatePaginationActiveState(branchId, page);
@@ -1146,9 +1144,26 @@ function loadPage(branchId, page) {
         });
 }
 
+// Add this function to update pagination info text
+function updatePaginationInfo(branchId, currentPage) {
+    const itemsPerPage = 5;
+    const totalItems = parseInt(document.querySelector(`.branch-container[data-branch-id="${branchId}"]`).dataset.totalItems);
+    
+    const startItem = (currentPage - 1) * itemsPerPage + 1;
+    const endItem = Math.min(currentPage * itemsPerPage, totalItems);
+    
+    document.getElementById(`paginationInfo_${branchId}`).textContent = 
+        `Showing ${startItem} - ${endItem} of ${totalItems} items`;
+}
+
+// Update the updatePaginationActiveState function
 function updatePaginationActiveState(branchId, currentPage) {
     const paginationContainer = document.querySelector(`#paginationInfo_${branchId}`).nextElementSibling;
+    if (!paginationContainer) return;
+    
     const pageButtons = paginationContainer.querySelectorAll('button');
+    const totalItems = parseInt(document.querySelector(`.branch-container[data-branch-id="${branchId}"]`).dataset.totalItems);
+    const totalPages = Math.ceil(totalItems / 5);
     
     pageButtons.forEach(button => {
         // Remove active class from all buttons
@@ -1157,12 +1172,72 @@ function updatePaginationActiveState(branchId, currentPage) {
         
         // Check if this button is the current page
         const pageNumber = parseInt(button.textContent);
-        if (!isNaN(pageNumber) && pageNumber === currentPage) {
-            button.classList.remove('border', 'border-sidebar-border', 'hover:bg-sidebar-hover');
-            button.classList.add('bg-sidebar-accent', 'text-white');
+        if (!isNaN(pageNumber)) {
+            if (pageNumber === currentPage) {
+                button.classList.remove('border', 'border-sidebar-border', 'hover:bg-sidebar-hover');
+                button.classList.add('bg-sidebar-accent', 'text-white');
+            }
+            
+            // Disable page buttons that are out of range
+            if (pageNumber < 1 || pageNumber > totalPages) {
+                button.style.display = 'none';
+            } else {
+                button.style.display = '';
+            }
+        }
+        
+        // Enable/disable arrow buttons based on current page
+        if (button.innerHTML === '&raquo;' || button.textContent === '»') {
+            button.disabled = currentPage >= totalPages;
+            if (button.disabled) {
+                button.classList.add('opacity-50', 'cursor-not-allowed');
+            } else {
+                button.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
+        } else if (button.innerHTML === '&laquo;' || button.textContent === '«') {
+            button.disabled = currentPage <= 1;
+            if (button.disabled) {
+                button.classList.add('opacity-50', 'cursor-not-allowed');
+            } else {
+                button.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
         }
     });
 }
+
+// Add this to handle browser back/forward navigation
+window.addEventListener('popstate', function(event) {
+    if (event.state) {
+        // When navigating back/forward, reload the current page state
+        const { branchId, page } = event.state;
+        loadPage(branchId, page);
+    } else {
+        // Initial page load - load all branches with their current page
+        document.querySelectorAll('.branch-container').forEach(container => {
+            const branchId = container.dataset.branchId;
+            const urlParams = new URLSearchParams(window.location.search);
+            const currentPage = urlParams.get(`page_${branchId}`) || 1;
+            loadPage(branchId, currentPage);
+        });
+    }
+});
+
+// Initialize pagination on page load
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.branch-container').forEach(container => {
+        const branchId = container.dataset.branchId;
+        const urlParams = new URLSearchParams(window.location.search);
+        const currentPage = urlParams.get(`page_${branchId}`) || 1;
+        
+        // Store total items in the container's dataset
+        const totalItems = <?php echo $totalItems; ?>;
+        container.dataset.totalItems = totalItems;
+        
+        // Initialize pagination
+        updatePaginationInfo(branchId, currentPage);
+        updatePaginationActiveState(branchId, currentPage);
+    });
+});
 
 // Add this function to reattach event listeners
 function reattachEventListeners(branchId) {
