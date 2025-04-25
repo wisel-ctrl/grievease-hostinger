@@ -579,123 +579,162 @@ $conn->close();
 
 <!-- Traditional Funeral Modal (Hidden by Default) -->
 <div id="traditionalModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4 hidden">
-    <div class="w-full max-w-5xl bg-white rounded-2xl shadow-xl overflow-hidden max-h-[80vh]">
+    <div class="w-full max-w-5xl bg-white rounded-2xl shadow-xl overflow-hidden max-h-[90vh] md:max-h-[80vh]">
         <!-- Scroll container for both columns -->
-        <div class="modal-scroll-container grid grid-cols-1 md:grid-cols-2 overflow-y-auto max-h-[80vh]">
+        <div class="modal-scroll-container grid grid-cols-1 md:grid-cols-2 overflow-y-auto max-h-[90vh] md:max-h-[80vh]">
             <!-- Left Side: Package Details -->
-            <div class="bg-cream p-8">
+            <div class="bg-cream p-4 md:p-8 details-section">
+                <!-- Header and Close Button for Mobile -->
+                <div class="flex justify-between items-center mb-4 md:hidden">
+                    <h2 class="text-xl font-hedvig text-navy">Package Details</h2>
+                    <button class="closeModalBtn text-gray-500 hover:text-navy">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+                
                 <!-- Package Image -->
-                <div class="mb-6">
-                    <img id="traditionalPackageImage" src="" alt="" class="w-full h-64 object-cover rounded-lg mb-4">
+                <div class="mb-4 md:mb-6">
+                    <img id="traditionalPackageImage" src="" alt="" class="w-full h-48 md:h-64 object-cover rounded-lg mb-4">
                 </div>
 
                 <!-- Package Header -->
-                <div class="flex justify-between items-center mb-6">
-                    <h2 id="traditionalPackageName" class="text-3xl font-hedvig text-navy"></h2>
-                    <div id="traditionalPackagePrice" class="text-3xl font-hedvig text-yellow-600"></div>
+                <div class="flex justify-between items-center mb-4 md:mb-6">
+                    <h2 id="traditionalPackageName" class="text-2xl md:text-3xl font-hedvig text-navy"></h2>
+                    <div id="traditionalPackagePrice" class="text-2xl md:text-3xl font-hedvig text-yellow-600"></div>
                 </div>
 
                 <!-- Package Description -->
-                <p id="traditionalPackageDesc" class="text-dark mb-6"></p>
+                <p id="traditionalPackageDesc" class="text-dark mb-4 md:mb-6 text-sm md:text-base"></p>
 
                 <!-- Main Package Details -->
                 <div class="border-t border-gray-200 pt-4">
-                    <h3 class="text-xl font-hedvig text-navy mb-4">Package Includes:</h3>
-                    <ul id="traditionalPackageFeatures" class="space-y-2">
+                    <h3 class="text-lg md:text-xl font-hedvig text-navy mb-3 md:mb-4">Package Includes:</h3>
+                    <ul id="traditionalPackageFeatures" class="space-y-1 md:space-y-2">
                         <!-- Features will be inserted here by JavaScript -->
                     </ul>
+                </div>
+
+                <!-- "With Cremate" checkbox for mobile -->
+                <div class="flex items-center mt-4 md:hidden">
+                    <input type="checkbox" id="traditionalWithCremateMobile" name="with_cremate" value="yes" class="h-4 w-4 text-yellow-600 focus:ring-yellow-500 border-gray-300 rounded">
+                    <label for="traditionalWithCremateMobile" class="ml-2 block text-sm text-navy">
+                        Include cremation service
+                    </label>
+                </div>
+                
+                <!-- Mobile-only summary and navigation button -->
+                <div class="mt-6 border-t border-gray-200 pt-4 md:hidden">
+                    <div class="bg-white p-4 rounded-lg shadow-sm">
+                        <div class="flex justify-between text-sm mb-2">
+                            <span class="text-navy">Package Total</span>
+                            <span id="traditionalTotalPriceMobile" class="text-yellow-600">₱0</span>
+                        </div>
+                        <div class="flex justify-between font-bold mt-2 pt-2 border-t border-gray-300">
+                            <span class="text-navy">Amount Due Now (30%)</span>
+                            <span id="traditionalAmountDueMobile" class="text-yellow-600">₱0</span>
+                        </div>
+                    </div>
+                    <button id="continueToFormBtn" class="mt-4 w-full bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg shadow-md transition-all duration-300">
+                        Continue to Booking
+                    </button>
                 </div>
             </div>
 
             <!-- Right Side: Booking Form -->
-            <div class="bg-white p-8 border-l border-gray-200 overflow-y-auto">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-2xl font-hedvig text-navy">Book Your Traditional Service</h2>
-                    <button class="closeModalBtn text-gray-500 hover:text-navy">
-                        <i class="fas fa-times text-2xl"></i>
-                    </button>
+            <div class="bg-white p-4 md:p-8 border-t md:border-t-0 md:border-l border-gray-200 overflow-y-auto form-section md:block">
+                <!-- Header and back button for mobile -->
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl md:text-2xl font-hedvig text-navy">Book Your Traditional Service</h2>
+                    <div class="flex items-center">
+                        <button id="backToDetailsBtn" class="mr-2 text-gray-500 hover:text-navy md:hidden">
+                            <i class="fas fa-arrow-left text-lg"></i>
+                        </button>
+                        <button class="closeModalBtn text-gray-500 hover:text-navy">
+                            <i class="fas fa-times text-xl md:text-2xl"></i>
+                        </button>
+                    </div>
                 </div>
 
                 <form id="traditionalBookingForm" class="space-y-4">
-                <input type="hidden" id="traditionalSelectedPackagePrice" name="packagePrice">
-                <input type="hidden" id="traditionalServiceId" name="service_id">
-                <input type="hidden" id="traditionalBranchId" name="branch_id">
-                <input type="hidden" name="customerID" value="<?php echo isset($_SESSION['user_id']) ? $_SESSION['user_id'] : ''; ?>">
+                    <input type="hidden" id="traditionalSelectedPackagePrice" name="packagePrice">
+                    <input type="hidden" id="traditionalServiceId" name="service_id">
+                    <input type="hidden" id="traditionalBranchId" name="branch_id">
+                    <input type="hidden" name="customerID" value="<?php echo isset($_SESSION['user_id']) ? $_SESSION['user_id'] : ''; ?>">
                     
                     <div class="border-b border-gray-200 pb-4 mb-4">
-                        <h3 class="text-lg font-hedvig text-navy mb-4">Deceased Information</h3>
-                        <div class="grid grid-cols-2 gap-4 mb-4">
+                        <h3 class="text-base md:text-lg font-hedvig text-navy mb-3 md:mb-4">Deceased Information</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 mb-3 md:mb-4">
                             <div>
-                                <label for="traditionalDeceasedFirstName" class="block text-sm font-medium text-navy mb-2">First Name *</label>
+                                <label for="traditionalDeceasedFirstName" class="block text-xs md:text-sm font-medium text-navy mb-1 md:mb-2">First Name *</label>
                                 <input type="text" id="traditionalDeceasedFirstName" name="deceasedFirstName" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                             </div>
                             <div>
-                                <label for="traditionalDeceasedMiddleName" class="block text-sm font-medium text-navy mb-2">Middle Name</label>
+                                <label for="traditionalDeceasedMiddleName" class="block text-xs md:text-sm font-medium text-navy mb-1 md:mb-2">Middle Name</label>
                                 <input type="text" id="traditionalDeceasedMiddleName" name="deceasedMiddleName" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                             </div>
                         </div>
-                        <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 mb-3 md:mb-4">
                             <div>
-                                <label for="traditionalDeceasedLastName" class="block text-sm font-medium text-navy mb-2">Last Name *</label>
+                                <label for="traditionalDeceasedLastName" class="block text-xs md:text-sm font-medium text-navy mb-1 md:mb-2">Last Name *</label>
                                 <input type="text" id="traditionalDeceasedLastName" name="deceasedLastName" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                             </div>
                             <div>
-                                <label for="traditionalDeceasedSuffix" class="block text-sm font-medium text-navy mb-2">Suffix</label>
+                                <label for="traditionalDeceasedSuffix" class="block text-xs md:text-sm font-medium text-navy mb-1 md:mb-2">Suffix</label>
                                 <input type="text" id="traditionalDeceasedSuffix" name="deceasedSuffix" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                             </div>
                         </div>
-                        <div class="grid grid-cols-3 gap-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4">
                             <div>
-                                <label for="traditionalDateOfBirth" class="block text-sm font-medium text-navy mb-2">Date of Birth</label>
+                                <label for="traditionalDateOfBirth" class="block text-xs md:text-sm font-medium text-navy mb-1 md:mb-2">Date of Birth</label>
                                 <input type="date" id="traditionalDateOfBirth" name="dateOfBirth" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                             </div>
                             <div>
-                                <label for="traditionalDateOfDeath" class="block text-sm font-medium text-navy mb-2">Date of Death *</label>
+                                <label for="traditionalDateOfDeath" class="block text-xs md:text-sm font-medium text-navy mb-1 md:mb-2">Date of Death *</label>
                                 <input type="date" id="traditionalDateOfDeath" name="dateOfDeath" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                             </div>
                             <div>
-                                <label for="traditionalDateOfBurial" class="block text-sm font-medium text-navy mb-2">Date of Burial</label>
+                                <label for="traditionalDateOfBurial" class="block text-xs md:text-sm font-medium text-navy mb-1 md:mb-2">Date of Burial</label>
                                 <input type="date" id="traditionalDateOfBurial" name="dateOfBurial" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                             </div>
                         </div>
-                        <div class="mt-4">
-                            <label for="traditionalDeathCertificate" class="block text-sm font-medium text-navy mb-2">Death Certificate</label>
-                            <input type="file" id="traditionalDeathCertificate" name="deathCertificate" accept=".pdf,.jpg,.jpeg,.png" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                        <div class="mt-3 md:mt-4">
+                            <label for="traditionalDeathCertificate" class="block text-xs md:text-sm font-medium text-navy mb-1 md:mb-2">Death Certificate</label>
+                            <input type="file" id="traditionalDeathCertificate" name="deathCertificate" accept=".pdf,.jpg,.jpeg,.png" class="w-full text-xs md:text-sm px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                         </div>
-                        <div class="mt-4">
-                            <label for="traditionalDeceasedAddress" class="block text-sm font-medium text-navy mb-2">Address of the Deceased</label>
-                            <textarea id="traditionalDeceasedAddress" name="deceasedAddress" rows="3" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600"></textarea>
+                        <div class="mt-3 md:mt-4">
+                            <label for="traditionalDeceasedAddress" class="block text-xs md:text-sm font-medium text-navy mb-1 md:mb-2">Address of the Deceased</label>
+                            <textarea id="traditionalDeceasedAddress" name="deceasedAddress" rows="2" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600"></textarea>
                         </div>
 
-                        <div class="flex items-center">
-                        <input type="checkbox" id="traditionalWithCremate" name="with_cremate" value="yes" class="h-4 w-4 mt-2 text-yellow-600 focus:ring-yellow-500 border-gray-300 rounded">
-                        <label for="traditionalWithCremate" class="ml-2 block text-sm text-navy">
-                            Include cremation service
-                        </label>
-                    </div>
-
+                        <!-- "With Cremate" checkbox for desktop -->
+                        <div class="flex items-center mt-3 md:mt-4 hidden md:flex">
+                            <input type="checkbox" id="traditionalWithCremate" name="with_cremate" value="yes" class="h-4 w-4 text-yellow-600 focus:ring-yellow-500 border-gray-300 rounded">
+                            <label for="traditionalWithCremate" class="ml-2 block text-sm text-navy">
+                                Include cremation service
+                            </label>
+                        </div>
                     </div>
 
                     <div class="border-b border-gray-200 pb-4 mb-4">
-                        <h3 class="text-lg font-hedvig text-navy mb-4">Payment</h3>
-                        <div class="grid grid-cols-2 gap-4">
+                        <h3 class="text-base md:text-lg font-hedvig text-navy mb-3 md:mb-4">Payment</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
                             <div>
-                                <label for="traditionalGcashReceipt" class="block text-sm font-medium text-navy mb-2">GCash Receipt </label>
-                                <input type="file" id="traditionalGcashReceipt" name="gcashReceipt" accept=".pdf,.jpg,.jpeg,.png" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                                <label for="traditionalGcashReceipt" class="block text-xs md:text-sm font-medium text-navy mb-1 md:mb-2">GCash Receipt</label>
+                                <input type="file" id="traditionalGcashReceipt" name="gcashReceipt" accept=".pdf,.jpg,.jpeg,.png" class="w-full text-xs md:text-sm px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                             </div>
                             <div>
-                                <label for="traditionalReferenceNumber" class="block text-sm font-medium text-navy mb-2">GCash Reference Number *</label>
+                                <label for="traditionalReferenceNumber" class="block text-xs md:text-sm font-medium text-navy mb-1 md:mb-2">GCash Reference Number *</label>
                                 <input type="text" id="traditionalReferenceNumber" name="referenceNumber" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                             </div>
                         </div>
                     </div>
 
-                    <div class="bg-cream p-4 rounded-lg">
-                        <div class="flex justify-between text-sm mb-2">
+                    <div class="bg-cream p-3 md:p-4 rounded-lg">
+                        <div class="flex justify-between text-xs md:text-sm mb-2">
                             <span class="text-navy">Package Total</span>
                             <span id="traditionalTotalPrice" class="text-yellow-600">₱0</span>
                         </div>
-                        <div class="flex justify-between text-sm mb-2">
+                        <div class="flex justify-between text-xs md:text-sm mb-2">
                             <span class="text-navy">Required Downpayment (30%)</span>
                             <span id="traditionalDownpayment" class="text-yellow-600">₱0</span>
                         </div>
