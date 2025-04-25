@@ -193,6 +193,11 @@ $customersResult = mysqli_query($conn, $customersQuery);
                     </div>
                 </div>
 
+                <button class="px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover">
+                <i class="fas fa-filter text-sidebar-accent"></i>
+                <span>Filters</span>
+                </button>
+
                 <!-- Add Customer Account Button -->
                 <button class="px-4 py-2 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm whitespace-nowrap" 
                         onclick="openAddCustomerAccountModal()">
