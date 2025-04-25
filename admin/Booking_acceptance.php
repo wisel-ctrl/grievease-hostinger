@@ -105,349 +105,341 @@ $offset = ($current_page - 1) * $bookings_per_page;
   </div>
 
   <!-- Pending Bookings List -->
-<div class="bg-white rounded-lg shadow-md mb-8 border border-sidebar-border overflow-hidden branch-container">
-  <!-- Header Section - Made responsive with better stacking -->
-  <div class="bg-sidebar-hover p-4 border-b border-sidebar-border">
-    <!-- Desktop layout for big screens - Title on left, controls on right -->
-    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
-      <!-- Title and Counter -->
-      <div class="flex items-center gap-3 mb-4 lg:mb-0">
-        <h4 class="text-lg font-bold text-sidebar-text whitespace-nowrap">Pending Requests</h4>
-        
-        <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
-          <i class="fas fa-list-ul"></i>
-          <?php 
-            if ($total_bookings > 0) {
-                echo $total_bookings . ($total_bookings != 1 ? "" : "");
-            } else {
-                echo "No bookings";
-            }
-          ?>
-        </span>
-      </div>
-      
-      <!-- Controls for big screens - aligned right -->
-      <div class="hidden lg:flex items-center gap-3">
-        <!-- Search Input -->
-        <div class="relative">
-          <input type="text" placeholder="Search bookings..." 
-                class="pl-8 pr-3 py-2 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
-          <i class="fas fa-search absolute left-2.5 top-3 text-gray-400"></i>
-        </div>
-
-        <!-- Filter Dropdown -->
-        <div class="relative filter-dropdown">
-          <button id="filterToggle" class="px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover">
-            <i class="fas fa-filter text-sidebar-accent"></i>
-            <span>Filters</span>
-            <?php if(isset($sortFilter) && $sortFilter): ?>
-              <span class="h-2 w-2 bg-sidebar-accent rounded-full"></span>
-            <?php endif; ?>
-          </button>
-          
-          <!-- Filter Window -->
-          <div id="filterDropdown" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-4">
-            <div class="space-y-4">
-              <!-- Sort Options -->
-              <div>
-                <h5 class="text-sm font-medium text-sidebar-text mb-2">Sort By</h5>
-                <div class="space-y-1">
-                  <div class="flex items-center cursor-pointer" data-sort="id_asc">
-                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                      ID: Ascending
+<div id="pending-bookings" class="bg-white rounded-lg shadow-md mb-8 border border-sidebar-border overflow-hidden">
+    <!-- Header Section - Made responsive with better stacking -->
+    <div class="bg-sidebar-hover p-4 border-b border-sidebar-border">
+        <!-- Desktop layout for big screens - Title on left, controls on right -->
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+            <!-- Title and Counter -->
+            <div class="flex items-center gap-3 mb-4 lg:mb-0">
+                <h3 class="text-lg font-bold text-sidebar-text whitespace-nowrap">Pending Requests</h3>
+                
+                <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
+                    <i class="fas fa-list-ul"></i>
+                    <span id="totalBookings">
+                        <?php 
+                          if ($total_bookings > 0) {
+                              echo $total_bookings . ($total_bookings != 1 ? "" : "");
+                          } else {
+                              echo "No bookings";
+                          }
+                        ?>
                     </span>
-                  </div>
-                  <div class="flex items-center cursor-pointer" data-sort="id_desc">
-                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                      ID: Descending
-                    </span>
-                  </div>
-                  <div class="flex items-center cursor-pointer" data-sort="customer_asc">
-                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                      Customer: A-Z
-                    </span>
-                  </div>
-                  <div class="flex items-center cursor-pointer" data-sort="customer_desc">
-                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                      Customer: Z-A
-                    </span>
-                  </div>
-                  <div class="flex items-center cursor-pointer" data-sort="newest">
-                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                      Newest First
-                    </span>
-                  </div>
-                  <div class="flex items-center cursor-pointer" data-sort="oldest">
-                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                      Oldest First
-                    </span>
-                  </div>
-                </div>
-              </div>
+                </span>
             </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    
-    <!-- Mobile/Tablet Controls - Only visible on smaller screens -->
-    <div class="lg:hidden w-full mt-4">
-      <!-- First row: Search bar with filter icon on the right -->
-      <div class="flex items-center w-full gap-3 mb-4">
-        <!-- Search Input - Takes most of the space -->
-        <div class="relative flex-grow">
-          <input type="text" placeholder="Search bookings..." 
-                  class="pl-8 pr-3 py-2.5 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
-          <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
-        </div>
-
-        <!-- Icon-only button for filter -->
-        <div class="flex items-center">
-          <!-- Filter Icon Button -->
-          <div class="relative filter-dropdown">
-            <button id="bookingFilterToggle" class="w-10 h-10 flex items-center justify-center text-sidebar-accent">
-              <i class="fas fa-filter text-xl"></i>
-              <span id="filterIndicator" class="hidden absolute top-1 right-1 h-2 w-2 bg-sidebar-accent rounded-full"></span>
-            </button>
             
-            <!-- Filter Window - Positioned below the icon -->
-            <div id="bookingFilterDropdown" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-4">
-              <div class="space-y-4">
-                <!-- Sort Options -->
-                <div>
-                  <h5 class="text-sm font-medium text-sidebar-text mb-2">Sort By</h5>
-                  <div class="space-y-2">
-                    <div class="flex items-center cursor-pointer" data-sort="id_asc">
-                      <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full">
-                        ID: Ascending
-                      </span>
-                    </div>
-                    <div class="flex items-center cursor-pointer" data-sort="id_desc">
-                      <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full">
-                        ID: Descending
-                      </span>
-                    </div>
-                    <div class="flex items-center cursor-pointer" data-sort="customer_asc">
-                      <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full">
-                        Customer: A-Z
-                      </span>
-                    </div>
-                    <div class="flex items-center cursor-pointer" data-sort="customer_desc">
-                      <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full">
-                        Customer: Z-A
-                      </span>
-                    </div>
-                    <div class="flex items-center cursor-pointer" data-sort="newest">
-                      <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full">
-                        Newest First
-                      </span>
-                    </div>
-                    <div class="flex items-center cursor-pointer" data-sort="oldest">
-                      <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full">
-                        Oldest First
-                      </span>
-                    </div>
-                  </div>
+            <!-- Controls for big screens - aligned right -->
+            <div class="hidden lg:flex items-center gap-3">
+                <!-- Search Input -->
+                <div class="relative">
+                    <input type="text" id="bookingSearchInput" 
+                           placeholder="Search bookings..." 
+                           class="pl-8 pr-3 py-2 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
+                    <i class="fas fa-search absolute left-2.5 top-3 text-gray-400"></i>
                 </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  
-  <!-- Responsive Table Container with improved spacing -->
-  <div class="overflow-x-auto scrollbar-thin" id="bookingsTableContainer">
-    <div id="bookingsLoadingIndicator" class="hidden absolute inset-0 bg-white bg-opacity-50 flex items-center justify-center">
-      <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-sidebar-accent"></div>
-    </div>
-    
-    <!-- Responsive Table with improved spacing and horizontal scroll for small screens -->
-    <div class="min-w-full">
-      <table class="w-full">
-        <thead>
-          <tr class="bg-gray-50 border-b border-sidebar-border">
-            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(0)">
-              <div class="flex items-center gap-1.5">
-                <i class="fas fa-hashtag text-sidebar-accent"></i> Booking ID 
-              </div>
-            </th>
-            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(1)">
-              <div class="flex items-center gap-1.5">
-                <i class="fas fa-user text-sidebar-accent"></i> Customer 
-              </div>
-            </th>
-            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(2)">
-              <div class="flex items-center gap-1.5">
-                <i class="fas fa-tag text-sidebar-accent"></i> Service 
-              </div>
-            </th>
-            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(3)">
-              <div class="flex items-center gap-1.5">
-                <i class="fas fa-calendar text-sidebar-accent"></i> Date Requested 
-              </div>
-            </th>
-            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(4)">
-              <div class="flex items-center gap-1.5">
-                <i class="fas fa-toggle-on text-sidebar-accent"></i> Status 
-              </div>
-            </th>
-            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text whitespace-nowrap">
-              <div class="flex items-center gap-1.5">
-                <i class="fas fa-cogs text-sidebar-accent"></i> Actions
-              </div>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <?php
-          // Query to get booking data with joins and pagination
-            $query = "SELECT b.booking_id, b.booking_date, b.status, 
-                    CONCAT(u.first_name, ' ', COALESCE(u.middle_name, ''), ' ', u.last_name, ' ', COALESCE(u.suffix, '')) AS customer_name,
-                    s.service_name
-                    FROM booking_tb b
-                    JOIN users u ON b.customerID = u.id
-                    JOIN services_tb s ON b.service_id = s.service_id
-                    WHERE b.status = 'Pending'
-                    ORDER BY b.booking_date DESC
-                    LIMIT ?, ?";
 
-            $stmt = $conn->prepare($query);
-            $stmt->bind_param("ii", $offset, $bookings_per_page);
-            $stmt->execute();
-            $result = $stmt->get_result();
-
-            if ($result->num_rows > 0) {
-              while ($row = $result->fetch_assoc()) {
-                // Format booking ID
-                $booking_id = "#BK-" . date('Y', strtotime($row['booking_date'])) . "-" . str_pad($row['booking_id'], 3, '0', STR_PAD_LEFT);
-
-                // Format date
-                $formatted_date = date('M j, Y', strtotime($row['booking_date']));
-
-                // Status badge class
-                $status_class = "bg-yellow-100 text-yellow-800 border border-yellow-200";
-                $status_icon = "fa-clock";
-                if ($row['status'] == 'Accepted') {
-                  $status_class = "bg-green-100 text-green-600 border border-green-200";
-                  $status_icon = "fa-check-circle";
-                } elseif ($row['status'] == 'Declined') {
-                  $status_class = "bg-red-100 text-red-600 border border-red-200";
-                  $status_icon = "fa-times-circle";
-                }
-          ?>
-                <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
-                    <td class="px-4 py-3.5 text-sm text-sidebar-text font-medium"><?php echo htmlspecialchars($booking_id); ?></td>
-                    <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo htmlspecialchars($row['customer_name']); ?></td>
-                    <td class="px-4 py-3.5 text-sm text-sidebar-text">
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">
-                            <?php echo htmlspecialchars($row['service_name']); ?>
-                        </span>
-                    </td>
-                    <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo htmlspecialchars($formatted_date); ?></td>
-                    <td class="px-4 py-3.5 text-sm">
-                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium <?php echo $status_class; ?>">
-                            <i class="fas <?php echo $status_icon; ?> mr-1"></i> <?php echo htmlspecialchars($row['status']); ?>
-                        </span>
-                    </td>
-                    <td class="px-4 py-3.5 text-sm">
-                        <div class="flex space-x-2">
-                            <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" 
-                                    title="View Details" 
-                                    onclick="openBookingDetails(<?php echo $row['booking_id']; ?>)">
-                                <i class="fas fa-eye"></i>
-                            </button>
+                <!-- Filter Dropdown -->
+                <div class="relative filter-dropdown">
+                    <button id="bookingFilterToggle" class="px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover">
+                        <i class="fas fa-filter text-sidebar-accent"></i>
+                        <span>Filters</span>
+                        <?php if(isset($sortFilter) && $sortFilter): ?>
+                            <span id="filterIndicator" class="h-2 w-2 bg-sidebar-accent rounded-full"></span>
+                        <?php else: ?>
+                            <span id="filterIndicator" class="hidden h-2 w-2 bg-sidebar-accent rounded-full"></span>
+                        <?php endif; ?>
+                    </button>
+                    
+                    <!-- Filter Window -->
+                    <div id="bookingFilterDropdown" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-4">
+                        <div class="space-y-4">
+                            <!-- Sort Options -->
+                            <div>
+                                <h5 class="text-sm font-medium text-sidebar-text mb-2">Sort By</h5>
+                                <div class="space-y-1">
+                                    <div class="flex items-center cursor-pointer filter-option" data-sort="id_asc">
+                                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                                            ID: Ascending
+                                        </span>
+                                    </div>
+                                    <div class="flex items-center cursor-pointer filter-option" data-sort="id_desc">
+                                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                                            ID: Descending
+                                        </span>
+                                    </div>
+                                    <div class="flex items-center cursor-pointer filter-option" data-sort="customer_asc">
+                                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                                            Customer: A-Z
+                                        </span>
+                                    </div>
+                                    <div class="flex items-center cursor-pointer filter-option" data-sort="customer_desc">
+                                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                                            Customer: Z-A
+                                        </span>
+                                    </div>
+                                    <div class="flex items-center cursor-pointer filter-option" data-sort="newest">
+                                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                                            Newest First
+                                        </span>
+                                    </div>
+                                    <div class="flex items-center cursor-pointer filter-option" data-sort="oldest">
+                                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                                            Oldest First
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                    </td>
-                </tr>
-          <?php
-              }
-            } else {
-          ?>
-              <tr>
-                  <td colspan="6" class="px-4 py-6 text-sm text-center">
-                      <div class="flex flex-col items-center">
-                          <i class="fas fa-inbox text-gray-300 text-4xl mb-3"></i>
-                          <p class="text-gray-500">No pending bookings found</p>
-                      </div>
-                  </td>
-              </tr>
-          <?php
-            }
-          ?>
-        </tbody>
-      </table>
-    </div>
-  </div>
-  
-  <!-- Sticky Pagination Footer with improved spacing -->
-<div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
-    <div id="paginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
-        <?php 
-        // Get the number of bookings on the current page
-        $current_page_bookings = $result->num_rows;
-
-        if ($total_bookings > 0) {
-            $start = $offset + 1;
-            $end = $offset + $result->num_rows;
+                    </div>
+                </div>
+            </div>
+        </div>
         
-            echo "Showing {$start} - {$end} of {$total_bookings} bookings";
-        } else {
-            echo "No bookings found";
-        }
-        ?>
+        <!-- Mobile/Tablet Controls - Only visible on smaller screens -->
+        <div class="lg:hidden w-full mt-4">
+            <!-- First row: Search bar with filter icon on the right -->
+            <div class="flex items-center w-full gap-3 mb-4">
+                <!-- Search Input - Takes most of the space -->
+                <div class="relative flex-grow">
+                    <input type="text" id="bookingSearchInputMobile" 
+                           placeholder="Search bookings..." 
+                           class="pl-8 pr-3 py-2.5 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
+                    <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                </div>
+
+                <!-- Icon-only button for filter -->
+                <div class="flex items-center">
+                    <!-- Filter Icon Button -->
+                    <div class="relative filter-dropdown">
+                        <button id="bookingFilterToggleMobile" class="w-10 h-10 flex items-center justify-center text-sidebar-accent">
+                            <i class="fas fa-filter text-xl"></i>
+                            <span id="filterIndicatorMobile" class="hidden absolute top-1 right-1 h-2 w-2 bg-sidebar-accent rounded-full"></span>
+                        </button>
+                        
+                        <!-- Mobile Filter Dropdown -->
+                        <div id="bookingFilterDropdownMobile" class="hidden absolute right-0 mt-2 w-56 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-4">
+                            <div class="space-y-2">
+                                <h5 class="text-sm font-medium text-sidebar-text mb-2">Sort By</h5>
+                                <div class="space-y-1">
+                                    <div class="flex items-center cursor-pointer filter-option-mobile" data-sort="id_asc">
+                                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                                            ID: Ascending
+                                        </span>
+                                    </div>
+                                    <div class="flex items-center cursor-pointer filter-option-mobile" data-sort="id_desc">
+                                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                                            ID: Descending
+                                        </span>
+                                    </div>
+                                    <div class="flex items-center cursor-pointer filter-option-mobile" data-sort="customer_asc">
+                                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                                            Customer: A-Z
+                                        </span>
+                                    </div>
+                                    <div class="flex items-center cursor-pointer filter-option-mobile" data-sort="customer_desc">
+                                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                                            Customer: Z-A
+                                        </span>
+                                    </div>
+                                    <div class="flex items-center cursor-pointer filter-option-mobile" data-sort="newest">
+                                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                                            Newest First
+                                        </span>
+                                    </div>
+                                    <div class="flex items-center cursor-pointer filter-option-mobile" data-sort="oldest">
+                                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                                            Oldest First
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     
-    <?php if ($total_pages > 1): ?>
-    <div class="flex items-center gap-2">
-        <!-- Previous Button -->
-        <a href="?page=<?php echo max(1, $current_page - 1); ?>" 
-           class="px-3 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($current_page == 1) ? 'opacity-50 pointer-events-none' : ''; ?>"
-           aria-label="Previous">
-            <i class="fas fa-chevron-left"></i>
-        </a>
+    <!-- Responsive Table Container with improved spacing -->
+    <div class="overflow-x-auto scrollbar-thin" id="bookingTableContainer">
+        <div id="loadingIndicator" class="hidden absolute inset-0 bg-white bg-opacity-50 flex items-center justify-center">
+            <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-sidebar-accent"></div>
+        </div>
         
-        <!-- Page Numbers -->
-        <div class="flex items-center gap-1">
-            <?php
-            // Always show first page
-            if ($current_page > 3) {
-                echo '<a href="?page=1" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">1</a>';
-                if ($current_page > 4) {
-                    echo '<span class="px-2 text-gray-500">...</span>';
-                }
-            }
+        <!-- Responsive Table with improved spacing and horizontal scroll for small screens -->
+        <div class="min-w-full">
+            <table class="w-full">
+                <thead>
+                    <tr class="bg-gray-50 border-b border-sidebar-border">
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable('booking_id')">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fas fa-hashtag text-sidebar-accent"></i> Booking ID 
+                            </div>
+                        </th>
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable('customer')">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fas fa-user text-sidebar-accent"></i> Customer 
+                            </div>
+                        </th>
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable('service')">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fas fa-tag text-sidebar-accent"></i> Service 
+                            </div>
+                        </th>
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable('date')">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fas fa-calendar text-sidebar-accent"></i> Date Requested 
+                            </div>
+                        </th>
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable('status')">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fas fa-toggle-on text-sidebar-accent"></i> Status 
+                            </div>
+                        </th>
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text whitespace-nowrap">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fas fa-cogs text-sidebar-accent"></i> Actions
+                            </div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody id="bookingTableBody">
+                    <?php
+                    // Query to get booking data with joins and pagination
+                    $query = "SELECT b.booking_id, b.booking_date, b.status, 
+                            CONCAT(u.first_name, ' ', COALESCE(u.middle_name, ''), ' ', u.last_name, ' ', COALESCE(u.suffix, '')) AS customer_name,
+                            s.service_name
+                            FROM booking_tb b
+                            JOIN users u ON b.customerID = u.id
+                            JOIN services_tb s ON b.service_id = s.service_id
+                            WHERE b.status = 'Pending'
+                            ORDER BY b.booking_date DESC
+                            LIMIT ?, ?";
+
+                    $stmt = $conn->prepare($query);
+                    $stmt->bind_param("ii", $offset, $bookings_per_page);
+                    $stmt->execute();
+                    $result = $stmt->get_result();
+
+                    if ($result->num_rows > 0) {
+                        while ($row = $result->fetch_assoc()) {
+                            // Format booking ID
+                            $booking_id = "#BK-" . date('Y', strtotime($row['booking_date'])) . "-" . str_pad($row['booking_id'], 3, '0', STR_PAD_LEFT);
+
+                            // Format date
+                            $formatted_date = date('M j, Y', strtotime($row['booking_date']));
+
+                            // Status badge class
+                            $status_class = "bg-yellow-100 text-yellow-800 border border-yellow-200";
+                            $status_icon = "fa-clock";
+                            if ($row['status'] == 'Accepted') {
+                                $status_class = "bg-green-100 text-green-600 border border-green-200";
+                                $status_icon = "fa-check-circle";
+                            } elseif ($row['status'] == 'Declined') {
+                                $status_class = "bg-red-100 text-red-600 border border-red-200";
+                                $status_icon = "fa-times-circle";
+                            }
+                    ?>
+                            <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
+                                <td class="px-4 py-3.5 text-sm text-sidebar-text font-medium"><?php echo htmlspecialchars($booking_id); ?></td>
+                                <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo htmlspecialchars($row['customer_name']); ?></td>
+                                <td class="px-4 py-3.5 text-sm text-sidebar-text">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">
+                                        <?php echo htmlspecialchars($row['service_name']); ?>
+                                    </span>
+                                </td>
+                                <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo htmlspecialchars($formatted_date); ?></td>
+                                <td class="px-4 py-3.5 text-sm">
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium <?php echo $status_class; ?>">
+                                        <i class="fas <?php echo $status_icon; ?> mr-1"></i> <?php echo htmlspecialchars($row['status']); ?>
+                                    </span>
+                                </td>
+                                <td class="px-4 py-3.5 text-sm">
+                                    <div class="flex space-x-2">
+                                        <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" 
+                                                title="View Details" 
+                                                onclick="openBookingDetails(<?php echo $row['booking_id']; ?>)">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                    <?php
+                        }
+                    } else {
+                    ?>
+                        <tr>
+                            <td colspan="6" class="px-4 py-6 text-sm text-center">
+                                <div class="flex flex-col items-center">
+                                    <i class="fas fa-inbox text-gray-300 text-4xl mb-3"></i>
+                                    <p class="text-gray-500">No pending bookings found</p>
+                                </div>
+                            </td>
+                        </tr>
+                    <?php
+                    }
+                    ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <!-- Sticky Pagination Footer with improved spacing -->
+    <div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div id="paginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
+            <?php 
+            // Get the number of bookings on the current page
+            $current_page_bookings = $result->num_rows;
+
+            if ($total_bookings > 0) {
+                $start = $offset + 1;
+                $end = $offset + $result->num_rows;
             
-            // Show pages around current page
-            for ($i = max(1, $current_page - 2); $i <= min($total_pages, $current_page + 2); $i++) {
-                if ($i == $current_page) {
-                    echo '<span class="px-3.5 py-1.5 bg-sidebar-accent text-white rounded text-sm">'.$i.'</span>';
-                } else {
-                    echo '<a href="?page='.$i.'" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">'.$i.'</a>';
-                }
-            }
-            
-            // Always show last page
-            if ($current_page < $total_pages - 2) {
-                if ($current_page < $total_pages - 3) {
-                    echo '<span class="px-2 text-gray-500">...</span>';
-                }
-                echo '<a href="?page='.$total_pages.'" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">'.$total_pages.'</a>';
+                echo "Showing {$start} - {$end} of {$total_bookings} bookings";
+            } else {
+                echo "No bookings found";
             }
             ?>
         </div>
-        
-        <!-- Next Button -->
-        <a href="?page=<?php echo min($total_pages, $current_page + 1); ?>" 
-           class="px-3 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($current_page == $total_pages) ? 'opacity-50 pointer-events-none' : ''; ?>"
-           aria-label="Next">
-            <i class="fas fa-chevron-right"></i>
-        </a>
+        <div id="paginationContainer" class="flex space-x-1">
+            <?php if ($total_pages > 1): ?>
+                <!-- First page and Previous page -->
+                <a href="<?php echo '?page=' . max(1, $current_page - 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($current_page == 1) ? 'opacity-50 pointer-events-none' : ''; ?>">&laquo;</a>
+                
+                <?php
+                // Determine the range of page numbers to show
+                $range = 2; // Show 2 pages before and after the current page
+                $start_page = max(1, $current_page - $range);
+                $end_page = min($total_pages, $current_page + $range);
+                
+                // Always show first page
+                if ($start_page > 1) {
+                    echo '<a href="?page=1" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">1</a>';
+                    if ($start_page > 2) {
+                        echo '<span class="px-3.5 py-1.5 text-gray-500">...</span>';
+                    }
+                }
+                
+                // Show page numbers
+                for ($i = $start_page; $i <= $end_page; $i++) {
+                    $active_class = ($i == $current_page) ? 'bg-sidebar-accent text-white' : 'border border-sidebar-border hover:bg-sidebar-hover';
+                    echo '<a href="?page=' . $i . '" class="px-3.5 py-1.5 rounded text-sm ' . $active_class . '">' . $i . '</a>';
+                }
+                
+                // Always show last page
+                if ($end_page < $total_pages) {
+                    if ($end_page < $total_pages - 1) {
+                        echo '<span class="px-3.5 py-1.5 text-gray-500">...</span>';
+                    }
+                    echo '<a href="?page=' . $total_pages . '" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">' . $total_pages . '</a>';
+                }
+                ?>
+                
+                <!-- Next page -->
+                <a href="<?php echo '?page=' . min($total_pages, $current_page + 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($current_page == $total_pages) ? 'opacity-50 pointer-events-none' : ''; ?>">&raquo;</a>
+            <?php endif; ?>
+        </div>
     </div>
-    <?php endif; ?>
-</div>
-  </div>
 </div>
  
 
