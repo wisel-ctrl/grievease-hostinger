@@ -211,7 +211,7 @@ $current_page_bookings = array_slice($filtered_bookings, ($page - 1) * $items_pe
     <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Cinzel:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&family=Hedvig+Letters+Serif:ital@0;1&display=swap" rel="stylesheet">
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="tailwind.js"></script>
+    <script src="../tailwind.js"></script>
     <style>
         body {
             background-color: #F9F6F0;
