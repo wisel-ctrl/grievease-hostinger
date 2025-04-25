@@ -638,8 +638,9 @@ $conn->close();
                 <div class="flex justify-between items-center mb-4">
                     <h2 class="text-xl md:text-2xl font-hedvig text-navy">Book Your Traditional Service</h2>
                     <div class="flex items-center">
-                        <button id="backToDetailsBtn" class="mr-2 text-gray-500 hover:text-navy md:hidden">
-                            <i class="fas fa-arrow-left text-lg"></i>
+                        <button id="backToDetailsBtn" class="mr-2 text-gray-500 hover:text-navy md:hidden flex items-center">
+                            <i class="fas fa-arrow-left text-lg mr-1"></i>
+                            <span class="text-sm">Back</span>
                         </button>
                         <button class="closeModalBtn text-gray-500 hover:text-navy">
                             <i class="fas fa-times text-xl md:text-2xl"></i>
@@ -655,52 +656,87 @@ $conn->close();
                     
                     <div class="border-b border-gray-200 pb-4 mb-4">
                         <h3 class="text-base md:text-lg font-hedvig text-navy mb-3 md:mb-4">Deceased Information</h3>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 mb-3 md:mb-4">
-                            <div>
-                                <label for="traditionalDeceasedFirstName" class="block text-xs md:text-sm font-medium text-navy mb-1 md:mb-2">First Name *</label>
-                                <input type="text" id="traditionalDeceasedFirstName" name="deceasedFirstName" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
-                            </div>
-                            <div>
-                                <label for="traditionalDeceasedMiddleName" class="block text-xs md:text-sm font-medium text-navy mb-1 md:mb-2">Middle Name</label>
-                                <input type="text" id="traditionalDeceasedMiddleName" name="deceasedMiddleName" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
-                            </div>
+                        
+                        <!-- First Name & Middle Name (Full width on mobile, side by side on larger screens) -->
+                        <div class="mb-3">
+                            <label for="traditionalDeceasedFirstName" class="block text-sm font-medium text-navy mb-1">First Name *</label>
+                            <input type="text" id="traditionalDeceasedFirstName" name="deceasedFirstName" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                         </div>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 mb-3 md:mb-4">
-                            <div>
-                                <label for="traditionalDeceasedLastName" class="block text-xs md:text-sm font-medium text-navy mb-1 md:mb-2">Last Name *</label>
-                                <input type="text" id="traditionalDeceasedLastName" name="deceasedLastName" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
-                            </div>
-                            <div>
-                                <label for="traditionalDeceasedSuffix" class="block text-xs md:text-sm font-medium text-navy mb-1 md:mb-2">Suffix</label>
-                                <input type="text" id="traditionalDeceasedSuffix" name="deceasedSuffix" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
-                            </div>
+                        <div class="mb-3">
+                            <label for="traditionalDeceasedMiddleName" class="block text-sm font-medium text-navy mb-1">Middle Name</label>
+                            <input type="text" id="traditionalDeceasedMiddleName" name="deceasedMiddleName" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                         </div>
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4">
-                            <div>
-                                <label for="traditionalDateOfBirth" class="block text-xs md:text-sm font-medium text-navy mb-1 md:mb-2">Date of Birth</label>
-                                <input type="date" id="traditionalDateOfBirth" name="dateOfBirth" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
-                            </div>
-                            <div>
-                                <label for="traditionalDateOfDeath" class="block text-xs md:text-sm font-medium text-navy mb-1 md:mb-2">Date of Death *</label>
-                                <input type="date" id="traditionalDateOfDeath" name="dateOfDeath" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
-                            </div>
-                            <div>
-                                <label for="traditionalDateOfBurial" class="block text-xs md:text-sm font-medium text-navy mb-1 md:mb-2">Date of Burial</label>
-                                <input type="date" id="traditionalDateOfBurial" name="dateOfBurial" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
-                            </div>
+                        
+                        <!-- Last Name & Suffix (Full width on mobile) -->
+                        <div class="mb-3">
+                            <label for="traditionalDeceasedLastName" class="block text-sm font-medium text-navy mb-1">Last Name *</label>
+                            <input type="text" id="traditionalDeceasedLastName" name="deceasedLastName" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                         </div>
-                        <div class="mt-3 md:mt-4">
-                            <label for="traditionalDeathCertificate" class="block text-xs md:text-sm font-medium text-navy mb-1 md:mb-2">Death Certificate</label>
-                            <input type="file" id="traditionalDeathCertificate" name="deathCertificate" accept=".pdf,.jpg,.jpeg,.png" class="w-full text-xs md:text-sm px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                        <div class="mb-3">
+                            <label for="traditionalDeceasedSuffix" class="block text-sm font-medium text-navy mb-1">Suffix</label>
+                            <select id="traditionalDeceasedSuffix" name="deceasedSuffix" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                                <option value="">None</option>
+                                <option value="Jr.">Jr.</option>
+                                <option value="Sr.">Sr.</option>
+                                <option value="I">I</option>
+                                <option value="II">II</option>
+                                <option value="III">III</option>
+                                <option value="IV">IV</option>
+                                <option value="V">V</option>
+                            </select>
                         </div>
-                        <div class="mt-3 md:mt-4">
-                            <label for="traditionalDeceasedAddress" class="block text-xs md:text-sm font-medium text-navy mb-1 md:mb-2">Address of the Deceased</label>
+                        
+                        <!-- Date fields (Full width on mobile) -->
+                        <div class="mb-3">
+                            <label for="traditionalDateOfBirth" class="block text-sm font-medium text-navy mb-1">Date of Birth</label>
+                            <input type="date" id="traditionalDateOfBirth" name="dateOfBirth" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                        </div>
+                        <div class="mb-3">
+                            <label for="traditionalDateOfDeath" class="block text-sm font-medium text-navy mb-1">Date of Death *</label>
+                            <input type="date" id="traditionalDateOfDeath" name="dateOfDeath" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                        </div>
+                        <div class="mb-3">
+                            <label for="traditionalDateOfBurial" class="block text-sm font-medium text-navy mb-1">Date of Burial</label>
+                            <input type="date" id="traditionalDateOfBurial" name="dateOfBurial" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                        </div>
+                        
+                        <!-- Death Certificate Upload (Improved UI) -->
+                        <div class="mb-3">
+                            <label for="traditionalDeathCertificate" class="block text-sm font-medium text-navy mb-1">Death Certificate</label>
+                            <div class="border border-input-border bg-white rounded-lg p-2 focus-within:ring-2 focus-within:ring-yellow-600">
+                                <div class="flex items-center">
+                                    <label for="traditionalDeathCertificate" class="flex-1 cursor-pointer">
+                                        <div class="flex items-center justify-center py-2 px-3 bg-gray-50 rounded">
+                                            <i class="fas fa-upload mr-2 text-gray-500"></i>
+                                            <span class="text-sm text-gray-600">Upload Certificate</span>
+                                        </div>
+                                    </label>
+                                    <span class="text-xs ml-2 text-gray-500" id="traditionalDeathCertFileName">No file chosen</span>
+                                </div>
+                                <input type="file" id="traditionalDeathCertificate" name="deathCertificate" accept=".pdf,.jpg,.jpeg,.png" class="hidden">
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">Accepted formats: PDF, JPG, JPEG, PNG</p>
+                        </div>
+                        
+                        <!-- Address (Improved UI with regions dropdown) -->
+                        <div class="mb-3">
+                            <label for="traditionalDeceasedRegion" class="block text-sm font-medium text-navy mb-1">Region</label>
+                            <select id="traditionalDeceasedRegion" name="deceasedRegion" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                                <option value="">Select Region</option>
+                                <option value="NCR">National Capital Region (NCR)</option>
+                                <option value="CAR">Cordillera Administrative Region (CAR)</option>
+                                <option value="Region I">Ilocos Region (Region I)</option>
+                                <!-- Add more regions as needed -->
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="traditionalDeceasedAddress" class="block text-sm font-medium text-navy mb-1">Complete Address</label>
                             <textarea id="traditionalDeceasedAddress" name="deceasedAddress" rows="2" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600"></textarea>
                         </div>
                         
                         <div class="flex items-center mt-3 md:mt-4">
                             <input type="checkbox" id="traditionalWithCremate" name="with_cremate" value="yes" class="h-4 w-4 text-yellow-600 focus:ring-yellow-500 border-gray-300 rounded">
-                            <label for="traditionalWithCremate" class="ml-2 block text-xs md:text-sm text-navy">
+                            <label for="traditionalWithCremate" class="ml-2 block text-sm text-navy">
                                 Include cremation service
                             </label>
                         </div>
@@ -708,15 +744,28 @@ $conn->close();
 
                     <div class="border-b border-gray-200 pb-4 mb-4">
                         <h3 class="text-base md:text-lg font-hedvig text-navy mb-3 md:mb-4">Payment</h3>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
-                            <div>
-                                <label for="traditionalGcashReceipt" class="block text-xs md:text-sm font-medium text-navy mb-1 md:mb-2">GCash Receipt</label>
-                                <input type="file" id="traditionalGcashReceipt" name="gcashReceipt" accept=".pdf,.jpg,.jpeg,.png" class="w-full text-xs md:text-sm px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                        
+                        <!-- GCash Upload (Improved UI) -->
+                        <div class="mb-3">
+                            <label for="traditionalGcashReceipt" class="block text-sm font-medium text-navy mb-1">GCash Receipt</label>
+                            <div class="border border-input-border bg-white rounded-lg p-2 focus-within:ring-2 focus-within:ring-yellow-600">
+                                <div class="flex items-center">
+                                    <label for="traditionalGcashReceipt" class="flex-1 cursor-pointer">
+                                        <div class="flex items-center justify-center py-2 px-3 bg-gray-50 rounded">
+                                            <i class="fas fa-receipt mr-2 text-blue-500"></i>
+                                            <span class="text-sm text-gray-600">Upload Receipt</span>
+                                        </div>
+                                    </label>
+                                    <span class="text-xs ml-2 text-gray-500" id="traditionalGcashFileName">No file chosen</span>
+                                </div>
+                                <input type="file" id="traditionalGcashReceipt" name="gcashReceipt" accept=".pdf,.jpg,.jpeg,.png" class="hidden">
                             </div>
-                            <div>
-                                <label for="traditionalReferenceNumber" class="block text-xs md:text-sm font-medium text-navy mb-1 md:mb-2">GCash Reference Number *</label>
-                                <input type="text" id="traditionalReferenceNumber" name="referenceNumber" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
-                            </div>
+                            <p class="text-xs text-gray-500 mt-1">Accepted formats: PDF, JPG, JPEG, PNG</p>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="traditionalReferenceNumber" class="block text-sm font-medium text-navy mb-1">GCash Reference Number *</label>
+                            <input type="text" id="traditionalReferenceNumber" name="referenceNumber" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" placeholder="e.g. 1234567890">
                         </div>
                     </div>
 
@@ -743,6 +792,22 @@ $conn->close();
         </div>
     </div>
 </div>
+
+<!-- Add this script at the end -->
+<script>
+// File upload UI enhancement
+document.getElementById('traditionalDeathCertificate').addEventListener('change', function() {
+    const fileName = this.files[0] ? this.files[0].name : 'No file chosen';
+    document.getElementById('traditionalDeathCertFileName').textContent = fileName.length > 20 ? 
+        fileName.substring(0, 17) + '...' : fileName;
+});
+
+document.getElementById('traditionalGcashReceipt').addEventListener('change', function() {
+    const fileName = this.files[0] ? this.files[0].name : 'No file chosen';
+    document.getElementById('traditionalGcashFileName').textContent = fileName.length > 20 ? 
+        fileName.substring(0, 17) + '...' : fileName;
+});
+</script>
 
 <!-- Lifeplan Modal (Hidden by Default) -->
 <div id="lifeplanModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4 hidden">
