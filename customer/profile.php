@@ -120,7 +120,7 @@ header("Pragma: no-cache");
     <?php include 'faviconLogo.php'; ?>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="tailwind.js"></script>
+    <script src="../tailwind.js"></script>
     <script src="profile.js"></script>    
     <!-- Add this in the head section of your HTML document -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.32/dist/sweetalert2.min.css">

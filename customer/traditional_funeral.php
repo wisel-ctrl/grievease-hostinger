@@ -125,7 +125,7 @@ require_once '../db_connect.php'; // Database connection
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Hedvig+Letters+Serif:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="tailwind.js"></script>
+    <script src="../tailwind.js"></script>
     <style>
         .modal {
             transition: opacity 0.3s ease-in-out;

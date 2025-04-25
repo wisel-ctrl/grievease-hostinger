@@ -846,7 +846,7 @@ $conn->close();
     </div>
 </div>
 
-<script src="tailwind.js"></script>
+<script src="../tailwind.js"></script>
 <script src="customer_support.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {

@@ -1,69 +1,68 @@
 <!-- chat_elements.html - Copy and include this HTML structure in your pages -->
-
-<!-- Overlay for blur effect (initially hidden) -->
+<!-- Overlay for blur effect (initially hidden) --> 
 <div id="overlay" class="fixed inset-0 bg-black bg-opacity-40 backdrop-blur-sm z-40 hidden"></div>
 
-<!-- Customer Service Floating Button -->
-<div class="fixed bottom-6 right-6 z-50">
-    <!-- Main Button -->
-    <button id="cs-button" class="bg-yellow-600 text-black rounded-full w-14 h-14 flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300">
-        <i class="fas fa-comments text-xl"></i>
-    </button>
+<!-- Customer Service Floating Button --> 
+<div class="fixed bottom-6 right-6 z-50"> 
+  <!-- Main Button --> 
+  <button id="cs-button" class="bg-yellow-600 text-black rounded-full w-14 h-14 flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300"> 
+    <i class="fas fa-comments text-xl"></i> 
+  </button>
 
-    <!-- Chat Window Modal (Initially Hidden) -->
-    <div id="chat-window" class="fixed bottom-12 right-20 z-50 bg-white rounded-lg shadow-xl w-80 hidden">
-        <!-- Chat Header -->
-        <div class="bg-black text-white p-3 rounded-t-lg flex justify-between items-center">
-            <div class="flex items-center">
-                <div class="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
-                <span>Customer Support</span>
-            </div>
-            <div class="flex space-x-2">
-                <button id="minimize-chat" class="hover:text-gray-300 transition">
-                    <i class="fas fa-minus text-xs"></i>
-                </button>
-                <button id="close-chat" class="hover:text-gray-300 transition">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-        </div>
-
-        <!-- Add this right after the chat window div -->
-        <input type="hidden" id="user-id" value="<?php echo isset($_SESSION['user_id']) ? $_SESSION['user_id'] : ''; ?>">
-
-        <!-- Chat Messages -->
-        <div id="chat-messages" class="p-3 h-80 overflow-y-auto space-y-3 bg-gray-50">
-            <div class="flex items-start">
-                <div class="bg-gray-200 rounded-lg p-2 max-w-[80%]">
-                    <p class="text-sm">Hello, welcome to GrievEase customer support. How can I assist you today?</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Chat Input -->
-        <div class="p-3 border-t">
-            <div class="flex">
-                <input type="text" id="chat-input" placeholder="Type your message..." class="flex-1 p-2 border border-gray-300 rounded-l-md focus:outline-none focus:border-gold">
-                <button id="send-message" class="bg-yellow-600 text-black px-4 rounded-r-md hover:bg-darkgold transition">
-                    <i class="fas fa-paper-plane"></i>
-                </button>
-            </div>
-        </div>
+  <!-- Chat Window Modal (Initially Hidden) --> 
+  <div id="chat-window" class="fixed sm:bottom-12 sm:right-20 bottom-0 right-0 z-50 bg-white rounded-lg shadow-xl sm:w-80 w-full sm:h-auto h-full hidden"> 
+    <!-- Chat Header --> 
+    <div class="bg-black text-white p-3 rounded-t-lg flex justify-between items-center"> 
+      <div class="flex items-center"> 
+        <div class="w-2 h-2 bg-green-500 rounded-full mr-2"></div> 
+        <span>Customer Support</span> 
+      </div> 
+      <div class="flex space-x-2"> 
+        <button id="minimize-chat" class="hover:text-gray-300 transition"> 
+          <i class="fas fa-minus text-xs"></i> 
+        </button> 
+        <button id="close-chat" class="hover:text-gray-300 transition"> 
+          <i class="fas fa-times"></i> 
+        </button> 
+      </div> 
     </div>
+
+    <!-- Add this right after the chat window div --> 
+    <input type="hidden" id="user-id" value="<?php echo isset($_SESSION['user_id']) ? $_SESSION['user_id'] : ''; ?>">
+
+    <!-- Chat Messages --> 
+    <div id="chat-messages" class="p-3 sm:h-80 h-[calc(100%-116px)] overflow-y-auto space-y-3 bg-gray-50"> 
+      <div class="flex items-start"> 
+        <div class="bg-gray-200 rounded-lg p-2 max-w-[80%]"> 
+          <p class="text-sm">Hello, welcome to GrievEase customer support. How can I assist you today?</p> 
+        </div> 
+      </div> 
+    </div>
+
+    <!-- Chat Input --> 
+    <div class="p-3 border-t"> 
+      <div class="flex"> 
+        <input type="text" id="chat-input" placeholder="Type your message..." class="flex-1 p-2 border border-gray-300 rounded-l-md focus:outline-none focus:border-gold"> 
+        <button id="send-message" class="bg-yellow-600 text-black px-4 rounded-r-md hover:bg-darkgold transition"> 
+          <i class="fas fa-paper-plane"></i> 
+        </button> 
+      </div> 
+    </div> 
+  </div> 
 </div>
 
-<!-- Branch Selection Modal (Initially Hidden) -->
-<div id="branch-modal" class="fixed inset-0 flex items-center justify-center z-50 hidden">
-    <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
-    <div class="bg-white rounded-lg shadow-xl w-80 z-10 p-5">
-        <h3 class="text-lg font-semibold mb-4">Select Branch Location</h3>
-        <p class="text-sm text-gray-600 mb-4">Please select which branch you'd like to contact:</p>
+<!-- Branch Selection Modal (Initially Hidden) --> 
+<div id="branch-modal" class="fixed inset-0 flex items-center justify-center z-50 hidden"> 
+  <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div> 
+  <div class="bg-white rounded-lg shadow-xl sm:w-80 w-[90%] max-w-sm z-10 p-5"> 
+    <h3 class="text-lg font-semibold mb-4">Select Branch Location</h3> 
+    <p class="text-sm text-gray-600 mb-4">Please select which branch you'd like to contact:</p>
 
-        <div id="branch-options" class="space-y-3">
-            <!-- Branch options will be dynamically inserted here -->
-            <div class="text-center py-4">
-                <i class="fas fa-spinner fa-spin"></i> Loading branches...
-            </div>
-        </div>
-    </div>
+    <div id="branch-options" class="space-y-3"> 
+      <!-- Branch options will be dynamically inserted here --> 
+      <div class="text-center py-4"> 
+        <i class="fas fa-spinner fa-spin"></i> Loading branches... 
+      </div> 
+    </div> 
+  </div> 
 </div>

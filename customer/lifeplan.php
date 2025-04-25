@@ -126,7 +126,7 @@ require_once '../db_connect.php'; // Database connection
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Alex+Brush&family=Inter:wght@300;400;500;600&family=Cinzel:wght@400;500;600;700&family=Hedvig+Letters+Serif:wght@400;500&display=swap" rel="stylesheet">
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="tailwind.js"></script>
+    <script src="../tailwind.js"></script>
     <style>
         :root {
             --navbar-height: 64px; /* Define the height of the navbar */
