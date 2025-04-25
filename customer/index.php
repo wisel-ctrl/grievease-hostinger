@@ -531,8 +531,8 @@ header("Pragma: no-cache");
             <!-- Legacy Tribute Package -->
             <div class="package-card min-w-full md:min-w-[33.333%] px-2 sm:px-4">
                 <div class="bg-white rounded-[20px] shadow-lg overflow-hidden relative group hover:shadow-xl transition-all duration-300 flex flex-col h-full" data-price="700000" data-service="traditional" data-name="Legacy Tribute" data-image="../image/700.jpg">
-                    <div class="h-10 sm:h-12 bg-navy flex items-center justify-center">
-                        <h4 class="text-red font-hedvig text-lg sm:text-xl">Legacy Tribute</h4>
+                    <div class="h-10 sm:h-12 bg-orange-200 flex items-center justify-center">
+                        <h4 class="text-white font-hedvig text-lg sm:text-xl">Legacy Tribute</h4>
                         <div class="absolute top-0 right-0 w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center">
                             <div class="w-12 h-12 sm:w-16 sm:h-16 bg-yellow-600/90 rotate-45 transform origin-bottom-left"></div>
                         </div>
