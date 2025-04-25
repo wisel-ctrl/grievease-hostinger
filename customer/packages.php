@@ -219,7 +219,17 @@ $conn->close();
             transform: translateY(-8px);
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
         }
-    
+        @media (min-width: 768px) {
+    .form-section {
+        display: block !important;
+    }
+}
+
+@media (max-width: 767px) {
+    .form-section:not(.force-show) {
+        display: none !important;
+    }
+}
     </style>
 </head>
 <body class="bg-cream overflow-x-hidden w-full max-w-full m-0 p-0 font-hedvig">
@@ -1027,6 +1037,8 @@ document.getElementById('traditionalDeceasedCity').addEventListener('change', fu
     
     // Add logic to populate barangays based on selected city
 });
+
+
 </script>
 
 <!-- Lifeplan Modal (Hidden by Default) -->
@@ -1212,17 +1224,21 @@ document.addEventListener('DOMContentLoaded', function() {
     const lifeplanDetailsSection = document.querySelector('#lifeplanModal .details-section');
     const lifeplanFormSection = document.querySelector('#lifeplanModal .form-section');
     
-    if (continueBtn && backBtn && detailsSection && formSection) {
-        continueBtn.addEventListener('click', function() {
-            detailsSection.classList.add('hidden');
-            formSection.classList.remove('hidden');
-        });
-        
-        backBtn.addEventListener('click', function() {
-            formSection.classList.add('hidden');
-            detailsSection.classList.remove('hidden');
-        });
-    }
+    // Update your existing continue/back button handlers
+if (continueBtn && backBtn && detailsSection && formSection) {
+    continueBtn.addEventListener('click', function() {
+        detailsSection.classList.add('hidden');
+        formSection.classList.remove('hidden');
+        // Force show on mobile when navigating to form
+        formSection.classList.add('force-show');
+    });
+    
+    backBtn.addEventListener('click', function() {
+        formSection.classList.add('hidden');
+        formSection.classList.remove('force-show');
+        detailsSection.classList.remove('hidden');
+    });
+}
 
     if (continueToLifeplanFormBtn && backToLifeplanDetailsBtn && lifeplanDetailsSection && lifeplanFormSection) {
     continueToLifeplanFormBtn.addEventListener('click', function() {
@@ -1237,14 +1253,16 @@ document.addEventListener('DOMContentLoaded', function() {
 }
     
     // Make sure the modal close button works for both sections
-    document.querySelectorAll('.closeModalBtn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            document.getElementById('traditionalModal').classList.add('hidden');
-            // Reset to show details when modal is reopened
-            detailsSection.classList.remove('hidden');
-            formSection.classList.add('hidden');
-        });
+    // Update your close modal handler
+document.querySelectorAll('.closeModalBtn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        document.getElementById('traditionalModal').classList.add('hidden');
+        // Reset to show details when modal is reopened
+        detailsSection.classList.remove('hidden');
+        formSection.classList.add('hidden');
+        formSection.classList.remove('force-show');
     });
+});
 
     // Package selection functionality
     document.addEventListener('click', function(event) {
@@ -1834,6 +1852,27 @@ document.addEventListener('DOMContentLoaded', function() {
             this.value = '';
         }
     });
+});
+
+// Add this to your existing JavaScript
+window.addEventListener('resize', function() {
+    const traditionalModal = document.getElementById('traditionalModal');
+    if (!traditionalModal.classList.contains('hidden')) {
+        const detailsSection = document.querySelector('.details-section');
+        const formSection = document.querySelector('.form-section');
+        const isMobileView = window.innerWidth < 768;
+        
+        if (isMobileView) {
+            // If switching to mobile view, ensure form is hidden if we were on details
+            if (!detailsSection.classList.contains('hidden')) {
+                formSection.classList.add('hidden');
+            }
+        } else {
+            // If switching to desktop view, show both sections
+            detailsSection.classList.remove('hidden');
+            formSection.classList.remove('hidden');
+        }
+    }
 });
 </script>
 </body>
