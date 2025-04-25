@@ -60,32 +60,32 @@ header("Cache-Control: post-check=0, pre-check=0", false);
 header("Pragma: no-cache");
 
 function generateInventoryRow($row) {
-  $html = '<tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">';
-  $html .= '<td class="p-4 text-sm text-sidebar-text font-medium">#INV-' . str_pad($row["inventory_id"], 3, '0', STR_PAD_LEFT) . '</td>';
-  $html .= '<td class="p-4 text-sm text-sidebar-text">' . htmlspecialchars($row["item_name"]) . '</td>';
-  $html .= '<td class="p-4 text-sm text-sidebar-text">';
-  $html .= '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">';
-  $html .= htmlspecialchars($row["category_name"]) . '</span>';
-  $html .= '</td>';
-  $html .= '<td class="p-4 text-sm text-sidebar-text" data-sort-value="' . $row["quantity"] . '">' . $row["quantity"] . '</td>';
-  $html .= '<td class="p-4 text-sm font-medium text-sidebar-text" data-sort-value="' . $row["price"] . '">₱' . number_format($row["price"], 2) . '</td>';
-  $html .= '<td class="p-4 text-sm font-medium text-sidebar-text" data-sort-value="' . $row["total_value"] . '">₱' . number_format($row["total_value"], 2) . '</td>';
-  $html .= '<td class="p-4 text-sm">';
-  $html .= '<div class="flex space-x-2">';
-  $html .= '<button class="p-2 bg-yellow-100 text-yellow-600 rounded-lg hover:bg-yellow-200 transition-all tooltip" title="Edit Item" onclick="openViewItemModal(' . $row["inventory_id"] . ')">';
-  $html .= '<i class="fas fa-edit"></i>';
-  $html .= '</button>';
-  $html .= '<form method="POST" action="inventory/delete_inventory_item.php" onsubmit="return false;" style="display:inline;" class="delete-form">';
-  $html .= '<input type="hidden" name="inventory_id" value="' . $row["inventory_id"] . '">';
-  $html .= '<button type="submit" class="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-all tooltip" title="Archive Item">';
-  $html .= '<i class="fas fa-archive"></i>';
-  $html .= '</button>';
-  $html .= '</form>';
-  $html .= '</div>';
-  $html .= '</td>';
-  $html .= '</tr>';
-  
-  return $html;
+    $html = '<tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">';
+    $html .= '<td class="p-4 text-sm text-sidebar-text font-medium">#INV-' . str_pad($row["inventory_id"], 3, '0', STR_PAD_LEFT) . '</td>';
+    $html .= '<td class="p-4 text-sm text-sidebar-text">' . htmlspecialchars($row["item_name"]) . '</td>';
+    $html .= '<td class="p-4 text-sm text-sidebar-text">';
+    $html .= '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">';
+    $html .= htmlspecialchars($row["category_name"]) . '</span>';
+    $html .= '</td>';
+    $html .= '<td class="p-4 text-sm text-sidebar-text" data-sort-value="' . $row["quantity"] . '">' . $row["quantity"] . '</td>';
+    $html .= '<td class="p-4 text-sm font-medium text-sidebar-text" data-sort-value="' . $row["price"] . '">₱' . number_format($row["price"], 2) . '</td>';
+    $html .= '<td class="p-4 text-sm font-medium text-sidebar-text" data-sort-value="' . $row["total_value"] . '">₱' . number_format($row["total_value"], 2) . '</td>';
+    $html .= '<td class="p-4 text-sm">';
+    $html .= '<div class="flex space-x-2">';
+    $html .= '<button class="p-2 bg-yellow-100 text-yellow-600 rounded-lg hover:bg-yellow-200 transition-all tooltip" title="Edit Item" onclick="openViewItemModal(' . $row["inventory_id"] . ')">';
+    $html .= '<i class="fas fa-edit"></i>';
+    $html .= '</button>';
+    $html .= '<form method="POST" action="inventory/delete_inventory_item.php" onsubmit="return false;" style="display:inline;" class="delete-form">';
+    $html .= '<input type="hidden" name="inventory_id" value="' . $row["inventory_id"] . '">';
+    $html .= '<button type="submit" class="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-all tooltip" title="Archive Item">';
+    $html .= '<i class="fas fa-archive"></i>';
+    $html .= '</button>';
+    $html .= '</form>';
+    $html .= '</div>';
+    $html .= '</td>';
+    $html .= '</tr>';
+    
+    return $html;
 }
 
 ?>
@@ -626,7 +626,7 @@ if ($branchResult->num_rows > 0) {
             </th>
           </tr>
         </thead>
-        <tbody id="inventoryTable_<?php echo $branchId; ?>">
+            <tbody id="inventoryTable_<?php echo $branchId; ?>">
               <?php
               if ($paginatedResult->num_rows > 0) {
                   while($row = $paginatedResult->fetch_assoc()) {
@@ -654,7 +654,7 @@ if ($branchResult->num_rows > 0) {
       Showing <?php echo min(($currentPage - 1) * $itemsPerPage + 1, $totalItems) . ' - ' . min($currentPage * $itemsPerPage, $totalItems); ?> 
       of <?php echo $totalItems; ?> items
     </div>
-    <div class="flex space-x-2">
+        <div class="flex space-x-2">
             <?php if ($currentPage > 1): ?>
                 <button onclick="loadPage(<?php echo $branchId; ?>, <?php echo $currentPage - 1 ?>)" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">&laquo;</button>
             <?php else: ?>
@@ -1119,20 +1119,20 @@ function loadPage(branchId, page) {
             document.getElementById(`paginationInfo_${branchId}`).innerHTML = 
                 `Showing ${startItem} - ${endItem} of ${totalItems} items`;
             
+            // Update URL without reloading
+            const url = new URL(window.location);
+            url.searchParams.set(`page_${branchId}`, page);
+            window.history.pushState({}, '', url);
+            
             // Update pagination buttons active state
             updatePaginationActiveState(branchId, page);
+            
+            // Reattach event listeners
+            reattachEventListeners(branchId);
             
             // Hide loading indicator
             loadingIndicator.classList.add('hidden');
             tableContainer.style.opacity = '1';
-            
-            // Re-attach event listeners for edit buttons
-            document.querySelectorAll(`#inventoryTable_${branchId} button[onclick^="openViewItemModal"]`).forEach(button => {
-                button.onclick = function() {
-                    const inventoryId = this.getAttribute('onclick').match(/openViewItemModal\((\d+)\)/)[1];
-                    openViewItemModal(inventoryId);
-                };
-            });
         })
         .catch(error => {
             console.error('Error:', error);
@@ -1144,6 +1144,58 @@ function loadPage(branchId, page) {
                 text: 'Failed to load inventory data. Please try again.'
             });
         });
+}
+
+function updatePaginationActiveState(branchId, currentPage) {
+    const paginationContainer = document.querySelector(`#paginationInfo_${branchId}`).nextElementSibling;
+    const pageButtons = paginationContainer.querySelectorAll('button');
+    
+    pageButtons.forEach(button => {
+        // Remove active class from all buttons
+        button.classList.remove('bg-sidebar-accent', 'text-white');
+        button.classList.add('border', 'border-sidebar-border', 'hover:bg-sidebar-hover');
+        
+        // Check if this button is the current page
+        const pageNumber = parseInt(button.textContent);
+        if (!isNaN(pageNumber) && pageNumber === currentPage) {
+            button.classList.remove('border', 'border-sidebar-border', 'hover:bg-sidebar-hover');
+            button.classList.add('bg-sidebar-accent', 'text-white');
+        }
+    });
+}
+
+// Add this function to reattach event listeners
+function reattachEventListeners(branchId) {
+    // Reattach click handlers for archive buttons
+    document.querySelectorAll('.delete-form').forEach(form => {
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+            const formElement = this;
+            
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, archive it!',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    formElement.submit();
+                }
+            });
+        });
+    });
+    
+    // Reattach click handlers for view item buttons
+    document.querySelectorAll(`#inventoryTable_${branchId} button[onclick^="openViewItemModal"]`).forEach(button => {
+        button.onclick = function() {
+            const inventoryId = this.getAttribute('onclick').match(/openViewItemModal\((\d+)\)/)[1];
+            openViewItemModal(inventoryId);
+        };
+    });
 }
 
 // Helper function to update pagination active state
