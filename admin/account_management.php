@@ -1628,12 +1628,12 @@ if ($result->num_rows > 0) {
                         </div>
                     </div>
                 </div>
-            </div>
 
             <!-- Archive Icon Button -->
           <button class="w-10 h-10 flex items-center justify-center text-sidebar-accent" onclick="showArchivedItems(<?php echo $branchId; ?>)">
             <i class="fas fa-archive text-xl"></i>
           </button>
+</div>
 
             <!-- Second row: Add Employee Account Button - Full width -->
             <div class="w-full">
