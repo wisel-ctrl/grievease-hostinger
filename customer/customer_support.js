@@ -2,76 +2,136 @@ document.addEventListener('DOMContentLoaded', function() {
     // Global variables
     let currentChatRoomId = null;
     let currentUser = null;
-    const supportAgent = 'support_agent'; // Support agent ID
-    let selectedBranch = null; // To store the selected branch
+    const supportAgent = 'support_agent';
+    let selectedBranch = null;
+    let isMinimized = false;
 
-    // Elements
+    // DOM Elements
     const csButton = document.getElementById('cs-button');
     const chatWindow = document.getElementById('chat-window');
-    const minimizeChat = document.getElementById('minimize-chat');
-    const closeChat = document.getElementById('close-chat');
-    const overlay = document.getElementById('overlay');
     const chatInput = document.getElementById('chat-input');
-    const sendMessage = document.getElementById('send-message');
+    const sendButton = document.getElementById('send-message');
     const chatMessages = document.getElementById('chat-messages');
+    const closeButton = document.getElementById('close-chat');
+    const minimizeButton = document.getElementById('minimize-chat');
+    const overlay = document.getElementById('overlay');
     const branchModal = document.getElementById('branch-modal');
     const branchOptions = document.getElementById('branch-options');
-    
-    // Check if it's a mobile device
+    const userId = document.getElementById('user-id').value;
+
+    // Check if mobile device
     function isMobile() {
-        return window.innerWidth < 640; // sm breakpoint in Tailwind
+        return window.innerWidth < 640;
     }
-    
-    // Function to handle UI adjustments for mobile
-    function handleMobileUI() {
+
+    // Handle responsive layout
+    function handleResponsiveLayout() {
+        if (chatWindow.classList.contains('hidden')) return;
+        
         if (isMobile()) {
-            // For mobile: when chat is open, hide the main button
+            // Mobile view
+            chatWindow.classList.add('bottom-20', 'right-4');
+            chatWindow.classList.remove('bottom-0', 'right-0');
+            chatWindow.style.height = 'calc(100% - 120px)';
+            chatWindow.style.width = 'calc(100% - 32px)';
+            
+            // Hide main button when chat is open
             if (!chatWindow.classList.contains('hidden')) {
                 csButton.classList.add('hidden');
-            } else {
-                csButton.classList.remove('hidden');
             }
         } else {
-            // For desktop: always show the button
+            // Desktop view
+            chatWindow.classList.remove('bottom-20', 'right-4');
+            chatWindow.style.height = '';
+            chatWindow.style.width = '';
             csButton.classList.remove('hidden');
         }
     }
-    
+
     // Toggle chat window
     function toggleChatWindow() {
-        chatWindow.classList.toggle('hidden');
-        if (!chatWindow.classList.contains('hidden')) {
+        const isHidden = chatWindow.classList.contains('hidden');
+        
+        if (isHidden) {
+            // Show chat window
+            chatWindow.classList.remove('hidden');
+            overlay.classList.remove('hidden');
+            isMinimized = false;
             chatInput.focus();
-            
-            // On mobile, show fullscreen and overlay
-            if (isMobile()) {
-                overlay.classList.remove('hidden');
-                csButton.classList.add('hidden');
-            }
             
             // Initialize chat when opened
             initChat();
         } else {
+            // Hide chat window
+            chatWindow.classList.add('hidden');
             overlay.classList.add('hidden');
-            csButton.classList.remove('hidden');
+        }
+        
+        handleResponsiveLayout();
+    }
+
+    // Minimize chat window
+    function minimizeChatWindow() {
+        if (!isMinimized) {
+            const headerHeight = chatWindow.querySelector('.bg-black').offsetHeight;
+            chatWindow.style.height = `${headerHeight}px`;
+            chatMessages.style.display = 'none';
+            chatWindow.querySelector('.p-3.border-t').style.display = 'none';
+            isMinimized = true;
+        } else {
+            chatWindow.style.height = '';
+            chatMessages.style.display = '';
+            chatWindow.querySelector('.p-3.border-t').style.display = '';
+            isMinimized = false;
+            handleResponsiveLayout();
         }
     }
-    
-    // Minimize chat
-    function minimizeChatWindow() {
-        chatWindow.classList.add('hidden');
-        overlay.classList.add('hidden');
-        csButton.classList.remove('hidden');
-    }
-    
-    // Close chat
+
+    // Close chat window
     function closeChatWindow() {
         chatWindow.classList.add('hidden');
         overlay.classList.add('hidden');
         csButton.classList.remove('hidden');
     }
-    
-    // Function to fetch branches from database
+
+    // Add message to chat UI
+    function addMessage(content, type = 'user', senderName = null) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'flex items-start ' + (type === 'user' ? 'justify-end' : '');
+        
+        const messageBubble = document.createElement('div');
+        messageBubble.className = type === 'user' 
+            ? 'bg-yellow-600 text-white rounded-lg p-2 max-w-[80%]'
+            : 'bg-gray-200 rounded-lg p-2 max-w-[80%]';
+        
+        const messageText = document.createElement('p');
+        messageText.className = 'text-sm';
+        
+        // Add sender name if provided (for system/bot messages)
+        if (senderName) {
+            const senderElement = document.createElement('p');
+            senderElement.className = 'text-xs text-gray-500 mb-1';
+            senderElement.textContent = `[${senderName}]`;
+            messageBubble.appendChild(senderElement);
+        }
+        
+        messageText.textContent = content;
+        messageBubble.appendChild(messageText);
+        
+        // Add timestamp
+        const timeElement = document.createElement('span');
+        timeElement.className = type === 'user' ? 'text-xs text-gray-800 mt-1' : 'text-xs text-gray-500 mt-1';
+        timeElement.textContent = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        messageBubble.appendChild(timeElement);
+        
+        messageDiv.appendChild(messageBubble);
+        chatMessages.appendChild(messageDiv);
+        
+        // Scroll to bottom
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    // Fetch available branches
     async function fetchBranches() {
         try {
             const response = await fetch('customService/get_branches.php');
@@ -89,14 +149,49 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Function to save branch selection to database
+    // Render branch options
+    async function renderBranchOptions() {
+        branchOptions.innerHTML = '<div class="text-center py-4"><i class="fas fa-spinner fa-spin"></i> Loading branches...</div>';
+        branchModal.classList.remove('hidden');
+        
+        const branches = await fetchBranches();
+        
+        if (branches.length > 0) {
+            branchOptions.innerHTML = '';
+            
+            branches.forEach(branch => {
+                const branchElement = document.createElement('div');
+                branchElement.className = 'p-3 border rounded-lg hover:bg-gray-100 cursor-pointer transition';
+                branchElement.innerHTML = `
+                    <p class="font-medium">${branch.name}</p>
+                    ${branch.address ? `<p class="text-sm text-gray-600">${branch.address}</p>` : ''}
+                `;
+                
+                branchElement.addEventListener('click', async () => {
+                    selectedBranch = branch.id;
+                    localStorage.setItem('selectedBranch_' + currentUser, selectedBranch);
+                    branchModal.classList.add('hidden');
+                    
+                    // Save branch selection to database
+                    await saveBranchSelection(selectedBranch);
+                    
+                    // Add system message
+                    addMessage(`You're now connected to ${branch.name}. An agent will be with you shortly.`, 'system');
+                    
+                    // Initialize chat after branch selection
+                    initChat();
+                });
+                
+                branchOptions.appendChild(branchElement);
+            });
+        } else {
+            branchOptions.innerHTML = '<div class="text-red-500 text-sm py-2">Failed to load branches. Please try again later.</div>';
+        }
+    }
+
+    // Save branch selection to database
     async function saveBranchSelection(branch) {
         try {
-            // Make sure we have the current user ID from the hidden input
-            const userId = document.getElementById('user-id').value;
-            
-            console.log("Saving branch:", branch, "for user:", userId); // Debug log
-            
             const response = await fetch('customService/save_branch.php', {
                 method: 'POST',
                 headers: {
@@ -104,12 +199,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 },
                 body: JSON.stringify({
                     branch: branch,
-                    user_id: userId
+                    user_id: currentUser
                 })
             });
             
             const data = await response.json();
-            console.log("Server response:", data); // Debug log
             return data;
         } catch (error) {
             console.error('Error saving branch selection:', error);
@@ -117,11 +211,10 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Function to get user's branch from database
+    // Get user's branch from database
     async function getUserBranch() {
         try {
-            const userId = document.getElementById('user-id').value;
-            const response = await fetch(`customService/get_user_branch.php?user_id=${userId}`);
+            const response = await fetch(`customService/get_user_branch.php?user_id=${currentUser}`);
             const data = await response.json();
             
             if (data.success) {
@@ -136,17 +229,15 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Function to load chat history
+    // Load chat history
     async function loadChatHistory(chatRoomId) {
         try {
             const response = await fetch(`customService/get_messages.php?chatRoomId=${chatRoomId}`);
             const data = await response.json();
             
             if (data.success && data.messages.length > 0) {
-                // Clear existing messages
                 chatMessages.innerHTML = '';
                 
-                // Add messages to chat window
                 data.messages.forEach(msg => {
                     const isUserMessage = msg.sender === currentUser;
                     const messageTime = new Date(msg.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
@@ -160,6 +251,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         </div>`
                         : `<div class="flex items-start">
                             <div class="bg-gray-200 rounded-lg p-2 max-w-[80%]">
+                                ${msg.sender !== 'support_agent' && msg.sender !== 'bot' ? '' : `<p class="text-xs text-gray-500 mb-1">[${msg.sender === 'bot' ? 'Customer Support Bot' : 'Support Agent'}]</p>`}
                                 <p class="text-sm">${msg.message}</p>
                                 <span class="text-xs text-gray-500 mt-1">${messageTime}</span>
                             </div>
@@ -173,7 +265,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 });
                 
-                // Auto-scroll to the bottom
                 chatMessages.scrollTop = chatMessages.scrollHeight;
             }
         } catch (error) {
@@ -181,7 +272,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Function to save message to database
+    // Save message to database
     async function saveMessage(sender, message, chatRoomId, messageType = 'text', attachmentUrl = null, automated = false) {
         try {
             const response = await fetch('customService/save_message.php', {
@@ -208,7 +299,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Function to update message status
+    // Update message status
     async function updateMessageStatus(chatId, status, userId) {
         try {
             const response = await fetch('customService/update_status.php', {
@@ -231,77 +322,23 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Function to show branch selection modal
-    async function showBranchModal() {
-        // Show loading state
-        branchOptions.innerHTML = '<div class="text-center py-4"><i class="fas fa-spinner fa-spin"></i> Loading branches...</div>';
-        branchModal.classList.remove('hidden');
-        
-        // Fetch branches from database
-        const branches = await fetchBranches();
-        
-        if (branches.length > 0) {
-            // Clear loading state and add branch buttons
-            branchOptions.innerHTML = '';
-            
-            branches.forEach(branch => {
-                const branchDiv = document.createElement('div');
-                branchDiv.className = 'p-3 border rounded-lg hover:bg-gray-100 cursor-pointer transition';
-                branchDiv.innerHTML = `
-                    <p class="font-medium">${branch.name}</p>
-                    <p class="text-sm text-gray-600">${branch.address}</p>
-                `;
-                
-                branchDiv.addEventListener('click', async function() {
-                    selectedBranch = branch.id;
-                    localStorage.setItem('selectedBranch_' + currentUser, selectedBranch);
-                    branchModal.classList.add('hidden');
-                    
-                    // Save branch selection to database
-                    await saveBranchSelection(selectedBranch);
-                    
-                    // Initialize chat after branch selection
-                    initChat();
-                });
-                
-                branchOptions.appendChild(branchDiv);
-            });
-        } else {
-            // Show error if no branches loaded
-            branchOptions.innerHTML = '<div class="text-red-500 text-sm py-2">Failed to load branches. Please try again later.</div>';
-        }
-    }
-
-    // Enhanced sendChatMessage function
+    // Send chat message
     async function sendChatMessage() {
         const message = chatInput.value.trim();
         if (!message) return;
         
-        const currentTime = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-        
         // Add user message to UI
-        const userMessageHtml = `
-            <div class="flex items-end justify-end">
-                <div class="bg-yellow-600 text-white rounded-lg p-2 max-w-[80%]">
-                    <p class="text-sm">${message}</p>
-                    <span class="text-xs text-gray-800 mt-1">${currentTime}</span>
-                </div>
-            </div>
-        `;
-        chatMessages.innerHTML += userMessageHtml;
-        
-        // Clear input and scroll to bottom
+        addMessage(message, 'user');
         chatInput.value = '';
-        chatMessages.scrollTop = chatMessages.scrollHeight;
         
         // Save user message to database
         const messageResponse = await saveMessage(
-            currentUser,          // sender
-            message,              // message
-            currentChatRoomId,    // chatRoomId
-            'text',               // messageType
-            null,                 // attachmentUrl
-            false                 // automated
+            currentUser,
+            message,
+            currentChatRoomId,
+            'text',
+            null,
+            false
         );
         
         console.log('Message sent response:', messageResponse);
@@ -324,35 +361,22 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             // Add agent response to UI
-            const responseHtml = `
-                <div class="flex items-start">
-                    <div class="bg-gray-200 rounded-lg p-2 max-w-[80%]">
-                        <p class="text-sm">${responseMessage}</p>
-                        <span class="text-xs text-gray-500 mt-1">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
-                    </div>
-                </div>
-            `;
-            chatMessages.innerHTML += responseHtml;
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-            
-            // Use bot as sender for automated replies
-            const botSender = 'bot';
+            addMessage(responseMessage, 'system', 'Customer Support Bot');
             
             // Save agent response to database
             await saveMessage(
-                botSender,           // sender (bot for automated messages)
-                responseMessage,      // message
-                currentChatRoomId,    // chatRoomId
-                'text',               // messageType
-                null,                 // attachmentUrl
-                true                  // automated
+                'bot',
+                responseMessage,
+                currentChatRoomId,
+                'text',
+                null,
+                true
             );
         }, 1000);
     }
 
     // Initialize chat
     async function initChat() {
-        // Get user ID from session
         currentUser = document.getElementById('user-id').value;
         
         if (!currentUser) {
@@ -360,7 +384,6 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        // Always use the same chat room ID based on user ID
         currentChatRoomId = 'user_' + currentUser;
         
         // Check if branch is already set in database
@@ -368,7 +391,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Show branch modal if needed
         if (userBranch === 'unknown') {
-            showBranchModal();
+            await renderBranchOptions();
             return;
         } else {
             selectedBranch = userBranch;
@@ -394,18 +417,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Show welcome message
             const welcomeMessage = `Hello, welcome to GrievEase ${branchName} customer support. How can I assist you today?`;
-            const currentTime = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-            
-            const welcomeHtml = `
-                <div class="flex items-start">
-                    <div class="bg-gray-200 rounded-lg p-2 max-w-[80%]">
-                        <p class="text-xs text-gray-500 mb-1">[Customer Support Bot]</p>
-                        <p class="text-sm">${welcomeMessage}</p>
-                        <span class="text-xs text-gray-500 mt-1">${currentTime}</span>
-                    </div>
-                </div>
-            `;
-            chatMessages.innerHTML = welcomeHtml;
+            addMessage(welcomeMessage, 'system', 'Customer Support Bot');
             
             // Save welcome message to database
             await saveMessage(
@@ -421,19 +433,21 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Event listeners
     csButton.addEventListener('click', toggleChatWindow);
+    sendButton.addEventListener('click', sendChatMessage);
+    closeButton.addEventListener('click', closeChatWindow);
+    minimizeButton.addEventListener('click', minimizeChatWindow);
     overlay.addEventListener('click', closeChatWindow);
-    minimizeChat.addEventListener('click', minimizeChatWindow);
-    closeChat.addEventListener('click', closeChatWindow);
-    sendMessage.addEventListener('click', sendChatMessage);
+    
+    // Handle pressing Enter in input
     chatInput.addEventListener('keypress', function(e) {
         if (e.key === 'Enter') {
             sendChatMessage();
         }
     });
     
-    // Handle window resize
-    window.addEventListener('resize', handleMobileUI);
+    // Handle window resize for responsive layout
+    window.addEventListener('resize', handleResponsiveLayout);
     
     // Initialize UI
-    handleMobileUI();
+    handleResponsiveLayout();
 });
