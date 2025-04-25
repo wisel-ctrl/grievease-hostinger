@@ -1326,22 +1326,25 @@ function confirmArchiveItem(form) {
         confirmButtonText: 'Yes, archive it!'
     }).then((result) => {
         if (result.isConfirmed) {
-            // Submit the form via AJAX
             const formData = new FormData(form);
             
             fetch(form.action, {
                 method: 'POST',
                 body: formData
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
             .then(data => {
                 if (data.success) {
                     Swal.fire(
                         'Archived!',
-                        'The item has been archived.',
+                        data.message || 'The item has been archived.',
                         'success'
                     ).then(() => {
-                        // Reload the current page
                         const branchId = form.closest('.branch-container').dataset.branchId;
                         const urlParams = new URLSearchParams(window.location.search);
                         const currentPage = urlParams.get(`page_${branchId}`) || 1;
@@ -1355,7 +1358,7 @@ function confirmArchiveItem(form) {
                 console.error('Error:', error);
                 Swal.fire(
                     'Error',
-                    error.message,
+                    error.message || 'An error occurred while archiving the item',
                     'error'
                 );
             });
