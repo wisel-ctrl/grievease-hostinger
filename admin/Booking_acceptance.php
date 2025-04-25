@@ -116,13 +116,15 @@ $offset = ($current_page - 1) * $bookings_per_page;
                 
                 <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
                     <i class="fas fa-list-ul"></i>
-                    <?php 
-                        if ($total_bookings > 0) {
-                            echo $total_bookings . ($total_bookings != 1 ? "" : "");
-                        } else {
-                            echo "No bookings";
-                        }
-                    ?>
+                    <span id="totalBookings">
+                        <?php 
+                          if ($total_bookings > 0) {
+                              echo $total_bookings . ($total_bookings != 1 ? "" : "");
+                          } else {
+                              echo "No bookings";
+                          }
+                        ?>
+                    </span>
                 </span>
             </div>
             
@@ -269,27 +271,27 @@ $offset = ($current_page - 1) * $bookings_per_page;
             <table class="w-full">
                 <thead>
                     <tr class="bg-gray-50 border-b border-sidebar-border">
-                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(0)">
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable('booking_id')">
                             <div class="flex items-center gap-1.5">
                                 <i class="fas fa-hashtag text-sidebar-accent"></i> Booking ID 
                             </div>
                         </th>
-                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(1)">
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable('customer')">
                             <div class="flex items-center gap-1.5">
                                 <i class="fas fa-user text-sidebar-accent"></i> Customer 
                             </div>
                         </th>
-                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(2)">
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable('service')">
                             <div class="flex items-center gap-1.5">
                                 <i class="fas fa-tag text-sidebar-accent"></i> Service 
                             </div>
                         </th>
-                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(3)">
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable('date')">
                             <div class="flex items-center gap-1.5">
                                 <i class="fas fa-calendar text-sidebar-accent"></i> Date Requested 
                             </div>
                         </th>
-                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(4)">
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable('status')">
                             <div class="flex items-center gap-1.5">
                                 <i class="fas fa-toggle-on text-sidebar-accent"></i> Status 
                             </div>
@@ -304,67 +306,67 @@ $offset = ($current_page - 1) * $bookings_per_page;
                 <tbody id="bookingTableBody">
                     <?php
                     // Query to get booking data with joins and pagination
-                      $query = "SELECT b.booking_id, b.booking_date, b.status, 
-                              CONCAT(u.first_name, ' ', COALESCE(u.middle_name, ''), ' ', u.last_name, ' ', COALESCE(u.suffix, '')) AS customer_name,
-                              s.service_name
-                              FROM booking_tb b
-                              JOIN users u ON b.customerID = u.id
-                              JOIN services_tb s ON b.service_id = s.service_id
-                              WHERE b.status = 'Pending'
-                              ORDER BY b.booking_date DESC
-                              LIMIT ?, ?";
+                    $query = "SELECT b.booking_id, b.booking_date, b.status, 
+                            CONCAT(u.first_name, ' ', COALESCE(u.middle_name, ''), ' ', u.last_name, ' ', COALESCE(u.suffix, '')) AS customer_name,
+                            s.service_name
+                            FROM booking_tb b
+                            JOIN users u ON b.customerID = u.id
+                            JOIN services_tb s ON b.service_id = s.service_id
+                            WHERE b.status = 'Pending'
+                            ORDER BY b.booking_date DESC
+                            LIMIT ?, ?";
 
-                      $stmt = $conn->prepare($query);
-                      $stmt->bind_param("ii", $offset, $bookings_per_page);
-                      $stmt->execute();
-                      $result = $stmt->get_result();
+                    $stmt = $conn->prepare($query);
+                    $stmt->bind_param("ii", $offset, $bookings_per_page);
+                    $stmt->execute();
+                    $result = $stmt->get_result();
 
-                      if ($result->num_rows > 0) {
+                    if ($result->num_rows > 0) {
                         while ($row = $result->fetch_assoc()) {
-                          // Format booking ID
-                          $booking_id = "#BK-" . date('Y', strtotime($row['booking_date'])) . "-" . str_pad($row['booking_id'], 3, '0', STR_PAD_LEFT);
+                            // Format booking ID
+                            $booking_id = "#BK-" . date('Y', strtotime($row['booking_date'])) . "-" . str_pad($row['booking_id'], 3, '0', STR_PAD_LEFT);
 
-                          // Format date
-                          $formatted_date = date('M j, Y', strtotime($row['booking_date']));
+                            // Format date
+                            $formatted_date = date('M j, Y', strtotime($row['booking_date']));
 
-                          // Status badge class
-                          $status_class = "bg-yellow-100 text-yellow-800 border border-yellow-200";
-                          $status_icon = "fa-clock";
-                          if ($row['status'] == 'Accepted') {
-                            $status_class = "bg-green-100 text-green-600 border border-green-200";
-                            $status_icon = "fa-check-circle";
-                          } elseif ($row['status'] == 'Declined') {
-                            $status_class = "bg-red-100 text-red-600 border border-red-200";
-                            $status_icon = "fa-times-circle";
-                          }
+                            // Status badge class
+                            $status_class = "bg-yellow-100 text-yellow-800 border border-yellow-200";
+                            $status_icon = "fa-clock";
+                            if ($row['status'] == 'Accepted') {
+                                $status_class = "bg-green-100 text-green-600 border border-green-200";
+                                $status_icon = "fa-check-circle";
+                            } elseif ($row['status'] == 'Declined') {
+                                $status_class = "bg-red-100 text-red-600 border border-red-200";
+                                $status_icon = "fa-times-circle";
+                            }
                     ?>
-                          <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
-                              <td class="px-4 py-3.5 text-sm text-sidebar-text font-medium"><?php echo htmlspecialchars($booking_id); ?></td>
-                              <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo htmlspecialchars($row['customer_name']); ?></td>
-                              <td class="px-4 py-3.5 text-sm text-sidebar-text">
-                                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">
-                                      <?php echo htmlspecialchars($row['service_name']); ?>
-                                  </span>
-                              </td>
-                              <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo htmlspecialchars($formatted_date); ?></td>
-                              <td class="px-4 py-3.5 text-sm">
-                                  <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium <?php echo $status_class; ?>">
-                                      <i class="fas <?php echo $status_icon; ?> mr-1"></i> <?php echo htmlspecialchars($row['status']); ?>
-                                  </span>
-                              </td>
-                              <td class="px-4 py-3.5 text-sm">
-                                  <div class="flex space-x-2">
-                                      <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" 
-                                              title="View Details" 
-                                              onclick="openBookingDetails(<?php echo $row['booking_id']; ?>)">
-                                          <i class="fas fa-eye"></i>
-                                      </button>
-                                  </div>
-                              </td>
-                          </tr>
+                            <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
+                                <td class="px-4 py-3.5 text-sm text-sidebar-text font-medium"><?php echo htmlspecialchars($booking_id); ?></td>
+                                <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo htmlspecialchars($row['customer_name']); ?></td>
+                                <td class="px-4 py-3.5 text-sm text-sidebar-text">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">
+                                        <?php echo htmlspecialchars($row['service_name']); ?>
+                                    </span>
+                                </td>
+                                <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo htmlspecialchars($formatted_date); ?></td>
+                                <td class="px-4 py-3.5 text-sm">
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium <?php echo $status_class; ?>">
+                                        <i class="fas <?php echo $status_icon; ?> mr-1"></i> <?php echo htmlspecialchars($row['status']); ?>
+                                    </span>
+                                </td>
+                                <td class="px-4 py-3.5 text-sm">
+                                    <div class="flex space-x-2">
+                                        <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" 
+                                                title="View Details" 
+                                                onclick="openBookingDetails(<?php echo $row['booking_id']; ?>)">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
                     <?php
                         }
-                      } else {
+                    } else {
                     ?>
                         <tr>
                             <td colspan="6" class="px-4 py-6 text-sm text-center">
@@ -375,7 +377,7 @@ $offset = ($current_page - 1) * $bookings_per_page;
                             </td>
                         </tr>
                     <?php
-                      }
+                    }
                     ?>
                 </tbody>
             </table>
@@ -390,9 +392,9 @@ $offset = ($current_page - 1) * $bookings_per_page;
             $current_page_bookings = $result->num_rows;
 
             if ($total_bookings > 0) {
-              $start = $offset + 1;
-              $end = $offset + $result->num_rows;
-          
+                $start = $offset + 1;
+                $end = $offset + $result->num_rows;
+            
                 echo "Showing {$start} - {$end} of {$total_bookings} bookings";
             } else {
                 echo "No bookings found";
