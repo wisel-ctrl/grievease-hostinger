@@ -76,11 +76,11 @@ function generateInventoryRow($row) {
     $html .= '<i class="fas fa-edit"></i>';
     $html .= '</button>';
     $html .= '<form method="POST" action="inventory/delete_inventory_item.php" onsubmit="return false;" style="display:inline;" class="delete-form">';
-    $html .= '<input type="hidden" name="inventory_id" value="' . $row["inventory_id"] . '">';
-    $html .= '<button type="submit" class="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-all tooltip" title="Archive Item">';
-    $html .= '<i class="fas fa-archive"></i>';
-    $html .= '</button>';
-    $html .= '</form>';
+$html .= '<input type="hidden" name="inventory_id" value="' . $row["inventory_id"] . '">';
+$html .= '<button type="submit" class="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-all tooltip" title="Archive Item">';
+$html .= '<i class="fas fa-archive"></i>';
+$html .= '</button>';
+$html .= '</form>';
     $html .= '</div>';
     $html .= '</td>';
     $html .= '</tr>';
@@ -654,27 +654,27 @@ if ($branchResult->num_rows > 0) {
       Showing <?php echo min(($currentPage - 1) * $itemsPerPage + 1, $totalItems) . ' - ' . min($currentPage * $itemsPerPage, $totalItems); ?> 
       of <?php echo $totalItems; ?> items
     </div>
-        <div class="flex space-x-2">
-            <?php if ($currentPage > 1): ?>
-                <button onclick="loadPage(<?php echo $branchId; ?>, <?php echo $currentPage - 1 ?>)" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">&laquo;</button>
-            <?php else: ?>
-                <button disabled class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm opacity-50 cursor-not-allowed">&laquo;</button>
-            <?php endif; ?>
-            
-            <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-                <?php if ($i == $currentPage): ?>
-                    <button class="px-3.5 py-1.5 bg-sidebar-accent text-white rounded text-sm"><?php echo $i ?></button>
-                <?php else: ?>
-                    <button onclick="loadPage(<?php echo $branchId; ?>, <?php echo $i ?>)" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover"><?php echo $i ?></button>
-                <?php endif; ?>
-            <?php endfor; ?>
-            
-            <?php if ($currentPage < $totalPages): ?>
-                <button onclick="loadPage(<?php echo $branchId; ?>, <?php echo $currentPage + 1 ?>)" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">&raquo;</button>
-            <?php else: ?>
-                <button disabled class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm opacity-50 cursor-not-allowed">&raquo;</button>
-            <?php endif; ?>
-        </div>
+    <div class="flex space-x-2">
+    <?php if ($currentPage > 1): ?>
+        <button onclick="loadPage(<?php echo $branchId; ?>, <?php echo $currentPage - 1 ?>)" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">&laquo;</button>
+    <?php else: ?>
+        <button disabled class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm opacity-50 cursor-not-allowed">&laquo;</button>
+    <?php endif; ?>
+    
+    <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+        <?php if ($i == $currentPage): ?>
+            <button class="px-3.5 py-1.5 bg-sidebar-accent text-white rounded text-sm"><?php echo $i ?></button>
+        <?php else: ?>
+            <button onclick="loadPage(<?php echo $branchId; ?>, <?php echo $i ?>)" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover"><?php echo $i ?></button>
+        <?php endif; ?>
+    <?php endfor; ?>
+    
+    <?php if ($currentPage < $totalPages): ?>
+        <button onclick="loadPage(<?php echo $branchId; ?>, <?php echo $currentPage + 1 ?>)" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">&raquo;</button>
+    <?php else: ?>
+        <button disabled class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm opacity-50 cursor-not-allowed">&raquo;</button>
+    <?php endif; ?>
+</div>
     </div>
 </div> 
  
@@ -1126,13 +1126,8 @@ function loadPage(branchId, page) {
             loadingIndicator.classList.add('hidden');
             tableContainer.style.opacity = '1';
             
-            // Re-attach event listeners for edit buttons
-            document.querySelectorAll(`#inventoryTable_${branchId} button[onclick^="openViewItemModal"]`).forEach(button => {
-                button.onclick = function() {
-                    const inventoryId = this.getAttribute('onclick').match(/openViewItemModal\((\d+)\)/)[1];
-                    openViewItemModal(inventoryId);
-                };
-            });
+            // Re-attach event listeners for all buttons
+            reattachEventListeners(branchId);
         })
         .catch(error => {
             console.error('Error:', error);
@@ -1144,6 +1139,90 @@ function loadPage(branchId, page) {
                 text: 'Failed to load inventory data. Please try again.'
             });
         });
+}
+
+// Function to reattach all necessary event listeners
+function reattachEventListeners(branchId) {
+    // Reattach edit button listeners
+    document.querySelectorAll(`#inventoryTable_${branchId} button[onclick^="openViewItemModal"]`).forEach(button => {
+        button.onclick = function() {
+            const inventoryId = this.getAttribute('onclick').match(/openViewItemModal\((\d+)\)/)[1];
+            openViewItemModal(inventoryId);
+        };
+    });
+    
+    // Reattach archive button listeners
+    document.querySelectorAll(`#inventoryTable_${branchId} .delete-form button[type="submit"]`).forEach(button => {
+        button.onclick = function(e) {
+            e.preventDefault();
+            const form = this.closest('form');
+            const inventoryId = form.querySelector('input[name="inventory_id"]').value;
+            archiveItem(inventoryId, branchId);
+        };
+    });
+    
+    // Reattach pagination button listeners
+    document.querySelectorAll(`#paginationInfo_${branchId} + div button`).forEach(button => {
+        if (!button.hasAttribute('disabled')) {
+            const pageMatch = button.getAttribute('onclick')?.match(/loadPage\((\d+),\s*(\d+)\)/);
+            if (pageMatch) {
+                button.onclick = function() {
+                    loadPage(parseInt(pageMatch[1]), parseInt(pageMatch[2]));
+                };
+            }
+        }
+    });
+}
+
+// Archive item function
+function archiveItem(inventoryId, branchId) {
+    Swal.fire({
+        title: 'Archive Item',
+        text: 'Are you sure you want to archive this item?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, archive it!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const formData = new FormData();
+            formData.append('inventory_id', inventoryId);
+            
+            fetch('inventory/delete_inventory_item.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire(
+                        'Archived!',
+                        'The item has been archived.',
+                        'success'
+                    ).then(() => {
+                        // Reload the current page
+                        const currentPage = document.querySelector(`#inventoryTable_${branchId}`).closest('.branch-container').querySelector('.bg-sidebar-accent.text-white')?.textContent || 1;
+                        loadPage(branchId, parseInt(currentPage));
+                    });
+                } else {
+                    Swal.fire(
+                        'Error!',
+                        data.message || 'Failed to archive item.',
+                        'error'
+                    );
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire(
+                    'Error!',
+                    'An error occurred while archiving the item.',
+                    'error'
+                );
+            });
+        }
+    });
 }
 
 // Helper function to update pagination active state
