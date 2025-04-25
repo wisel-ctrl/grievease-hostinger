@@ -246,6 +246,26 @@ function getBranchMetrics($conn, $branchId) {
 // Get metrics for both branches
 $pilaMetrics = getBranchMetrics($conn, 2); // Pila branch_id = 2
 $paeteMetrics = getBranchMetrics($conn, 1); // Paete branch_id = 1
+
+// Get monthly revenue data for the last 6 months
+$monthlyRevenueData = [];
+for ($i = 5; $i >= 0; $i--) {
+    $date = new DateTime();
+    $date->modify("-$i months");
+    $month = $date->format('m');
+    $year = $date->format('Y');
+    
+    $query = "SELECT SUM(amount_paid) as revenue FROM sales_tb 
+              WHERE MONTH(get_timestamp) = ? AND YEAR(get_timestamp) = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("ii", $month, $year);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $data = $result->fetch_assoc();
+    
+    $monthlyRevenueData[] = $data['revenue'] ?? 0;
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -1367,5 +1387,119 @@ $paeteMetrics = getBranchMetrics($conn, 1); // Paete branch_id = 1
             
             <script src="tailwind.js"></script>
             <script src="script.js"></script>
+            <script>
+              document.addEventListener('DOMContentLoaded', function() {
+              const months = [];
+    const currentMonth = new Date().getMonth(); // 0-11 (Jan-Dec)
+    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+    // Generate labels for the last 6 months
+    for (let i = 5; i >= 0; i--) {
+        const monthIndex = (currentMonth - i + 12) % 12;
+        months.push(monthNames[monthIndex]);
+    }
+
+    // Get the revenue data from PHP
+    const currentRevenue = <?php echo $totalRevenue; ?>;
+    const prevRevenue = <?php echo $prevTotalRevenue; ?>;
+
+    // Calculate revenue for the last 6 months (this is a simplified example)
+    // In a real application, you would query the database for monthly revenue
+    const monthlyRevenue = [
+        Math.round(prevRevenue * 0.7), // 3 months ago
+        Math.round(prevRevenue * 0.8), // 2 months ago
+        Math.round(prevRevenue * 0.9), // last month
+        currentRevenue,                // current month
+        Math.round(currentRevenue * 1.1), // next month projection
+        Math.round(currentRevenue * 1.2)  // following month projection
+    ];
+
+    // For a more accurate chart, you should query the database for actual monthly revenue
+    // Here's how you might modify the PHP to get monthly data:
+    /*
+    $monthlyRevenueData = [];
+    for ($i = 5; $i >= 0; $i--) {
+        $date = new DateTime();
+        $date->modify("-$i months");
+        $month = $date->format('m');
+        $year = $date->format('Y');
+        
+        $query = "SELECT SUM(amount_paid) as revenue FROM sales_tb 
+                  WHERE MONTH(get_timestamp) = ? AND YEAR(get_timestamp) = ?";
+        $stmt = $conn->prepare($query);
+        $stmt->bind_param("ii", $month, $year);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $data = $result->fetch_assoc();
+        
+        $monthlyRevenueData[] = $data['revenue'] ?? 0;
+    }
+    */
+    // Then you would pass this to JavaScript:
+    const monthlyRevenue = <?php echo json_encode($monthlyRevenueData); ?>;
+
+    const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+    const revenueChart = new Chart(revenueCtx, {
+        type: 'line',
+        data: {
+            labels: months,
+            datasets: [{
+                label: 'Revenue (₱)',
+                data: monthlyRevenue,
+                borderColor: '#4caf50',
+                backgroundColor: 'rgba(76, 175, 80, 0.1)',
+                tension: 0.3,
+                fill: true,
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            return '₱' + value.toLocaleString();
+                        }
+                    },
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.05)'
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    position: 'top',
+                    labels: {
+                        boxWidth: 12,
+                        padding: 20
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return '₱' + context.raw.toLocaleString();
+                        }
+                    }
+                }
+            },
+            elements: {
+                point: {
+                    radius: 4,
+                    hoverRadius: 6,
+                    backgroundColor: '#4caf50'
+                }
+            }
+        }
+    });
+  });
+            </script>
   </body>
 </html>

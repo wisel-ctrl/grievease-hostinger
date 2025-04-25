@@ -30,47 +30,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 10000);
     
     
-    const revenueCtx = document.getElementById('revenueChart').getContext('2d');
-    const revenueChart = new Chart(revenueCtx, {
-      type: 'line',
-      data: {
-        labels: ['Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar'],
-        datasets: [{
-          label: 'Revenue',
-          data: [62000, 58000, 69000, 74000, 78000, 87320],
-          borderColor: '#4caf50',
-          backgroundColor: 'rgba(76, 175, 80, 0.1)',
-          tension: 0.3,
-          fill: true
-        }, {
-          label: 'Expenses',
-          data: [42000, 39000, 36000, 31000, 37000, 34520],
-          borderColor: '#f44336',
-          backgroundColor: 'rgba(244, 67, 54, 0.1)',
-          tension: 0.3,
-          fill: true
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-          y: {
-            beginAtZero: true,
-            ticks: {
-              callback: function(value) {
-                return '$' + value.toLocaleString();
-              }
-            }
-          }
-        },
-        plugins: {
-          legend: {
-            position: 'top'
-          }
-        }
-      }
-    });
+    // Get the current month and previous months for labels
+    
     
     // Branch comparison charts
     const branchRevenueCtx = document.getElementById('branchRevenueChart').getContext('2d');
