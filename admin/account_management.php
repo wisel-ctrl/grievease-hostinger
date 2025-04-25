@@ -272,6 +272,13 @@ $customersResult = mysqli_query($conn, $customersQuery);
                 </div>
             </div>
 
+            <!-- Archive Icon Button -->
+          <button class="w-10 h-10 flex items-center justify-center text-sidebar-accent" onclick="showArchivedItems(<?php echo $branchId; ?>)">
+            <i class="fas fa-archive text-xl"></i>
+          </button>
+        </div>
+      </div>
+
             <!-- Second row: Add Customer Account Button - Full width -->
             <div class="w-full">
                 <button class="px-4 py-2.5 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm whitespace-nowrap w-full justify-center" 
