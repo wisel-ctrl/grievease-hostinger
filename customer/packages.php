@@ -1079,14 +1079,26 @@ document.getElementById('traditionalDeceasedCity').addEventListener('change', fu
                     </ul>
                 </div>
 
-                <!-- Add this simple continue button at the bottom of the details section -->
-<div class="mt-6 border-t border-gray-200 pt-4 md:hidden">
-    <button id="continueToLifeplanFormBtn" class="w-full bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg shadow-md transition-all duration-300">
-        Continue to Booking
-    </button>
-</div>
-
-                
+                <!-- Mobile-only summary and navigation button -->
+                <div class="mt-6 border-t border-gray-200 pt-4 md:hidden">
+                    <div class="bg-white p-4 rounded-lg shadow-sm">
+                        <div class="flex justify-between text-sm mb-2">
+                            <span class="text-navy">Package Total</span>
+                            <span id="lifeplanTotalPriceMobile" class="text-yellow-600">₱0</span>
+                        </div>
+                        <div class="flex justify-between text-sm mb-2">
+                            <span class="text-navy">Payment Term</span>
+                            <span id="lifeplanPaymentTermDisplayMobile" class="text-yellow-600">5 Years (60 Monthly Payments)</span>
+                        </div>
+                        <div class="flex justify-between font-bold mt-2 pt-2 border-t border-gray-300">
+                            <span class="text-navy">Monthly Payment</span>
+                            <span id="lifeplanMonthlyPaymentMobile" class="text-yellow-600">₱0</span>
+                        </div>
+                    </div>
+                    <button id="continueToLifeplanFormBtn" class="mt-4 w-full bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg shadow-md transition-all duration-300">
+                        Continue to Booking
+                    </button>
+                </div>
             </div>
 
             <!-- Right Side: Booking Form -->
@@ -1704,61 +1716,42 @@ document.querySelectorAll('.closeModalBtn').forEach(btn => {
         checkbox.checked = false;
     });
 
-    // Update lifeplan monthly payment when payment term changes
-document.getElementById('lifeplanPaymentTerm').addEventListener('change', function() {
-    updateLifeplanPayment();
-});
+    // Lifeplan Service button click event
+    document.getElementById('lifeplanServiceBtn').addEventListener('click', function() {
+        document.getElementById('serviceTypeModal').classList.add('hidden');
+        
+        const packageName = sessionStorage.getItem('selectedPackageName');
+        const packagePrice = sessionStorage.getItem('selectedPackagePrice');
+        const packageImage = sessionStorage.getItem('selectedPackageImage');
+        const packageFeatures = JSON.parse(sessionStorage.getItem('selectedPackageFeatures') || '[]');
+        
+        document.getElementById('lifeplanPackageName').textContent = packageName;
+        document.getElementById('lifeplanPackagePrice').textContent = `₱${parseInt(packagePrice).toLocaleString()}`;
+        
+        if (packageImage) {
+            document.getElementById('lifeplanPackageImage').src = packageImage;
+            document.getElementById('lifeplanPackageImage').alt = packageName;
+        }
+        
+        const totalPrice = parseInt(packagePrice);
+        const monthlyPayment = Math.ceil(totalPrice / 60);
+        
+        document.getElementById('lifeplanTotalPrice').textContent = `₱${totalPrice.toLocaleString()}`;
+        document.getElementById('lifeplanTotalPriceMobile').textContent = `₱${totalPrice.toLocaleString()}`;
+        document.getElementById('lifeplanMonthlyPayment').textContent = `₱${monthlyPayment.toLocaleString()}`;
+        document.getElementById('lifeplanMonthlyPaymentMobile').textContent = `₱${monthlyPayment.toLocaleString()}`;
 
-// Function to update lifeplan payment details
-function updateLifeplanPayment() {
-    const months = parseInt(document.getElementById('lifeplanPaymentTerm').value);
-    const totalPrice = parseInt(sessionStorage.getItem('selectedPackagePrice') || '0');
-    const monthlyPayment = Math.ceil(totalPrice / months);
-    
-    let termText = '';
-    if (months === 60) termText = '5 Years (60 Monthly Payments)';
-    else if (months === 36) termText = '3 Years (36 Monthly Payments)';
-    else if (months === 24) termText = '2 Years (24 Monthly Payments)';
-    else if (months === 12) termText = '1 Year (12 Monthly Payments)';
-    
-    document.getElementById('lifeplanPaymentTermDisplay').textContent = termText;
-    document.getElementById('lifeplanMonthlyPayment').textContent = `₱${monthlyPayment.toLocaleString()}`;
-}
-
-// Update the lifeplanServiceBtn click event to initialize the payment calculation
-document.getElementById('lifeplanServiceBtn').addEventListener('click', function() {
-    document.getElementById('serviceTypeModal').classList.add('hidden');
-    
-    const packageName = sessionStorage.getItem('selectedPackageName');
-    const packagePrice = sessionStorage.getItem('selectedPackagePrice');
-    const packageImage = sessionStorage.getItem('selectedPackageImage');
-    const packageFeatures = JSON.parse(sessionStorage.getItem('selectedPackageFeatures') || '[]');
-    
-    document.getElementById('lifeplanPackageName').textContent = packageName;
-    document.getElementById('lifeplanPackagePrice').textContent = `₱${parseInt(packagePrice).toLocaleString()}`;
-    
-    if (packageImage) {
-        document.getElementById('lifeplanPackageImage').src = packageImage;
-        document.getElementById('lifeplanPackageImage').alt = packageName;
-    }
-    
-    const totalPrice = parseInt(packagePrice);
-    
-    document.getElementById('lifeplanTotalPrice').textContent = `₱${totalPrice.toLocaleString()}`;
-    document.getElementById('lifeplanSelectedPackageName').value = packageName;
-    document.getElementById('lifeplanSelectedPackagePrice').value = packagePrice;
-    
-    const featuresList = document.getElementById('lifeplanPackageFeatures');
-    featuresList.innerHTML = '';
-    packageFeatures.forEach(feature => {
-        featuresList.innerHTML += `<li class="flex items-center text-sm text-gray-700">${feature}</li>`;
+        const featuresList = document.getElementById('lifeplanPackageFeatures');
+        featuresList.innerHTML = '';
+        packageFeatures.forEach(feature => {
+            featuresList.innerHTML += `<li class="flex items-center text-sm text-gray-700">${feature}</li>`;
+        });
+        
+        document.getElementById('lifeplanSelectedPackageName').value = packageName;
+        document.getElementById('lifeplanSelectedPackagePrice').value = packagePrice;
+        
+        document.getElementById('lifeplanModal').classList.remove('hidden');
     });
-    
-    // Initialize payment calculation
-    updateLifeplanPayment();
-    
-    document.getElementById('lifeplanModal').classList.remove('hidden');
-});
 
     document.querySelectorAll('.lifeplan-addon').forEach(checkbox => {
         checkbox.checked = false;
@@ -1806,25 +1799,24 @@ function closeAllModals() {
     });
 
     // Update lifeplan monthly payment when payment term changes
-document.getElementById('lifeplanPaymentTerm').addEventListener('change', function() {
-    updateLifeplanPayment();
-});
+    document.getElementById('lifeplanPaymentTerm').addEventListener('change', function() {
+        updateLifeplanTotal();
+        const months = parseInt(this.value);
+        const totalPrice = parseInt(sessionStorage.getItem('selectedPackagePrice') || '0');
+        const monthlyPayment = Math.ceil(totalPrice / months);
+        
+        let termText = '';
+        if (months === 60) termText = '5 Years (60 Monthly Payments)';
+        else if (months === 36) termText = '3 Years (36 Monthly Payments)';
+        else if (months === 24) termText = '2 Years (24 Monthly Payments)';
+        else if (months === 12) termText = '1 Year (12 Monthly Payments)';
+        
+        document.getElementById('lifeplanPaymentTermDisplay').textContent = termText;
+        document.getElementById('lifeplanPaymentTermDisplayMobile').textContent = termText;
+        document.getElementById('lifeplanMonthlyPayment').textContent = `₱${monthlyPayment.toLocaleString()}`;
+        document.getElementById('lifeplanMonthlyPaymentMobile').textContent = `₱${monthlyPayment.toLocaleString()}`;
+    });
 
-// Function to update lifeplan payment details
-function updateLifeplanPayment() {
-    const months = parseInt(document.getElementById('lifeplanPaymentTerm').value);
-    const totalPrice = parseInt(sessionStorage.getItem('selectedPackagePrice') || '0');
-    const monthlyPayment = Math.ceil(totalPrice / months);
-    
-    let termText = '';
-    if (months === 60) termText = '5 Years (60 Monthly Payments)';
-    else if (months === 36) termText = '3 Years (36 Monthly Payments)';
-    else if (months === 24) termText = '2 Years (24 Monthly Payments)';
-    else if (months === 12) termText = '1 Year (12 Monthly Payments)';
-    
-    document.getElementById('lifeplanPaymentTermDisplay').textContent = termText;
-    document.getElementById('lifeplanMonthlyPayment').textContent = `₱${monthlyPayment.toLocaleString()}`;
-}
     // Form submission for Lifeplan
     document.getElementById('lifeplanBookingForm').addEventListener('submit', function(e) {
         e.preventDefault();
