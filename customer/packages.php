@@ -700,19 +700,43 @@ $conn->close();
                             <input type="date" id="traditionalDateOfBurial" name="dateOfBurial" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                         </div>
                         
-                        <!-- Death Certificate Upload (Improved UI) -->
-                        <div class="mb-3">
+                        <!-- Death Certificate Upload with Preview -->
+                        <div class="mb-4">
                             <label for="traditionalDeathCertificate" class="block text-sm font-medium text-navy mb-1">Death Certificate</label>
-                            <div class="border border-input-border bg-white rounded-lg p-2 focus-within:ring-2 focus-within:ring-yellow-600">
-                                <div class="flex items-center">
+                            <div class="border border-input-border bg-white rounded-lg p-3 focus-within:ring-2 focus-within:ring-yellow-600">
+                                <!-- Upload Button and File Name -->
+                                <div class="flex items-center mb-2">
                                     <label for="traditionalDeathCertificate" class="flex-1 cursor-pointer">
-                                        <div class="flex items-center justify-center py-2 px-3 bg-gray-50 rounded">
+                                        <div class="flex items-center justify-center py-2 px-3 bg-gray-50 rounded hover:bg-gray-100 transition">
                                             <i class="fas fa-upload mr-2 text-gray-500"></i>
                                             <span class="text-sm text-gray-600">Upload Certificate</span>
                                         </div>
                                     </label>
                                     <span class="text-xs ml-2 text-gray-500" id="traditionalDeathCertFileName">No file chosen</span>
                                 </div>
+                                
+                                <!-- Preview Container -->
+                                <div id="deathCertPreviewContainer" class="hidden mt-2 rounded-lg overflow-hidden border border-gray-200">
+                                    <!-- Image Preview -->
+                                    <div id="deathCertImagePreview" class="hidden">
+                                        <img id="deathCertImage" src="" alt="Death Certificate Preview" class="w-full h-auto max-h-48 object-contain">
+                                    </div>
+                                    
+                                    <!-- PDF Preview -->
+                                    <div id="deathCertPdfPreview" class="hidden bg-gray-100 p-3 flex items-center">
+                                        <i class="fas fa-file-pdf text-red-500 text-2xl mr-2"></i>
+                                        <span class="text-sm text-gray-700">PDF Document</span>
+                                        <button type="button" id="viewDeathCertPdf" class="ml-auto bg-blue-500 hover:bg-blue-600 text-white text-xs px-2 py-1 rounded">
+                                            View
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <!-- Remove Button -->
+                                <button type="button" id="removeDeathCert" class="text-xs text-red-600 hover:text-red-800 mt-2 hidden">
+                                    <i class="fas fa-trash-alt mr-1"></i> Remove file
+                                </button>
+                                
                                 <input type="file" id="traditionalDeathCertificate" name="deathCertificate" accept=".pdf,.jpg,.jpeg,.png" class="hidden">
                             </div>
                             <p class="text-xs text-gray-500 mt-1">Accepted formats: PDF, JPG, JPEG, PNG</p>
@@ -745,19 +769,43 @@ $conn->close();
                     <div class="border-b border-gray-200 pb-4 mb-4">
                         <h3 class="text-base md:text-lg font-hedvig text-navy mb-3 md:mb-4">Payment</h3>
                         
-                        <!-- GCash Upload (Improved UI) -->
-                        <div class="mb-3">
+                        <!-- GCash Upload with Preview -->
+                        <div class="mb-4">
                             <label for="traditionalGcashReceipt" class="block text-sm font-medium text-navy mb-1">GCash Receipt</label>
-                            <div class="border border-input-border bg-white rounded-lg p-2 focus-within:ring-2 focus-within:ring-yellow-600">
-                                <div class="flex items-center">
+                            <div class="border border-input-border bg-white rounded-lg p-3 focus-within:ring-2 focus-within:ring-yellow-600">
+                                <!-- Upload Button and File Name -->
+                                <div class="flex items-center mb-2">
                                     <label for="traditionalGcashReceipt" class="flex-1 cursor-pointer">
-                                        <div class="flex items-center justify-center py-2 px-3 bg-gray-50 rounded">
+                                        <div class="flex items-center justify-center py-2 px-3 bg-gray-50 rounded hover:bg-gray-100 transition">
                                             <i class="fas fa-receipt mr-2 text-blue-500"></i>
                                             <span class="text-sm text-gray-600">Upload Receipt</span>
                                         </div>
                                     </label>
                                     <span class="text-xs ml-2 text-gray-500" id="traditionalGcashFileName">No file chosen</span>
                                 </div>
+                                
+                                <!-- Preview Container -->
+                                <div id="gcashPreviewContainer" class="hidden mt-2 rounded-lg overflow-hidden border border-gray-200">
+                                    <!-- Image Preview -->
+                                    <div id="gcashImagePreview" class="hidden">
+                                        <img id="gcashImage" src="" alt="GCash Receipt Preview" class="w-full h-auto max-h-48 object-contain">
+                                    </div>
+                                    
+                                    <!-- PDF Preview -->
+                                    <div id="gcashPdfPreview" class="hidden bg-gray-100 p-3 flex items-center">
+                                        <i class="fas fa-file-pdf text-red-500 text-2xl mr-2"></i>
+                                        <span class="text-sm text-gray-700">PDF Document</span>
+                                        <button type="button" id="viewGcashPdf" class="ml-auto bg-blue-500 hover:bg-blue-600 text-white text-xs px-2 py-1 rounded">
+                                            View
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <!-- Remove Button -->
+                                <button type="button" id="removeGcash" class="text-xs text-red-600 hover:text-red-800 mt-2 hidden">
+                                    <i class="fas fa-trash-alt mr-1"></i> Remove file
+                                </button>
+                                
                                 <input type="file" id="traditionalGcashReceipt" name="gcashReceipt" accept=".pdf,.jpg,.jpeg,.png" class="hidden">
                             </div>
                             <p class="text-xs text-gray-500 mt-1">Accepted formats: PDF, JPG, JPEG, PNG</p>
@@ -795,18 +843,121 @@ $conn->close();
 
 <!-- Add this script at the end -->
 <script>
-// File upload UI enhancement
+// Death Certificate Upload Preview
 document.getElementById('traditionalDeathCertificate').addEventListener('change', function() {
-    const fileName = this.files[0] ? this.files[0].name : 'No file chosen';
+    const file = this.files[0];
+    if (!file) {
+        hideDeathCertPreview();
+        return;
+    }
+    
+    // Update file name display
+    const fileName = file.name;
     document.getElementById('traditionalDeathCertFileName').textContent = fileName.length > 20 ? 
         fileName.substring(0, 17) + '...' : fileName;
+    
+    // Show preview container
+    const previewContainer = document.getElementById('deathCertPreviewContainer');
+    previewContainer.classList.remove('hidden');
+    
+    // Show remove button
+    document.getElementById('removeDeathCert').classList.remove('hidden');
+    
+    // Check file type
+    if (file.type === 'application/pdf') {
+        // PDF Preview
+        document.getElementById('deathCertPdfPreview').classList.remove('hidden');
+        document.getElementById('deathCertImagePreview').classList.add('hidden');
+        
+        // Setup PDF viewer button
+        document.getElementById('viewDeathCertPdf').onclick = function() {
+            const fileURL = URL.createObjectURL(file);
+            window.open(fileURL, '_blank');
+        };
+    } else {
+        // Image Preview
+        document.getElementById('deathCertImagePreview').classList.remove('hidden');
+        document.getElementById('deathCertPdfPreview').classList.add('hidden');
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('deathCertImage').src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
 });
 
+// GCash Receipt Upload Preview
 document.getElementById('traditionalGcashReceipt').addEventListener('change', function() {
-    const fileName = this.files[0] ? this.files[0].name : 'No file chosen';
+    const file = this.files[0];
+    if (!file) {
+        hideGcashPreview();
+        return;
+    }
+    
+    // Update file name display
+    const fileName = file.name;
     document.getElementById('traditionalGcashFileName').textContent = fileName.length > 20 ? 
         fileName.substring(0, 17) + '...' : fileName;
+    
+    // Show preview container
+    const previewContainer = document.getElementById('gcashPreviewContainer');
+    previewContainer.classList.remove('hidden');
+    
+    // Show remove button
+    document.getElementById('removeGcash').classList.remove('hidden');
+    
+    // Check file type
+    if (file.type === 'application/pdf') {
+        // PDF Preview
+        document.getElementById('gcashPdfPreview').classList.remove('hidden');
+        document.getElementById('gcashImagePreview').classList.add('hidden');
+        
+        // Setup PDF viewer button
+        document.getElementById('viewGcashPdf').onclick = function() {
+            const fileURL = URL.createObjectURL(file);
+            window.open(fileURL, '_blank');
+        };
+    } else {
+        // Image Preview
+        document.getElementById('gcashImagePreview').classList.remove('hidden');
+        document.getElementById('gcashPdfPreview').classList.add('hidden');
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('gcashImage').src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
 });
+
+// Remove buttons functionality
+document.getElementById('removeDeathCert').addEventListener('click', function() {
+    document.getElementById('traditionalDeathCertificate').value = '';
+    document.getElementById('traditionalDeathCertFileName').textContent = 'No file chosen';
+    hideDeathCertPreview();
+});
+
+document.getElementById('removeGcash').addEventListener('click', function() {
+    document.getElementById('traditionalGcashReceipt').value = '';
+    document.getElementById('traditionalGcashFileName').textContent = 'No file chosen';
+    hideGcashPreview();
+});
+
+// Helper functions
+function hideDeathCertPreview() {
+    document.getElementById('deathCertPreviewContainer').classList.add('hidden');
+    document.getElementById('deathCertImagePreview').classList.add('hidden');
+    document.getElementById('deathCertPdfPreview').classList.add('hidden');
+    document.getElementById('removeDeathCert').classList.add('hidden');
+}
+
+function hideGcashPreview() {
+    document.getElementById('gcashPreviewContainer').classList.add('hidden');
+    document.getElementById('gcashImagePreview').classList.add('hidden');
+    document.getElementById('gcashPdfPreview').classList.add('hidden');
+    document.getElementById('removeGcash').classList.add('hidden');
+}
 </script>
 
 <!-- Lifeplan Modal (Hidden by Default) -->
