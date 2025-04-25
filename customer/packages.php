@@ -633,7 +633,7 @@ $conn->close();
             </div>
 
             <!-- Right Side: Booking Form -->
-            <div class="bg-white p-4 md:p-8 border-t md:border-t-0 md:border-l border-gray-200 overflow-y-auto form-section md:block">
+            <div class="bg-white p-4 md:p-8 border-t md:border-t-0 md:border-l border-gray-200 overflow-y-auto form-section hidden md:block">
                 <!-- Header and back button for mobile -->
                 <div class="flex justify-between items-center mb-4">
                     <h2 class="text-xl md:text-2xl font-hedvig text-navy">Book Your Traditional Service</h2>
@@ -881,7 +881,36 @@ $conn->close();
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const packagesFromDB = <?php echo json_encode($packages); ?>;
+    
+    // Mobile form toggle functionality
+    const continueBtn = document.getElementById('continueToFormBtn');
+    const backBtn = document.getElementById('backToDetailsBtn');
+    const detailsSection = document.querySelector('.details-section');
+    const formSection = document.querySelector('.form-section');
+    
+    if (continueBtn && backBtn && detailsSection && formSection) {
+        continueBtn.addEventListener('click', function() {
+            detailsSection.classList.add('hidden');
+            formSection.classList.remove('hidden');
+        });
+        
+        backBtn.addEventListener('click', function() {
+            formSection.classList.add('hidden');
+            detailsSection.classList.remove('hidden');
+        });
+    }
+    
+    // Make sure the modal close button works for both sections
+    document.querySelectorAll('.closeModalBtn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.getElementById('traditionalModal').classList.add('hidden');
+            // Reset to show details when modal is reopened
+            detailsSection.classList.remove('hidden');
+            formSection.classList.add('hidden');
+        });
+    });
 
+    // Package selection functionality
     document.addEventListener('click', function(event) {
         if (event.target.classList.contains('selectPackageBtn')) {
             const packageCard = event.target.closest('.package-card');
@@ -920,113 +949,113 @@ document.addEventListener('DOMContentLoaded', function() {
         openTraditionalModal();
     });
 
-    // Replace the traditionalBookingForm submit event listener with this:
+    // Traditional Booking Form submission
     document.getElementById('traditionalBookingForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    const formData = new FormData(this);
-    const formElement = this;
+        e.preventDefault();
+        
+        const formData = new FormData(this);
+        const formElement = this;
 
-    Swal.fire({
-        title: 'Confirm Booking',
-        text: 'Are you sure you want to proceed with this booking?',
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonColor: '#d97706',
-        cancelButtonColor: '#6b7280',
-        confirmButtonText: 'Yes, book now',
-        cancelButtonText: 'Cancel'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            // Show loading indicator
-            Swal.fire({
-                title: 'Processing Booking',
-                html: 'Please wait while we process your booking...',
-                allowOutsideClick: false,
-                didOpen: () => {
-                    Swal.showLoading();
-                }
-            });
-            
-            fetch('booking/booking.php', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                Swal.close();
+        Swal.fire({
+            title: 'Confirm Booking',
+            text: 'Are you sure you want to proceed with this booking?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#d97706',
+            cancelButtonColor: '#6b7280',
+            confirmButtonText: 'Yes, book now',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Show loading indicator
+                Swal.fire({
+                    title: 'Processing Booking',
+                    html: 'Please wait while we process your booking...',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
                 
-                if (data.success) {
-                    // Close modal and reset form
-                    document.getElementById('traditionalModal').classList.add('hidden');
-                    formElement.reset();
+                fetch('booking/booking.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    Swal.close();
                     
-                    // Show notification
-                    showNotification('New Booking', 'Your booking has been confirmed. Click to view details.', 'notification.php');
-                } else {
+                    if (data.success) {
+                        // Close modal and reset form
+                        document.getElementById('traditionalModal').classList.add('hidden');
+                        formElement.reset();
+                        
+                        // Reset to show details section for next time
+                        detailsSection.classList.remove('hidden');
+                        formSection.classList.add('hidden');
+                        
+                        // Show notification
+                        showNotification('New Booking', 'Your booking has been confirmed. Click to view details.', 'notification.php');
+                    } else {
+                        Swal.fire({
+                            title: 'Error',
+                            text: data.message || 'An error occurred. Please try again.',
+                            icon: 'error',
+                            confirmButtonColor: '#d97706'
+                        });
+                    }
+                })
+                .catch(error => {
+                    Swal.close();
+                    console.error('Error:', error);
                     Swal.fire({
                         title: 'Error',
-                        text: data.message || 'An error occurred. Please try again.',
+                        text: 'An error occurred. Please try again.',
                         icon: 'error',
                         confirmButtonColor: '#d97706'
                     });
-                }
-            })
-            .catch(error => {
-                Swal.close();
-                console.error('Error:', error);
-                Swal.fire({
-                    title: 'Error',
-                    text: 'An error occurred. Please try again.',
-                    icon: 'error',
-                    confirmButtonColor: '#d97706'
                 });
-            });
-        }
+            }
+        });
     });
-});
 
-// Add this function to show notifications
-function showNotification(title, message, redirectUrl) {
-    // Create notification element
-    const notification = document.createElement('div');
-    notification.className = 'fixed top-4 right-4 z-50 w-80 bg-white rounded-lg shadow-lg overflow-hidden border-l-4 border-yellow-600 transform transition-all duration-300 hover:scale-105 cursor-pointer';
-    notification.innerHTML = `
-        <div class="p-4" onclick="window.location.href='${redirectUrl}'">
-            <div class="flex items-start">
-                <div class="flex-shrink-0">
-                    <i class="fas fa-bell text-yellow-600 text-xl mt-1"></i>
-                </div>
-                <div class="ml-3 w-0 flex-1 pt-0.5">
-                    <p class="text-sm font-medium text-gray-900">${title}</p>
-                    <p class="mt-1 text-sm text-gray-500">${message}</p>
-                </div>
-                <div class="ml-4 flex-shrink-0 flex">
-                    <button class="bg-white rounded-md inline-flex text-gray-400 hover:text-gray-500 focus:outline-none" onclick="event.stopPropagation(); this.parentNode.parentNode.parentNode.remove()">
-                        <i class="fas fa-times"></i>
-                    </button>
+    // Function to show notifications
+    function showNotification(title, message, redirectUrl) {
+        const notification = document.createElement('div');
+        notification.className = 'fixed top-4 right-4 z-50 w-80 bg-white rounded-lg shadow-lg overflow-hidden border-l-4 border-yellow-600 transform transition-all duration-300 hover:scale-105 cursor-pointer';
+        notification.innerHTML = `
+            <div class="p-4" onclick="window.location.href='${redirectUrl}'">
+                <div class="flex items-start">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-bell text-yellow-600 text-xl mt-1"></i>
+                    </div>
+                    <div class="ml-3 w-0 flex-1 pt-0.5">
+                        <p class="text-sm font-medium text-gray-900">${title}</p>
+                        <p class="mt-1 text-sm text-gray-500">${message}</p>
+                    </div>
+                    <div class="ml-4 flex-shrink-0 flex">
+                        <button class="bg-white rounded-md inline-flex text-gray-400 hover:text-gray-500 focus:outline-none" onclick="event.stopPropagation(); this.parentNode.parentNode.parentNode.remove()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
-        </div>
-    `;
-    
-    // Add to body
-    document.body.appendChild(notification);
-    
-    // Auto-remove after 5 seconds
-    setTimeout(() => {
-        notification.classList.add('opacity-0');
+        `;
+        
+        document.body.appendChild(notification);
+        
         setTimeout(() => {
+            notification.classList.add('opacity-0');
+            setTimeout(() => {
+                notification.remove();
+            }, 300);
+        }, 5000);
+        
+        notification.querySelector('button').addEventListener('click', function(e) {
+            e.stopPropagation();
             notification.remove();
-        }, 300);
-    }, 5000);
-    
-    // Click handler for the close button
-    notification.querySelector('button').addEventListener('click', function(e) {
-        e.stopPropagation();
-        notification.remove();
-    });
-}
+        });
+    }
 
     // Traditional addon checkbox event handling
     document.querySelectorAll('.traditional-addon').forEach(checkbox => {
@@ -1040,12 +1069,10 @@ function showNotification(title, message, redirectUrl) {
         const basePrice = parseInt(sessionStorage.getItem('selectedPackagePrice') || '0');
         let addonTotal = 0;
         
-        // Calculate addons total
         document.querySelectorAll('.traditional-addon:checked').forEach(checkbox => {
             addonTotal += parseInt(checkbox.value);
         });
         
-        // Update totals
         const totalPrice = basePrice + addonTotal;
         const downpayment = Math.ceil(totalPrice * 0.3);
         
@@ -1053,64 +1080,32 @@ function showNotification(title, message, redirectUrl) {
         document.getElementById('traditionalDownpayment').textContent = `₱${downpayment.toLocaleString()}`;
         document.getElementById('traditionalAmountDue').textContent = `₱${downpayment.toLocaleString()}`;
         
-        // Update hidden fields
+        // Update mobile view totals as well
+        document.getElementById('traditionalTotalPriceMobile').textContent = `₱${totalPrice.toLocaleString()}`;
+        document.getElementById('traditionalAmountDueMobile').textContent = `₱${downpayment.toLocaleString()}`;
+        
         document.getElementById('traditionalSelectedPackagePrice').value = totalPrice;
-    }
-
-    // Lifeplan addon checkbox event handling
-    document.querySelectorAll('.lifeplan-addon').forEach(checkbox => {
-        checkbox.addEventListener('change', function() {
-            updateLifeplanTotal();
-        });
-    });
-
-    // Function to update lifeplan total price when addons are selected
-    function updateLifeplanTotal() {
-        const basePrice = parseInt(sessionStorage.getItem('selectedPackagePrice') || '0');
-        let addonTotal = 0;
-        
-        // Calculate addons total
-        document.querySelectorAll('.lifeplan-addon:checked').forEach(checkbox => {
-            addonTotal += parseInt(checkbox.value);
-        });
-        
-        // Update totals
-        const totalPrice = basePrice + addonTotal;
-        const months = parseInt(document.getElementById('lifeplanPaymentTerm').value);
-        const monthlyPayment = Math.ceil(totalPrice / months);
-        
-        document.getElementById('lifeplanTotalPrice').textContent = `₱${totalPrice.toLocaleString()}`;
-        document.getElementById('lifeplanMonthlyPayment').textContent = `₱${monthlyPayment.toLocaleString()}`;
-        
-        // Update hidden fields
-        document.getElementById('lifeplanSelectedPackagePrice').value = totalPrice;
     }
 
     // Function to open traditional modal with package details
     function openTraditionalModal() {
-        // Get stored package details
         const packageName = sessionStorage.getItem('selectedPackageName');
         const packagePrice = sessionStorage.getItem('selectedPackagePrice');
         const packageImage = sessionStorage.getItem('selectedPackageImage');
         const packageFeatures = JSON.parse(sessionStorage.getItem('selectedPackageFeatures') || '[]');
         
-        // Find the full package details from packagesFromDB to get the service_id
         const selectedPackage = packagesFromDB.find(pkg => pkg.name === packageName);
         
-        // Update modal title
         document.querySelector('#traditionalModal .font-hedvig.text-2xl.text-navy').textContent = 'Book Your Package';
         
-        // Update traditional modal with package details
         document.getElementById('traditionalPackageName').textContent = packageName;
         document.getElementById('traditionalPackagePrice').textContent = `₱${parseInt(packagePrice).toLocaleString()}`;
         
-        // Only set image src if packageImage exists
         if (packageImage) {
             document.getElementById('traditionalPackageImage').src = packageImage;
             document.getElementById('traditionalPackageImage').alt = packageName;
         }
         
-        // Calculate downpayment (30%)
         const totalPrice = parseInt(packagePrice);
         const downpayment = Math.ceil(totalPrice * 0.3);
         
@@ -1118,38 +1113,41 @@ function showNotification(title, message, redirectUrl) {
         document.getElementById('traditionalDownpayment').textContent = `₱${downpayment.toLocaleString()}`;
         document.getElementById('traditionalAmountDue').textContent = `₱${downpayment.toLocaleString()}`;
 
-        // Update features list
+        // Update mobile view totals
+        document.getElementById('traditionalTotalPriceMobile').textContent = `₱${totalPrice.toLocaleString()}`;
+        document.getElementById('traditionalAmountDueMobile').textContent = `₱${downpayment.toLocaleString()}`;
+
         const featuresList = document.getElementById('traditionalPackageFeatures');
         featuresList.innerHTML = '';
         packageFeatures.forEach(feature => {
             featuresList.innerHTML += `<li class="flex items-center text-sm text-gray-700">${feature}</li>`;
         });
         
-        // Update the form's hidden fields with package info
         document.getElementById('traditionalSelectedPackagePrice').value = totalPrice;
-        document.getElementById('traditionalServiceId').value = selectedPackage.id; // Set the service_id
-        document.getElementById('traditionalBranchId').value = <?php echo $branch_id; ?>; // Set the branch_id from PHP
+        document.getElementById('traditionalServiceId').value = selectedPackage.id;
+        document.getElementById('traditionalBranchId').value = <?php echo $branch_id; ?>;
         
-        // Show traditional modal
+        // Reset form section visibility
+        detailsSection.classList.remove('hidden');
+        formSection.classList.add('hidden');
+        
         document.getElementById('traditionalModal').classList.remove('hidden');
     }
     
+    // Reset addons when modal is opened
     document.querySelectorAll('.traditional-addon').forEach(checkbox => {
         checkbox.checked = false;
     });
 
     // Lifeplan Service button click event
     document.getElementById('lifeplanServiceBtn').addEventListener('click', function() {
-        // Hide service type modal
         document.getElementById('serviceTypeModal').classList.add('hidden');
         
-        // Get stored package details
         const packageName = sessionStorage.getItem('selectedPackageName');
         const packagePrice = sessionStorage.getItem('selectedPackagePrice');
         const packageImage = sessionStorage.getItem('selectedPackageImage');
         const packageFeatures = JSON.parse(sessionStorage.getItem('selectedPackageFeatures') || '[]');
         
-        // Update lifeplan modal with package details
         document.getElementById('lifeplanPackageName').textContent = packageName;
         document.getElementById('lifeplanPackagePrice').textContent = `₱${parseInt(packagePrice).toLocaleString()}`;
         
@@ -1158,25 +1156,21 @@ function showNotification(title, message, redirectUrl) {
             document.getElementById('lifeplanPackageImage').alt = packageName;
         }
         
-        // Calculate monthly payment (default: 5 years / 60 months)
         const totalPrice = parseInt(packagePrice);
         const monthlyPayment = Math.ceil(totalPrice / 60);
         
         document.getElementById('lifeplanTotalPrice').textContent = `₱${totalPrice.toLocaleString()}`;
         document.getElementById('lifeplanMonthlyPayment').textContent = `₱${monthlyPayment.toLocaleString()}`;
 
-        // Update features list
         const featuresList = document.getElementById('lifeplanPackageFeatures');
         featuresList.innerHTML = '';
         packageFeatures.forEach(feature => {
             featuresList.innerHTML += `<li class="flex items-center text-sm text-gray-700">${feature}</li>`;
         });
         
-        // Update the form's hidden fields with package info
         document.getElementById('lifeplanSelectedPackageName').value = packageName;
         document.getElementById('lifeplanSelectedPackagePrice').value = packagePrice;
         
-        // Show lifeplan modal
         document.getElementById('lifeplanModal').classList.remove('hidden');
     });
 
@@ -1196,6 +1190,10 @@ function showNotification(title, message, redirectUrl) {
         document.getElementById('traditionalModal').classList.add('hidden');
         document.getElementById('lifeplanModal').classList.add('hidden');
         document.getElementById('serviceTypeModal').classList.add('hidden');
+        
+        // Reset traditional modal to show details section
+        detailsSection.classList.remove('hidden');
+        formSection.classList.add('hidden');
     }
 
     // Close modals when pressing Escape key
@@ -1208,7 +1206,6 @@ function showNotification(title, message, redirectUrl) {
     // Close modals when clicking outside of modal content
     document.querySelectorAll('#serviceTypeModal, #traditionalModal, #lifeplanModal').forEach(modal => {
         modal.addEventListener('click', function(event) {
-            // Check if the click was directly on the modal background (not its children)
             if (event.target === modal) {
                 closeAllModals();
             }
@@ -1234,64 +1231,62 @@ function showNotification(title, message, redirectUrl) {
 
     // Form submission for Lifeplan
     document.getElementById('lifeplanBookingForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    const formData = new FormData(this);
-    const formElement = this;
+        e.preventDefault();
+        const formData = new FormData(this);
+        const formElement = this;
 
-    Swal.fire({
-        title: 'Confirm Lifeplan Booking',
-        text: 'Are you sure you want to proceed with this lifeplan?',
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonColor: '#d97706',
-        cancelButtonColor: '#6b7280',
-        confirmButtonText: 'Yes, proceed',
-        cancelButtonText: 'Cancel'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            fetch('booking/lifeplan_booking.php', { // Update this URL to your actual endpoint
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    Swal.fire({
-                        title: 'Success!',
-                        text: 'Lifeplan booking submitted successfully!',
-                        icon: 'success',
-                        confirmButtonColor: '#d97706'
-                    });
-                    closeAllModals();
-                    formElement.reset();
-                    showNotification('New Lifeplan', 'Your lifeplan has been confirmed. Click to view details.', 'notification.php');
-                } else {
+        Swal.fire({
+            title: 'Confirm Lifeplan Booking',
+            text: 'Are you sure you want to proceed with this lifeplan?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#d97706',
+            cancelButtonColor: '#6b7280',
+            confirmButtonText: 'Yes, proceed',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fetch('booking/lifeplan_booking.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire({
+                            title: 'Success!',
+                            text: 'Lifeplan booking submitted successfully!',
+                            icon: 'success',
+                            confirmButtonColor: '#d97706'
+                        });
+                        closeAllModals();
+                        formElement.reset();
+                        showNotification('New Lifeplan', 'Your lifeplan has been confirmed. Click to view details.', 'notification.php');
+                    } else {
+                        Swal.fire({
+                            title: 'Error',
+                            text: data.message || 'An error occurred. Please try again.',
+                            icon: 'error',
+                            confirmButtonColor: '#d97706'
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
                     Swal.fire({
                         title: 'Error',
-                        text: data.message || 'An error occurred. Please try again.',
+                        text: 'An error occurred. Please try again.',
                         icon: 'error',
                         confirmButtonColor: '#d97706'
                     });
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                Swal.fire({
-                    title: 'Error',
-                    text: 'An error occurred. Please try again.',
-                    icon: 'error',
-                    confirmButtonColor: '#d97706'
                 });
-            });
-        }
+            }
+        });
     });
-});
 
     // Process packages from database
     const processedPackages = packagesFromDB.map(pkg => {
-        console.log('Processing package:', pkg); // Log each package being processed
-        // Determine icon based on package price or name
-        let icon = 'leaf'; // default icon
+        let icon = 'leaf';
         if (pkg.price > 500000) icon = 'star';
         else if (pkg.price > 200000) icon = 'crown';
         else if (pkg.price > 100000) icon = 'heart';
@@ -1307,18 +1302,16 @@ function showNotification(title, message, redirectUrl) {
             features: pkg.features
         };
     });
-    console.log('Processed packages:', processedPackages); // Log the processed packages
+
     // Initial render
     renderPackages(processedPackages);
 });
 
 // Function to render packages
 function renderPackages(filteredPackages) {
-    console.log('Rendering packages:', filteredPackages); // Log packages being rendered
     const container = document.getElementById('packages-container');
     const noResults = document.getElementById('no-results');
     
-    // Check if elements exist
     if (!container || !noResults) {
         console.error('Required DOM elements not found!');
         return;
@@ -1327,16 +1320,13 @@ function renderPackages(filteredPackages) {
     container.innerHTML = '';
 
     if (filteredPackages.length === 0) {
-        console.log('No packages to display, showing no-results message');
         noResults.classList.remove('hidden');
         return;
     } else {
         noResults.classList.add('hidden');
     }
 
-
     filteredPackages.forEach(pkg => {
-        console.log('Creating card for package:', pkg); // Log each package being rendered
         const packageCard = document.createElement('div');
         packageCard.className = 'package-card bg-white rounded-[20px] shadow-lg overflow-hidden';
         packageCard.setAttribute('data-price', pkg.price);
@@ -1345,8 +1335,7 @@ function renderPackages(filteredPackages) {
         packageCard.setAttribute('data-image', pkg.image);
         
         packageCard.innerHTML = `
-            <div class="flex flex-col h-full"> <!-- Main flex container -->
-                <!-- Image section (unchanged) -->
+            <div class="flex flex-col h-full">
                 <div class="h-48 bg-cover bg-center relative" style="background-image: url('${pkg.image}')">
                     <div class="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-all duration-300"></div>
                     <div class="absolute top-4 right-4 w-12 h-12 rounded-full bg-yellow-600/90 flex items-center justify-center text-white">
@@ -1354,18 +1343,13 @@ function renderPackages(filteredPackages) {
                     </div>
                 </div>
                 
-                <!-- Content section with consistent sizing -->
                 <div class="p-6 flex flex-col flex-grow">
-                    <!-- Title (unchanged) -->
                     <h3 class="text-2xl font-hedvig text-navy mb-3">${pkg.name}</h3>
                     
-                    <!-- Description with fixed height and line clamping -->
                     <p class="text-dark mb-4 line-clamp-3 h-[72px] overflow-hidden">${pkg.description}</p>
                     
-                    <!-- Price with consistent sizing -->
                     <div class="text-3xl font-hedvig text-yellow-600 mb-4 h-12 flex items-center">₱${pkg.price.toLocaleString()}</div>
                     
-                    <!-- Features list with scroll if needed -->
                     <div class="border-t border-gray-200 pt-4 mt-2 flex-grow overflow-y-auto">
                         <ul class="space-y-2">
                             ${pkg.features.map(feature => `
@@ -1377,7 +1361,6 @@ function renderPackages(filteredPackages) {
                         </ul>
                     </div>
                     
-                    <!-- Button at the bottom -->
                     <button class="selectPackageBtn mt-6 w-full bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg shadow-md transition-all duration-300 text-center">
                         Select Package
                     </button>
@@ -1389,74 +1372,66 @@ function renderPackages(filteredPackages) {
 }
 
 function filterAndSortPackages() {
-        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-        const priceSort = document.getElementById('priceSort').value;
-        const packagesContainer = document.getElementById('packages-container');
-        const noResults = document.getElementById('no-results');
+    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+    const priceSort = document.getElementById('priceSort').value;
+    const packagesContainer = document.getElementById('packages-container');
+    const noResults = document.getElementById('no-results');
+    
+    let visibleCount = 0;
+    document.querySelectorAll('.package-card').forEach(card => {
+        const packageName = card.dataset.name.toLowerCase();
+        const packageDescription = card.querySelector('p').textContent.toLowerCase();
+        const featureTexts = Array.from(card.querySelectorAll('ul li')).map(li => li.textContent.toLowerCase());
         
-        // Show/hide all package cards based on search
-        let visibleCount = 0;
-        document.querySelectorAll('.package-card').forEach(card => {
-            const packageName = card.dataset.name.toLowerCase();
-            const packageDescription = card.querySelector('p').textContent.toLowerCase();
-            const featureTexts = Array.from(card.querySelectorAll('ul li')).map(li => li.textContent.toLowerCase());
-            
-            const matchesSearch = searchTerm === '' || 
-                                  packageName.includes(searchTerm) || 
-                                  packageDescription.includes(searchTerm) ||
-                                  featureTexts.some(text => text.includes(searchTerm));
-            
-            if (matchesSearch) {
-                card.classList.remove('hidden');
-                visibleCount++;
-            } else {
-                card.classList.add('hidden');
-            }
+        const matchesSearch = searchTerm === '' || 
+                            packageName.includes(searchTerm) || 
+                            packageDescription.includes(searchTerm) ||
+                            featureTexts.some(text => text.includes(searchTerm));
+        
+        if (matchesSearch) {
+            card.classList.remove('hidden');
+            visibleCount++;
+        } else {
+            card.classList.add('hidden');
+        }
+    });
+    
+    if (visibleCount === 0) {
+        noResults.classList.remove('hidden');
+    } else {
+        noResults.classList.add('hidden');
+    }
+    
+    if (priceSort) {
+        const cards = Array.from(packagesContainer.querySelectorAll('.package-card:not(.hidden)'));
+        cards.sort((a, b) => {
+            const priceA = parseFloat(a.dataset.price);
+            const priceB = parseFloat(b.dataset.price);
+            return priceSort === 'asc' ? priceA - priceB : priceB - priceA;
         });
         
-        // Show/hide no results message
-        if (visibleCount === 0) {
-            noResults.classList.remove('hidden');
-        } else {
-            noResults.classList.add('hidden');
-        }
-        
-        // Sort visible cards if needed
-        if (priceSort) {
-            const cards = Array.from(packagesContainer.querySelectorAll('.package-card:not(.hidden)'));
-            cards.sort((a, b) => {
-                const priceA = parseFloat(a.dataset.price);
-                const priceB = parseFloat(b.dataset.price);
-                return priceSort === 'asc' ? priceA - priceB : priceB - priceA;
-            });
-            
-            // Reattach sorted cards
-            cards.forEach(card => {
-                packagesContainer.appendChild(card);
-            });
-        }
+        cards.forEach(card => {
+            packagesContainer.appendChild(card);
+        });
     }
+}
 
 function resetFilters() {
-        document.getElementById('searchInput').value = '';
-        document.getElementById('priceSort').value = '';
-        
-        // Show all cards
-        document.querySelectorAll('.package-card').forEach(card => {
-            card.classList.remove('hidden');
-        });
-        
-        // Hide no results message
-        document.getElementById('no-results').classList.add('hidden');
-    }
-
+    document.getElementById('searchInput').value = '';
+    document.getElementById('priceSort').value = '';
+    
+    document.querySelectorAll('.package-card').forEach(card => {
+        card.classList.remove('hidden');
+    });
+    
+    document.getElementById('no-results').classList.add('hidden');
+}
 
 // Event Listeners
 document.getElementById('searchInput').addEventListener('input', filterAndSortPackages);
-    document.getElementById('priceSort').addEventListener('change', filterAndSortPackages);
-    document.getElementById('resetFilters').addEventListener('click', resetFilters);
-    document.getElementById('reset-filters-no-results').addEventListener('click', resetFilters);
-
+document.getElementById('priceSort').addEventListener('change', filterAndSortPackages);
+document.getElementById('resetFilters').addEventListener('click', resetFilters);
+document.getElementById('reset-filters-no-results').addEventListener('click', resetFilters);
 
 function toggleMenu() {
     const mobileMenu = document.getElementById('mobile-menu');
