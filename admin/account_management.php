@@ -277,6 +277,7 @@ $customersResult = mysqli_query($conn, $customersQuery);
     </div>
     
     <!-- Responsive Table Container with improved spacing -->
+    <div class="overflow-x-auto scrollbar-thin" id="customerTableContainer">
         
         <!-- Responsive Table with improved spacing and horizontal scroll for small screens -->
         <div class="min-w-full">
