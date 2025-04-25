@@ -1211,6 +1211,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const monthlyPayment = Math.ceil(totalPrice / 60);
         
         document.getElementById('lifeplanTotalPrice').textContent = `₱${totalPrice.toLocaleString()}`;
+        document.getElementById('lifeplanTotalPriceMobile').textContent = `₱${totalPrice.toLocaleString()}`;
         document.getElementById('lifeplanMonthlyPayment').textContent = `₱${monthlyPayment.toLocaleString()}`;
 
         const featuresList = document.getElementById('lifeplanPackageFeatures');
@@ -1277,7 +1278,9 @@ document.addEventListener('DOMContentLoaded', function() {
         else if (months === 12) termText = '1 Year (12 Monthly Payments)';
         
         document.getElementById('lifeplanPaymentTermDisplay').textContent = termText;
+        document.getElementById('lifeplanPaymentTermDisplayMobile').textContent = termText;
         document.getElementById('lifeplanMonthlyPayment').textContent = `₱${monthlyPayment.toLocaleString()}`;
+        document.getElementById('lifeplanMonthlyPaymentMobile').textContent = `₱${monthlyPayment.toLocaleString()}`;
     });
 
     // Form submission for Lifeplan
