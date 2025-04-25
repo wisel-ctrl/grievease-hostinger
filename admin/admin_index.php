@@ -1388,6 +1388,9 @@ for ($i = 5; $i >= 0; $i--) {
             <script src="tailwind.js"></script>
             <script src="script.js"></script>
             <script>
+              console.log('Canvas element:', document.getElementById('revenueChart'));
+              console.log('Chart.js available:', typeof Chart !== 'undefined');
+              console.log('Monthly revenue data:', <?php echo json_encode($monthlyRevenueData); ?>);
               document.addEventListener('DOMContentLoaded', function() {
               const months = [];
     const currentMonth = new Date().getMonth(); // 0-11 (Jan-Dec)
@@ -1413,29 +1416,6 @@ for ($i = 5; $i >= 0; $i--) {
         Math.round(currentRevenue * 1.1), // next month projection
         Math.round(currentRevenue * 1.2)  // following month projection
     ];
-
-    // For a more accurate chart, you should query the database for actual monthly revenue
-    // Here's how you might modify the PHP to get monthly data:
-    /*
-    $monthlyRevenueData = [];
-    for ($i = 5; $i >= 0; $i--) {
-        $date = new DateTime();
-        $date->modify("-$i months");
-        $month = $date->format('m');
-        $year = $date->format('Y');
-        
-        $query = "SELECT SUM(amount_paid) as revenue FROM sales_tb 
-                  WHERE MONTH(get_timestamp) = ? AND YEAR(get_timestamp) = ?";
-        $stmt = $conn->prepare($query);
-        $stmt->bind_param("ii", $month, $year);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $data = $result->fetch_assoc();
-        
-        $monthlyRevenueData[] = $data['revenue'] ?? 0;
-    }
-    */
-    // Then you would pass this to JavaScript:
     const monthlyRevenue = <?php echo json_encode($monthlyRevenueData); ?>;
 
     const revenueCtx = document.getElementById('revenueChart').getContext('2d');
