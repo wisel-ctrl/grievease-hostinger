@@ -194,8 +194,8 @@ $customersResult = mysqli_query($conn, $customersQuery);
                 </div>
 
                 <button class="px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover">
-                <i class="fas fa-filter text-sidebar-accent"></i>
-                <span>Filters</span>
+                <i class="fas fa-archive text-sidebar-accent"></i>
+                <span>Archived</span>
                 </button>
 
                 <!-- Add Customer Account Button -->
