@@ -1326,39 +1326,25 @@ function confirmArchiveItem(form) {
         confirmButtonText: 'Yes, archive it!'
     }).then((result) => {
         if (result.isConfirmed) {
-            // Show loading indicator
-            Swal.showLoading();
-            
+            // Submit the form via AJAX
             const formData = new FormData(form);
-            const branchId = form.closest('.branch-container').dataset.branchId;
-            const urlParams = new URLSearchParams(window.location.search);
-            const currentPage = urlParams.get(`page_${branchId}`) || 1;
             
             fetch(form.action, {
                 method: 'POST',
-                body: formData,
-                headers: {
-                    'Accept': 'application/json'
-                }
+                body: formData
             })
-            .then(response => {
-                // First check if the response is JSON
-                const contentType = response.headers.get('content-type');
-                if (!contentType || !contentType.includes('application/json')) {
-                    return response.text().then(text => {
-                        throw new Error('Server returned non-JSON response: ' + text);
-                    });
-                }
-                return response.json();
-            })
+            .then(response => response.json())
             .then(data => {
                 if (data.success) {
                     Swal.fire(
                         'Archived!',
-                        data.message || 'The item has been archived.',
+                        'The item has been archived.',
                         'success'
                     ).then(() => {
                         // Reload the current page
+                        const branchId = form.closest('.branch-container').dataset.branchId;
+                        const urlParams = new URLSearchParams(window.location.search);
+                        const currentPage = urlParams.get(`page_${branchId}`) || 1;
                         loadPage(branchId, currentPage);
                     });
                 } else {
@@ -1369,7 +1355,7 @@ function confirmArchiveItem(form) {
                 console.error('Error:', error);
                 Swal.fire(
                     'Error',
-                    error.message || 'An error occurred while archiving the item',
+                    error.message,
                     'error'
                 );
             });
