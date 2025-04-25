@@ -208,85 +208,89 @@ $customersResult = mysqli_query($conn, $customersQuery);
         </div>
         
         <!-- Mobile/Tablet Controls - Only visible on smaller screens -->
-        <div class="lg:hidden w-full mt-4">
-            <!-- First row: Search bar with filter icon on the right -->
-            <div class="flex items-center w-full gap-3 mb-4">
-                <!-- Search Input - Takes most of the space -->
-                <div class="relative flex-grow">
-                    <input type="text" id="customerSearchInputMobile" 
-                            placeholder="Search customers..." 
-                            class="pl-8 pr-3 py-2.5 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
-                    <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
-                </div>
-
-                <!-- Icon-only button for filter -->
-                <div class="flex items-center">
-                    <!-- Filter Icon Button -->
-                    <div class="relative filter-dropdown">
-                        <button id="customerFilterToggleMobile" class="w-10 h-10 flex items-center justify-center text-sidebar-accent">
-                            <i class="fas fa-filter text-xl"></i>
-                            <span id="filterIndicatorMobile" class="hidden absolute top-1 right-1 h-2 w-2 bg-sidebar-accent rounded-full"></span>
-                        </button>
-                        
-                        <!-- Mobile Filter Dropdown -->
-                        <div id="customerFilterDropdownMobile" class="hidden absolute right-0 mt-2 w-56 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-4">
-                            <div class="space-y-2">
-                                <h5 class="text-sm font-medium text-sidebar-text mb-2">Sort By</h5>
-                                <div class="space-y-1">
-                                    <div class="flex items-center cursor-pointer filter-option-mobile" data-sort="id_asc">
-                                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                                            ID: Ascending
-                                        </span>
-                                    </div>
-                                    <div class="flex items-center cursor-pointer filter-option-mobile" data-sort="id_desc">
-                                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                                            ID: Descending
-                                        </span>
-                                    </div>
-                                    <div class="flex items-center cursor-pointer filter-option-mobile" data-sort="name_asc">
-                                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                                            Name: A-Z
-                                        </span>
-                                    </div>
-                                    <div class="flex items-center cursor-pointer filter-option-mobile" data-sort="name_desc">
-                                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                                            Name: Z-A
-                                        </span>
-                                    </div>
-                                    <div class="flex items-center cursor-pointer filter-option-mobile" data-sort="email_asc">
-                                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                                            Email: A-Z
-                                        </span>
-                                    </div>
-                                    <div class="flex items-center cursor-pointer filter-option-mobile" data-sort="email_desc">
-                                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                                            Email: Z-A
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <button class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-4">
-              <i class="fas fa-archive text-sidebar-accent"></i>
-            </button>
-                    </div>
-                    
-                </div>
-                
-            </div>
-            
-            
-
-            <!-- Second row: Add Customer Account Button - Full width -->
-            <div class="w-full">
-                <button class="px-4 py-2.5 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm whitespace-nowrap w-full justify-center" 
-                        onclick="openAddCustomerAccountModal()">
-                    <i class="fas fa-plus mr-2"></i>
-                    <span>Add Customer Account</span>
-                </button>
-            </div>
+    <div class="lg:hidden w-full mt-4">
+      <!-- First row: Search bar with filter and archive icons on the right -->
+      <div class="flex items-center w-full gap-3 mb-4">
+        <!-- Search Input - Takes most of the space -->
+        <div class="relative flex-grow">
+          <input type="text" id="searchBox_<?php echo $branchId; ?>" 
+                  placeholder="Search items..." 
+                  class="pl-8 pr-3 py-2.5 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
+          <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
         </div>
+
+        <!-- Icon-only buttons for filter and archive -->
+        <div class="flex items-center gap-3">
+          <!-- Filter Icon Button -->
+          <div class="relative filter-dropdown">
+            <button id="filterButton_<?php echo $branchId; ?>" class="w-10 h-10 flex items-center justify-center text-sidebar-accent">
+              <i class="fas fa-filter text-xl"></i>
+              <span id="filterIndicator_<?php echo $branchId; ?>" class="hidden absolute top-1 right-1 h-2 w-2 bg-sidebar-accent rounded-full"></span>
+            </button>
+            
+            <!-- Filter Window - Positioned below the icon -->
+            <div id="filterDropdown_<?php echo $branchId; ?>" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-4">
+              <div class="space-y-4">
+                <!-- Sort Options -->
+                <div>
+                  <h5 class="text-sm font-medium text-sidebar-text mb-2">Sort By</h5>
+                  <div class="space-y-2">
+                    <div class="flex items-center cursor-pointer">
+                      <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full" data-sort="default" data-branch="<?php echo $branchId; ?>">
+                        Default (Unsorted)
+                      </span>
+                    </div>
+                    <div class="flex items-center cursor-pointer">
+                      <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full" data-sort="price_asc" data-branch="<?php echo $branchId; ?>">
+                        Price: Low to High
+                      </span>
+                    </div>
+                    <div class="flex items-center cursor-pointer">
+                      <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full" data-sort="price_desc" data-branch="<?php echo $branchId; ?>">
+                        Price: High to Low
+                      </span>
+                    </div>
+                    <div class="flex items-center cursor-pointer">
+                      <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full" data-sort="quantity_asc" data-branch="<?php echo $branchId; ?>">
+                        Quantity: Low to High
+                      </span>
+                    </div>
+                    <div class="flex items-center cursor-pointer">
+                      <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full" data-sort="quantity_desc" data-branch="<?php echo $branchId; ?>">
+                        Quantity: High to Low
+                      </span>
+                    </div>
+                    <div class="flex items-center cursor-pointer">
+                      <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full" data-sort="name_asc" data-branch="<?php echo $branchId; ?>">
+                        Name: A to Z
+                      </span>
+                    </div>
+                    <div class="flex items-center cursor-pointer">
+                      <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full" data-sort="name_desc" data-branch="<?php echo $branchId; ?>">
+                        Name: Z to A
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Archive Icon Button -->
+          <button class="w-10 h-10 flex items-center justify-center text-sidebar-accent" onclick="showArchivedItems(<?php echo $branchId; ?>)">
+            <i class="fas fa-archive text-xl"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Second row: Add Item Button - Full width -->
+      <div class="w-full">
+        <button class="px-4 py-2.5 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm whitespace-nowrap w-full justify-center" 
+                onclick="openAddInventoryModal(<?php echo $branchId; ?>)"> Add Item
+        </button>
+      </div>
     </div>
+  </div>
     
     <!-- Responsive Table Container with improved spacing -->
     <div class="overflow-x-auto scrollbar-thin" id="customerTableContainer">
