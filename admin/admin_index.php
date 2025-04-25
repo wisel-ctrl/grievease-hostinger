@@ -276,6 +276,7 @@ for ($i = 5; $i >= 0; $i--) {
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
   
 </head>
 <body class="flex bg-gray-50">
@@ -573,7 +574,8 @@ for ($i = 5; $i >= 0; $i--) {
     </div>
     <div class="p-4 sm:p-5">
       <div class="w-full h-48 md:h-64">
-        <canvas id="revenueChart" style="width: 100%; height: 100%;"></canvas>
+        <!-- <canvas id="revenueChart" style="width: 100%; height: 100%;"></canvas> -->
+        <div id="revenueChart"></div>
       </div>
     </div>
   </div>
@@ -1388,90 +1390,144 @@ for ($i = 5; $i >= 0; $i--) {
 <script src="tailwind.js"></script>
 <script src="script.js"></script>
 <script>
-  console.log('Canvas element:', document.getElementById('revenueChart'));
-  console.log('Chart.js available:', typeof Chart !== 'undefined');
-  console.log('Monthly revenue data:', <?php echo json_encode($monthlyRevenueData); ?>);
-  document.addEventListener('DOMContentLoaded', function() {
-    const months = [];
-    const currentMonth = new Date().getMonth();
-    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+//   console.log('Canvas element:', document.getElementById('revenueChart'));
+//   console.log('Chart.js available:', typeof Chart !== 'undefined');
+//   console.log('Monthly revenue data:', <?php echo json_encode($monthlyRevenueData); ?>);
+//   document.addEventListener('DOMContentLoaded', function() {
+//     const months = [];
+//     const currentMonth = new Date().getMonth();
+//     const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-    // Generate labels for the last 6 months
-    for (let i = 5; i >= 0; i--) {
-        const monthIndex = (currentMonth - i + 12) % 12;
-        months.push(monthNames[monthIndex]);
-    }
+//     // Generate labels for the last 6 months
+//     for (let i = 5; i >= 0; i--) {
+//         const monthIndex = (currentMonth - i + 12) % 12;
+//         months.push(monthNames[monthIndex]);
+//     }
 
-    const monthlyRevenue = <?php echo json_encode($monthlyRevenueData); ?>;
-    const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+//     const monthlyRevenue = <?php echo json_encode($monthlyRevenueData); ?>;
+//     const revenueCtx = document.getElementById('revenueChart').getContext('2d');
     
-    // Check if a chart already exists and destroy it
-    if (window.revenueChart instanceof Chart) {
-        window.revenueChart.destroy();
-    }
+//     // Check if a chart already exists and destroy it
+//     if (window.revenueChart instanceof Chart) {
+//         window.revenueChart.destroy();
+//     }
 
-    // Create new chart and store it in a global variable
-    window.revenueChart = new Chart(revenueCtx, {
-        type: 'line',
-        data: {
-            labels: months,
-            datasets: [{
-                label: 'Revenue (₱)',
-                data: monthlyRevenue,
-                borderColor: '#4caf50',
-                backgroundColor: 'rgba(76, 175, 80, 0.1)',
-                tension: 0.3,
-                fill: true,
-                borderWidth: 2
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        callback: function(value) {
-                            return '₱' + value.toLocaleString();
-                        }
-                    },
-                    grid: {
-                        color: 'rgba(0, 0, 0, 0.05)'
-                    }
-                },
-                x: {
-                    grid: {
-                        display: false
-                    }
-                }
-            },
-            plugins: {
-                legend: {
-                    position: 'top',
-                    labels: {
-                        boxWidth: 12,
-                        padding: 20
-                    }
-                },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            return '₱' + context.raw.toLocaleString();
-                        }
-                    }
-                }
-            },
-            elements: {
-                point: {
-                    radius: 4,
-                    hoverRadius: 6,
-                    backgroundColor: '#4caf50'
-                }
-            }
-        }
-    });
-});
+//     // Create new chart and store it in a global variable
+//     window.revenueChart = new Chart(revenueCtx, {
+//         type: 'line',
+//         data: {
+//             labels: months,
+//             datasets: [{
+//                 label: 'Revenue (₱)',
+//                 data: monthlyRevenue,
+//                 borderColor: '#4caf50',
+//                 backgroundColor: 'rgba(76, 175, 80, 0.1)',
+//                 tension: 0.3,
+//                 fill: true,
+//                 borderWidth: 2
+//             }]
+//         },
+//         options: {
+//             responsive: true,
+//             maintainAspectRatio: false,
+//             scales: {
+//                 y: {
+//                     beginAtZero: true,
+//                     ticks: {
+//                         callback: function(value) {
+//                             return '₱' + value.toLocaleString();
+//                         }
+//                     },
+//                     grid: {
+//                         color: 'rgba(0, 0, 0, 0.05)'
+//                     }
+//                 },
+//                 x: {
+//                     grid: {
+//                         display: false
+//                     }
+//                 }
+//             },
+//             plugins: {
+//                 legend: {
+//                     position: 'top',
+//                     labels: {
+//                         boxWidth: 12,
+//                         padding: 20
+//                     }
+//                 },
+//                 tooltip: {
+//                     callbacks: {
+//                         label: function(context) {
+//                             return '₱' + context.raw.toLocaleString();
+//                         }
+//                     }
+//                 }
+//             },
+//             elements: {
+//                 point: {
+//                     radius: 4,
+//                     hoverRadius: 6,
+//                     backgroundColor: '#4caf50'
+//                 }
+//             }
+//         }
+//     });
+// });
+
     </script>
+    <script>
+var options = {
+  series: [{
+    name: "Revenue",
+    data: <?php echo json_encode($monthlyRevenueData); ?>
+  }],
+  chart: {
+    height: 350,
+    type: 'area',
+    animations: {
+      enabled: true,
+      easing: 'easeout',
+      speed: 800
+    }
+  },
+  colors: ['#4ade80'],
+  dataLabels: {
+    enabled: false
+  },
+  stroke: {
+    curve: 'smooth',
+    width: 2
+  },
+  fill: {
+    type: 'gradient',
+    gradient: {
+      shadeIntensity: 1,
+      opacityFrom: 0.7,
+      opacityTo: 0.3,
+    }
+  },
+  xaxis: {
+    categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+  },
+  yaxis: {
+    labels: {
+      formatter: function(val) {
+        return "₱" + val.toLocaleString()
+      }
+    }
+  },
+  tooltip: {
+    y: {
+      formatter: function(val) {
+        return "₱" + val.toLocaleString()
+      }
+    }
+  }
+};
+
+var chart = new ApexCharts(document.querySelector("#revenueChart"), options);
+chart.render();
+</script>
   </body>
 </html>
