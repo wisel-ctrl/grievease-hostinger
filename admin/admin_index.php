@@ -1380,20 +1380,20 @@ for ($i = 5; $i >= 0; $i--) {
 </div>
             
               <!-- Footer -->
-              <footer class="bg-white rounded-lg shadow-sidebar border border-sidebar-border p-4 text-center text-sm text-gray-500 mt-8">
-                <p>© 2025 GrievEase.</p>
-              </footer>
-            </div>
-            
-            <script src="tailwind.js"></script>
-            <script src="script.js"></script>
-            <script>
-              console.log('Canvas element:', document.getElementById('revenueChart'));
-              console.log('Chart.js available:', typeof Chart !== 'undefined');
-              console.log('Monthly revenue data:', <?php echo json_encode($monthlyRevenueData); ?>);
-              document.addEventListener('DOMContentLoaded', function() {
-              const months = [];
-    const currentMonth = new Date().getMonth(); // 0-11 (Jan-Dec)
+  <footer class="bg-white rounded-lg shadow-sidebar border border-sidebar-border p-4 text-center text-sm text-gray-500 mt-8">
+    <p>© 2025 GrievEase.</p>
+  </footer>
+</div>
+
+<script src="tailwind.js"></script>
+<script src="script.js"></script>
+<script>
+  console.log('Canvas element:', document.getElementById('revenueChart'));
+  console.log('Chart.js available:', typeof Chart !== 'undefined');
+  console.log('Monthly revenue data:', <?php echo json_encode($monthlyRevenueData); ?>);
+  document.addEventListener('DOMContentLoaded', function() {
+    const months = [];
+    const currentMonth = new Date().getMonth();
     const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
     // Generate labels for the last 6 months
@@ -1402,24 +1402,16 @@ for ($i = 5; $i >= 0; $i--) {
         months.push(monthNames[monthIndex]);
     }
 
-    // Get the revenue data from PHP
-    const currentRevenue = <?php echo $totalRevenue; ?>;
-    const prevRevenue = <?php echo $prevTotalRevenue; ?>;
-
-    // Calculate revenue for the last 6 months (this is a simplified example)
-    // In a real application, you would query the database for monthly revenue
-    // const monthlyRevenue = [
-    //     Math.round(prevRevenue * 0.7), // 3 months ago
-    //     Math.round(prevRevenue * 0.8), // 2 months ago
-    //     Math.round(prevRevenue * 0.9), // last month
-    //     currentRevenue,                // current month
-    //     Math.round(currentRevenue * 1.1), // next month projection
-    //     Math.round(currentRevenue * 1.2)  // following month projection
-    // ];
     const monthlyRevenue = <?php echo json_encode($monthlyRevenueData); ?>;
-
     const revenueCtx = document.getElementById('revenueChart').getContext('2d');
-    const revenueChart = new Chart(revenueCtx, {
+    
+    // Check if a chart already exists and destroy it
+    if (window.revenueChart instanceof Chart) {
+        window.revenueChart.destroy();
+    }
+
+    // Create new chart and store it in a global variable
+    window.revenueChart = new Chart(revenueCtx, {
         type: 'line',
         data: {
             labels: months,
@@ -1479,7 +1471,7 @@ for ($i = 5; $i >= 0; $i--) {
             }
         }
     });
-  });
-            </script>
+});
+    </script>
   </body>
 </html>
