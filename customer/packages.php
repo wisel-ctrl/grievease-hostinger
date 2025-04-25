@@ -922,6 +922,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const backBtn = document.getElementById('backToDetailsBtn');
     const detailsSection = document.querySelector('.details-section');
     const formSection = document.querySelector('.form-section');
+    const continueToLifeplanFormBtn = document.getElementById('continueToLifeplanFormBtn');
+    const backToLifeplanDetailsBtn = document.getElementById('backToLifeplanDetailsBtn');
+    const lifeplanDetailsSection = document.querySelector('#lifeplanModal .details-section');
+    const lifeplanFormSection = document.querySelector('#lifeplanModal .form-section');
     
     if (continueBtn && backBtn && detailsSection && formSection) {
         continueBtn.addEventListener('click', function() {
@@ -934,6 +938,18 @@ document.addEventListener('DOMContentLoaded', function() {
             detailsSection.classList.remove('hidden');
         });
     }
+
+    if (continueToLifeplanFormBtn && backToLifeplanDetailsBtn && lifeplanDetailsSection && lifeplanFormSection) {
+    continueToLifeplanFormBtn.addEventListener('click', function() {
+        lifeplanDetailsSection.classList.add('hidden');
+        lifeplanFormSection.classList.remove('hidden');
+    });
+    
+    backToLifeplanDetailsBtn.addEventListener('click', function() {
+        lifeplanFormSection.classList.add('hidden');
+        lifeplanDetailsSection.classList.remove('hidden');
+    });
+}
     
     // Make sure the modal close button works for both sections
     document.querySelectorAll('.closeModalBtn').forEach(btn => {
