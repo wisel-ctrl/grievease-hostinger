@@ -880,6 +880,53 @@ $conn->close();
 <script src="customer_support.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Get references to the elements for the first code
+    const continueToFormBtn = document.getElementById('continueToFormBtn');
+    const backToDetailsBtn = document.getElementById('backToDetailsBtn');
+    const detailsSection = document.querySelector('.details-section');
+    const formSection = document.querySelector('.form-section');
+    
+    // On small screens, when "Continue to Booking" is clicked
+    if (continueToFormBtn) {
+        continueToFormBtn.addEventListener('click', function() {
+            // Hide details section and show form section on mobile
+            if (window.innerWidth < 768) { // md breakpoint in Tailwind
+                detailsSection.classList.add('hidden');
+                formSection.classList.remove('hidden');
+            }
+        });
+    }
+    
+    // On small screens, when "Back to Details" is clicked
+    if (backToDetailsBtn) {
+        backToDetailsBtn.addEventListener('click', function() {
+            // Show details section and hide form section on mobile
+            if (window.innerWidth < 768) { // md breakpoint in Tailwind
+                detailsSection.classList.remove('hidden');
+                formSection.classList.add('hidden');
+            }
+        });
+    }
+    
+    // Make sure form is visible on desktop regardless of state
+    window.addEventListener('resize', function() {
+        if (window.innerWidth >= 768) { // md breakpoint in Tailwind
+            detailsSection.classList.remove('hidden');
+            formSection.classList.remove('hidden');
+        } else {
+            // On mobile, maintain the current view state
+            // If we were showing the form, keep showing it
+            if (!formSection.classList.contains('hidden')) {
+                detailsSection.classList.add('hidden');
+            } else {
+                // If we were showing details, hide the form
+                formSection.classList.add('hidden');
+                detailsSection.classList.remove('hidden');
+            }
+        }
+    });
+
+    // Second code starts here
     const packagesFromDB = <?php echo json_encode($packages); ?>;
 
     document.addEventListener('click', function(event) {
@@ -922,111 +969,111 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Replace the traditionalBookingForm submit event listener with this:
     document.getElementById('traditionalBookingForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    const formData = new FormData(this);
-    const formElement = this;
+        e.preventDefault();
+        
+        const formData = new FormData(this);
+        const formElement = this;
 
-    Swal.fire({
-        title: 'Confirm Booking',
-        text: 'Are you sure you want to proceed with this booking?',
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonColor: '#d97706',
-        cancelButtonColor: '#6b7280',
-        confirmButtonText: 'Yes, book now',
-        cancelButtonText: 'Cancel'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            // Show loading indicator
-            Swal.fire({
-                title: 'Processing Booking',
-                html: 'Please wait while we process your booking...',
-                allowOutsideClick: false,
-                didOpen: () => {
-                    Swal.showLoading();
-                }
-            });
-            
-            fetch('booking/booking.php', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                Swal.close();
+        Swal.fire({
+            title: 'Confirm Booking',
+            text: 'Are you sure you want to proceed with this booking?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#d97706',
+            cancelButtonColor: '#6b7280',
+            confirmButtonText: 'Yes, book now',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Show loading indicator
+                Swal.fire({
+                    title: 'Processing Booking',
+                    html: 'Please wait while we process your booking...',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
                 
-                if (data.success) {
-                    // Close modal and reset form
-                    document.getElementById('traditionalModal').classList.add('hidden');
-                    formElement.reset();
+                fetch('booking/booking.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    Swal.close();
                     
-                    // Show notification
-                    showNotification('New Booking', 'Your booking has been confirmed. Click to view details.', 'notification.php');
-                } else {
+                    if (data.success) {
+                        // Close modal and reset form
+                        document.getElementById('traditionalModal').classList.add('hidden');
+                        formElement.reset();
+                        
+                        // Show notification
+                        showNotification('New Booking', 'Your booking has been confirmed. Click to view details.', 'notification.php');
+                    } else {
+                        Swal.fire({
+                            title: 'Error',
+                            text: data.message || 'An error occurred. Please try again.',
+                            icon: 'error',
+                            confirmButtonColor: '#d97706'
+                        });
+                    }
+                })
+                .catch(error => {
+                    Swal.close();
+                    console.error('Error:', error);
                     Swal.fire({
                         title: 'Error',
-                        text: data.message || 'An error occurred. Please try again.',
+                        text: 'An error occurred. Please try again.',
                         icon: 'error',
                         confirmButtonColor: '#d97706'
                     });
-                }
-            })
-            .catch(error => {
-                Swal.close();
-                console.error('Error:', error);
-                Swal.fire({
-                    title: 'Error',
-                    text: 'An error occurred. Please try again.',
-                    icon: 'error',
-                    confirmButtonColor: '#d97706'
                 });
-            });
-        }
+            }
+        });
     });
-});
 
-// Add this function to show notifications
-function showNotification(title, message, redirectUrl) {
-    // Create notification element
-    const notification = document.createElement('div');
-    notification.className = 'fixed top-4 right-4 z-50 w-80 bg-white rounded-lg shadow-lg overflow-hidden border-l-4 border-yellow-600 transform transition-all duration-300 hover:scale-105 cursor-pointer';
-    notification.innerHTML = `
-        <div class="p-4" onclick="window.location.href='${redirectUrl}'">
-            <div class="flex items-start">
-                <div class="flex-shrink-0">
-                    <i class="fas fa-bell text-yellow-600 text-xl mt-1"></i>
-                </div>
-                <div class="ml-3 w-0 flex-1 pt-0.5">
-                    <p class="text-sm font-medium text-gray-900">${title}</p>
-                    <p class="mt-1 text-sm text-gray-500">${message}</p>
-                </div>
-                <div class="ml-4 flex-shrink-0 flex">
-                    <button class="bg-white rounded-md inline-flex text-gray-400 hover:text-gray-500 focus:outline-none" onclick="event.stopPropagation(); this.parentNode.parentNode.parentNode.remove()">
-                        <i class="fas fa-times"></i>
-                    </button>
+    // Add this function to show notifications
+    function showNotification(title, message, redirectUrl) {
+        // Create notification element
+        const notification = document.createElement('div');
+        notification.className = 'fixed top-4 right-4 z-50 w-80 bg-white rounded-lg shadow-lg overflow-hidden border-l-4 border-yellow-600 transform transition-all duration-300 hover:scale-105 cursor-pointer';
+        notification.innerHTML = `
+            <div class="p-4" onclick="window.location.href='${redirectUrl}'">
+                <div class="flex items-start">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-bell text-yellow-600 text-xl mt-1"></i>
+                    </div>
+                    <div class="ml-3 w-0 flex-1 pt-0.5">
+                        <p class="text-sm font-medium text-gray-900">${title}</p>
+                        <p class="mt-1 text-sm text-gray-500">${message}</p>
+                    </div>
+                    <div class="ml-4 flex-shrink-0 flex">
+                        <button class="bg-white rounded-md inline-flex text-gray-400 hover:text-gray-500 focus:outline-none" onclick="event.stopPropagation(); this.parentNode.parentNode.parentNode.remove()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
-        </div>
-    `;
-    
-    // Add to body
-    document.body.appendChild(notification);
-    
-    // Auto-remove after 5 seconds
-    setTimeout(() => {
-        notification.classList.add('opacity-0');
+        `;
+        
+        // Add to body
+        document.body.appendChild(notification);
+        
+        // Auto-remove after 5 seconds
         setTimeout(() => {
+            notification.classList.add('opacity-0');
+            setTimeout(() => {
+                notification.remove();
+            }, 300);
+        }, 5000);
+        
+        // Click handler for the close button
+        notification.querySelector('button').addEventListener('click', function(e) {
+            e.stopPropagation();
             notification.remove();
-        }, 300);
-    }, 5000);
-    
-    // Click handler for the close button
-    notification.querySelector('button').addEventListener('click', function(e) {
-        e.stopPropagation();
-        notification.remove();
-    });
-}
+        });
+    }
 
     // Traditional addon checkbox event handling
     document.querySelectorAll('.traditional-addon').forEach(checkbox => {
@@ -1234,58 +1281,58 @@ function showNotification(title, message, redirectUrl) {
 
     // Form submission for Lifeplan
     document.getElementById('lifeplanBookingForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    const formData = new FormData(this);
-    const formElement = this;
+        e.preventDefault();
+        const formData = new FormData(this);
+        const formElement = this;
 
-    Swal.fire({
-        title: 'Confirm Lifeplan Booking',
-        text: 'Are you sure you want to proceed with this lifeplan?',
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonColor: '#d97706',
-        cancelButtonColor: '#6b7280',
-        confirmButtonText: 'Yes, proceed',
-        cancelButtonText: 'Cancel'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            fetch('booking/lifeplan_booking.php', { // Update this URL to your actual endpoint
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    Swal.fire({
-                        title: 'Success!',
-                        text: 'Lifeplan booking submitted successfully!',
-                        icon: 'success',
-                        confirmButtonColor: '#d97706'
-                    });
-                    closeAllModals();
-                    formElement.reset();
-                    showNotification('New Lifeplan', 'Your lifeplan has been confirmed. Click to view details.', 'notification.php');
-                } else {
+        Swal.fire({
+            title: 'Confirm Lifeplan Booking',
+            text: 'Are you sure you want to proceed with this lifeplan?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#d97706',
+            cancelButtonColor: '#6b7280',
+            confirmButtonText: 'Yes, proceed',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fetch('booking/lifeplan_booking.php', { // Update this URL to your actual endpoint
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire({
+                            title: 'Success!',
+                            text: 'Lifeplan booking submitted successfully!',
+                            icon: 'success',
+                            confirmButtonColor: '#d97706'
+                        });
+                        closeAllModals();
+                        formElement.reset();
+                        showNotification('New Lifeplan', 'Your lifeplan has been confirmed. Click to view details.', 'notification.php');
+                    } else {
+                        Swal.fire({
+                            title: 'Error',
+                            text: data.message || 'An error occurred. Please try again.',
+                            icon: 'error',
+                            confirmButtonColor: '#d97706'
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
                     Swal.fire({
                         title: 'Error',
-                        text: data.message || 'An error occurred. Please try again.',
+                        text: 'An error occurred. Please try again.',
                         icon: 'error',
                         confirmButtonColor: '#d97706'
                     });
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                Swal.fire({
-                    title: 'Error',
-                    text: 'An error occurred. Please try again.',
-                    icon: 'error',
-                    confirmButtonColor: '#d97706'
                 });
-            });
-        }
+            }
+        });
     });
-});
 
     // Process packages from database
     const processedPackages = packagesFromDB.map(pkg => {
@@ -1333,7 +1380,6 @@ function renderPackages(filteredPackages) {
     } else {
         noResults.classList.add('hidden');
     }
-
 
     filteredPackages.forEach(pkg => {
         console.log('Creating card for package:', pkg); // Log each package being rendered
@@ -1389,74 +1435,72 @@ function renderPackages(filteredPackages) {
 }
 
 function filterAndSortPackages() {
-        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-        const priceSort = document.getElementById('priceSort').value;
-        const packagesContainer = document.getElementById('packages-container');
-        const noResults = document.getElementById('no-results');
+    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+    const priceSort = document.getElementById('priceSort').value;
+    const packagesContainer = document.getElementById('packages-container');
+    const noResults = document.getElementById('no-results');
+    
+    // Show/hide all package cards based on search
+    let visibleCount = 0;
+    document.querySelectorAll('.package-card').forEach(card => {
+        const packageName = card.dataset.name.toLowerCase();
+        const packageDescription = card.querySelector('p').textContent.toLowerCase();
+        const featureTexts = Array.from(card.querySelectorAll('ul li')).map(li => li.textContent.toLowerCase());
         
-        // Show/hide all package cards based on search
-        let visibleCount = 0;
-        document.querySelectorAll('.package-card').forEach(card => {
-            const packageName = card.dataset.name.toLowerCase();
-            const packageDescription = card.querySelector('p').textContent.toLowerCase();
-            const featureTexts = Array.from(card.querySelectorAll('ul li')).map(li => li.textContent.toLowerCase());
-            
-            const matchesSearch = searchTerm === '' || 
-                                  packageName.includes(searchTerm) || 
-                                  packageDescription.includes(searchTerm) ||
-                                  featureTexts.some(text => text.includes(searchTerm));
-            
-            if (matchesSearch) {
-                card.classList.remove('hidden');
-                visibleCount++;
-            } else {
-                card.classList.add('hidden');
-            }
+        const matchesSearch = searchTerm === '' || 
+                              packageName.includes(searchTerm) || 
+                              packageDescription.includes(searchTerm) ||
+                              featureTexts.some(text => text.includes(searchTerm));
+        
+        if (matchesSearch) {
+            card.classList.remove('hidden');
+            visibleCount++;
+        } else {
+            card.classList.add('hidden');
+        }
+    });
+    
+    // Show/hide no results message
+    if (visibleCount === 0) {
+        noResults.classList.remove('hidden');
+    } else {
+        noResults.classList.add('hidden');
+    }
+    
+    // Sort visible cards if needed
+    if (priceSort) {
+        const cards = Array.from(packagesContainer.querySelectorAll('.package-card:not(.hidden)'));
+        cards.sort((a, b) => {
+            const priceA = parseFloat(a.dataset.price);
+            const priceB = parseFloat(b.dataset.price);
+            return priceSort === 'asc' ? priceA - priceB : priceB - priceA;
         });
         
-        // Show/hide no results message
-        if (visibleCount === 0) {
-            noResults.classList.remove('hidden');
-        } else {
-            noResults.classList.add('hidden');
-        }
-        
-        // Sort visible cards if needed
-        if (priceSort) {
-            const cards = Array.from(packagesContainer.querySelectorAll('.package-card:not(.hidden)'));
-            cards.sort((a, b) => {
-                const priceA = parseFloat(a.dataset.price);
-                const priceB = parseFloat(b.dataset.price);
-                return priceSort === 'asc' ? priceA - priceB : priceB - priceA;
-            });
-            
-            // Reattach sorted cards
-            cards.forEach(card => {
-                packagesContainer.appendChild(card);
-            });
-        }
+        // Reattach sorted cards
+        cards.forEach(card => {
+            packagesContainer.appendChild(card);
+        });
     }
+}
 
 function resetFilters() {
-        document.getElementById('searchInput').value = '';
-        document.getElementById('priceSort').value = '';
-        
-        // Show all cards
-        document.querySelectorAll('.package-card').forEach(card => {
-            card.classList.remove('hidden');
-        });
-        
-        // Hide no results message
-        document.getElementById('no-results').classList.add('hidden');
-    }
-
+    document.getElementById('searchInput').value = '';
+    document.getElementById('priceSort').value = '';
+    
+    // Show all cards
+    document.querySelectorAll('.package-card').forEach(card => {
+        card.classList.remove('hidden');
+    });
+    
+    // Hide no results message
+    document.getElementById('no-results').classList.add('hidden');
+}
 
 // Event Listeners
 document.getElementById('searchInput').addEventListener('input', filterAndSortPackages);
-    document.getElementById('priceSort').addEventListener('change', filterAndSortPackages);
-    document.getElementById('resetFilters').addEventListener('click', resetFilters);
-    document.getElementById('reset-filters-no-results').addEventListener('click', resetFilters);
-
+document.getElementById('priceSort').addEventListener('change', filterAndSortPackages);
+document.getElementById('resetFilters').addEventListener('click', resetFilters);
+document.getElementById('reset-filters-no-results').addEventListener('click', resetFilters);
 
 function toggleMenu() {
     const mobileMenu = document.getElementById('mobile-menu');
