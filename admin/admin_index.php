@@ -1396,8 +1396,9 @@ var options = {
     data: <?php echo json_encode($monthlyRevenueData); ?>
   }],
   chart: {
-    height: 350,
     type: 'area',
+    height: '100%',
+    width: '100%',
     animations: {
       enabled: true,
       easing: 'easeout',
