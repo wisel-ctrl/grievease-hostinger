@@ -193,11 +193,12 @@ $customersResult = mysqli_query($conn, $customersQuery);
                     </div>
                 </div>
 
-                <button class="px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover">
-                <i class="fas fa-archive text-sidebar-accent"></i>
-                <span>Archived</span>
+                <!-- For Customer Archive Button -->
+                <button class="px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover" onclick="deleteCustomerAccount(123)">
+                    <i class="fas fa-archive text-sidebar-accent"></i>
+                    <span>Archive</span>
                 </button>
-
+                
                 <!-- Add Customer Account Button -->
                 <button class="px-4 py-2 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm whitespace-nowrap" 
                         onclick="openAddCustomerAccountModal()">
@@ -346,6 +347,31 @@ $customersResult = mysqli_query($conn, $customersQuery);
     </div>
 </div>
 
+
+<script>
+    document.querySelectorAll('.fa-archive').forEach(icon => {
+      icon.closest('button').addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        Swal.fire({
+          title: 'Are you sure?',
+          text: "You are about to view archived items. Do you want to proceed?",
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Yes, view archived',
+          cancelButtonText: 'Cancel'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            // User confirmed, proceed with archive view
+            const branchId = <?php echo $branchId; ?>;
+            showArchivedItems(branchId);
+          }
+        });
+      });
+    });
+</script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Elements for both desktop and mobile
@@ -1542,9 +1568,10 @@ if ($result->num_rows > 0) {
                     </div>
                 </div>
 
-                <button class="px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover">
-                <i class="fas fa-archive text-sidebar-accent"></i>
-                <span>Archived</span>
+                <!-- For Employee Archive Button -->
+                <button class="px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover" onclick="deleteEmployeeAccount(456)">
+                    <i class="fas fa-archive text-sidebar-accent"></i>
+                    <span>Archive</span>
                 </button>
 
                 <!-- Add Employee Account Button -->
@@ -1712,6 +1739,84 @@ if ($result->num_rows > 0) {
         </div>
     </div>
 </div>
+
+
+<script>
+function deleteCustomerAccount(userId) {
+    Swal.fire({
+        title: 'Archive Customer Account?',
+        text: "Are you sure you want to Archive this customer account?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, Archive it!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Send AJAX request to update the database
+            updateUserStatus(userId, 3, 0); // 3 = customer, 0 = inactive
+        }
+    });
+}
+
+function deleteEmployeeAccount(userId) {
+    Swal.fire({
+        title: 'Archive Employee Account?',
+        text: "Are you sure you want to Archive this employee account?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, Archive it!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Send AJAX request to update the database
+            updateUserStatus(userId, 2, 0); // 2 = employee, 0 = inactive
+        }
+    });
+}
+
+function updateUserStatus(userId, userType, status) {
+    // Create AJAX request
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', 'accountManagement/archive_user.php', true);
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    
+    xhr.onload = function() {
+        if (this.status === 200) {
+            try {
+                const response = JSON.parse(this.responseText);
+                
+                if (response.success) {
+                    Swal.fire(
+                        'Deleted!',
+                        'The account has been deleted successfully.',
+                        'success'
+                    ).then(() => {
+                        // Reload the page to reflect changes
+                        location.reload();
+                    });
+                } else {
+                    Swal.fire(
+                        'Error!',
+                        'There was an error deleting the account: ' + response.message,
+                        'error'
+                    );
+                }
+            } catch (e) {
+                Swal.fire(
+                    'Error!',
+                    'Invalid response from server.',
+                    'error'
+                );
+                console.error('Invalid JSON response:', this.responseText);
+            }
+        }
+    };
+    
+    xhr.send(`user_id=${userId}&user_type=${userType}&status=${status}`);
+}
+</script>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
