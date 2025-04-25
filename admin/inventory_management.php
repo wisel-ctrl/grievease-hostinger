@@ -75,12 +75,7 @@ function generateInventoryRow($row) {
     $html .= '<button class="p-2 bg-yellow-100 text-yellow-600 rounded-lg hover:bg-yellow-200 transition-all tooltip" title="Edit Item" onclick="openViewItemModal(' . $row["inventory_id"] . ')">';
     $html .= '<i class="fas fa-edit"></i>';
     $html .= '</button>';
-    $html .= '<form method="POST" action="inventory/delete_inventory_item.php" class="delete-form">
-    <input type="hidden" name="inventory_id" value="<?php echo $row['inventory_id']; ?>">
-    <button type="button" class="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-all tooltip" title="Archive Item">
-        <i class="fas fa-archive"></i>
-    </button>
-</form>';
+    $html .= '<form method="POST" action="inventory/delete_inventory_item.php" onsubmit="return false;" style="display:inline;" class="delete-form">';
     $html .= '<input type="hidden" name="inventory_id" value="' . $row["inventory_id"] . '">';
     $html .= '<button type="submit" class="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-all tooltip" title="Archive Item">';
     $html .= '<i class="fas fa-archive"></i>';
