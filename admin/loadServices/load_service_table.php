@@ -175,4 +175,5 @@ $result = $conn->query($sql);
             <?php endif; ?>
         </tbody>
     </table>
+    
     </div>

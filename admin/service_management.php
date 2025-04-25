@@ -1,5 +1,5 @@
 <?php
-
+//service_management.php
 session_start();
 
 require_once '../db_connect.php'; // Database connection
@@ -472,29 +472,54 @@ if ($branchResult->num_rows > 0) {
         </div>
     </div>
     
-    <?php include 'loadServices/load_service_table'?>
+
     
-    <!-- Sticky Pagination Footer with improved spacing -->
-    <div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
-        <div class="text-sm text-gray-500 text-center sm:text-left">
+<!-- Sticky Pagination Footer with improved spacing -->
+<div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
+    <div class="text-sm text-gray-500 text-center sm:text-left">
         Showing <?php echo ($offset + 1) . ' - ' . min($offset + $recordsPerPage, $totalServices); ?> 
         of <?php echo $totalServices; ?> services
     </div>
-    <div class="flex space-x-2">
+    <div class="flex space-x-2 pagination">
         <a href="javascript:void(0)" onclick="changePage(<?php echo $branchId; ?>, <?php echo max(1, $page - 1); ?>)" 
            class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo $page <= 1 ? 'opacity-50 pointer-events-none' : ''; ?>">&laquo;</a>
         
-        <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+        <?php 
+        // Show limited pagination links (e.g., 5 around current page)
+        $startPage = max(1, $page - 2);
+        $endPage = min($totalPages, $page + 2);
+        
+        // Always show first page if not in range
+        if ($startPage > 1) {
+            echo '<a href="javascript:void(0)" onclick="changePage('.$branchId.', 1)"
+               class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm '.($page == 1 ? 'bg-sidebar-accent text-white' : 'hover:bg-sidebar-hover').'">1</a>';
+            if ($startPage > 2) {
+                echo '<span class="px-3.5 py-1.5">...</span>';
+            }
+        }
+        
+        for ($i = $startPage; $i <= $endPage; $i++): ?>
             <a href="javascript:void(0)" onclick="changePage(<?php echo $branchId; ?>, <?php echo $i; ?>)"
                class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm <?php echo $i == $page ? 'bg-sidebar-accent text-white' : 'hover:bg-sidebar-hover'; ?>">
                 <?php echo $i; ?>
             </a>
-        <?php endfor; ?>
+        <?php endfor; 
+        
+        // Always show last page if not in range
+        if ($endPage < $totalPages) {
+            if ($endPage < $totalPages - 1) {
+                echo '<span class="px-3.5 py-1.5">...</span>';
+            }
+            echo '<a href="javascript:void(0)" onclick="changePage('.$branchId.', '.$totalPages.')"
+               class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm '.($page == $totalPages ? 'bg-sidebar-accent text-white' : 'hover:bg-sidebar-hover').'">'.$totalPages.'</a>';
+        }
+        ?>
         
         <a href="javascript:void(0)" onclick="changePage(<?php echo $branchId; ?>, <?php echo min($totalPages, $page + 1); ?>)" 
            class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo $page >= $totalPages ? 'opacity-50 pointer-events-none' : ''; ?>">&raquo;</a>
     </div>
-    </div>
+</div>
+
 </div>
 
 <?php
@@ -587,8 +612,35 @@ function changePage(branchId, page) {
     }
     activeFilters[branchId].page = page;
     loadBranchTable(branchId);
+    
+    // Update the URL with the current page
+    updateUrlWithFilters(branchId);
+    
+    // Update active page highlight
+    updateActivePageHighlight(branchId, page);
 }
 
+// Function to update active page highlight
+function updateActivePageHighlight(branchId, page) {
+    // Remove active class from all pagination links
+    const container = document.querySelector(`.branch-container[data-branch-id="${branchId}"]`);
+    if (container) {
+        const paginationLinks = container.querySelectorAll('.pagination a');
+        paginationLinks.forEach(link => {
+            link.classList.remove('bg-sidebar-accent', 'text-white');
+            link.classList.add('hover:bg-sidebar-hover');
+        });
+        
+        // Add active class to current page link
+        const currentPageLink = container.querySelector(`.pagination a[onclick*="changePage(${branchId}, ${page})"]`);
+        if (currentPageLink) {
+            currentPageLink.classList.add('bg-sidebar-accent', 'text-white');
+            currentPageLink.classList.remove('hover:bg-sidebar-hover');
+        }
+    }
+}
+
+// Load branch table via AJAX
 // Load branch table via AJAX
 function loadBranchTable(branchId) {
     const container = document.querySelector(`.branch-container[data-branch-id="${branchId}"] .overflow-x-auto`);
@@ -601,13 +653,13 @@ function loadBranchTable(branchId) {
     
     // Prepare query parameters
     const params = new URLSearchParams();
-      params.append('branch_id', branchId);
-      params.append('page', activeFilters[branchId]?.page || 1);
-      if (activeFilters[branchId]?.search) params.append('search', activeFilters[branchId].search);
-      if (activeFilters[branchId]?.category) params.append('category', activeFilters[branchId].category);
-      if (activeFilters[branchId]?.status) params.append('status', activeFilters[branchId].status);
+    params.append('branch_id', branchId);
+    params.append('page', activeFilters[branchId]?.page || 1);
+    if (activeFilters[branchId]?.search) params.append('search', activeFilters[branchId].search);
+    if (activeFilters[branchId]?.category) params.append('category', activeFilters[branchId].category);
+    if (activeFilters[branchId]?.status) params.append('status', activeFilters[branchId].status);
 
-// Make AJAX request
+    // Make AJAX request
     fetch(`loadServices/load_service_table.php?${params.toString()}`)
         .then(response => {
             if (!response.ok) throw new Error('Network response was not ok');
@@ -616,6 +668,9 @@ function loadBranchTable(branchId) {
         .then(html => {
             container.innerHTML = html;
             if (loadingIndicator) loadingIndicator.classList.add('hidden');
+            
+            // Update active page highlight after content loads
+            updateActivePageHighlight(branchId, activeFilters[branchId]?.page || 1);
         })
         .catch(error => {
             console.error('Error loading table:', error);
@@ -634,6 +689,9 @@ document.addEventListener('DOMContentLoaded', () => {
             status: '<?php echo $statusFilter; ?>',
             page: <?php echo $page; ?>
         };
+        
+        // Set initial active page highlight
+        updateActivePageHighlight(branchId, activeFilters[branchId].page);
     });
 });
 </script>
