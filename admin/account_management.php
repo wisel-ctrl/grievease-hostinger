@@ -279,7 +279,7 @@ $customersResult = mysqli_query($conn, $customersQuery);
     <!-- Responsive Table Container with improved spacing -->
     <div class="overflow-x-auto scrollbar-thin" id="customerTableContainer">
         <div id="loadingIndicator" class="hidden absolute inset-0 bg-white bg-opacity-50 flex items-center justify-center">
-            <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-sidebar-accent"></div>
+            <div class="animate-spin text-sidebar-accent rounded-full h-8 w-8 border-t-2 border-b-2 border-sidebar-accent"></div>
         </div>
         
         <!-- Responsive Table with improved spacing and horizontal scroll for small screens -->
