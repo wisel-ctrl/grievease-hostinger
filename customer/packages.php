@@ -584,9 +584,13 @@ $conn->close();
         <div class="modal-scroll-container grid grid-cols-1 md:grid-cols-2 overflow-y-auto max-h-[90vh] md:max-h-[80vh]">
             <!-- Left Side: Package Details -->
             <div class="bg-cream p-4 md:p-8 details-section">
-                <!-- Header and Close Button for Mobile -->
-                <div class="flex justify-between items-center mb-4 md:hidden">
-                    <h2 class="text-xl font-hedvig text-navy">Package Details</h2>
+                <!-- Mobile Progress Indicator -->
+                <div class="flex items-center justify-between mb-4 md:hidden">
+                    <div class="flex items-center">
+                        <div class="h-6 w-6 rounded-full bg-yellow-600 text-white flex items-center justify-center text-xs font-bold">1</div>
+                        <div class="h-1 w-8 bg-yellow-600"></div>
+                        <div class="h-6 w-6 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center text-xs font-bold">2</div>
+                    </div>
                     <button class="closeModalBtn text-gray-500 hover:text-navy">
                         <i class="fas fa-times text-xl"></i>
                     </button>
@@ -626,8 +630,9 @@ $conn->close();
                             <span id="traditionalAmountDueMobile" class="text-yellow-600">₱0</span>
                         </div>
                     </div>
-                    <button id="continueToFormBtn" class="mt-4 w-full bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg shadow-md transition-all duration-300">
-                        Continue to Booking
+                    <button id="continueToFormBtn" class="mt-4 w-full bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg shadow-md transition-all duration-300 flex items-center justify-center">
+                        <span>Continue to Booking</span>
+                        <i class="fas fa-arrow-right ml-2"></i>
                     </button>
                 </div>
             </div>
@@ -636,16 +641,25 @@ $conn->close();
             <div class="bg-white p-4 md:p-8 border-t md:border-t-0 md:border-l border-gray-200 overflow-y-auto form-section hidden md:block">
                 <!-- Header and back button for mobile -->
                 <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-xl md:text-2xl font-hedvig text-navy">Book Your Traditional Service</h2>
+                    <!-- Mobile Progress Indicator (Form View) -->
+                    <div class="flex items-center md:hidden">
+                        <div class="h-6 w-6 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center text-xs font-bold">1</div>
+                        <div class="h-1 w-8 bg-yellow-600"></div>
+                        <div class="h-6 w-6 rounded-full bg-yellow-600 text-white flex items-center justify-center text-xs font-bold">2</div>
+                    </div>
+                    <h2 class="text-xl md:text-2xl font-hedvig text-navy hidden md:block">Book Your Traditional Service</h2>
                     <div class="flex items-center">
-                        <button id="backToDetailsBtn" class="mr-2 text-gray-500 hover:text-navy md:hidden">
-                            <i class="fas fa-arrow-left text-lg"></i>
+                        <button id="backToDetailsBtn" class="text-navy hover:text-yellow-600 flex items-center md:hidden">
+                            <i class="fas fa-arrow-left text-lg mr-2"></i>
+                            <span>Back</span>
                         </button>
-                        <button class="closeModalBtn text-gray-500 hover:text-navy">
+                        <button class="closeModalBtn text-gray-500 hover:text-navy ml-4">
                             <i class="fas fa-times text-xl md:text-2xl"></i>
                         </button>
                     </div>
                 </div>
+
+                <h2 class="text-xl font-hedvig text-navy mb-4 md:hidden">Book Your Traditional Service</h2>
 
                 <form id="traditionalBookingForm" class="space-y-4">
                     <input type="hidden" id="traditionalSelectedPackagePrice" name="packagePrice">
@@ -675,12 +689,13 @@ $conn->close();
                                 <input type="text" id="traditionalDeceasedSuffix" name="deceasedSuffix" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                             </div>
                         </div>
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4">
-                            <div>
+                        <div class="grid grid-cols-1 gap-3 md:gap-4">
+                            <!-- Mobile-friendly date entry - one per row -->
+                            <div class="mb-2">
                                 <label for="traditionalDateOfBirth" class="block text-xs md:text-sm font-medium text-navy mb-1 md:mb-2">Date of Birth</label>
                                 <input type="date" id="traditionalDateOfBirth" name="dateOfBirth" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                             </div>
-                            <div>
+                            <div class="mb-2">
                                 <label for="traditionalDateOfDeath" class="block text-xs md:text-sm font-medium text-navy mb-1 md:mb-2">Date of Death *</label>
                                 <input type="date" id="traditionalDateOfDeath" name="dateOfDeath" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                             </div>
@@ -689,9 +704,27 @@ $conn->close();
                                 <input type="date" id="traditionalDateOfBurial" name="dateOfBurial" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                             </div>
                         </div>
+                        <!-- Restore original layout for medium screens and up -->
+                        <div class="hidden md:grid md:grid-cols-3 md:gap-4 md:mt-4">
+                            <div>
+                                <label for="traditionalDateOfBirthMd" class="block text-sm font-medium text-navy mb-2">Date of Birth</label>
+                                <input type="date" id="traditionalDateOfBirthMd" name="dateOfBirth" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                            </div>
+                            <div>
+                                <label for="traditionalDateOfDeathMd" class="block text-sm font-medium text-navy mb-2">Date of Death *</label>
+                                <input type="date" id="traditionalDateOfDeathMd" name="dateOfDeath" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                            </div>
+                            <div>
+                                <label for="traditionalDateOfBurialMd" class="block text-sm font-medium text-navy mb-2">Date of Burial</label>
+                                <input type="date" id="traditionalDateOfBurialMd" name="dateOfBurial" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                            </div>
+                        </div>
                         <div class="mt-3 md:mt-4">
                             <label for="traditionalDeathCertificate" class="block text-xs md:text-sm font-medium text-navy mb-1 md:mb-2">Death Certificate</label>
-                            <input type="file" id="traditionalDeathCertificate" name="deathCertificate" accept=".pdf,.jpg,.jpeg,.png" class="w-full text-xs md:text-sm px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                            <div class="relative">
+                                <input type="file" id="traditionalDeathCertificate" name="deathCertificate" accept=".pdf,.jpg,.jpeg,.png" class="w-full text-xs md:text-sm px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                                <div class="text-xs text-gray-500 mt-1">Accepted formats: PDF, JPG, JPEG, PNG</div>
+                            </div>
                         </div>
                         <div class="mt-3 md:mt-4">
                             <label for="traditionalDeceasedAddress" class="block text-xs md:text-sm font-medium text-navy mb-1 md:mb-2">Address of the Deceased</label>
@@ -708,14 +741,28 @@ $conn->close();
 
                     <div class="border-b border-gray-200 pb-4 mb-4">
                         <h3 class="text-base md:text-lg font-hedvig text-navy mb-3 md:mb-4">Payment</h3>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
+                        <div class="grid grid-cols-1 gap-3 md:gap-4">
                             <div>
                                 <label for="traditionalGcashReceipt" class="block text-xs md:text-sm font-medium text-navy mb-1 md:mb-2">GCash Receipt</label>
-                                <input type="file" id="traditionalGcashReceipt" name="gcashReceipt" accept=".pdf,.jpg,.jpeg,.png" class="w-full text-xs md:text-sm px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                                <div class="relative">
+                                    <input type="file" id="traditionalGcashReceipt" name="gcashReceipt" accept=".pdf,.jpg,.jpeg,.png" class="w-full text-xs md:text-sm px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                                    <div class="text-xs text-gray-500 mt-1">Accepted formats: PDF, JPG, JPEG, PNG</div>
+                                </div>
                             </div>
                             <div>
                                 <label for="traditionalReferenceNumber" class="block text-xs md:text-sm font-medium text-navy mb-1 md:mb-2">GCash Reference Number *</label>
                                 <input type="text" id="traditionalReferenceNumber" name="referenceNumber" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                            </div>
+                        </div>
+                        <!-- Restore original layout for medium screens -->
+                        <div class="hidden md:grid md:grid-cols-2 md:gap-4 md:mt-4">
+                            <div>
+                                <label for="traditionalGcashReceiptMd" class="block text-sm font-medium text-navy mb-2">GCash Receipt</label>
+                                <input type="file" id="traditionalGcashReceiptMd" name="gcashReceipt" accept=".pdf,.jpg,.jpeg,.png" class="w-full text-sm px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                            </div>
+                            <div>
+                                <label for="traditionalReferenceNumberMd" class="block text-sm font-medium text-navy mb-2">GCash Reference Number *</label>
+                                <input type="text" id="traditionalReferenceNumberMd" name="referenceNumber" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                             </div>
                         </div>
                     </div>
@@ -735,8 +782,9 @@ $conn->close();
                         </div>
                     </div>
 
-                    <button type="submit" class="w-full bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg shadow-md transition-all duration-300">
-                        Confirm Booking
+                    <button type="submit" class="w-full bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg shadow-md transition-all duration-300 flex items-center justify-center">
+                        <span>Confirm Booking</span>
+                        <i class="fas fa-check ml-2"></i>
                     </button>
                 </form>
             </div>
