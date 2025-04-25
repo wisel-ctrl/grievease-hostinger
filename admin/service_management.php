@@ -331,7 +331,7 @@ if ($branchResult->num_rows > 0) {
                 </div>
 
                 <!-- Archive Button -->
-                <button class="px-4 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover whitespace-nowrap">
+                <button id="archiveBtn" class="px-4 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover whitespace-nowrap">
                     <i class="fas fa-archive text-sidebar-accent"></i>
                     <span>Archive</span>
                 </button>
@@ -539,6 +539,8 @@ if ($branchResult->num_rows > 0) {
     echo "</div>";
 }
 ?>
+
+
 
 <script>
 // Global variable to track active filters
@@ -1336,6 +1338,217 @@ document.addEventListener('DOMContentLoaded', () => {
     </div>
   </div>
 </div>
+
+<div id="archiveModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center">
+    <div class="bg-white rounded-lg p-6 w-3/4 max-w-4xl">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-semibold">Archived Services</h2>
+            <button id="closeArchiveModal" class="text-gray-500 hover:text-gray-700">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="overflow-x-auto w-full">
+            <table class="w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/4">
+                            <div class="flex items-center">
+                                <i class="fas fa-hashtag mr-1.5 text-blue-500"></i> ID
+                            </div>
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/2">
+                            <div class="flex items-center">
+                                <i class="fas fa-tag mr-1.5 text-blue-500"></i> Service Name
+                            </div>
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/4">
+                            <div class="flex items-center">
+                                <i class="fas fa-cogs mr-1.5 text-blue-500"></i> Actions
+                            </div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody id="archivedServicesTable" class="bg-white divide-y divide-gray-200">
+                    <!-- Table content will be loaded dynamically -->
+                </tbody>
+            </table>
+        </div>
+        <div id="noArchivedServices" class="hidden text-center py-4 w-full">
+            <div class="flex flex-col items-center justify-center py-6">
+                <i class="fas fa-inbox text-gray-300 text-4xl mb-3"></i>
+                <p>No archived services found</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const archiveBtn = document.getElementById('archiveBtn');
+    const archiveModal = document.getElementById('archiveModal');
+    const closeArchiveModal = document.getElementById('closeArchiveModal');
+    const archivedServicesTable = document.getElementById('archivedServicesTable');
+    const noArchivedServices = document.getElementById('noArchivedServices');
+
+    // Open modal when archive button is clicked
+    archiveBtn.addEventListener('click', function() {
+        archiveModal.classList.remove('hidden');
+        fetchArchivedServices();
+    });
+
+    // Close modal when close button is clicked
+    closeArchiveModal.addEventListener('click', function() {
+        archiveModal.classList.add('hidden');
+    });
+
+    // Close modal when clicking outside the modal content
+    archiveModal.addEventListener('click', function(e) {
+        if (e.target === archiveModal) {
+            archiveModal.classList.add('hidden');
+        }
+    });
+
+    // Function to fetch archived services
+    function fetchArchivedServices() {
+        // Show loading state
+        archivedServicesTable.innerHTML = '<tr><td colspan="3" class="px-6 py-4 text-center"><div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500 mx-auto"></div></td></tr>';
+        
+        fetch('servicesManagement/fetch_archived_services.php')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Server responded with ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                archivedServicesTable.innerHTML = '';
+                
+                if (data.length === 0) {
+                    noArchivedServices.classList.remove('hidden');
+                } else {
+                    noArchivedServices.classList.add('hidden');
+                    
+                    data.forEach(service => {
+                        const row = document.createElement('tr');
+                        row.className = 'hover:bg-gray-50';
+                        
+                        const formattedId = `#SVC-${String(service.service_id).padStart(3, '0')}`;
+                        
+                        row.innerHTML = `
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                ${formattedId}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                ${service.service_name}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                <button 
+                                    class="unarchive-btn px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 flex items-center gap-2"
+                                    data-service-id="${service.service_id}"
+                                    data-service-name="${service.service_name}">
+                                    <i class="fas fa-archive"></i>
+                                    <span>Unarchive</span>
+                                </button>
+                            </td>
+                        `;
+                        archivedServicesTable.appendChild(row);
+                    });
+
+                    // Add event listeners to unarchive buttons
+                    document.querySelectorAll('.unarchive-btn').forEach(btn => {
+                        btn.addEventListener('click', function() {
+                            const serviceId = this.getAttribute('data-service-id');
+                            const serviceName = this.getAttribute('data-service-name');
+                            showUnarchiveConfirmation(serviceId, serviceName);
+                        });
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching archived services:', error);
+                archivedServicesTable.innerHTML = '<tr><td colspan="3" class="px-6 py-4 text-center text-red-500">Error loading archived services</td></tr>';
+            });
+    }
+
+    // Function to show confirmation dialog using SweetAlert
+    function showUnarchiveConfirmation(serviceId, serviceName) {
+        Swal.fire({
+            title: 'Unarchive Service',
+            html: `Are you sure you want to unarchive <strong>${serviceName}</strong>?`,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#10B981', // Green color
+            cancelButtonColor: '#6B7280', // Gray color
+            confirmButtonText: 'Yes, unarchive it!',
+            cancelButtonText: 'Cancel',
+            reverseButtons: true,
+            focusConfirm: false
+        }).then((result) => {
+            if (result.isConfirmed) {
+                unarchiveService(serviceId);
+            }
+        });
+    }
+
+    // Function to unarchive a service
+    function unarchiveService(serviceId) {
+        // Show loading state with SweetAlert
+        Swal.fire({
+            title: 'Processing...',
+            text: 'Please wait while we unarchive the service.',
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            showConfirmButton: false,
+            willOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
+        const formData = new FormData();
+        formData.append('service_id', serviceId);
+        
+        fetch('servicesManagement/unarchive_service.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Show success message
+                Swal.fire({
+                    title: 'Success!',
+                    text: 'Service has been unarchived successfully.',
+                    icon: 'success',
+                    confirmButtonColor: '#10B981'
+                }).then(() => {
+                    // Close the archive modal
+                    archiveModal.classList.add('hidden');
+                    
+                    // Reload the page to refresh the services list
+                    window.location.reload();
+                });
+            } else {
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Failed to unarchive service: ' + data.message,
+                    icon: 'error',
+                    confirmButtonColor: '#EF4444'
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Error unarchiving service:', error);
+            Swal.fire({
+                title: 'Error!',
+                text: 'An error occurred while unarchiving the service',
+                icon: 'error',
+                confirmButtonColor: '#EF4444'
+            });
+        });
+    }
+});
+</script>
+
 
 <!-- JavaScript to handle fetching and displaying service data -->
 <script>
