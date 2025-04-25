@@ -385,60 +385,71 @@ $offset = ($current_page - 1) * $bookings_per_page;
     </div>
     
     <!-- Sticky Pagination Footer with improved spacing -->
-    <div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
-        <div id="paginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
-            <?php 
-            // Get the number of bookings on the current page
-            $current_page_bookings = $result->num_rows;
+<div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
+    <div id="paginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
+        <?php 
+        // Get the number of bookings on the current page
+        $current_page_bookings = $result->num_rows;
 
-            if ($total_bookings > 0) {
-                $start = $offset + 1;
-                $end = $offset + $result->num_rows;
+        if ($total_bookings > 0) {
+            $start = $offset + 1;
+            $end = $offset + $result->num_rows;
+        
+            echo "Showing {$start} - {$end} of {$total_bookings} bookings";
+        } else {
+            echo "No bookings found";
+        }
+        ?>
+    </div>
+    
+    <?php if ($total_pages > 1): ?>
+    <div class="flex items-center gap-2">
+        <!-- Previous Button -->
+        <a href="?page=<?php echo max(1, $current_page - 1); ?>" 
+           class="px-3 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($current_page == 1) ? 'opacity-50 pointer-events-none' : ''; ?>"
+           aria-label="Previous">
+            <i class="fas fa-chevron-left"></i>
+        </a>
+        
+        <!-- Page Numbers -->
+        <div class="flex items-center gap-1">
+            <?php
+            // Always show first page
+            if ($current_page > 3) {
+                echo '<a href="?page=1" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">1</a>';
+                if ($current_page > 4) {
+                    echo '<span class="px-2 text-gray-500">...</span>';
+                }
+            }
             
-                echo "Showing {$start} - {$end} of {$total_bookings} bookings";
-            } else {
-                echo "No bookings found";
+            // Show pages around current page
+            for ($i = max(1, $current_page - 2); $i <= min($total_pages, $current_page + 2); $i++) {
+                if ($i == $current_page) {
+                    echo '<span class="px-3.5 py-1.5 bg-sidebar-accent text-white rounded text-sm">'.$i.'</span>';
+                } else {
+                    echo '<a href="?page='.$i.'" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">'.$i.'</a>';
+                }
+            }
+            
+            // Always show last page
+            if ($current_page < $total_pages - 2) {
+                if ($current_page < $total_pages - 3) {
+                    echo '<span class="px-2 text-gray-500">...</span>';
+                }
+                echo '<a href="?page='.$total_pages.'" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">'.$total_pages.'</a>';
             }
             ?>
         </div>
-        <div id="paginationContainer" class="flex space-x-1">
-            <?php if ($total_pages > 1): ?>
-                <!-- First page and Previous page -->
-                <a href="<?php echo '?page=' . max(1, $current_page - 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($current_page == 1) ? 'opacity-50 pointer-events-none' : ''; ?>">&laquo;</a>
-                
-                <?php
-                // Determine the range of page numbers to show
-                $range = 2; // Show 2 pages before and after the current page
-                $start_page = max(1, $current_page - $range);
-                $end_page = min($total_pages, $current_page + $range);
-                
-                // Always show first page
-                if ($start_page > 1) {
-                    echo '<a href="?page=1" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">1</a>';
-                    if ($start_page > 2) {
-                        echo '<span class="px-3.5 py-1.5 text-gray-500">...</span>';
-                    }
-                }
-                
-                // Show page numbers
-                for ($i = $start_page; $i <= $end_page; $i++) {
-                    $active_class = ($i == $current_page) ? 'bg-sidebar-accent text-white' : 'border border-sidebar-border hover:bg-sidebar-hover';
-                    echo '<a href="?page=' . $i . '" class="px-3.5 py-1.5 rounded text-sm ' . $active_class . '">' . $i . '</a>';
-                }
-                
-                // Always show last page
-                if ($end_page < $total_pages) {
-                    if ($end_page < $total_pages - 1) {
-                        echo '<span class="px-3.5 py-1.5 text-gray-500">...</span>';
-                    }
-                    echo '<a href="?page=' . $total_pages . '" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">' . $total_pages . '</a>';
-                }
-                ?>
-                
-                <!-- Next page -->
-                <a href="<?php echo '?page=' . min($total_pages, $current_page + 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($current_page == $total_pages) ? 'opacity-50 pointer-events-none' : ''; ?>">&raquo;</a>
-            <?php endif; ?>
-        </div>
+        
+        <!-- Next Button -->
+        <a href="?page=<?php echo min($total_pages, $current_page + 1); ?>" 
+           class="px-3 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($current_page == $total_pages) ? 'opacity-50 pointer-events-none' : ''; ?>"
+           aria-label="Next">
+            <i class="fas fa-chevron-right"></i>
+        </a>
+    </div>
+    <?php endif; ?>
+</div>
     </div>
 </div>
  
