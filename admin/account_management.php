@@ -1703,16 +1703,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Function to fetch employee accounts via AJAX
     function fetchEmployeeAccounts(search = '', sort = 'id_asc', page = 1) {
-        // Show loading state
-        employeeTableBody.innerHTML = `
-            <tr>
-                <td colspan="6" class="text-center p-4">
-                    <div class="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-blue-500"></div>
-                    <p class="mt-2 text-gray-500">Loading...</p>
-                </td>
-            </tr>
-        `;
-
         // Create a new XMLHttpRequest
         const xhr = new XMLHttpRequest();
         
