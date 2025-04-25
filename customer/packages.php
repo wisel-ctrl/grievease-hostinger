@@ -1097,8 +1097,10 @@ document.addEventListener('DOMContentLoaded', function() {
         const downpayment = Math.ceil(totalPrice * 0.3);
         
         document.getElementById('traditionalTotalPrice').textContent = `₱${totalPrice.toLocaleString()}`;
+        document.getElementById('traditionalTotalPriceMobile').textContent = `₱${totalPrice.toLocaleString()}`;
         document.getElementById('traditionalDownpayment').textContent = `₱${downpayment.toLocaleString()}`;
         document.getElementById('traditionalAmountDue').textContent = `₱${downpayment.toLocaleString()}`;
+        document.getElementById('traditionalAmountDueMobile').textContent = `₱${downpayment.toLocaleString()}`;
         
         // Update hidden fields
         document.getElementById('traditionalSelectedPackagePrice').value = totalPrice;
@@ -1162,8 +1164,10 @@ document.addEventListener('DOMContentLoaded', function() {
         const downpayment = Math.ceil(totalPrice * 0.3);
         
         document.getElementById('traditionalTotalPrice').textContent = `₱${totalPrice.toLocaleString()}`;
+        document.getElementById('traditionalTotalPriceMobile').textContent = `₱${totalPrice.toLocaleString()}`;
         document.getElementById('traditionalDownpayment').textContent = `₱${downpayment.toLocaleString()}`;
         document.getElementById('traditionalAmountDue').textContent = `₱${downpayment.toLocaleString()}`;
+        document.getElementById('traditionalAmountDueMobile').textContent = `₱${downpayment.toLocaleString()}`;
 
         // Update features list
         const featuresList = document.getElementById('traditionalPackageFeatures');
