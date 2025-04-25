@@ -193,6 +193,21 @@ if (isset($_SESSION['user_id'])) {
     }
     $stmt->close();
 }
+
+// Get user's validation status
+$validationQuery = "SELECT is_validated FROM valid_id_tb WHERE id = ?";
+$validationStmt = $conn->prepare($validationQuery);
+$validationStmt->bind_param("i", $user_id);
+$validationStmt->execute();
+$validationResult = $validationStmt->get_result();
+$validationStatus = 'no'; // Default to 'no' if no record exists
+
+if ($validationResult->num_rows > 0) {
+    $validationRow = $validationResult->fetch_assoc();
+    $validationStatus = $validationRow['is_validated'];
+}
+$validationStmt->close();
+
 $conn->close();
 ?>
 
@@ -212,6 +227,17 @@ $conn->close();
             --navbar-height: 64px;
             --section-spacing: 4rem;
         }
+        
+        .selectPackageBtn.disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            background-color: #9ca3af !important;
+        }
+
+        .selectPackageBtn.disabled:hover {
+            background-color: #9ca3af !important;
+        }
+
         .package-card {
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
@@ -219,7 +245,17 @@ $conn->close();
             transform: translateY(-8px);
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
         }
-    
+        @media (min-width: 768px) {
+    .form-section {
+        display: block !important;
+    }
+}
+
+@media (max-width: 767px) {
+    .form-section:not(.force-show) {
+        display: none !important;
+    }
+}
     </style>
 </head>
 <body class="bg-cream overflow-x-hidden w-full max-w-full m-0 p-0 font-hedvig">
@@ -469,6 +505,92 @@ $conn->close();
             <?php endif; ?>
         </div>
 
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                    // Store validation status in a JavaScript variable
+                const validationStatus = '<?php echo $validationStatus; ?>';
+
+                // Function to handle package selection based on validation status
+                function handlePackageSelection() {
+                    switch(validationStatus) {
+                        case 'no':
+                            Swal.fire({
+                                title: 'Profile Incomplete',
+                                html: 'You need to <strong>complete your profile</strong> and <strong>upload a valid ID</strong> before you can select a package.',
+                                icon: 'warning',
+                                confirmButtonColor: '#d97706',
+                                confirmButtonText: 'Go to Profile',
+                                allowOutsideClick: false,  // Prevent closing when clicking outside
+                                allowEscapeKey: false      // Prevent closing with Escape key
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    window.location.href = 'profile.php';
+                                }
+                            });
+                            return false;
+                        case 'denied':
+                            Swal.fire({
+                                title: 'ID Verification Failed',
+                                html: 'Your uploaded ID was <strong>not approved</strong>. Please re-upload a valid government-issued ID to proceed with package selection.',
+                                icon: 'error',
+                                confirmButtonColor: '#d97706',
+                                confirmButtonText: 'Upload ID',
+                                allowOutsideClick: false,  // Prevent closing when clicking outside
+                                allowEscapeKey: false      // Prevent closing with Escape key
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    window.location.href = 'profile.php#id-upload';
+                                }
+                            });
+                            return false;
+                        case 'valid':
+                            return true; // Allow package selection
+                        default:
+                            return true; // Default allow (shouldn't happen)
+                    }
+                }
+
+                // Modify the package selection event listener
+                document.addEventListener('click', function(event) {
+                    if (event.target.classList.contains('selectPackageBtn')) {
+                        event.preventDefault(); // Prevent any default behavior
+                        
+                        // First check validation status
+                        if (!handlePackageSelection()) {
+                            return; // Stop here if validation fails - modal will not be shown
+                        }
+                        
+                        // Only proceed with package selection if validation passed
+                        const packageCard = event.target.closest('.package-card');
+                        if (!packageCard) return;
+                        
+                        const packageName = packageCard.dataset.name;
+                        const packagePrice = packageCard.dataset.price;
+                        const packageImage = packageCard.dataset.image || '';
+                        const serviceType = packageCard.dataset.service;
+
+                        sessionStorage.setItem('selectedPackageName', packageName);
+                        sessionStorage.setItem('selectedPackagePrice', packagePrice);
+                        sessionStorage.setItem('selectedPackageImage', packageImage);
+                        sessionStorage.setItem('selectedServiceType', serviceType);
+                        
+                        const features = Array.from(packageCard.querySelectorAll('ul li')).map(li => li.textContent.trim());
+                        sessionStorage.setItem('selectedPackageFeatures', JSON.stringify(features));
+                        
+                        const traditionalBtn = document.getElementById('traditionalServiceBtn');
+                        traditionalBtn.innerHTML = `
+                            <i class="fas fa-dove text-3xl text-yellow-600 mb-2"></i>
+                            <span class="font-hedvig text-lg">Traditional</span>
+                            <span class="text-sm text-gray-600 mt-2 text-center">For immediate funeral needs</span>
+                        `;
+                        
+                        // Only show the modal if validation passed
+                        document.getElementById('serviceTypeModal').classList.remove('hidden');
+                    }
+                });
+            });
+        </script>
+
         <!-- No Results Message (initially hidden) -->
         <div id="no-results" class="<?= (count($packages) > 0) ? 'hidden' : '' ?> text-center py-12">
             <i class="fas fa-search text-5xl text-gray-300 mb-4"></i>
@@ -579,128 +701,283 @@ $conn->close();
 
 <!-- Traditional Funeral Modal (Hidden by Default) -->
 <div id="traditionalModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4 hidden">
-    <div class="w-full max-w-5xl bg-white rounded-2xl shadow-xl overflow-hidden max-h-[80vh]">
+    <div class="w-full max-w-5xl bg-white rounded-2xl shadow-xl overflow-hidden max-h-[90vh] md:max-h-[80vh]">
         <!-- Scroll container for both columns -->
-        <div class="modal-scroll-container grid grid-cols-1 md:grid-cols-2 overflow-y-auto max-h-[80vh]">
+        <div class="modal-scroll-container grid grid-cols-1 md:grid-cols-2 overflow-y-auto max-h-[90vh] md:max-h-[80vh]">
             <!-- Left Side: Package Details -->
-            <div class="bg-cream p-8">
+            <div class="bg-cream p-4 md:p-8 details-section">
+                <!-- Header and Close Button for Mobile -->
+                <div class="flex justify-between items-center mb-4 md:hidden">
+                    <h2 class="text-xl font-hedvig text-navy">Package Details</h2>
+                    <button class="closeModalBtn text-gray-500 hover:text-navy">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
                 
                 <!-- Package Image -->
-                <div class="mb-6">
-                    <img id="traditionalPackageImage" src="" alt="" class="w-full h-64 object-cover rounded-lg mb-4">
+                <div class="mb-4 md:mb-6">
+                    <img id="traditionalPackageImage" src="" alt="" class="w-full h-48 md:h-64 object-cover rounded-lg mb-4">
                 </div>
 
                 <!-- Package Header -->
-                <div class="flex justify-between items-center mb-6">
-                    <h2 id="traditionalPackageName" class="text-3xl font-hedvig text-navy"></h2>
-                    <div id="traditionalPackagePrice" class="text-3xl font-hedvig text-yellow-600"></div>
-                
+                <div class="flex justify-between items-center mb-4 md:mb-6">
+                    <h2 id="traditionalPackageName" class="text-2xl md:text-3xl font-hedvig text-navy"></h2>
+                    <div id="traditionalPackagePrice" class="text-2xl md:text-3xl font-hedvig text-yellow-600"></div>
                 </div>
 
                 <!-- Package Description -->
-                <p id="traditionalPackageDesc" class="text-dark mb-6"></p>
+                <p id="traditionalPackageDesc" class="text-dark mb-4 md:mb-6 text-sm md:text-base"></p>
 
                 <!-- Main Package Details -->
                 <div class="border-t border-gray-200 pt-4">
-                    <h3 class="text-xl font-hedvig text-navy mb-4">Package Includes:</h3>
-                    <ul id="traditionalPackageFeatures" class="space-y-2">
+                    <h3 class="text-lg md:text-xl font-hedvig text-navy mb-3 md:mb-4">Package Includes:</h3>
+                    <ul id="traditionalPackageFeatures" class="space-y-1 md:space-y-2">
                         <!-- Features will be inserted here by JavaScript -->
                     </ul>
+                </div>
+
+                <!-- Mobile-only summary and navigation button -->
+                <div class="mt-6 border-t border-gray-200 pt-4 md:hidden">
+                    <div class="bg-white p-4 rounded-lg shadow-sm">
+                        <div class="flex justify-between text-sm mb-2">
+                            <span class="text-navy">Package Total</span>
+                            <span id="traditionalTotalPriceMobile" class="text-yellow-600">₱0</span>
+                        </div>
+                        <div class="flex justify-between font-bold mt-2 pt-2 border-t border-gray-300">
+                            <span class="text-navy">Amount Due Now (30%)</span>
+                            <span id="traditionalAmountDueMobile" class="text-yellow-600">₱0</span>
+                        </div>
+                    </div>
+                    <button id="continueToFormBtn" class="mt-4 w-full bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg shadow-md transition-all duration-300">
+                        Continue to Booking
+                    </button>
                 </div>
             </div>
 
             <!-- Right Side: Booking Form -->
-            <div class="bg-white p-8 border-l border-gray-200 overflow-y-auto">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-2xl font-hedvig text-navy">Book Your Traditional Service</h2>
-                    <button class="closeModalBtn text-gray-500 hover:text-navy">
-                        <i class="fas fa-times text-2xl"></i>
-                    </button>
+            <div class="bg-white p-4 md:p-8 border-t md:border-t-0 md:border-l border-gray-200 overflow-y-auto form-section hidden md:block">
+                <!-- Header and back button for mobile -->
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl md:text-2xl font-hedvig text-navy">Book Your Traditional Service</h2>
+                    <div class="flex items-center">
+                        <button id="backToDetailsBtn" class="mr-2 text-gray-500 hover:text-navy md:hidden flex items-center">
+                            <i class="fas fa-arrow-left text-lg mr-1"></i>
+                            <span class="text-sm">Back</span>
+                        </button>
+                        <button class="closeModalBtn text-gray-500 hover:text-navy">
+                            <i class="fas fa-times text-xl md:text-2xl"></i>
+                        </button>
+                    </div>
                 </div>
-            
 
                 <form id="traditionalBookingForm" class="space-y-4">
-                <input type="hidden" id="traditionalSelectedPackagePrice" name="packagePrice">
-                <input type="hidden" id="traditionalServiceId" name="service_id">
-                <input type="hidden" id="traditionalBranchId" name="branch_id">
-                <input type="hidden" name="customerID" value="<?php echo isset($_SESSION['user_id']) ? $_SESSION['user_id'] : ''; ?>">
-               
+                    <input type="hidden" id="traditionalSelectedPackagePrice" name="packagePrice">
+                    <input type="hidden" id="traditionalServiceId" name="service_id">
+                    <input type="hidden" id="traditionalBranchId" name="branch_id">
+                    <input type="hidden" name="customerID" value="<?php echo isset($_SESSION['user_id']) ? $_SESSION['user_id'] : ''; ?>">
                     
                     <div class="border-b border-gray-200 pb-4 mb-4">
-                        <h3 class="text-lg font-hedvig text-navy mb-4">Deceased Information</h3>
-                        <div class="grid grid-cols-2 gap-4 mb-4">
+                        <h3 class="text-base md:text-lg font-hedvig text-navy mb-3 md:mb-4">Deceased Information</h3>
                         
-                            <div>
-                                <label for="traditionalDeceasedFirstName" class="block text-sm font-medium text-navy mb-2">First Name *</label>
+                        <!-- First Name & Middle Name (Side by side) -->
+                        <div class="flex flex-wrap -mx-2 mb-3">
+                            <div class="w-full sm:w-1/2 px-2 mb-3 sm:mb-0">
+                                <label for="traditionalDeceasedFirstName" class="block text-sm font-medium text-navy mb-1">First Name *</label>
                                 <input type="text" id="traditionalDeceasedFirstName" name="deceasedFirstName" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                             </div>
-                            <div>
-                                <label for="traditionalDeceasedMiddleName" class="block text-sm font-medium text-navy mb-2">Middle Name</label>
+                            <div class="w-full sm:w-1/2 px-2">
+                                <label for="traditionalDeceasedMiddleName" class="block text-sm font-medium text-navy mb-1">Middle Name</label>
                                 <input type="text" id="traditionalDeceasedMiddleName" name="deceasedMiddleName" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                             </div>
                         </div>
-                        <div class="grid grid-cols-2 gap-4 mb-4">
-                            <div>
-                                <label for="traditionalDeceasedLastName" class="block text-sm font-medium text-navy mb-2">Last Name *</label>
+                        
+                        <!-- Last Name & Suffix (Side by side) -->
+                        <div class="flex flex-wrap -mx-2 mb-3">
+                            <div class="w-full sm:w-3/4 px-2 mb-3 sm:mb-0">
+                                <label for="traditionalDeceasedLastName" class="block text-sm font-medium text-navy mb-1">Last Name *</label>
                                 <input type="text" id="traditionalDeceasedLastName" name="deceasedLastName" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                             </div>
-                            <div>
-                                <label for="traditionalDeceasedSuffix" class="block text-sm font-medium text-navy mb-2">Suffix</label>
-                                <input type="text" id="traditionalDeceasedSuffix" name="deceasedSuffix" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                            <div class="w-full sm:w-1/4 px-2">
+                                <label for="traditionalDeceasedSuffix" class="block text-sm font-medium text-navy mb-1">Suffix</label>
+                                <select id="traditionalDeceasedSuffix" name="deceasedSuffix" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                                    <option value="">None</option>
+                                    <option value="Jr.">Jr.</option>
+                                    <option value="Sr.">Sr.</option>
+                                    <option value="I">I</option>
+                                    <option value="II">II</option>
+                                    <option value="III">III</option>
+                                    <option value="IV">IV</option>
+                                    <option value="V">V</option>
+                                </select>
                             </div>
                         </div>
-                        <div class="grid grid-cols-3 gap-4">
-                            <div>
-                                <label for="traditionalDateOfBirth" class="block text-sm font-medium text-navy mb-2">Date of Birth</label>
+                        
+                        <!-- Date fields (Three in a row on larger screens, stacked on mobile) -->
+                        <div class="flex flex-wrap -mx-2 mb-3">
+                            <div class="w-full sm:w-1/3 px-2 mb-3 sm:mb-0">
+                                <label for="traditionalDateOfBirth" class="block text-sm font-medium text-navy mb-1">Date of Birth</label>
                                 <input type="date" id="traditionalDateOfBirth" name="dateOfBirth" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                             </div>
-                            <div>
-                                <label for="traditionalDateOfDeath" class="block text-sm font-medium text-navy mb-2">Date of Death *</label>
+                            <div class="w-full sm:w-1/3 px-2 mb-3 sm:mb-0">
+                                <label for="traditionalDateOfDeath" class="block text-sm font-medium text-navy mb-1">Date of Death *</label>
                                 <input type="date" id="traditionalDateOfDeath" name="dateOfDeath" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                             </div>
-                            <div>
-                                <label for="traditionalDateOfBurial" class="block text-sm font-medium text-navy mb-2">Date of Burial</label>
+                            <div class="w-full sm:w-1/3 px-2">
+                                <label for="traditionalDateOfBurial" class="block text-sm font-medium text-navy mb-1">Date of Burial</label>
                                 <input type="date" id="traditionalDateOfBurial" name="dateOfBurial" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                             </div>
                         </div>
-                        <div class="mt-4">
-                            <label for="traditionalDeathCertificate" class="block text-sm font-medium text-navy mb-2">Death Certificate</label>
-                            <input type="file" id="traditionalDeathCertificate" name="deathCertificate" accept=".pdf,.jpg,.jpeg,.png" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                        
+                        <!-- Death Certificate Upload with Preview -->
+                        <div class="mb-4">
+                            <label for="traditionalDeathCertificate" class="block text-sm font-medium text-navy mb-1">Death Certificate</label>
+                            <div class="border border-input-border bg-white rounded-lg p-3 focus-within:ring-2 focus-within:ring-yellow-600">
+                                <!-- Upload Button and File Name -->
+                                <div class="flex items-center mb-2">
+                                    <label for="traditionalDeathCertificate" class="flex-1 cursor-pointer">
+                                        <div class="flex items-center justify-center py-2 px-3 bg-gray-50 rounded hover:bg-gray-100 transition">
+                                            <i class="fas fa-upload mr-2 text-gray-500"></i>
+                                            <span class="text-sm text-gray-600">Upload Certificate</span>
+                                        </div>
+                                    </label>
+                                    <span class="text-xs ml-2 text-gray-500" id="traditionalDeathCertFileName">No file chosen</span>
+                                </div>
+                                
+                                <!-- Preview Container -->
+                                <div id="deathCertPreviewContainer" class="hidden mt-2 rounded-lg overflow-hidden border border-gray-200">
+                                    <!-- Image Preview -->
+                                    <div id="deathCertImagePreview" class="hidden">
+                                        <img id="deathCertImage" src="" alt="Death Certificate Preview" class="w-full h-auto max-h-48 object-contain">
+                                    </div>
+                                    
+                                    <!-- PDF Preview -->
+                                    <div id="deathCertPdfPreview" class="hidden bg-gray-100 p-3 flex items-center">
+                                        <i class="fas fa-file-pdf text-red-500 text-2xl mr-2"></i>
+                                        <span class="text-sm text-gray-700">PDF Document</span>
+                                        <button type="button" id="viewDeathCertPdf" class="ml-auto bg-blue-500 hover:bg-blue-600 text-white text-xs px-2 py-1 rounded">
+                                            View
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <!-- Remove Button -->
+                                <button type="button" id="removeDeathCert" class="text-xs text-red-600 hover:text-red-800 mt-2 hidden">
+                                    <i class="fas fa-trash-alt mr-1"></i> Remove file
+                                </button>
+                                
+                                <input type="file" id="traditionalDeathCertificate" name="deathCertificate" accept=".pdf,.jpg,.jpeg,.png" class="hidden">
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">Accepted formats: PDF, JPG, JPEG, PNG</p>
                         </div>
-                        <div class="mt-4">
-                            <label for="traditionalDeceasedAddress" class="block text-sm font-medium text-navy mb-2">Address of the Deceased</label>
-                            <textarea id="traditionalDeceasedAddress" name="deceasedAddress" rows="3" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600"></textarea>
+                        
+                        <!-- Address (Improved UI with dropdowns in specified layout) -->
+                        <div class="flex flex-wrap -mx-2 mb-3">
+                            <div class="w-full sm:w-1/2 px-2 mb-3 sm:mb-0">
+                                <label for="traditionalDeceasedRegion" class="block text-sm font-medium text-navy mb-1">Region</label>
+                                <select id="traditionalDeceasedRegion" name="deceasedRegion" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                                    <option value="">Select Region</option>
+                                    <option value="NCR">National Capital Region (NCR)</option>
+                                    <option value="CAR">Cordillera Administrative Region (CAR)</option>
+                                    <option value="Region I">Ilocos Region (Region I)</option>
+                                    <!-- Add more regions as needed -->
+                                </select>
+                            </div>
+                            <div class="w-full sm:w-1/2 px-2">
+                                <label for="traditionalDeceasedProvince" class="block text-sm font-medium text-navy mb-1">Province</label>
+                                <select id="traditionalDeceasedProvince" name="deceasedProvince" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                                    <option value="">Select Province</option>
+                                    <!-- Provinces will be populated by JavaScript based on selected region -->
+                                </select>
+                            </div>
                         </div>
-
-                        <div class="flex items-center">
-                        <input type="checkbox" id="traditionalWithCremate" name="with_cremate" value="yes" class="h-4 w-4 mt-2 text-yellow-600 focus:ring-yellow-500 border-gray-300 rounded">
-                        <label for="traditionalWithCremate" class="ml-2 block text-sm text-navy">
-                            Include cremation service
-                        </label>
-                    </div>
-
+                        
+                        <div class="flex flex-wrap -mx-2 mb-3">
+                            <div class="w-full sm:w-1/2 px-2 mb-3 sm:mb-0">
+                                <label for="traditionalDeceasedCity" class="block text-sm font-medium text-navy mb-1">City/Municipality</label>
+                                <select id="traditionalDeceasedCity" name="deceasedCity" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                                    <option value="">Select City/Municipality</option>
+                                    <!-- Cities will be populated by JavaScript based on selected province -->
+                                </select>
+                            </div>
+                            <div class="w-full sm:w-1/2 px-2">
+                                <label for="traditionalDeceasedBarangay" class="block text-sm font-medium text-navy mb-1">Barangay</label>
+                                <select id="traditionalDeceasedBarangay" name="deceasedBarangay" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                                    <option value="">Select Barangay</option>
+                                    <!-- Barangays will be populated by JavaScript based on selected city -->
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="traditionalDeceasedStreet" class="block text-sm font-medium text-navy mb-1">Street/Block/House Number</label>
+                            <input type="text" id="traditionalDeceasedStreet" name="deceasedStreet" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" placeholder="Enter detailed street address">
+                        </div>
+                        
+                        <div class="flex items-center mt-3 md:mt-4">
+                            <input type="checkbox" id="traditionalWithCremate" name="with_cremate" value="yes" class="h-4 w-4 text-yellow-600 focus:ring-yellow-500 border-gray-300 rounded">
+                            <label for="traditionalWithCremate" class="ml-2 block text-sm text-navy">
+                                Include cremation service
+                            </label>
+                        </div>
                     </div>
 
                     <div class="border-b border-gray-200 pb-4 mb-4">
-                        <h3 class="text-lg font-hedvig text-navy mb-4">Payment</h3>
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label for="traditionalGcashReceipt" class="block text-sm font-medium text-navy mb-2">GCash Receipt </label>
-                                <input type="file" id="traditionalGcashReceipt" name="gcashReceipt" accept=".pdf,.jpg,.jpeg,.png" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                        <h3 class="text-base md:text-lg font-hedvig text-navy mb-3 md:mb-4">Payment</h3>
+                        
+                        <!-- GCash Upload with Preview -->
+                        <div class="mb-4">
+                            <label for="traditionalGcashReceipt" class="block text-sm font-medium text-navy mb-1">GCash Receipt</label>
+                            <div class="border border-input-border bg-white rounded-lg p-3 focus-within:ring-2 focus-within:ring-yellow-600">
+                                <!-- Upload Button and File Name -->
+                                <div class="flex items-center mb-2">
+                                    <label for="traditionalGcashReceipt" class="flex-1 cursor-pointer">
+                                        <div class="flex items-center justify-center py-2 px-3 bg-gray-50 rounded hover:bg-gray-100 transition">
+                                            <i class="fas fa-receipt mr-2 text-blue-500"></i>
+                                            <span class="text-sm text-gray-600">Upload Receipt</span>
+                                        </div>
+                                    </label>
+                                    <span class="text-xs ml-2 text-gray-500" id="traditionalGcashFileName">No file chosen</span>
+                                </div>
+                                
+                                <!-- Preview Container -->
+                                <div id="gcashPreviewContainer" class="hidden mt-2 rounded-lg overflow-hidden border border-gray-200">
+                                    <!-- Image Preview -->
+                                    <div id="gcashImagePreview" class="hidden">
+                                        <img id="gcashImage" src="" alt="GCash Receipt Preview" class="w-full h-auto max-h-48 object-contain">
+                                    </div>
+                                    
+                                    <!-- PDF Preview -->
+                                    <div id="gcashPdfPreview" class="hidden bg-gray-100 p-3 flex items-center">
+                                        <i class="fas fa-file-pdf text-red-500 text-2xl mr-2"></i>
+                                        <span class="text-sm text-gray-700">PDF Document</span>
+                                        <button type="button" id="viewGcashPdf" class="ml-auto bg-blue-500 hover:bg-blue-600 text-white text-xs px-2 py-1 rounded">
+                                            View
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <!-- Remove Button -->
+                                <button type="button" id="removeGcash" class="text-xs text-red-600 hover:text-red-800 mt-2 hidden">
+                                    <i class="fas fa-trash-alt mr-1"></i> Remove file
+                                </button>
+                                
+                                <input type="file" id="traditionalGcashReceipt" name="gcashReceipt" accept=".pdf,.jpg,.jpeg,.png" class="hidden">
                             </div>
-                            <div>
-                                <label for="traditionalReferenceNumber" class="block text-sm font-medium text-navy mb-2">GCash Reference Number *</label>
-                                <input type="text" id="traditionalReferenceNumber" name="referenceNumber" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
-                            </div>
+                            <p class="text-xs text-gray-500 mt-1">Accepted formats: PDF, JPG, JPEG, PNG</p>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="traditionalReferenceNumber" class="block text-sm font-medium text-navy mb-1">GCash Reference Number *</label>
+                            <input type="text" id="traditionalReferenceNumber" name="referenceNumber" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" placeholder="e.g. 1234567890">
                         </div>
                     </div>
 
-                    <div class="bg-cream p-4 rounded-lg">
-                        <div class="flex justify-between text-sm mb-2">
+                    <div class="bg-cream p-3 md:p-4 rounded-lg">
+                        <div class="flex justify-between text-xs md:text-sm mb-2">
                             <span class="text-navy">Package Total</span>
                             <span id="traditionalTotalPrice" class="text-yellow-600">₱0</span>
                         </div>
-                        <div class="flex justify-between text-sm mb-2">
+                        <div class="flex justify-between text-xs md:text-sm mb-2">
                             <span class="text-navy">Required Downpayment (30%)</span>
                             <span id="traditionalDownpayment" class="text-yellow-600">₱0</span>
                         </div>
@@ -719,43 +996,242 @@ $conn->close();
     </div>
 </div>
 
+<!-- Add this script at the end -->
+<script>
+
+    // Disable buttons if not validated
+if (validationStatus !== 'valid') {
+    document.querySelectorAll('.selectPackageBtn').forEach(btn => {
+        btn.classList.add('disabled');
+    });
+}
+// Death Certificate Upload Preview
+document.getElementById('traditionalDeathCertificate').addEventListener('change', function() {
+    const file = this.files[0];
+    if (!file) {
+        hideDeathCertPreview();
+        return;
+    }
+    
+    // Update file name display
+    const fileName = file.name;
+    document.getElementById('traditionalDeathCertFileName').textContent = fileName.length > 20 ? 
+        fileName.substring(0, 17) + '...' : fileName;
+    
+    // Show preview container
+    const previewContainer = document.getElementById('deathCertPreviewContainer');
+    previewContainer.classList.remove('hidden');
+    
+    // Show remove button
+    document.getElementById('removeDeathCert').classList.remove('hidden');
+    
+    // Check file type
+    if (file.type === 'application/pdf') {
+        // PDF Preview
+        document.getElementById('deathCertPdfPreview').classList.remove('hidden');
+        document.getElementById('deathCertImagePreview').classList.add('hidden');
+        
+        // Setup PDF viewer button
+        document.getElementById('viewDeathCertPdf').onclick = function() {
+            const fileURL = URL.createObjectURL(file);
+            window.open(fileURL, '_blank');
+        };
+    } else {
+        // Image Preview
+        document.getElementById('deathCertImagePreview').classList.remove('hidden');
+        document.getElementById('deathCertPdfPreview').classList.add('hidden');
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('deathCertImage').src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+});
+
+// GCash Receipt Upload Preview
+document.getElementById('traditionalGcashReceipt').addEventListener('change', function() {
+    const file = this.files[0];
+    if (!file) {
+        hideGcashPreview();
+        return;
+    }
+    
+    // Update file name display
+    const fileName = file.name;
+    document.getElementById('traditionalGcashFileName').textContent = fileName.length > 20 ? 
+        fileName.substring(0, 17) + '...' : fileName;
+    
+    // Show preview container
+    const previewContainer = document.getElementById('gcashPreviewContainer');
+    previewContainer.classList.remove('hidden');
+    
+    // Show remove button
+    document.getElementById('removeGcash').classList.remove('hidden');
+    
+    // Check file type
+    if (file.type === 'application/pdf') {
+        // PDF Preview
+        document.getElementById('gcashPdfPreview').classList.remove('hidden');
+        document.getElementById('gcashImagePreview').classList.add('hidden');
+        
+        // Setup PDF viewer button
+        document.getElementById('viewGcashPdf').onclick = function() {
+            const fileURL = URL.createObjectURL(file);
+            window.open(fileURL, '_blank');
+        };
+    } else {
+        // Image Preview
+        document.getElementById('gcashImagePreview').classList.remove('hidden');
+        document.getElementById('gcashPdfPreview').classList.add('hidden');
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('gcashImage').src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+});
+
+// Remove buttons functionality
+document.getElementById('removeDeathCert').addEventListener('click', function() {
+    document.getElementById('traditionalDeathCertificate').value = '';
+    document.getElementById('traditionalDeathCertFileName').textContent = 'No file chosen';
+    hideDeathCertPreview();
+});
+
+document.getElementById('removeGcash').addEventListener('click', function() {
+    document.getElementById('traditionalGcashReceipt').value = '';
+    document.getElementById('traditionalGcashFileName').textContent = 'No file chosen';
+    hideGcashPreview();
+});
+
+// Helper functions
+function hideDeathCertPreview() {
+    document.getElementById('deathCertPreviewContainer').classList.add('hidden');
+    document.getElementById('deathCertImagePreview').classList.add('hidden');
+    document.getElementById('deathCertPdfPreview').classList.add('hidden');
+    document.getElementById('removeDeathCert').classList.add('hidden');
+}
+
+function hideGcashPreview() {
+    document.getElementById('gcashPreviewContainer').classList.add('hidden');
+    document.getElementById('gcashImagePreview').classList.add('hidden');
+    document.getElementById('gcashPdfPreview').classList.add('hidden');
+    document.getElementById('removeGcash').classList.add('hidden');
+}
+
+// You would need to add code here to handle the cascading dropdowns for region, province, city, barangay
+// For example:
+document.getElementById('traditionalDeceasedRegion').addEventListener('change', function() {
+    // Code to populate province dropdown based on selected region
+    const selectedRegion = this.value;
+    const provinceDropdown = document.getElementById('traditionalDeceasedProvince');
+    
+    // Clear existing options
+    provinceDropdown.innerHTML = '<option value="">Select Province</option>';
+    
+    // Add logic to populate provinces based on selected region
+    // This would typically involve an API call or using predefined data
+});
+
+document.getElementById('traditionalDeceasedProvince').addEventListener('change', function() {
+    // Code to populate city dropdown based on selected province
+    const selectedProvince = this.value;
+    const cityDropdown = document.getElementById('traditionalDeceasedCity');
+    
+    // Clear existing options
+    cityDropdown.innerHTML = '<option value="">Select City/Municipality</option>';
+    
+    // Add logic to populate cities based on selected province
+});
+
+document.getElementById('traditionalDeceasedCity').addEventListener('change', function() {
+    // Code to populate barangay dropdown based on selected city
+    const selectedCity = this.value;
+    const barangayDropdown = document.getElementById('traditionalDeceasedBarangay');
+    
+    // Clear existing options
+    barangayDropdown.innerHTML = '<option value="">Select Barangay</option>';
+    
+    // Add logic to populate barangays based on selected city
+});
+
+
+</script>
+
 <!-- Lifeplan Modal (Hidden by Default) -->
 <div id="lifeplanModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4 hidden">
-    <div class="w-full max-w-5xl bg-white rounded-2xl shadow-xl overflow-hidden max-h-[80vh]">
+    <div class="w-full max-w-5xl bg-white rounded-2xl shadow-xl overflow-hidden max-h-[90vh] md:max-h-[80vh]">
         <!-- Scroll container for both columns -->
-        <div class="modal-scroll-container grid grid-cols-1 md:grid-cols-2 overflow-y-auto max-h-[80vh]">
+        <div class="modal-scroll-container grid grid-cols-1 md:grid-cols-2 overflow-y-auto max-h-[90vh] md:max-h-[80vh]">
             <!-- Left Side: Package Details -->
-            <div class="bg-cream p-8">
+            <div class="bg-cream p-4 md:p-8 details-section">
+                <!-- Header and Close Button for Mobile -->
+                <div class="flex justify-between items-center mb-4 md:hidden">
+                    <h2 class="text-xl font-hedvig text-navy">Package Details</h2>
+                    <button class="closeModalBtn text-gray-500 hover:text-navy">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+                
                 <!-- Package Image -->
-                <div class="mb-6">
-                    <img id="lifeplanPackageImage" src="" alt="" class="w-full h-64 object-cover rounded-lg mb-4">
+                <div class="mb-4 md:mb-6">
+                    <img id="lifeplanPackageImage" src="" alt="" class="w-full h-48 md:h-64 object-cover rounded-lg mb-4">
                 </div>
 
                 <!-- Package Header -->
-                <div class="flex justify-between items-center mb-6">
-                    <h2 id="lifeplanPackageName" class="text-3xl font-hedvig text-navy"></h2>
-                    <div id="lifeplanPackagePrice" class="text-3xl font-hedvig text-yellow-600"></div>
+                <div class="flex justify-between items-center mb-4 md:mb-6">
+                    <h2 id="lifeplanPackageName" class="text-2xl md:text-3xl font-hedvig text-navy"></h2>
+                    <div id="lifeplanPackagePrice" class="text-2xl md:text-3xl font-hedvig text-yellow-600"></div>
                 </div>
 
                 <!-- Package Description -->
-                <p id="lifeplanPackageDesc" class="text-dark mb-6"></p>
+                <p id="lifeplanPackageDesc" class="text-dark mb-4 md:mb-6 text-sm md:text-base"></p>
 
                 <!-- Main Package Details -->
                 <div class="border-t border-gray-200 pt-4">
-                    <h3 class="text-xl font-hedvig text-navy mb-4">Package Includes:</h3>
-                    <ul id="lifeplanPackageFeatures" class="space-y-2">
+                    <h3 class="text-lg md:text-xl font-hedvig text-navy mb-3 md:mb-4">Package Includes:</h3>
+                    <ul id="lifeplanPackageFeatures" class="space-y-1 md:space-y-2">
                         <!-- Features will be inserted here by JavaScript -->
                     </ul>
+                </div>
+
+                <!-- Mobile-only summary and navigation button -->
+                <div class="mt-6 border-t border-gray-200 pt-4 md:hidden">
+                    <div class="bg-white p-4 rounded-lg shadow-sm">
+                        <div class="flex justify-between text-sm mb-2">
+                            <span class="text-navy">Package Total</span>
+                            <span id="lifeplanTotalPriceMobile" class="text-yellow-600">₱0</span>
+                        </div>
+                        <div class="flex justify-between text-sm mb-2">
+                            <span class="text-navy">Payment Term</span>
+                            <span id="lifeplanPaymentTermDisplayMobile" class="text-yellow-600">5 Years (60 Monthly Payments)</span>
+                        </div>
+                        <div class="flex justify-between font-bold mt-2 pt-2 border-t border-gray-300">
+                            <span class="text-navy">Monthly Payment</span>
+                            <span id="lifeplanMonthlyPaymentMobile" class="text-yellow-600">₱0</span>
+                        </div>
+                    </div>
+                    <button id="continueToLifeplanFormBtn" class="mt-4 w-full bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg shadow-md transition-all duration-300">
+                        Continue to Booking
+                    </button>
                 </div>
             </div>
 
             <!-- Right Side: Booking Form -->
-            <div class="bg-white p-8 border-l border-gray-200 overflow-y-auto">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-2xl font-hedvig text-navy">Book Your Lifeplan</h2>
-                    <button class="closeModalBtn text-gray-500 hover:text-navy">
-                        <i class="fas fa-times text-2xl"></i>
-                    </button>
+            <div class="bg-white p-4 md:p-8 border-t md:border-t-0 md:border-l border-gray-200 overflow-y-auto form-section hidden md:block">
+                <!-- Header and back button for mobile -->
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl md:text-2xl font-hedvig text-navy">Book Your Lifeplan</h2>
+                    <div class="flex items-center">
+                        <button id="backToLifeplanDetailsBtn" class="mr-2 text-gray-500 hover:text-navy md:hidden">
+                            <i class="fas fa-arrow-left text-lg"></i>
+                        </button>
+                        <button class="closeModalBtn text-gray-500 hover:text-navy">
+                            <i class="fas fa-times text-xl md:text-2xl"></i>
+                        </button>
+                    </div>
                 </div>
 
                 <form id="lifeplanBookingForm" class="space-y-4">
@@ -763,51 +1239,51 @@ $conn->close();
                     <input type="hidden" id="lifeplanSelectedPackagePrice" name="packagePrice">
                     
                     <div class="border-b border-gray-200 pb-4 mb-4">
-                        <h3 class="text-lg font-hedvig text-navy mb-4">Plan Holder Information</h3>
-                        <div class="grid grid-cols-2 gap-4 mb-4">
+                        <h3 class="text-base md:text-lg font-hedvig text-navy mb-3 md:mb-4">Plan Holder Information</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 mb-3 md:mb-4">
                             <div>
-                                <label for="lifeplanHolderFirstName" class="block text-sm font-medium text-navy mb-2">First Name *</label>
+                                <label for="lifeplanHolderFirstName" class="block text-xs md:text-sm font-medium text-navy mb-1 md:mb-2">First Name *</label>
                                 <input type="text" id="lifeplanHolderFirstName" name="holderFirstName" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                             </div>
                             <div>
-                                <label for="lifeplanHolderMiddleName" class="block text-sm font-medium text-navy mb-2">Middle Name</label>
+                                <label for="lifeplanHolderMiddleName" class="block text-xs md:text-sm font-medium text-navy mb-1 md:mb-2">Middle Name</label>
                                 <input type="text" id="lifeplanHolderMiddleName" name="holderMiddleName" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                             </div>
                         </div>
-                        <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 mb-3 md:mb-4">
                             <div>
-                                <label for="lifeplanHolderLastName" class="block text-sm font-medium text-navy mb-2">Last Name *</label>
+                                <label for="lifeplanHolderLastName" class="block text-xs md:text-sm font-medium text-navy mb-1 md:mb-2">Last Name *</label>
                                 <input type="text" id="lifeplanHolderLastName" name="holderLastName" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                             </div>
                             <div>
-                                <label for="lifeplanHolderSuffix" class="block text-sm font-medium text-navy mb-2">Suffix</label>
+                                <label for="lifeplanHolderSuffix" class="block text-xs md:text-sm font-medium text-navy mb-1 md:mb-2">Suffix</label>
                                 <input type="text" id="lifeplanHolderSuffix" name="holderSuffix" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                             </div>
                         </div>
-                        <div class="grid grid-cols-2 gap-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
                             <div>
-                                <label for="lifeplanDateOfBirth" class="block text-sm font-medium text-navy mb-2">Date of Birth *</label>
+                                <label for="lifeplanDateOfBirth" class="block text-xs md:text-sm font-medium text-navy mb-1 md:mb-2">Date of Birth *</label>
                                 <input type="date" id="lifeplanDateOfBirth" name="dateOfBirth" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                             </div>
                             <div>
-                                <label for="lifeplanContactNumber" class="block text-sm font-medium text-navy mb-2">Contact Number *</label>
+                                <label for="lifeplanContactNumber" class="block text-xs md:text-sm font-medium text-navy mb-1 md:mb-2">Contact Number *</label>
                                 <input type="tel" id="lifeplanContactNumber" name="contactNumber" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                             </div>
                         </div>
-                        <div class="mt-4">
-                            <label for="lifeplanEmailAddress" class="block text-sm font-medium text-navy mb-2">Email Address *</label>
+                        <div class="mt-3 md:mt-4">
+                            <label for="lifeplanEmailAddress" class="block text-xs md:text-sm font-medium text-navy mb-1 md:mb-2">Email Address *</label>
                             <input type="email" id="lifeplanEmailAddress" name="emailAddress" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                         </div>
-                        <div class="mt-4">
-                            <label for="lifeplanHolderAddress" class="block text-sm font-medium text-navy mb-2">Current Address *</label>
-                            <textarea id="lifeplanHolderAddress" name="holderAddress" rows="3" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600"></textarea>
+                        <div class="mt-3 md:mt-4">
+                            <label for="lifeplanHolderAddress" class="block text-xs md:text-sm font-medium text-navy mb-1 md:mb-2">Current Address *</label>
+                            <textarea id="lifeplanHolderAddress" name="holderAddress" rows="2" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600"></textarea>
                         </div>
                     </div>
 
                     <div class="border-b border-gray-200 pb-4 mb-4">
-                        <h3 class="text-lg font-hedvig text-navy mb-4">Payment Plan</h3>
-                        <div class="flex items-center mb-4">
-                            <label class="block text-sm font-medium text-navy mb-2 mr-4">Payment Term:</label>
+                        <h3 class="text-base md:text-lg font-hedvig text-navy mb-3 md:mb-4">Payment Plan</h3>
+                        <div class="flex items-center mb-3 md:mb-4">
+                            <label class="block text-xs md:text-sm font-medium text-navy mb-1 md:mb-2 mr-4">Payment Term:</label>
                             <select id="lifeplanPaymentTerm" name="paymentTerm" class="px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                                 <option value="60">5 Years (60 Monthly Payments)</option>
                                 <option value="36">3 Years (36 Monthly Payments)</option>
@@ -815,24 +1291,24 @@ $conn->close();
                                 <option value="12">1 Year (12 Monthly Payments)</option>
                             </select>
                         </div>
-                        <div class="grid grid-cols-2 gap-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
                             <div>
-                                <label for="lifeplanGcashReceipt" class="block text-sm font-medium text-navy mb-2">First Payment Receipt *</label>
-                                <input type="file" id="lifeplanGcashReceipt" name="gcashReceipt" accept=".pdf,.jpg,.jpeg,.png" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                                <label for="lifeplanGcashReceipt" class="block text-xs md:text-sm font-medium text-navy mb-1 md:mb-2">First Payment Receipt *</label>
+                                <input type="file" id="lifeplanGcashReceipt" name="gcashReceipt" accept=".pdf,.jpg,.jpeg,.png" class="w-full text-xs md:text-sm px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                             </div>
                             <div>
-                                <label for="lifeplanReferenceNumber" class="block text-sm font-medium text-navy mb-2">GCash Reference Number *</label>
+                                <label for="lifeplanReferenceNumber" class="block text-xs md:text-sm font-medium text-navy mb-1 md:mb-2">GCash Reference Number *</label>
                                 <input type="text" id="lifeplanReferenceNumber" name="referenceNumber" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                             </div>
                         </div>
                     </div>
 
-                    <div class="bg-cream p-4 rounded-lg">
-                        <div class="flex justify-between text-sm mb-2">
+                    <div class="bg-cream p-3 md:p-4 rounded-lg">
+                        <div class="flex justify-between text-xs md:text-sm mb-2">
                             <span class="text-navy">Package Total</span>
                             <span id="lifeplanTotalPrice" class="text-yellow-600">₱0</span>
                         </div>
-                        <div class="flex justify-between text-sm mb-2">
+                        <div class="flex justify-between text-xs md:text-sm mb-2">
                             <span class="text-navy">Payment Term</span>
                             <span id="lifeplanPaymentTermDisplay" class="text-yellow-600">5 Years (60 Monthly Payments)</span>
                         </div>
@@ -856,7 +1332,58 @@ $conn->close();
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const packagesFromDB = <?php echo json_encode($packages); ?>;
+    
+    // Mobile form toggle functionality
+    const continueBtn = document.getElementById('continueToFormBtn');
+    const backBtn = document.getElementById('backToDetailsBtn');
+    const detailsSection = document.querySelector('.details-section');
+    const formSection = document.querySelector('.form-section');
+    const continueToLifeplanFormBtn = document.getElementById('continueToLifeplanFormBtn');
+    const backToLifeplanDetailsBtn = document.getElementById('backToLifeplanDetailsBtn');
+    const lifeplanDetailsSection = document.querySelector('#lifeplanModal .details-section');
+    const lifeplanFormSection = document.querySelector('#lifeplanModal .form-section');
+    
+    // Update your existing continue/back button handlers
+if (continueBtn && backBtn && detailsSection && formSection) {
+    continueBtn.addEventListener('click', function() {
+        detailsSection.classList.add('hidden');
+        formSection.classList.remove('hidden');
+        // Force show on mobile when navigating to form
+        formSection.classList.add('force-show');
+    });
+    
+    backBtn.addEventListener('click', function() {
+        formSection.classList.add('hidden');
+        formSection.classList.remove('force-show');
+        detailsSection.classList.remove('hidden');
+    });
+}
 
+    if (continueToLifeplanFormBtn && backToLifeplanDetailsBtn && lifeplanDetailsSection && lifeplanFormSection) {
+    continueToLifeplanFormBtn.addEventListener('click', function() {
+        lifeplanDetailsSection.classList.add('hidden');
+        lifeplanFormSection.classList.remove('hidden');
+    });
+    
+    backToLifeplanDetailsBtn.addEventListener('click', function() {
+        lifeplanFormSection.classList.add('hidden');
+        lifeplanDetailsSection.classList.remove('hidden');
+    });
+}
+    
+    // Make sure the modal close button works for both sections
+    // Update your close modal handler
+document.querySelectorAll('.closeModalBtn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        document.getElementById('traditionalModal').classList.add('hidden');
+        // Reset to show details when modal is reopened
+        detailsSection.classList.remove('hidden');
+        formSection.classList.add('hidden');
+        formSection.classList.remove('force-show');
+    });
+});
+
+    // Package selection functionality
     document.addEventListener('click', function(event) {
         if (event.target.classList.contains('selectPackageBtn')) {
             const packageCard = event.target.closest('.package-card');
@@ -895,113 +1422,113 @@ document.addEventListener('DOMContentLoaded', function() {
         openTraditionalModal();
     });
 
-    // Replace the traditionalBookingForm submit event listener with this:
+    // Traditional Booking Form submission
     document.getElementById('traditionalBookingForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    const formData = new FormData(this);
-    const formElement = this;
+        e.preventDefault();
+        
+        const formData = new FormData(this);
+        const formElement = this;
 
-    Swal.fire({
-        title: 'Confirm Booking',
-        text: 'Are you sure you want to proceed with this booking?',
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonColor: '#d97706',
-        cancelButtonColor: '#6b7280',
-        confirmButtonText: 'Yes, book now',
-        cancelButtonText: 'Cancel'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            // Show loading indicator
-            Swal.fire({
-                title: 'Processing Booking',
-                html: 'Please wait while we process your booking...',
-                allowOutsideClick: false,
-                didOpen: () => {
-                    Swal.showLoading();
-                }
-            });
-            
-            fetch('booking/booking.php', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                Swal.close();
+        Swal.fire({
+            title: 'Confirm Booking',
+            text: 'Are you sure you want to proceed with this booking?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#d97706',
+            cancelButtonColor: '#6b7280',
+            confirmButtonText: 'Yes, book now',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Show loading indicator
+                Swal.fire({
+                    title: 'Processing Booking',
+                    html: 'Please wait while we process your booking...',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
                 
-                if (data.success) {
-                    // Close modal and reset form
-                    document.getElementById('traditionalModal').classList.add('hidden');
-                    formElement.reset();
+                fetch('booking/booking.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    Swal.close();
                     
-                    // Show notification
-                    showNotification('New Booking', 'Your booking has been confirmed. Click to view details.', 'notification.php');
-                } else {
+                    if (data.success) {
+                        // Close modal and reset form
+                        document.getElementById('traditionalModal').classList.add('hidden');
+                        formElement.reset();
+                        
+                        // Reset to show details section for next time
+                        detailsSection.classList.remove('hidden');
+                        formSection.classList.add('hidden');
+                        
+                        // Show notification
+                        showNotification('New Booking', 'Your booking has been confirmed. Click to view details.', 'notification.php');
+                    } else {
+                        Swal.fire({
+                            title: 'Error',
+                            text: data.message || 'An error occurred. Please try again.',
+                            icon: 'error',
+                            confirmButtonColor: '#d97706'
+                        });
+                    }
+                })
+                .catch(error => {
+                    Swal.close();
+                    console.error('Error:', error);
                     Swal.fire({
                         title: 'Error',
-                        text: data.message || 'An error occurred. Please try again.',
+                        text: 'An error occurred. Please try again.',
                         icon: 'error',
                         confirmButtonColor: '#d97706'
                     });
-                }
-            })
-            .catch(error => {
-                Swal.close();
-                console.error('Error:', error);
-                Swal.fire({
-                    title: 'Error',
-                    text: 'An error occurred. Please try again.',
-                    icon: 'error',
-                    confirmButtonColor: '#d97706'
                 });
-            });
-        }
+            }
+        });
     });
-});
 
-// Add this function to show notifications
-function showNotification(title, message, redirectUrl) {
-    // Create notification element
-    const notification = document.createElement('div');
-    notification.className = 'fixed top-4 right-4 z-50 w-80 bg-white rounded-lg shadow-lg overflow-hidden border-l-4 border-yellow-600 transform transition-all duration-300 hover:scale-105 cursor-pointer';
-    notification.innerHTML = `
-        <div class="p-4" onclick="window.location.href='${redirectUrl}'">
-            <div class="flex items-start">
-                <div class="flex-shrink-0">
-                    <i class="fas fa-bell text-yellow-600 text-xl mt-1"></i>
-                </div>
-                <div class="ml-3 w-0 flex-1 pt-0.5">
-                    <p class="text-sm font-medium text-gray-900">${title}</p>
-                    <p class="mt-1 text-sm text-gray-500">${message}</p>
-                </div>
-                <div class="ml-4 flex-shrink-0 flex">
-                    <button class="bg-white rounded-md inline-flex text-gray-400 hover:text-gray-500 focus:outline-none" onclick="event.stopPropagation(); this.parentNode.parentNode.parentNode.remove()">
-                        <i class="fas fa-times"></i>
-                    </button>
+    // Function to show notifications
+    function showNotification(title, message, redirectUrl) {
+        const notification = document.createElement('div');
+        notification.className = 'fixed top-4 right-4 z-50 w-80 bg-white rounded-lg shadow-lg overflow-hidden border-l-4 border-yellow-600 transform transition-all duration-300 hover:scale-105 cursor-pointer';
+        notification.innerHTML = `
+            <div class="p-4" onclick="window.location.href='${redirectUrl}'">
+                <div class="flex items-start">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-bell text-yellow-600 text-xl mt-1"></i>
+                    </div>
+                    <div class="ml-3 w-0 flex-1 pt-0.5">
+                        <p class="text-sm font-medium text-gray-900">${title}</p>
+                        <p class="mt-1 text-sm text-gray-500">${message}</p>
+                    </div>
+                    <div class="ml-4 flex-shrink-0 flex">
+                        <button class="bg-white rounded-md inline-flex text-gray-400 hover:text-gray-500 focus:outline-none" onclick="event.stopPropagation(); this.parentNode.parentNode.parentNode.remove()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
-        </div>
-    `;
-    
-    // Add to body
-    document.body.appendChild(notification);
-    
-    // Auto-remove after 5 seconds
-    setTimeout(() => {
-        notification.classList.add('opacity-0');
+        `;
+        
+        document.body.appendChild(notification);
+        
         setTimeout(() => {
+            notification.classList.add('opacity-0');
+            setTimeout(() => {
+                notification.remove();
+            }, 300);
+        }, 5000);
+        
+        notification.querySelector('button').addEventListener('click', function(e) {
+            e.stopPropagation();
             notification.remove();
-        }, 300);
-    }, 5000);
-    
-    // Click handler for the close button
-    notification.querySelector('button').addEventListener('click', function(e) {
-        e.stopPropagation();
-        notification.remove();
-    });
-}
+        });
+    }
 
     // Traditional addon checkbox event handling
     document.querySelectorAll('.traditional-addon').forEach(checkbox => {
@@ -1015,12 +1542,10 @@ function showNotification(title, message, redirectUrl) {
         const basePrice = parseInt(sessionStorage.getItem('selectedPackagePrice') || '0');
         let addonTotal = 0;
         
-        // Calculate addons total
         document.querySelectorAll('.traditional-addon:checked').forEach(checkbox => {
             addonTotal += parseInt(checkbox.value);
         });
         
-        // Update totals
         const totalPrice = basePrice + addonTotal;
         const downpayment = Math.ceil(totalPrice * 0.3);
         
@@ -1028,64 +1553,32 @@ function showNotification(title, message, redirectUrl) {
         document.getElementById('traditionalDownpayment').textContent = `₱${downpayment.toLocaleString()}`;
         document.getElementById('traditionalAmountDue').textContent = `₱${downpayment.toLocaleString()}`;
         
-        // Update hidden fields
+        // Update mobile view totals as well
+        document.getElementById('traditionalTotalPriceMobile').textContent = `₱${totalPrice.toLocaleString()}`;
+        document.getElementById('traditionalAmountDueMobile').textContent = `₱${downpayment.toLocaleString()}`;
+        
         document.getElementById('traditionalSelectedPackagePrice').value = totalPrice;
-    }
-
-    // Lifeplan addon checkbox event handling
-    document.querySelectorAll('.lifeplan-addon').forEach(checkbox => {
-        checkbox.addEventListener('change', function() {
-            updateLifeplanTotal();
-        });
-    });
-
-    // Function to update lifeplan total price when addons are selected
-    function updateLifeplanTotal() {
-        const basePrice = parseInt(sessionStorage.getItem('selectedPackagePrice') || '0');
-        let addonTotal = 0;
-        
-        // Calculate addons total
-        document.querySelectorAll('.lifeplan-addon:checked').forEach(checkbox => {
-            addonTotal += parseInt(checkbox.value);
-        });
-        
-        // Update totals
-        const totalPrice = basePrice + addonTotal;
-        const months = parseInt(document.getElementById('lifeplanPaymentTerm').value);
-        const monthlyPayment = Math.ceil(totalPrice / months);
-        
-        document.getElementById('lifeplanTotalPrice').textContent = `₱${totalPrice.toLocaleString()}`;
-        document.getElementById('lifeplanMonthlyPayment').textContent = `₱${monthlyPayment.toLocaleString()}`;
-        
-        // Update hidden fields
-        document.getElementById('lifeplanSelectedPackagePrice').value = totalPrice;
     }
 
     // Function to open traditional modal with package details
     function openTraditionalModal() {
-        // Get stored package details
         const packageName = sessionStorage.getItem('selectedPackageName');
         const packagePrice = sessionStorage.getItem('selectedPackagePrice');
         const packageImage = sessionStorage.getItem('selectedPackageImage');
         const packageFeatures = JSON.parse(sessionStorage.getItem('selectedPackageFeatures') || '[]');
         
-        // Find the full package details from packagesFromDB to get the service_id
         const selectedPackage = packagesFromDB.find(pkg => pkg.name === packageName);
         
-        // Update modal title
         document.querySelector('#traditionalModal .font-hedvig.text-2xl.text-navy').textContent = 'Book Your Package';
         
-        // Update traditional modal with package details
         document.getElementById('traditionalPackageName').textContent = packageName;
         document.getElementById('traditionalPackagePrice').textContent = `₱${parseInt(packagePrice).toLocaleString()}`;
         
-        // Only set image src if packageImage exists
         if (packageImage) {
             document.getElementById('traditionalPackageImage').src = packageImage;
             document.getElementById('traditionalPackageImage').alt = packageName;
         }
         
-        // Calculate downpayment (30%)
         const totalPrice = parseInt(packagePrice);
         const downpayment = Math.ceil(totalPrice * 0.3);
         
@@ -1093,38 +1586,41 @@ function showNotification(title, message, redirectUrl) {
         document.getElementById('traditionalDownpayment').textContent = `₱${downpayment.toLocaleString()}`;
         document.getElementById('traditionalAmountDue').textContent = `₱${downpayment.toLocaleString()}`;
 
-        // Update features list
+        // Update mobile view totals
+        document.getElementById('traditionalTotalPriceMobile').textContent = `₱${totalPrice.toLocaleString()}`;
+        document.getElementById('traditionalAmountDueMobile').textContent = `₱${downpayment.toLocaleString()}`;
+
         const featuresList = document.getElementById('traditionalPackageFeatures');
         featuresList.innerHTML = '';
         packageFeatures.forEach(feature => {
             featuresList.innerHTML += `<li class="flex items-center text-sm text-gray-700">${feature}</li>`;
         });
         
-        // Update the form's hidden fields with package info
         document.getElementById('traditionalSelectedPackagePrice').value = totalPrice;
-        document.getElementById('traditionalServiceId').value = selectedPackage.id; // Set the service_id
-        document.getElementById('traditionalBranchId').value = <?php echo $branch_id; ?>; // Set the branch_id from PHP
+        document.getElementById('traditionalServiceId').value = selectedPackage.id;
+        document.getElementById('traditionalBranchId').value = <?php echo $branch_id; ?>;
         
-        // Show traditional modal
+        // Reset form section visibility
+        detailsSection.classList.remove('hidden');
+        formSection.classList.add('hidden');
+        
         document.getElementById('traditionalModal').classList.remove('hidden');
     }
     
+    // Reset addons when modal is opened
     document.querySelectorAll('.traditional-addon').forEach(checkbox => {
         checkbox.checked = false;
     });
 
     // Lifeplan Service button click event
     document.getElementById('lifeplanServiceBtn').addEventListener('click', function() {
-        // Hide service type modal
         document.getElementById('serviceTypeModal').classList.add('hidden');
         
-        // Get stored package details
         const packageName = sessionStorage.getItem('selectedPackageName');
         const packagePrice = sessionStorage.getItem('selectedPackagePrice');
         const packageImage = sessionStorage.getItem('selectedPackageImage');
         const packageFeatures = JSON.parse(sessionStorage.getItem('selectedPackageFeatures') || '[]');
         
-        // Update lifeplan modal with package details
         document.getElementById('lifeplanPackageName').textContent = packageName;
         document.getElementById('lifeplanPackagePrice').textContent = `₱${parseInt(packagePrice).toLocaleString()}`;
         
@@ -1133,25 +1629,23 @@ function showNotification(title, message, redirectUrl) {
             document.getElementById('lifeplanPackageImage').alt = packageName;
         }
         
-        // Calculate monthly payment (default: 5 years / 60 months)
         const totalPrice = parseInt(packagePrice);
         const monthlyPayment = Math.ceil(totalPrice / 60);
         
         document.getElementById('lifeplanTotalPrice').textContent = `₱${totalPrice.toLocaleString()}`;
+        document.getElementById('lifeplanTotalPriceMobile').textContent = `₱${totalPrice.toLocaleString()}`;
         document.getElementById('lifeplanMonthlyPayment').textContent = `₱${monthlyPayment.toLocaleString()}`;
+        document.getElementById('lifeplanMonthlyPaymentMobile').textContent = `₱${monthlyPayment.toLocaleString()}`;
 
-        // Update features list
         const featuresList = document.getElementById('lifeplanPackageFeatures');
         featuresList.innerHTML = '';
         packageFeatures.forEach(feature => {
             featuresList.innerHTML += `<li class="flex items-center text-sm text-gray-700">${feature}</li>`;
         });
         
-        // Update the form's hidden fields with package info
         document.getElementById('lifeplanSelectedPackageName').value = packageName;
         document.getElementById('lifeplanSelectedPackagePrice').value = packagePrice;
         
-        // Show lifeplan modal
         document.getElementById('lifeplanModal').classList.remove('hidden');
     });
 
@@ -1171,6 +1665,10 @@ function showNotification(title, message, redirectUrl) {
         document.getElementById('traditionalModal').classList.add('hidden');
         document.getElementById('lifeplanModal').classList.add('hidden');
         document.getElementById('serviceTypeModal').classList.add('hidden');
+        
+        // Reset traditional modal to show details section
+        detailsSection.classList.remove('hidden');
+        formSection.classList.add('hidden');
     }
 
     // Close modals when pressing Escape key
@@ -1183,7 +1681,6 @@ function showNotification(title, message, redirectUrl) {
     // Close modals when clicking outside of modal content
     document.querySelectorAll('#serviceTypeModal, #traditionalModal, #lifeplanModal').forEach(modal => {
         modal.addEventListener('click', function(event) {
-            // Check if the click was directly on the modal background (not its children)
             if (event.target === modal) {
                 closeAllModals();
             }
@@ -1204,69 +1701,69 @@ function showNotification(title, message, redirectUrl) {
         else if (months === 12) termText = '1 Year (12 Monthly Payments)';
         
         document.getElementById('lifeplanPaymentTermDisplay').textContent = termText;
+        document.getElementById('lifeplanPaymentTermDisplayMobile').textContent = termText;
         document.getElementById('lifeplanMonthlyPayment').textContent = `₱${monthlyPayment.toLocaleString()}`;
+        document.getElementById('lifeplanMonthlyPaymentMobile').textContent = `₱${monthlyPayment.toLocaleString()}`;
     });
 
     // Form submission for Lifeplan
     document.getElementById('lifeplanBookingForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    const formData = new FormData(this);
-    const formElement = this;
+        e.preventDefault();
+        const formData = new FormData(this);
+        const formElement = this;
 
-    Swal.fire({
-        title: 'Confirm Lifeplan Booking',
-        text: 'Are you sure you want to proceed with this lifeplan?',
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonColor: '#d97706',
-        cancelButtonColor: '#6b7280',
-        confirmButtonText: 'Yes, proceed',
-        cancelButtonText: 'Cancel'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            fetch('booking/lifeplan_booking.php', { // Update this URL to your actual endpoint
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    Swal.fire({
-                        title: 'Success!',
-                        text: 'Lifeplan booking submitted successfully!',
-                        icon: 'success',
-                        confirmButtonColor: '#d97706'
-                    });
-                    closeAllModals();
-                    formElement.reset();
-                    showNotification('New Lifeplan', 'Your lifeplan has been confirmed. Click to view details.', 'notification.php');
-                } else {
+        Swal.fire({
+            title: 'Confirm Lifeplan Booking',
+            text: 'Are you sure you want to proceed with this lifeplan?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#d97706',
+            cancelButtonColor: '#6b7280',
+            confirmButtonText: 'Yes, proceed',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fetch('booking/lifeplan_booking.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire({
+                            title: 'Success!',
+                            text: 'Lifeplan booking submitted successfully!',
+                            icon: 'success',
+                            confirmButtonColor: '#d97706'
+                        });
+                        closeAllModals();
+                        formElement.reset();
+                        showNotification('New Lifeplan', 'Your lifeplan has been confirmed. Click to view details.', 'notification.php');
+                    } else {
+                        Swal.fire({
+                            title: 'Error',
+                            text: data.message || 'An error occurred. Please try again.',
+                            icon: 'error',
+                            confirmButtonColor: '#d97706'
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
                     Swal.fire({
                         title: 'Error',
-                        text: data.message || 'An error occurred. Please try again.',
+                        text: 'An error occurred. Please try again.',
                         icon: 'error',
                         confirmButtonColor: '#d97706'
                     });
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                Swal.fire({
-                    title: 'Error',
-                    text: 'An error occurred. Please try again.',
-                    icon: 'error',
-                    confirmButtonColor: '#d97706'
                 });
-            });
-        }
+            }
+        });
     });
-});
 
     // Process packages from database
     const processedPackages = packagesFromDB.map(pkg => {
-        console.log('Processing package:', pkg); // Log each package being processed
-        // Determine icon based on package price or name
-        let icon = 'leaf'; // default icon
+        let icon = 'leaf';
         if (pkg.price > 500000) icon = 'star';
         else if (pkg.price > 200000) icon = 'crown';
         else if (pkg.price > 100000) icon = 'heart';
@@ -1282,18 +1779,18 @@ function showNotification(title, message, redirectUrl) {
             features: pkg.features
         };
     });
-    console.log('Processed packages:', processedPackages); // Log the processed packages
+
     // Initial render
     renderPackages(processedPackages);
+
+   
 });
 
 // Function to render packages
 function renderPackages(filteredPackages) {
-    console.log('Rendering packages:', filteredPackages); // Log packages being rendered
     const container = document.getElementById('packages-container');
     const noResults = document.getElementById('no-results');
     
-    // Check if elements exist
     if (!container || !noResults) {
         console.error('Required DOM elements not found!');
         return;
@@ -1302,16 +1799,13 @@ function renderPackages(filteredPackages) {
     container.innerHTML = '';
 
     if (filteredPackages.length === 0) {
-        console.log('No packages to display, showing no-results message');
         noResults.classList.remove('hidden');
         return;
     } else {
         noResults.classList.add('hidden');
     }
 
-
     filteredPackages.forEach(pkg => {
-        console.log('Creating card for package:', pkg); // Log each package being rendered
         const packageCard = document.createElement('div');
         packageCard.className = 'package-card bg-white rounded-[20px] shadow-lg overflow-hidden';
         packageCard.setAttribute('data-price', pkg.price);
@@ -1320,8 +1814,7 @@ function renderPackages(filteredPackages) {
         packageCard.setAttribute('data-image', pkg.image);
         
         packageCard.innerHTML = `
-            <div class="flex flex-col h-full"> <!-- Main flex container -->
-                <!-- Image section (unchanged) -->
+            <div class="flex flex-col h-full">
                 <div class="h-48 bg-cover bg-center relative" style="background-image: url('${pkg.image}')">
                     <div class="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-all duration-300"></div>
                     <div class="absolute top-4 right-4 w-12 h-12 rounded-full bg-yellow-600/90 flex items-center justify-center text-white">
@@ -1329,18 +1822,13 @@ function renderPackages(filteredPackages) {
                     </div>
                 </div>
                 
-                <!-- Content section with consistent sizing -->
                 <div class="p-6 flex flex-col flex-grow">
-                    <!-- Title (unchanged) -->
                     <h3 class="text-2xl font-hedvig text-navy mb-3">${pkg.name}</h3>
                     
-                    <!-- Description with fixed height and line clamping -->
                     <p class="text-dark mb-4 line-clamp-3 h-[72px] overflow-hidden">${pkg.description}</p>
                     
-                    <!-- Price with consistent sizing -->
                     <div class="text-3xl font-hedvig text-yellow-600 mb-4 h-12 flex items-center">₱${pkg.price.toLocaleString()}</div>
                     
-                    <!-- Features list with scroll if needed -->
                     <div class="border-t border-gray-200 pt-4 mt-2 flex-grow overflow-y-auto">
                         <ul class="space-y-2">
                             ${pkg.features.map(feature => `
@@ -1352,7 +1840,6 @@ function renderPackages(filteredPackages) {
                         </ul>
                     </div>
                     
-                    <!-- Button at the bottom -->
                     <button class="selectPackageBtn mt-6 w-full bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg shadow-md transition-all duration-300 text-center">
                         Select Package
                     </button>
@@ -1364,79 +1851,150 @@ function renderPackages(filteredPackages) {
 }
 
 function filterAndSortPackages() {
-        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-        const priceSort = document.getElementById('priceSort').value;
-        const packagesContainer = document.getElementById('packages-container');
-        const noResults = document.getElementById('no-results');
+    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+    const priceSort = document.getElementById('priceSort').value;
+    const packagesContainer = document.getElementById('packages-container');
+    const noResults = document.getElementById('no-results');
+    
+    let visibleCount = 0;
+    document.querySelectorAll('.package-card').forEach(card => {
+        const packageName = card.dataset.name.toLowerCase();
+        const packageDescription = card.querySelector('p').textContent.toLowerCase();
+        const featureTexts = Array.from(card.querySelectorAll('ul li')).map(li => li.textContent.toLowerCase());
         
-        // Show/hide all package cards based on search
-        let visibleCount = 0;
-        document.querySelectorAll('.package-card').forEach(card => {
-            const packageName = card.dataset.name.toLowerCase();
-            const packageDescription = card.querySelector('p').textContent.toLowerCase();
-            const featureTexts = Array.from(card.querySelectorAll('ul li')).map(li => li.textContent.toLowerCase());
-            
-            const matchesSearch = searchTerm === '' || 
-                                  packageName.includes(searchTerm) || 
-                                  packageDescription.includes(searchTerm) ||
-                                  featureTexts.some(text => text.includes(searchTerm));
-            
-            if (matchesSearch) {
-                card.classList.remove('hidden');
-                visibleCount++;
-            } else {
-                card.classList.add('hidden');
-            }
+        const matchesSearch = searchTerm === '' || 
+                            packageName.includes(searchTerm) || 
+                            packageDescription.includes(searchTerm) ||
+                            featureTexts.some(text => text.includes(searchTerm));
+        
+        if (matchesSearch) {
+            card.classList.remove('hidden');
+            visibleCount++;
+        } else {
+            card.classList.add('hidden');
+        }
+    });
+    
+    if (visibleCount === 0) {
+        noResults.classList.remove('hidden');
+    } else {
+        noResults.classList.add('hidden');
+    }
+    
+    if (priceSort) {
+        const cards = Array.from(packagesContainer.querySelectorAll('.package-card:not(.hidden)'));
+        cards.sort((a, b) => {
+            const priceA = parseFloat(a.dataset.price);
+            const priceB = parseFloat(b.dataset.price);
+            return priceSort === 'asc' ? priceA - priceB : priceB - priceA;
         });
         
-        // Show/hide no results message
-        if (visibleCount === 0) {
-            noResults.classList.remove('hidden');
-        } else {
-            noResults.classList.add('hidden');
-        }
-        
-        // Sort visible cards if needed
-        if (priceSort) {
-            const cards = Array.from(packagesContainer.querySelectorAll('.package-card:not(.hidden)'));
-            cards.sort((a, b) => {
-                const priceA = parseFloat(a.dataset.price);
-                const priceB = parseFloat(b.dataset.price);
-                return priceSort === 'asc' ? priceA - priceB : priceB - priceA;
-            });
-            
-            // Reattach sorted cards
-            cards.forEach(card => {
-                packagesContainer.appendChild(card);
-            });
-        }
+        cards.forEach(card => {
+            packagesContainer.appendChild(card);
+        });
     }
+}
 
 function resetFilters() {
-        document.getElementById('searchInput').value = '';
-        document.getElementById('priceSort').value = '';
-        
-        // Show all cards
-        document.querySelectorAll('.package-card').forEach(card => {
-            card.classList.remove('hidden');
-        });
-        
-        // Hide no results message
-        document.getElementById('no-results').classList.add('hidden');
-    }
-
+    document.getElementById('searchInput').value = '';
+    document.getElementById('priceSort').value = '';
+    
+    document.querySelectorAll('.package-card').forEach(card => {
+        card.classList.remove('hidden');
+    });
+    
+    document.getElementById('no-results').classList.add('hidden');
+}
 
 // Event Listeners
 document.getElementById('searchInput').addEventListener('input', filterAndSortPackages);
-    document.getElementById('priceSort').addEventListener('change', filterAndSortPackages);
-    document.getElementById('resetFilters').addEventListener('click', resetFilters);
-    document.getElementById('reset-filters-no-results').addEventListener('click', resetFilters);
-
+document.getElementById('priceSort').addEventListener('change', filterAndSortPackages);
+document.getElementById('resetFilters').addEventListener('click', resetFilters);
+document.getElementById('reset-filters-no-results').addEventListener('click', resetFilters);
 
 function toggleMenu() {
     const mobileMenu = document.getElementById('mobile-menu');
     mobileMenu.classList.toggle('hidden');
 }
+
+// Date validation for traditional booking form
+document.addEventListener('DOMContentLoaded', function() {
+    // Get today's date in YYYY-MM-DD format
+    const today = new Date();
+    const todayFormatted = today.toISOString().split('T')[0];
+    
+    // Set max date for date of birth and date of death to today
+    document.getElementById('traditionalDateOfBirth').max = todayFormatted;
+    document.getElementById('traditionalDateOfDeath').max = todayFormatted;
+    
+    // Set min date for date of burial to tomorrow
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const tomorrowFormatted = tomorrow.toISOString().split('T')[0];
+    document.getElementById('traditionalDateOfBurial').min = tomorrowFormatted;
+    
+    // Validate date of birth is before date of death
+    document.getElementById('traditionalDateOfBirth').addEventListener('change', function() {
+        const dob = this.value;
+        const dod = document.getElementById('traditionalDateOfDeath').value;
+        
+        if (dob && dod && dob > dod) {
+            alert('Date of birth must be before date of death');
+            this.value = '';
+        }
+    });
+    
+    // Validate date of death is after date of birth and before date of burial
+    document.getElementById('traditionalDateOfDeath').addEventListener('change', function() {
+        const dod = this.value;
+        const dob = document.getElementById('traditionalDateOfBirth').value;
+        const dobInput = document.getElementById('traditionalDateOfBirth');
+        
+        if (dob && dod < dob) {
+            alert('Date of death must be after date of birth');
+            this.value = '';
+            return;
+        }
+        
+        const burialDate = document.getElementById('traditionalDateOfBurial').value;
+        if (burialDate && dod > burialDate) {
+            alert('Date of death must be before date of burial');
+            this.value = '';
+        }
+    });
+    
+    // Validate date of burial is after date of death
+    document.getElementById('traditionalDateOfBurial').addEventListener('change', function() {
+        const burialDate = this.value;
+        const dod = document.getElementById('traditionalDateOfDeath').value;
+        
+        if (dod && burialDate < dod) {
+            alert('Date of burial must be after date of death');
+            this.value = '';
+        }
+    });
+});
+
+// Add this to your existing JavaScript
+window.addEventListener('resize', function() {
+    const traditionalModal = document.getElementById('traditionalModal');
+    if (!traditionalModal.classList.contains('hidden')) {
+        const detailsSection = document.querySelector('.details-section');
+        const formSection = document.querySelector('.form-section');
+        const isMobileView = window.innerWidth < 768;
+        
+        if (isMobileView) {
+            // If switching to mobile view, ensure form is hidden if we were on details
+            if (!detailsSection.classList.contains('hidden')) {
+                formSection.classList.add('hidden');
+            }
+        } else {
+            // If switching to desktop view, show both sections
+            detailsSection.classList.remove('hidden');
+            formSection.classList.remove('hidden');
+        }
+    }
+});
 </script>
 </body>
 </html>
