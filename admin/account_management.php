@@ -269,6 +269,10 @@ $customersResult = mysqli_query($conn, $customersQuery);
                     </div>
                 </div>
             </div>
+            
+            <button class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-4">
+              <i class="fas fa-archive text-sidebar-accent"></i>
+            </button>
 
             <!-- Second row: Add Customer Account Button - Full width -->
             <div class="w-full">
