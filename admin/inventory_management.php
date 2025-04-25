@@ -1051,15 +1051,36 @@ if ($branchResult->num_rows > 0) {
   .bg-gold { background-color: #d4af37; }
   .hover\:bg-darkgold:hover { background-color: #b8860b; }
 </style>
-
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Get the data from PHP
+    // Initialize charts
+    initCharts();
+    
+    // Initialize pagination for all branches
+    document.querySelectorAll('.branch-container').forEach(container => {
+        const branchId = container.dataset.branchId;
+        const urlParams = new URLSearchParams(window.location.search);
+        const currentPage = parseInt(urlParams.get(`page_${branchId}`)) || 1;
+        updatePaginationActiveState(branchId, currentPage);
+    });
+
+    // Handle browser back/forward navigation
+    window.addEventListener('popstate', function() {
+        document.querySelectorAll('.branch-container').forEach(container => {
+            const branchId = container.dataset.branchId;
+            const urlParams = new URLSearchParams(window.location.search);
+            const page = urlParams.get(`page_${branchId}`) || 1;
+            loadPage(branchId, page, false); // false to prevent pushing new state
+        });
+    });
+});
+
+function initCharts() {
+    // Inventory by Category Chart
     const categoryLabels = <?php echo json_encode($categoryLabels); ?>;
     const categoryData = <?php echo json_encode($categoryCounts); ?>;
     const categoryColors = <?php echo json_encode(array_slice($categoryColors, 0, count($categoryLabels))); ?>;
 
-    // Create the chart
     const inventoryCategoryChart = new Chart(document.getElementById('inventoryCategoryChart'), {
         type: 'doughnut',
         data: {
@@ -1093,85 +1114,11 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     });
-});
 
-function loadPage(branchId, page) {
-    // Show loading indicator
-    const loadingIndicator = document.getElementById(`loadingIndicator${branchId}`);
-    const tableContainer = document.getElementById(`tableContainer${branchId}`);
-    
-    loadingIndicator.classList.remove('hidden');
-    tableContainer.style.opacity = '0.5';
-    
-    // Make AJAX request
-    fetch(`inventory/load_inventory_table.php?branch_id=${branchId}&page=${page}`)
-        .then(response => response.text())
-        .then(data => {
-            // Update the table content
-            document.getElementById(`inventoryTable_${branchId}`).innerHTML = data;
-            
-            // Update pagination info
-            const totalItems = <?php echo $totalItems; ?>;
-            const itemsPerPage = <?php echo $itemsPerPage; ?>;
-            const startItem = (page - 1) * itemsPerPage + 1;
-            const endItem = Math.min(page * itemsPerPage, totalItems);
-            
-            document.getElementById(`paginationInfo_${branchId}`).innerHTML = 
-                `Showing ${startItem} - ${endItem} of ${totalItems} items`;
-            
-            // Update pagination buttons active state
-            updatePaginationActiveState(branchId, page);
-            
-            // Hide loading indicator
-            loadingIndicator.classList.add('hidden');
-            tableContainer.style.opacity = '1';
-            
-            // Re-attach event listeners for edit buttons
-            document.querySelectorAll(`#inventoryTable_${branchId} button[onclick^="openViewItemModal"]`).forEach(button => {
-                button.onclick = function() {
-                    const inventoryId = this.getAttribute('onclick').match(/openViewItemModal\((\d+)\)/)[1];
-                    openViewItemModal(inventoryId);
-                };
-            });
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            loadingIndicator.classList.add('hidden');
-            tableContainer.style.opacity = '1';
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: 'Failed to load inventory data. Please try again.'
-            });
-        });
-}
-
-// Helper function to update pagination active state
-function updatePaginationActiveState(branchId, currentPage) {
-    const paginationContainer = document.querySelector(`#paginationInfo_${branchId}`).nextElementSibling;
-    const pageButtons = paginationContainer.querySelectorAll('button');
-    
-    pageButtons.forEach(button => {
-        // Remove active class from all buttons
-        button.classList.remove('bg-sidebar-accent', 'text-white');
-        button.classList.add('border', 'border-sidebar-border', 'hover:bg-sidebar-hover');
-        
-        // Check if this button is the current page
-        const pageNumber = parseInt(button.textContent);
-        if (!isNaN(pageNumber) && pageNumber === currentPage) {
-            button.classList.remove('border', 'border-sidebar-border', 'hover:bg-sidebar-hover');
-            button.classList.add('bg-sidebar-accent', 'text-white');
-        }
-    });
-}
-</script>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Get the data from PHP
+    // Inventory Value Trends Chart
     const monthLabels = <?php echo json_encode($monthLabels); ?>;
     const monthValues = <?php echo json_encode($monthValues); ?>;
     
-    // Create the chart
     const inventoryValueChart = new Chart(document.getElementById('inventoryValueChart'), {
         type: 'line',
         data: {
@@ -1216,32 +1163,205 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Add event listener for period selector
+    // Trend period selector
     document.getElementById('valueTrendPeriod').addEventListener('change', function() {
         const period = this.value;
         fetchInventoryTrendData(period);
     });
+}
 
-    // Function to fetch data based on selected period
-    function fetchInventoryTrendData(period) {
+function fetchInventoryTrendData(period) {
     fetch(`inventory/get_trend_data.php?period=${period}`)
         .then(response => response.json())
         .then(data => {
-            // For quarters, you might want to format the labels differently
             if (period === 'quarter') {
                 data.labels = data.labels.map(label => {
-                    // Format as "Q1 2023" instead of "2023 Q1" if preferred
                     return label.replace(/(\d{4}) Q(\d)/, 'Q$2 $1');
                 });
             }
             
-            inventoryValueChart.data.labels = data.labels;
-            inventoryValueChart.data.datasets[0].data = data.values;
-            inventoryValueChart.update();
+            const chart = Chart.getChart('inventoryValueChart');
+            chart.data.labels = data.labels;
+            chart.data.datasets[0].data = data.values;
+            chart.update();
         })
         .catch(error => console.error('Error:', error));
 }
-});
+
+function loadPage(branchId, page, pushState = true) {
+    // Update URL if pushState is true
+    if (pushState) {
+        const url = new URL(window.location);
+        url.searchParams.set(`page_${branchId}`, page);
+        window.history.pushState({ branchId, page }, '', url);
+    }
+
+    // Show loading indicator
+    const loadingIndicator = document.getElementById(`loadingIndicator${branchId}`);
+    const tableContainer = document.getElementById(`tableContainer${branchId}`);
+    
+    loadingIndicator.classList.remove('hidden');
+    tableContainer.style.opacity = '0.5';
+    
+    // Make AJAX request
+    fetch(`inventory/load_inventory_table.php?branch_id=${branchId}&page=${page}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.text();
+        })
+        .then(data => {
+            // Update the table content
+            document.getElementById(`inventoryTable_${branchId}`).innerHTML = data;
+            
+            // Update pagination info
+            const totalItems = <?php echo $totalItems; ?>;
+            const itemsPerPage = <?php echo $itemsPerPage; ?>;
+            const startItem = (page - 1) * itemsPerPage + 1;
+            const endItem = Math.min(page * itemsPerPage, totalItems);
+            
+            document.getElementById(`paginationInfo_${branchId}`).innerHTML = 
+                `Showing ${startItem} - ${endItem} of ${totalItems} items`;
+            
+            // Update pagination buttons
+            updatePaginationActiveState(branchId, page);
+            
+            // Hide loading indicator
+            loadingIndicator.classList.add('hidden');
+            tableContainer.style.opacity = '1';
+            
+            // Re-attach event listeners for action buttons
+            attachActionButtonListeners(branchId);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            loadingIndicator.classList.add('hidden');
+            tableContainer.style.opacity = '1';
+            showErrorToast('Failed to load inventory data. Please try again.');
+        });
+}
+
+function updatePaginationActiveState(branchId, currentPage) {
+    const paginationContainer = document.querySelector(`#paginationInfo_${branchId}`).nextElementSibling;
+    if (!paginationContainer) return;
+    
+    paginationContainer.querySelectorAll('button').forEach(button => {
+        // Reset all buttons
+        button.classList.remove('bg-sidebar-accent', 'text-white');
+        button.classList.add('border', 'border-sidebar-border', 'hover:bg-sidebar-hover');
+        
+        // Handle number buttons
+        const pageNumber = parseInt(button.textContent);
+        if (!isNaN(pageNumber)) {
+            if (pageNumber === currentPage) {
+                button.classList.remove('border', 'border-sidebar-border', 'hover:bg-sidebar-hover');
+                button.classList.add('bg-sidebar-accent', 'text-white');
+            }
+            
+            // Update onclick handler
+            button.onclick = () => loadPage(branchId, pageNumber);
+            return;
+        }
+        
+        // Handle navigation buttons
+        if (button.innerHTML.includes('&laquo;')) {
+            button.onclick = () => loadPage(branchId, currentPage - 1);
+            button.disabled = currentPage <= 1;
+        } else if (button.innerHTML.includes('&raquo;')) {
+            const totalPages = Math.ceil(<?php echo $totalItems; ?> / <?php echo $itemsPerPage; ?>);
+            button.onclick = () => loadPage(branchId, currentPage + 1);
+            button.disabled = currentPage >= totalPages;
+        }
+    });
+}
+
+function attachActionButtonListeners(branchId) {
+    // Edit buttons
+    document.querySelectorAll(`#inventoryTable_${branchId} button[onclick^="openViewItemModal"]`).forEach(button => {
+        button.onclick = function() {
+            const inventoryId = this.getAttribute('onclick').match(/openViewItemModal\((\d+)\)/)[1];
+            openViewItemModal(inventoryId);
+        };
+    });
+    
+    // Archive buttons
+    document.querySelectorAll(`#inventoryTable_${branchId} .delete-form button[type="submit"]`).forEach(button => {
+        button.onclick = function(e) {
+            e.preventDefault();
+            const form = this.closest('form');
+            confirmArchiveItem(form);
+        };
+    });
+}
+
+function showErrorToast(message) {
+    const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+            toast.addEventListener('mouseenter', Swal.stopTimer);
+            toast.addEventListener('mouseleave', Swal.resumeTimer);
+        }
+    });
+    
+    Toast.fire({
+        icon: 'error',
+        title: message
+    });
+}
+
+// Example confirm archive function
+function confirmArchiveItem(form) {
+    Swal.fire({
+        title: 'Archive Item?',
+        text: "Are you sure you want to archive this item?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, archive it!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Submit the form via AJAX
+            const formData = new FormData(form);
+            
+            fetch(form.action, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire(
+                        'Archived!',
+                        'The item has been archived.',
+                        'success'
+                    ).then(() => {
+                        // Reload the current page
+                        const branchId = form.closest('.branch-container').dataset.branchId;
+                        const urlParams = new URLSearchParams(window.location.search);
+                        const currentPage = urlParams.get(`page_${branchId}`) || 1;
+                        loadPage(branchId, currentPage);
+                    });
+                } else {
+                    throw new Error(data.message || 'Failed to archive item');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire(
+                    'Error',
+                    error.message,
+                    'error'
+                );
+            });
+        }
+    });
+}
 </script>
   <script src="inventory_functions.js"></script>
   <script src="script.js"></script>
