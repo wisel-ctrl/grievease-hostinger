@@ -75,7 +75,12 @@ function generateInventoryRow($row) {
     $html .= '<button class="p-2 bg-yellow-100 text-yellow-600 rounded-lg hover:bg-yellow-200 transition-all tooltip" title="Edit Item" onclick="openViewItemModal(' . $row["inventory_id"] . ')">';
     $html .= '<i class="fas fa-edit"></i>';
     $html .= '</button>';
-    $html .= '<form method="POST" action="inventory/delete_inventory_item.php" onsubmit="return false;" style="display:inline;" class="delete-form">';
+    $html .= '<form method="POST" action="inventory/delete_inventory_item.php" class="delete-form">
+    <input type="hidden" name="inventory_id" value="<?php echo $row['inventory_id']; ?>">
+    <button type="button" class="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-all tooltip" title="Archive Item">
+        <i class="fas fa-archive"></i>
+    </button>
+</form>';
     $html .= '<input type="hidden" name="inventory_id" value="' . $row["inventory_id"] . '">';
     $html .= '<button type="submit" class="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-all tooltip" title="Archive Item">';
     $html .= '<i class="fas fa-archive"></i>';
@@ -1326,25 +1331,39 @@ function confirmArchiveItem(form) {
         confirmButtonText: 'Yes, archive it!'
     }).then((result) => {
         if (result.isConfirmed) {
-            // Submit the form via AJAX
+            // Show loading indicator
+            Swal.showLoading();
+            
             const formData = new FormData(form);
+            const branchId = form.closest('.branch-container').dataset.branchId;
+            const urlParams = new URLSearchParams(window.location.search);
+            const currentPage = urlParams.get(`page_${branchId}`) || 1;
             
             fetch(form.action, {
                 method: 'POST',
-                body: formData
+                body: formData,
+                headers: {
+                    'Accept': 'application/json'
+                }
             })
-            .then(response => response.json())
+            .then(response => {
+                // First check if the response is JSON
+                const contentType = response.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/json')) {
+                    return response.text().then(text => {
+                        throw new Error('Server returned non-JSON response: ' + text);
+                    });
+                }
+                return response.json();
+            })
             .then(data => {
                 if (data.success) {
                     Swal.fire(
                         'Archived!',
-                        'The item has been archived.',
+                        data.message || 'The item has been archived.',
                         'success'
                     ).then(() => {
                         // Reload the current page
-                        const branchId = form.closest('.branch-container').dataset.branchId;
-                        const urlParams = new URLSearchParams(window.location.search);
-                        const currentPage = urlParams.get(`page_${branchId}`) || 1;
                         loadPage(branchId, currentPage);
                     });
                 } else {
@@ -1355,7 +1374,7 @@ function confirmArchiveItem(form) {
                 console.error('Error:', error);
                 Swal.fire(
                     'Error',
-                    error.message,
+                    error.message || 'An error occurred while archiving the item',
                     'error'
                 );
             });
