@@ -413,7 +413,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Function to fetch customer accounts via AJAX
     function fetchCustomerAccounts() {
-        
         // Create a new XMLHttpRequest
         const xhr = new XMLHttpRequest();
         
@@ -1626,6 +1625,7 @@ if ($result->num_rows > 0) {
     </div>
     
     <!-- Responsive Table Container with improved spacing -->
+    <div class="overflow-x-auto scrollbar-thin" id="employeeTableContainer">
         
         <!-- Responsive Table with improved spacing and horizontal scroll for small screens -->
         <div class="min-w-full">
