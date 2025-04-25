@@ -277,10 +277,6 @@ $customersResult = mysqli_query($conn, $customersQuery);
     </div>
     
     <!-- Responsive Table Container with improved spacing -->
-    <div class="overflow-x-auto scrollbar-thin" id="customerTableContainer">
-        <div id="loadingIndicator" class="hidden absolute inset-0 bg-white bg-opacity-50 flex items-center justify-center">
-            <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-sidebar-accent"></div>
-        </div>
         
         <!-- Responsive Table with improved spacing and horizontal scroll for small screens -->
         <div class="min-w-full">
@@ -417,15 +413,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Function to fetch customer accounts via AJAX
     function fetchCustomerAccounts() {
-        // Show loading state
-        customerTableBody.innerHTML = `
-            <tr>
-                <td colspan="6" class="text-center p-4">
-                    <div class="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-sidebar-accent"></div>
-                    <p class="mt-2 text-gray-500">Loading...</p>
-                </td>
-            </tr>
-        `;
         
         // Create a new XMLHttpRequest
         const xhr = new XMLHttpRequest();
@@ -1639,10 +1626,6 @@ if ($result->num_rows > 0) {
     </div>
     
     <!-- Responsive Table Container with improved spacing -->
-    <div class="overflow-x-auto scrollbar-thin" id="employeeTableContainer">
-        <div id="loadingIndicator" class="hidden absolute inset-0 bg-white bg-opacity-50 flex items-center justify-center">
-            <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-sidebar-accent"></div>
-        </div>
         
         <!-- Responsive Table with improved spacing and horizontal scroll for small screens -->
         <div class="min-w-full">
