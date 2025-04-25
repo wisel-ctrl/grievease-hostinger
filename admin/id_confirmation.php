@@ -54,7 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && isset($_
         $stmt->execute();
         
         // Also update the user's validated_id status
-        $stmt = $conn->prepare("UPDATE users SET validated_id = 'yes' WHERE id = (SELECT user_id FROM valid_id_tb WHERE id = ?)");
+        $stmt = $conn->prepare("UPDATE users SET validated_id = 'yes' WHERE id = (SELECT id FROM valid_id_tb WHERE id = ?)");
         $stmt->bind_param("i", $id);
         $stmt->execute();
         
