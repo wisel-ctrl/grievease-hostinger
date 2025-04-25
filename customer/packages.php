@@ -219,17 +219,7 @@ $conn->close();
             transform: translateY(-8px);
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
         }
-        @media (min-width: 768px) {
-    .form-section {
-        display: block !important;
-    }
-}
-
-@media (max-width: 767px) {
-    .form-section:not(.force-show) {
-        display: none !important;
-    }
-}
+    
     </style>
 </head>
 <body class="bg-cream overflow-x-hidden w-full max-w-full m-0 p-0 font-hedvig">
@@ -648,9 +638,8 @@ $conn->close();
                 <div class="flex justify-between items-center mb-4">
                     <h2 class="text-xl md:text-2xl font-hedvig text-navy">Book Your Traditional Service</h2>
                     <div class="flex items-center">
-                        <button id="backToDetailsBtn" class="mr-2 text-gray-500 hover:text-navy md:hidden flex items-center">
-                            <i class="fas fa-arrow-left text-lg mr-1"></i>
-                            <span class="text-sm">Back</span>
+                        <button id="backToDetailsBtn" class="mr-2 text-gray-500 hover:text-navy md:hidden">
+                            <i class="fas fa-arrow-left text-lg"></i>
                         </button>
                         <button class="closeModalBtn text-gray-500 hover:text-navy">
                             <i class="fas fa-times text-xl md:text-2xl"></i>
@@ -666,144 +655,52 @@ $conn->close();
                     
                     <div class="border-b border-gray-200 pb-4 mb-4">
                         <h3 class="text-base md:text-lg font-hedvig text-navy mb-3 md:mb-4">Deceased Information</h3>
-                        
-                        <!-- First Name & Middle Name (Side by side) -->
-                        <div class="flex flex-wrap -mx-2 mb-3">
-                            <div class="w-full sm:w-1/2 px-2 mb-3 sm:mb-0">
-                                <label for="traditionalDeceasedFirstName" class="block text-sm font-medium text-navy mb-1">First Name *</label>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 mb-3 md:mb-4">
+                            <div>
+                                <label for="traditionalDeceasedFirstName" class="block text-xs md:text-sm font-medium text-navy mb-1 md:mb-2">First Name *</label>
                                 <input type="text" id="traditionalDeceasedFirstName" name="deceasedFirstName" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                             </div>
-                            <div class="w-full sm:w-1/2 px-2">
-                                <label for="traditionalDeceasedMiddleName" class="block text-sm font-medium text-navy mb-1">Middle Name</label>
+                            <div>
+                                <label for="traditionalDeceasedMiddleName" class="block text-xs md:text-sm font-medium text-navy mb-1 md:mb-2">Middle Name</label>
                                 <input type="text" id="traditionalDeceasedMiddleName" name="deceasedMiddleName" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                             </div>
                         </div>
-                        
-                        <!-- Last Name & Suffix (Side by side) -->
-                        <div class="flex flex-wrap -mx-2 mb-3">
-                            <div class="w-full sm:w-3/4 px-2 mb-3 sm:mb-0">
-                                <label for="traditionalDeceasedLastName" class="block text-sm font-medium text-navy mb-1">Last Name *</label>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 mb-3 md:mb-4">
+                            <div>
+                                <label for="traditionalDeceasedLastName" class="block text-xs md:text-sm font-medium text-navy mb-1 md:mb-2">Last Name *</label>
                                 <input type="text" id="traditionalDeceasedLastName" name="deceasedLastName" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                             </div>
-                            <div class="w-full sm:w-1/4 px-2">
-                                <label for="traditionalDeceasedSuffix" class="block text-sm font-medium text-navy mb-1">Suffix</label>
-                                <select id="traditionalDeceasedSuffix" name="deceasedSuffix" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
-                                    <option value="">None</option>
-                                    <option value="Jr.">Jr.</option>
-                                    <option value="Sr.">Sr.</option>
-                                    <option value="I">I</option>
-                                    <option value="II">II</option>
-                                    <option value="III">III</option>
-                                    <option value="IV">IV</option>
-                                    <option value="V">V</option>
-                                </select>
+                            <div>
+                                <label for="traditionalDeceasedSuffix" class="block text-xs md:text-sm font-medium text-navy mb-1 md:mb-2">Suffix</label>
+                                <input type="text" id="traditionalDeceasedSuffix" name="deceasedSuffix" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                             </div>
                         </div>
-                        
-                        <!-- Date fields (Three in a row on larger screens, stacked on mobile) -->
-                        <div class="flex flex-wrap -mx-2 mb-3">
-                            <div class="w-full sm:w-1/3 px-2 mb-3 sm:mb-0">
-                                <label for="traditionalDateOfBirth" class="block text-sm font-medium text-navy mb-1">Date of Birth</label>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4">
+                            <div>
+                                <label for="traditionalDateOfBirth" class="block text-xs md:text-sm font-medium text-navy mb-1 md:mb-2">Date of Birth</label>
                                 <input type="date" id="traditionalDateOfBirth" name="dateOfBirth" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                             </div>
-                            <div class="w-full sm:w-1/3 px-2 mb-3 sm:mb-0">
-                                <label for="traditionalDateOfDeath" class="block text-sm font-medium text-navy mb-1">Date of Death *</label>
+                            <div>
+                                <label for="traditionalDateOfDeath" class="block text-xs md:text-sm font-medium text-navy mb-1 md:mb-2">Date of Death *</label>
                                 <input type="date" id="traditionalDateOfDeath" name="dateOfDeath" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                             </div>
-                            <div class="w-full sm:w-1/3 px-2">
-                                <label for="traditionalDateOfBurial" class="block text-sm font-medium text-navy mb-1">Date of Burial</label>
+                            <div>
+                                <label for="traditionalDateOfBurial" class="block text-xs md:text-sm font-medium text-navy mb-1 md:mb-2">Date of Burial</label>
                                 <input type="date" id="traditionalDateOfBurial" name="dateOfBurial" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                             </div>
                         </div>
-                        
-                        <!-- Death Certificate Upload with Preview -->
-                        <div class="mb-4">
-                            <label for="traditionalDeathCertificate" class="block text-sm font-medium text-navy mb-1">Death Certificate</label>
-                            <div class="border border-input-border bg-white rounded-lg p-3 focus-within:ring-2 focus-within:ring-yellow-600">
-                                <!-- Upload Button and File Name -->
-                                <div class="flex items-center mb-2">
-                                    <label for="traditionalDeathCertificate" class="flex-1 cursor-pointer">
-                                        <div class="flex items-center justify-center py-2 px-3 bg-gray-50 rounded hover:bg-gray-100 transition">
-                                            <i class="fas fa-upload mr-2 text-gray-500"></i>
-                                            <span class="text-sm text-gray-600">Upload Certificate</span>
-                                        </div>
-                                    </label>
-                                    <span class="text-xs ml-2 text-gray-500" id="traditionalDeathCertFileName">No file chosen</span>
-                                </div>
-                                
-                                <!-- Preview Container -->
-                                <div id="deathCertPreviewContainer" class="hidden mt-2 rounded-lg overflow-hidden border border-gray-200">
-                                    <!-- Image Preview -->
-                                    <div id="deathCertImagePreview" class="hidden">
-                                        <img id="deathCertImage" src="" alt="Death Certificate Preview" class="w-full h-auto max-h-48 object-contain">
-                                    </div>
-                                    
-                                    <!-- PDF Preview -->
-                                    <div id="deathCertPdfPreview" class="hidden bg-gray-100 p-3 flex items-center">
-                                        <i class="fas fa-file-pdf text-red-500 text-2xl mr-2"></i>
-                                        <span class="text-sm text-gray-700">PDF Document</span>
-                                        <button type="button" id="viewDeathCertPdf" class="ml-auto bg-blue-500 hover:bg-blue-600 text-white text-xs px-2 py-1 rounded">
-                                            View
-                                        </button>
-                                    </div>
-                                </div>
-                                
-                                <!-- Remove Button -->
-                                <button type="button" id="removeDeathCert" class="text-xs text-red-600 hover:text-red-800 mt-2 hidden">
-                                    <i class="fas fa-trash-alt mr-1"></i> Remove file
-                                </button>
-                                
-                                <input type="file" id="traditionalDeathCertificate" name="deathCertificate" accept=".pdf,.jpg,.jpeg,.png" class="hidden">
-                            </div>
-                            <p class="text-xs text-gray-500 mt-1">Accepted formats: PDF, JPG, JPEG, PNG</p>
+                        <div class="mt-3 md:mt-4">
+                            <label for="traditionalDeathCertificate" class="block text-xs md:text-sm font-medium text-navy mb-1 md:mb-2">Death Certificate</label>
+                            <input type="file" id="traditionalDeathCertificate" name="deathCertificate" accept=".pdf,.jpg,.jpeg,.png" class="w-full text-xs md:text-sm px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                         </div>
-                        
-                        <!-- Address (Improved UI with dropdowns in specified layout) -->
-                        <div class="flex flex-wrap -mx-2 mb-3">
-                            <div class="w-full sm:w-1/2 px-2 mb-3 sm:mb-0">
-                                <label for="traditionalDeceasedRegion" class="block text-sm font-medium text-navy mb-1">Region</label>
-                                <select id="traditionalDeceasedRegion" name="deceasedRegion" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
-                                    <option value="">Select Region</option>
-                                    <option value="NCR">National Capital Region (NCR)</option>
-                                    <option value="CAR">Cordillera Administrative Region (CAR)</option>
-                                    <option value="Region I">Ilocos Region (Region I)</option>
-                                    <!-- Add more regions as needed -->
-                                </select>
-                            </div>
-                            <div class="w-full sm:w-1/2 px-2">
-                                <label for="traditionalDeceasedProvince" class="block text-sm font-medium text-navy mb-1">Province</label>
-                                <select id="traditionalDeceasedProvince" name="deceasedProvince" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
-                                    <option value="">Select Province</option>
-                                    <!-- Provinces will be populated by JavaScript based on selected region -->
-                                </select>
-                            </div>
-                        </div>
-                        
-                        <div class="flex flex-wrap -mx-2 mb-3">
-                            <div class="w-full sm:w-1/2 px-2 mb-3 sm:mb-0">
-                                <label for="traditionalDeceasedCity" class="block text-sm font-medium text-navy mb-1">City/Municipality</label>
-                                <select id="traditionalDeceasedCity" name="deceasedCity" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
-                                    <option value="">Select City/Municipality</option>
-                                    <!-- Cities will be populated by JavaScript based on selected province -->
-                                </select>
-                            </div>
-                            <div class="w-full sm:w-1/2 px-2">
-                                <label for="traditionalDeceasedBarangay" class="block text-sm font-medium text-navy mb-1">Barangay</label>
-                                <select id="traditionalDeceasedBarangay" name="deceasedBarangay" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
-                                    <option value="">Select Barangay</option>
-                                    <!-- Barangays will be populated by JavaScript based on selected city -->
-                                </select>
-                            </div>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label for="traditionalDeceasedStreet" class="block text-sm font-medium text-navy mb-1">Street/Block/House Number</label>
-                            <input type="text" id="traditionalDeceasedStreet" name="deceasedStreet" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" placeholder="Enter detailed street address">
+                        <div class="mt-3 md:mt-4">
+                            <label for="traditionalDeceasedAddress" class="block text-xs md:text-sm font-medium text-navy mb-1 md:mb-2">Address of the Deceased</label>
+                            <textarea id="traditionalDeceasedAddress" name="deceasedAddress" rows="2" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600"></textarea>
                         </div>
                         
                         <div class="flex items-center mt-3 md:mt-4">
                             <input type="checkbox" id="traditionalWithCremate" name="with_cremate" value="yes" class="h-4 w-4 text-yellow-600 focus:ring-yellow-500 border-gray-300 rounded">
-                            <label for="traditionalWithCremate" class="ml-2 block text-sm text-navy">
+                            <label for="traditionalWithCremate" class="ml-2 block text-xs md:text-sm text-navy">
                                 Include cremation service
                             </label>
                         </div>
@@ -811,52 +708,15 @@ $conn->close();
 
                     <div class="border-b border-gray-200 pb-4 mb-4">
                         <h3 class="text-base md:text-lg font-hedvig text-navy mb-3 md:mb-4">Payment</h3>
-                        
-                        <!-- GCash Upload with Preview -->
-                        <div class="mb-4">
-                            <label for="traditionalGcashReceipt" class="block text-sm font-medium text-navy mb-1">GCash Receipt</label>
-                            <div class="border border-input-border bg-white rounded-lg p-3 focus-within:ring-2 focus-within:ring-yellow-600">
-                                <!-- Upload Button and File Name -->
-                                <div class="flex items-center mb-2">
-                                    <label for="traditionalGcashReceipt" class="flex-1 cursor-pointer">
-                                        <div class="flex items-center justify-center py-2 px-3 bg-gray-50 rounded hover:bg-gray-100 transition">
-                                            <i class="fas fa-receipt mr-2 text-blue-500"></i>
-                                            <span class="text-sm text-gray-600">Upload Receipt</span>
-                                        </div>
-                                    </label>
-                                    <span class="text-xs ml-2 text-gray-500" id="traditionalGcashFileName">No file chosen</span>
-                                </div>
-                                
-                                <!-- Preview Container -->
-                                <div id="gcashPreviewContainer" class="hidden mt-2 rounded-lg overflow-hidden border border-gray-200">
-                                    <!-- Image Preview -->
-                                    <div id="gcashImagePreview" class="hidden">
-                                        <img id="gcashImage" src="" alt="GCash Receipt Preview" class="w-full h-auto max-h-48 object-contain">
-                                    </div>
-                                    
-                                    <!-- PDF Preview -->
-                                    <div id="gcashPdfPreview" class="hidden bg-gray-100 p-3 flex items-center">
-                                        <i class="fas fa-file-pdf text-red-500 text-2xl mr-2"></i>
-                                        <span class="text-sm text-gray-700">PDF Document</span>
-                                        <button type="button" id="viewGcashPdf" class="ml-auto bg-blue-500 hover:bg-blue-600 text-white text-xs px-2 py-1 rounded">
-                                            View
-                                        </button>
-                                    </div>
-                                </div>
-                                
-                                <!-- Remove Button -->
-                                <button type="button" id="removeGcash" class="text-xs text-red-600 hover:text-red-800 mt-2 hidden">
-                                    <i class="fas fa-trash-alt mr-1"></i> Remove file
-                                </button>
-                                
-                                <input type="file" id="traditionalGcashReceipt" name="gcashReceipt" accept=".pdf,.jpg,.jpeg,.png" class="hidden">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
+                            <div>
+                                <label for="traditionalGcashReceipt" class="block text-xs md:text-sm font-medium text-navy mb-1 md:mb-2">GCash Receipt</label>
+                                <input type="file" id="traditionalGcashReceipt" name="gcashReceipt" accept=".pdf,.jpg,.jpeg,.png" class="w-full text-xs md:text-sm px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                             </div>
-                            <p class="text-xs text-gray-500 mt-1">Accepted formats: PDF, JPG, JPEG, PNG</p>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label for="traditionalReferenceNumber" class="block text-sm font-medium text-navy mb-1">GCash Reference Number *</label>
-                            <input type="text" id="traditionalReferenceNumber" name="referenceNumber" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" placeholder="e.g. 1234567890">
+                            <div>
+                                <label for="traditionalReferenceNumber" class="block text-xs md:text-sm font-medium text-navy mb-1 md:mb-2">GCash Reference Number *</label>
+                                <input type="text" id="traditionalReferenceNumber" name="referenceNumber" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                            </div>
                         </div>
                     </div>
 
@@ -883,163 +743,6 @@ $conn->close();
         </div>
     </div>
 </div>
-
-<!-- Add this script at the end -->
-<script>
-// Death Certificate Upload Preview
-document.getElementById('traditionalDeathCertificate').addEventListener('change', function() {
-    const file = this.files[0];
-    if (!file) {
-        hideDeathCertPreview();
-        return;
-    }
-    
-    // Update file name display
-    const fileName = file.name;
-    document.getElementById('traditionalDeathCertFileName').textContent = fileName.length > 20 ? 
-        fileName.substring(0, 17) + '...' : fileName;
-    
-    // Show preview container
-    const previewContainer = document.getElementById('deathCertPreviewContainer');
-    previewContainer.classList.remove('hidden');
-    
-    // Show remove button
-    document.getElementById('removeDeathCert').classList.remove('hidden');
-    
-    // Check file type
-    if (file.type === 'application/pdf') {
-        // PDF Preview
-        document.getElementById('deathCertPdfPreview').classList.remove('hidden');
-        document.getElementById('deathCertImagePreview').classList.add('hidden');
-        
-        // Setup PDF viewer button
-        document.getElementById('viewDeathCertPdf').onclick = function() {
-            const fileURL = URL.createObjectURL(file);
-            window.open(fileURL, '_blank');
-        };
-    } else {
-        // Image Preview
-        document.getElementById('deathCertImagePreview').classList.remove('hidden');
-        document.getElementById('deathCertPdfPreview').classList.add('hidden');
-        
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            document.getElementById('deathCertImage').src = e.target.result;
-        };
-        reader.readAsDataURL(file);
-    }
-});
-
-// GCash Receipt Upload Preview
-document.getElementById('traditionalGcashReceipt').addEventListener('change', function() {
-    const file = this.files[0];
-    if (!file) {
-        hideGcashPreview();
-        return;
-    }
-    
-    // Update file name display
-    const fileName = file.name;
-    document.getElementById('traditionalGcashFileName').textContent = fileName.length > 20 ? 
-        fileName.substring(0, 17) + '...' : fileName;
-    
-    // Show preview container
-    const previewContainer = document.getElementById('gcashPreviewContainer');
-    previewContainer.classList.remove('hidden');
-    
-    // Show remove button
-    document.getElementById('removeGcash').classList.remove('hidden');
-    
-    // Check file type
-    if (file.type === 'application/pdf') {
-        // PDF Preview
-        document.getElementById('gcashPdfPreview').classList.remove('hidden');
-        document.getElementById('gcashImagePreview').classList.add('hidden');
-        
-        // Setup PDF viewer button
-        document.getElementById('viewGcashPdf').onclick = function() {
-            const fileURL = URL.createObjectURL(file);
-            window.open(fileURL, '_blank');
-        };
-    } else {
-        // Image Preview
-        document.getElementById('gcashImagePreview').classList.remove('hidden');
-        document.getElementById('gcashPdfPreview').classList.add('hidden');
-        
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            document.getElementById('gcashImage').src = e.target.result;
-        };
-        reader.readAsDataURL(file);
-    }
-});
-
-// Remove buttons functionality
-document.getElementById('removeDeathCert').addEventListener('click', function() {
-    document.getElementById('traditionalDeathCertificate').value = '';
-    document.getElementById('traditionalDeathCertFileName').textContent = 'No file chosen';
-    hideDeathCertPreview();
-});
-
-document.getElementById('removeGcash').addEventListener('click', function() {
-    document.getElementById('traditionalGcashReceipt').value = '';
-    document.getElementById('traditionalGcashFileName').textContent = 'No file chosen';
-    hideGcashPreview();
-});
-
-// Helper functions
-function hideDeathCertPreview() {
-    document.getElementById('deathCertPreviewContainer').classList.add('hidden');
-    document.getElementById('deathCertImagePreview').classList.add('hidden');
-    document.getElementById('deathCertPdfPreview').classList.add('hidden');
-    document.getElementById('removeDeathCert').classList.add('hidden');
-}
-
-function hideGcashPreview() {
-    document.getElementById('gcashPreviewContainer').classList.add('hidden');
-    document.getElementById('gcashImagePreview').classList.add('hidden');
-    document.getElementById('gcashPdfPreview').classList.add('hidden');
-    document.getElementById('removeGcash').classList.add('hidden');
-}
-
-// You would need to add code here to handle the cascading dropdowns for region, province, city, barangay
-// For example:
-document.getElementById('traditionalDeceasedRegion').addEventListener('change', function() {
-    // Code to populate province dropdown based on selected region
-    const selectedRegion = this.value;
-    const provinceDropdown = document.getElementById('traditionalDeceasedProvince');
-    
-    // Clear existing options
-    provinceDropdown.innerHTML = '<option value="">Select Province</option>';
-    
-    // Add logic to populate provinces based on selected region
-    // This would typically involve an API call or using predefined data
-});
-
-document.getElementById('traditionalDeceasedProvince').addEventListener('change', function() {
-    // Code to populate city dropdown based on selected province
-    const selectedProvince = this.value;
-    const cityDropdown = document.getElementById('traditionalDeceasedCity');
-    
-    // Clear existing options
-    cityDropdown.innerHTML = '<option value="">Select City/Municipality</option>';
-    
-    // Add logic to populate cities based on selected province
-});
-
-document.getElementById('traditionalDeceasedCity').addEventListener('change', function() {
-    // Code to populate barangay dropdown based on selected city
-    const selectedCity = this.value;
-    const barangayDropdown = document.getElementById('traditionalDeceasedBarangay');
-    
-    // Clear existing options
-    barangayDropdown.innerHTML = '<option value="">Select Barangay</option>';
-    
-    // Add logic to populate barangays based on selected city
-});
-
-
-</script>
 
 <!-- Lifeplan Modal (Hidden by Default) -->
 <div id="lifeplanModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4 hidden">
@@ -1224,21 +927,17 @@ document.addEventListener('DOMContentLoaded', function() {
     const lifeplanDetailsSection = document.querySelector('#lifeplanModal .details-section');
     const lifeplanFormSection = document.querySelector('#lifeplanModal .form-section');
     
-    // Update your existing continue/back button handlers
-if (continueBtn && backBtn && detailsSection && formSection) {
-    continueBtn.addEventListener('click', function() {
-        detailsSection.classList.add('hidden');
-        formSection.classList.remove('hidden');
-        // Force show on mobile when navigating to form
-        formSection.classList.add('force-show');
-    });
-    
-    backBtn.addEventListener('click', function() {
-        formSection.classList.add('hidden');
-        formSection.classList.remove('force-show');
-        detailsSection.classList.remove('hidden');
-    });
-}
+    if (continueBtn && backBtn && detailsSection && formSection) {
+        continueBtn.addEventListener('click', function() {
+            detailsSection.classList.add('hidden');
+            formSection.classList.remove('hidden');
+        });
+        
+        backBtn.addEventListener('click', function() {
+            formSection.classList.add('hidden');
+            detailsSection.classList.remove('hidden');
+        });
+    }
 
     if (continueToLifeplanFormBtn && backToLifeplanDetailsBtn && lifeplanDetailsSection && lifeplanFormSection) {
     continueToLifeplanFormBtn.addEventListener('click', function() {
@@ -1253,16 +952,14 @@ if (continueBtn && backBtn && detailsSection && formSection) {
 }
     
     // Make sure the modal close button works for both sections
-    // Update your close modal handler
-document.querySelectorAll('.closeModalBtn').forEach(btn => {
-    btn.addEventListener('click', function() {
-        document.getElementById('traditionalModal').classList.add('hidden');
-        // Reset to show details when modal is reopened
-        detailsSection.classList.remove('hidden');
-        formSection.classList.add('hidden');
-        formSection.classList.remove('force-show');
+    document.querySelectorAll('.closeModalBtn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.getElementById('traditionalModal').classList.add('hidden');
+            // Reset to show details when modal is reopened
+            detailsSection.classList.remove('hidden');
+            formSection.classList.add('hidden');
+        });
     });
-});
 
     // Package selection functionality
     document.addEventListener('click', function(event) {
@@ -1795,85 +1492,6 @@ function toggleMenu() {
     const mobileMenu = document.getElementById('mobile-menu');
     mobileMenu.classList.toggle('hidden');
 }
-
-// Date validation for traditional booking form
-document.addEventListener('DOMContentLoaded', function() {
-    // Get today's date in YYYY-MM-DD format
-    const today = new Date();
-    const todayFormatted = today.toISOString().split('T')[0];
-    
-    // Set max date for date of birth and date of death to today
-    document.getElementById('traditionalDateOfBirth').max = todayFormatted;
-    document.getElementById('traditionalDateOfDeath').max = todayFormatted;
-    
-    // Set min date for date of burial to tomorrow
-    const tomorrow = new Date(today);
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    const tomorrowFormatted = tomorrow.toISOString().split('T')[0];
-    document.getElementById('traditionalDateOfBurial').min = tomorrowFormatted;
-    
-    // Validate date of birth is before date of death
-    document.getElementById('traditionalDateOfBirth').addEventListener('change', function() {
-        const dob = this.value;
-        const dod = document.getElementById('traditionalDateOfDeath').value;
-        
-        if (dob && dod && dob > dod) {
-            alert('Date of birth must be before date of death');
-            this.value = '';
-        }
-    });
-    
-    // Validate date of death is after date of birth and before date of burial
-    document.getElementById('traditionalDateOfDeath').addEventListener('change', function() {
-        const dod = this.value;
-        const dob = document.getElementById('traditionalDateOfBirth').value;
-        const dobInput = document.getElementById('traditionalDateOfBirth');
-        
-        if (dob && dod < dob) {
-            alert('Date of death must be after date of birth');
-            this.value = '';
-            return;
-        }
-        
-        const burialDate = document.getElementById('traditionalDateOfBurial').value;
-        if (burialDate && dod > burialDate) {
-            alert('Date of death must be before date of burial');
-            this.value = '';
-        }
-    });
-    
-    // Validate date of burial is after date of death
-    document.getElementById('traditionalDateOfBurial').addEventListener('change', function() {
-        const burialDate = this.value;
-        const dod = document.getElementById('traditionalDateOfDeath').value;
-        
-        if (dod && burialDate < dod) {
-            alert('Date of burial must be after date of death');
-            this.value = '';
-        }
-    });
-});
-
-// Add this to your existing JavaScript
-window.addEventListener('resize', function() {
-    const traditionalModal = document.getElementById('traditionalModal');
-    if (!traditionalModal.classList.contains('hidden')) {
-        const detailsSection = document.querySelector('.details-section');
-        const formSection = document.querySelector('.form-section');
-        const isMobileView = window.innerWidth < 768;
-        
-        if (isMobileView) {
-            // If switching to mobile view, ensure form is hidden if we were on details
-            if (!detailsSection.classList.contains('hidden')) {
-                formSection.classList.add('hidden');
-            }
-        } else {
-            // If switching to desktop view, show both sections
-            detailsSection.classList.remove('hidden');
-            formSection.classList.remove('hidden');
-        }
-    }
-});
 </script>
 </body>
 </html>
