@@ -575,7 +575,7 @@ for ($i = 5; $i >= 0; $i--) {
     <div class="p-4 sm:p-5">
       <div class="w-full h-48 md:h-64">
         <!-- <canvas id="revenueChart" style="width: 100%; height: 100%;"></canvas> -->
-        <div id="revenueChart"></div>
+        <div id="revenueChart" style="width: 100%; height: 100%;"></div>
       </div>
     </div>
   </div>
