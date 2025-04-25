@@ -194,7 +194,7 @@ $customersResult = mysqli_query($conn, $customersQuery);
                 </div>
 
                 <!-- For Customer Archive Button -->
-                <button class="px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover" onclick="deleteCustomerAccount(123)">
+                <button class="px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover" onclick="showArchivedCustomer">
                     <i class="fas fa-archive text-sidebar-accent"></i>
                     <span>Archive</span>
                 </button>
@@ -1569,7 +1569,7 @@ if ($result->num_rows > 0) {
                 </div>
 
                 <!-- For Employee Archive Button -->
-                <button class="px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover" onclick="deleteEmployeeAccount(456)">
+                <button class="px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover" onclick="showArchivedEmployee">
                     <i class="fas fa-archive text-sidebar-accent"></i>
                     <span>Archive</span>
                 </button>
@@ -1739,6 +1739,135 @@ if ($result->num_rows > 0) {
         </div>
     </div>
 </div>
+
+<!-- Archived Accounts Modal -->
+<div id="archivedModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-lg w-3/4 max-w-4xl max-h-[80vh] flex flex-col">
+        <!-- Modal Header -->
+        <div class="p-4 border-b border-gray-200 flex justify-between items-center">
+            <h3 class="text-lg font-semibold" id="modalTitle">Archived Accounts</h3>
+            <button onclick="closeArchivedModal()" class="text-gray-500 hover:text-gray-700">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <!-- Modal Body -->
+        <div class="p-4 overflow-y-auto flex-grow">
+            <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+                <table class="w-full text-sm text-left text-gray-500">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                        <tr>
+                            <th scope="col" class="px-6 py-3">ID</th>
+                            <th scope="col" class="px-6 py-3">Name</th>
+                            <th scope="col" class="px-6 py-3">Email</th>
+                            <th scope="col" class="px-6 py-3">Type</th>
+                            <th scope="col" class="px-6 py-3">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="archivedAccountsTable">
+                        <!-- Archived accounts will be loaded here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Modal Footer -->
+        <div class="p-4 border-t border-gray-200 flex justify-end">
+            <button onclick="closeArchivedModal()" class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition">
+                Close
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    
+    document.querySelector('[onclick="showArchivedCustomer"]').setAttribute('onclick', 'showArchivedCustomer()');
+    document.querySelector('[onclick="showArchivedEmployee"]').setAttribute('onclick', 'showArchivedEmployee()');
+
+// Function to show archived customers
+function showArchivedCustomer() {
+    document.getElementById('modalTitle').textContent = 'Archived Customer Accounts';
+    fetchArchivedAccounts(3); // 3 is the user_type for customers
+    document.getElementById('archivedModal').classList.remove('hidden');
+}
+
+// Function to show archived employees
+function showArchivedEmployee() {
+    document.getElementById('modalTitle').textContent = 'Archived Employee Accounts';
+    fetchArchivedAccounts(2); // 2 is the user_type for employees
+    document.getElementById('archivedModal').classList.remove('hidden');
+}
+
+// Function to close the modal
+function closeArchivedModal() {
+    document.getElementById('archivedModal').classList.add('hidden');
+}
+
+// Function to fetch archived accounts
+function fetchArchivedAccounts(userType) {
+    fetch(`accountManagement/fetch_archived_accounts.php?user_type=${userType}`)
+        .then(response => response.json())
+        .then(data => {
+            const tableBody = document.getElementById('archivedAccountsTable');
+            tableBody.innerHTML = data.tableContent;
+        })
+        .catch(error => console.error('Error:', error));
+}
+
+// Function to unarchive an account
+function unarchiveAccount(userId) {
+    Swal.fire({
+        title: 'Confirm',
+        text: 'Are you sure you want to unarchive this account?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, unarchive it!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch('accountManagement/unarchive_account.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `id=${userId}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        title: 'Success!',
+                        text: 'Account unarchived successfully!',
+                        icon: 'success',
+                        confirmButtonText: 'OK'
+                    }).then(() => {
+                        location.reload(); // Reload the page after clicking OK
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'Error unarchiving account: ' + data.message,
+                        icon: 'error'
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire({
+                    title: 'Error',
+                    text: 'An error occurred while unarchiving the account.',
+                    icon: 'error'
+                });
+            });
+        }
+    });
+}
+function closeArchivedModal() {
+    document.getElementById('archivedModal').classList.add('hidden');
+}
+</script>
 
 
 <script>
