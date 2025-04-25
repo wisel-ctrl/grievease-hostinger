@@ -1,4 +1,4 @@
-<!-- chat_elements.html - Copy and include this HTML structure in your pages -->
+<!-- chat_elements.html - Updated with non-fullscreen mobile view -->
 <!-- Overlay for blur effect (initially hidden) --> 
 <div id="overlay" class="fixed inset-0 bg-black bg-opacity-40 backdrop-blur-sm z-40 hidden"></div>
 
@@ -10,7 +10,7 @@
   </button>
 
   <!-- Chat Window Modal (Initially Hidden) --> 
-  <div id="chat-window" class="fixed sm:bottom-12 sm:right-20 bottom-0 right-0 z-50 bg-white rounded-lg shadow-xl sm:w-80 w-full sm:h-auto h-full hidden"> 
+  <div id="chat-window" class="fixed bottom-20 right-4 z-50 bg-white rounded-lg shadow-xl w-5/6 max-w-sm h-3/4 max-h-[500px] hidden"> 
     <!-- Chat Header --> 
     <div class="bg-black text-white p-3 rounded-t-lg flex justify-between items-center"> 
       <div class="flex items-center"> 
@@ -27,11 +27,11 @@
       </div> 
     </div>
 
-    <!-- Add this right after the chat window div --> 
+    <!-- User ID hidden input -->
     <input type="hidden" id="user-id" value="<?php echo isset($_SESSION['user_id']) ? $_SESSION['user_id'] : ''; ?>">
 
     <!-- Chat Messages --> 
-    <div id="chat-messages" class="p-3 sm:h-80 h-[calc(100%-116px)] overflow-y-auto space-y-3 bg-gray-50"> 
+    <div id="chat-messages" class="p-3 h-[calc(100%-116px)] overflow-y-auto space-y-3 bg-gray-50"> 
       <div class="flex items-start"> 
         <div class="bg-gray-200 rounded-lg p-2 max-w-[80%]"> 
           <p class="text-sm">Hello, welcome to GrievEase customer support. How can I assist you today?</p> 
@@ -54,7 +54,7 @@
 <!-- Branch Selection Modal (Initially Hidden) --> 
 <div id="branch-modal" class="fixed inset-0 flex items-center justify-center z-50 hidden"> 
   <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div> 
-  <div class="bg-white rounded-lg shadow-xl sm:w-80 w-[90%] max-w-sm z-10 p-5"> 
+  <div class="bg-white rounded-lg shadow-xl w-5/6 max-w-sm z-10 p-5"> 
     <h3 class="text-lg font-semibold mb-4">Select Branch Location</h3> 
     <p class="text-sm text-gray-600 mb-4">Please select which branch you'd like to contact:</p>
 
@@ -63,6 +63,6 @@
       <div class="text-center py-4"> 
         <i class="fas fa-spinner fa-spin"></i> Loading branches... 
       </div> 
-    </div> 
+    </div>
   </div> 
 </div>
