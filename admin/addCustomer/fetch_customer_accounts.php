@@ -15,7 +15,7 @@ $sort = isset($_GET['sort']) ? $conn->real_escape_string($_GET['sort']) : 'id_as
 $offset = ($page - 1) * $usersPerPage;
 
 // Base SQL query
-$baseSql = "FROM users WHERE user_type = 3";
+$baseSql = "FROM users WHERE user_type = 3 AND is_verified = 1";
 
 // Add search condition if search term is provided
 if (!empty($search)) {
