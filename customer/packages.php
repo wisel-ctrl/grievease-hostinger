@@ -657,47 +657,53 @@ $conn->close();
                     <div class="border-b border-gray-200 pb-4 mb-4">
                         <h3 class="text-base md:text-lg font-hedvig text-navy mb-3 md:mb-4">Deceased Information</h3>
                         
-                        <!-- First Name & Middle Name (Full width on mobile, side by side on larger screens) -->
-                        <div class="mb-3">
-                            <label for="traditionalDeceasedFirstName" class="block text-sm font-medium text-navy mb-1">First Name *</label>
-                            <input type="text" id="traditionalDeceasedFirstName" name="deceasedFirstName" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
-                        </div>
-                        <div class="mb-3">
-                            <label for="traditionalDeceasedMiddleName" class="block text-sm font-medium text-navy mb-1">Middle Name</label>
-                            <input type="text" id="traditionalDeceasedMiddleName" name="deceasedMiddleName" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
-                        </div>
-                        
-                        <!-- Last Name & Suffix (Full width on mobile) -->
-                        <div class="mb-3">
-                            <label for="traditionalDeceasedLastName" class="block text-sm font-medium text-navy mb-1">Last Name *</label>
-                            <input type="text" id="traditionalDeceasedLastName" name="deceasedLastName" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
-                        </div>
-                        <div class="mb-3">
-                            <label for="traditionalDeceasedSuffix" class="block text-sm font-medium text-navy mb-1">Suffix</label>
-                            <select id="traditionalDeceasedSuffix" name="deceasedSuffix" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
-                                <option value="">None</option>
-                                <option value="Jr.">Jr.</option>
-                                <option value="Sr.">Sr.</option>
-                                <option value="I">I</option>
-                                <option value="II">II</option>
-                                <option value="III">III</option>
-                                <option value="IV">IV</option>
-                                <option value="V">V</option>
-                            </select>
+                        <!-- First Name & Middle Name (Side by side) -->
+                        <div class="flex flex-wrap -mx-2 mb-3">
+                            <div class="w-full sm:w-1/2 px-2 mb-3 sm:mb-0">
+                                <label for="traditionalDeceasedFirstName" class="block text-sm font-medium text-navy mb-1">First Name *</label>
+                                <input type="text" id="traditionalDeceasedFirstName" name="deceasedFirstName" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                            </div>
+                            <div class="w-full sm:w-1/2 px-2">
+                                <label for="traditionalDeceasedMiddleName" class="block text-sm font-medium text-navy mb-1">Middle Name</label>
+                                <input type="text" id="traditionalDeceasedMiddleName" name="deceasedMiddleName" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                            </div>
                         </div>
                         
-                        <!-- Date fields (Full width on mobile) -->
-                        <div class="mb-3">
-                            <label for="traditionalDateOfBirth" class="block text-sm font-medium text-navy mb-1">Date of Birth</label>
-                            <input type="date" id="traditionalDateOfBirth" name="dateOfBirth" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                        <!-- Last Name & Suffix (Side by side) -->
+                        <div class="flex flex-wrap -mx-2 mb-3">
+                            <div class="w-full sm:w-3/4 px-2 mb-3 sm:mb-0">
+                                <label for="traditionalDeceasedLastName" class="block text-sm font-medium text-navy mb-1">Last Name *</label>
+                                <input type="text" id="traditionalDeceasedLastName" name="deceasedLastName" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                            </div>
+                            <div class="w-full sm:w-1/4 px-2">
+                                <label for="traditionalDeceasedSuffix" class="block text-sm font-medium text-navy mb-1">Suffix</label>
+                                <select id="traditionalDeceasedSuffix" name="deceasedSuffix" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                                    <option value="">None</option>
+                                    <option value="Jr.">Jr.</option>
+                                    <option value="Sr.">Sr.</option>
+                                    <option value="I">I</option>
+                                    <option value="II">II</option>
+                                    <option value="III">III</option>
+                                    <option value="IV">IV</option>
+                                    <option value="V">V</option>
+                                </select>
+                            </div>
                         </div>
-                        <div class="mb-3">
-                            <label for="traditionalDateOfDeath" class="block text-sm font-medium text-navy mb-1">Date of Death *</label>
-                            <input type="date" id="traditionalDateOfDeath" name="dateOfDeath" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
-                        </div>
-                        <div class="mb-3">
-                            <label for="traditionalDateOfBurial" class="block text-sm font-medium text-navy mb-1">Date of Burial</label>
-                            <input type="date" id="traditionalDateOfBurial" name="dateOfBurial" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                        
+                        <!-- Date fields (Three in a row on larger screens, stacked on mobile) -->
+                        <div class="flex flex-wrap -mx-2 mb-3">
+                            <div class="w-full sm:w-1/3 px-2 mb-3 sm:mb-0">
+                                <label for="traditionalDateOfBirth" class="block text-sm font-medium text-navy mb-1">Date of Birth</label>
+                                <input type="date" id="traditionalDateOfBirth" name="dateOfBirth" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                            </div>
+                            <div class="w-full sm:w-1/3 px-2 mb-3 sm:mb-0">
+                                <label for="traditionalDateOfDeath" class="block text-sm font-medium text-navy mb-1">Date of Death *</label>
+                                <input type="date" id="traditionalDateOfDeath" name="dateOfDeath" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                            </div>
+                            <div class="w-full sm:w-1/3 px-2">
+                                <label for="traditionalDateOfBurial" class="block text-sm font-medium text-navy mb-1">Date of Burial</label>
+                                <input type="date" id="traditionalDateOfBurial" name="dateOfBurial" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                            </div>
                         </div>
                         
                         <!-- Death Certificate Upload with Preview -->
@@ -742,20 +748,47 @@ $conn->close();
                             <p class="text-xs text-gray-500 mt-1">Accepted formats: PDF, JPG, JPEG, PNG</p>
                         </div>
                         
-                        <!-- Address (Improved UI with regions dropdown) -->
-                        <div class="mb-3">
-                            <label for="traditionalDeceasedRegion" class="block text-sm font-medium text-navy mb-1">Region</label>
-                            <select id="traditionalDeceasedRegion" name="deceasedRegion" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
-                                <option value="">Select Region</option>
-                                <option value="NCR">National Capital Region (NCR)</option>
-                                <option value="CAR">Cordillera Administrative Region (CAR)</option>
-                                <option value="Region I">Ilocos Region (Region I)</option>
-                                <!-- Add more regions as needed -->
-                            </select>
+                        <!-- Address (Improved UI with dropdowns in specified layout) -->
+                        <div class="flex flex-wrap -mx-2 mb-3">
+                            <div class="w-full sm:w-1/2 px-2 mb-3 sm:mb-0">
+                                <label for="traditionalDeceasedRegion" class="block text-sm font-medium text-navy mb-1">Region</label>
+                                <select id="traditionalDeceasedRegion" name="deceasedRegion" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                                    <option value="">Select Region</option>
+                                    <option value="NCR">National Capital Region (NCR)</option>
+                                    <option value="CAR">Cordillera Administrative Region (CAR)</option>
+                                    <option value="Region I">Ilocos Region (Region I)</option>
+                                    <!-- Add more regions as needed -->
+                                </select>
+                            </div>
+                            <div class="w-full sm:w-1/2 px-2">
+                                <label for="traditionalDeceasedProvince" class="block text-sm font-medium text-navy mb-1">Province</label>
+                                <select id="traditionalDeceasedProvince" name="deceasedProvince" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                                    <option value="">Select Province</option>
+                                    <!-- Provinces will be populated by JavaScript based on selected region -->
+                                </select>
+                            </div>
                         </div>
+                        
+                        <div class="flex flex-wrap -mx-2 mb-3">
+                            <div class="w-full sm:w-1/2 px-2 mb-3 sm:mb-0">
+                                <label for="traditionalDeceasedCity" class="block text-sm font-medium text-navy mb-1">City/Municipality</label>
+                                <select id="traditionalDeceasedCity" name="deceasedCity" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                                    <option value="">Select City/Municipality</option>
+                                    <!-- Cities will be populated by JavaScript based on selected province -->
+                                </select>
+                            </div>
+                            <div class="w-full sm:w-1/2 px-2">
+                                <label for="traditionalDeceasedBarangay" class="block text-sm font-medium text-navy mb-1">Barangay</label>
+                                <select id="traditionalDeceasedBarangay" name="deceasedBarangay" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                                    <option value="">Select Barangay</option>
+                                    <!-- Barangays will be populated by JavaScript based on selected city -->
+                                </select>
+                            </div>
+                        </div>
+                        
                         <div class="mb-3">
-                            <label for="traditionalDeceasedAddress" class="block text-sm font-medium text-navy mb-1">Complete Address</label>
-                            <textarea id="traditionalDeceasedAddress" name="deceasedAddress" rows="2" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600"></textarea>
+                            <label for="traditionalDeceasedStreet" class="block text-sm font-medium text-navy mb-1">Street/Block/House Number</label>
+                            <input type="text" id="traditionalDeceasedStreet" name="deceasedStreet" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" placeholder="Enter detailed street address">
                         </div>
                         
                         <div class="flex items-center mt-3 md:mt-4">
@@ -958,6 +991,42 @@ function hideGcashPreview() {
     document.getElementById('gcashPdfPreview').classList.add('hidden');
     document.getElementById('removeGcash').classList.add('hidden');
 }
+
+// You would need to add code here to handle the cascading dropdowns for region, province, city, barangay
+// For example:
+document.getElementById('traditionalDeceasedRegion').addEventListener('change', function() {
+    // Code to populate province dropdown based on selected region
+    const selectedRegion = this.value;
+    const provinceDropdown = document.getElementById('traditionalDeceasedProvince');
+    
+    // Clear existing options
+    provinceDropdown.innerHTML = '<option value="">Select Province</option>';
+    
+    // Add logic to populate provinces based on selected region
+    // This would typically involve an API call or using predefined data
+});
+
+document.getElementById('traditionalDeceasedProvince').addEventListener('change', function() {
+    // Code to populate city dropdown based on selected province
+    const selectedProvince = this.value;
+    const cityDropdown = document.getElementById('traditionalDeceasedCity');
+    
+    // Clear existing options
+    cityDropdown.innerHTML = '<option value="">Select City/Municipality</option>';
+    
+    // Add logic to populate cities based on selected province
+});
+
+document.getElementById('traditionalDeceasedCity').addEventListener('change', function() {
+    // Code to populate barangay dropdown based on selected city
+    const selectedCity = this.value;
+    const barangayDropdown = document.getElementById('traditionalDeceasedBarangay');
+    
+    // Clear existing options
+    barangayDropdown.innerHTML = '<option value="">Select Barangay</option>';
+    
+    // Add logic to populate barangays based on selected city
+});
 </script>
 
 <!-- Lifeplan Modal (Hidden by Default) -->
