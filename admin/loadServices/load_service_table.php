@@ -156,7 +156,7 @@ $result = $conn->query($sql);
                                     <i class="fas fa-edit"></i>
                                 </button>
                                 <button class="p-2 text-red-600 hover:text-red-900 hover:bg-red-50 rounded transition-colors"
-                                        onclick="deleteService('<?php echo $row["service_id"]; ?>', '<?php echo $branchId; ?>')">
+                                        onclick="archiveService('<?php echo htmlspecialchars($row['service_id'], ENT_QUOTES); ?>', '<?php echo htmlspecialchars($branchId, ENT_QUOTES); ?>')">
                                     <i class="fas fa-trash-alt"></i>
                                 </button>
                             </div>
