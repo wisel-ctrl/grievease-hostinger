@@ -614,14 +614,6 @@ $conn->close();
                     </ul>
                 </div>
 
-                <!-- "With Cremate" checkbox for mobile -->
-                <div class="flex items-center mt-4 md:hidden">
-                    <input type="checkbox" id="traditionalWithCremateMobile" name="with_cremate" value="yes" class="h-4 w-4 text-yellow-600 focus:ring-yellow-500 border-gray-300 rounded">
-                    <label for="traditionalWithCremateMobile" class="ml-2 block text-sm text-navy">
-                        Include cremation service
-                    </label>
-                </div>
-                
                 <!-- Mobile-only summary and navigation button -->
                 <div class="mt-6 border-t border-gray-200 pt-4 md:hidden">
                     <div class="bg-white p-4 rounded-lg shadow-sm">
@@ -705,11 +697,10 @@ $conn->close();
                             <label for="traditionalDeceasedAddress" class="block text-xs md:text-sm font-medium text-navy mb-1 md:mb-2">Address of the Deceased</label>
                             <textarea id="traditionalDeceasedAddress" name="deceasedAddress" rows="2" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600"></textarea>
                         </div>
-
-                        <!-- "With Cremate" checkbox for desktop -->
-                        <div class="flex items-center mt-3 md:mt-4 hidden md:flex">
+                        
+                        <div class="flex items-center mt-3 md:mt-4">
                             <input type="checkbox" id="traditionalWithCremate" name="with_cremate" value="yes" class="h-4 w-4 text-yellow-600 focus:ring-yellow-500 border-gray-300 rounded">
-                            <label for="traditionalWithCremate" class="ml-2 block text-sm text-navy">
+                            <label for="traditionalWithCremate" class="ml-2 block text-xs md:text-sm text-navy">
                                 Include cremation service
                             </label>
                         </div>
