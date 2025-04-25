@@ -422,7 +422,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <tr>
                 <td colspan="6" class="text-center p-4">
                     <div class="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-blue-500"></div>
-                    <p class="mt-2 text-gray-500">Loading...</p>
+                    <p class="mt-2 text-sidebar-accent">Loading...</p>
                 </td>
             </tr>
         `;
@@ -1724,7 +1724,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <tr>
                 <td colspan="6" class="text-center p-4">
                     <div class="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-blue-500"></div>
-                    <p class="mt-2 text-gray-500">Loading...</p>
+                    <p class="mt-2 text-sidebar-accent">Loading...</p>
                 </td>
             </tr>
         `;
