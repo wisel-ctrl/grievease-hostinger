@@ -14,42 +14,41 @@ document.getElementById('archivedItemsModal').classList.add('hidden');
   document.body.style.overflow = 'auto';
 }
 
+// In the unarchiveItem function
 function unarchiveItem(itemId, branchId) {
-Swal.fire({
-  title: 'Are you sure?',
-  text: 'You want to unarchive this item?',
-  icon: 'warning',
-  showCancelButton: true,
-  confirmButtonColor: '#3085d6',
-  cancelButtonColor: '#d33',
-  confirmButtonText: 'Yes, unarchive it!',
-  cancelButtonText: 'Cancel'
-}).then((result) => {
-  if (result.isConfirmed) {
-      // If confirmed, proceed with the AJAX request
-      $.ajax({
-          url: 'inventory/unarchive_item.php',
-          type: 'POST',
-          data: { 
-              inventory_id: itemId,
-              branch_id: branchId 
-          },
-          success: function(response) {
-              // Refresh the archived items list
-              showArchivedItems(branchId);
-              // Optionally refresh the main inventory table
-              location.reload();
-          },
-          error: function(xhr, status, error) {
-              Swal.fire({
-                  icon: 'error',
-                  title: 'Error',
-                  text: 'Error unarchiving item: ' + error
-              });
-          }
-      });
-  }
-});
+  Swal.fire({
+      title: 'Unarchive this item?',
+      text: 'You want to restore this item to active inventory?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, unarchive it!',
+      cancelButtonText: 'No, cancel'
+  }).then((result) => {
+      if (result.isConfirmed) {
+          // AJAX request to unarchive
+          $.ajax({
+              url: 'inventory/unarchive_item.php',
+              type: 'POST',
+              data: { 
+                  inventory_id: itemId,
+                  branch_id: branchId 
+              },
+              success: function(response) {
+                  showArchivedItems(branchId);
+                  location.reload();
+              },
+              error: function(xhr, status, error) {
+                  Swal.fire({
+                      icon: 'error',
+                      title: 'Error',
+                      text: 'Error unarchiving item: ' + error
+                  });
+              }
+          });
+      }
+  });
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -214,21 +213,25 @@ rows.forEach(row => {
 }
 
 
+// Update the delete-form event listener in inventory_functions.js
 document.querySelectorAll('.delete-form').forEach(form => {
   form.addEventListener('submit', function(event) {
       event.preventDefault(); // Prevent the default form submission
-
-      const formElement = this; // Reference to the form
+      const formElement = this;
 
       Swal.fire({
-          title: 'Are you sure?',
-          text: "You won't be able to revert this!",
+          title: 'Archive this item?',
+          text: "The item will be moved to archives and can be restored later.",
           icon: 'warning',
           showCancelButton: true,
           confirmButtonColor: '#3085d6',
           cancelButtonColor: '#d33',
-          confirmButtonText: 'Yes, delete it!',
-          cancelButtonText: 'Cancel'
+          confirmButtonText: 'Yes, archive it!',
+          cancelButtonText: 'No, cancel',
+          customClass: {
+              confirmButton: 'swal2-confirm',
+              cancelButton: 'swal2-cancel'
+          }
       }).then((result) => {
           if (result.isConfirmed) {
               // If confirmed, submit the form
@@ -237,7 +240,6 @@ document.querySelectorAll('.delete-form').forEach(form => {
       });
   });
 });
-
 // Remove the duplicate sortTable function (keep only one)
 function sortTable(branchId, n) {
 let table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
