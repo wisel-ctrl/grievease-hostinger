@@ -261,14 +261,20 @@ $customersResult = mysqli_query($conn, $customersQuery);
                                     <div class="flex items-center cursor-pointer filter-option-mobile" data-sort="email_desc">
                                         <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
                                             Email: Z-A
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                                            </span>
                     </div>
+                  </div>
                 </div>
+              </div>
             </div>
+          </div>
+
+          <!-- Archive Icon Button -->
+          <button class="w-10 h-10 flex items-center justify-center text-sidebar-accent" onclick="showArchivedItems(<?php echo $branchId; ?>)">
+            <i class="fas fa-archive text-xl"></i>
+          </button>
+        </div>
+      </div>
             
 
             <!-- Second row: Add Customer Account Button - Full width -->
