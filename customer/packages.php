@@ -1213,6 +1213,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('lifeplanTotalPrice').textContent = `₱${totalPrice.toLocaleString()}`;
         document.getElementById('lifeplanTotalPriceMobile').textContent = `₱${totalPrice.toLocaleString()}`;
         document.getElementById('lifeplanMonthlyPayment').textContent = `₱${monthlyPayment.toLocaleString()}`;
+        document.getElementById('lifeplanMonthlyPaymentMobile').textContent = `₱${monthlyPayment.toLocaleString()}`;
 
         const featuresList = document.getElementById('lifeplanPackageFeatures');
         featuresList.innerHTML = '';
