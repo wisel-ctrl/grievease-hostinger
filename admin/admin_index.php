@@ -172,7 +172,6 @@ if ($prevCompletedCount > 0) {
 
 // Format the revenue with PHP's number_format
 $formattedRevenue = number_format($totalRevenue, 2);
-
 ?>
 <?php
 function getBranchMetrics($conn, $branchId) {
@@ -313,6 +312,50 @@ for ($i = 11; $i >= 0; $i--) {
     $date = new DateTime();
     $date->modify("-$i months");
     $monthLabels[] = $date->format('M Y');
+}
+?>
+<?php
+$serviceSalesQuery = "SELECT 
+                        s.service_name,
+                        sa.branch_id,
+                        COUNT(*) AS total_sales
+                      FROM sales_tb sa
+                      JOIN services_tb s ON sa.service_id = s.service_id
+                      GROUP BY s.service_name, sa.branch_id";
+
+$stmt = $conn->prepare($serviceSalesQuery);
+$stmt->execute();
+$result = $stmt->get_result();
+
+// Organize the data by service and branch
+$serviceData = [];
+while ($row = $result->fetch_assoc()) {
+    $serviceName = $row['service_name'];
+    $branchId = $row['branch_id'];
+    $totalSales = $row['total_sales'];
+    
+    if (!isset($serviceData[$serviceName])) {
+        $serviceData[$serviceName] = [
+            'Pila' => 0,
+            'Paete' => 0
+        ];
+    }
+    
+    if ($branchId == 1) { // Paete branch
+        $serviceData[$serviceName]['Paete'] = $totalSales;
+    } else if ($branchId == 2) { // Pila branch
+        $serviceData[$serviceName]['Pila'] = $totalSales;
+    }
+}
+
+// Prepare data for chart
+$services = array_keys($serviceData);
+$pilaData = [];
+$paeteData = [];
+
+foreach ($serviceData as $service => $branches) {
+    $pilaData[] = $branches['Pila'];
+    $paeteData[] = $branches['Paete'];
 }
 ?>
 <!DOCTYPE html>
@@ -654,7 +697,7 @@ for ($i = 11; $i >= 0; $i--) {
     </div>
     <div class="p-4 sm:p-5">
       <div class="w-full h-48 md:h-64">
-        <canvas id="branchServicesChart" style="width: 100%; height: 100%;"></canvas>
+        <div id="branchServicesChart" style="width: 100%; height: 100%;"></div>
       </div>
     </div>
   </div>
@@ -1615,6 +1658,109 @@ var branchRevenueOptions = {
 
 var branchRevenueChart = new ApexCharts(document.querySelector("#branchRevenueChart"), branchRevenueOptions);
 branchRevenueChart.render();
+</script>
+<script>
+  var branchServicesOptions = {
+    series: [
+        {
+            name: 'Pila Branch',
+            data: <?php echo json_encode($pilaData); ?>
+        },
+        {
+            name: 'Paete Branch',
+            data: <?php echo json_encode($paeteData); ?>
+        }
+    ],
+    chart: {
+        height: '100%',
+        width: '100%',
+        type: 'radar',
+        dropShadow: {
+            enabled: true,
+            blur: 1,
+            left: 1,
+            top: 1
+        },
+        toolbar: {
+            show: true,
+            tools: {
+                download: true,
+                selection: false,
+                zoom: false,
+                zoomin: false,
+                zoomout: false,
+                pan: false,
+                reset: true
+            },
+            export: {
+                csv: {
+                    filename: 'branch-services-comparison',
+                    headerCategory: 'Service',
+                    headerValue: 'Sales Count',
+                },
+                png: {
+                    filename: 'branch-services-comparison',
+                },
+                svg: {
+                    filename: 'branch-services-comparison',
+                }
+            }
+        }
+    },
+    colors: ['#4f46e5', '#10b981'],
+    labels: <?php echo json_encode($services); ?>,
+    markers: {
+        size: 5,
+        hover: {
+            size: 7
+        }
+    },
+    yaxis: {
+        show: false,
+        min: 0
+    },
+    fill: {
+        opacity: 0.2
+    },
+    stroke: {
+        width: 2
+    },
+    tooltip: {
+        y: {
+            formatter: function(val) {
+                return val + ' sales';
+            }
+        }
+    },
+    legend: {
+        position: 'bottom',
+        horizontalAlign: 'center'
+    },
+    plotOptions: {
+        radar: {
+            polygons: {
+                strokeColors: '#e8e8e8',
+                fill: {
+                    colors: ['#f8f8f8', '#fff']
+                }
+            }
+        }
+    },
+    responsive: [{
+        breakpoint: 768,
+        options: {
+            legend: {
+                position: 'bottom'
+            },
+            chart: {
+                height: 400
+            }
+        }
+    }]
+};
+
+var branchServicesChart = new ApexCharts(document.querySelector("#branchServicesChart"), branchServicesOptions);
+branchServicesChart.render();
 </script>
   </body>
 </html>
