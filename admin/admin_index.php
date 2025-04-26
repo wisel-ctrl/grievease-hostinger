@@ -682,7 +682,7 @@ foreach ($serviceData as $service => $branches) {
       </button>
     </div>
     <div class="p-4 sm:p-5">
-      <div class="w-full h-48 md:h-64">
+    <div class="w-full" style="min-height: 300px; height: 60vh; max-height: 500px;">
         <div id="branchRevenueChart" style="width: 100%; height: 100%;"></div>
       </div>
     </div>
@@ -696,7 +696,7 @@ foreach ($serviceData as $service => $branches) {
       </button>
     </div>
     <div class="p-4 sm:p-5">
-      <div class="w-full h-48 md:h-64">
+      <div class="w-full" style="min-height: 300px; height: 60vh; max-height: 500px;">
         <div id="branchServicesChart" style="width: 100%; height: 100%;"></div>
       </div>
     </div>
