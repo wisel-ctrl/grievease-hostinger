@@ -663,7 +663,7 @@ header("Pragma: no-cache");
 </div>
 
 <!-- Modal for enlarged image - Improved UI -->
-<div id="imageModal" class="fixed inset-0 z-50 hidden bg-black bg-opacity-90 flex items-center justify-center p-4">
+<div id="imageModal" class="fixed inset-0 z-50 hidden bg-black bg-opacity-90 flex items-center justify-center p-4 transition-opacity duration-300">
     <div class="relative max-w-4xl w-full">
         <button onclick="closeImageModal()" class="absolute top-4 right-4 text-white hover:text-gray-300 bg-gray-800 bg-opacity-50 rounded-full p-2 transition-colors">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -750,24 +750,23 @@ function closeDeclineReasonModal() {
     document.body.style.overflow = 'auto';
 }
 
+// Function to open the image modal
 function openImageModal(imagePath) {
     // Set the source of the enlarged image
     document.getElementById('enlargedImage').src = imagePath;
     
-    // Show the modal
-    document.getElementById('imageModal').classList.remove('hidden');
-    document.getElementById('imageModal').classList.add('flex');
-    
-    // Prevent scrolling of the background
+    // Show the modal with smooth transition
+    const modal = document.getElementById('imageModal');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
     document.body.style.overflow = 'hidden';
 }
 
+// Function to close the image modal
 function closeImageModal() {
-    // Hide the modal
-    document.getElementById('imageModal').classList.add('hidden');
-    document.getElementById('imageModal').classList.remove('flex');
-    
-    // Restore scrolling
+    const modal = document.getElementById('imageModal');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
     document.body.style.overflow = 'auto';
 }
 
@@ -781,12 +780,7 @@ document.getElementById('imageModal').addEventListener('click', function(event) 
 // Close modal with Escape key
 document.addEventListener('keydown', function(event) {
     if (event.key === 'Escape') {
-        if (!document.getElementById('imageModal').classList.contains('hidden')) {
-            closeImageModal();
-        }
-        if (!document.getElementById('declineReasonModal').classList.contains('hidden')) {
-            closeDeclineReasonModal();
-        }
+        closeImageModal();
     }
 });
 </script>
