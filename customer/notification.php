@@ -856,29 +856,30 @@ $current_page_items = array_slice($filtered_items, ($page - 1) * $items_per_page
         </script>
         
         <!-- Booking Details Modal -->
-<div id="bookingDetailsModal" class="fixed inset-0 z-50 hidden overflow-y-auto">
-    <div class="flex items-center justify-center min-h-screen pt-4 px-2 sm:px-4 pb-20 text-center sm:block sm:p-0">
-        <!-- Background overlay -->
-        <div class="fixed inset-0 transition-opacity" aria-hidden="true">
-            <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
-        </div>
-        
-        <!-- Modal content -->
-        <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all w-full max-w-full sm:max-w-2xl sm:my-8 sm:align-middle">
-            <div class="bg-white px-3 sm:px-4 pt-4 sm:pt-5 pb-3 sm:pb-4 sm:p-6">
-                <h3 class="text-lg leading-6 font-medium text-gray-900 mb-3 sm:mb-4">Booking Details</h3>
-                <div class="grid grid-cols-1 gap-3 sm:gap-4 md:grid-cols-2" id="bookingDetailsContent">
-                    <!-- Details will be loaded here via JavaScript -->
+        <div id="bookingDetailsModal" class="fixed inset-0 z-50 hidden overflow-y-auto">
+            <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                <!-- Background overlay -->
+                <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+                    <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
                 </div>
-            </div>
-            <div class="bg-gray-50 px-3 sm:px-6 py-2 sm:py-3 flex justify-end sm:flex-row-reverse">
-                <button type="button" onclick="closeModal()" class="w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-3 sm:px-4 py-1.5 sm:py-2 bg-white text-sm sm:text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto">
-                    Close
-                </button>
+                
+                <!-- Modal content -->
+                <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl w-full">
+                    <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                        <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Booking Details</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="bookingDetailsContent">
+                            <!-- Details will be loaded here via JavaScript -->
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                        <button type="button" onclick="closeModal()" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                            Close
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
     <?php include 'customService/chat_elements.html'; ?>
     
@@ -929,32 +930,32 @@ $current_page_items = array_slice($filtered_items, ($page - 1) * $items_per_page
                 let htmlContent = `
                     <div class="col-span-2">
                         <h4 class="font-semibold text-gray-700 mb-2">Deceased Information</h4>
-                        <div class="bg-gray-50 p-2 sm:p-3 rounded-lg mb-3 sm:mb-4 text-sm sm:text-base">
-                            <p class="mb-1"><span class="font-medium">Full Name:</span> ${data.deceased_lname}, ${data.deceased_fname} ${data.deceased_midname || ''} ${data.deceased_suffix || ''}</p>
-                            <p class="mb-1"><span class="font-medium">Address:</span> ${data.deceased_address}</p>
-                            <p class="mb-1"><span class="font-medium">Birth Date:</span> ${formatDate(data.deceased_birth)}</p>
-                            <p class="mb-1"><span class="font-medium">Date of Death:</span> ${formatDate(data.deceased_dodeath)}</p>
-                            <p class="mb-1"><span class="font-medium">Date of Burial:</span> ${formatDate(data.deceased_dateOfBurial)}</p>
+                        <div class="bg-gray-50 p-3 rounded-lg mb-4">
+                            <p><span class="font-medium">Full Name:</span> ${data.deceased_lname}, ${data.deceased_fname} ${data.deceased_midname || ''} ${data.deceased_suffix || ''}</p>
+                            <p><span class="font-medium">Address:</span> ${data.deceased_address}</p>
+                            <p><span class="font-medium">Birth Date:</span> ${formatDate(data.deceased_birth)}</p>
+                            <p><span class="font-medium">Date of Death:</span> ${formatDate(data.deceased_dodeath)}</p>
+                            <p><span class="font-medium">Date of Burial:</span> ${formatDate(data.deceased_dateOfBurial)}</p>
                             <p><span class="font-medium">With Cremation:</span> ${data.with_cremate === 'yes' ? 'Yes' : 'No'}</p>
                         </div>
                     </div>
                     
-                    <div class="col-span-2 sm:col-span-1">
+                    <div>
                         <h4 class="font-semibold text-gray-700 mb-2">Service Details</h4>
-                        <div class="bg-gray-50 p-2 sm:p-3 rounded-lg mb-3 sm:mb-4 text-sm sm:text-base">
-                            <p class="mb-1"><span class="font-medium">Service:</span> ${data.service_name}</p>
-                            <p class="mb-1"><span class="font-medium">Branch:</span> ${data.branch_name}</p>
-                            <p class="mb-1"><span class="font-medium">Initial Price:</span> ₱${parseFloat(data.initial_price).toFixed(2)}</p>
+                        <div class="bg-gray-50 p-3 rounded-lg mb-4">
+                            <p><span class="font-medium">Service:</span> ${data.service_name}</p>
+                            <p><span class="font-medium">Branch:</span> ${data.branch_name}</p>
+                            <p><span class="font-medium">Initial Price:</span> ₱${parseFloat(data.initial_price).toFixed(2)}</p>
                             <p><span class="font-medium">Amount Paid:</span> ₱${parseFloat(data.amount_paid || 0).toFixed(2)}</p>
                         </div>
                     </div>
                     
-                    <div class="col-span-2 sm:col-span-1">
+                    <div>
                         <h4 class="font-semibold text-gray-700 mb-2">Booking Information</h4>
-                        <div class="bg-gray-50 p-2 sm:p-3 rounded-lg mb-3 sm:mb-4 text-sm sm:text-base">
-                            <p class="mb-1"><span class="font-medium">Status:</span> <span class="px-2 py-0.5 rounded text-xs ${getStatusColorClass(data.status)}">${data.status}</span></p>
-                            <p class="mb-1"><span class="font-medium">Booking Date:</span> ${formattedBookingDate}</p>
-                            ${data.accepted_date ? `<p class="mb-1"><span class="font-medium">${data.status} Date:</span> ${new Date(data.accepted_date).toLocaleString()}</p>` : ''}
+                        <div class="bg-gray-50 p-3 rounded-lg mb-4">
+                            <p><span class="font-medium">Status:</span> <span class="px-2 py-1 rounded text-xs ${getStatusColorClass(data.status)}">${data.status}</span></p>
+                            <p><span class="font-medium">Booking Date:</span> ${formattedBookingDate}</p>
+                            ${data.accepted_date ? `<p><span class="font-medium">${data.status} Date:</span> ${new Date(data.accepted_date).toLocaleString()}</p>` : ''}
                             <p><span class="font-medium">Reference Code:</span> ${data.reference_code || 'N/A'}</p>
                         </div>
                     </div>
@@ -962,42 +963,42 @@ $current_page_items = array_slice($filtered_items, ($page - 1) * $items_per_page
                     ${(data.deathcert_url || data.payment_url) ? `
                     <div class="col-span-2">
                         <h4 class="font-semibold text-gray-700 mb-2">Attachments</h4>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 bg-gray-50 p-2 sm:p-3 rounded-lg text-sm sm:text-base">
+                        <div class="grid grid-cols-2 gap-4 bg-gray-50 p-3 rounded-lg">
                             ${data.deathcert_url ? `
-                                <div>
-                                    <p class="font-medium mb-1 sm:mb-2">Death Certificate:</p>
+                                <div class="col-span-1">
+                                    <p class="font-medium mb-2">Death Certificate:</p>
                                     <img src="booking/${data.deathcert_url}" 
                                         alt="Death Certificate" 
                                         class="w-full h-auto rounded border border-gray-200"
                                         onload="this.nextElementSibling.textContent = this.naturalWidth + '×' + this.naturalHeight + 'px'">
-                                    <p class="text-xs sm:text-sm text-gray-500 mt-1 text-center"></p>
+                                    <p class="text-sm text-gray-500 mt-1 text-center"></p>
                                 </div>
                             ` : `
-                                <div>
-                                    <p class="font-medium mb-1 sm:mb-2">Death Certificate:</p>
-                                    <div class="w-full h-32 sm:h-40 bg-gray-100 rounded border border-gray-200 flex items-center justify-center">
+                                <div class="col-span-1">
+                                    <p class="font-medium mb-2">Death Certificate:</p>
+                                    <div class="w-full h-40 bg-gray-100 rounded border border-gray-200 flex items-center justify-center">
                                         <p class="text-gray-400">N/A</p>
                                     </div>
-                                    <p class="text-xs sm:text-sm text-gray-500 mt-1 text-center">0×0 px</p>
+                                    <p class="text-sm text-gray-500 mt-1 text-center">0×0 px</p>
                                 </div>
                             `}
                             
                             ${data.payment_url ? `
-                                <div>
-                                    <p class="font-medium mb-1 sm:mb-2">Payment Receipt:</p>
+                                <div class="col-span-1">
+                                    <p class="font-medium mb-2">Payment Receipt:</p>
                                     <img src="booking/${data.payment_url}" 
                                         alt="Payment Receipt" 
                                         class="w-full h-auto rounded border border-gray-200"
                                         onload="this.nextElementSibling.textContent = this.naturalWidth + '×' + this.naturalHeight + 'px'">
-                                    <p class="text-xs sm:text-sm text-gray-500 mt-1 text-center"></p>
+                                    <p class="text-sm text-gray-500 mt-1 text-center"></p>
                                 </div>
                             ` : `
-                                <div>
-                                    <p class="font-medium mb-1 sm:mb-2">Payment Receipt:</p>
-                                    <div class="w-full h-32 sm:h-40 bg-gray-100 rounded border border-gray-200 flex items-center justify-center">
+                                <div class="col-span-1">
+                                    <p class="font-medium mb-2">Payment Receipt:</p>
+                                    <div class="w-full h-40 bg-gray-100 rounded border border-gray-200 flex items-center justify-center">
                                         <p class="text-gray-400">N/A</p>
                                     </div>
-                                    <p class="text-xs sm:text-sm text-gray-500 mt-1 text-center">0×0 px</p>
+                                    <p class="text-sm text-gray-500 mt-1 text-center">0×0 px</p>
                                 </div>
                             `}
                         </div>
@@ -1018,6 +1019,7 @@ $current_page_items = array_slice($filtered_items, ($page - 1) * $items_per_page
             `;
         });
 }
+
 function closeModal() {
     document.getElementById('bookingDetailsModal').classList.add('hidden');
 }
