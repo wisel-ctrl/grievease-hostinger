@@ -553,7 +553,7 @@ header("Pragma: no-cache");
                     ?>
                     
                     <div class="flex items-center mt-2 mb-2">
-                        <span class="text-sm text-gray-600 mr-2">Upload ID Status:</span>
+                        <span class="text-sm text-gray-600 mr-2">Uploaded ID Status:</span>
                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <?php echo $statusClass; ?>">
                             <?php echo $statusText; ?>
                         </span>
