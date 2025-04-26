@@ -1225,8 +1225,9 @@ document.getElementById('traditionalDeceasedCity').addEventListener('change', fu
                 <div class="flex justify-between items-center mb-4">
                     <h2 class="text-xl md:text-2xl font-hedvig text-navy">Book Your Lifeplan</h2>
                     <div class="flex items-center">
-                        <button id="backToLifeplanDetailsBtn" class="mr-2 text-gray-500 hover:text-navy md:hidden">
-                            <i class="fas fa-arrow-left text-lg"></i>
+                        <button id="backToLifeplanDetailsBtn" class="mr-2 text-gray-500 hover:text-navy md:hidden flex items-center">
+                            <i class="fas fa-arrow-left text-lg mr-1"></i>
+                            <span class="text-sm">Back</span>
                         </button>
                         <button class="closeModalBtn text-gray-500 hover:text-navy">
                             <i class="fas fa-times text-xl md:text-2xl"></i>
@@ -1237,69 +1238,163 @@ document.getElementById('traditionalDeceasedCity').addEventListener('change', fu
                 <form id="lifeplanBookingForm" class="space-y-4">
                     <input type="hidden" id="lifeplanSelectedPackageName" name="packageName">
                     <input type="hidden" id="lifeplanSelectedPackagePrice" name="packagePrice">
+                    <input type="hidden" id="lifeplanServiceId" name="service_id">
+                    <input type="hidden" id="lifeplanBranchId" name="branch_id">
+                    <input type="hidden" name="customerID" value="<?php echo isset($_SESSION['user_id']) ? $_SESSION['user_id'] : ''; ?>">
                     
                     <div class="border-b border-gray-200 pb-4 mb-4">
                         <h3 class="text-base md:text-lg font-hedvig text-navy mb-3 md:mb-4">Plan Holder Information</h3>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 mb-3 md:mb-4">
-                            <div>
-                                <label for="lifeplanHolderFirstName" class="block text-xs md:text-sm font-medium text-navy mb-1 md:mb-2">First Name *</label>
+                        
+                        <!-- First Name & Middle Name (Side by side) -->
+                        <div class="flex flex-wrap -mx-2 mb-3">
+                            <div class="w-full sm:w-1/2 px-2 mb-3 sm:mb-0">
+                                <label for="lifeplanHolderFirstName" class="block text-sm font-medium text-navy mb-1">First Name *</label>
                                 <input type="text" id="lifeplanHolderFirstName" name="holderFirstName" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                             </div>
-                            <div>
-                                <label for="lifeplanHolderMiddleName" class="block text-xs md:text-sm font-medium text-navy mb-1 md:mb-2">Middle Name</label>
+                            <div class="w-full sm:w-1/2 px-2">
+                                <label for="lifeplanHolderMiddleName" class="block text-sm font-medium text-navy mb-1">Middle Name</label>
                                 <input type="text" id="lifeplanHolderMiddleName" name="holderMiddleName" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                             </div>
                         </div>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 mb-3 md:mb-4">
-                            <div>
-                                <label for="lifeplanHolderLastName" class="block text-xs md:text-sm font-medium text-navy mb-1 md:mb-2">Last Name *</label>
+                        
+                        <!-- Last Name & Suffix (Side by side) -->
+                        <div class="flex flex-wrap -mx-2 mb-3">
+                            <div class="w-full sm:w-3/4 px-2 mb-3 sm:mb-0">
+                                <label for="lifeplanHolderLastName" class="block text-sm font-medium text-navy mb-1">Last Name *</label>
                                 <input type="text" id="lifeplanHolderLastName" name="holderLastName" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                             </div>
-                            <div>
-                                <label for="lifeplanHolderSuffix" class="block text-xs md:text-sm font-medium text-navy mb-1 md:mb-2">Suffix</label>
-                                <input type="text" id="lifeplanHolderSuffix" name="holderSuffix" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                            <div class="w-full sm:w-1/4 px-2">
+                                <label for="lifeplanHolderSuffix" class="block text-sm font-medium text-navy mb-1">Suffix</label>
+                                <select id="lifeplanHolderSuffix" name="holderSuffix" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                                    <option value="">None</option>
+                                    <option value="Jr.">Jr.</option>
+                                    <option value="Sr.">Sr.</option>
+                                    <option value="I">I</option>
+                                    <option value="II">II</option>
+                                    <option value="III">III</option>
+                                    <option value="IV">IV</option>
+                                    <option value="V">V</option>
+                                </select>
                             </div>
                         </div>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
-                            <div>
-                                <label for="lifeplanDateOfBirth" class="block text-xs md:text-sm font-medium text-navy mb-1 md:mb-2">Date of Birth *</label>
+                        
+                        <div class="flex flex-wrap -mx-2 mb-3">
+                            <div class="w-full sm:w-1/2 px-2 mb-3 sm:mb-0">
+                                <label for="lifeplanDateOfBirth" class="block text-sm font-medium text-navy mb-1">Date of Birth *</label>
                                 <input type="date" id="lifeplanDateOfBirth" name="dateOfBirth" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                             </div>
-                            <div>
-                                <label for="lifeplanContactNumber" class="block text-xs md:text-sm font-medium text-navy mb-1 md:mb-2">Contact Number *</label>
+                            <div class="w-full sm:w-1/2 px-2">
+                                <label for="lifeplanContactNumber" class="block text-sm font-medium text-navy mb-1">Contact Number *</label>
                                 <input type="tel" id="lifeplanContactNumber" name="contactNumber" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                             </div>
                         </div>
-                        <div class="mt-3 md:mt-4">
-                            <label for="lifeplanEmailAddress" class="block text-xs md:text-sm font-medium text-navy mb-1 md:mb-2">Email Address *</label>
+                        
+                        <div class="mb-3">
+                            <label for="lifeplanEmailAddress" class="block text-sm font-medium text-navy mb-1">Email Address *</label>
                             <input type="email" id="lifeplanEmailAddress" name="emailAddress" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                         </div>
-                        <div class="mt-3 md:mt-4">
-                            <label for="lifeplanHolderAddress" class="block text-xs md:text-sm font-medium text-navy mb-1 md:mb-2">Current Address *</label>
-                            <textarea id="lifeplanHolderAddress" name="holderAddress" rows="2" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600"></textarea>
+                        
+                        <!-- Address (Improved UI with dropdowns in specified layout) -->
+                        <div class="flex flex-wrap -mx-2 mb-3">
+                            <div class="w-full sm:w-1/2 px-2 mb-3 sm:mb-0">
+                                <label for="lifeplanHolderRegion" class="block text-sm font-medium text-navy mb-1">Region</label>
+                                <select id="lifeplanHolderRegion" name="holderRegion" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                                    <option value="">Select Region</option>
+                                    <option value="NCR">National Capital Region (NCR)</option>
+                                    <option value="CAR">Cordillera Administrative Region (CAR)</option>
+                                    <option value="Region I">Ilocos Region (Region I)</option>
+                                    <!-- Add more regions as needed -->
+                                </select>
+                            </div>
+                            <div class="w-full sm:w-1/2 px-2">
+                                <label for="lifeplanHolderProvince" class="block text-sm font-medium text-navy mb-1">Province</label>
+                                <select id="lifeplanHolderProvince" name="holderProvince" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                                    <option value="">Select Province</option>
+                                    <!-- Provinces will be populated by JavaScript based on selected region -->
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="flex flex-wrap -mx-2 mb-3">
+                            <div class="w-full sm:w-1/2 px-2 mb-3 sm:mb-0">
+                                <label for="lifeplanHolderCity" class="block text-sm font-medium text-navy mb-1">City/Municipality</label>
+                                <select id="lifeplanHolderCity" name="holderCity" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                                    <option value="">Select City/Municipality</option>
+                                    <!-- Cities will be populated by JavaScript based on selected province -->
+                                </select>
+                            </div>
+                            <div class="w-full sm:w-1/2 px-2">
+                                <label for="lifeplanHolderBarangay" class="block text-sm font-medium text-navy mb-1">Barangay</label>
+                                <select id="lifeplanHolderBarangay" name="holderBarangay" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                                    <option value="">Select Barangay</option>
+                                    <!-- Barangays will be populated by JavaScript based on selected city -->
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="lifeplanHolderStreet" class="block text-sm font-medium text-navy mb-1">Street/Block/House Number</label>
+                            <input type="text" id="lifeplanHolderStreet" name="holderStreet" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" placeholder="Enter detailed street address">
                         </div>
                     </div>
 
                     <div class="border-b border-gray-200 pb-4 mb-4">
                         <h3 class="text-base md:text-lg font-hedvig text-navy mb-3 md:mb-4">Payment Plan</h3>
-                        <div class="flex items-center mb-3 md:mb-4">
-                            <label class="block text-xs md:text-sm font-medium text-navy mb-1 md:mb-2 mr-4">Payment Term:</label>
-                            <select id="lifeplanPaymentTerm" name="paymentTerm" class="px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                        <div class="mb-3 md:mb-4">
+                            <label class="block text-sm font-medium text-navy mb-1">Payment Term:</label>
+                            <select id="lifeplanPaymentTerm" name="paymentTerm" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                                 <option value="60">5 Years (60 Monthly Payments)</option>
                                 <option value="36">3 Years (36 Monthly Payments)</option>
                                 <option value="24">2 Years (24 Monthly Payments)</option>
                                 <option value="12">1 Year (12 Monthly Payments)</option>
                             </select>
                         </div>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
-                            <div>
-                                <label for="lifeplanGcashReceipt" class="block text-xs md:text-sm font-medium text-navy mb-1 md:mb-2">First Payment Receipt *</label>
-                                <input type="file" id="lifeplanGcashReceipt" name="gcashReceipt" accept=".pdf,.jpg,.jpeg,.png" class="w-full text-xs md:text-sm px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                        
+                        <!-- GCash Upload with Preview (Improved UI) -->
+                        <div class="mb-4">
+                            <label for="lifeplanGcashReceipt" class="block text-sm font-medium text-navy mb-1">First Payment Receipt</label>
+                            <div class="border border-input-border bg-white rounded-lg p-3 focus-within:ring-2 focus-within:ring-yellow-600">
+                                <!-- Upload Button and File Name -->
+                                <div class="flex items-center mb-2">
+                                    <label for="lifeplanGcashReceipt" class="flex-1 cursor-pointer">
+                                        <div class="flex items-center justify-center py-2 px-3 bg-gray-50 rounded hover:bg-gray-100 transition">
+                                            <i class="fas fa-receipt mr-2 text-blue-500"></i>
+                                            <span class="text-sm text-gray-600">Upload Receipt</span>
+                                        </div>
+                                    </label>
+                                    <span class="text-xs ml-2 text-gray-500" id="lifeplanGcashFileName">No file chosen</span>
+                                </div>
+                                
+                                <!-- Preview Container -->
+                                <div id="lifeplanGcashPreviewContainer" class="hidden mt-2 rounded-lg overflow-hidden border border-gray-200">
+                                    <!-- Image Preview -->
+                                    <div id="lifeplanGcashImagePreview" class="hidden">
+                                        <img id="lifeplanGcashImage" src="" alt="GCash Receipt Preview" class="w-full h-auto max-h-48 object-contain">
+                                    </div>
+                                    
+                                    <!-- PDF Preview -->
+                                    <div id="lifeplanGcashPdfPreview" class="hidden bg-gray-100 p-3 flex items-center">
+                                        <i class="fas fa-file-pdf text-red-500 text-2xl mr-2"></i>
+                                        <span class="text-sm text-gray-700">PDF Document</span>
+                                        <button type="button" id="viewLifeplanGcashPdf" class="ml-auto bg-blue-500 hover:bg-blue-600 text-white text-xs px-2 py-1 rounded">
+                                            View
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <!-- Remove Button -->
+                                <button type="button" id="removeLifeplanGcash" class="text-xs text-red-600 hover:text-red-800 mt-2 hidden">
+                                    <i class="fas fa-trash-alt mr-1"></i> Remove file
+                                </button>
+                                
+                                <input type="file" id="lifeplanGcashReceipt" name="gcashReceipt" accept=".pdf,.jpg,.jpeg,.png" class="hidden">
                             </div>
-                            <div>
-                                <label for="lifeplanReferenceNumber" class="block text-xs md:text-sm font-medium text-navy mb-1 md:mb-2">GCash Reference Number *</label>
-                                <input type="text" id="lifeplanReferenceNumber" name="referenceNumber" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
-                            </div>
+                            <p class="text-xs text-gray-500 mt-1">Accepted formats: PDF, JPG, JPEG, PNG</p>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="lifeplanReferenceNumber" class="block text-sm font-medium text-navy mb-1">GCash Reference Number *</label>
+                            <input type="text" id="lifeplanReferenceNumber" name="referenceNumber" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" placeholder="e.g. 1234567890">
                         </div>
                     </div>
 
@@ -1326,6 +1421,116 @@ document.getElementById('traditionalDeceasedCity').addEventListener('change', fu
         </div>
     </div>
 </div>
+
+<!-- Add this script at the end -->
+<script>
+// GCash Receipt Upload Preview for Lifeplan
+document.getElementById('lifeplanGcashReceipt').addEventListener('change', function() {
+    const file = this.files[0];
+    if (!file) {
+        hideLifeplanGcashPreview();
+        return;
+    }
+    
+    // Update file name display
+    const fileName = file.name;
+    document.getElementById('lifeplanGcashFileName').textContent = fileName.length > 20 ? 
+        fileName.substring(0, 17) + '...' : fileName;
+    
+    // Show preview container
+    const previewContainer = document.getElementById('lifeplanGcashPreviewContainer');
+    previewContainer.classList.remove('hidden');
+    
+    // Show remove button
+    document.getElementById('removeLifeplanGcash').classList.remove('hidden');
+    
+    // Check file type
+    if (file.type === 'application/pdf') {
+        // PDF Preview
+        document.getElementById('lifeplanGcashPdfPreview').classList.remove('hidden');
+        document.getElementById('lifeplanGcashImagePreview').classList.add('hidden');
+        
+        // Setup PDF viewer button
+        document.getElementById('viewLifeplanGcashPdf').onclick = function() {
+            const fileURL = URL.createObjectURL(file);
+            window.open(fileURL, '_blank');
+        };
+    } else {
+        // Image Preview
+        document.getElementById('lifeplanGcashImagePreview').classList.remove('hidden');
+        document.getElementById('lifeplanGcashPdfPreview').classList.add('hidden');
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('lifeplanGcashImage').src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+});
+
+// Remove button functionality for Lifeplan
+document.getElementById('removeLifeplanGcash').addEventListener('click', function() {
+    document.getElementById('lifeplanGcashReceipt').value = '';
+    document.getElementById('lifeplanGcashFileName').textContent = 'No file chosen';
+    hideLifeplanGcashPreview();
+});
+
+// Helper function for Lifeplan
+function hideLifeplanGcashPreview() {
+    document.getElementById('lifeplanGcashPreviewContainer').classList.add('hidden');
+    document.getElementById('lifeplanGcashImagePreview').classList.add('hidden');
+    document.getElementById('lifeplanGcashPdfPreview').classList.add('hidden');
+    document.getElementById('removeLifeplanGcash').classList.add('hidden');
+}
+
+// Cascading dropdowns for address in Lifeplan
+document.getElementById('lifeplanHolderRegion').addEventListener('change', function() {
+    // Code to populate province dropdown based on selected region
+    const selectedRegion = this.value;
+    const provinceDropdown = document.getElementById('lifeplanHolderProvince');
+    
+    // Clear existing options
+    provinceDropdown.innerHTML = '<option value="">Select Province</option>';
+    
+    // Add logic to populate provinces based on selected region
+    // This would typically involve an API call or using predefined data
+});
+
+document.getElementById('lifeplanHolderProvince').addEventListener('change', function() {
+    // Code to populate city dropdown based on selected province
+    const selectedProvince = this.value;
+    const cityDropdown = document.getElementById('lifeplanHolderCity');
+    
+    // Clear existing options
+    cityDropdown.innerHTML = '<option value="">Select City/Municipality</option>';
+    
+    // Add logic to populate cities based on selected province
+});
+
+document.getElementById('lifeplanHolderCity').addEventListener('change', function() {
+    // Code to populate barangay dropdown based on selected city
+    const selectedCity = this.value;
+    const barangayDropdown = document.getElementById('lifeplanHolderBarangay');
+    
+    // Clear existing options
+    barangayDropdown.innerHTML = '<option value="">Select Barangay</option>';
+    
+    // Add logic to populate barangays based on selected city
+});
+
+// Mobile view navigation
+document.getElementById('continueToLifeplanFormBtn').addEventListener('click', function() {
+    // Hide details section and show form section on mobile
+    document.querySelector('#lifeplanModal .details-section').classList.add('hidden');
+    document.querySelector('#lifeplanModal .form-section').classList.remove('hidden');
+});
+
+document.getElementById('backToLifeplanDetailsBtn').addEventListener('click', function() {
+    // Hide form section and show details section on mobile
+    document.querySelector('#lifeplanModal .form-section').classList.add('hidden');
+    document.querySelector('#lifeplanModal .details-section').classList.remove('hidden');
+});
+</script>
 
 <script src="../tailwind.js"></script>
 <script src="customer_support.js"></script>
