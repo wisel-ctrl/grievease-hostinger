@@ -441,8 +441,8 @@ $current_page_bookings = array_slice($filtered_bookings, ($page - 1) * $items_pe
     <!-- Page Header -->
     <div class="bg-gradient-to-b from-yellow-600/10 to-transparent rounded-lg py-4 px-3 mb-4 shadow-sm">
         <div class="max-w-2xl mx-auto text-center">
-            <h1 class="text-5xl font-hedvig text-navy mb-1">Notifications</h1>
-            <p class="text-dark text-lg text-sm">Stay updated with important information about your services.</p>
+            <h1 class="text-3xl md:text-5xl font-hedvig text-navy mb-1">Notifications</h1>
+            <p class="text-dark text-sm md:text-lg">Stay updated with important information about your services.</p>
             <div class="w-12 h-1 bg-yellow-600 mx-auto mt-1 rounded-full"></div>
         </div>
     </div>
@@ -450,8 +450,16 @@ $current_page_bookings = array_slice($filtered_bookings, ($page - 1) * $items_pe
     <!-- Dashboard Layout -->
     <div class="flex flex-col lg:flex-row gap-4">
         <!-- Left Sidebar: Filter Controls -->
-        <div class="lg:w-1/4">
-            <div class="bg-white rounded-xl shadow-md p-4 sticky top-20">
+        <div class="lg:w-1/4 mb-4 lg:mb-0">
+            <!-- Mobile Filter Toggle Button -->
+            <button id="mobileFilterToggle" class="lg:hidden w-full bg-white text-navy px-4 py-3 rounded-xl shadow-md mb-2 flex items-center justify-between">
+                <span class="flex items-center font-medium">
+                    <i class="fas fa-filter mr-2"></i> Filter Notifications
+                </span>
+                <i class="fas fa-chevron-down transition-transform" id="filterChevron"></i>
+            </button>
+            
+            <div id="filterContainer" class="bg-white rounded-xl shadow-md p-4 sticky top-20 lg:block hidden">
                 <h2 class="text-navy text-lg mb-3 font-hedvig">Filter Notifications</h2>
                 
                 <!-- Filter Buttons -->
@@ -492,8 +500,6 @@ $current_page_bookings = array_slice($filtered_bookings, ($page - 1) * $items_pe
                         <span class="<?php echo $current_filter === 'declined' ? 'bg-white text-error' : 'bg-error/10 text-error'; ?> w-6 h-6 rounded-full flex items-center justify-center text-xs"><?php echo $notifications_count['declined']; ?></span>
                     </a>
                 </div>
-                
-                
             </div>
         </div>
         
@@ -574,14 +580,14 @@ $current_page_bookings = array_slice($filtered_bookings, ($page - 1) * $items_pe
                         <div class="flex flex-col md:flex-row">
                             
                             <!-- Notification Content -->
-                            <div class="flex-1 py-5 px-7">
+                            <div class="flex-1 py-4 px-4 md:py-5 md:px-7">
                                 <div class="flex flex-col md:flex-row justify-between">
                                     <div>
                                         <span class="<?php echo $status_badge_bg; ?> <?php echo $status_text_color; ?> text-xs px-2 py-1 rounded-full inline-flex items-center">
                                             <i class="<?php echo $status_icon; ?> mr-1 text-xs"></i>
                                             <?php echo htmlspecialchars($booking['status']); ?>
                                         </span>
-                                        <h3 class="text-navy text-lg font-hedvig mt-1">
+                                        <h3 class="text-navy text-base md:text-lg font-hedvig mt-1">
                                             <?php echo htmlspecialchars($booking['service_name']); ?>
                                         </h3>
                                         <p class="text-gray-600 text-sm mt-1 flex items-center">
@@ -645,14 +651,14 @@ $current_page_bookings = array_slice($filtered_bookings, ($page - 1) * $items_pe
             
             <!-- Pagination -->
             <?php if ($total_filtered_pages > 1): ?>
-            <div class="mt-6">
+            <div class="mt-6 overflow-x-auto">
                 <nav class="flex items-center justify-center">
                     <div class="inline-flex shadow-md rounded-lg overflow-hidden">
                         <!-- Previous Button -->
                         <a href="?filter=<?php echo $current_filter; ?>&page=<?php echo max(1, $page - 1); ?>" 
-                           class="<?php echo $page <= 1 ? 'opacity-50 cursor-not-allowed' : ''; ?> px-3 py-2 bg-white text-navy hover:bg-gray-50 transition border-r border-gray-200 flex items-center text-xs">
+                           class="<?php echo $page <= 1 ? 'opacity-50 cursor-not-allowed' : ''; ?> px-2 md:px-3 py-2 bg-white text-navy hover:bg-gray-50 transition border-r border-gray-200 flex items-center text-xs">
                             <i class="fas fa-chevron-left text-xs mr-1"></i>
-                            <span>Prev</span>
+                            <span class="hidden sm:inline">Prev</span>
                         </a>
                         
                         <!-- Page Numbers -->
@@ -684,8 +690,8 @@ $current_page_bookings = array_slice($filtered_bookings, ($page - 1) * $items_pe
                         
                         <!-- Next Button -->
                         <a href="?filter=<?php echo $current_filter; ?>&page=<?php echo min($total_filtered_pages, $page + 1); ?>" 
-                           class="<?php echo $page >= $total_filtered_pages ? 'opacity-50 cursor-not-allowed' : ''; ?> px-3 py-2 bg-white text-navy hover:bg-gray-50 transition flex items-center text-xs">
-                            <span>Next</span>
+                           class="<?php echo $page >= $total_filtered_pages ? 'opacity-50 cursor-not-allowed' : ''; ?> px-2 md:px-3 py-2 bg-white text-navy hover:bg-gray-50 transition flex items-center text-xs">
+                            <span class="hidden sm:inline">Next</span>
                             <i class="fas fa-chevron-right text-xs ml-1"></i>
                         </a>
                     </div>
@@ -697,6 +703,38 @@ $current_page_bookings = array_slice($filtered_bookings, ($page - 1) * $items_pe
         </div>
     </div>
 </div>
+
+<!-- Add this JavaScript at the end of your document -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const mobileFilterToggle = document.getElementById('mobileFilterToggle');
+    const filterContainer = document.getElementById('filterContainer');
+    const filterChevron = document.getElementById('filterChevron');
+    
+    // Toggle filter visibility on mobile
+    if (mobileFilterToggle) {
+        mobileFilterToggle.addEventListener('click', function() {
+            filterContainer.classList.toggle('hidden');
+            filterChevron.classList.toggle('rotate-180');
+        });
+    }
+    
+    // Show filters by default on large screens
+    function handleResize() {
+        if (window.innerWidth >= 1024) { // lg breakpoint
+            filterContainer.classList.remove('hidden');
+        } else {
+            filterContainer.classList.add('hidden');
+        }
+    }
+    
+    // Run on page load
+    handleResize();
+    
+    // Listen for window resize events
+    window.addEventListener('resize', handleResize);
+});
+</script>
 
     <!-- Search No Results State - Enhanced -->
     <div id="noSearchResults" class="hidden bg-white rounded-xl shadow-md p-10 text-center max-w-2xl mx-auto mt-8">
