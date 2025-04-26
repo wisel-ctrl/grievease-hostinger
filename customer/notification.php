@@ -684,8 +684,6 @@ $current_page_bookings = array_slice($filtered_bookings, ($page - 1) * $items_pe
                 </nav>
             </div>
             <?php endif; ?>
-            
-            <?php endif; ?>
         </div>
     </div>
 </div>
