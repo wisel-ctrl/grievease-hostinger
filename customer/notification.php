@@ -749,47 +749,48 @@ document.addEventListener('DOMContentLoaded', function() {
         </button>
     </div>
 
-    <!-- Booking Details Modal - Enhanced design -->
+    <!-- Booking Details Modal - Enhanced design with reduced size -->
 <div id="bookingDetailsModal" class="fixed inset-0 z-50 hidden overflow-y-auto flex items-center justify-center">
     <!-- Modal Backdrop -->
     <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm" id="bookingDetailsModalBackdrop"></div>
     
-    <!-- Modal Content -->
-    <div class="relative bg-white rounded-xl shadow-card w-full max-w-2xl mx-4 z-10 transform transition-all duration-300" id="bookingDetailsModalContent">
+    <!-- Modal Content - Reduced width -->
+    <div class="relative bg-white rounded-xl shadow-card w-full max-w-lg mx-4 z-10 transform transition-all duration-300" id="bookingDetailsModalContent">
         <!-- Close Button -->
         <button type="button" class="absolute top-4 right-4 text-gray-500 hover:text-navy transition-colors" onclick="closeModal()">
             <i class="fas fa-times"></i>
         </button>
         
         <!-- Modal Header -->
-        <div class="px-6 py-5 border-b border-gray-200">
+        <div class="px-5 py-4 border-b border-gray-200">
             <div class="flex items-center">
-                <div class="bg-navy/10 rounded-full p-3 mr-4">
-                    <i class="fas fa-info-circle text-navy text-xl"></i>
+                <div class="bg-navy/10 rounded-full p-2 mr-3">
+                    <i class="fas fa-info-circle text-navy text-lg"></i>
                 </div>
-                <h3 class="text-xl font-hedvig font-bold text-navy">Booking Details</h3>
+                <h3 class="text-lg font-hedvig font-bold text-navy">Booking Details</h3>
             </div>
         </div>
         
-        <!-- Modal Body -->
-        <div class="px-6 py-5">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="bookingDetailsContent">
+        <!-- Modal Body - More compact padding -->
+        <div class="px-5 py-4">
+            <div class="grid grid-cols-1 gap-5" id="bookingDetailsContent">
                 <!-- Details will be loaded here via JavaScript -->
             </div>
         </div>
         
         <!-- Modal Footer -->
-        <div class="px-6 py-4 border-t border-gray-200 flex justify-end">
+        <div class="px-5 py-3 border-t border-gray-200 flex justify-end">
             <button 
                 type="button" 
                 onclick="closeModal()" 
-                class="bg-gradient-to-r from-yellow-600 to-darkgold text-white py-2 px-5 rounded-lg text-sm font-medium shadow-lg hover:shadow-xl transition-all duration-300"
+                class="bg-gradient-to-r from-yellow-600 to-darkgold text-white py-2 px-4 rounded-lg text-sm font-medium shadow-lg hover:shadow-xl transition-all duration-300"
             >
                 Close
             </button>
         </div>
     </div>
 </div>
+
     
     <?php include 'customService/chat_elements.html'; ?>
     
@@ -806,12 +807,12 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Enhanced viewBookingDetails function with better loading animation
+    // Enhanced viewBookingDetails function with more compact layout
 function viewBookingDetails(bookingId, status) {
     // Show loading state with improved animation
     document.getElementById('bookingDetailsContent').innerHTML = `
-        <div class="col-span-2 flex flex-col items-center justify-center py-10">
-            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-600"></div>
+        <div class="flex flex-col items-center justify-center py-8">
+            <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-yellow-600"></div>
             <p class="mt-3 text-gray-600">Loading details...</p>
         </div>
     `;
@@ -827,9 +828,9 @@ function viewBookingDetails(bookingId, status) {
         .then(data => {
             if (data.error) {
                 document.getElementById('bookingDetailsContent').innerHTML = `
-                    <div class="col-span-2 text-center py-8">
-                        <div class="bg-error/10 rounded-full p-4 mx-auto w-16 h-16 flex items-center justify-center mb-4">
-                            <i class="fas fa-exclamation-circle text-error text-2xl"></i>
+                    <div class="text-center py-6">
+                        <div class="bg-error/10 rounded-full p-3 mx-auto w-14 h-14 flex items-center justify-center mb-3">
+                            <i class="fas fa-exclamation-circle text-error text-xl"></i>
                         </div>
                         <p class="text-error">${data.error}</p>
                     </div>
@@ -873,50 +874,50 @@ function viewBookingDetails(bookingId, status) {
                         statusIcon = 'fas fa-info-circle';
                 }
                 
-                // Create the HTML content with enhanced styling
+                // Create the HTML content with more compact styling and single column layout
                 let htmlContent = `
-                    <div class="col-span-2">
-                        <div class="flex items-center mb-3">
-                            <i class="fas fa-user text-navy bg-navy/10 p-2 rounded-full mr-3"></i>
-                            <h4 class="font-semibold text-navy text-lg">Deceased Information</h4>
+                    <div>
+                        <div class="flex items-center mb-2">
+                            <i class="fas fa-user text-navy bg-navy/10 p-1.5 rounded-full mr-2 text-sm"></i>
+                            <h4 class="font-semibold text-navy">Deceased Information</h4>
                         </div>
-                        <div class="bg-cream p-4 rounded-lg mb-6">
-                            <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-cream p-3 rounded-lg mb-4">
+                            <div class="grid grid-cols-2 gap-3">
                                 <div>
-                                    <p class="mb-2"><span class="font-medium text-navy">Full Name:</span></p>
-                                    <p class="bg-white px-3 py-2 rounded-md">${data.deceased_lname}, ${data.deceased_fname} ${data.deceased_midname || ''}</p>
+                                    <p class="mb-1 text-sm"><span class="font-medium text-navy">Full Name:</span></p>
+                                    <p class="bg-white px-2 py-1.5 rounded-md text-sm">${data.deceased_lname}, ${data.deceased_fname} ${data.deceased_midname || ''}</p>
                                 </div>
                                 <div>
-                                    <p class="mb-2"><span class="font-medium text-navy">Date of Death:</span></p>
-                                    <p class="bg-white px-3 py-2 rounded-md">${formatDate(data.date_of_death)}</p>
+                                    <p class="mb-1 text-sm"><span class="font-medium text-navy">Date of Death:</span></p>
+                                    <p class="bg-white px-2 py-1.5 rounded-md text-sm">${formatDate(data.date_of_death)}</p>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="col-span-2">
-                        <div class="flex items-center mb-3">
-                            <i class="fas fa-calendar-alt text-navy bg-navy/10 p-2 rounded-full mr-3"></i>
-                            <h4 class="font-semibold text-navy text-lg">Service Details</h4>
+                    <div>
+                        <div class="flex items-center mb-2">
+                            <i class="fas fa-calendar-alt text-navy bg-navy/10 p-1.5 rounded-full mr-2 text-sm"></i>
+                            <h4 class="font-semibold text-navy">Service Details</h4>
                         </div>
-                        <div class="bg-cream p-4 rounded-lg mb-6">
-                            <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-cream p-3 rounded-lg mb-4">
+                            <div class="grid grid-cols-2 gap-3">
                                 <div>
-                                    <p class="mb-2"><span class="font-medium text-navy">Service Type:</span></p>
-                                    <p class="bg-white px-3 py-2 rounded-md">${data.service_name}</p>
+                                    <p class="mb-1 text-sm"><span class="font-medium text-navy">Service Type:</span></p>
+                                    <p class="bg-white px-2 py-1.5 rounded-md text-sm">${data.service_name}</p>
                                 </div>
                                 <div>
-                                    <p class="mb-2"><span class="font-medium text-navy">Branch:</span></p>
-                                    <p class="bg-white px-3 py-2 rounded-md">${data.branch_name}</p>
+                                    <p class="mb-1 text-sm"><span class="font-medium text-navy">Branch:</span></p>
+                                    <p class="bg-white px-2 py-1.5 rounded-md text-sm">${data.branch_name}</p>
                                 </div>
                                 <div>
-                                    <p class="mb-2"><span class="font-medium text-navy">Date & Time:</span></p>
-                                    <p class="bg-white px-3 py-2 rounded-md">${formattedBookingDate}</p>
+                                    <p class="mb-1 text-sm"><span class="font-medium text-navy">Date & Time:</span></p>
+                                    <p class="bg-white px-2 py-1.5 rounded-md text-sm">${formattedBookingDate}</p>
                                 </div>
                                 <div>
-                                    <p class="mb-2"><span class="font-medium text-navy">Status:</span></p>
-                                    <p class="bg-white px-3 py-2 rounded-md">
-                                        <span class="${statusBgClass} ${statusColorClass} inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium">
+                                    <p class="mb-1 text-sm"><span class="font-medium text-navy">Status:</span></p>
+                                    <p class="bg-white px-2 py-1.5 rounded-md text-sm">
+                                        <span class="${statusBgClass} ${statusColorClass} inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium">
                                             <i class="${statusIcon} mr-1"></i> ${data.status}
                                         </span>
                                     </p>
@@ -925,19 +926,19 @@ function viewBookingDetails(bookingId, status) {
                         </div>
                     </div>
 
-                    <div class="col-span-2">
-                        <div class="flex items-center mb-3">
-                            <i class="fas fa-comment-alt text-navy bg-navy/10 p-2 rounded-full mr-3"></i>
-                            <h4 class="font-semibold text-navy text-lg">Additional Information</h4>
+                    <div>
+                        <div class="flex items-center mb-2">
+                            <i class="fas fa-comment-alt text-navy bg-navy/10 p-1.5 rounded-full mr-2 text-sm"></i>
+                            <h4 class="font-semibold text-navy">Additional Information</h4>
                         </div>
-                        <div class="bg-cream p-4 rounded-lg">
-                            <p class="mb-2"><span class="font-medium text-navy">Special Instructions:</span></p>
-                            <p class="bg-white px-3 py-2 rounded-md min-h-[60px]">${data.special_instructions || 'No special instructions provided.'}</p>
+                        <div class="bg-cream p-3 rounded-lg">
+                            <p class="mb-1 text-sm"><span class="font-medium text-navy">Special Instructions:</span></p>
+                            <p class="bg-white px-2 py-1.5 rounded-md text-sm min-h-[40px]">${data.special_instructions || 'No special instructions provided.'}</p>
                             
                             ${data.admin_message ? `
-                            <div class="mt-4">
-                                <p class="mb-2"><span class="font-medium text-navy">Message from Staff:</span></p>
-                                <p class="bg-white px-3 py-2 rounded-md">${data.admin_message}</p>
+                            <div class="mt-3">
+                                <p class="mb-1 text-sm"><span class="font-medium text-navy">Message from Staff:</span></p>
+                                <p class="bg-white px-2 py-1.5 rounded-md text-sm">${data.admin_message}</p>
                             </div>
                             ` : ''}
                         </div>
@@ -949,9 +950,9 @@ function viewBookingDetails(bookingId, status) {
         })
         .catch(error => {
             document.getElementById('bookingDetailsContent').innerHTML = `
-                <div class="col-span-2 text-center py-8">
-                    <div class="bg-error/10 rounded-full p-4 mx-auto w-16 h-16 flex items-center justify-center mb-4">
-                        <i class="fas fa-exclamation-triangle text-error text-2xl"></i>
+                <div class="text-center py-6">
+                    <div class="bg-error/10 rounded-full p-3 mx-auto w-14 h-14 flex items-center justify-center mb-3">
+                        <i class="fas fa-exclamation-triangle text-error text-xl"></i>
                     </div>
                     <p class="text-error">Failed to load booking details. Please try again.</p>
                 </div>
