@@ -756,7 +756,7 @@ document.addEventListener('DOMContentLoaded', function() {
         <div class="bg-cream p-4 md:p-8 border-b border-gold/30">
             <div class="flex justify-between items-center mb-4">
                 <div class="sm:flex sm:items-center">
-                    <div class="bg-gold/20 rounded-full p-3 mr-4">
+                    <div class="bg-sidebar-accent rounded-full p-3 mr-4">
                         <i class="fas fa-info-circle text-gold text-xl"></i>
                     </div>
                     <h3 class="text-2xl leading-6 font-hedvig text-navy">Booking Details</h3>
@@ -848,7 +848,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     switch(data.status) {
                         case 'Pending':
                             statusColorClass = 'text-gold';
-                            statusBgClass = 'bg-gold/20';
+                            statusBgClass = 'bg-sidebar-accent';
                             statusIcon = 'fas fa-clock';
                             break;
                         case 'Accepted':
@@ -874,7 +874,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <i class="fas fa-user text-gold bg-gold/10 p-2 rounded-full mr-3"></i>
                                 <h4 class="font-playfair text-navy text-lg">Deceased Information</h4>
                             </div>
-                            <div class="bg-cream p-4 rounded-lg mb-6 border border-gold/20">
+                            <div class="bg-cream p-4 rounded-lg mb-6 border border-sidebar-accent">
                                 <div class="grid grid-cols-2 gap-4">
                                     <div>
                                         <p class="mb-2"><span class="font-medium text-navy">Full Name:</span></p>
@@ -893,7 +893,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <i class="fas fa-calendar-alt text-gold bg-gold/10 p-2 rounded-full mr-3"></i>
                                 <h4 class="font-playfair text-navy text-lg">Service Details</h4>
                             </div>
-                            <div class="bg-cream p-4 rounded-lg mb-6 border border-gold/20">
+                            <div class="bg-cream p-4 rounded-lg mb-6 border border-sidebar-accent">
                                 <div class="grid grid-cols-2 gap-4">
                                     <div>
                                         <p class="mb-2"><span class="font-medium text-navy">Service Type:</span></p>
@@ -924,7 +924,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <i class="fas fa-comment-alt text-gold bg-gold/10 p-2 rounded-full mr-3"></i>
                                 <h4 class="font-playfair text-navy text-lg">Additional Information</h4>
                             </div>
-                            <div class="bg-cream p-4 rounded-lg border border-gold/20">
+                            <div class="bg-cream p-4 rounded-lg border border-sidebar-accent">
                                 <p class="mb-2"><span class="font-medium text-navy">Special Instructions:</span></p>
                                 <p class="bg-white px-3 py-2 rounded-md min-h-[60px] border border-gold/10">${data.special_instructions || 'No special instructions provided.'}</p>
                                 
