@@ -736,8 +736,8 @@ document.addEventListener('DOMContentLoaded', function() {
 <!-- Booking Details Modal -->
 <div id="bookingDetailsModal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-gray-500 bg-opacity-75 transition-opacity">
     <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-        <!-- Modal content with increased width -->
-        <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-5xl sm:w-full">
+        <!-- Modal content -->
+        <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
             <!-- Modal header with close button -->
             <div class="bg-gray-50 px-6 py-4 border-b border-gray-200 flex justify-between items-center">
                 <h3 class="text-lg font-semibold text-gray-900">Booking Details</h3>
@@ -750,7 +750,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             <!-- Loading spinner -->
             <div class="bg-white px-6 py-5">
-                <div id="bookingDetailsContent" class="grid grid-cols-1 gap-6">
+                <div id="bookingDetailsContent" class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <!-- Details will be loaded here via JavaScript -->
                 </div>
             </div>
@@ -880,141 +880,135 @@ function renderBookingDetails(data) {
     
     // Create the HTML content
     let htmlContent = `
-        <!-- First Row: Deceased Information and Service Details side by side -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <!-- Deceased Information (2/3 width) -->
-            <div class="md:col-span-2">
-                <div class="bg-white rounded-lg shadow-sm border border-gray-200 h-full">
-                    <div class="px-4 py-3 border-b border-gray-200 bg-gray-50">
-                        <h4 class="text-md font-semibold text-gray-800 flex items-center">
-                            <svg class="h-5 w-5 mr-2 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                            </svg>
-                            Deceased Information
-                        </h4>
-                    </div>
-                    <div class="px-4 py-3">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <p class="text-sm text-gray-500">Full Name</p>
-                                <p class="font-medium">${data.deceased_lname}, ${data.deceased_fname} ${data.deceased_midname || ''} ${data.deceased_suffix || ''}</p>
-                            </div>
-                            <div>
-                                <p class="text-sm text-gray-500">Address</p>
-                                <p class="font-medium">${data.deceased_address}</p>
-                            </div>
-                            <div>
-                                <p class="text-sm text-gray-500">Birth Date</p>
-                                <p class="font-medium">${formatDate(data.deceased_birth)}</p>
-                            </div>
-                            <div>
-                                <p class="text-sm text-gray-500">Date of Death</p>
-                                <p class="font-medium">${formatDate(data.deceased_dodeath)}</p>
-                            </div>
-                            <div>
-                                <p class="text-sm text-gray-500">Date of Burial</p>
-                                <p class="font-medium">${formatDate(data.deceased_dateOfBurial)}</p>
-                            </div>
-                            <div>
-                                <p class="text-sm text-gray-500">With Cremation</p>
-                                <p class="font-medium">${data.with_cremate === 'yes' ? 'Yes' : 'No'}</p>
-                            </div>
-                        </div>
-                    </div>
+        <!-- Deceased Information -->
+        <div class="col-span-2">
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+                <div class="px-4 py-3 border-b border-gray-200 bg-gray-50">
+                    <h4 class="text-md font-semibold text-gray-800 flex items-center">
+                        <svg class="h-5 w-5 mr-2 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                        Deceased Information
+                    </h4>
                 </div>
-            </div>
-            
-            <!-- Service Details (1/3 width) -->
-            <div>
-                <div class="bg-white rounded-lg shadow-sm border border-gray-200 h-full">
-                    <div class="px-4 py-3 border-b border-gray-200 bg-gray-50">
-                        <h4 class="text-md font-semibold text-gray-800 flex items-center">
-                            <svg class="h-5 w-5 mr-2 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                            </svg>
-                            Service Details
-                        </h4>
-                    </div>
-                    <div class="px-4 py-3">
-                        <div class="space-y-3">
-                            <div>
-                                <p class="text-sm text-gray-500">Service</p>
-                                <p class="font-medium">${data.service_name}</p>
-                            </div>
-                            <div>
-                                <p class="text-sm text-gray-500">Branch</p>
-                                <p class="font-medium">${data.branch_name}</p>
-                            </div>
+                <div class="px-4 py-3">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <p class="text-sm text-gray-500">Full Name</p>
+                            <p class="font-medium">${data.deceased_lname}, ${data.deceased_fname} ${data.deceased_midname || ''} ${data.deceased_suffix || ''}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Address</p>
+                            <p class="font-medium">${data.deceased_address}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Birth Date</p>
+                            <p class="font-medium">${formatDate(data.deceased_birth)}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Date of Death</p>
+                            <p class="font-medium">${formatDate(data.deceased_dodeath)}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Date of Burial</p>
+                            <p class="font-medium">${formatDate(data.deceased_dateOfBurial)}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">With Cremation</p>
+                            <p class="font-medium">${data.with_cremate === 'yes' ? 'Yes' : 'No'}</p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
         
-        <!-- Second Row: Payment Details and Booking Information side by side -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- Payment Details -->
-            <div>
-                <div class="bg-white rounded-lg shadow-sm border border-gray-200 h-full">
-                    <div class="px-4 py-3 border-b border-gray-200 bg-gray-50">
-                        <h4 class="text-md font-semibold text-gray-800 flex items-center">
-                            <svg class="h-5 w-5 mr-2 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
-                            </svg>
-                            Payment Details
-                        </h4>
-                    </div>
-                    <div class="px-4 py-3">
-                        <div class="space-y-3">
-                            <div>
-                                <p class="text-sm text-gray-500">Initial Price</p>
-                                <p class="font-medium">${formatCurrency(data.initial_price)}</p>
-                            </div>
-                            <div>
-                                <p class="text-sm text-gray-500">Amount Paid</p>
-                                <p class="font-medium">${formatCurrency(data.amount_paid || 0)}</p>
-                            </div>
-                            <div>
-                                <p class="text-sm text-gray-500">Remaining Balance</p>
-                                <p class="font-medium ${remainingBalance > 0 ? 'text-red-600' : 'text-green-600'}">${formatCurrency(remainingBalance)}</p>
-                            </div>
+        <!-- Service Details -->
+        <div>
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 h-full">
+                <div class="px-4 py-3 border-b border-gray-200 bg-gray-50">
+                    <h4 class="text-md font-semibold text-gray-800 flex items-center">
+                        <svg class="h-5 w-5 mr-2 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                        </svg>
+                        Service Details
+                    </h4>
+                </div>
+                <div class="px-4 py-3">
+                    <div class="space-y-3">
+                        <div>
+                            <p class="text-sm text-gray-500">Service</p>
+                            <p class="font-medium">${data.service_name}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Branch</p>
+                            <p class="font-medium">${data.branch_name}</p>
                         </div>
                     </div>
                 </div>
             </div>
-            
-            <!-- Booking Information -->
-            <div>
-                <div class="bg-white rounded-lg shadow-sm border border-gray-200 h-full">
-                    <div class="px-4 py-3 border-b border-gray-200 bg-gray-50">
-                        <h4 class="text-md font-semibold text-gray-800 flex items-center">
-                            <svg class="h-5 w-5 mr-2 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                            </svg>
-                            Booking Information
-                        </h4>
-                    </div>
-                    <div class="px-4 py-3">
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
-                                <p class="text-sm text-gray-500">Status</p>
-                                <p><span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColorClass(data.status)}">${data.status}</span></p>
-                            </div>
-                            <div>
-                                <p class="text-sm text-gray-500">Booking Date</p>
-                                <p class="font-medium">${formattedBookingDate}</p>
-                            </div>
-                            <div>
-                                <p class="text-sm text-gray-500">Reference Code</p>
-                                <p class="font-medium">${data.reference_code || 'N/A'}</p>
-                            </div>
-                            ${data.accepted_date ? `
-                            <div>
-                                <p class="text-sm text-gray-500">${data.status} Date</p>
-                                <p class="font-medium">${new Date(data.accepted_date).toLocaleString()}</p>
-                            </div>
-                            ` : ''}
+        </div>
+        
+        <!-- Payment Details -->
+        <div>
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 h-full">
+                <div class="px-4 py-3 border-b border-gray-200 bg-gray-50">
+                    <h4 class="text-md font-semibold text-gray-800 flex items-center">
+                        <svg class="h-5 w-5 mr-2 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                        </svg>
+                        Payment Details
+                    </h4>
+                </div>
+                <div class="px-4 py-3">
+                    <div class="space-y-3">
+                        <div>
+                            <p class="text-sm text-gray-500">Initial Price</p>
+                            <p class="font-medium">${formatCurrency(data.initial_price)}</p>
                         </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Amount Paid</p>
+                            <p class="font-medium">${formatCurrency(data.amount_paid || 0)}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Remaining Balance</p>
+                            <p class="font-medium ${remainingBalance > 0 ? 'text-red-600' : 'text-green-600'}">${formatCurrency(remainingBalance)}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Booking Information -->
+        <div class="col-span-2">
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+                <div class="px-4 py-3 border-b border-gray-200 bg-gray-50">
+                    <h4 class="text-md font-semibold text-gray-800 flex items-center">
+                        <svg class="h-5 w-5 mr-2 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        Booking Information
+                    </h4>
+                </div>
+                <div class="px-4 py-3">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <p class="text-sm text-gray-500">Status</p>
+                            <p><span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColorClass(data.status)}">${data.status}</span></p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Booking Date</p>
+                            <p class="font-medium">${formattedBookingDate}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Reference Code</p>
+                            <p class="font-medium">${data.reference_code || 'N/A'}</p>
+                        </div>
+                        ${data.accepted_date ? `
+                        <div>
+                            <p class="text-sm text-gray-500">${data.status} Date</p>
+                            <p class="font-medium">${new Date(data.accepted_date).toLocaleString()}</p>
+                        </div>
+                        ` : ''}
                     </div>
                 </div>
             </div>
@@ -1024,8 +1018,8 @@ function renderBookingDetails(data) {
     // Add attachments section if there are documents
     if (data.deathcert_url || data.payment_url) {
         htmlContent += `
-            <!-- Third Row: Attachments -->
-            <div>
+            <!-- Attachments -->
+            <div class="col-span-2">
                 <div class="bg-white rounded-lg shadow-sm border border-gray-200">
                     <div class="px-4 py-3 border-b border-gray-200 bg-gray-50">
                         <h4 class="text-md font-semibold text-gray-800 flex items-center">
@@ -1042,7 +1036,7 @@ function renderBookingDetails(data) {
                                 <p class="text-sm font-medium text-gray-700 mb-2">Death Certificate</p>
                                 ${data.deathcert_url ? `
                                     <div class="border border-gray-200 rounded-lg overflow-hidden">
-                                        <div class="relative pb-2/3">
+                                        <div class="relative pb-3/4">
                                             <img src="booking/${data.deathcert_url}" 
                                                 alt="Death Certificate" 
                                                 class="absolute h-full w-full object-contain cursor-pointer hover:opacity-90 transition-opacity"
@@ -1071,7 +1065,7 @@ function renderBookingDetails(data) {
                                 <p class="text-sm font-medium text-gray-700 mb-2">Payment Receipt</p>
                                 ${data.payment_url ? `
                                     <div class="border border-gray-200 rounded-lg overflow-hidden">
-                                        <div class="relative pb-2/3">
+                                        <div class="relative pb-3/4">
                                             <img src="booking/${data.payment_url}" 
                                                 alt="Payment Receipt" 
                                                 class="absolute h-full w-full object-contain cursor-pointer hover:opacity-90 transition-opacity"
@@ -1104,7 +1098,6 @@ function renderBookingDetails(data) {
     // Set the content
     document.getElementById('bookingDetailsContent').innerHTML = htmlContent;
 }
-
 
 function closeModal() {
     // Hide the modal with fade-out effect
