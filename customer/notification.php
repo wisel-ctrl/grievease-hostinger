@@ -488,7 +488,7 @@ $current_page_items = array_slice($filtered_items, ($page - 1) * $items_per_page
     <!-- Main Content Container -->
     <div class="container mx-auto px-4 py-8 max-w-screen-xl mt-[var(--navbar-height)]">
         <!-- Page Header with subtle background -->
-        <div class="bg-gradient-to-b from-yellow-600/10 to-transparent rounded-xl py-8 px-6 mb-10">
+        <div class="bg-yellow-600/10 rounded-xl py-8 px-6 mb-10">
             <div class="max-w-3xl mx-auto text-center">
                 <h1 class="text-4xl md:text-5xl font-hedvig text-navy mb-3">Notifications</h1>
                 <p class="text-dark text-lg max-w-2xl mx-auto">Stay updated with important information about your services and arrangements.</p>
