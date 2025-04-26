@@ -929,32 +929,32 @@ $current_page_items = array_slice($filtered_items, ($page - 1) * $items_per_page
                 let htmlContent = `
                     <div class="col-span-2">
                         <h4 class="font-semibold text-gray-700 mb-2">Deceased Information</h4>
-                        <div class="bg-gray-50 p-3 rounded-lg mb-4">
-                            <p><span class="font-medium">Full Name:</span> ${data.deceased_lname}, ${data.deceased_fname} ${data.deceased_midname || ''} ${data.deceased_suffix || ''}</p>
-                            <p><span class="font-medium">Address:</span> ${data.deceased_address}</p>
-                            <p><span class="font-medium">Birth Date:</span> ${formatDate(data.deceased_birth)}</p>
-                            <p><span class="font-medium">Date of Death:</span> ${formatDate(data.deceased_dodeath)}</p>
-                            <p><span class="font-medium">Date of Burial:</span> ${formatDate(data.deceased_dateOfBurial)}</p>
+                        <div class="bg-gray-50 p-2 sm:p-3 rounded-lg mb-3 sm:mb-4 text-sm sm:text-base">
+                            <p class="mb-1"><span class="font-medium">Full Name:</span> ${data.deceased_lname}, ${data.deceased_fname} ${data.deceased_midname || ''} ${data.deceased_suffix || ''}</p>
+                            <p class="mb-1"><span class="font-medium">Address:</span> ${data.deceased_address}</p>
+                            <p class="mb-1"><span class="font-medium">Birth Date:</span> ${formatDate(data.deceased_birth)}</p>
+                            <p class="mb-1"><span class="font-medium">Date of Death:</span> ${formatDate(data.deceased_dodeath)}</p>
+                            <p class="mb-1"><span class="font-medium">Date of Burial:</span> ${formatDate(data.deceased_dateOfBurial)}</p>
                             <p><span class="font-medium">With Cremation:</span> ${data.with_cremate === 'yes' ? 'Yes' : 'No'}</p>
                         </div>
                     </div>
                     
-                    <div>
+                    <div class="col-span-2 sm:col-span-1">
                         <h4 class="font-semibold text-gray-700 mb-2">Service Details</h4>
-                        <div class="bg-gray-50 p-3 rounded-lg mb-4">
-                            <p><span class="font-medium">Service:</span> ${data.service_name}</p>
-                            <p><span class="font-medium">Branch:</span> ${data.branch_name}</p>
-                            <p><span class="font-medium">Initial Price:</span> ₱${parseFloat(data.initial_price).toFixed(2)}</p>
+                        <div class="bg-gray-50 p-2 sm:p-3 rounded-lg mb-3 sm:mb-4 text-sm sm:text-base">
+                            <p class="mb-1"><span class="font-medium">Service:</span> ${data.service_name}</p>
+                            <p class="mb-1"><span class="font-medium">Branch:</span> ${data.branch_name}</p>
+                            <p class="mb-1"><span class="font-medium">Initial Price:</span> ₱${parseFloat(data.initial_price).toFixed(2)}</p>
                             <p><span class="font-medium">Amount Paid:</span> ₱${parseFloat(data.amount_paid || 0).toFixed(2)}</p>
                         </div>
                     </div>
                     
-                    <div>
+                    <div class="col-span-2 sm:col-span-1">
                         <h4 class="font-semibold text-gray-700 mb-2">Booking Information</h4>
-                        <div class="bg-gray-50 p-3 rounded-lg mb-4">
-                            <p><span class="font-medium">Status:</span> <span class="px-2 py-1 rounded text-xs ${getStatusColorClass(data.status)}">${data.status}</span></p>
-                            <p><span class="font-medium">Booking Date:</span> ${formattedBookingDate}</p>
-                            ${data.accepted_date ? `<p><span class="font-medium">${data.status} Date:</span> ${new Date(data.accepted_date).toLocaleString()}</p>` : ''}
+                        <div class="bg-gray-50 p-2 sm:p-3 rounded-lg mb-3 sm:mb-4 text-sm sm:text-base">
+                            <p class="mb-1"><span class="font-medium">Status:</span> <span class="px-2 py-0.5 rounded text-xs ${getStatusColorClass(data.status)}">${data.status}</span></p>
+                            <p class="mb-1"><span class="font-medium">Booking Date:</span> ${formattedBookingDate}</p>
+                            ${data.accepted_date ? `<p class="mb-1"><span class="font-medium">${data.status} Date:</span> ${new Date(data.accepted_date).toLocaleString()}</p>` : ''}
                             <p><span class="font-medium">Reference Code:</span> ${data.reference_code || 'N/A'}</p>
                         </div>
                     </div>
@@ -962,42 +962,42 @@ $current_page_items = array_slice($filtered_items, ($page - 1) * $items_per_page
                     ${(data.deathcert_url || data.payment_url) ? `
                     <div class="col-span-2">
                         <h4 class="font-semibold text-gray-700 mb-2">Attachments</h4>
-                        <div class="grid grid-cols-2 gap-4 bg-gray-50 p-3 rounded-lg">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 bg-gray-50 p-2 sm:p-3 rounded-lg text-sm sm:text-base">
                             ${data.deathcert_url ? `
-                                <div class="col-span-1">
-                                    <p class="font-medium mb-2">Death Certificate:</p>
+                                <div>
+                                    <p class="font-medium mb-1 sm:mb-2">Death Certificate:</p>
                                     <img src="booking/${data.deathcert_url}" 
                                         alt="Death Certificate" 
                                         class="w-full h-auto rounded border border-gray-200"
                                         onload="this.nextElementSibling.textContent = this.naturalWidth + '×' + this.naturalHeight + 'px'">
-                                    <p class="text-sm text-gray-500 mt-1 text-center"></p>
+                                    <p class="text-xs sm:text-sm text-gray-500 mt-1 text-center"></p>
                                 </div>
                             ` : `
-                                <div class="col-span-1">
-                                    <p class="font-medium mb-2">Death Certificate:</p>
-                                    <div class="w-full h-40 bg-gray-100 rounded border border-gray-200 flex items-center justify-center">
+                                <div>
+                                    <p class="font-medium mb-1 sm:mb-2">Death Certificate:</p>
+                                    <div class="w-full h-32 sm:h-40 bg-gray-100 rounded border border-gray-200 flex items-center justify-center">
                                         <p class="text-gray-400">N/A</p>
                                     </div>
-                                    <p class="text-sm text-gray-500 mt-1 text-center">0×0 px</p>
+                                    <p class="text-xs sm:text-sm text-gray-500 mt-1 text-center">0×0 px</p>
                                 </div>
                             `}
                             
                             ${data.payment_url ? `
-                                <div class="col-span-1">
-                                    <p class="font-medium mb-2">Payment Receipt:</p>
+                                <div>
+                                    <p class="font-medium mb-1 sm:mb-2">Payment Receipt:</p>
                                     <img src="booking/${data.payment_url}" 
                                         alt="Payment Receipt" 
                                         class="w-full h-auto rounded border border-gray-200"
                                         onload="this.nextElementSibling.textContent = this.naturalWidth + '×' + this.naturalHeight + 'px'">
-                                    <p class="text-sm text-gray-500 mt-1 text-center"></p>
+                                    <p class="text-xs sm:text-sm text-gray-500 mt-1 text-center"></p>
                                 </div>
                             ` : `
-                                <div class="col-span-1">
-                                    <p class="font-medium mb-2">Payment Receipt:</p>
-                                    <div class="w-full h-40 bg-gray-100 rounded border border-gray-200 flex items-center justify-center">
+                                <div>
+                                    <p class="font-medium mb-1 sm:mb-2">Payment Receipt:</p>
+                                    <div class="w-full h-32 sm:h-40 bg-gray-100 rounded border border-gray-200 flex items-center justify-center">
                                         <p class="text-gray-400">N/A</p>
                                     </div>
-                                    <p class="text-sm text-gray-500 mt-1 text-center">0×0 px</p>
+                                    <p class="text-xs sm:text-sm text-gray-500 mt-1 text-center">0×0 px</p>
                                 </div>
                             `}
                         </div>
@@ -1018,7 +1018,6 @@ $current_page_items = array_slice($filtered_items, ($page - 1) * $items_per_page
             `;
         });
 }
-
 function closeModal() {
     document.getElementById('bookingDetailsModal').classList.add('hidden');
 }
