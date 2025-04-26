@@ -72,7 +72,7 @@ if ($page < 1) $page = 1;
 
 // Get user's ID validation status
 $user_id = $_SESSION['user_id'];
-$id_validation_query = "SELECT is_validated, decline_reason, upload_at FROM valid_id_tb WHERE id = ?";
+$id_validation_query = "SELECT is_validated, decline_reason, upload_at, image_path FROM valid_id_tb WHERE id = ?";
 $id_validation_stmt = $conn->prepare($id_validation_query);
 $id_validation_stmt->bind_param("i", $user_id);
 $id_validation_stmt->execute();
@@ -741,10 +741,10 @@ $current_page_items = array_slice($filtered_items, ($page - 1) * $items_per_page
                         <div>
                             <span class="<?php echo $id_status_class; ?> text-xs px-2 py-1 rounded-full inline-flex items-center">
                                 <i class="<?php echo $id_icon; ?> mr-1 text-xs"></i>
-                                ID Validation: <?php echo $id_status; ?>
+                                ID Upload Status: <?php echo $id_status; ?>
                             </span>
                             <h3 class="text-navy text-lg font-hedvig mt-1">
-                                ID Verification Status
+                                ID Verification
                             </h3>
                             <p class="text-gray-600 text-sm mt-1 flex items-center">
                                 <i class="fas fa-id-card mr-1 text-gold"></i> 
@@ -766,10 +766,14 @@ $current_page_items = array_slice($filtered_items, ($page - 1) * $items_per_page
                     </div>
                     
                     <div class="mt-3 flex flex-wrap gap-2 items-center justify-between">
-                        <a href="profile.php" 
-                            class="bg-navy text-white px-3 py-1.5 rounded-lg text-xs font-medium transition flex items-center">
-                            <i class="fas fa-id-card mr-1"></i> View in Profile
-                        </a>
+                        <?php if (!empty($id_validation['image_path'])): ?>
+                            <button onclick="viewIdImage('<?php echo htmlspecialchars($id_validation['image_path']); ?>')" 
+                                class="bg-navy text-white px-3 py-1.5 rounded-lg text-xs font-medium transition flex items-center">
+                                <i class="fas fa-image mr-1"></i> View ID
+                            </button>
+                        <?php else: ?>
+                            <span class="text-gray-500 text-xs">No ID image available</span>
+                        <?php endif; ?>
                         
                         <!-- Timestamp -->
                         <div class="text-xs text-gray-500 flex items-center">
@@ -780,6 +784,39 @@ $current_page_items = array_slice($filtered_items, ($page - 1) * $items_per_page
                 </div>
             </div>
         </div>
+        
+        <!-- ID Image Modal -->
+        <div id="idImageModal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-black bg-opacity-75">
+            <div class="flex items-center justify-center min-h-screen">
+                <div class="bg-white rounded-lg max-w-2xl w-full mx-4 relative">
+                    <button onclick="closeIdImageModal()" class="absolute top-2 right-2 text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                    <div class="p-4">
+                        <h3 class="text-lg font-semibold mb-2">Uploaded ID</h3>
+                        <div class="flex justify-center">
+                            <img id="modalIdImage" src="" alt="Uploaded ID" class="max-w-full max-h-[70vh] rounded border border-gray-200">
+                        </div>
+                        <div class="mt-4 text-center">
+                            <button onclick="closeIdImageModal()" class="bg-navy text-white px-4 py-2 rounded-md text-sm">
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <script>
+        function viewIdImage(imagePath) {
+            document.getElementById('modalIdImage').src = imagePath;
+            document.getElementById('idImageModal').classList.remove('hidden');
+        }
+        
+        function closeIdImageModal() {
+            document.getElementById('idImageModal').classList.add('hidden');
+        }
+        </script>
     <?php endif; ?>
 <?php endforeach; ?>
             
