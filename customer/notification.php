@@ -445,36 +445,7 @@ $current_page_bookings = array_slice($filtered_bookings, ($page - 1) * $items_pe
         <p class="text-dark text-base mx-auto">Stay updated with important information about your services.</p>
         <div class="w-16 h-1 bg-yellow-600 mx-auto mt-2 rounded-full"></div>
         
-        <!-- Notification Summary Cards - Compact Version -->
-        <div class="mt-4 grid grid-cols-3 gap-2 mx-auto">
-            <div class="bg-white rounded-lg shadow-sm p-3 hover-scale">
-                <div class="flex flex-col items-center">
-                    <div class="rounded-full bg-error/10 p-2 mb-1">
-                        <i class="fas fa-clock text-error text-sm"></i>
-                    </div>
-                    <div class="text-error font-bold text-xl"><?php echo $notifications_count['pending']; ?></div>
-                    <div class="text-gray-600 text-sm">Pending</div>
-                </div>
-            </div>
-            <div class="bg-white rounded-lg shadow-sm p-3 hover-scale">
-                <div class="flex flex-col items-center">
-                    <div class="rounded-full bg-success/10 p-2 mb-1">
-                        <i class="fas fa-check-circle text-success text-sm"></i>
-                    </div>
-                    <div class="text-success font-bold text-xl"><?php echo $notifications_count['accepted']; ?></div>
-                    <div class="text-gray-600 text-sm">Accepted</div>
-                </div>
-            </div>
-            <div class="bg-white rounded-lg shadow-sm p-3 hover-scale">
-                <div class="flex flex-col items-center">
-                    <div class="rounded-full bg-navy/10 p-2 mb-1">
-                        <i class="fas fa-bell text-navy text-sm"></i>
-                    </div>
-                    <div class="text-navy font-bold text-xl"><?php echo $notifications_count['total']; ?></div>
-                    <div class="text-gray-600 text-sm">Total</div>
-                </div>
-            </div>
-        </div>
+        
     </div>
 </div>
 
