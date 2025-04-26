@@ -432,16 +432,6 @@ $current_page_bookings = array_slice($filtered_bookings, ($page - 1) * $items_pe
             </div>
         </div>
 
-        <!-- Main Content Container -->
-<div class="container mx-auto px-4 py-6 max-w-screen-xl mt-[var(--navbar-height)]">
-    <!-- Page Header -->
-    <div class="bg-gradient-to-b from-yellow-600/10 to-transparent rounded-lg py-4 px-3 mb-4 shadow-sm">
-        <div class="max-w-2xl mx-auto text-center">
-            <h1 class="text-3xl md:text-5xl font-hedvig text-navy mb-1">Notifications</h1>
-            <p class="text-dark text-sm md:text-lg">Stay updated with important information about your services.</p>
-            <div class="w-12 h-1 bg-yellow-600 mx-auto mt-1 rounded-full"></div>
-        </div>
-    </div>
 
     <!-- Dashboard Layout -->
     <div class="flex flex-col lg:flex-row gap-4">
