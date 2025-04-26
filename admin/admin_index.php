@@ -248,12 +248,18 @@ $pilaMetrics = getBranchMetrics($conn, 2); // Pila branch_id = 2
 $paeteMetrics = getBranchMetrics($conn, 1); // Paete branch_id = 1
 
 // Get monthly revenue data for the last 6 months
+// PHP code modification
 $monthlyRevenueData = [];
+$monthLabels = [];
+
 for ($i = 11; $i >= 0; $i--) {
     $date = new DateTime();
     $date->modify("-$i months");
     $month = $date->format('m');
     $year = $date->format('Y');
+    
+    // Save the month name for our labels
+    $monthLabels[] = $date->format('M');
     
     $query = "SELECT SUM(amount_paid) as revenue FROM sales_tb 
               WHERE MONTH(get_timestamp) = ? AND YEAR(get_timestamp) = ?";
@@ -1381,7 +1387,7 @@ for ($i = 11; $i >= 0; $i--) {
 
 </div>
             
-              <!-- Footer -->
+  <!-- Footer -->
   <footer class="bg-white rounded-lg shadow-sidebar border border-sidebar-border p-4 text-center text-sm text-gray-500 mt-8">
     <p>© 2025 GrievEase.</p>
   </footer>
@@ -1422,7 +1428,7 @@ var options = {
     }
   },
   xaxis: {
-    categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+    categories: <?php echo json_encode($monthLabels); ?>,
   },
   yaxis: {
     labels: {
