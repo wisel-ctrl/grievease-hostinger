@@ -856,30 +856,40 @@ $current_page_items = array_slice($filtered_items, ($page - 1) * $items_per_page
         </script>
         
         <!-- Booking Details Modal -->
-        <div id="bookingDetailsModal" class="fixed inset-0 z-50 hidden overflow-y-auto">
-            <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-                <!-- Background overlay -->
-                <div class="fixed inset-0 transition-opacity" aria-hidden="true">
-                    <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
-                </div>
-                
-                <!-- Modal content -->
-                <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl w-full">
-                    <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                        <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Booking Details</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="bookingDetailsContent">
-                            <!-- Details will be loaded here via JavaScript -->
-                        </div>
-                    </div>
-                    <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                        <button type="button" onclick="closeModal()" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
-                            Close
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
+<div id="bookingDetailsModal" class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto">
+  <!-- Modal Backdrop -->
+  <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+  
+  <!-- Modal Content -->
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-4xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+    <!-- Close Button -->
+    <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeModal()">
+      <i class="fas fa-times"></i>
+    </button>
+    
+    <!-- Modal Header -->
+    <div class="px-4 sm:px-6 py-4 sm:py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
+      <h3 id="modal-package-title" class="text-lg sm:text-xl font-bold text-white flex items-center">
+        Booking Details
+      </h3>
     </div>
+    
+    <!-- Modal Body -->
+    <div class="px-4 sm:px-6 py-4 sm:py-5">
+      <!-- Content will be populated via JavaScript -->
+      <div id="bookingDetailsContent">
+        <!-- Details will be loaded here via JavaScript -->
+      </div>
+    </div>
+    
+    <!-- Modal Footer --> 
+    <div class="px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row sm:justify-end gap-2 sm:gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
+      <button class="w-full sm:w-auto px-4 sm:px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center" onclick="closeModal()">
+        Close
+      </button>
+    </div>
+  </div>
+</div>
 
     <?php include 'customService/chat_elements.html'; ?>
     
@@ -898,7 +908,7 @@ $current_page_items = array_slice($filtered_items, ($page - 1) * $items_per_page
 
     function viewBookingDetails(bookingId, status) {
     // Show loading state
-    document.getElementById('bookingDetailsContent').innerHTML = '<div class="col-span-2 flex justify-center py-8"><i class="fas fa-spinner fa-spin text-2xl text-blue-500"></i></div>';
+    document.getElementById('bookingDetailsContent').innerHTML = '<div class="flex justify-center py-8"><i class="fas fa-spinner fa-spin text-2xl text-sidebar-accent"></i></div>';
     
     // Show the modal
     document.getElementById('bookingDetailsModal').classList.remove('hidden');
@@ -909,7 +919,7 @@ $current_page_items = array_slice($filtered_items, ($page - 1) * $items_per_page
         .then(data => {
             if (data.error) {
                 document.getElementById('bookingDetailsContent').innerHTML = `
-                    <div class="col-span-2 text-center py-8 text-red-500">
+                    <div class="text-center py-8 text-red-500">
                         <i class="fas fa-exclamation-circle text-2xl mb-2"></i>
                         <p>${data.error}</p>
                     </div>
@@ -928,82 +938,160 @@ $current_page_items = array_slice($filtered_items, ($page - 1) * $items_per_page
                 
                 // Create the HTML content
                 let htmlContent = `
-                    <div class="col-span-2">
-                        <h4 class="font-semibold text-gray-700 mb-2">Deceased Information</h4>
-                        <div class="bg-gray-50 p-3 rounded-lg mb-4">
-                            <p><span class="font-medium">Full Name:</span> ${data.deceased_lname}, ${data.deceased_fname} ${data.deceased_midname || ''} ${data.deceased_suffix || ''}</p>
-                            <p><span class="font-medium">Address:</span> ${data.deceased_address}</p>
-                            <p><span class="font-medium">Birth Date:</span> ${formatDate(data.deceased_birth)}</p>
-                            <p><span class="font-medium">Date of Death:</span> ${formatDate(data.deceased_dodeath)}</p>
-                            <p><span class="font-medium">Date of Burial:</span> ${formatDate(data.deceased_dateOfBurial)}</p>
-                            <p><span class="font-medium">With Cremation:</span> ${data.with_cremate === 'yes' ? 'Yes' : 'No'}</p>
+                    <!-- Booking ID and Status Banner -->
+                    <div class="flex justify-between items-center mb-6 bg-gray-50 p-3 sm:p-4 rounded-lg">
+                        <div class="flex items-center">
+                            <div class="bg-navy rounded-full p-2 mr-3">
+                                <i class="fas fa-hashtag text-sidebar-accent"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500">Booking ID</p>
+                                <p class="font-semibold text-gray-800">${data.reference_code || 'N/A'}</p>
+                            </div>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500 mb-1">Status</p>
+                            <div>
+                                <span class="px-3 py-1.5 text-sm font-medium rounded-full ${getStatusColorClass(data.status)} flex items-center">
+                                    ${data.status}
+                                </span>
+                            </div>
                         </div>
                     </div>
                     
-                    <div>
-                        <h4 class="font-semibold text-gray-700 mb-2">Service Details</h4>
-                        <div class="bg-gray-50 p-3 rounded-lg mb-4">
-                            <p><span class="font-medium">Service:</span> ${data.service_name}</p>
-                            <p><span class="font-medium">Branch:</span> ${data.branch_name}</p>
-                            <p><span class="font-medium">Initial Price:</span> ₱${parseFloat(data.initial_price).toFixed(2)}</p>
-                            <p><span class="font-medium">Amount Paid:</span> ₱${parseFloat(data.amount_paid || 0).toFixed(2)}</p>
-                        </div>
-                    </div>
-                    
-                    <div>
-                        <h4 class="font-semibold text-gray-700 mb-2">Booking Information</h4>
-                        <div class="bg-gray-50 p-3 rounded-lg mb-4">
-                            <p><span class="font-medium">Status:</span> <span class="px-2 py-1 rounded text-xs ${getStatusColorClass(data.status)}">${data.status}</span></p>
-                            <p><span class="font-medium">Booking Date:</span> ${formattedBookingDate}</p>
-                            ${data.accepted_date ? `<p><span class="font-medium">${data.status} Date:</span> ${new Date(data.accepted_date).toLocaleString()}</p>` : ''}
-                            <p><span class="font-medium">Reference Code:</span> ${data.reference_code || 'N/A'}</p>
-                        </div>
-                    </div>
-                    
-                    ${(data.deathcert_url || data.payment_url) ? `
-                    <div class="col-span-2">
-                        <h4 class="font-semibold text-gray-700 mb-2">Attachments</h4>
-                        <div class="grid grid-cols-2 gap-4 bg-gray-50 p-3 rounded-lg">
-                            ${data.deathcert_url ? `
-                                <div class="col-span-1">
-                                    <p class="font-medium mb-2">Death Certificate:</p>
-                                    <img src="booking/${data.deathcert_url}" 
-                                        alt="Death Certificate" 
-                                        class="w-full h-auto rounded border border-gray-200"
-                                        onload="this.nextElementSibling.textContent = this.naturalWidth + '×' + this.naturalHeight + 'px'">
-                                    <p class="text-sm text-gray-500 mt-1 text-center"></p>
-                                </div>
-                            ` : `
-                                <div class="col-span-1">
-                                    <p class="font-medium mb-2">Death Certificate:</p>
-                                    <div class="w-full h-40 bg-gray-100 rounded border border-gray-200 flex items-center justify-center">
-                                        <p class="text-gray-400">N/A</p>
+                    <!-- Content Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                        <!-- Left Column -->
+                        <div class="space-y-3 sm:space-y-4">
+                            <!-- Deceased Information -->
+                            <div class="bg-white rounded-lg p-4 sm:p-5 border border-gray-200 shadow-sm">
+                                <h4 class="font-semibold text-gray-800 mb-3 sm:mb-4 flex items-center">
+                                    Deceased Information
+                                </h4>
+                                <div class="space-y-2 sm:space-y-3">
+                                    <div class="flex flex-wrap">
+                                        <div class="w-1/3 text-sm text-gray-500">Full Name</div>
+                                        <div class="w-2/3 font-medium text-gray-800 break-words">${data.deceased_lname}, ${data.deceased_fname} ${data.deceased_midname || ''} ${data.deceased_suffix || ''}</div>
                                     </div>
-                                    <p class="text-sm text-gray-500 mt-1 text-center">0×0 px</p>
-                                </div>
-                            `}
-                            
-                            ${data.payment_url ? `
-                                <div class="col-span-1">
-                                    <p class="font-medium mb-2">Payment Receipt:</p>
-                                    <img src="booking/${data.payment_url}" 
-                                        alt="Payment Receipt" 
-                                        class="w-full h-auto rounded border border-gray-200"
-                                        onload="this.nextElementSibling.textContent = this.naturalWidth + '×' + this.naturalHeight + 'px'">
-                                    <p class="text-sm text-gray-500 mt-1 text-center"></p>
-                                </div>
-                            ` : `
-                                <div class="col-span-1">
-                                    <p class="font-medium mb-2">Payment Receipt:</p>
-                                    <div class="w-full h-40 bg-gray-100 rounded border border-gray-200 flex items-center justify-center">
-                                        <p class="text-gray-400">N/A</p>
+                                    <div class="flex flex-wrap">
+                                        <div class="w-1/3 text-sm text-gray-500">Address</div>
+                                        <div class="w-2/3 font-medium text-gray-800 break-words">${data.deceased_address}</div>
                                     </div>
-                                    <p class="text-sm text-gray-500 mt-1 text-center">0×0 px</p>
+                                    <div class="flex flex-wrap">
+                                        <div class="w-1/3 text-sm text-gray-500">Birth Date</div>
+                                        <div class="w-2/3 font-medium text-gray-800 break-words">${formatDate(data.deceased_birth)}</div>
+                                    </div>
+                                    <div class="flex flex-wrap">
+                                        <div class="w-1/3 text-sm text-gray-500">Date of Death</div>
+                                        <div class="w-2/3 font-medium text-gray-800 break-words">${formatDate(data.deceased_dodeath)}</div>
+                                    </div>
+                                    <div class="flex flex-wrap">
+                                        <div class="w-1/3 text-sm text-gray-500">Date of Burial</div>
+                                        <div class="w-2/3 font-medium text-gray-800 break-words">${formatDate(data.deceased_dateOfBurial)}</div>
+                                    </div>
+                                    <div class="flex flex-wrap">
+                                        <div class="w-1/3 text-sm text-gray-500">With Cremation</div>
+                                        <div class="w-2/3 font-medium text-gray-800 break-words">${data.with_cremate === 'yes' ? 'Yes' : 'No'}</div>
+                                    </div>
                                 </div>
-                            `}
+                            </div>
+                        
+                            <!-- Service Details -->
+                            <div class="bg-white rounded-lg p-4 sm:p-5 border border-gray-200 shadow-sm">
+                                <h4 class="font-semibold text-gray-800 mb-3 sm:mb-4 flex items-center">
+                                    Service Details
+                                </h4>
+                                <div class="space-y-2 sm:space-y-3">
+                                    <div class="flex flex-wrap">
+                                        <div class="w-1/3 text-sm text-gray-500">Service</div>
+                                        <div class="w-2/3 font-medium text-gray-800 break-words">${data.service_name}</div>
+                                    </div>
+                                    <div class="flex flex-wrap">
+                                        <div class="w-1/3 text-sm text-gray-500">Branch</div>
+                                        <div class="w-2/3 font-medium text-gray-800 break-words">${data.branch_name}</div>
+                                    </div>
+                                    <div class="flex flex-wrap">
+                                        <div class="w-1/3 text-sm text-gray-500">Initial Price</div>
+                                        <div class="w-2/3 font-medium text-gray-800 break-words">₱${parseFloat(data.initial_price).toFixed(2)}</div>
+                                    </div>
+                                    <div class="flex flex-wrap">
+                                        <div class="w-1/3 text-sm text-gray-500">Amount Paid</div>
+                                        <div class="w-2/3 font-medium text-gray-800 break-words">₱${parseFloat(data.amount_paid || 0).toFixed(2)}</div>
+                                    </div>
+                                    <div class="flex flex-wrap">
+                                        <div class="w-1/3 text-sm text-gray-500">Booking Date</div>
+                                        <div class="w-2/3 font-medium text-gray-800 break-words">${formattedBookingDate}</div>
+                                    </div>
+                                    ${data.accepted_date ? `
+                                    <div class="flex flex-wrap">
+                                        <div class="w-1/3 text-sm text-gray-500">${data.status} Date</div>
+                                        <div class="w-2/3 font-medium text-gray-800 break-words">${new Date(data.accepted_date).toLocaleString()}</div>
+                                    </div>
+                                    ` : ''}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Right Column -->
+                        <div class="space-y-3 sm:space-y-4">
+                            <!-- Documents -->
+                            <div class="bg-white rounded-lg p-4 sm:p-5 border border-gray-200 shadow-sm">
+                                <h4 class="font-semibold text-gray-800 mb-3 sm:mb-4 flex items-center">
+                                    Documents
+                                </h4>
+                                
+                                <!-- Death Certificate -->
+                                <div class="mb-4 sm:mb-5">
+                                    <h5 class="font-medium text-gray-700 mb-2 flex items-center">
+                                        Death Certificate
+                                    </h5>
+                                    <div class="border border-gray-200 rounded-lg overflow-hidden">
+                                        ${data.deathcert_url ? `
+                                            <div class="relative bg-gray-100 p-1">
+                                                <img src="booking/${data.deathcert_url}" alt="Death Certificate" class="mx-auto rounded-md max-h-48 object-contain" />
+                                                <div class="absolute top-2 right-2">
+                                                    <button class="bg-white rounded-full p-1 shadow-md hover:bg-gray-100 transition-colors duration-200" title="View Full Size" 
+                                                    onclick="window.open('booking/${data.deathcert_url}', '_blank')">
+                                                        <i class="fas fa-search-plus text-blue-600"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        ` : `
+                                            <div class="flex flex-col items-center justify-center py-8 px-4 bg-gray-50">
+                                                <i class="fas fa-exclamation-circle text-gray-400 text-3xl mb-2"></i>
+                                                <p class="text-gray-500 text-center">No death certificate has been uploaded yet.</p>
+                                            </div>
+                                        `}
+                                    </div>
+                                </div>
+                                
+                                <!-- Payment Proof -->
+                                <div>
+                                    <h5 class="font-medium text-gray-700 mb-2 flex items-center">
+                                        Payment Proof
+                                    </h5>
+                                    <div class="border border-gray-200 rounded-lg overflow-hidden">
+                                        ${data.payment_url ? `
+                                            <div class="relative bg-gray-100 p-1">
+                                                <img src="booking/${data.payment_url}" alt="Payment Proof" class="mx-auto rounded-md max-h-48 object-contain" />
+                                                <div class="absolute top-2 right-2">
+                                                    <button class="bg-white rounded-full p-1 shadow-md hover:bg-gray-100 transition-colors duration-200" title="View Full Size"
+                                                    onclick="window.open('booking/${data.payment_url}', '_blank')">
+                                                        <i class="fas fa-search-plus text-blue-600"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        ` : `
+                                            <div class="flex flex-col items-center justify-center py-8 px-4 bg-gray-50">
+                                                <i class="fas fa-exclamation-circle text-gray-400 text-3xl mb-2"></i>
+                                                <p class="text-gray-500 text-center">No payment proof has been uploaded yet.</p>
+                                            </div>
+                                        `}
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                ` : ''}
                 `;
                 
                 document.getElementById('bookingDetailsContent').innerHTML = htmlContent;
@@ -1012,7 +1100,7 @@ $current_page_items = array_slice($filtered_items, ($page - 1) * $items_per_page
         .catch(error => {
             console.error('Error:', error);
             document.getElementById('bookingDetailsContent').innerHTML = `
-                <div class="col-span-2 text-center py-8 text-red-500">
+                <div class="text-center py-8 text-red-500">
                     <i class="fas fa-exclamation-circle text-2xl mb-2"></i>
                     <p>Failed to load booking details. Please try again.</p>
                 </div>
@@ -1024,12 +1112,21 @@ function closeModal() {
     document.getElementById('bookingDetailsModal').classList.add('hidden');
 }
 
+// Helper function for status colors
 function getStatusColorClass(status) {
-    switch(status) {
-        case 'Pending': return 'bg-yellow-100 text-yellow-800';
-        case 'Accepted': return 'bg-green-100 text-green-800';
-        case 'Declined': return 'bg-red-100 text-red-800';
-        default: return 'bg-gray-100 text-gray-800';
+    switch(status.toLowerCase()) {
+        case 'pending':
+            return 'bg-yellow-100 text-sidebar-accent';
+        case 'accepted':
+        case 'approved':
+            return 'bg-green-100 text-green-700';
+        case 'completed':
+            return 'bg-blue-100 text-blue-700';
+        case 'declined':
+        case 'cancelled':
+            return 'bg-red-100 text-red-700';
+        default:
+            return 'bg-gray-100 text-gray-700';
     }
 }
 
