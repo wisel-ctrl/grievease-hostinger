@@ -574,7 +574,7 @@ $current_page_bookings = array_slice($filtered_bookings, ($page - 1) * $items_pe
                         <div class="flex flex-col md:flex-row">
                             
                             <!-- Notification Content -->
-                            <div class="flex-1 py-7 px-5">
+                            <div class="flex-1 py-5 px-7">
                                 <div class="flex flex-col md:flex-row justify-between">
                                     <div>
                                         <span class="<?php echo $status_badge_bg; ?> <?php echo $status_text_color; ?> text-xs px-2 py-1 rounded-full inline-flex items-center">
