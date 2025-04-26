@@ -97,49 +97,54 @@ function getImageUrl($image_path) {
 // Fetch packages from database
 $packages = [];
 $branch_id = $row['branch_loc'];
+$show_branch_modal = ($branch_id === null || $branch_id === 'unknown' || $branch_id === '');
 
-$query = "SELECT s.service_id, s.service_name, s.description, s.selling_price, s.image_url, 
-                 i.item_name AS casket_name, s.flower_design, s.inclusions
-          FROM services_tb s
-          LEFT JOIN inventory_tb i ON s.casket_id = i.inventory_id
-          WHERE s.status = 'active' AND s.branch_id = ?";
+error_log("User branch_loc: " . $branch_id . ", show_branch_modal: " . ($show_branch_modal ? 'true' : 'false'));
 
-$stmt = $conn->prepare($query);
-$stmt->bind_param("i", $branch_id); // "i" stands for integer
-$stmt->execute();
-$result = $stmt->get_result();
+if ($branch_id && $branch_id !== 'unknown' && $branch_id !== '') {
+    $query = "SELECT s.service_id, s.service_name, s.description, s.selling_price, s.image_url, 
+                     i.item_name AS casket_name, s.flower_design, s.inclusions
+              FROM services_tb s
+              LEFT JOIN inventory_tb i ON s.casket_id = i.inventory_id
+              WHERE s.status = 'active' AND s.branch_id = ?";
 
-if ($result) {
-    while ($row = $result->fetch_assoc()) {
-        // Parse inclusions (assuming it's stored as a JSON string or comma-separated)
-        $inclusions = []; // Define $inclusions here, inside the loop
-        if (!empty($row['inclusions'])) {
-            // Try to decode as JSON first
-            $decoded = json_decode($row['inclusions'], true);
-            $inclusions = is_array($decoded) ? $decoded : explode(',', $row['inclusions']);
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("i", $branch_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result) {
+        while ($row = $result->fetch_assoc()) {
+            // Parse inclusions (assuming it's stored as a JSON string or comma-separated)
+            $inclusions = []; // Define $inclusions here, inside the loop
+            if (!empty($row['inclusions'])) {
+                // Try to decode as JSON first
+                $decoded = json_decode($row['inclusions'], true);
+                $inclusions = is_array($decoded) ? $decoded : explode(',', $row['inclusions']);
+            }
+
+            // Add casket name first (if it exists)
+            if (!empty($row['casket_name'])) {
+                array_unshift($inclusions, $row['casket_name'] . " casket");
+            }
+
+            // Add flower design second (if it exists)
+            if (!empty($row['flower_design'])) {
+                array_splice($inclusions, 1, 0, $row['flower_design']);
+            }
+            
+            $packages[] = [
+                'id' => $row['service_id'],
+                'name' => $row['service_name'],
+                'description' => $row['description'],
+                'price' => $row['selling_price'],
+                'image' => getImageUrl($row['image_url']), // Use the helper function for image URLs
+                'features' => $inclusions, // Now $inclusions is defined for each package
+                'service' => 'traditional' // Assuming all are traditional for now
+            ];
         }
-
-        // Add casket name first (if it exists)
-        if (!empty($row['casket_name'])) {
-            array_unshift($inclusions, $row['casket_name'] . " casket");
-        }
-
-        // Add flower design second (if it exists)
-        if (!empty($row['flower_design'])) {
-            array_splice($inclusions, 1, 0, $row['flower_design']);
-        }
-        
-        $packages[] = [
-            'id' => $row['service_id'],
-            'name' => $row['service_name'],
-            'description' => $row['description'],
-            'price' => $row['selling_price'],
-            'image' => getImageUrl($row['image_url']), // Use the helper function for image URLs
-            'features' => $inclusions, // Now $inclusions is defined for each package
-            'service' => 'traditional' // Assuming all are traditional for now
-        ];
+        $result->free();
     }
-    $result->free();
 }
 
 // Add some debug information
@@ -260,6 +265,130 @@ $conn->close();
     </style>
 </head>
 <body class="bg-cream overflow-x-hidden w-full max-w-full m-0 p-0 font-hedvig">
+    <!-- Add this right after the opening <body> tag -->
+<?php if ($show_branch_modal): ?>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Show branch modal immediately if branch is unknown
+        const branchModal = document.getElementById('branch-modal');
+        branchModal.classList.remove('hidden');
+        
+        // Fetch branches from server
+        fetchBranches();
+        
+        // Close modal when clicking outside
+        branchModal.addEventListener('click', function(e) {
+            if (e.target === branchModal) {
+                // Don't allow closing by clicking outside - user must select a branch
+                Swal.fire({
+                    title: 'Branch Selection Required',
+                    text: 'You must select a branch to continue using our services.',
+                    icon: 'warning',
+                    confirmButtonColor: '#d97706'
+                });
+            }
+        });
+    });
+    
+    function fetchBranches() {
+        const branchOptions = document.getElementById('branch-options');
+        branchOptions.innerHTML = `
+            <div class="text-center py-4">
+                <i class="fas fa-spinner fa-spin"></i> Loading branches...
+            </div>
+        `;
+        
+        fetch('customService/get_branches.php')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success && data.branches && data.branches.length > 0) {
+                    populateBranchOptions(data.branches);
+                } else {
+                    showBranchError(data.message || 'No branches available');
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching branches:', error);
+                showBranchError('Failed to load branches. Please try again.');
+            });
+    }
+    
+    function populateBranchOptions(branches) {
+        const branchOptions = document.getElementById('branch-options');
+        branchOptions.innerHTML = '';
+        
+        branches.forEach(branch => {
+            const option = document.createElement('button');
+            option.className = 'w-full py-3 px-4 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors text-left mb-2 last:mb-0';
+            option.innerHTML = `
+                <div class="flex items-center">
+                    <i class="fas fa-map-marker-alt text-yellow-600 mr-3"></i>
+                    <div>
+                        <h4 class="font-medium">${branch.name}</h4>
+                    </div>
+                </div>
+            `;
+            
+            option.addEventListener('click', () => selectBranch(branch.id));
+            branchOptions.appendChild(option);
+        });
+    }
+    
+    function selectBranch(branchId) {
+        const branchOptions = document.getElementById('branch-options');
+        branchOptions.innerHTML = `
+            <div class="text-center py-4">
+                <i class="fas fa-spinner fa-spin"></i> Updating your branch...
+            </div>
+        `;
+        
+        fetch('customService/save_branch.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                branch: branchId
+            })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                // Success - reload the page to show packages from selected branch
+                window.location.reload();
+            } else {
+                showBranchError(data.message || 'Failed to update branch');
+            }
+        })
+        .catch(error => {
+            console.error('Error updating branch:', error);
+            showBranchError('Network error. Please check your connection.');
+        });
+    }
+    
+    function showBranchError(message) {
+        document.getElementById('branch-options').innerHTML = `
+            <div class="text-center py-4 text-red-500">
+                <i class="fas fa-exclamation-circle"></i> ${message}
+                <button onclick="fetchBranches()" class="mt-2 text-yellow-600 hover:text-yellow-700">
+                    <i class="fas fa-sync-alt mr-1"></i> Try Again
+                </button>
+            </div>
+        `;
+    }
+</script>
+<?php endif; ?>    
+    
     <!-- Fixed Navigation Bar -->
     <nav class="bg-black text-white shadow-md w-full fixed top-0 left-0 z-50 px-4 sm:px-6 lg:px-8" style="height: var(--navbar-height);">
         <div class="flex justify-between items-center h-16">
@@ -2225,5 +2354,20 @@ function handleModalResize(modalId) {
     }
 }
 </script>
+
+<!-- Branch Selection Modal (Initially Hidden) -->
+<div id="branch-modal" class="fixed inset-0 flex items-center justify-center z-50 hidden"> 
+  <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div> 
+  <div class="bg-white rounded-lg shadow-xl sm:w-80 w-5/6 max-w-sm z-10 p-5"> 
+    <h3 class="text-lg font-semibold mb-4">Select Branch Location</h3>
+
+    <div id="branch-options" class="space-y-3"> 
+      <!-- Branch options will be dynamically inserted here --> 
+      <div class="text-center py-4"> 
+        <i class="fas fa-spinner fa-spin"></i> Loading branches... 
+      </div> 
+    </div> 
+  </div> 
+</div>
 </body>
 </html>
