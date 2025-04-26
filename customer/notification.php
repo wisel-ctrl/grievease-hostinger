@@ -823,36 +823,82 @@ $current_page_items = array_slice($filtered_items, ($page - 1) * $items_per_page
         </div>
 
         <!-- ID Image Modal -->
-        <div id="idImageModal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-black bg-opacity-75">
-            <div class="flex items-center justify-center min-h-screen">
-                <div class="bg-white rounded-lg max-w-2xl w-full mx-4 relative">
-                    <button onclick="closeIdImageModal()" class="absolute top-2 right-2 text-gray-500 hover:text-gray-700">
-                        <i class="fas fa-times text-xl"></i>
-                    </button>
-                    <div class="p-4">
-                        <h3 class="text-lg font-semibold mb-2">Uploaded ID</h3>
-                        <div class="flex justify-center">
-                            <img id="modalIdImage" src="" alt="Uploaded ID" class="max-w-full max-h-[70vh] rounded border border-gray-200">
-                        </div>
-                        <div class="mt-4 text-center">
-                            <button onclick="closeIdImageModal()" class="bg-navy text-white px-4 py-2 rounded-md text-sm">
-                                Close
-                            </button>
-                        </div>
+<div id="idImageModal" class="fixed inset-0 z-50 hidden overflow-y-auto">
+    <div class="flex items-center justify-center min-h-screen">
+        <div class="rounded-lg max-w-2xl w-full mx-4 relative">
+            <button onclick="closeIdImageModal()" class="absolute top-2 right-2 text-white hover:text-gray-200">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+            <div class="p-0">
+                <!-- Dynamic Header -->
+                <div class="bg-yellow-600 rounded-t-lg p-4">
+                    <h3 class="text-lg font-semibold mb-2 text-white">ID Verification</h3>
+                </div>
+                <!-- Content -->
+                <div class="bg-white p-4 rounded-b-lg">
+                    <div class="flex justify-center">
+                        <img id="modalIdImage" src="" alt="Uploaded ID" class="max-w-full max-h-[70vh] rounded border border-gray-200">
+                    </div>
+                    <div class="mt-4 text-center">
+                        <button onclick="closeIdImageModal()" class="bg-navy text-white px-4 py-2 rounded-md text-sm">
+                            Close
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
+</div>
         
         <script>
         function viewIdImage(imagePath) {
-            document.getElementById('modalIdImage').src = imagePath;
-            document.getElementById('idImageModal').classList.remove('hidden');
-        }
-        
-        function closeIdImageModal() {
-            document.getElementById('idImageModal').classList.add('hidden');
-        }
+    // Get the ID validation status from PHP
+    const idStatus = '<?php echo $id_validation ? $id_validation["is_validated"] : "no"; ?>';
+    
+    // Set modal header color based on status
+    const modalHeader = document.querySelector('#idImageModal .bg-white');
+    modalHeader.classList.remove('bg-white');
+    
+    // Set appropriate colors based on status
+    switch(idStatus) {
+        case 'no':
+            modalHeader.classList.add('bg-yellow-600');
+            break;
+        case 'valid':
+            modalHeader.classList.add('bg-green-600');
+            break;
+        case 'denied':
+            modalHeader.classList.add('bg-red-600');
+            break;
+        default:
+            modalHeader.classList.add('bg-gray-600');
+    }
+
+    // Set the image source
+    document.getElementById('modalIdImage').src = imagePath;
+    
+    // Update the modal title based on status
+    const modalTitle = document.querySelector('#idImageModal h3');
+    modalTitle.textContent = `ID Verification - ${getStatusText(idStatus)}`;
+    modalTitle.className = `text-lg font-semibold mb-2 text-white`;
+    
+    // Show the modal
+    document.getElementById('idImageModal').classList.remove('hidden');
+}
+
+// Helper function to get status text
+function getStatusText(status) {
+    switch(status) {
+        case 'no':
+            return 'Pending';
+        case 'valid':
+            return 'Accepted';
+        case 'denied':
+            return 'Declined';
+        default:
+            return 'Not Submitted';
+    }
+}
         </script>
         
         <!-- Booking Details Modal -->
