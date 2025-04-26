@@ -741,10 +741,12 @@ document.addEventListener('click', function(event) {
             <!-- Top Row - Now using grid columns -->
             <div class="grid grid-cols-2 gap-2 mb-1">  <!-- Changed to grid layout -->
                 <!-- Left Column - Status -->
+                <div class="inline-flex items-start">  <!-- Added container for status -->
                     <span class="<?php echo $status_bg; ?> <?php echo $status_text_color; ?> text-xs px-2 py-1 rounded-full inline-flex items-center">
                         <i class="<?php echo $status_icon; ?> mr-1 text-xs"></i>
                         <?php echo htmlspecialchars($booking['status']); ?>
                     </span>
+                </div>
                 
                 <!-- Right Column - Date/Time and Branch -->
                 <div class="flex flex-col items-end">
