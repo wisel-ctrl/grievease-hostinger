@@ -899,6 +899,9 @@ function getStatusText(status) {
             return 'Not Submitted';
     }
 }
+function closeIdImageModal() {
+            document.getElementById('idImageModal').classList.add('hidden');
+        }
         </script>
         
         <!-- Booking Details Modal -->
