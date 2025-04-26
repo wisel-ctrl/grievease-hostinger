@@ -939,7 +939,7 @@ $current_page_items = array_slice($filtered_items, ($page - 1) * $items_per_page
                 // Create the HTML content
                 let htmlContent = `
                     <!-- Booking ID and Status Banner -->
-                    <div class="flex justify-between items-center mb-6 bg-gray-50 p-3 sm:p-4 rounded-lg">
+                    <div class="flex justify-between items-center mb-6 bg-yellow-600 p-3 sm:p-4 rounded-lg">
                         <div class="flex items-center">
                             <div class="bg-navy rounded-full p-2 mr-3">
                                 <i class="fas fa-hashtag text-sidebar-accent"></i>
