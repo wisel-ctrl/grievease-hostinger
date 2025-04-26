@@ -637,56 +637,52 @@ $current_page_bookings = array_slice($filtered_bookings, ($page - 1) * $items_pe
             
             <!-- Pagination -->
             <?php if ($total_filtered_pages > 1): ?>
-            <div class="mt-6 overflow-x-auto">
-                <nav class="flex items-center justify-center">
-                    <div class="inline-flex shadow-md rounded-lg overflow-hidden">
-                        <!-- Previous Button -->
-                        <a href="?filter=<?php echo $current_filter; ?>&page=<?php echo max(1, $page - 1); ?>" 
-                           class="<?php echo $page <= 1 ? 'opacity-50 cursor-not-allowed' : ''; ?> px-2 md:px-3 py-2 bg-white text-navy hover:bg-gray-50 transition border-r border-gray-200 flex items-center text-xs">
-                            <i class="fas fa-chevron-left text-xs mr-1"></i>
-                            <span class="hidden sm:inline">Prev</span>
-                        </a>
-                        
-                        <!-- Page Numbers -->
-                        <div class="flex items-center">
-                            <?php 
-                            $start_page = max(1, $page - 1);
-                            $end_page = min($total_filtered_pages, $page + 1);
-                            
-                            if ($start_page > 1) {
-                                echo '<a href="?filter=' . $current_filter . '&page=1" class="w-8 h-8 bg-white flex items-center justify-center text-navy hover:bg-gray-50 transition border-r border-gray-200 text-xs">1</a>';
-                                if ($start_page > 2) {
-                                    echo '<span class="w-8 h-8 flex items-center justify-center text-gray-500 bg-white border-r border-gray-200 text-xs">...</span>';
-                                }
-                            }
-                            
-                            for ($i = $start_page; $i <= $end_page; $i++) {
-                                $active_class = ($i == $page) ? 'bg-yellow-600 text-white hover:bg-yellow-600' : 'bg-white text-navy hover:bg-gray-50';
-                                echo '<a href="?filter=' . $current_filter . '&page=' . $i . '" class="w-8 h-8 ' . $active_class . ' flex items-center justify-center transition border-r border-gray-200 text-xs">' . $i . '</a>';
-                            }
-                            
-                            if ($end_page < $total_filtered_pages) {
-                                if ($end_page < $total_filtered_pages - 1) {
-                                    echo '<span class="w-8 h-8 flex items-center justify-center text-gray-500 bg-white border-r border-gray-200 text-xs">...</span>';
-                                }
-                                echo '<a href="?filter=' . $current_filter . '&page=' . $total_filtered_pages . '" class="w-8 h-8 bg-white flex items-center justify-center text-navy hover:bg-gray-50 transition border-r border-gray-200 text-xs">' . $total_filtered_pages . '</a>';
-                            }
-                            ?>
-                        </div>
-                        
-                        <!-- Next Button -->
-                        <a href="?filter=<?php echo $current_filter; ?>&page=<?php echo min($total_filtered_pages, $page + 1); ?>" 
-                           class="<?php echo $page >= $total_filtered_pages ? 'opacity-50 cursor-not-allowed' : ''; ?> px-2 md:px-3 py-2 bg-white text-navy hover:bg-gray-50 transition flex items-center text-xs">
-                            <span class="hidden sm:inline">Next</span>
-                            <i class="fas fa-chevron-right text-xs ml-1"></i>
-                        </a>
-                    </div>
-                </nav>
-            </div>
-            <?php endif; ?>
-        </div>
-    </div>
-</div>
+                                <div class="mt-8 flex justify-center">
+                                    <nav class="flex items-center space-x-1">
+                                        <!-- Previous Button -->
+                                        <a href="?filter=<?php echo $current_filter; ?>&page=<?php echo max(1, $page - 1); ?>" 
+                                           class="<?php echo $page <= 1 ? 'opacity-50 cursor-not-allowed' : ''; ?> px-3 py-2 bg-white rounded-md border border-gray-300 text-navy hover:bg-gray-50 transition">
+                                            <i class="fas fa-chevron-left text-sm"></i>
+                                        </a>
+                                        
+                                        <!-- Page Numbers -->
+                                        <?php 
+                                        $start_page = max(1, $page - 2);
+                                        $end_page = min($total_filtered_pages, $page + 2);
+                                        
+                                        if ($start_page > 1) {
+                                            echo '<a href="?filter=' . $current_filter . '&page=1" class="px-3 py-2 bg-white rounded-md border border-gray-300 text-navy hover:bg-gray-50 transition">1</a>';
+                                            if ($start_page > 2) {
+                                                echo '<span class="px-3 py-2 text-gray-500">...</span>';
+                                            }
+                                        }
+                                        
+                                        for ($i = $start_page; $i <= $end_page; $i++) {
+                                            $active_class = ($i == $page) ? 'bg-yellow-600 text-white border-yellow-600' : 'bg-white text-navy border-gray-300 hover:bg-gray-50';
+                                            echo '<a href="?filter=' . $current_filter . '&page=' . $i . '" class="px-3 py-2 rounded-md border ' . $active_class . ' transition">' . $i . '</a>';
+                                        }
+                                        
+                                        if ($end_page < $total_filtered_pages) {
+                                            if ($end_page < $total_filtered_pages - 1) {
+                                                echo '<span class="px-3 py-2 text-gray-500">...</span>';
+                                            }
+                                            echo '<a href="?filter=' . $current_filter . '&page=' . $total_filtered_pages . '" class="px-3 py-2 bg-white rounded-md border border-gray-300 text-navy hover:bg-gray-50 transition">' . $total_filtered_pages . '</a>';
+                                        }
+                                        ?>
+                                        
+                                        <!-- Next Button -->
+                                        <a href="?filter=<?php echo $current_filter; ?>&page=<?php echo min($total_filtered_pages, $page + 1); ?>" 
+                                           class="<?php echo $page >= $total_filtered_pages ? 'opacity-50 cursor-not-allowed' : ''; ?> px-3 py-2 bg-white rounded-md border border-gray-300 text-navy hover:bg-gray-50 transition">
+                                            <i class="fas fa-chevron-right text-sm"></i>
+                                        </a>
+                                    </nav>
+                                </div>
+                                <?php endif; ?>
+                                
+                                <?php endif; ?>
+                                </div>
+                                </div>
+                                </div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
