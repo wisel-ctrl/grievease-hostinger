@@ -513,21 +513,23 @@ header("Pragma: no-cache");
     </div>
                 
                 <!-- New Uploaded Documents Section -->
-                <div class="mt-8 pt-6 border-t border-gray-200">
+                <!-- New Uploaded Documents Section -->
+<div class="mt-8 pt-6 border-t border-gray-200">
     <h3 class="font-hedvig text-lg text-navy mb-4">Uploaded ID</h3>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
             <div class="flex justify-between items-start mb-1">
                 <?php if ($uploadedImagePath): ?>
                     <?php
-                        // Fetch the validation status from valid_id_tb
-                        $status_query = "SELECT is_validated FROM valid_id_tb WHERE id = ?";
+                        // Fetch the validation status and decline reason from valid_id_tb
+                        $status_query = "SELECT is_validated, decline_reason FROM valid_id_tb WHERE id = ?";
                         $status_stmt = $conn->prepare($status_query);
                         $status_stmt->bind_param("i", $user_id);
                         $status_stmt->execute();
                         $status_result = $status_stmt->get_result();
                         $status_row = $status_result->fetch_assoc();
                         $id_status = $status_row ? $status_row['is_validated'] : 'no';
+                        $decline_reason = $status_row ? $status_row['decline_reason'] : '';
                         $status_stmt->close();
                         $conn->close();
                         
@@ -556,6 +558,13 @@ header("Pragma: no-cache");
                         <span class="text-sm text-gray-600 mr-2">Uploaded ID Status:</span>
                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <?php echo $statusClass; ?>">
                             <?php echo $statusText; ?>
+                            <?php if ($id_status === 'denied' && $decline_reason): ?>
+                                <!-- Info icon for declined status -->
+                                <svg class="w-4 h-4 ml-1 cursor-pointer" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" 
+                                     onclick="openDeclineReasonModal('<?php echo htmlspecialchars($decline_reason); ?>')">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2h-1V9z" clip-rule="evenodd"></path>
+                                </svg>
+                            <?php endif; ?>
                         </span>
                     </div>
                 <?php endif; ?>
@@ -583,8 +592,69 @@ header("Pragma: no-cache");
     <img id="enlargedImage" src="" alt="Enlarged ID" class="max-w-full max-h-[90vh] object-contain">
 </div>
 
+<!-- Modal for decline reason -->
+<div id="declineReasonModal" class="fixed inset-0 z-50 hidden bg-black bg-opacity-80 flex items-center justify-center p-4">
+    <div class="bg-white rounded-lg p-6 max-w-md w-full">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-bold text-red-600">ID Verification Declined</h3>
+            <button onclick="closeDeclineReasonModal()" class="text-gray-500 hover:text-gray-700">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+        <div class="space-y-4">
+            <div class="flex items-start">
+                <svg class="w-5 h-5 text-red-500 mt-0.5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                </svg>
+                <div>
+                    <p id="declineReasonText" class="font-medium text-gray-800"></p>
+                    <p id="declineExplanation" class="text-sm text-gray-600 mt-1"></p>
+                </div>
+            </div>
+        </div>
+        <div class="mt-6 flex justify-end">
+            <button onclick="closeDeclineReasonModal()" class="px-4 py-2 bg-navy text-white rounded-md hover:bg-navy-dark transition-colors">
+                Understood
+            </button>
+        </div>
+    </div>
+</div>
+
 <!-- JavaScript for modal functionality -->
 <script>
+// Decline reason explanations
+const declineExplanations = {
+    'Incomplete Document': 'Your ID upload was declined because the entire document was not visible. Ensure all edges and text (like "REPUBLIC OF THE PHILIPPINES") are fully captured without cuts.',
+    'Cropped or Cut-off Text': 'Parts of your ID (e.g., headers or personal details) were cropped out. Zoom out to show the full document, including all four corners.',
+    'Blurry or Low-Quality Image': 'The photo was unclear, making text unreadable. Retake in bright light, hold steady, and ensure sharp focus before uploading.',
+    'Glare or Shadows': 'Bright spots or dark shadows covered details. Avoid flash, adjust lighting, and position the ID flat to prevent reflections.',
+    'Missing Critical Details': 'Key info (name, ID number, photo) was missing or hidden. Double-check that all personal details are clear and unobstructed.'
+};
+
+function openDeclineReasonModal(reason) {
+    document.getElementById('declineReasonText').textContent = reason;
+    
+    // Set the explanation if we have one, otherwise hide it
+    const explanationElement = document.getElementById('declineExplanation');
+    if (declineExplanations[reason]) {
+        explanationElement.textContent = declineExplanations[reason];
+        explanationElement.style.display = 'block';
+    } else {
+        explanationElement.style.display = 'none';
+    }
+    
+    // Show the modal
+    document.getElementById('declineReasonModal').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeDeclineReasonModal() {
+    document.getElementById('declineReasonModal').classList.add('hidden');
+    document.body.style.overflow = 'auto';
+}
+
 function openImageModal(imagePath) {
     // Set the source of the enlarged image
     document.getElementById('enlargedImage').src = imagePath;
@@ -615,11 +685,17 @@ document.getElementById('imageModal').addEventListener('click', function(event) 
 
 // Close modal with Escape key
 document.addEventListener('keydown', function(event) {
-    if (event.key === 'Escape' && !document.getElementById('imageModal').classList.contains('hidden')) {
-        closeImageModal();
+    if (event.key === 'Escape') {
+        if (!document.getElementById('imageModal').classList.contains('hidden')) {
+            closeImageModal();
+        }
+        if (!document.getElementById('declineReasonModal').classList.contains('hidden')) {
+            closeDeclineReasonModal();
+        }
     }
 });
 </script>
+
 
             </div>
         </div>
