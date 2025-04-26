@@ -110,6 +110,7 @@ header("Pragma: no-cache");
                     $stmt->close();
                 }
                 
+// PROFILE CONFIRMATION
 // Initialize variables
 $percentage = 25; // Base 25% for account creation
 $status_text = "25% Complete";
@@ -204,6 +205,8 @@ if ($percentage >= 100) {
 // Ensure minimum 25% and maximum 100% (before penalty)
 $percentage = min(max($percentage, 25), 100);
 
+
+//ID STATUS
 $id_query = "SELECT * FROM valid_id_tb WHERE id = ? ORDER BY upload_at DESC LIMIT 1";
 $id_stmt = $conn->prepare($id_query);
 $id_stmt->bind_param("i", $user_id);
@@ -255,7 +258,87 @@ if ($has_id) {
             break;
     }
 }
+
+// BOOKING STATUS
+$booking_query = "SELECT * FROM booking_tb WHERE customerID = ? ORDER BY booking_date DESC LIMIT 1";
+$booking_stmt = $conn->prepare($booking_query);
+$booking_stmt->bind_param("i", $user_id);
+$booking_stmt->execute();
+$booking_result = $booking_stmt->get_result();
+$has_booking = $booking_result->num_rows > 0;
+$booking_data = $has_booking ? $booking_result->fetch_assoc() : null;
+
+// Determine booking status and styling
+$booking_status = 'No Booking';
+$booking_status_class = 'text-gray-500';
+$booking_icon_class = 'text-gray-400';
+$booking_bg_class = 'bg-gray-200';
+$booking_message = 'You haven\'t made any service bookings yet.';
+$booking_link_text = 'Book a Service';
+$booking_redirect_url = 'services.php'; // Default for no booking
+
+if ($has_booking) {
+    switch(strtolower($booking_data['status'])) {
+        case 'accepted':
+            $booking_status = 'Approved';
+            $booking_status_class = 'text-success';
+            $booking_icon_class = 'text-success';
+            $booking_bg_class = 'bg-success/10';
+            
+            // Format the burial date if available
+            $burial_date = !empty($booking_data['deceased_dateOfBurial']) ? 
+                date('F j, Y', strtotime($booking_data['deceased_dateOfBurial'])) : 'a future date';
+            
+            $booking_message = 'Your service booking has been confirmed for ' . $burial_date;
+            
+            // Add time if you store that information separately
+            if (!empty($booking_data['accepted_date'])) {
+                $booking_message .= ' (approved on ' . date('F j, Y', strtotime($booking_data['accepted_date'])) . ')';
+            }
+            
+            $booking_link_text = 'View Details';
+            $booking_redirect_url = 'profile.php#bookings';
+            break;
+            
+        case 'pending':
+            $booking_status = 'Pending';
+            $booking_status_class = 'text-yellow-600';
+            $booking_icon_class = 'text-yellow-600';
+            $booking_bg_class = 'bg-yellow-600/10';
+            
+            $booking_message = 'Your booking request is under review. Submitted on ' . 
+                date('F j, Y', strtotime($booking_data['booking_date']));
+            
+            $booking_link_text = 'Check Status';
+            $booking_redirect_url = 'notification.php';
+            break;
+            
+        case 'declined':
+            $booking_status = 'Declined';
+            $booking_status_class = 'text-danger';
+            $booking_icon_class = 'text-danger';
+            $booking_bg_class = 'bg-danger/10';
+            
+            $booking_message = 'Your booking was declined';
+            
+            if (!empty($booking_data['decline_date'])) {
+                $booking_message .= ' on ' . date('F j, Y', strtotime($booking_data['decline_date']));
+            }
+            
+            if (!empty($booking_data['reason_for_decline'])) {
+                $booking_message .= '. Reason: ' . htmlspecialchars($booking_data['reason_for_decline']);
+            }
+            
+            $booking_link_text = 'Book Again';
+            $booking_redirect_url = 'services.php';
+            break;
+    }
+}
                 
+$show_booking_card = !$has_booking || strtolower($booking_data['status']) != 'accepted';
+$show_profile_card = $percentage < 100;
+$show_id_card = !$has_id || strtolower($id_data['is_validated']) != 'valid';
+
                 $conn->close();
 ?>
 <!DOCTYPE html>
@@ -564,23 +647,32 @@ if ($has_id) {
                 </a>
             </div>
             
+            <?php if ($show_booking_card): ?>
             <!-- Booking Status Card -->
             <div class="bg-white rounded-xl shadow-lg p-6 dashboard-card transition-all duration-300">
                 <div class="flex items-start justify-between mb-4">
                     <div>
                         <p class="text-sm text-gray-500 font-medium">Booking Status</p>
-                        <h3 class="text-xl font-hedvig text-navy">Approved</h3>
+                        <h3 class="text-xl font-hedvig <?= $booking_status_class ?>"><?= $booking_status ?></h3>
                     </div>
-                    <div class="w-10 h-10 rounded-full bg-success/10 flex items-center justify-center">
-                        <i class="fas fa-check-circle text-success"></i>
+                    <div class="w-10 h-10 rounded-full <?= $booking_bg_class ?> flex items-center justify-center">
+                        <i class="fas 
+                            <?= $booking_status === 'Approved' ? 'fa-check-circle' : '' ?>
+                            <?= $booking_status === 'Pending' ? 'fa-hourglass-half' : '' ?>
+                            <?= $booking_status === 'Declined' ? 'fa-times-circle' : '' ?>
+                            <?= $booking_status === 'No Booking' ? 'fa-calendar-plus' : '' ?>
+                            <?= $booking_icon_class ?>">
+                        </i>
                     </div>
                 </div>
-                <p class="text-sm text-dark mb-4">Your service booking has been confirmed for March 25, 2025 at 10:00 AM.</p>
-                <a href="profile.php#bookings" class="text-sm text-yellow-600 hover:text-darkgold font-medium flex items-center">
-                    View Details <i class="fas fa-arrow-right ml-2"></i>
+                <p class="text-sm text-dark mb-4"><?= $booking_message ?></p>
+                <a href="<?= $booking_redirect_url ?>" class="text-sm text-yellow-600 hover:text-darkgold font-medium flex items-center">
+                    <?= $booking_link_text ?> <i class="fas fa-arrow-right ml-2"></i>
                 </a>
             </div>
+            <?php endif; ?>
             
+            <?php if ($show_profile_card): ?>
             <!-- Profile Completion Card -->
             <div class="bg-white rounded-xl shadow-lg p-6 dashboard-card transition-all duration-300">
                 <div class="flex items-start justify-between mb-4">
@@ -642,7 +734,9 @@ if ($has_id) {
                     <?= $percentage < 100 ? 'Complete Profile' : 'View Profile' ?> <i class="fas fa-arrow-right ml-2"></i>
                 </a>
             </div>
+            <?php endif; ?>
             
+            <?php if ($show_id_card): ?>
             <!-- ID Verification Card -->
             <div class="bg-white rounded-xl shadow-lg p-6 dashboard-card transition-all duration-300">
                 <div class="flex items-start justify-between mb-4">
@@ -661,6 +755,7 @@ if ($has_id) {
                     <?= $link_text ?> <i class="fas fa-arrow-right ml-2"></i>
                 </a>
             </div>
+            <?php endif; ?>
         </div>
         
         <!-- Services Section -->
