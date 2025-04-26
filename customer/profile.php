@@ -669,130 +669,130 @@ header("Pragma: no-cache");
                         
                         <!-- Right column: ID image -->
                         <div class="flex items-center justify-center">
-                            <?php if ($uploadedImagePath): ?>
-                                <div class="relative border border-gray-200 rounded-lg p-2 inline-block">
-                                    <!-- Image with overlay effect on hover -->
-                                    <div class="relative group">
-                                        <img 
-                                            src="<?php echo '../uploads/valid_ids/' . htmlspecialchars($uploadedImagePath); ?>" 
-                                            alt="Uploaded ID"
-                                            class="rounded-lg shadow w-60 h-auto cursor-pointer transition-all group-hover:opacity-90"
-                                            onclick="openImageModal('<?php echo '../uploads/valid_ids/' . htmlspecialchars($uploadedImagePath); ?>')"
-                                        >
-                                        <!-- Hover overlay with zoom icon -->
-                                        <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 flex items-center justify-center transition-all rounded-lg opacity-0 group-hover:opacity-100">
-                                            <span class="bg-white bg-opacity-75 rounded-full p-2">
-                                                <svg class="w-6 h-6 text-navy" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path>
-                                                </svg>
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <!-- Caption -->
-                                    <p class="text-xs text-center text-gray-500 mt-2">Click to enlarge</p>
-                                </div>
-                            <?php else: ?>
-                                <div class="border border-dashed border-gray-300 rounded-lg p-8 text-center w-full">
-                                    <svg class="w-16 h-16 text-gray-300 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                                    </svg>
-                                    <p class="text-gray-500 font-medium mb-2">No ID uploaded yet</p>
-                                    <button class="px-4 py-2 bg-navy text-white text-sm rounded hover:bg-blue-800 transition-colors">
-                                        Upload ID
-                                    </button>
-                                </div>
-                            <?php endif; ?>
+                        <?php if ($uploadedImagePath): ?>
+    <div class="relative border border-gray-200 rounded-lg p-2 inline-block">
+        <!-- Image with overlay effect on hover -->
+        <div class="relative group">
+            <img 
+                src="<?php echo '../uploads/valid_ids/' . htmlspecialchars($uploadedImagePath); ?>" 
+                alt="Uploaded ID"
+                class="rounded-lg shadow w-60 h-auto cursor-pointer transition-all group-hover:opacity-90"
+                onclick="openImageModal('<?php echo '../uploads/valid_ids/' . htmlspecialchars($uploadedImagePath); ?>')"
+            >
+            <!-- Hover overlay with zoom icon -->
+            <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 flex items-center justify-center transition-all rounded-lg opacity-0 group-hover:opacity-100">
+                <span class="bg-white bg-opacity-75 rounded-full p-2">
+                    <svg class="w-6 h-6 text-navy" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path>
+                    </svg>
+                </span>
+            </div>
+        </div>
+        <!-- Caption -->
+        <p class="text-xs text-center text-gray-500 mt-2">Click to enlarge</p>
+    </div>
+<?php else: ?>
+    <div class="border border-dashed border-gray-300 rounded-lg p-8 text-center w-full">
+        <svg class="w-16 h-16 text-gray-300 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+        </svg>
+        <p class="text-gray-500 font-medium mb-2">No ID uploaded yet</p>
+        <button class="px-4 py-2 bg-navy text-white text-sm rounded hover:bg-blue-800 transition-colors">
+            Upload ID
+        </button>
+    </div>
+<?php endif; ?>
                         </div>
                     </div>
                 </div>
 
                 <!-- Modal for enlarged image - improved with animation -->
-                <div id="imageModal" class="fixed inset-0 z-50 hidden bg-black bg-opacity-80 flex items-center justify-center p-4 transition-all duration-300">
-                    <div class="relative max-w-3xl w-full">
-                        <!-- Close button -->
-                        <button onclick="closeImageModal()" class="absolute -top-10 right-0 text-white hover:text-gray-300 focus:outline-none transition-colors">
-                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                            </svg>
-                        </button>
-                        <!-- Image with border and shadow -->
-                        <img id="enlargedImage" src="" alt="Enlarged ID" class="max-w-full max-h-[80vh] object-contain mx-auto rounded-lg shadow-2xl border-4 border-white">
-                    </div>
-                </div>
+<div id="imageModal" class="fixed inset-0 z-50 hidden bg-black bg-opacity-80 flex items-center justify-center p-4 transition-all duration-300">
+    <div class="relative max-w-3xl w-full">
+        <!-- Close button -->
+        <button onclick="closeImageModal()" class="absolute -top-10 right-0 text-white hover:text-gray-300 focus:outline-none transition-colors">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+        </button>
+        <!-- Image with border and shadow -->
+        <img id="enlargedImage" src="" alt="Enlarged ID" class="max-w-full max-h-[80vh] object-contain mx-auto rounded-lg shadow-2xl border-4 border-white">
+    </div>
+</div>
 
-                <!-- Modal for decline reason - improved design -->
-                <div id="declineReasonModal" class="fixed inset-0 z-50 hidden bg-black bg-opacity-80 flex items-center justify-center p-4 transition-all duration-300">
-                    <div class="bg-white rounded-lg p-6 max-w-md w-full shadow-2xl transform transition-all">
-                        <div class="flex justify-between items-center mb-4">
-                            <h3 class="text-lg font-bold text-red-600 flex items-center">
-                                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
-                                </svg>
-                                ID Verification Declined
-                            </h3>
-                            <button onclick="closeDeclineReasonModal()" class="text-gray-500 hover:text-gray-700">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                                </svg>
-                            </button>
-                        </div>
-                        <div class="space-y-4">
-                            <div class="flex items-start bg-red-50 p-4 rounded-lg">
-                                <svg class="w-5 h-5 text-red-500 mt-0.5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
-                                </svg>
-                                <div>
-                                    <p id="declineReasonText" class="font-medium text-gray-800"></p>
-                                    <p id="declineExplanation" class="text-sm text-gray-600 mt-2"></p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="mt-6 flex justify-end">
-                            <button onclick="closeDeclineReasonModal()" class="px-4 py-2 bg-navy text-white rounded-md hover:bg-blue-800 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-300">
-                                Understood
-                            </button>
-                        </div>
-                    </div>
+<!-- Modal for decline reason - improved design -->
+<div id="declineReasonModal" class="fixed inset-0 z-50 hidden bg-black bg-opacity-80 flex items-center justify-center p-4 transition-all duration-300">
+    <div class="bg-white rounded-lg p-6 max-w-md w-full shadow-2xl transform transition-all">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-bold text-red-600 flex items-center">
+                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                </svg>
+                ID Verification Declined
+            </h3>
+            <button onclick="closeDeclineReasonModal()" class="text-gray-500 hover:text-gray-700">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+        <div class="space-y-4">
+            <div class="flex items-start bg-red-50 p-4 rounded-lg">
+                <svg class="w-5 h-5 text-red-500 mt-0.5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                </svg>
+                <div>
+                    <p id="declineReasonText" class="font-medium text-gray-800"></p>
+                    <p id="declineExplanation" class="text-sm text-gray-600 mt-2"></p>
                 </div>
+            </div>
+        </div>
+        <div class="mt-6 flex justify-end">
+            <button onclick="closeDeclineReasonModal()" class="px-4 py-2 bg-navy text-white rounded-md hover:bg-blue-800 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-300">
+                Understood
+            </button>
+        </div>
+    </div>
+</div>
 
                 <!-- JavaScript for modal functionality - enhanced with animations -->
                 <script>
                 // Decline reason explanations
-                const declineExplanations = {
-                    'Incomplete Document': 'Your ID upload was declined because the entire document was not visible. Ensure all edges and text (like "REPUBLIC OF THE PHILIPPINES") are fully captured without cuts.',
-                    'Cropped or Cut-off Text': 'Parts of your ID (e.g., headers or personal details) were cropped out. Zoom out to show the full document, including all four corners.',
-                    'Blurry or Low-Quality Image': 'The photo was unclear, making text unreadable. Retake in bright light, hold steady, and ensure sharp focus before uploading.',
-                    'Glare or Shadows': 'Bright spots or dark shadows covered details. Avoid flash, adjust lighting, and position the ID flat to prevent reflections.',
-                    'Missing Critical Details': 'Key info (name, ID number, photo) was missing or hidden. Double-check that all personal details are clear and unobstructed.'
-                };
+const declineExplanations = {
+    'Incomplete Document': 'Your ID upload was declined because the entire document was not visible. Ensure all edges and text (like "REPUBLIC OF THE PHILIPPINES") are fully captured without cuts.',
+    'Cropped or Cut-off Text': 'Parts of your ID (e.g., headers or personal details) were cropped out. Zoom out to show the full document, including all four corners.',
+    'Blurry or Low-Quality Image': 'The photo was unclear, making text unreadable. Retake in bright light, hold steady, and ensure sharp focus before uploading.',
+    'Glare or Shadows': 'Bright spots or dark shadows covered details. Avoid flash, adjust lighting, and position the ID flat to prevent reflections.',
+    'Missing Critical Details': 'Key info (name, ID number, photo) was missing or hidden. Double-check that all personal details are clear and unobstructed.'
+};
 
-                function openDeclineReasonModal(reason) {
-                    document.getElementById('declineReasonText').textContent = reason;
-                    
-                    // Set the explanation if we have one, otherwise hide it
-                    const explanationElement = document.getElementById('declineExplanation');
-                    if (declineExplanations[reason]) {
-                        explanationElement.textContent = declineExplanations[reason];
-                        explanationElement.style.display = 'block';
-                    } else {
-                        explanationElement.style.display = 'none';
-                    }
-                    
-                    // Show the modal with animation
-                    const modal = document.getElementById('declineReasonModal');
-                    modal.classList.remove('hidden');
-                    modal.classList.add('flex');
-                    
-                    // Add animation
-                    setTimeout(() => {
-                        modal.querySelector('.transform').classList.add('scale-100');
-                        modal.querySelector('.transform').classList.remove('scale-95', 'opacity-0');
-                    }, 10);
-                    
-                    document.body.style.overflow = 'hidden';
-                }
+function openDeclineReasonModal(reason) {
+    document.getElementById('declineReasonText').textContent = reason;
+    
+    // Set the explanation if we have one, otherwise hide it
+    const explanationElement = document.getElementById('declineExplanation');
+    if (declineExplanations[reason]) {
+        explanationElement.textContent = declineExplanations[reason];
+        explanationElement.style.display = 'block';
+    } else {
+        explanationElement.style.display = 'none';
+    }
+    
+    // Show the modal with animation
+    const modal = document.getElementById('declineReasonModal');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    
+    // Add animation
+    setTimeout(() => {
+        modal.querySelector('.transform').classList.add('scale-100');
+        modal.querySelector('.transform').classList.remove('scale-95', 'opacity-0');
+    }, 10);
+    
+    document.body.style.overflow = 'hidden';
+}
 
-                function closeDeclineReasonModal() {
+function closeDeclineReasonModal() {
     const modal = document.getElementById('declineReasonModal');
     const modalContent = modal.querySelector('.transform');
     
@@ -873,6 +873,25 @@ function closeImageModal() {
     }, 300);
 }
 
+// Close modal when clicking outside the image container
+document.getElementById('imageModal')?.addEventListener('click', function(event) {
+    if (event.target === this) {
+        closeImageModal();
+    }
+});
+
+// Close modal with Escape key
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        if (!document.getElementById('imageModal')?.classList.contains('hidden')) {
+            closeImageModal();
+        }
+        if (!document.getElementById('declineReasonModal')?.classList.contains('hidden')) {
+            closeDeclineReasonModal();
+        }
+    }
+});
+
 // Find all elements that should open the image modal
 const imageTriggers = document.querySelectorAll('[onclick*="openImageModal"]');
 console.log('Found image triggers:', imageTriggers.length); // Debug log
@@ -885,18 +904,6 @@ imageTriggers.forEach(trigger => {
         console.log('Attempting to open modal with src:', imageSrc); // Debug log
         openImageModal(imageSrc);
     });
-});
-
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM fully loaded'); // Debug log
-    
-    const modal = document.getElementById('imageModal');
-    console.log('Image modal on load:', modal ? 'Exists' : 'Does not exist'); // Debug log
-    
-    if (modal) {
-        console.log('Modal initial classes:', modal.classList); // Debug log
-        console.log('Modal initial style:', modal.style); // Debug log
-    }
 });
 
 // Initialize tooltips if any
