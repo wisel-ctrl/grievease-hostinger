@@ -598,7 +598,7 @@ for ($i = 11; $i >= 0; $i--) {
     </div>
     <div class="p-4 sm:p-5">
       <div class="w-full h-48 md:h-64">
-        <canvas id="branchRevenueChart" style="width: 100%; height: 100%;"></canvas>
+        <div id="branchRevenueChart" style="width: 100%; height: 100%;"></div>
       </div>
     </div>
   </div>
@@ -1448,6 +1448,84 @@ var options = {
 
 var chart = new ApexCharts(document.querySelector("#revenueChart"), options);
 chart.render();
+</script>
+
+<script>
+// Get the revenue data for both branches
+var pilaRevenue = <?php echo $pilaMetrics['revenue']; ?>;
+var paeteRevenue = <?php echo $paeteMetrics['revenue']; ?>;
+
+var branchRevenueOptions = {
+  series: [{
+    name: 'Revenue',
+    data: [pilaRevenue, paeteRevenue]
+  }],
+  chart: {
+    type: 'bar',
+    height: '100%',
+    width: '100%',
+    toolbar: {
+      show: false
+    }
+  },
+  plotOptions: {
+    bar: {
+      horizontal: false,
+      columnWidth: '70%',
+      endingShape: 'rounded',
+      borderRadius: 4
+    },
+  },
+  dataLabels: {
+    enabled: false
+  },
+  colors: ['#4f46e5', '#10b981'],
+  stroke: {
+    show: true,
+    width: 2,
+    colors: ['transparent']
+  },
+  xaxis: {
+    categories: ['Pila Branch', 'Paete Branch'],
+    labels: {
+      style: {
+        fontSize: '13px',
+        fontWeight: 600
+      }
+    }
+  },
+  yaxis: {
+    title: {
+      text: 'Amount (₱)'
+    },
+    labels: {
+      formatter: function(val) {
+        return "₱" + val.toLocaleString();
+      }
+    }
+  },
+  fill: {
+    opacity: 1
+  },
+  tooltip: {
+    y: {
+      formatter: function(val) {
+        return "₱" + val.toLocaleString()
+      }
+    }
+  },
+  responsive: [{
+    breakpoint: 480,
+    options: {
+      chart: {
+        height: 300
+      }
+    }
+  }]
+};
+
+var branchRevenueChart = new ApexCharts(document.querySelector("#branchRevenueChart"), branchRevenueOptions);
+branchRevenueChart.render();
 </script>
   </body>
 </html>

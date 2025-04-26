@@ -34,47 +34,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     
     // Branch comparison charts
-    const branchRevenueCtx = document.getElementById('branchRevenueChart').getContext('2d');
-    const branchRevenueChart = new Chart(branchRevenueCtx, {
-      type: 'bar',
-      data: {
-        labels: ['Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar'],
-        datasets: [{
-          label: 'Downtown Branch',
-          data: [62000, 58000, 69000, 74000, 78000, 87320],
-          backgroundColor: 'rgba(25, 118, 210, 0.7)',
-          borderWidth: 0
-        }, {
-          label: 'Westside Branch',
-          data: [54000, 62000, 57000, 68000, 72000, 79500],
-          backgroundColor: 'rgba(156, 39, 176, 0.7)',
-          borderWidth: 0
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-          y: {
-            beginAtZero: true,
-            ticks: {
-              callback: function(value) {
-                return '$' + value.toLocaleString();
-              }
-            }
-          }
-        },
-        plugins: {
-          title: {
-            display: true,
-            text: 'Revenue by Branch'
-          },
-          legend: {
-            position: 'top'
-          }
-        }
-      }
-    });
+    
     
     const branchServicesCtx = document.getElementById('branchServicesChart').getContext('2d');
     const branchServicesChart = new Chart(branchServicesCtx, {
