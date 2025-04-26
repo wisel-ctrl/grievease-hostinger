@@ -203,6 +203,58 @@ if ($percentage >= 100) {
 
 // Ensure minimum 25% and maximum 100% (before penalty)
 $percentage = min(max($percentage, 25), 100);
+
+$id_query = "SELECT * FROM valid_id_tb WHERE id = ? ORDER BY upload_at DESC LIMIT 1";
+$id_stmt = $conn->prepare($id_query);
+$id_stmt->bind_param("i", $user_id);
+$id_stmt->execute();
+$id_result = $id_stmt->get_result();
+$has_id = $id_result->num_rows > 0;
+$id_data = $has_id ? $id_result->fetch_assoc() : null;
+
+// Determine status and styling
+$status = 'Not Uploaded';
+$status_class = 'text-gray-500';
+$icon_class = 'text-gray-400';
+$bg_class = 'bg-gray-200';
+$message = 'You haven\'t uploaded any ID for verification yet.';
+$link_text = 'Upload ID Now';
+$redirect_url = 'profile.php'; // Default for no ID
+
+if ($has_id) {
+    switch(strtolower($id_data['is_validated'])) {
+        case 'valid':
+            $status = 'Verified';
+            $status_class = 'text-success';
+            $icon_class = 'text-success';
+            $bg_class = 'bg-success/10';
+            $message = 'Your identity was successfully verified on '.date('F j, Y', strtotime($id_data['upload_at']));
+            $link_text = 'View Details';
+            $redirect_url = '#'; // Or set to view_details.php if you have that page
+            break;
+        case 'no':
+            $status = 'Pending Verification';
+            $status_class = 'text-yellow-600';
+            $icon_class = 'text-yellow-600';
+            $bg_class = 'bg-yellow-600/10';
+            $message = 'Your ID is pending verification. Uploaded on '.date('F j, Y', strtotime($id_data['upload_at']));
+            $link_text = 'Check Status';
+            $redirect_url = 'notification.php'; // Redirect to notification.php when pending
+            break;
+        case 'denied':
+            $status = 'Denied';
+            $status_class = 'text-danger';
+            $icon_class = 'text-danger';
+            $bg_class = 'bg-danger/10';
+            $message = 'Your ID was denied on '.date('F j, Y', strtotime($id_data['upload_at']));
+            if (!empty($id_data['decline_reason'])) {
+                $message .= '. Reason: '.htmlspecialchars($id_data['decline_reason']);
+            }
+            $link_text = 'Re-upload ID';
+            $redirect_url = 'profile.php'; // Redirect to profile.php when declined
+            break;
+    }
+}
                 
                 $conn->close();
 ?>
@@ -482,7 +534,8 @@ $percentage = min(max($percentage, 25), 100);
 
                 <h1 class="font-hedvig text-3xl md:text-4xl text-white text-shadow-lg mb-2 fade-in-up">Welcome back, 
                     <?php 
-                    echo htmlspecialchars($first_name); ?>
+                        echo htmlspecialchars(ucfirst($first_name)); 
+                        ?>
                 </h1>
                 <p class="text-white/80 max-w-lg mb-6 fade-in-up delay-1">Here you can manage your services, track payments, and get updates on your requests.</p>
                 <div class="flex flex-wrap gap-3 fade-in-up delay-2">
@@ -595,15 +648,17 @@ $percentage = min(max($percentage, 25), 100);
                 <div class="flex items-start justify-between mb-4">
                     <div>
                         <p class="text-sm text-gray-500 font-medium">ID Verification</p>
-                        <h3 class="text-xl font-hedvig text-navy">Verified</h3>
+                        <h3 class="text-xl font-hedvig <?= $status_class ?>"><?= $status ?></h3>
                     </div>
-                    <div class="w-10 h-10 rounded-full bg-success/10 flex items-center justify-center">
-                        <i class="fas fa-id-card text-success"></i>
+                    <div class="w-10 h-10 rounded-full <?= $bg_class ?> flex items-center justify-center">
+                        <i class="fas fa-id-card <?= $icon_class ?>"></i>
                     </div>
                 </div>
-                <p class="text-sm text-dark mb-4">Your identity has been successfully verified on March 15, 2025.</p>
-                <a href="#" class="text-sm text-yellow-600 hover:text-darkgold font-medium flex items-center">
-                    View Details <i class="fas fa-arrow-right ml-2"></i>
+                
+                <p class="text-sm text-dark mb-4"><?= $message ?></p>
+                
+                <a href="<?= $redirect_url ?>" class="text-sm text-yellow-600 hover:text-darkgold font-medium flex items-center">
+                    <?= $link_text ?> <i class="fas fa-arrow-right ml-2"></i>
                 </a>
             </div>
         </div>
