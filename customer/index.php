@@ -109,6 +109,84 @@ header("Pragma: no-cache");
                     }
                     $stmt->close();
                 }
+                
+                // Initialize variables
+$percentage = 25;
+$status_text = "25% Complete";
+$check_icons = [];
+
+// Check verification status
+$user_query = "SELECT is_verified, branch_loc FROM users WHERE id = ?";
+$stmt = $conn->prepare($user_query);
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+$user_result = $stmt->get_result();
+
+if ($user_result->num_rows > 0) {
+    $user = $user_result->fetch_assoc();
+    
+    // Check email verification (50%)
+    if ($user['is_verified'] == 1) {
+        $percentage = 50;
+        $status_text = "50% Complete";
+        $check_icons[] = [
+            'icon' => 'fa-check-circle',
+            'color' => 'text-success',
+            'text' => 'Account Verified'
+        ];
+    }
+    
+    // Check branch selection (60%)
+    if ($user['branch_loc'] != 'unknown') {
+        $percentage = 60;
+        $status_text = "60% Complete";
+        $check_icons[] = [
+            'icon' => 'fa-map-marker-alt',
+            'color' => 'text-success',
+            'text' => 'Branch Selected'
+        ];
+    }
+    
+    // Check ID validation status
+    $id_query = "SELECT is_validated FROM valid_id_tb WHERE id = ?";
+    $id_stmt = $conn->prepare($id_query);
+    $id_stmt->bind_param("i", $user_id);
+    $id_stmt->execute();
+    $id_result = $id_stmt->get_result();
+    
+    if ($id_result->num_rows > 0) {
+        $id_data = $id_result->fetch_assoc();
+        
+        // ID uploaded but not yet validated (80%)
+        if ($id_data['is_validated'] == 'no') {
+            $percentage = 80;
+            $status_text = "80% Complete";
+            $check_icons[] = [
+                'icon' => 'fa-id-card',
+                'color' => 'text-success',
+                'text' => 'ID Uploaded'
+            ];
+        }
+        // ID fully validated (100%)
+        elseif ($id_data['is_validated'] == 'valid') {
+            $percentage = 100;
+            $status_text = "100% Complete";
+            $check_icons[] = [
+                'icon' => 'fa-check-circle',
+                'color' => 'text-success',
+                'text' => 'ID Verified'
+            ];
+        }
+    }
+}
+
+// Default check icon for account creation
+array_unshift($check_icons, [
+    'icon' => 'fa-user-circle',
+    'color' => 'text-success',
+    'text' => 'Account Created'
+]);
+                
                 $conn->close();
 ?>
 <!DOCTYPE html>
@@ -438,17 +516,60 @@ header("Pragma: no-cache");
                 <div class="flex items-start justify-between mb-4">
                     <div>
                         <p class="text-sm text-gray-500 font-medium">Profile Completion</p>
-                        <h3 class="text-xl font-hedvig text-navy">75% Complete</h3>
+                        <h3 class="text-xl font-hedvig text-navy"><?= $status_text ?></h3>
                     </div>
                     <div class="w-10 h-10 rounded-full bg-yellow-600/10 flex items-center justify-center">
                         <i class="fas fa-user-circle text-yellow-600"></i>
                     </div>
                 </div>
+                
+                <!-- Progress bar -->
                 <div class="w-full bg-gray-200 rounded-full h-2.5 mb-4">
-                    <div class="bg-yellow-600 h-2.5 rounded-full" style="width: 75%"></div>
+                    <div class="bg-yellow-600 h-2.5 rounded-full" style="width: <?= $percentage ?>%"></div>
                 </div>
+                
+                <!-- Completion steps -->
+                <div class="space-y-2 mb-4">
+                    <?php foreach ($check_icons as $item): ?>
+                    <div class="flex items-center text-sm">
+                        <i class="fas <?= $item['icon'] ?> <?= $item['color'] ?> mr-2"></i>
+                        <span><?= $item['text'] ?></span>
+                    </div>
+                    <?php endforeach; ?>
+                    
+                    <?php if ($percentage < 100): ?>
+                        <?php if (!in_array('Account Verified', array_column($check_icons, 'text'))): ?>
+                            <div class="flex items-center text-sm text-gray-400">
+                                <i class="far fa-circle mr-2"></i>
+                                <span>Verify Account</span>
+                            </div>
+                        <?php endif; ?>
+                        
+                        <?php if (!in_array('Branch Selected', array_column($check_icons, 'text'))): ?>
+                            <div class="flex items-center text-sm text-gray-400">
+                                <i class="far fa-circle mr-2"></i>
+                                <span>Select Branch</span>
+                            </div>
+                        <?php endif; ?>
+                        
+                        <?php if (!in_array('ID Uploaded', array_column($check_icons, 'text')) && !in_array('ID Verified', array_column($check_icons, 'text'))): ?>
+                            <div class="flex items-center text-sm text-gray-400">
+                                <i class="far fa-circle mr-2"></i>
+                                <span>Upload ID</span>
+                            </div>
+                        <?php endif; ?>
+                        
+                        <?php if (in_array('ID Uploaded', array_column($check_icons, 'text')) && !in_array('ID Verified', array_column($check_icons, 'text'))): ?>
+                            <div class="flex items-center text-sm text-gray-400">
+                                <i class="far fa-circle mr-2"></i>
+                                <span>Verify ID</span>
+                            </div>
+                        <?php endif; ?>
+                    <?php endif; ?>
+                </div>
+                
                 <a href="profile.php#personal-info" class="text-sm text-yellow-600 hover:text-darkgold font-medium flex items-center">
-                    Complete Profile <i class="fas fa-arrow-right ml-2"></i>
+                    <?= $percentage < 100 ? 'Complete Profile' : 'View Profile' ?> <i class="fas fa-arrow-right ml-2"></i>
                 </a>
             </div>
             
