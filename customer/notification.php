@@ -1029,7 +1029,7 @@ document.addEventListener('click', function(event) {
         <div class="rounded-lg max-w-2xl w-full mx-4 relative overflow-hidden z-10"> <!-- Added z-10 -->
             <!-- Dynamic Header -->
             <div id="idModalHeader" class="px-4 py-3 bg-yellow-600">
-                <h3 class="text-lg font-semibold text-white flex items-center justify-between">
+                <h3 class="text-lg text-white flex items-center justify-between">
                     <span>
                         <i class="fas fa-id-card mr-2"></i>
                         ID Verification
@@ -1232,7 +1232,7 @@ function getStatusText(status) {
                             </div>
                             <div>
                                 <p class="text-sm text-gray-500">Booking ID</p>
-                                <p class="font-semibold text-gray-800">${data.reference_code || 'N/A'}</p>
+                                <p class=" text-gray-800">${data.reference_code || 'N/A'}</p>
                             </div>
                         </div>
                         <div>
@@ -1251,7 +1251,7 @@ function getStatusText(status) {
                         <div class="space-y-3 sm:space-y-4">
                             <!-- Deceased Information -->
                             <div class="bg-white rounded-lg p-4 sm:p-5 border border-gray-200 shadow-sm">
-                                <h4 class="font-semibold text-gray-800 mb-3 sm:mb-4 flex items-center">
+                                <h4 class=" text-gray-800 mb-3 sm:mb-4 flex items-center">
                                     Deceased Information
                                 </h4>
                                 <div class="space-y-2 sm:space-y-3">
@@ -1284,7 +1284,7 @@ function getStatusText(status) {
                         
                             <!-- Service Details -->
                             <div class="bg-white rounded-lg p-4 sm:p-5 border border-gray-200 shadow-sm">
-                                <h4 class="font-semibold text-gray-800 mb-3 sm:mb-4 flex items-center">
+                                <h4 class="text-gray-800 mb-3 sm:mb-4 flex items-center">
                                     Service Details
                                 </h4>
                                 <div class="space-y-2 sm:space-y-3">
@@ -1322,7 +1322,7 @@ function getStatusText(status) {
                         <div class="space-y-3 sm:space-y-4">
                             <!-- Documents -->
                             <div class="bg-white rounded-lg p-4 sm:p-5 border border-gray-200 shadow-sm">
-                                <h4 class="font-semibold text-gray-800 mb-3 sm:mb-4 flex items-center">
+                                <h4 class="text-gray-800 mb-3 sm:mb-4 flex items-center">
                                     Documents
                                 </h4>
                                 
