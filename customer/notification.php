@@ -424,12 +424,27 @@ $current_page_bookings = array_slice($filtered_bookings, ($page - 1) * $items_pe
     <!-- Main Content Container -->
     <div class="container mx-auto px-4 py-8 max-w-screen-xl mt-[var(--navbar-height)]">
         <!-- Page Header with subtle background -->
-        <div class="py-8 px-6 mb-10">
+        <div class="bg-gradient-to-b from-yellow-600/10 to-transparent rounded-xl py-8 px-6 mb-10">
             <div class="max-w-3xl mx-auto text-center">
                 <h1 class="text-4xl md:text-5xl font-hedvig text-navy mb-3">Notifications</h1>
                 <p class="text-dark text-lg max-w-2xl mx-auto">Stay updated with important information about your services and arrangements.</p>
                 <div class="w-16 h-1 bg-yellow-600 mx-auto mt-4"></div>
                 
+                <!-- Notification Summary -->
+                <div class="mt-6 flex justify-center space-x-6">
+                    <div class="flex flex-col items-center">
+                        <div class="text-error font-bold text-2xl"><?php echo $notifications_count['pending']; ?></div>
+                        <div class="text-sm text-gray-600">Pending</div>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <div class="text-success font-bold text-2xl"><?php echo $notifications_count['accepted']; ?></div>
+                        <div class="text-sm text-gray-600">Accepted</div>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <div class="text-navy font-bold text-2xl"><?php echo $notifications_count['total']; ?></div>
+                        <div class="text-sm text-gray-600">Total</div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -547,7 +562,9 @@ $current_page_bookings = array_slice($filtered_bookings, ($page - 1) * $items_pe
                                 <div class="bg-white border-l-4 <?php echo $status_color; ?> rounded-lg shadow-md overflow-hidden notification-animate">
                                     <div class="flex flex-col md:flex-row">
                                         <!-- Notification Icon -->
-                                        
+                                        <div class="<?php echo $status_bg; ?> py-6 px-4 md:w-16 flex items-center justify-center">
+                                            <i class="<?php echo $status_icon; ?> <?php echo $status_text_color; ?> text-xl"></i>
+                                        </div>
                                         
                                         <!-- Notification Content -->
                                         <div class="flex-1 p-4">
