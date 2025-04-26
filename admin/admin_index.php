@@ -894,30 +894,47 @@ foreach ($serviceData as $service => $branches) {
                   $branchQuery = "SELECT 
                                       b.branch_id,
                                       b.branch_name,
-                                      COUNT(DISTINCT s.sales_id) as service_count,
-                                      SUM(s.amount_paid) as revenue,
-                                      SUM(exp.price) as expenses,
-                                      (SUM(s.amount_paid) - (SUM(sv.capital_price) + SUM(exp.price))) as profit,
+                                      COALESCE(s.service_count, 0) AS service_count,
+                                      COALESCE(s.revenue, 0) AS revenue,
+                                      COALESCE(e.expenses, 0) AS expenses,
+                                      COALESCE(s.revenue, 0) - (COALESCE(s.capital_total, 0) + COALESCE(e.expenses, 0)) AS profit,
                                       CASE 
-                                          WHEN SUM(s.amount_paid) > 0 
-                                          THEN ((SUM(s.amount_paid) - (SUM(sv.capital_price) + SUM(exp.price))) / SUM(s.amount_paid)) * 100 
+                                          WHEN COALESCE(s.revenue, 0) > 0 THEN 
+                                              (COALESCE(s.revenue, 0) - (COALESCE(s.capital_total, 0) + COALESCE(e.expenses, 0))) / COALESCE(s.revenue, 0) * 100
                                           ELSE 0 
-                                      END as margin
+                                      END AS margin
                                   FROM 
                                       branch_tb b
-                                  LEFT JOIN 
-                                      sales_tb s ON b.branch_id = s.branch_id
-                                  LEFT JOIN 
-                                      services_tb sv ON s.service_id = sv.service_id
-                                  LEFT JOIN 
-                                      expense_tb exp ON b.branch_id = exp.branch_id
-                                  WHERE 
-                                      MONTH(s.get_timestamp) = ? AND YEAR(s.get_timestamp) = ?
-                                      AND MONTH(exp.date) = ? AND YEAR(exp.date) = ?
-                                  GROUP BY 
-                                      b.branch_id, b.branch_name
+                                  LEFT JOIN (
+                                      SELECT 
+                                          s.branch_id,
+                                          COUNT(DISTINCT s.sales_id) AS service_count,
+                                          SUM(s.amount_paid) AS revenue,
+                                          SUM(sv.capital_price) AS capital_total
+                                      FROM 
+                                          sales_tb s
+                                      LEFT JOIN 
+                                          services_tb sv ON s.service_id = sv.service_id
+                                      WHERE 
+                                          MONTH(s.get_timestamp) = ? AND YEAR(s.get_timestamp) = ?
+                                      GROUP BY 
+                                          s.branch_id
+                                  ) s ON b.branch_id = s.branch_id
+                                  LEFT JOIN (
+                                      SELECT 
+                                          branch_id,
+                                          SUM(price) AS expenses
+                                      FROM 
+                                          expense_tb
+                                      WHERE 
+                                          MONTH(date) = ? AND YEAR(date) = ?
+                                      GROUP BY 
+                                          branch_id
+                                  ) e ON b.branch_id = e.branch_id
+                                  WHERE b.branch_id IN (1, 2)
                                   ORDER BY 
-                                      b.branch_name ASC";
+                                      b.branch_name ASC;
+                                  ";
                   
                   $stmt = $conn->prepare($branchQuery);
                   $stmt->bind_param("iiii", $currentMonth, $currentYear, $currentMonth, $currentYear);
