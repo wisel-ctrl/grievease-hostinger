@@ -786,74 +786,64 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Update the viewBookingDetails function to use the new modal animation
     function viewBookingDetails(bookingId, status) {
-        // Show loading state
-        document.getElementById('bookingDetailsContent').innerHTML = `
-            <div class="col-span-2 flex flex-col items-center justify-center py-12">
-                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-500"></div>
-                <p class="mt-4 text-gray-600">Loading booking details...</p>
-            </div>
-        `;
-        
-        // Show the modal with fade-in and scale effect
-        const modal = document.getElementById('bookingDetailsModal');
-        const modalContent = document.getElementById('bookingModalContent');
-        
-        modal.classList.remove('hidden');
-        modal.classList.add('flex');
-        
-        // Trigger animation
-        setTimeout(() => {
-            modalContent.classList.add('opacity-100', 'scale-100');
-            modalContent.classList.remove('opacity-0', 'scale-95');
-        }, 10);
-        
-        // Lock body scroll when modal is open
-        document.body.style.overflow = 'hidden';
-        
-        // Fetch booking details via AJAX
-        fetch(`notification/get_booking_details.php?booking_id=${bookingId}`)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data.error) {
-                    document.getElementById('bookingDetailsContent').innerHTML = `
-                        <div class="col-span-2 text-center py-8">
-                            <div class="bg-red-50 rounded-lg p-4 border border-red-100">
-                                <svg class="mx-auto h-12 w-12 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                                <p class="mt-2 text-red-600">${data.error}</p>
-                            </div>
-                        </div>
-                    `;
-                } else {
-                    renderBookingDetails(data);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
+    // Show loading state
+    document.getElementById('bookingDetailsContent').innerHTML = `
+        <div class="col-span-2 flex flex-col items-center justify-center py-12">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-500"></div>
+            <p class="mt-4 text-gray-600">Loading booking details...</p>
+        </div>
+    `;
+    
+    // Show the modal with fade-in effect
+    const modal = document.getElementById('bookingDetailsModal');
+    modal.classList.remove('hidden');
+    setTimeout(() => modal.classList.add('opacity-100'), 10);
+    
+    // Lock body scroll when modal is open
+    document.body.style.overflow = 'hidden';
+    
+    // Fetch booking details via AJAX
+    fetch(`notification/get_booking_details.php?booking_id=${bookingId}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.error) {
                 document.getElementById('bookingDetailsContent').innerHTML = `
                     <div class="col-span-2 text-center py-8">
                         <div class="bg-red-50 rounded-lg p-4 border border-red-100">
                             <svg class="mx-auto h-12 w-12 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
-                            <p class="mt-2 text-red-600">Failed to load booking details. Please try again.</p>
-                            <button onclick="viewBookingDetails(${bookingId}, '${status}')" class="mt-3 px-4 py-2 bg-indigo-500 text-white rounded-md hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
-                                Retry
-                            </button>
+                            <p class="mt-2 text-red-600">${data.error}</p>
                         </div>
                     </div>
                 `;
-            });
-    }
-
+            } else {
+                renderBookingDetails(data);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            document.getElementById('bookingDetailsContent').innerHTML = `
+                <div class="col-span-2 text-center py-8">
+                    <div class="bg-red-50 rounded-lg p-4 border border-red-100">
+                        <svg class="mx-auto h-12 w-12 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <p class="mt-2 text-red-600">Failed to load booking details. Please try again.</p>
+                        <button onclick="viewBookingDetails(${bookingId}, '${status}')" class="mt-3 px-4 py-2 bg-indigo-500 text-white rounded-md hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                            Retry
+                        </button>
+                    </div>
+                </div>
+            `;
+        });
+}
 
 function renderBookingDetails(data) {
     // Format the booking date
