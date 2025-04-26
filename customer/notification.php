@@ -738,17 +738,19 @@ document.addEventListener('click', function(event) {
 <div class="bg-white border-l-4 <?php echo $border_color; ?> rounded-xl shadow-md overflow-hidden notification-animate hover:shadow-lg transition-all duration-300">
     <div class="flex flex-col">
         <div class="flex-1 py-4 px-4 sm:py-5 sm:px-7">
-            <!-- Top Row - Status and Timestamp/Branch -->
-            <div class="flex justify-between items-start mb-1">  <!-- Changed mb-2 to mb-1 -->
-                <!-- Status Badge -->
-                <span class="<?php echo $status_bg; ?> <?php echo $status_text_color; ?> text-xs px-2 py-1 rounded-full inline-flex items-center">
-                    <i class="<?php echo $status_icon; ?> mr-1 text-xs"></i>
-                    <?php echo htmlspecialchars($booking['status']); ?>
-                </span>
+            <!-- Top Row - Now using grid columns -->
+            <div class="grid grid-cols-2 gap-2 mb-1">  <!-- Changed to grid layout -->
+                <!-- Left Column - Status -->
+                <div class="flex items-start">  <!-- Added container for status -->
+                    <span class="<?php echo $status_bg; ?> <?php echo $status_text_color; ?> text-xs px-2 py-1 rounded-full inline-flex items-center">
+                        <i class="<?php echo $status_icon; ?> mr-1 text-xs"></i>
+                        <?php echo htmlspecialchars($booking['status']); ?>
+                    </span>
+                </div>
                 
-                <!-- Right-aligned container for Date/Time and Branch -->
+                <!-- Right Column - Date/Time and Branch -->
                 <div class="flex flex-col items-end">
-                    <!-- Date/Time - Single line for both mobile and desktop -->
+                    <!-- Date/Time -->
                     <div class="bg-cream rounded-lg p-1 text-xs flex items-center space-x-1">
                         <p class="text-gray-700 flex items-center">
                             <i class="far fa-calendar mr-1 text-gold text-xs"></i>
@@ -760,7 +762,7 @@ document.addEventListener('click', function(event) {
                         </p>
                     </div>
                     
-                    <!-- Branch Name - Below Date/Time -->
+                    <!-- Branch Name -->
                     <p class="text-gray-600 text-xs mt-1 flex items-center">
                         <i class="fas fa-map-marker-alt mr-1 text-gold text-xs"></i> 
                         <?php echo htmlspecialchars($booking['branch_name']); ?>
@@ -768,8 +770,8 @@ document.addEventListener('click', function(event) {
                 </div>
             </div>
 
-            <!-- Service Name - Moved up by reducing margin-top -->
-            <h3 class="text-navy text-base sm:text-lg font-hedvig">  <!-- Removed mt-1 -->
+            <!-- Service Name -->
+            <h3 class="text-navy text-base sm:text-lg font-hedvig">
                 <?php echo htmlspecialchars($booking['service_name']); ?>
             </h3>
             
