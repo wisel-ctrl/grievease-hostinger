@@ -432,6 +432,7 @@ $current_page_bookings = array_slice($filtered_bookings, ($page - 1) * $items_pe
             </div>
         </div>
 
+
     <!-- Dashboard Layout -->
     <div class="flex flex-col lg:flex-row gap-4">
         <!-- Left Sidebar: Filter Controls -->
