@@ -806,39 +806,210 @@ header("Pragma: no-cache");
                     }, 200);
                 }
 
-                function openImageModal(imagePath) {
-                    // Set the source of the enlarged image
-                    document.getElementById('enlargedImage').src = imagePath;
-                    
-                    // Show the modal with animation
-                    const modal = document.getElementById('imageModal');
-                    modal.classList.remove('hidden');
-                    modal.classList.add('flex');
-                    modal.style.opacity = '0';
-                    
-                    // Fade in animation
-                    setTimeout(() => {
-                        modal.style.opacity = '1';
-                    }, 10);
-                    
-                    // Prevent scrolling of the background
-                    document.body.style.overflow = 'hidden';
-                }
+                // Enhanced Image Enlargement Functionality
+function openImageModal(imagePath) {
+    // Set the source of the enlarged image
+    const enlargedImg = document.getElementById('enlargedImage');
+    enlargedImg.src = imagePath;
+    
+    // Show loading state while image loads
+    enlargedImg.classList.add('opacity-0');
+    
+    // Show the modal with animation
+    const modal = document.getElementById('imageModal');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    modal.style.opacity = '0';
+    
+    // Fade in animation
+    setTimeout(() => {
+        modal.style.opacity = '1';
+    }, 10);
+    
+    // Prevent scrolling of the background
+    document.body.style.overflow = 'hidden';
+    
+    // Add keyboard navigation support
+    document.addEventListener('keydown', handleImageModalKeyboardNav);
+    
+    // Add pinch-to-zoom and panning support for touch devices
+    if ('ontouchstart' in window) {
+        setupTouchZoom(enlargedImg);
+    }
+    
+    // Add download button functionality
+    setupDownloadButton(imagePath);
+    
+    // Once image is loaded, fade it in
+    enlargedImg.onload = function() {
+        enlargedImg.classList.remove('opacity-0');
+        enlargedImg.classList.add('opacity-100');
+    };
+}
 
-                function closeImageModal() {
-                    // Fade out animation
-                    const modal = document.getElementById('imageModal');
-                    modal.style.opacity = '0';
-                    
-                    setTimeout(() => {
-                        // Hide the modal
-                        modal.classList.add('hidden');
-                        modal.classList.remove('flex');
-                        
-                        // Restore scrolling
-                        document.body.style.overflow = 'auto';
-                    }, 300);
-                }
+function closeImageModal() {
+    // Fade out animation
+    const modal = document.getElementById('imageModal');
+    modal.style.opacity = '0';
+    
+    // Reset zoom and pan state
+    const enlargedImg = document.getElementById('enlargedImage');
+    resetImageZoom(enlargedImg);
+    
+    setTimeout(() => {
+        // Hide the modal
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+        
+        // Restore scrolling
+        document.body.style.overflow = 'auto';
+        
+        // Remove event listeners
+        document.removeEventListener('keydown', handleImageModalKeyboardNav);
+        removeTouchZoomListeners();
+    }, 300);
+}
+
+// Keyboard navigation support
+function handleImageModalKeyboardNav(event) {
+    if (event.key === 'Escape') {
+        closeImageModal();
+    }
+}
+
+// Touch zoom and pan functionality
+let initialDistance = null;
+let initialScale = 1;
+let currentScale = 1;
+let startX = 0;
+let startY = 0;
+let translateX = 0;
+let translateY = 0;
+
+function setupTouchZoom(imageElement) {
+    imageElement.style.transformOrigin = '0 0';
+    
+    imageElement.addEventListener('touchstart', handleTouchStart, { passive: false });
+    imageElement.addEventListener('touchmove', handleTouchMove, { passive: false });
+    imageElement.addEventListener('touchend', handleTouchEnd, { passive: false });
+}
+
+function removeTouchZoomListeners() {
+    const imageElement = document.getElementById('enlargedImage');
+    if (imageElement) {
+        imageElement.removeEventListener('touchstart', handleTouchStart);
+        imageElement.removeEventListener('touchmove', handleTouchMove);
+        imageElement.removeEventListener('touchend', handleTouchEnd);
+    }
+}
+
+function handleTouchStart(e) {
+    if (e.touches.length === 1) {
+        // Single touch for panning
+        startX = e.touches[0].clientX - translateX;
+        startY = e.touches[0].clientY - translateY;
+    } else if (e.touches.length === 2) {
+        // Two touches for pinch zoom
+        e.preventDefault();
+        initialDistance = getDistance(
+            e.touches[0].clientX, e.touches[0].clientY,
+            e.touches[1].clientX, e.touches[1].clientY
+        );
+        initialScale = currentScale;
+    }
+}
+
+function handleTouchMove(e) {
+    const imageElement = document.getElementById('enlargedImage');
+    
+    if (e.touches.length === 1 && currentScale > 1) {
+        // Panning
+        e.preventDefault();
+        translateX = e.touches[0].clientX - startX;
+        translateY = e.touches[0].clientY - startY;
+        applyTransform(imageElement);
+    } else if (e.touches.length === 2) {
+        // Zooming
+        e.preventDefault();
+        const currentDistance = getDistance(
+            e.touches[0].clientX, e.touches[0].clientY,
+            e.touches[1].clientX, e.touches[1].clientY
+        );
+        
+        if (initialDistance !== null) {
+            const scale = (currentDistance / initialDistance) * initialScale;
+            currentScale = Math.max(1, Math.min(scale, 4)); // Limit zoom between 1x and 4x
+            applyTransform(imageElement);
+        }
+    }
+}
+
+function handleTouchEnd() {
+    initialDistance = null;
+}
+
+function getDistance(x1, y1, x2, y2) {
+    return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+}
+
+function applyTransform(imageElement) {
+    imageElement.style.transform = `scale(${currentScale}) translate(${translateX / currentScale}px, ${translateY / currentScale}px)`;
+}
+
+function resetImageZoom(imageElement) {
+    currentScale = 1;
+    translateX = 0;
+    translateY = 0;
+    if (imageElement) {
+        imageElement.style.transform = '';
+        imageElement.style.transformOrigin = '';
+    }
+}
+
+// Download button functionality
+function setupDownloadButton(imagePath) {
+    const modal = document.getElementById('imageModal');
+    
+    // Remove existing download button if it exists
+    const existingBtn = document.getElementById('downloadImageBtn');
+    if (existingBtn) {
+        existingBtn.remove();
+    }
+    
+    // Create download button
+    const downloadBtn = document.createElement('button');
+    downloadBtn.id = 'downloadImageBtn';
+    downloadBtn.className = 'absolute bottom-6 right-6 bg-white p-3 rounded-full shadow-lg hover:bg-gray-100 transition-colors';
+    downloadBtn.title = 'Download Image';
+    downloadBtn.innerHTML = `
+        <svg class="w-6 h-6 text-navy" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+        </svg>
+    `;
+    
+    downloadBtn.onclick = function(e) {
+        e.stopPropagation();
+        downloadImage(imagePath);
+    };
+    
+    modal.querySelector('.relative').appendChild(downloadBtn);
+}
+
+function downloadImage(imagePath) {
+    const link = document.createElement('a');
+    link.href = imagePath;
+    link.download = 'id_verification_' + new Date().toISOString().slice(0, 10) + '.jpg';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
+// Close modal when clicking outside the image container
+document.getElementById('imageModal').addEventListener('click', function(event) {
+    if (event.target === this || event.target.classList.contains('modal-backdrop')) {
+        closeImageModal();
+    }
+});
 
                 // Close modal when clicking outside the image container
                 document.getElementById('imageModal').addEventListener('click', function(event) {
