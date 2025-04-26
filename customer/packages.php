@@ -2355,19 +2355,5 @@ function handleModalResize(modalId) {
 }
 </script>
 
-<!-- Branch Selection Modal (Initially Hidden) -->
-<div id="branch-modal" class="fixed inset-0 flex items-center justify-center z-50 hidden"> 
-  <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div> 
-  <div class="bg-white rounded-lg shadow-xl sm:w-80 w-5/6 max-w-sm z-10 p-5"> 
-    <h3 class="text-lg font-semibold mb-4">Select Branch Location</h3>
-
-    <div id="branch-options" class="space-y-3"> 
-      <!-- Branch options will be dynamically inserted here --> 
-      <div class="text-center py-4"> 
-        <i class="fas fa-spinner fa-spin"></i> Loading branches... 
-      </div> 
-    </div> 
-  </div> 
-</div>
 </body>
 </html>

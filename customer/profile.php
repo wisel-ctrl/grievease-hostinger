@@ -373,12 +373,22 @@ header("Pragma: no-cache");
                 <div class="relative">
                     <div class="absolute -top-16 w-24 h-24 rounded-full border-4 border-cream overflow-hidden bg-white">
                         <div class="w-full h-full bg-gray-300 flex items-center justify-center text-3xl font-bold text-gray-600">
-                            JD
+                            <?php 
+                                // Get initials from first letter of first_name and first letter of last_name
+                                $initials = strtoupper(substr($first_name, 0, 1) . substr($last_name, 0, 1)); 
+                                echo htmlspecialchars($initials);
+                            ?>
                         </div>
                     </div>
                     <div class="ml-32">
-                        <h1 class="font-hedvig text-3xl text-white">John Doe</h1>
-                        <p class="text-white/80">Member since January 2025</p>
+                        <h1 class="font-hedvig text-3xl text-white"><?php echo htmlspecialchars(ucwords($first_name . ' ' . $last_name)); ?></h1>
+                        <p class="text-white/80">
+                            Member since <?php 
+                                // Format the created_at date (assuming it's stored in your $row variable)
+                                $created_at = isset($row['created_at']) ? $row['created_at'] : date('Y-m-d H:i:s');
+                                echo date('F Y', strtotime($created_at)); 
+                            ?>
+                        </p>
                     </div>
                 </div>
             </div>
@@ -1189,8 +1199,10 @@ document.addEventListener('keydown', function(event) {
                         <div class="relative">
                             <select id="region" name="region" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent appearance-none text-sm sm:text-base" onchange="updateProvinces()">
                                 <option value="" selected disabled>Select Region</option>
-                                <?php foreach ($regions as $region): ?>
-                                    <option value="<?php echo $region['region_id']; ?>"><?php echo htmlspecialchars($region['region_name']); ?></option>
+                                <?php foreach ($regions as $region_option): ?>
+                                    <option value="<?php echo $region_option['region_id']; ?>" <?php echo ($region_option['region_name'] == $region) ? 'selected' : ''; ?>>
+                                        <?php echo htmlspecialchars($region_option['region_name']); ?>
+                                    </option>
                                 <?php endforeach; ?>
                             </select>
                             <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 sm:px-3 text-gray-700">
@@ -1238,12 +1250,16 @@ document.addEventListener('keydown', function(event) {
                         
                         <!-- Street Address Manual Input (full width) -->
                         <div class="sm:col-span-2">
-                            <input type="text" id="street_address" name="street_address" placeholder="Street Address (House/Lot/Unit No., Building, Street Name)" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base">
+                            <input type="text" id="street_address" name="street_address" placeholder="Street Address (House/Lot/Unit No., Building, Street Name)" 
+                                   value="<?php echo htmlspecialchars($street_address); ?>" 
+                                   class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base">
                         </div>
                         
                         <!-- Zip/Postal Code -->
                         <div class="sm:col-span-2">
-                            <input type="text" id="zip" name="zip" placeholder="Zip/Postal Code" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base">
+                            <input type="text" id="zip" name="zip" placeholder="Zip/Postal Code" 
+                                   value="<?php echo htmlspecialchars($zip_code); ?>" 
+                                   class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base">
                         </div>
                     </div>
                 </div>
@@ -1439,6 +1455,70 @@ document.addEventListener('keydown', function(event) {
 
 
 <script>
+    
+    // Function to load address data when modal opens
+function loadAddressData() {
+    const regionId = document.getElementById('region').value;
+    if (regionId) {
+        updateProvinces();
+        
+        // We need to wait for provinces to load before selecting the right one
+        setTimeout(() => {
+            // Select the province if we have the data
+            const provinceSelect = document.getElementById('province');
+            if (provinceSelect && '<?php echo $province; ?>') {
+                for (let i = 0; i < provinceSelect.options.length; i++) {
+                    if (provinceSelect.options[i].text === '<?php echo $province; ?>') {
+                        provinceSelect.value = provinceSelect.options[i].value;
+                        provinceSelect.dispatchEvent(new Event('change'));
+                        break;
+                    }
+                }
+            }
+            
+            // Wait for cities to load
+            setTimeout(() => {
+                // Select the city if we have the data
+                const citySelect = document.getElementById('city');
+                if (citySelect && '<?php echo $city; ?>') {
+                    for (let i = 0; i < citySelect.options.length; i++) {
+                        if (citySelect.options[i].text === '<?php echo $city; ?>') {
+                            citySelect.value = citySelect.options[i].value;
+                            citySelect.dispatchEvent(new Event('change'));
+                            break;
+                        }
+                    }
+                }
+                
+                // Wait for barangays to load
+                setTimeout(() => {
+                    // Select the barangay if we have the data
+                    const barangaySelect = document.getElementById('barangay');
+                    if (barangaySelect && '<?php echo $barangay; ?>') {
+                        for (let i = 0; i < barangaySelect.options.length; i++) {
+                            if (barangaySelect.options[i].text === '<?php echo $barangay; ?>') {
+                                barangaySelect.value = barangaySelect.options[i].value;
+                                break;
+                            }
+                        }
+                    }
+                }, 500);
+            }, 500);
+        }, 500);
+    }
+}
+
+// Call loadAddressData when edit modal opens
+document.getElementById('edit-profile-btn').addEventListener('click', function() {
+    // Show modal first
+    const modal = document.getElementById('edit-profile-modal');
+    modal.classList.remove('hidden');
+    modal.classList.remove('opacity-0', 'scale-95');
+    modal.classList.add('opacity-100', 'scale-100');
+    
+    // Then load address data
+    setTimeout(loadAddressData, 100);
+});
 // Enhanced address dropdown functions with AJAX
 function updateProvinces() {
     const regionId = document.getElementById('region').value;
