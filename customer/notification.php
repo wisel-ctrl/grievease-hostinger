@@ -738,14 +738,26 @@ document.addEventListener('click', function(event) {
 <div class="bg-white border-l-4 <?php echo $border_color; ?> rounded-xl shadow-md overflow-hidden notification-animate hover:shadow-lg transition-all duration-300">
     <div class="flex flex-col">
         <div class="flex-1 py-4 px-4 sm:py-5 sm:px-7">
-            <!-- Top Row - Now using grid columns -->
-            <div class="grid grid-cols-2 gap-2 mb-1">  <!-- Changed to grid layout -->
+            <!-- Top Row - Now using flex layout with space-between -->
+            <div class="flex justify-between items-start mb-1">
                 <!-- Left Column - Status -->
-                <div class="inline-flex items-start">  <!-- Added container for status -->
+                <div class="flex flex-col items-start">
                     <span class="<?php echo $status_bg; ?> <?php echo $status_text_color; ?> text-xs px-2 py-1 rounded-full inline-flex items-center">
                         <i class="<?php echo $status_icon; ?> mr-1 text-xs"></i>
                         <?php echo htmlspecialchars($booking['status']); ?>
                     </span>
+                    
+                    <!-- Service Name -->
+                    <h3 class="text-navy text-base sm:text-lg font-hedvig mt-2">
+                        <?php echo htmlspecialchars($booking['service_name']); ?>
+                    </h3>
+                    
+                    <?php if ($booking['status'] === 'Declined' && !empty($booking['admin_message'])): ?>
+                        <p class="text-gray-600 text-xs sm:text-sm mt-1">
+                            <i class="fas fa-comment-alt mr-1 text-gold text-xs"></i> 
+                            Reason: <?php echo htmlspecialchars($booking['admin_message']); ?>
+                        </p>
+                    <?php endif; ?>
                 </div>
                 
                 <!-- Right Column - Date/Time and Branch -->
@@ -769,18 +781,6 @@ document.addEventListener('click', function(event) {
                     </p>
                 </div>
             </div>
-
-            <!-- Service Name -->
-            <h3 class="text-navy text-base sm:text-lg font-hedvig">
-                <?php echo htmlspecialchars($booking['service_name']); ?>
-            </h3>
-            
-            <?php if ($booking['status'] === 'Declined' && !empty($booking['admin_message'])): ?>
-                <p class="text-gray-600 text-xs sm:text-sm mt-1">
-                    <i class="fas fa-comment-alt mr-1 text-gold text-xs"></i> 
-                    Reason: <?php echo htmlspecialchars($booking['admin_message']); ?>
-                </p>
-            <?php endif; ?>
 
             <!-- Booking Details -->
             <div class="mt-2">
