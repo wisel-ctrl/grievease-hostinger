@@ -749,43 +749,41 @@ document.addEventListener('DOMContentLoaded', function() {
         </button>
     </div>
 
-    <!-- Booking Details Modal - Enhanced with Traditional Modal UI style -->
+    <!-- Booking Details Modal - Enhanced with Traditional Modal UI style and sticky footer -->
 <div id="bookingDetailsModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4 hidden">
-    <div class="w-full max-w-5xl bg-white rounded-2xl shadow-xl overflow-hidden max-h-[90vh] md:max-h-[80vh]">
-        <!-- Scroll container -->
-        <div class="modal-scroll-container overflow-y-auto max-h-[90vh] md:max-h-[80vh]">
-            <!-- Modal Header with Close Button -->
-            <div class="bg-cream p-4 md:p-8">
-                <div class="flex justify-between items-center mb-4">
-                    <div class="sm:flex sm:items-center">
-                        <div class="bg-navy/10 rounded-full p-3 mr-4">
-                            <i class="fas fa-info-circle text-navy text-xl"></i>
-                        </div>
-                        <h3 class="text-2xl leading-6 font-hedvig text-navy">Booking Details</h3>
+    <div class="w-full max-w-5xl bg-white rounded-2xl shadow-xl overflow-hidden flex flex-col max-h-[90vh] md:max-h-[80vh]">
+        <!-- Header - Fixed at top -->
+        <div class="bg-cream p-4 md:p-8">
+            <div class="flex justify-between items-center mb-4">
+                <div class="sm:flex sm:items-center">
+                    <div class="bg-navy/10 rounded-full p-3 mr-4">
+                        <i class="fas fa-info-circle text-navy text-xl"></i>
                     </div>
-                    <button onclick="closeModal()" class="text-gray-500 hover:text-navy">
-                        <i class="fas fa-times text-xl md:text-2xl"></i>
-                    </button>
+                    <h3 class="text-2xl leading-6 font-hedvig text-navy">Booking Details</h3>
                 </div>
+                <button onclick="closeModal()" class="text-gray-500 hover:text-navy">
+                    <i class="fas fa-times text-xl md:text-2xl"></i>
+                </button>
             </div>
-            
-            <!-- Modal Content -->
+        </div>
+        
+        <!-- Content - Scrollable -->
+        <div class="overflow-y-auto flex-grow">
             <div class="bg-white px-6 pt-4 pb-6">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="bookingDetailsContent">
                     <!-- Details will be loaded here via JavaScript -->
                 </div>
             </div>
-            
-            <!-- Modal Footer -->
-            <div class="bg-gray-50 px-6 py-4 flex justify-end border-t border-gray-200">
-                <button type="button" onclick="closeModal()" class="bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg shadow-md transition-all duration-300">
-                    Close
-                </button>
-            </div>
+        </div>
+        
+        <!-- Footer - Fixed at bottom -->
+        <div class="bg-gray-50 px-6 py-4 flex justify-end border-t border-gray-200 sticky bottom-0">
+            <button type="button" onclick="closeModal()" class="bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg shadow-md transition-all duration-300">
+                Close
+            </button>
         </div>
     </div>
 </div>
-    
     <?php include 'customService/chat_elements.html'; ?>
     
     <script>
