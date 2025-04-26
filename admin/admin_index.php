@@ -690,7 +690,7 @@ foreach ($serviceData as $service => $branches) {
   
   <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 w-full">
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 p-4 sm:p-5 border-b border-sidebar-border">
-      <h3 class="font-medium text-sidebar-text">Services by Type & Branch</h3>
+      <h3 class="font-medium text-sidebar-text">Top Selling Packages</h3>
       <button class="px-3 py-2 border border-sidebar-border rounded-md text-sm flex items-center text-sidebar-text hover:bg-sidebar-hover transition-all duration-300">
         <i class="fas fa-download mr-2"></i> Export
       </button>
@@ -1737,26 +1737,48 @@ branchRevenueChart.render();
         horizontalAlign: 'center'
     },
     plotOptions: {
+    radar: {
+      size: 140, // Adjust based on screen size
+      polygons: {
+        strokeColors: '#e8e8e8',
+        connectorColors: '#e8e8e8'
+      }
+    }
+  },
+  responsive: [{
+    breakpoint: 1200,
+    options: {
+      plotOptions: {
         radar: {
-            polygons: {
-                strokeColors: '#e8e8e8',
-                fill: {
-                    colors: ['#f8f8f8', '#fff']
-                }
-            }
+          size: 160
         }
-    },
-    responsive: [{
-        breakpoint: 768,
-        options: {
-            legend: {
-                position: 'bottom'
-            },
-            chart: {
-                height: 400
-            }
+      }
+    }
+  },
+  {
+    breakpoint: 992,
+    options: {
+      plotOptions: {
+        radar: {
+          size: 140
         }
-    }]
+      }
+    }
+  },
+  {
+    breakpoint: 768,
+    options: {
+      plotOptions: {
+        radar: {
+          size: 120
+        }
+      },
+      legend: {
+        position: 'bottom',
+        horizontalAlign: 'center'
+      }
+    }
+  }]
 };
 
 var branchServicesChart = new ApexCharts(document.querySelector("#branchServicesChart"), branchServicesOptions);
