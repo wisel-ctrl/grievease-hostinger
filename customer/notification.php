@@ -270,6 +270,24 @@ $current_page_bookings = array_slice($filtered_bookings, ($page - 1) * $items_pe
             height: 2px;
             background-color: #CA8A04;
         }
+
+        /* Custom aspect ratio helper */
+.pb-3\/4 {
+    padding-bottom: 75%;
+    position: relative;
+}
+/* Smooth transitions */
+.transition-opacity {
+    transition: opacity 0.3s ease-in-out;
+}
+/* Modal animation */
+#bookingDetailsModal {
+    transition: opacity 0.2s ease-in-out;
+    opacity: 0;
+}
+#bookingDetailsModal.opacity-100 {
+    opacity: 1;
+}
     </style>
 </head>
 <body class="bg-cream overflow-x-hidden w-full max-w-full m-0 p-0 font-hedvig">
@@ -715,30 +733,37 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
-                                <!-- Booking Details Modal -->
-                                <div id="bookingDetailsModal" class="fixed inset-0 z-50 hidden overflow-y-auto">
-                                    <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-                                        <!-- Background overlay -->
-                                        <div class="fixed inset-0 transition-opacity" aria-hidden="true">
-                                            <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
-                                        </div>
-                                        
-                                        <!-- Modal content -->
-                                        <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
-                                            <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                                                <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Booking Details</h3>
-                                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="bookingDetailsContent">
-                                                    <!-- Details will be loaded here via JavaScript -->
-                                                </div>
-                                            </div>
-                                            <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                                                <button type="button" onclick="closeModal()" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
-                                                    Close
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+<!-- Booking Details Modal -->
+<div id="bookingDetailsModal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-gray-500 bg-opacity-75 transition-opacity">
+    <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <!-- Modal content -->
+        <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
+            <!-- Modal header with close button -->
+            <div class="bg-gray-50 px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                <h3 class="text-lg font-semibold text-gray-900">Booking Details</h3>
+                <button type="button" onclick="closeModal()" class="text-gray-400 hover:text-gray-500 focus:outline-none">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            
+            <!-- Loading spinner -->
+            <div class="bg-white px-6 py-5">
+                <div id="bookingDetailsContent" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Details will be loaded here via JavaScript -->
+                </div>
+            </div>
+            
+            <!-- Modal footer -->
+            <div class="bg-gray-50 px-6 py-4 flex justify-end">
+                <button type="button" onclick="closeModal()" class="inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 
     <?php include 'customService/chat_elements.html'; ?>
     
@@ -757,131 +782,399 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function viewBookingDetails(bookingId, status) {
     // Show loading state
-    document.getElementById('bookingDetailsContent').innerHTML = '<div class="col-span-2 flex justify-center py-8"><i class="fas fa-spinner fa-spin text-2xl text-blue-500"></i></div>';
+    document.getElementById('bookingDetailsContent').innerHTML = `
+        <div class="col-span-2 flex flex-col items-center justify-center py-12">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-500"></div>
+            <p class="mt-4 text-gray-600">Loading booking details...</p>
+        </div>
+    `;
     
-    // Show the modal
-    document.getElementById('bookingDetailsModal').classList.remove('hidden');
+    // Show the modal with fade-in effect
+    const modal = document.getElementById('bookingDetailsModal');
+    modal.classList.remove('hidden');
+    setTimeout(() => modal.classList.add('opacity-100'), 10);
+    
+    // Lock body scroll when modal is open
+    document.body.style.overflow = 'hidden';
     
     // Fetch booking details via AJAX
     fetch(`notification/get_booking_details.php?booking_id=${bookingId}`)
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
         .then(data => {
             if (data.error) {
                 document.getElementById('bookingDetailsContent').innerHTML = `
-                    <div class="col-span-2 text-center py-8 text-red-500">
-                        <i class="fas fa-exclamation-circle text-2xl mb-2"></i>
-                        <p>${data.error}</p>
+                    <div class="col-span-2 text-center py-8">
+                        <div class="bg-red-50 rounded-lg p-4 border border-red-100">
+                            <svg class="mx-auto h-12 w-12 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <p class="mt-2 text-red-600">${data.error}</p>
+                        </div>
                     </div>
                 `;
             } else {
-                // Format the booking date
-                const bookingDate = new Date(data.booking_date);
-                const formattedBookingDate = bookingDate.toLocaleString();
-                
-                // Format dates (handle null values)
-                const formatDate = (dateString) => {
-                    if (!dateString) return 'Not set';
-                    const date = new Date(dateString);
-                    return date.toLocaleDateString();
-                };
-                
-                // Create the HTML content
-                let htmlContent = `
-                    <div class="col-span-2">
-                        <h4 class="font-semibold text-gray-700 mb-2">Deceased Information</h4>
-                        <div class="bg-gray-50 p-3 rounded-lg mb-4">
-                            <p><span class="font-medium">Full Name:</span> ${data.deceased_lname}, ${data.deceased_fname} ${data.deceased_midname || ''} ${data.deceased_suffix || ''}</p>
-                            <p><span class="font-medium">Address:</span> ${data.deceased_address}</p>
-                            <p><span class="font-medium">Birth Date:</span> ${formatDate(data.deceased_birth)}</p>
-                            <p><span class="font-medium">Date of Death:</span> ${formatDate(data.deceased_dodeath)}</p>
-                            <p><span class="font-medium">Date of Burial:</span> ${formatDate(data.deceased_dateOfBurial)}</p>
-                            <p><span class="font-medium">With Cremation:</span> ${data.with_cremate === 'yes' ? 'Yes' : 'No'}</p>
-                        </div>
-                    </div>
-                    
-                    <div>
-                        <h4 class="font-semibold text-gray-700 mb-2">Service Details</h4>
-                        <div class="bg-gray-50 p-3 rounded-lg mb-4">
-                            <p><span class="font-medium">Service:</span> ${data.service_name}</p>
-                            <p><span class="font-medium">Branch:</span> ${data.branch_name}</p>
-                            <p><span class="font-medium">Initial Price:</span> ₱${parseFloat(data.initial_price).toFixed(2)}</p>
-                            <p><span class="font-medium">Amount Paid:</span> ₱${parseFloat(data.amount_paid || 0).toFixed(2)}</p>
-                        </div>
-                    </div>
-                    
-                    <div>
-                        <h4 class="font-semibold text-gray-700 mb-2">Booking Information</h4>
-                        <div class="bg-gray-50 p-3 rounded-lg mb-4">
-                            <p><span class="font-medium">Status:</span> <span class="px-2 py-1 rounded text-xs ${getStatusColorClass(data.status)}">${data.status}</span></p>
-                            <p><span class="font-medium">Booking Date:</span> ${formattedBookingDate}</p>
-                            ${data.accepted_date ? `<p><span class="font-medium">${data.status} Date:</span> ${new Date(data.accepted_date).toLocaleString()}</p>` : ''}
-                            <p><span class="font-medium">Reference Code:</span> ${data.reference_code || 'N/A'}</p>
-                        </div>
-                    </div>
-                    
-                    ${(data.deathcert_url || data.payment_url) ? `
-                    <div class="col-span-2">
-                        <h4 class="font-semibold text-gray-700 mb-2">Attachments</h4>
-                        <div class="grid grid-cols-2 gap-4 bg-gray-50 p-3 rounded-lg">
-                            ${data.deathcert_url ? `
-                                <div class="col-span-1">
-                                    <p class="font-medium mb-2">Death Certificate:</p>
-                                    <img src="booking/${data.deathcert_url}" 
-                                        alt="Death Certificate" 
-                                        class="w-full h-auto rounded border border-gray-200"
-                                        onload="this.nextElementSibling.textContent = this.naturalWidth + '×' + this.naturalHeight + 'px'">
-                                    <p class="text-sm text-gray-500 mt-1 text-center"></p>
-                                </div>
-                            ` : `
-                                <div class="col-span-1">
-                                    <p class="font-medium mb-2">Death Certificate:</p>
-                                    <div class="w-full h-40 bg-gray-100 rounded border border-gray-200 flex items-center justify-center">
-                                        <p class="text-gray-400">N/A</p>
-                                    </div>
-                                    <p class="text-sm text-gray-500 mt-1 text-center">0×0 px</p>
-                                </div>
-                            `}
-                            
-                            ${data.payment_url ? `
-                                <div class="col-span-1">
-                                    <p class="font-medium mb-2">Payment Receipt:</p>
-                                    <img src="booking/${data.payment_url}" 
-                                        alt="Payment Receipt" 
-                                        class="w-full h-auto rounded border border-gray-200"
-                                        onload="this.nextElementSibling.textContent = this.naturalWidth + '×' + this.naturalHeight + 'px'">
-                                    <p class="text-sm text-gray-500 mt-1 text-center"></p>
-                                </div>
-                            ` : `
-                                <div class="col-span-1">
-                                    <p class="font-medium mb-2">Payment Receipt:</p>
-                                    <div class="w-full h-40 bg-gray-100 rounded border border-gray-200 flex items-center justify-center">
-                                        <p class="text-gray-400">N/A</p>
-                                    </div>
-                                    <p class="text-sm text-gray-500 mt-1 text-center">0×0 px</p>
-                                </div>
-                            `}
-                        </div>
-                    </div>
-                ` : ''}
-                `;
-                
-                document.getElementById('bookingDetailsContent').innerHTML = htmlContent;
+                renderBookingDetails(data);
             }
         })
         .catch(error => {
             console.error('Error:', error);
             document.getElementById('bookingDetailsContent').innerHTML = `
-                <div class="col-span-2 text-center py-8 text-red-500">
-                    <i class="fas fa-exclamation-circle text-2xl mb-2"></i>
-                    <p>Failed to load booking details. Please try again.</p>
+                <div class="col-span-2 text-center py-8">
+                    <div class="bg-red-50 rounded-lg p-4 border border-red-100">
+                        <svg class="mx-auto h-12 w-12 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <p class="mt-2 text-red-600">Failed to load booking details. Please try again.</p>
+                        <button onclick="viewBookingDetails(${bookingId}, '${status}')" class="mt-3 px-4 py-2 bg-indigo-500 text-white rounded-md hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                            Retry
+                        </button>
+                    </div>
                 </div>
             `;
         });
 }
 
-function closeModal() {
-    document.getElementById('bookingDetailsModal').classList.add('hidden');
+function renderBookingDetails(data) {
+    // Format the booking date
+    const bookingDate = new Date(data.booking_date);
+    const formattedBookingDate = bookingDate.toLocaleString();
+    
+    // Format dates (handle null values)
+    const formatDate = (dateString) => {
+        if (!dateString) return 'Not set';
+        const date = new Date(dateString);
+        return date.toLocaleDateString();
+    };
+    
+    // Get status color class
+    const getStatusColorClass = (status) => {
+        switch(status.toLowerCase()) {
+            case 'pending':
+                return 'bg-yellow-100 text-yellow-800';
+            case 'accepted':
+            case 'confirmed':
+            case 'completed':
+                return 'bg-green-100 text-green-800';
+            case 'rejected':
+            case 'cancelled':
+                return 'bg-red-100 text-red-800';
+            default:
+                return 'bg-gray-100 text-gray-800';
+        }
+    };
+    
+    // Calculate remaining balance
+    const initialPrice = parseFloat(data.initial_price || 0);
+    const amountPaid = parseFloat(data.amount_paid || 0);
+    const remainingBalance = initialPrice - amountPaid;
+    
+    // Format currency
+    const formatCurrency = (amount) => {
+        return '₱' + parseFloat(amount).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+    };
+    
+    // Create the HTML content
+    let htmlContent = `
+        <!-- Deceased Information -->
+        <div class="col-span-2">
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+                <div class="px-4 py-3 border-b border-gray-200 bg-gray-50">
+                    <h4 class="text-md font-semibold text-gray-800 flex items-center">
+                        <svg class="h-5 w-5 mr-2 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                        Deceased Information
+                    </h4>
+                </div>
+                <div class="px-4 py-3">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <p class="text-sm text-gray-500">Full Name</p>
+                            <p class="font-medium">${data.deceased_lname}, ${data.deceased_fname} ${data.deceased_midname || ''} ${data.deceased_suffix || ''}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Address</p>
+                            <p class="font-medium">${data.deceased_address}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Birth Date</p>
+                            <p class="font-medium">${formatDate(data.deceased_birth)}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Date of Death</p>
+                            <p class="font-medium">${formatDate(data.deceased_dodeath)}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Date of Burial</p>
+                            <p class="font-medium">${formatDate(data.deceased_dateOfBurial)}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">With Cremation</p>
+                            <p class="font-medium">${data.with_cremate === 'yes' ? 'Yes' : 'No'}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Service Details -->
+        <div>
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 h-full">
+                <div class="px-4 py-3 border-b border-gray-200 bg-gray-50">
+                    <h4 class="text-md font-semibold text-gray-800 flex items-center">
+                        <svg class="h-5 w-5 mr-2 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                        </svg>
+                        Service Details
+                    </h4>
+                </div>
+                <div class="px-4 py-3">
+                    <div class="space-y-3">
+                        <div>
+                            <p class="text-sm text-gray-500">Service</p>
+                            <p class="font-medium">${data.service_name}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Branch</p>
+                            <p class="font-medium">${data.branch_name}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Payment Details -->
+        <div>
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 h-full">
+                <div class="px-4 py-3 border-b border-gray-200 bg-gray-50">
+                    <h4 class="text-md font-semibold text-gray-800 flex items-center">
+                        <svg class="h-5 w-5 mr-2 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                        </svg>
+                        Payment Details
+                    </h4>
+                </div>
+                <div class="px-4 py-3">
+                    <div class="space-y-3">
+                        <div>
+                            <p class="text-sm text-gray-500">Initial Price</p>
+                            <p class="font-medium">${formatCurrency(data.initial_price)}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Amount Paid</p>
+                            <p class="font-medium">${formatCurrency(data.amount_paid || 0)}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Remaining Balance</p>
+                            <p class="font-medium ${remainingBalance > 0 ? 'text-red-600' : 'text-green-600'}">${formatCurrency(remainingBalance)}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Booking Information -->
+        <div class="col-span-2">
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+                <div class="px-4 py-3 border-b border-gray-200 bg-gray-50">
+                    <h4 class="text-md font-semibold text-gray-800 flex items-center">
+                        <svg class="h-5 w-5 mr-2 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        Booking Information
+                    </h4>
+                </div>
+                <div class="px-4 py-3">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <p class="text-sm text-gray-500">Status</p>
+                            <p><span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColorClass(data.status)}">${data.status}</span></p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Booking Date</p>
+                            <p class="font-medium">${formattedBookingDate}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Reference Code</p>
+                            <p class="font-medium">${data.reference_code || 'N/A'}</p>
+                        </div>
+                        ${data.accepted_date ? `
+                        <div>
+                            <p class="text-sm text-gray-500">${data.status} Date</p>
+                            <p class="font-medium">${new Date(data.accepted_date).toLocaleString()}</p>
+                        </div>
+                        ` : ''}
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Add attachments section if there are documents
+    if (data.deathcert_url || data.payment_url) {
+        htmlContent += `
+            <!-- Attachments -->
+            <div class="col-span-2">
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+                    <div class="px-4 py-3 border-b border-gray-200 bg-gray-50">
+                        <h4 class="text-md font-semibold text-gray-800 flex items-center">
+                            <svg class="h-5 w-5 mr-2 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+                            </svg>
+                            Attachments
+                        </h4>
+                    </div>
+                    <div class="px-4 py-3">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Death Certificate -->
+                            <div>
+                                <p class="text-sm font-medium text-gray-700 mb-2">Death Certificate</p>
+                                ${data.deathcert_url ? `
+                                    <div class="border border-gray-200 rounded-lg overflow-hidden">
+                                        <div class="relative pb-3/4">
+                                            <img src="booking/${data.deathcert_url}" 
+                                                alt="Death Certificate" 
+                                                class="absolute h-full w-full object-contain cursor-pointer hover:opacity-90 transition-opacity"
+                                                onclick="openImageViewer('booking/${data.deathcert_url}', 'Death Certificate')"
+                                                onload="this.parentElement.nextElementSibling.querySelector('.dimensions').textContent = this.naturalWidth + '×' + this.naturalHeight + 'px'">
+                                        </div>
+                                        <div class="bg-gray-50 px-3 py-2 text-center">
+                                            <span class="text-xs text-gray-500 dimensions"></span>
+                                            <button onclick="openImageViewer('booking/${data.deathcert_url}', 'Death Certificate')" class="ml-2 text-xs text-indigo-600 hover:text-indigo-800">View full size</button>
+                                        </div>
+                                    </div>
+                                ` : `
+                                    <div class="border border-gray-200 rounded-lg bg-gray-50 flex items-center justify-center h-48">
+                                        <div class="text-center">
+                                            <svg class="mx-auto h-10 w-10 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+                                            </svg>
+                                            <p class="mt-2 text-sm text-gray-500">No death certificate attached</p>
+                                        </div>
+                                    </div>
+                                `}
+                            </div>
+                            
+                            <!-- Payment Receipt -->
+                            <div>
+                                <p class="text-sm font-medium text-gray-700 mb-2">Payment Receipt</p>
+                                ${data.payment_url ? `
+                                    <div class="border border-gray-200 rounded-lg overflow-hidden">
+                                        <div class="relative pb-3/4">
+                                            <img src="booking/${data.payment_url}" 
+                                                alt="Payment Receipt" 
+                                                class="absolute h-full w-full object-contain cursor-pointer hover:opacity-90 transition-opacity"
+                                                onclick="openImageViewer('booking/${data.payment_url}', 'Payment Receipt')"
+                                                onload="this.parentElement.nextElementSibling.querySelector('.dimensions').textContent = this.naturalWidth + '×' + this.naturalHeight + 'px'">
+                                        </div>
+                                        <div class="bg-gray-50 px-3 py-2 text-center">
+                                            <span class="text-xs text-gray-500 dimensions"></span>
+                                            <button onclick="openImageViewer('booking/${data.payment_url}', 'Payment Receipt')" class="ml-2 text-xs text-indigo-600 hover:text-indigo-800">View full size</button>
+                                        </div>
+                                    </div>
+                                ` : `
+                                    <div class="border border-gray-200 rounded-lg bg-gray-50 flex items-center justify-center h-48">
+                                        <div class="text-center">
+                                            <svg class="mx-auto h-10 w-10 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+                                            </svg>
+                                            <p class="mt-2 text-sm text-gray-500">No payment receipt attached</p>
+                                        </div>
+                                    </div>
+                                `}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+    
+    // Set the content
+    document.getElementById('bookingDetailsContent').innerHTML = htmlContent;
 }
+
+function closeModal() {
+    // Hide the modal with fade-out effect
+    const modal = document.getElementById('bookingDetailsModal');
+    modal.classList.add('hidden');
+    
+    // Restore body scroll
+    document.body.style.overflow = '';
+}
+function openImageViewer(imageSrc, title) {
+    // Create image viewer modal if it doesn't exist
+    if (!document.getElementById('imageViewerModal')) {
+        const imageViewer = document.createElement('div');
+        imageViewer.id = 'imageViewerModal';
+        imageViewer.className = 'fixed inset-0 z-50 hidden bg-black bg-opacity-90 flex items-center justify-center p-4';
+        imageViewer.innerHTML = `
+            <div class="max-w-4xl w-full flex flex-col">
+                <div class="flex justify-between items-center text-white mb-4">
+                    <h3 class="text-lg font-medium" id="imageViewerTitle"></h3>
+                    <button onclick="closeImageViewer()" class="text-white hover:text-gray-300 focus:outline-none">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                <div class="bg-white rounded-lg overflow-hidden">
+                    <img id="imageViewerImg" class="w-full h-auto max-h-screen" src="" alt="">
+                </div>
+            </div>
+        `;
+        document.body.appendChild(imageViewer);
+    }
+    
+    // Set image and title
+    const imageViewerModal = document.getElementById('imageViewerModal');
+    document.getElementById('imageViewerTitle').textContent = title;
+    document.getElementById('imageViewerImg').src = imageSrc;
+    
+    // Show the modal
+    imageViewerModal.classList.remove('hidden');
+}
+
+function closeImageViewer() {
+    document.getElementById('imageViewerModal').classList.add('hidden');
+}
+
+// Add event listener to close modal when clicking outside the content
+document.addEventListener('click', function(event) {
+    const modal = document.getElementById('bookingDetailsModal');
+    const modalContent = modal.querySelector('.inline-block');
+    
+    if (modal && !modal.classList.contains('hidden') && !modalContent.contains(event.target) && event.target === modal) {
+        closeModal();
+    }
+    
+    const imageViewer = document.getElementById('imageViewerModal');
+    if (imageViewer && !imageViewer.classList.contains('hidden') && event.target === imageViewer) {
+        closeImageViewer();
+    }
+});
+
+// Add keyboard support for closing modals
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        const modal = document.getElementById('bookingDetailsModal');
+        if (modal && !modal.classList.contains('hidden')) {
+            closeModal();
+        }
+        
+        const imageViewer = document.getElementById('imageViewerModal');
+        if (imageViewer && !imageViewer.classList.contains('hidden')) {
+            closeImageViewer();
+        }
+    }
+});
+
+
 
 function getStatusColorClass(status) {
     switch(status) {
@@ -1011,6 +1304,8 @@ function getStatusClass(status) {
         </div>
     </div>
 </footer>
+
+
 
 </body>
 </html>
