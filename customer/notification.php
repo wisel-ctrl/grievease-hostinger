@@ -1089,77 +1089,78 @@ function getStatusClass(status) {
 
 
     <!-- Footer -->
-<footer class="bg-black text-white py-12 mt-16">
-    <div class="container mx-auto px-4">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <!-- Company Info -->
-            <div>
-                <div class="flex items-center mb-4">
-                    <img src="..\Landing_Page/Landing_images/logo.png" alt="Logo" class="h-[42px] w-[38px]">
-                    <span class="text-yellow-600 text-2xl ml-2">GrievEase</span>
+    <footer class="bg-black font-playfair text-white py-12">
+        <div class="container mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <!-- Company Info -->
+                <div>
+                    <h3 class="text-yellow-600 text-2xl mb-4">GrievEase</h3>
+                    <p class="text-gray-300 mb-4">Providing dignified funeral services with compassion and respect since 1980.</p>
+                    <div class="flex space-x-4">
+                        
+                    </div>
                 </div>
-                <p class="text-gray-400 mb-4">Providing compassionate and comprehensive funeral services to honor your loved ones with dignity and respect.</p>
-                <div class="flex space-x-4">
-                    <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-twitter"></i></a>
-                    <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-instagram"></i></a>
-                    <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-linkedin-in"></i></a>
+                
+                <!-- Quick Links -->
+                <div>
+                    <h3 class="text-lg mb-4">Quick Links</h3>
+                    <ul class="space-y-2">
+                        <li><a href="index.php" class="text-gray-300 hover:text-white transition">Home</a></li>
+                        <li><a href="about.php" class="text-gray-300 hover:text-white transition">About</a></li>
+                        <li><a href="lifeplan.php" class="text-gray-300 hover:text-white transition">Life Plan</a></li>
+                        <li><a href="traditional_funeral.php" class="text-gray-300 hover:text-white transition">Traditional Funeral</a></li>
+                        <li><a href="faqs.php" class="text-gray-300 hover:text-white transition">FAQs</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Services -->
+                <div>
+                    <h3 class="text-lg mb-4">Our Services</h3>
+                    <ul class="space-y-2">
+                        <li><a href="traditional_funeral.php" class="text-gray-300 hover:text-white transition">Traditional Funeral</a></li>
+                        <li><a href="lifeplan.php" class="text-gray-300 hover:text-white transition">Life Plan</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Contact Info -->
+                <div>
+                    <h3 class="text-lg mb-4">Contact Us</h3>
+                    <ul class="space-y-2">
+                        <li class="flex items-start">
+                            <i class="fas fa-map-marker-alt mt-1 mr-2 text-yellow-600"></i>
+                            <span>#6 J.P Rizal St. Brgy. Sta Clara Sur, (Pob) Pila, Laguna</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-phone-alt mr-2 text-yellow-600"></i>
+                            <span>(0956) 814-3000 <br> (0961) 345-4283</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-envelope mr-2 text-yellow-600"></i>
+                            <span>GrievEase@gmail.com</span>
+                        </li>
+                        <li class=" flex items-center">
+                        <a href="https://web.facebook.com/vjayrelovafuneralservices" class=" hover:text-white transition">
+                            <i class="fab fa-facebook-f mr-2 text-yellow-600"></i>
+                            <span> VJay Relova Funeral Services</span>
+                        </a>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-clock mr-2 text-yellow-600"></i>
+                            <span>Available 24/7</span>
+                        </li>
+                    </ul>
                 </div>
             </div>
             
-            <!-- Quick Links -->
-            <div>
-                <h3 class="text-lg mb-4 text-white">Quick Links</h3>
-                <ul class="space-y-2">
-                    <li><a href="index.php" class="text-gray-400 hover:text-white transition">Home</a></li>
-                    <li><a href="about.php" class="text-gray-400 hover:text-white transition">About Us</a></li>
-                    <li><a href="lifeplan.php" class="text-gray-400 hover:text-white transition">Life Plan</a></li>
-                    <li><a href="traditional_funeral.php" class="text-gray-400 hover:text-white transition">Traditional Funeral</a></li>
-                    <li><a href="faqs.php" class="text-gray-400 hover:text-white transition">FAQs</a></li>
-                </ul>
-            </div>
-            
-            <!-- Services -->
-            <div>
-                <h3 class="text-lg  mb-4 text-white">Our Services</h3>
-                <ul class="space-y-2">
-                    <li><a href="traditional_funeral.php" class="text-gray-400 hover:text-white transition">Traditional Funeral</a></li>
-                    <li><a href="lifeplan.php" class="text-gray-400 hover:text-white transition">Life Plan Packages</a></li>
-                    <li><a href="#" class="text-gray-400 hover:text-white transition">Memorial Services</a></li>
-                    <li><a href="#" class="text-gray-400 hover:text-white transition">Cremation Services</a></li>
-                    <li><a href="#" class="text-gray-400 hover:text-white transition">Grief Counseling</a></li>
-                </ul>
-            </div>
-            
-            <!-- Contact -->
-            <div>
-                <h3 class="text-lg mb-4 text-white">Contact Us</h3>
-                <ul class="space-y-2">
-                    <li class="flex items-start">
-                        <i class="fas fa-map-marker-alt mt-1 mr-2 text-yellow-600"></i>
-                        <span class="text-gray-400">4671 Sugar Camp Road, Owatonna, MN 55060</span>
-                    </li>
-                    <li class="flex items-start">
-                        <i class="fas fa-phone-alt mt-1 mr-2 text-yellow-600"></i>
-                        <span class="text-gray-400">(507) 475-6094</span>
-                    </li>
-                    <li class="flex items-start">
-                        <i class="fas fa-envelope mt-1 mr-2 text-yellow-600"></i>
-                        <span class="text-gray-400">support@grievease.com</span>
-                    </li>
-                    <li class="flex items-start">
-                        <i class="fas fa-clock mt-1 mr-2 text-yellow-600"></i>
-                        <span class="text-gray-400">Available 24/7</span>
-                    </li>
-                </ul>
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400 text-sm">
+                <p class="text-yellow-600">&copy; 2025 Vjay Relova Funeral Services. All rights reserved.</p>
+                <div class="mt-2">
+                    <a href="privacy_policy.php" class="text-gray-400 hover:text-white transition mx-2">Privacy Policy</a>
+                    <a href="#" class="text-gray-400 hover:text-white transition mx-2">Terms of Service</a>
+                </div>
             </div>
         </div>
-        
-        <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-            <p>&copy; <?php echo date('Y'); ?> GrievEase. All rights reserved.</p>
-        </div>
-    </div>
-</footer>
+    </footer>
 
 </body>
 </html>
