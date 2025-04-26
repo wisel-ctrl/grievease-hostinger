@@ -443,7 +443,7 @@ header("Pragma: no-cache");
     <div id="personal-info" class="tab-content">
         <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
             <!-- Header with enhanced styling -->
-            <div class="p-6 border-b border-gray-100 flex justify-between items-center bg-gradient-to-r from-blue-50 to-white">
+            <div class="p-6 border-b border-gray-100 flex justify-between items-center ">
                 <h3 class="font-hedvig text-xl text-navy">Personal Information</h3>
                 <button id="edit-profile-btn" class="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-md transition-colors">
                     <i class="fas fa-pencil-alt mr-1"></i> Edit Profile
