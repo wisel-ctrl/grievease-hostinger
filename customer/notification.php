@@ -1,4 +1,6 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 session_start();
 
 // Check if user is logged in
@@ -64,6 +66,26 @@ header("Pragma: no-cache");
 
 require_once '../db_connect.php'; // Database connection
 
+$items_per_page = 5;
+$page = isset($_GET['page']) ? intval($_GET['page']) : 1;
+if ($page < 1) $page = 1;
+
+// Get user's ID validation status
+$user_id = $_SESSION['user_id'];
+$id_validation_query = "SELECT is_validated, decline_reason, upload_at, image_path FROM valid_id_tb WHERE id = ?";
+$id_validation_stmt = $conn->prepare($id_validation_query);
+$id_validation_stmt->bind_param("i", $user_id);
+$id_validation_stmt->execute();
+$id_validation_result = $id_validation_stmt->get_result();
+$id_validation = $id_validation_result->fetch_assoc();
+$id_validation_stmt->close();
+
+// Map the validation status to more readable values
+$id_status = 'Not Submitted'; // Default
+$id_status_class = 'bg-gray-200 text-gray-800'; // Default
+$id_icon = 'fas fa-question-circle';
+
+
 // Get user's information from database
 $user_id = $_SESSION['user_id'];
 $query = "SELECT first_name, last_name, email, birthdate FROM users WHERE id = ?";
@@ -88,7 +110,10 @@ $notifications_count = [
     'total' => 0,
     'pending' => 0,
     'accepted' => 0,
-    'declined' => 0
+    'declined' => 0,
+    'id_pending' => 0,
+    'id_accepted' => 0,
+    'id_declined' => 0
 ];
 
 while ($booking = $bookings_result->fetch_assoc()) {
@@ -107,6 +132,26 @@ while ($booking = $bookings_result->fetch_assoc()) {
             break;
     }
 }
+
+// Update ID validation counts
+if ($id_validation) {
+    $notifications_count['total']++;
+    switch ($id_validation['is_validated']) {
+        case 'no':
+            $notifications_count['pending']++;
+            $notifications_count['id_pending']++;
+            break;
+        case 'valid':
+            $notifications_count['accepted']++;
+            $notifications_count['id_accepted']++;
+            break;
+        case 'denied':
+            $notifications_count['declined']++;
+            $notifications_count['id_declined']++;
+            break;
+    }
+}
+
 $stmt->close();
 
 // Get service names for each booking
@@ -171,29 +216,46 @@ if (isset($_GET['filter'])) {
     $current_filter = $_GET['filter'];
 }
 
-// Get requested page
-$page = isset($_GET['page']) ? intval($_GET['page']) : 1;
-$items_per_page = 5;
-$total_pages = ceil(count($bookings) / $items_per_page);
-if ($page < 1) $page = 1;
-if ($page > $total_pages && $total_pages > 0) $page = $total_pages;
-
-// Filter and paginate bookings
-$filtered_bookings = [];
+// Filter and paginate bookings and ID validation
+$filtered_items = [];
 foreach ($bookings as $booking) {
     if ($current_filter === 'all' || 
         ($current_filter === 'pending' && $booking['status'] === 'Pending') ||
         ($current_filter === 'accepted' && $booking['status'] === 'Accepted') ||
         ($current_filter === 'declined' && $booking['status'] === 'Declined')) {
-        $filtered_bookings[] = $booking;
+        $filtered_items[] = [
+            'type' => 'booking',
+            'data' => $booking,
+            'timestamp' => $booking['booking_date']
+        ];
     }
 }
+// Add ID validation if it matches the filter
+if ($id_validation) {
+    $id_validation_status = $id_validation['is_validated'];
+    if ($current_filter === 'all' || 
+        ($current_filter === 'pending' && $id_validation_status === 'no') ||
+        ($current_filter === 'accepted' && $id_validation_status === 'valid') ||
+        ($current_filter === 'declined' && $id_validation_status === 'denied')) {
+        $filtered_items[] = [
+            'type' => 'id_validation',
+            'data' => $id_validation,
+            'timestamp' => $id_validation['upload_at']
+        ];
+    }
+}
+// Sort all items by timestamp
+usort($filtered_items, function($a, $b) {
+    return strtotime($b['timestamp']) - strtotime($a['timestamp']);
+});
 
-$total_filtered = count($filtered_bookings);
+$total_filtered = count($filtered_items);
 $total_filtered_pages = ceil($total_filtered / $items_per_page);
 
 // Get current page items
-$current_page_bookings = array_slice($filtered_bookings, ($page - 1) * $items_per_page, $items_per_page);
+$current_page_items = array_slice($filtered_items, ($page - 1) * $items_per_page, $items_per_page);
+
+
 ?>
 
 <script src="customer_support.js"></script>
@@ -319,6 +381,8 @@ $current_page_bookings = array_slice($filtered_bookings, ($page - 1) * $items_pe
                     <?php endif; ?>
                 </a>
                 
+            
+                
                 <div class="relative group">
                     <button class="flex items-center space-x-2">
                     <div class="w-8 h-8 rounded-full bg-yellow-600 flex items-center justify-center text-sm">
@@ -429,7 +493,6 @@ $current_page_bookings = array_slice($filtered_bookings, ($page - 1) * $items_pe
                 <h1 class="text-4xl md:text-5xl font-hedvig text-navy mb-3">Notifications</h1>
                 <p class="text-dark text-lg max-w-2xl mx-auto">Stay updated with important information about your services and arrangements.</p>
                 <div class="w-16 h-1 bg-yellow-600 mx-auto mt-4"></div>
-                
                 <!-- Notification Summary -->
                 <div class="mt-6 flex justify-center space-x-6">
                     <div class="flex flex-col items-center">
@@ -449,257 +512,373 @@ $current_page_bookings = array_slice($filtered_bookings, ($page - 1) * $items_pe
         </div>
 
         <!-- Dashboard Layout -->
-        <div class="flex flex-col lg:flex-row gap-6">
-            <!-- Left Sidebar: Filter Controls -->
-            <div class="lg:w-1/4">
-                <div class="bg-white rounded-xl shadow-md p-5 sticky top-20">
-                    <h2 class="text-navy text-xl mb-4">Filter by Status</h2>
-                    
-                    <!-- Filter Buttons -->
-                    <div class="space-y-2">
-                        <a href="?filter=all" 
-                           class="w-full <?php echo $current_filter === 'all' ? 'bg-navy text-white filter-active' : 'bg-white hover:bg-navy/10 border border-input-border text-navy'; ?> px-4 py-3 rounded-lg text-sm font-medium flex items-center justify-between group transition-all duration-200">
-                            <span class="flex items-center">
-                                <i class="fas fa-inbox mr-3"></i>
-                                <span>All Notifications</span>
-                            </span>
-                            <span class="<?php echo $current_filter === 'all' ? 'bg-white text-navy' : 'bg-navy/20 text-navy'; ?> w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs"><?php echo $notifications_count['total']; ?></span>
-                        </a>
-                        
-                        <a href="?filter=pending" 
-                           class="w-full <?php echo $current_filter === 'pending' ? 'bg-yellow-600 text-white filter-active' : 'bg-white hover:bg-yellow-600/10 border border-input-border text-navy'; ?> px-4 py-3 rounded-lg text-sm font-medium flex items-center justify-between group transition-all duration-200">
-                            <span class="flex items-center">
-                                <span class="notification-dot <?php echo $current_filter === 'pending' ? 'bg-white' : 'bg-yellow-600'; ?> mr-3"></span>
-                                <span>Pending</span>
-                            </span>
-                            <span class="<?php echo $current_filter === 'pending' ? 'bg-white text-yellow-600' : 'bg-yellow-600/20 text-yellow-600'; ?> w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs"><?php echo $notifications_count['pending']; ?></span>
-                            
-                        </a>
-                        
-                        <a href="?filter=accepted" 
-                           class="w-full <?php echo $current_filter === 'accepted' ? 'bg-success text-white filter-active' : 'bg-white hover:bg-success/10 border border-input-border text-navy'; ?> px-4 py-3 rounded-lg text-sm font-medium flex items-center justify-between group transition-all duration-200">
-                            <span class="flex items-center">
-                                <span class="notification-dot <?php echo $current_filter === 'accepted' ? 'bg-white' : 'bg-success'; ?> mr-3"></span>
-                                <span>Accepted</span>
-                            </span>
-                            <span class="<?php echo $current_filter === 'accepted' ? 'bg-white text-success' : 'bg-success/20 text-success'; ?> w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs"><?php echo $notifications_count['accepted']; ?></span>
-                        </a>
-                        
-                        <a href="?filter=declined" 
-                           class="w-full <?php echo $current_filter === 'declined' ? 'bg-error text-white filter-active' : 'bg-white hover:bg-error/10 border border-input-border text-navy'; ?> px-4 py-3 rounded-lg text-sm font-medium flex items-center justify-between group transition-all duration-200">
-                            <span class="flex items-center">
-                                <span class="notification-dot <?php echo $current_filter === 'declined' ? 'bg-white' : 'bg-error'; ?> mr-3"></span>
-                                <span>Declined</span>
-                            </span>
-                            <span class="<?php echo $current_filter === 'declined' ? 'bg-white text-error' : 'bg-error/20 text-error'; ?> w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs"><?php echo $notifications_count['declined']; ?></span>
-                        </a>
-                    </div>
-                    
-                </div>
-            </div>
+<div class="flex flex-col lg:flex-row gap-4">
+    <!-- Left Sidebar: Filter Controls -->
+    <div class="lg:w-1/4">
+        <div class="bg-white rounded-lg shadow-sm p-4 sticky top-20">
+            <h2 class="text-navy text-lg mb-3">Filter by Status</h2>
             
-            <!-- Right Content: Notifications List -->
-            <div class="lg:w-3/4">
-                <!-- Search Bar -->
-                <div class="mb-6 relative">
-                    <input type="text" id="searchInput" placeholder="Search notifications..." class="w-full pl-10 pr-4 py-3 bg-white border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600/50">
-                    <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                    
-                </div>
+            <!-- Filter Buttons -->
+            <div class="space-y-1.5">
+                <a href="?filter=all" 
+                   class="w-full <?php echo $current_filter === 'all' ? 'bg-navy text-white filter-active' : 'bg-white hover:bg-navy/10 border border-input-border text-navy'; ?> px-3 py-2 rounded-md text-xs font-medium flex items-center justify-between group transition-all duration-200">
+                    <span class="flex items-center">
+                        <i class="fas fa-inbox mr-2"></i>
+                        <span>All Notifications</span>
+                    </span>
+                    <span class="<?php echo $current_filter === 'all' ? 'bg-white text-navy' : 'bg-navy/20 text-navy'; ?> w-5 h-5 rounded-full flex items-center justify-center font-bold text-xs"><?php echo $notifications_count['total']; ?></span>
+                </a>
                 
-                <?php if (empty($current_page_bookings)): ?>
-                <!-- No Notifications Message -->
-                <div class="bg-white rounded-lg shadow-lg p-8 text-center">
-                    <div class="rounded-full bg-gray-100 p-4 inline-flex items-center justify-center mb-4">
-                        <i class="fas fa-bell-slash text-gray-400 text-3xl"></i>
+                <a href="?filter=pending" 
+                   class="w-full <?php echo $current_filter === 'pending' ? 'bg-yellow-600 text-white filter-active' : 'bg-white hover:bg-yellow-600/10 border border-input-border text-navy'; ?> px-3 py-2 rounded-md text-xs font-medium flex items-center justify-between group transition-all duration-200">
+                    <span class="flex items-center">
+                        <span class="notification-dot <?php echo $current_filter === 'pending' ? 'bg-white' : 'bg-yellow-600'; ?> mr-2"></span>
+                        <span>Pending</span>
+                    </span>
+                    <span class="<?php echo $current_filter === 'pending' ? 'bg-white text-yellow-600' : 'bg-yellow-600/20 text-yellow-600'; ?> w-5 h-5 rounded-full flex items-center justify-center font-bold text-xs"><?php echo $notifications_count['pending']; ?></span>
+                </a>
+                
+                <a href="?filter=accepted" 
+                   class="w-full <?php echo $current_filter === 'accepted' ? 'bg-success text-white filter-active' : 'bg-white hover:bg-success/10 border border-input-border text-navy'; ?> px-3 py-2 rounded-md text-xs font-medium flex items-center justify-between group transition-all duration-200">
+                    <span class="flex items-center">
+                        <span class="notification-dot <?php echo $current_filter === 'accepted' ? 'bg-white' : 'bg-success'; ?> mr-2"></span>
+                        <span>Accepted</span>
+                    </span>
+                    <span class="<?php echo $current_filter === 'accepted' ? 'bg-white text-success' : 'bg-success/20 text-success'; ?> w-5 h-5 rounded-full flex items-center justify-center font-bold text-xs"><?php echo $notifications_count['accepted']; ?></span>
+                </a>
+                
+                <a href="?filter=declined" 
+                   class="w-full <?php echo $current_filter === 'declined' ? 'bg-error text-white filter-active' : 'bg-white hover:bg-error/10 border border-input-border text-navy'; ?> px-3 py-2 rounded-md text-xs font-medium flex items-center justify-between group transition-all duration-200">
+                    <span class="flex items-center">
+                        <span class="notification-dot <?php echo $current_filter === 'declined' ? 'bg-white' : 'bg-error'; ?> mr-2"></span>
+                        <span>Declined</span>
+                    </span>
+                    <span class="<?php echo $current_filter === 'declined' ? 'bg-white text-error' : 'bg-error/20 text-error'; ?> w-5 h-5 rounded-full flex items-center justify-center font-bold text-xs"><?php echo $notifications_count['declined']; ?></span>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Right Content: Notifications List -->
+    <div class="lg:w-3/4">
+        <!-- Search Bar -->
+        <div class="mb-4 relative">
+            <input type="text" id="searchInput" placeholder="Search notifications..." class="w-full pl-8 pr-3 py-2 bg-white border border-input-border rounded-md focus:outline-none focus:ring-1 focus:ring-yellow-600/50">
+            <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-xs"></i>
+        </div>
+        
+        <?php if (empty($current_page_items)): ?>
+        <!-- No Notifications Message -->
+        <div class="bg-white rounded-md shadow-md p-6 text-center">
+            <div class="rounded-full bg-gray-100 p-3 inline-flex items-center justify-center mb-3">
+                <i class="fas fa-bell-slash text-gray-400 text-xl"></i>
+            </div>
+            <h3 class="text-lg font-hedvig text-navy mb-1">No notifications found</h3>
+            <p class="text-gray-500 text-sm">
+                <?php 
+                if ($current_filter !== 'all') {
+                    echo "You don't have any " . strtolower($current_filter) . " notifications.";
+                } else {
+                    echo "You don't have any notifications yet.";
+                }
+                ?>
+            </p>
+        </div>
+        <?php else: ?>
+        
+        <!-- Notifications Container -->
+        <div class="space-y-3" id="notificationsContainer">
+            <?php foreach ($current_page_items as $item): ?>
+    <?php if ($item['type'] === 'booking'): ?>
+        <!-- BOOKING NOTIFICATION - Use your existing booking notification display code -->
+        <?php 
+            $booking = $item['data']; // Get the booking data
+            
+            // Define notification style based on booking status
+            $status_color = '';
+            $status_bg = '';
+            $status_icon = '';
+            
+            switch ($booking['status']) {
+                case 'Pending':
+                    $status_color = 'border-yellow-600';
+                    $status_bg = 'bg-yellow-600/10';
+                    $status_icon = 'fas fa-clock';
+                    $status_text_color = 'text-yellow-600';
+                    $btn_color = 'bg-yellow-600 hover:bg-yellow-700';
+                    $status_badge_bg = 'bg-yellow-600/20';
+                    break;
+                case 'Accepted':
+                    $status_color = 'border-success';
+                    $status_bg = 'bg-success/10';
+                    $status_icon = 'fas fa-check-circle';
+                    $status_text_color = 'text-success';
+                    $btn_color = 'bg-success hover:bg-success/90';
+                    $status_badge_bg = 'bg-success/20';
+                    break;
+                case 'Declined':
+                    $status_color = 'border-error';
+                    $status_bg = 'bg-error/10';
+                    $status_icon = 'fas fa-times-circle';
+                    $status_text_color = 'text-error';
+                    $btn_color = 'bg-error hover:bg-error/90';
+                    $status_badge_bg = 'bg-error/20';
+                    break;
+            }
+        ?>
+                
+                <div class="bg-white border-l-3 <?php echo $status_color; ?> rounded-md shadow-sm overflow-hidden notification-animate">
+                    <div class="flex flex-col md:flex-row">
+                    <div class="<?php echo $status_bg; ?> py-6 px-4 md:w-16 flex items-center justify-center">
+                                            <i class="<?php echo $status_icon; ?> <?php echo $status_text_color; ?> text-xl"></i>
+                                        </div>
+                        <!-- Notification Content -->
+                        <div class="flex-1 px-4 py-3">
+                            <div class="flex flex-col md:flex-row justify-between">
+                                <div>
+                                    <span class="<?php echo $status_text_color; ?> font-medium text-xs">
+                                        <?php echo htmlspecialchars($booking['status']); ?>
+                                    </span>
+                                    <h3 class="text-navy text-base font-medium">
+                                        <?php echo htmlspecialchars($booking['service_name']); ?>
+                                    </h3>
+                                    <p class="text-gray-600 text-xs mt-0.5">
+                                        <i class="fas fa-map-marker-alt mr-1"></i> 
+                                        <?php echo htmlspecialchars($booking['branch_name']); ?>
+                                    </p>
+                                </div>
+                                <div class="mt-1 md:mt-0">
+                                    <p class="text-xs text-gray-500">
+                                        <i class="far fa-calendar mr-1"></i>
+                                        <?php echo date('M d, Y', strtotime($booking['booking_date'])); ?>
+                                    </p>
+                                    <p class="text-xs text-gray-500">
+                                        <i class="far fa-clock mr-1"></i>
+                                        <?php echo date('h:i A', strtotime($booking['booking_date'])); ?>
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            <!-- Booking Details -->
+                            <div class="mt-2">
+                                <p class="text-gray-700 text-xs">
+                                    <?php 
+                                        // Create a description based on status
+                                        switch($booking['status']) {
+                                            case 'Pending':
+                                                echo "Your booking request is being reviewed by our staff. We will update you soon.";
+                                                break;
+                                            case 'Accepted':
+                                                echo "Your booking has been confirmed. Please arrive 15 minutes before your scheduled time.";
+                                                break;
+                                            case 'Declined':
+                                                echo "We apologize, but we were unable to accommodate your booking request.";
+                                                if (!empty($booking['admin_message'])) {
+                                                    echo " Reason: " . htmlspecialchars($booking['admin_message']);
+                                                }
+                                                break;
+                                        }
+                                    ?>
+                                </p>
+                            </div>
+                            
+                            <!-- Action Buttons -->
+                            <div class="mt-3 flex flex-wrap gap-2">
+                                <button onclick="viewBookingDetails(<?php echo $booking['booking_id']; ?>, '<?php echo $booking['status']; ?>')" 
+                                    class="<?php echo $btn_color; ?> text-white px-3 py-1.5 rounded-md text-xs hover:shadow-sm transition">
+                                    <i class="fas fa-eye mr-1"></i> View Details
+                                </button>
+                            </div>
+                            
+                            <!-- Timestamp -->
+                            <div class="mt-2 text-xs text-gray-500">
+                                <i class="fas fa-history mr-1"></i> 
+                                <?php echo time_elapsed_string($booking['booking_date']); ?>
+                            </div>
+                        </div>
                     </div>
-                    <h3 class="text-xl font-hedvig text-navy mb-2">No notifications found</h3>
-                    <p class="text-gray-500">
-                        <?php 
-                        if ($current_filter !== 'all') {
-                            echo "You don't have any " . strtolower($current_filter) . " notifications.";
-                        } else {
-                            echo "You don't have any notifications yet.";
-                        }
-                        ?>
-                    </p>
                 </div>
-                <?php else: ?>
-                
-                <!-- Notifications Container -->
-                <div class="space-y-4" id="notificationsContainer">
-                    <?php foreach ($current_page_bookings as $booking): ?>
-                        <?php
-                        // Define notification style based on status
-                        $status_color = '';
-                        $status_bg = '';
-                        $status_icon = '';
-                        
-                        switch ($booking['status']) {
-                            case 'Pending':
-                                $status_color = 'border-yellow-600';
-                                $status_bg = 'bg-yellow-600/10';
-                                $status_icon = 'fas fa-clock';
-                                $status_text_color = 'text-yellow-600';
-                                $btn_color = 'bg-yellow-600 hover:bg-yellow-700';
-                                break;
-                            case 'Accepted':
-                                $status_color = 'border-success';
-                                $status_bg = 'bg-success/10';
-                                $status_icon = 'fas fa-check-circle';
-                                $status_text_color = 'text-success';
-                                $btn_color = 'bg-success hover:bg-success/90';
-                                break;
-                                case 'Declined':
-                                    $status_color = 'border-error';
-                                    $status_bg = 'bg-error/10';
-                                    $status_icon = 'fas fa-times-circle';
-                                    $status_text_color = 'text-error';
-                                    $btn_color = 'bg-error hover:bg-error/90';
-                                    break;
+           <?php elseif ($item['type'] === 'id_validation'): ?>
+        <!-- ID VALIDATION NOTIFICATION -->
+        <?php 
+            $id_validation = $item['data']; // Get the ID validation data
+            
+            // Determine status styling
+            $id_status = 'Not Submitted'; // Default
+            $id_status_class = 'bg-gray-200 text-gray-800'; // Default
+            $id_icon = 'fas fa-question-circle';
+            $border_color = 'border-gray-400';
+
+            if ($id_validation) {
+                switch ($id_validation['is_validated']) {
+                    case 'no':
+                        $id_status = 'Pending';
+                        $id_status_class = 'bg-yellow-600/20 text-yellow-600';
+                        $id_icon = 'fas fa-clock';
+                        $border_color = 'border-yellow-600';
+                        break;
+                    case 'valid':
+                        $id_status = 'Accepted';
+                        $id_status_class = 'bg-success/20 text-success';
+                        $id_icon = 'fas fa-check-circle';
+                        $border_color = 'border-success';
+                        break;
+                    case 'denied':
+                        $id_status = 'Declined';
+                        $id_status_class = 'bg-error/20 text-error';
+                        $id_icon = 'fas fa-times-circle';
+                        $border_color = 'border-error';
+                        break;
+                }
+            }
+        ?>
+        
+        <!-- ID Validation Notification HTML -->
+        <div class="bg-white border-l-4 <?php echo $border_color; ?> rounded-xl shadow-md overflow-hidden notification-animate hover:shadow-lg transition-all duration-300">
+            <div class="flex flex-col md:flex-row">
+                <div class="flex-1 py-5 px-7">
+                    <div class="flex flex-col md:flex-row justify-between">
+                        <div>
+                            <span class="<?php echo $id_status_class; ?> text-xs px-2 py-1 rounded-full inline-flex items-center">
+                                <i class="<?php echo $id_icon; ?> mr-1 text-xs"></i>
+                                ID Upload Status: <?php echo $id_status; ?>
+                            </span>
+                            <h3 class="text-navy text-lg font-hedvig mt-1">
+                                ID Verification
+                            </h3>
+                            <p class="text-gray-600 text-sm mt-1 flex items-center">
+                                <i class="fas fa-id-card mr-1 text-gold"></i> 
+                                <?php 
+                                if ($id_validation['is_validated'] === 'denied' && !empty($id_validation['decline_reason'])) {
+                                    echo "Reason: " . htmlspecialchars($id_validation['decline_reason']);
+                                } else {
+                                    echo "Uploaded on " . date('M d, Y', strtotime($id_validation['upload_at']));
                                 }
                                 ?>
-                            
-                                
-                                <div class="bg-white border-l-4 <?php echo $status_color; ?> rounded-lg shadow-md overflow-hidden notification-animate">
-                                    <div class="flex flex-col md:flex-row">
-                                        <!-- Notification Icon -->
-                                        <div class="<?php echo $status_bg; ?> py-6 px-4 md:w-16 flex items-center justify-center">
-                                            <i class="<?php echo $status_icon; ?> <?php echo $status_text_color; ?> text-xl"></i>
-                                
-                                        </div>
-                                        
-                                        <!-- Notification Content -->
-                                        <div class="flex-1 p-4">
-                                            <div class="flex flex-col md:flex-row justify-between">
-                                                <div>
-                                                    <span class="<?php echo $status_text_color; ?> font-medium text-sm">
-                                                        <?php echo htmlspecialchars($booking['status']); ?>
-                                                    </span>
-                                                    <h3 class="text-navy text-lg font-medium">
-                                                        <?php echo htmlspecialchars($booking['service_name']); ?>
-                                                    </h3>
-                                                    <p class="text-gray-600 text-sm mt-1">
-                                                        <i class="fas fa-map-marker-alt mr-1"></i> 
-                                                        <?php echo htmlspecialchars($booking['branch_name']); ?>
-                                                    </p>
-                                                </div>
-                                                <div class="mt-2 md:mt-0">
-                                                    <p class="text-sm text-gray-500">
-                                                        <i class="far fa-calendar mr-1"></i>
-                                                        <?php echo date('M d, Y', strtotime($booking['booking_date'])); ?>
-                                                    </p>
-                                                    <p class="text-sm text-gray-500">
-                                                        <i class="far fa-clock mr-1"></i>
-                                                        <?php echo date('h:i A', strtotime($booking['booking_date'])); ?>
-                                                    </p>
-                                                </div>
-                                            </div>
-                                            
-                                            <!-- Booking Details -->
-                                            <div class="mt-3">
-                                                <p class="text-gray-700">
-                                                    <?php 
-                                                        // Create a description based on status
-                                                        switch($booking['status']) {
-                                                            case 'Pending':
-                                                                echo "Your booking request is being reviewed by our staff. We will update you soon.";
-                                                                break;
-                                                            case 'Accepted':
-                                                                echo "Your booking has been confirmed. Please arrive 15 minutes before your scheduled time.";
-                                                                break;
-                                                            case 'Declined':
-                                                                echo "We apologize, but we were unable to accommodate your booking request.";
-                                                                if (!empty($booking['admin_message'])) {
-                                                                    echo " Reason: " . htmlspecialchars($booking['admin_message']);
-                                                                }
-                                                                break;
-                                       
-                                                        }
-                                                    ?>
-                                                </p>
-                                            </div>
-                                            
-                                            <!-- Action Buttons -->
-                                            <div class="mt-4 flex flex-wrap gap-2">
-                                                <button onclick="viewBookingDetails(<?php echo $booking['booking_id']; ?>, '<?php echo $booking['status']; ?>')" 
-                                                    class="<?php echo $btn_color; ?> text-white px-4 py-2 rounded-lg text-sm hover:shadow-md transition">
-                                                    <i class="fas fa-eye mr-1"></i> View Details
-                                                </button>
-                                            </div>
-                                            
-                                            <!-- Timestamp -->
-                                            <div class="mt-3 text-xs text-gray-500">
-                                                <i class="fas fa-history mr-1"></i> 
-                                                <?php echo time_elapsed_string($booking['booking_date']); ?>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <?php endforeach; ?>
-                                </div>
-                           
-                                
-                                <!-- Pagination -->
-                                <?php if ($total_filtered_pages > 1): ?>
-                                <div class="mt-8 flex justify-center">
-                                    <nav class="flex items-center space-x-1">
-                                        <!-- Previous Button -->
-                                        <a href="?filter=<?php echo $current_filter; ?>&page=<?php echo max(1, $page - 1); ?>" 
-                                           class="<?php echo $page <= 1 ? 'opacity-50 cursor-not-allowed' : ''; ?> px-3 py-2 bg-white rounded-md border border-gray-300 text-navy hover:bg-gray-50 transition">
-                                            <i class="fas fa-chevron-left text-sm"></i>
-                                        </a>
-                                        
-                                        <!-- Page Numbers -->
-                                        <?php 
-                                        $start_page = max(1, $page - 2);
-                                        $end_page = min($total_filtered_pages, $page + 2);
-                                        
-                                        if ($start_page > 1) {
-                                            echo '<a href="?filter=' . $current_filter . '&page=1" class="px-3 py-2 bg-white rounded-md border border-gray-300 text-navy hover:bg-gray-50 transition">1</a>';
-                                            if ($start_page > 2) {
-                                                echo '<span class="px-3 py-2 text-gray-500">...</span>';
-                                            }
-                                        }
-                                        
-                                        for ($i = $start_page; $i <= $end_page; $i++) {
-                                            $active_class = ($i == $page) ? 'bg-yellow-600 text-white border-yellow-600' : 'bg-white text-navy border-gray-300 hover:bg-gray-50';
-                                            echo '<a href="?filter=' . $current_filter . '&page=' . $i . '" class="px-3 py-2 rounded-md border ' . $active_class . ' transition">' . $i . '</a>';
-                                        }
-                                        
-                                        if ($end_page < $total_filtered_pages) {
-                                            if ($end_page < $total_filtered_pages - 1) {
-                                                echo '<span class="px-3 py-2 text-gray-500">...</span>';
-                                            }
-                                            echo '<a href="?filter=' . $current_filter . '&page=' . $total_filtered_pages . '" class="px-3 py-2 bg-white rounded-md border border-gray-300 text-navy hover:bg-gray-50 transition">' . $total_filtered_pages . '</a>';
-                                        }
-                                        ?>
-                                        
-                                        <!-- Next Button -->
-                                        <a href="?filter=<?php echo $current_filter; ?>&page=<?php echo min($total_filtered_pages, $page + 1); ?>" 
-                                           class="<?php echo $page >= $total_filtered_pages ? 'opacity-50 cursor-not-allowed' : ''; ?> px-3 py-2 bg-white rounded-md border border-gray-300 text-navy hover:bg-gray-50 transition">
-                                            <i class="fas fa-chevron-right text-sm"></i>
-                                        </a>
-                                    </nav>
-                                </div>
-                                <?php endif; ?>
-                                
-                                
-                                <?php endif; ?>
-                                </div>
-                                </div>
-                                </div>
+                            </p>
+                        </div>
+                        <div class="mt-2 md:mt-0 bg-cream rounded-lg p-2 text-xs">
+                            <p class="text-gray-700 flex items-center">
+                                <i class="far fa-clock mr-1 text-gold"></i>
+                                <?php echo time_elapsed_string($id_validation['upload_at']); ?>
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-3 flex flex-wrap gap-2 items-center justify-between">
+                        <?php if (!empty($id_validation['image_path'])): ?>
+                            <button onclick="viewIdImage('<?php echo htmlspecialchars($id_validation['image_path']); ?>')" 
+                                class="bg-navy text-white px-3 py-1.5 rounded-lg text-xs font-medium transition flex items-center">
+                                <i class="fas fa-image mr-1"></i> View ID
+                            </button>
+                        <?php else: ?>
+                            <span class="text-gray-500 text-xs">No ID image available</span>
+                        <?php endif; ?>
+                        
+                        <!-- Timestamp -->
+                        <div class="text-xs text-gray-500 flex items-center">
+                            <i class="fas fa-history mr-1"></i> 
+                            <?php echo time_elapsed_string($id_validation['upload_at']); ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- ID Image Modal -->
+        <div id="idImageModal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-black bg-opacity-75">
+            <div class="flex items-center justify-center min-h-screen">
+                <div class="bg-white rounded-lg max-w-2xl w-full mx-4 relative">
+                    <button onclick="closeIdImageModal()" class="absolute top-2 right-2 text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                    <div class="p-4">
+                        <h3 class="text-lg font-semibold mb-2">Uploaded ID</h3>
+                        <div class="flex justify-center">
+                            <img id="modalIdImage" src="" alt="Uploaded ID" class="max-w-full max-h-[70vh] rounded border border-gray-200">
+                        </div>
+                        <div class="mt-4 text-center">
+                            <button onclick="closeIdImageModal()" class="bg-navy text-white px-4 py-2 rounded-md text-sm">
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <script>
+        function viewIdImage(imagePath) {
+            document.getElementById('modalIdImage').src = imagePath;
+            document.getElementById('idImageModal').classList.remove('hidden');
+        }
+        
+        function closeIdImageModal() {
+            document.getElementById('idImageModal').classList.add('hidden');
+        }
+        </script>
+    <?php endif; ?>
+<?php endforeach; ?>
+            
+            
+        </div>
+        
+        <!-- Pagination -->
+        <?php if ($total_filtered_pages > 1): ?>
+        <div class="mt-6 flex justify-center">
+            <nav class="flex items-center space-x-1">
+                <!-- Previous Button -->
+                <a href="?filter=<?php echo $current_filter; ?>&page=<?php echo max(1, $page - 1); ?>" 
+                   class="<?php echo $page <= 1 ? 'opacity-50 cursor-not-allowed' : ''; ?> px-2 py-1 bg-white rounded-md border border-gray-300 text-navy hover:bg-gray-50 transition">
+                    <i class="fas fa-chevron-left text-xs"></i>
+                </a>
+                
+                <!-- Page Numbers -->
+                <?php 
+                $start_page = max(1, $page - 2);
+                $end_page = min($total_filtered_pages, $page + 2);
+                
+                if ($start_page > 1) {
+                    echo '<a href="?filter=' . $current_filter . '&page=1" class="px-2 py-1 bg-white rounded-md border border-gray-300 text-navy hover:bg-gray-50 transition text-xs">1</a>';
+                    if ($start_page > 2) {
+                        echo '<span class="px-2 py-1 text-gray-500 text-xs">...</span>';
+                    }
+                }
+                
+                for ($i = $start_page; $i <= $end_page; $i++) {
+                    $active_class = ($i == $page) ? 'bg-yellow-600 text-white border-yellow-600' : 'bg-white text-navy border-gray-300 hover:bg-gray-50';
+                    echo '<a href="?filter=' . $current_filter . '&page=' . $i . '" class="px-2 py-1 rounded-md border ' . $active_class . ' transition text-xs">' . $i . '</a>';
+                }
+                
+                if ($end_page < $total_filtered_pages) {
+                    if ($end_page < $total_filtered_pages - 1) {
+                        echo '<span class="px-2 py-1 text-gray-500 text-xs">...</span>';
+                    }
+                    echo '<a href="?filter=' . $current_filter . '&page=' . $total_filtered_pages . '" class="px-2 py-1 bg-white rounded-md border border-gray-300 text-navy hover:bg-gray-50 transition text-xs">' . $total_filtered_pages . '</a>';
+                }
+                ?>
+                
+                <!-- Next Button -->
+                <a href="?filter=<?php echo $current_filter; ?>&page=<?php echo min($total_filtered_pages, $page + 1); ?>" 
+                   class="<?php echo $page >= $total_filtered_pages ? 'opacity-50 cursor-not-allowed' : ''; ?> px-2 py-1 bg-white rounded-md border border-gray-300 text-navy hover:bg-gray-50 transition">
+                    <i class="fas fa-chevron-right text-xs"></i>
+                </a>
+            </nav>
+        </div>
+        <?php endif; ?>
+        
+        <?php endif; ?>
+    </div>
+</div>
 
-                                
-
-                                <!-- Search No Results State -->
-                                <div id="noSearchResults" class="hidden bg-white rounded-lg shadow-lg p-8 text-center">
-                                    <div class="rounded-full bg-gray-100 p-4 inline-flex items-center justify-center mb-4">
-                                        <i class="fas fa-search text-gray-400 text-3xl"></i>
-                                    </div>
-                                    <h3 class="text-xl font-hedvig text-navy mb-2">No notifications found</h3>
-                                    <p class="text-gray-500">Try adjusting your search criteria or check back later.</p>
-                                </div>
+<!-- Search No Results State -->
+<div id="noSearchResults" class="hidden bg-white rounded-md shadow-md p-6 text-center">
+    <div class="rounded-full bg-gray-100 p-3 inline-flex items-center justify-center mb-3">
+        <i class="fas fa-search text-gray-400 text-xl"></i>
+    </div>
+    <h3 class="text-lg font-hedvig text-navy mb-1">No notifications found</h3>
+    <p class="text-gray-500 text-sm">Try adjusting your search criteria or check back later.</p>
+</div>
 
                                 <!-- Booking Details Modal -->
                                 <div id="bookingDetailsModal" class="fixed inset-0 z-50 hidden overflow-y-auto">
@@ -725,8 +904,7 @@ $current_page_bookings = array_slice($filtered_bookings, ($page - 1) * $items_pe
                                         </div>
                                     </div>
                                 </div>
-    
-    
+
     <?php include 'customService/chat_elements.html'; ?>
     
     <script>
@@ -783,7 +961,6 @@ $current_page_bookings = array_slice($filtered_bookings, ($page - 1) * $items_pe
                             <p><span class="font-medium">Date of Death:</span> ${formatDate(data.deceased_dodeath)}</p>
                             <p><span class="font-medium">Date of Burial:</span> ${formatDate(data.deceased_dateOfBurial)}</p>
                             <p><span class="font-medium">With Cremation:</span> ${data.with_cremate === 'yes' ? 'Yes' : 'No'}</p>
-        
                         </div>
                     </div>
                     
@@ -825,7 +1002,6 @@ $current_page_bookings = array_slice($filtered_bookings, ($page - 1) * $items_pe
                                     <p class="font-medium mb-2">Death Certificate:</p>
                                     <div class="w-full h-40 bg-gray-100 rounded border border-gray-200 flex items-center justify-center">
                                         <p class="text-gray-400">N/A</p>
-                    
                                     </div>
                                     <p class="text-sm text-gray-500 mt-1 text-center">0×0 px</p>
                                 </div>
@@ -845,27 +1021,11 @@ $current_page_bookings = array_slice($filtered_bookings, ($page - 1) * $items_pe
                                     <p class="font-medium mb-2">Payment Receipt:</p>
                                     <div class="w-full h-40 bg-gray-100 rounded border border-gray-200 flex items-center justify-center">
                                         <p class="text-gray-400">N/A</p>
-                            
                                     </div>
                                     <p class="text-sm text-gray-500 mt-1 text-center">0×0 px</p>
                                 </div>
                             `}
                         </div>
-
-                        <div class="col-span-2">
-                            <div class="flex items-center mb-3">
-                                <i class="fas fa-comment-alt text-navy bg-navy/10 p-2 rounded-full mr-3"></i>
-                                <h4 class="font-semibold text-navy text-lg">Additional Information</h4>
-                            </div>
-                            <div class="bg-cream p-4 rounded-lg">
-                                <p class="mb-2"><span class="font-medium text-navy">Special Instructions:</span></p>
-                                <p class="bg-white px-3 py-2 rounded-md min-h-[60px]">${data.special_instructions || 'No special instructions provided.'}</p>
-                                
-                                ${data.admin_message ? `
-                                <div class="mt-4">
-                                    <p class="mb-2"><span class="font-medium text-navy">Message from Staff:</span></p>
-                                    <p class="bg-white px-3 py-2 rounded-md">${data.admin_message}</p>
-                                
                     </div>
                 ` : ''}
                 `;
@@ -939,7 +1099,6 @@ function getStatusClass(status) {
             noSearchResults.style.display = 'block';
         } else {
             noSearchResults.style.display = 'none';
-       
         }
     });
 </script>
