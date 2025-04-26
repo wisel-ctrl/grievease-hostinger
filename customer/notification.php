@@ -493,14 +493,7 @@ $current_page_bookings = array_slice($filtered_bookings, ($page - 1) * $items_pe
                     </a>
                 </div>
                 
-                <!-- Quick Help Section -->
-                <div class="mt-4 bg-secondary rounded-lg p-3">
-                    <h3 class="text-navy font-medium mb-1 text-sm">Need Help?</h3>
-                    <p class="text-xs text-gray-600 mb-2">Questions about your notifications? Our support team is here.</p>
-                    <button class="w-full bg-navy text-white py-1.5 rounded-md text-xs font-medium hover:bg-navy/90 transition flex items-center justify-center">
-                        <i class="fas fa-headset mr-1"></i> Contact Support
-                    </button>
-                </div>
+                
             </div>
         </div>
         
