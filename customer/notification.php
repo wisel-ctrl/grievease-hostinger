@@ -493,21 +493,7 @@ $current_page_items = array_slice($filtered_items, ($page - 1) * $items_per_page
                 <h1 class="text-4xl md:text-5xl font-hedvig text-navy mb-3">Notifications</h1>
                 <p class="text-dark text-lg max-w-2xl mx-auto">Stay updated with important information about your services and arrangements.</p>
                 <div class="w-16 h-1 bg-yellow-600 mx-auto mt-4"></div>
-                <!-- Notification Summary -->
-                <div class="mt-6 flex justify-center space-x-6">
-                    <div class="flex flex-col items-center">
-                        <div class="text-error font-bold text-2xl"><?php echo $notifications_count['pending']; ?></div>
-                        <div class="text-sm text-gray-600">Pending</div>
-                    </div>
-                    <div class="flex flex-col items-center">
-                        <div class="text-success font-bold text-2xl"><?php echo $notifications_count['accepted']; ?></div>
-                        <div class="text-sm text-gray-600">Accepted</div>
-                    </div>
-                    <div class="flex flex-col items-center">
-                        <div class="text-navy font-bold text-2xl"><?php echo $notifications_count['total']; ?></div>
-                        <div class="text-sm text-gray-600">Total</div>
-                    </div>
-                </div>
+                
             </div>
         </div>
 
