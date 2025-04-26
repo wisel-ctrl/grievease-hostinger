@@ -809,36 +809,83 @@ header("Pragma: no-cache");
 }
 
 function openImageModal(imageSrc) {
+    console.log('openImageModal called with src:', imageSrc); // Debug log
+    
+    // Check if the modal element exists
+    const modal = document.getElementById('imageModal');
+    console.log('Modal element:', modal); // Debug log
+    
+    if (!modal) {
+        console.error('Image modal not found in DOM');
+        return;
+    }
+    
     // Set the image source
-    document.getElementById('enlargedImage').src = imageSrc;
+    const enlargedImage = document.getElementById('enlargedImage');
+    console.log('Enlarged image element:', enlargedImage); // Debug log
+    
+    if (!enlargedImage) {
+        console.error('Enlarged image element not found');
+        return;
+    }
+    
+    enlargedImage.src = imageSrc;
+    console.log('Image source set to:', imageSrc); // Debug log
     
     // Show the modal with animation
-    const modal = document.getElementById('imageModal');
     modal.classList.remove('hidden');
     modal.classList.add('flex');
     modal.style.opacity = '0';
     
+    console.log('Modal classes after showing:', modal.classList); // Debug log
+    
     // Animate fade in
     setTimeout(() => {
         modal.style.opacity = '1';
+        console.log('Modal opacity after animation:', modal.style.opacity); // Debug log
     }, 10);
     
     document.body.style.overflow = 'hidden';
+    console.log('Body overflow set to hidden'); // Debug log
 }
 
 function closeImageModal() {
+    console.log('closeImageModal called'); // Debug log
+    
     const modal = document.getElementById('imageModal');
+    console.log('Modal element:', modal); // Debug log
+    
+    if (!modal) {
+        console.error('Image modal not found in DOM');
+        return;
+    }
     
     // Animate fade out
     modal.style.opacity = '0';
+    console.log('Modal opacity set to 0'); // Debug log
     
     // Wait for animation to complete before hiding
     setTimeout(() => {
         modal.classList.add('hidden');
         modal.classList.remove('flex');
         document.body.style.overflow = 'auto';
+        console.log('Modal hidden and body overflow reset'); // Debug log
     }, 300);
 }
+
+// Find all elements that should open the image modal
+const imageTriggers = document.querySelectorAll('[onclick*="openImageModal"]');
+console.log('Found image triggers:', imageTriggers.length); // Debug log
+
+// Add click event listeners if not already present
+imageTriggers.forEach(trigger => {
+    trigger.addEventListener('click', function(e) {
+        console.log('Image trigger clicked'); // Debug log
+        const imageSrc = this.getAttribute('data-image-src') || this.src;
+        console.log('Attempting to open modal with src:', imageSrc); // Debug log
+        openImageModal(imageSrc);
+    });
+});
 
 // Initialize tooltips if any
 function initTooltips() {
