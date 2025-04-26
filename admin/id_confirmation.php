@@ -63,16 +63,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && isset($_
         $_SESSION['message_type'] = "success";
     } 
     elseif ($action === 'deny') {
-        // Update ID status to denied
-        $stmt = $conn->prepare("UPDATE valid_id_tb SET is_validated = 'denied' WHERE id = ?");
-        $stmt->bind_param("i", $id);
-        $stmt->execute();
+        $decline_reason = filter_input(INPUT_POST, 'decline_reason', FILTER_SANITIZE_STRING);
         
-        // Set info message
-        $_SESSION['message'] = "ID request denied.";
-        $_SESSION['message_type'] = "info";
-    }
-    
+        if (empty($decline_reason)) {
+            $_SESSION['message'] = "Please select a reason for declining the ID.";
+            $_SESSION['message_type'] = "error";
+        } else {
+            // Update ID status to denied with reason
+            $stmt = $conn->prepare("UPDATE valid_id_tb SET is_validated = 'denied', decline_reason = ? WHERE id = ?");
+            $stmt->bind_param("si", $decline_reason, $id);
+            $stmt->execute();
+            
+            // Set info message
+            $_SESSION['message'] = "ID request denied. Reason: " . htmlspecialchars($decline_reason);
+            $_SESSION['message_type'] = "info";
+        }
+    }    
     // Redirect to refresh the page
     header("Location: id_confirmation.php");
     exit();
@@ -412,7 +418,7 @@ $denied = $result->fetch_assoc()['count'];
                                 <input type="hidden" name="id" value="<?php echo htmlspecialchars($id_request['validation_id']); ?>">
                                 <input type="hidden" name="action" value="deny">
                                 <button type="button" class="w-full py-3 text-red-600 hover:bg-red-50 focus:outline-none focus:bg-red-50 transition duration-150"
-                                        onclick="confirmAction('denyForm<?php echo $id_request['validation_id']; ?>', 'deny')">
+                                        onclick="confirmDeny('denyForm<?php echo $id_request['validation_id']; ?>')">
                                     <i class="fas fa-times-circle mr-2"></i>
                                     Decline
                                 </button>
@@ -491,6 +497,55 @@ $denied = $result->fetch_assoc()['count'];
         }).then((result) => {
             if (result.isConfirmed) {
                 document.getElementById(formId).submit();
+            }
+        });
+    }
+    
+    function confirmDeny(formId) {
+        const declineReasons = [
+            'Incomplete Document Visibility',
+            'Cropped or Cut-off Text',
+            'Blurry or Low-Quality Image',
+            'Glare or Shadows',
+            'Missing Critical Details'
+        ];
+        
+        // Create HTML for the select dropdown
+        let selectHtml = '<select id="swalDeclineReason" class="w-full mt-3 p-2 border border-gray-300 rounded focus:ring-yellow-500 focus:border-yellow-500">';
+        selectHtml += '<option value="">Select a reason for decline</option>';
+        declineReasons.forEach(reason => {
+            selectHtml += `<option value="${reason}">${reason}</option>`;
+        });
+        selectHtml += '</select>';
+        
+        Swal.fire({
+            title: 'Deny ID Verification',
+            html: `Are you sure you want to deny this ID verification?<br><br>${selectHtml}`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#EF4444',
+            cancelButtonColor: '#6B7280',
+            confirmButtonText: 'Confirm Denial',
+            cancelButtonText: 'Cancel',
+            focusConfirm: false,
+            preConfirm: () => {
+                const reason = document.getElementById('swalDeclineReason').value;
+                if (!reason) {
+                    Swal.showValidationMessage('Please select a reason for decline');
+                    return false;
+                }
+                return reason;
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const form = document.getElementById(formId);
+                // Create a hidden input for the decline reason
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'decline_reason';
+                input.value = result.value;
+                form.appendChild(input);
+                form.submit();
             }
         });
     }
