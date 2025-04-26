@@ -887,6 +887,7 @@ $current_page_items = array_slice($filtered_items, ($page - 1) * $items_per_page
                                         </div>
                                     </div>
                                 </div>
+            </div>
 
     <?php include 'customService/chat_elements.html'; ?>
     
