@@ -682,7 +682,7 @@ $current_page_items = array_slice($filtered_items, ($page - 1) * $items_per_page
                 
                 <div class="mt-3 flex flex-wrap gap-2 items-center justify-between">
                     <button onclick="viewBookingDetails(<?php echo $booking['booking_id']; ?>, '<?php echo $booking['status']; ?>')" 
-                        class="bg-navy text-white px-3 py-1.5 rounded-lg text-xs font-medium transition flex items-center">
+                        class="bg-yellow-600 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition flex items-center">
                         <i class="fas fa-eye mr-1"></i> View Details
                     </button>
                     
