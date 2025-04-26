@@ -441,7 +441,7 @@ $current_page_bookings = array_slice($filtered_bookings, ($page - 1) * $items_pe
     <!-- Page Header -->
     <div class="bg-gradient-to-b from-yellow-600/10 to-transparent rounded-lg py-4 px-3 mb-4 shadow-sm">
         <div class="max-w-2xl mx-auto text-center">
-            <h1 class="text-4xl font-hedvig text-navy mb-1">Notifications</h1>
+            <h1 class="text-5xl font-hedvig text-navy mb-1">Notifications</h1>
             <p class="text-dark text-sm">Stay updated with important information about your services.</p>
             <div class="w-12 h-1 bg-yellow-600 mx-auto mt-1 rounded-full"></div>
         </div>
