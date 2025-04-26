@@ -438,298 +438,175 @@ header("Pragma: no-cache");
             </div>
             
             <!-- Right Content Area -->
-<div class="lg:col-span-2">
-    <!-- Personal Information Tab -->
-    <div id="personal-info" class="tab-content">
+            <div class="lg:col-span-2">
+                <!-- Personal Information Tab -->
+                <div id="personal-info" class="tab-content">
         <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
-            <!-- Header with enhanced styling -->
-            <div class="p-6 border-b border-gray-100 flex justify-between items-center bg-gradient-to-r from-blue-50 to-white">
+            <div class="p-6 border-b border-gray-100 flex justify-between items-center">
                 <h3 class="font-hedvig text-xl text-navy">Personal Information</h3>
-                <button id="edit-profile-btn" class="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-md transition-colors">
-                    <i class="fas fa-pencil-alt mr-1"></i> Edit Profile
+                <button id="edit-profile-btn" class="text-yellow-600 hover:text-yellow-700">
+                    <i class="fas fa-pencil-alt mr-1"></i> Edit
                 </button>
             </div>
-            
-            <!-- Content area with improved spacing and grouping -->
             <div class="p-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Name section with visual grouping -->
-                    <div class="col-span-1 md:col-span-2 mb-2">
-                        <h4 class="text-navy text-lg font-medium mb-3 pb-2 border-b border-gray-100">Name Details</h4>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-500 mb-1">First Name</label>
-                                <p class="text-navy font-medium"><?php echo htmlspecialchars($first_name); ?></p>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-500 mb-1">Last Name</label>
-                                <p class="text-navy font-medium"><?php echo htmlspecialchars($last_name); ?></p>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-500 mb-1">Middle Name</label>
-                                <p class="text-navy <?= empty($middle_name) ? 'opacity-60 italic text-gray-500' : 'font-medium' ?>">
-                                    <?= !empty($middle_name) ? htmlspecialchars($middle_name) : 'N/A' ?>
-                                </p>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-500 mb-1">Suffix</label>
-                                <p class="text-navy <?= empty($suffix) ? 'opacity-60 italic text-gray-500' : 'font-medium' ?>">
-                                    <?= !empty($suffix) ? htmlspecialchars($suffix) : 'N/A' ?>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Contact section -->
-                    <div class="col-span-1 md:col-span-2 mb-2">
-                        <h4 class="text-navy text-lg font-medium mb-3 pb-2 border-b border-gray-100">Contact Information</h4>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-500 mb-1">Email Address</label>
-                                <p class="text-navy font-medium flex items-center">
-                                    <svg class="w-4 h-4 mr-2 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                                        <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
-                                        <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
-                                    </svg>
-                                    <?php echo htmlspecialchars($email); ?>
-                                </p>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-500 mb-1">Phone Number</label>
-                                <p class="text-navy <?= empty($phone_number) ? 'opacity-60 italic text-gray-500' : 'font-medium' ?> flex items-center">
-                                    <svg class="w-4 h-4 mr-2 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                                        <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"></path>
-                                    </svg>
-                                    <?= !empty($phone_number) ? htmlspecialchars($phone_number) : 'N/A' ?>
-                                </p>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-500 mb-1">Date of Birth</label>
-                                <p class="text-navy font-medium flex items-center">
-                                    <svg class="w-4 h-4 mr-2 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"></path>
-                                    </svg>
-                                    <?php echo date('F d, Y', strtotime($birthdate)); ?>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Address section -->
-                    <div class="col-span-1 md:col-span-2 mb-2">
-                        <h4 class="text-navy text-lg font-medium mb-3 pb-2 border-b border-gray-100">Address Information</h4>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-500 mb-1">Region</label>
-                                <p class="text-navy <?= empty($region) ? 'opacity-60 italic text-gray-500' : 'font-medium' ?>">
-                                    <?= !empty($region) ? htmlspecialchars($region) : 'N/A' ?>
-                                </p>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-500 mb-1">Province</label>
-                                <p class="text-navy <?= empty($province) ? 'opacity-60 italic text-gray-500' : 'font-medium' ?>">
-                                    <?= !empty($province) ? htmlspecialchars($province) : 'N/A' ?>
-                                </p>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-500 mb-1">City</label>
-                                <p class="text-navy <?= empty($city) ? 'opacity-60 italic text-gray-500' : 'font-medium' ?>">
-                                    <?= !empty($city) ? htmlspecialchars($city) : 'N/A' ?>
-                                </p>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-500 mb-1">Barangay</label>
-                                <p class="text-navy <?= empty($barangay) ? 'opacity-60 italic text-gray-500' : 'font-medium' ?>">
-                                    <?= !empty($barangay) ? htmlspecialchars($barangay) : 'N/A' ?>
-                                </p>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-500 mb-1">Street Address</label>
-                                <p class="text-navy <?= empty($street_address) ? 'opacity-60 italic text-gray-500' : 'font-medium' ?>">
-                                    <?= !empty($street_address) ? htmlspecialchars($street_address) : 'N/A' ?>
-                                </p>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-500 mb-1">Zip/Postal Code</label>
-                                <p class="text-navy <?= empty($zip_code) ? 'opacity-60 italic text-gray-500' : 'font-medium' ?>">
-                                    <?= !empty($zip_code) ? htmlspecialchars($zip_code) : 'N/A' ?>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Uploaded Documents Section - with enhanced UI and right column layout -->
-                <div class="mt-8 pt-6 border-t border-gray-200">
-                    <div class="flex justify-between items-start mb-4">
-                        <h3 class="font-hedvig text-lg text-navy flex items-center">
-                            <svg class="w-5 h-5 mr-2 text-navy" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd"></path>
-                            </svg>
-                            Uploaded ID
-                        </h3>
-                    </div>
-                    
-                    <!-- Two-column layout for ID section -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <!-- Left column: Status information -->
-                        <div>
-                            <?php if ($uploadedImagePath): ?>
-                                <?php
-                                    // Fetch the validation status and decline reason from valid_id_tb
-                                    $status_query = "SELECT is_validated, decline_reason FROM valid_id_tb WHERE id = ?";
-                                    $status_stmt = $conn->prepare($status_query);
-                                    $status_stmt->bind_param("i", $user_id);
-                                    $status_stmt->execute();
-                                    $status_result = $status_stmt->get_result();
-                                    $status_row = $status_result->fetch_assoc();
-                                    $id_status = $status_row ? $status_row['is_validated'] : 'no';
-                                    $decline_reason = $status_row ? $status_row['decline_reason'] : '';
-                                    $status_stmt->close();
-                                    $conn->close();
-                                    
-                                    // Define status label style based on status value
-                                    switch ($id_status) {
-                                        case 'no':
-                                            $statusText = 'PENDING';
-                                            $statusClass = 'bg-yellow-100 text-yellow-800';
-                                            $iconSvg = '<svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path></svg>';
-                                            $statusDescription = "Your ID is currently being reviewed by our team. This usually takes 1-2 business days.";
-                                            break;
-                                        case 'valid':
-                                            $statusText = 'APPROVED';
-                                            $statusClass = 'bg-green-100 text-green-800';
-                                            $iconSvg = '<svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>';
-                                            $statusDescription = "Your ID has been verified successfully. Your account now has full access to all features.";
-                                            break;
-                                        case 'denied':
-                                            $statusText = 'DECLINED';
-                                            $statusClass = 'bg-red-100 text-red-800';
-                                            $iconSvg = '<svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path></svg>';
-                                            $statusDescription = "Your ID verification was declined. Please check the reason below and upload a new ID.";
-                                            break;
-                                        default:
-                                            $statusText = 'PENDING';
-                                            $statusClass = 'bg-yellow-100 text-yellow-800';
-                                            $iconSvg = '<svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path></svg>';
-                                            $statusDescription = "Your ID is currently being reviewed by our team. This usually takes 1-2 business days.";
-                                            break;
-                                    }
-                                ?>
-                                
-                                <div class="bg-gray-50 rounded-lg p-4">
-                                    <h4 class="text-navy text-md font-medium mb-2">ID Verification Status</h4>
-                                    <div class="flex items-center mb-3">
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium <?php echo $statusClass; ?>">
-                                            <?php echo $iconSvg; ?>
-                                            <?php echo $statusText; ?>
-                                        </span>
-                                    </div>
-                                    
-                                    <p class="text-sm text-gray-600 mb-4"><?php echo $statusDescription; ?></p>
-                                    
-                                    <?php if ($id_status === 'denied' && $decline_reason): ?>
-                                        <div class="bg-red-50 border-l-4 border-red-400 p-3 rounded">
-                                            <div class="flex items-start">
-                                                <svg class="w-5 h-5 text-red-500 mt-0.5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
-                                                </svg>
-                                                <div>
-                                                    <p class="text-sm font-medium text-red-800">Reason: <?php echo htmlspecialchars($decline_reason); ?></p>
-                                                    <button 
-                                                        class="text-xs text-red-600 hover:text-red-800 mt-1 underline"
-                                                        onclick="openDeclineReasonModal('<?php echo htmlspecialchars($decline_reason); ?>')"
-                                                    >
-                                                        More details
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    <?php endif; ?>
-                                </div>
-                            <?php else: ?>
-                                <div class="bg-gray-50 rounded-lg p-4">
-                                    <h4 class="text-navy text-md font-medium mb-2">ID Verification</h4>
-                                    <p class="text-sm text-gray-600 mb-3">
-                                        Upload a government-issued ID to verify your identity.
-                                    </p>
-                                    <div class="border-l-4 border-blue-400 bg-blue-50 p-3 rounded">
-                                        <div class="flex">
-                                            <svg class="w-5 h-5 text-blue-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2h-1V9z" clip-rule="evenodd"></path>
-                                            </svg>
-                                            <p class="text-sm text-blue-700">
-                                                Account verification gives you access to all platform features.
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                            <?php endif; ?>
-                        </div>
-                        
-                        <!-- Right column: ID image -->
-                        <div class="flex items-center justify-center">
-                        <?php if ($uploadedImagePath): ?>
-    <div class="relative border border-gray-200 rounded-lg p-2 inline-block">
-        <!-- Image with overlay effect on hover -->
-        <div class="relative group">
-            <img 
-                src="<?php echo '../uploads/valid_ids/' . htmlspecialchars($uploadedImagePath); ?>" 
-                alt="Uploaded ID"
-                class="rounded-lg shadow w-60 h-auto cursor-pointer transition-all group-hover:opacity-90"
-                onclick="openImageModal('<?php echo '../uploads/valid_ids/' . htmlspecialchars($uploadedImagePath); ?>')"
-            >
-            <!-- Hover overlay with zoom icon -->
-            <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 flex items-center justify-center transition-all rounded-lg opacity-0 group-hover:opacity-100">
-                <span class="bg-white bg-opacity-75 rounded-full p-2">
-                    <svg class="w-6 h-6 text-navy" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path>
-                    </svg>
-                </span>
-            </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+            <label class="block text-sm font-medium text-gray-500 mb-1">First Name</label>
+            <p class="text-navy"> <?php echo htmlspecialchars($first_name); ?></p>
         </div>
-        <!-- Caption -->
-        <p class="text-xs text-center text-gray-500 mt-2">Click to enlarge</p>
+        <div>
+            <label class="block text-sm font-medium text-gray-500 mb-1">Last Name</label>
+            <p class="text-navy"><?php echo htmlspecialchars($last_name); ?></p>
+        </div>
+        <div>
+            <label class="block text-sm font-medium text-gray-500 mb-1">Middle Name</label>
+            <p class="text-navy <?= empty($middle_name) ? 'opacity-60 italic text-gray-500' : '' ?>">
+                <?= !empty($middle_name) ? htmlspecialchars($middle_name) : 'N/A' ?>
+            </p>
+        </div>
+        <div>
+            <label class="block text-sm font-medium text-gray-500 mb-1">Suffix</label>
+            <p class="text-navy <?= empty($suffix) ? 'opacity-60 italic text-gray-500' : '' ?>">
+                <?= !empty($suffix) ? htmlspecialchars($suffix) : 'N/A' ?>
+            </p>
+        </div>
+        <div>
+            <label class="block text-sm font-medium text-gray-500 mb-1">Email Address</label>
+            <p class="text-navy"><?php echo htmlspecialchars($email); ?></p>
+        </div>
+        <div>
+            <label class="block text-sm font-medium text-gray-500 mb-1">Phone Number</label>
+            <p class="text-navy <?= empty($phone_number) ? 'opacity-60 italic text-gray-500' : '' ?>">
+                <?= !empty($phone_number) ? htmlspecialchars($phone_number) : 'N/A' ?>
+            </p>
+        </div>
+        <div>
+            <label class="block text-sm font-medium text-gray-500 mb-1">Date of Birth</label>
+            <p class="text-navy"><?php echo date('F d Y', strtotime($birthdate)); ?></p>
+        </div>
+        <div>
+            <label class="block text-sm font-medium text-gray-500 mb-1">Region</label>
+            <p class="text-navy <?= empty($region) ? 'opacity-60 italic text-gray-500' : '' ?>">
+                <?= !empty($region) ? htmlspecialchars($region) : 'N/A' ?>
+            </p>
+        </div>
+        <div>
+            <label class="block text-sm font-medium text-gray-500 mb-1">Province</label>
+            <p class="text-navy <?= empty($province) ? 'opacity-60 italic text-gray-500' : '' ?>">
+                <?= !empty($province) ? htmlspecialchars($province) : 'N/A' ?>
+            </p>
+        </div>
+        <div>
+            <label class="block text-sm font-medium text-gray-500 mb-1">City</label>
+            <p class="text-navy <?= empty($city) ? 'opacity-60 italic text-gray-500' : '' ?>">
+                <?= !empty($city) ? htmlspecialchars($city) : 'N/A' ?>
+            </p>
+        </div>
+        <div>
+            <label class="block text-sm font-medium text-gray-500 mb-1">Barangay</label>
+            <p class="text-navy <?= empty($barangay) ? 'opacity-60 italic text-gray-500' : '' ?>">
+                <?= !empty($barangay) ? htmlspecialchars($barangay) : 'N/A' ?>
+            </p>
+        </div>
+        <div>
+            <label class="block text-sm font-medium text-gray-500 mb-1">Street Address</label>
+            <p class="text-navy <?= empty($street_address) ? 'opacity-60 italic text-gray-500' : '' ?>">
+                <?= !empty($street_address) ? htmlspecialchars($street_address) : 'N/A' ?>
+            </p>
+        </div>
+        <div>
+            <label class="block text-sm font-medium text-gray-500 mb-1">Zip/Postal Code</label>
+            <p class="text-navy <?= empty($zip_code) ? 'opacity-60 italic text-gray-500' : '' ?>">
+                <?= !empty($zip_code) ? htmlspecialchars($zip_code) : 'N/A' ?>
+            </p>
+        </div>
     </div>
-<?php else: ?>
-    <div class="border border-dashed border-gray-300 rounded-lg p-8 text-center w-full">
-        <svg class="w-16 h-16 text-gray-300 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-        </svg>
-        <p class="text-gray-500 font-medium mb-2">No ID uploaded yet</p>
-        <button class="px-4 py-2 bg-navy text-white text-sm rounded hover:bg-blue-800 transition-colors">
-            Upload ID
-        </button>
-    </div>
-<?php endif; ?>
-                        </div>
+                
+                <!-- New Uploaded Documents Section -->
+                <!-- New Uploaded Documents Section -->
+<div class="mt-8 pt-6 border-t border-gray-200">
+    <h3 class="font-hedvig text-lg text-navy mb-4">Uploaded ID</h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+            <div class="flex justify-between items-start mb-1">
+                <?php if ($uploadedImagePath): ?>
+                    <?php
+                        // Fetch the validation status and decline reason from valid_id_tb
+                        $status_query = "SELECT is_validated, decline_reason FROM valid_id_tb WHERE id = ?";
+                        $status_stmt = $conn->prepare($status_query);
+                        $status_stmt->bind_param("i", $user_id);
+                        $status_stmt->execute();
+                        $status_result = $status_stmt->get_result();
+                        $status_row = $status_result->fetch_assoc();
+                        $id_status = $status_row ? $status_row['is_validated'] : 'no';
+                        $decline_reason = $status_row ? $status_row['decline_reason'] : '';
+                        $status_stmt->close();
+                        $conn->close();
+                        
+                        // Define status label style based on status value
+                        switch ($id_status) {
+                            case 'no':
+                                $statusText = 'PENDING';
+                                $statusClass = 'bg-yellow-100 text-yellow-800';
+                                break;
+                            case 'valid':
+                                $statusText = 'APPROVED';
+                                $statusClass = 'bg-green-100 text-green-800';
+                                break;
+                            case 'denied':
+                                $statusText = 'DECLINED';
+                                $statusClass = 'bg-red-100 text-red-800';
+                                break;
+                            default:
+                                $statusText = 'PENDING';
+                                $statusClass = 'bg-yellow-100 text-yellow-800';
+                                break;
+                        }
+                    ?>
+                    
+                    <div class="flex items-center mt-2 mb-2">
+                        <span class="text-sm text-gray-600 mr-2">Uploaded ID Status:</span>
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <?php echo $statusClass; ?>">
+                            <?php echo $statusText; ?>
+                            <?php if ($id_status === 'denied' && $decline_reason): ?>
+                                <!-- Info icon for declined status -->
+                                <svg class="w-4 h-4 ml-1 cursor-pointer" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" 
+                                     onclick="openDeclineReasonModal('<?php echo htmlspecialchars($decline_reason); ?>')">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2h-1V9z" clip-rule="evenodd"></path>
+                                </svg>
+                            <?php endif; ?>
+                        </span>
                     </div>
-                </div>
+                <?php endif; ?>
+            </div>
 
-                <!-- Modal for enlarged image - improved with animation -->
-<div id="imageModal" class="fixed inset-0 z-50 hidden bg-black bg-opacity-80 flex items-center justify-center p-4 transition-all duration-300">
-    <div class="relative max-w-3xl w-full">
-        <!-- Close button -->
-        <button onclick="closeImageModal()" class="absolute -top-10 right-0 text-white hover:text-gray-300 focus:outline-none transition-colors">
-            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-            </svg>
-        </button>
-        <!-- Image with border and shadow -->
-        <img id="enlargedImage" src="" alt="Enlarged ID" class="max-w-full max-h-[80vh] object-contain mx-auto rounded-lg shadow-2xl border-4 border-white">
+            <?php if ($uploadedImagePath): ?>
+                <div class="relative">
+                    <!-- Thumbnail image that opens the modal when clicked -->
+                    <img 
+                        src="<?php echo '../uploads/valid_ids/' . htmlspecialchars($uploadedImagePath); ?>" 
+                        alt="Uploaded ID"
+                        class="mt-2 rounded-lg shadow border w-48 h-auto cursor-pointer hover:opacity-90 transition-opacity"
+                        onclick="openImageModal('<?php echo '../uploads/valid_ids/' . htmlspecialchars($uploadedImagePath); ?>')"
+                    >
+                </div>
+            <?php else: ?>
+                <p class="text-sm text-gray-400 italic">No ID uploaded yet.</p>
+            <?php endif; ?>
+        </div>
     </div>
 </div>
 
-<!-- Modal for decline reason - improved design -->
-<div id="declineReasonModal" class="fixed inset-0 z-50 hidden bg-black bg-opacity-80 flex items-center justify-center p-4 transition-all duration-300">
-    <div class="bg-white rounded-lg p-6 max-w-md w-full shadow-2xl transform transition-all">
+<!-- Modal for enlarged image -->
+<div id="imageModal" class="fixed inset-0 z-50 hidden bg-black bg-opacity-80 flex items-center justify-center p-4">
+    <img id="enlargedImage" src="" alt="Enlarged ID" class="max-w-full max-h-[90vh] object-contain">
+</div>
+
+<!-- Modal for decline reason -->
+<div id="declineReasonModal" class="fixed inset-0 z-50 hidden bg-black bg-opacity-80 flex items-center justify-center p-4">
+    <div class="bg-white rounded-lg p-6 max-w-md w-full">
         <div class="flex justify-between items-center mb-4">
-            <h3 class="text-lg font-bold text-red-600 flex items-center">
-                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
-                </svg>
-                ID Verification Declined
-            </h3>
+            <h3 class="text-lg font-bold text-red-600">ID Verification Declined</h3>
             <button onclick="closeDeclineReasonModal()" class="text-gray-500 hover:text-gray-700">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -737,27 +614,27 @@ header("Pragma: no-cache");
             </button>
         </div>
         <div class="space-y-4">
-            <div class="flex items-start bg-red-50 p-4 rounded-lg">
+            <div class="flex items-start">
                 <svg class="w-5 h-5 text-red-500 mt-0.5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                     <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
                 </svg>
                 <div>
                     <p id="declineReasonText" class="font-medium text-gray-800"></p>
-                    <p id="declineExplanation" class="text-sm text-gray-600 mt-2"></p>
+                    <p id="declineExplanation" class="text-sm text-gray-600 mt-1"></p>
                 </div>
             </div>
         </div>
         <div class="mt-6 flex justify-end">
-            <button onclick="closeDeclineReasonModal()" class="px-4 py-2 bg-navy text-white rounded-md hover:bg-blue-800 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-300">
+            <button onclick="closeDeclineReasonModal()" class="px-4 py-2 bg-navy text-white rounded-md hover:bg-navy-dark transition-colors">
                 Understood
             </button>
         </div>
     </div>
 </div>
 
-                <!-- JavaScript for modal functionality - enhanced with animations -->
-                <script>
-                // Decline reason explanations
+<!-- JavaScript for modal functionality -->
+<script>
+// Decline reason explanations
 const declineExplanations = {
     'Incomplete Document': 'Your ID upload was declined because the entire document was not visible. Ensure all edges and text (like "REPUBLIC OF THE PHILIPPINES") are fully captured without cuts.',
     'Cropped or Cut-off Text': 'Parts of your ID (e.g., headers or personal details) were cropped out. Zoom out to show the full document, including all four corners.',
@@ -778,103 +655,39 @@ function openDeclineReasonModal(reason) {
         explanationElement.style.display = 'none';
     }
     
-    // Show the modal with animation
-    const modal = document.getElementById('declineReasonModal');
-    modal.classList.remove('hidden');
-    modal.classList.add('flex');
-    
-    // Add animation
-    setTimeout(() => {
-        modal.querySelector('.transform').classList.add('scale-100');
-        modal.querySelector('.transform').classList.remove('scale-95', 'opacity-0');
-    }, 10);
-    
+    // Show the modal
+    document.getElementById('declineReasonModal').classList.remove('hidden');
     document.body.style.overflow = 'hidden';
 }
 
 function closeDeclineReasonModal() {
-    const modal = document.getElementById('declineReasonModal');
-    const modalContent = modal.querySelector('.transform');
-    
-    // Add animation for closing
-    modalContent.classList.add('scale-95', 'opacity-0');
-    modalContent.classList.remove('scale-100');
-    
-    // Wait for animation to complete before hiding
-    setTimeout(() => {
-        modal.classList.add('hidden');
-        modal.classList.remove('flex');
-        document.body.style.overflow = 'auto';
-    }, 300);
+    document.getElementById('declineReasonModal').classList.add('hidden');
+    document.body.style.overflow = 'auto';
 }
 
-function openImageModal(imageSrc) {
-    console.log('openImageModal called with src:', imageSrc); // Debug log
+function openImageModal(imagePath) {
+    // Set the source of the enlarged image
+    document.getElementById('enlargedImage').src = imagePath;
     
-    // Check if the modal element exists
-    const modal = document.getElementById('imageModal');
-    console.log('Modal element:', modal); // Debug log
+    // Show the modal
+    document.getElementById('imageModal').classList.remove('hidden');
+    document.getElementById('imageModal').classList.add('flex');
     
-    if (!modal) {
-        console.error('Image modal not found in DOM');
-        return;
-    }
-    
-    // Set the image source
-    const enlargedImage = document.getElementById('enlargedImage');
-    console.log('Enlarged image element:', enlargedImage); // Debug log
-    
-    if (!enlargedImage) {
-        console.error('Enlarged image element not found');
-        return;
-    }
-    
-    enlargedImage.src = imageSrc;
-    console.log('Image source set to:', imageSrc); // Debug log
-    
-    // Show the modal with animation
-    modal.classList.remove('hidden');
-    modal.classList.add('flex');
-    modal.style.opacity = '0';
-    
-    console.log('Modal classes after showing:', modal.classList); // Debug log
-    
-    // Animate fade in
-    setTimeout(() => {
-        modal.style.opacity = '1';
-        console.log('Modal opacity after animation:', modal.style.opacity); // Debug log
-    }, 10);
-    
+    // Prevent scrolling of the background
     document.body.style.overflow = 'hidden';
-    console.log('Body overflow set to hidden'); // Debug log
 }
 
 function closeImageModal() {
-    console.log('closeImageModal called'); // Debug log
+    // Hide the modal
+    document.getElementById('imageModal').classList.add('hidden');
+    document.getElementById('imageModal').classList.remove('flex');
     
-    const modal = document.getElementById('imageModal');
-    console.log('Modal element:', modal); // Debug log
-    
-    if (!modal) {
-        console.error('Image modal not found in DOM');
-        return;
-    }
-    
-    // Animate fade out
-    modal.style.opacity = '0';
-    console.log('Modal opacity set to 0'); // Debug log
-    
-    // Wait for animation to complete before hiding
-    setTimeout(() => {
-        modal.classList.add('hidden');
-        modal.classList.remove('flex');
-        document.body.style.overflow = 'auto';
-        console.log('Modal hidden and body overflow reset'); // Debug log
-    }, 300);
+    // Restore scrolling
+    document.body.style.overflow = 'auto';
 }
 
 // Close modal when clicking outside the image container
-document.getElementById('imageModal')?.addEventListener('click', function(event) {
+document.getElementById('imageModal').addEventListener('click', function(event) {
     if (event.target === this) {
         closeImageModal();
     }
@@ -883,57 +696,20 @@ document.getElementById('imageModal')?.addEventListener('click', function(event)
 // Close modal with Escape key
 document.addEventListener('keydown', function(event) {
     if (event.key === 'Escape') {
-        if (!document.getElementById('imageModal')?.classList.contains('hidden')) {
+        if (!document.getElementById('imageModal').classList.contains('hidden')) {
             closeImageModal();
         }
-        if (!document.getElementById('declineReasonModal')?.classList.contains('hidden')) {
+        if (!document.getElementById('declineReasonModal').classList.contains('hidden')) {
             closeDeclineReasonModal();
         }
     }
 });
-
-// Find all elements that should open the image modal
-const imageTriggers = document.querySelectorAll('[onclick*="openImageModal"]');
-console.log('Found image triggers:', imageTriggers.length); // Debug log
-
-// Add click event listeners if not already present
-imageTriggers.forEach(trigger => {
-    trigger.addEventListener('click', function(e) {
-        console.log('Image trigger clicked'); // Debug log
-        const imageSrc = this.getAttribute('data-image-src') || this.src;
-        console.log('Attempting to open modal with src:', imageSrc); // Debug log
-        openImageModal(imageSrc);
-    });
-});
-
-// Initialize tooltips if any
-function initTooltips() {
-    const tooltips = document.querySelectorAll('[data-tooltip]');
-    tooltips.forEach(tooltip => {
-        // Initialize tooltip logic here if using a library
-        // or implement custom tooltip behavior
-    });
-}
-
-// Initialize the page
-document.addEventListener('DOMContentLoaded', function() {
-    initTooltips();
-    
-    // Check for URL parameters that might indicate we should show modals
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('show_decline_reason') === 'true') {
-        // Get the reason from the database or URL if available
-        const reason = '<?php echo htmlspecialchars($decline_reason); ?>';
-        if (reason) {
-            openDeclineReasonModal(reason);
-        }
-    }
-});
 </script>
-</div>
-</div>
-</div>
-</div>
+
+
+            </div>
+        </div>
+    </div>
                     
                     <!-- Bookings Tab -->
                     <div id="bookings" class="tab-content">
