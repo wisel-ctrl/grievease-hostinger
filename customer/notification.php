@@ -545,13 +545,9 @@ $current_page_bookings = array_slice($filtered_bookings, ($page - 1) * $items_pe
                                 
                                 <div class="bg-white border-l-4 <?php echo $status_color; ?> rounded-lg shadow-md overflow-hidden notification-animate">
                                     <div class="flex flex-col md:flex-row">
-                                        <!-- Notification Icon -->
-                                        <div class="<?php echo $status_bg; ?> py-6 px-4 md:w-16 flex items-center justify-center">
-                                            <i class="<?php echo $status_icon; ?> <?php echo $status_text_color; ?> text-xl"></i>
-                                        </div>
                                         
                                         <!-- Notification Content -->
-                                        <div class="flex-1 p-4">
+                                        <div class="flex-1 px-7 py-5">
                                             <div class="flex flex-col md:flex-row justify-between">
                                                 <div>
                                                     <span class="<?php echo $status_text_color; ?> font-medium text-sm">
