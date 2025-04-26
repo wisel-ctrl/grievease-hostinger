@@ -738,7 +738,7 @@ document.addEventListener('click', function(event) {
 <div class="bg-white border-l-4 <?php echo $border_color; ?> rounded-xl shadow-md overflow-hidden notification-animate hover:shadow-lg transition-all duration-300">
     <div class="flex flex-col">
         <div class="flex-1 py-4 px-4 sm:py-5 sm:px-7">
-            <!-- Status and Date Row -->
+            <!-- Status and Branch Name Row -->
             <div class="flex justify-between items-start mb-2">
                 <!-- Status Badge -->
                 <span class="<?php echo $status_bg; ?> <?php echo $status_text_color; ?> text-xs px-2 py-1 rounded-full inline-flex items-center">
@@ -746,43 +746,39 @@ document.addEventListener('click', function(event) {
                     <?php echo htmlspecialchars($booking['status']); ?>
                 </span>
                 
-                <!-- Desktop Date/Time Badge - Now aligned with status -->
-                <div class="hidden sm:block bg-cream rounded-lg p-1.5 text-xs">
-                    <p class="text-gray-700 flex items-center">
-                        <i class="far fa-calendar mr-1 text-gold text-xs"></i>
-                        <?php echo date('M d, Y', strtotime($booking['booking_date'])); ?>
-                    </p>
-                    <p class="text-gray-700 flex items-center mt-1">
-                        <i class="far fa-clock mr-1 text-gold text-xs"></i>
-                        <?php echo date('h:i A', strtotime($booking['booking_date'])); ?>
-                    </p>
-                </div>
-            </div>
-
-            <!-- Service Name and Branch Row -->
-            <div class="flex justify-between items-start">
-                <div>
-                    <h3 class="text-navy text-base sm:text-lg font-hedvig mt-1">
-                        <?php echo htmlspecialchars($booking['service_name']); ?>
-                    </h3>
-                </div>
-                
                 <!-- Branch Name - Moved to upper right -->
                 <p class="text-gray-600 text-xs sm:text-sm flex items-center">
                     <i class="fas fa-map-marker-alt mr-1 text-gold text-xs"></i> 
                     <?php echo htmlspecialchars($booking['branch_name']); ?>
                 </p>
             </div>
-
+            
+            <!-- Service Name -->
+            <h3 class="text-navy text-base sm:text-lg font-hedvig mt-1">
+                <?php echo htmlspecialchars($booking['service_name']); ?>
+            </h3>
+            
+            <!-- Date/Time Badge - Single row for both mobile and desktop -->
+            <div class="mt-2 bg-cream rounded-lg p-1.5 text-xs inline-flex items-center space-x-2">
+                <p class="text-gray-700 flex items-center">
+                    <i class="far fa-calendar mr-1 text-gold text-xs"></i>
+                    <?php echo date('M d, Y', strtotime($booking['booking_date'])); ?>
+                </p>
+                <p class="text-gray-700 flex items-center">
+                    <i class="far fa-clock mr-1 text-gold text-xs"></i>
+                    <?php echo date('h:i A', strtotime($booking['booking_date'])); ?>
+                </p>
+            </div>
+            
             <?php if ($booking['status'] === 'Declined' && !empty($booking['admin_message'])): ?>
-                <p class="text-gray-600 text-xs sm:text-sm mt-1">
+                <p class="text-gray-600 text-xs sm:text-sm mt-2">
                     <i class="fas fa-comment-alt mr-1 text-gold text-xs"></i> 
                     Reason: <?php echo htmlspecialchars($booking['admin_message']); ?>
                 </p>
             <?php endif; ?>
-
+            
             <!-- Booking Details -->
-            <div class="mt-2">
+            <div class="mt-3">
                 <p class="text-gray-700 text-xs sm:text-sm">
                     <?php 
                         switch($booking['status']) {
