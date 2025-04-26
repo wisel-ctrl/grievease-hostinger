@@ -889,97 +889,111 @@ foreach ($serviceData as $service => $branches) {
                     </tr>
                 </thead>
                 <tbody id="branchTableBody">
-                    <?php
-                    // Fetch branch performance data
-                    $branchQuery = "SELECT 
-                                    b.branch_id,
-                                    b.branch_name,
-                                    b.location,
-                                    COUNT(DISTINCT s.sale_id) as service_count,
-                                    SUM(s.amount_paid) as revenue,
-                                    SUM(exp.price) as expenses,
-                                    (SUM(s.amount_paid) - (SUM(sv.capital_price) + SUM(exp.price))) as profit,
-                                    CASE 
-                                        WHEN SUM(s.amount_paid) > 0 
-                                        THEN ((SUM(s.amount_paid) - (SUM(sv.capital_price) + SUM(exp.price))) / SUM(s.amount_paid)) * 100 
-                                        ELSE 0 
-                                    END as margin
-                                FROM 
-                                    branch_tb b
-                                LEFT JOIN 
-                                    sales_tb s ON b.branch_id = s.branch_id
-                                LEFT JOIN 
-                                    services_tb sv ON s.service_id = sv.service_id
-                                LEFT JOIN 
-                                    expense_tb exp ON b.branch_id = exp.branch_id
-                                WHERE 
-                                    MONTH(s.get_timestamp) = ? AND YEAR(s.get_timestamp) = ?
-                                    AND MONTH(exp.date) = ? AND YEAR(exp.date) = ?
-                                GROUP BY 
-                                    b.branch_id, b.branch_name, b.location
-                                ORDER BY 
-                                    b.branch_name ASC";
-                    
-                    $stmt = $conn->prepare($branchQuery);
-                    $stmt->bind_param("iiii", $currentMonth, $currentYear, $currentMonth, $currentYear);
-                    $stmt->execute();
-                    $branchResult = $stmt->get_result();
-                    
-                    if ($branchResult->num_rows > 0) {
-                        while ($branch = $branchResult->fetch_assoc()) {
-                            $branchName = htmlspecialchars($branch['branch_name']);
-                            $location = htmlspecialchars($branch['location']);
-                            $serviceCount = $branch['service_count'] ?? 0;
-                            $revenue = $branch['revenue'] ?? 0;
-                            $expenses = $branch['expenses'] ?? 0;
-                            $profit = $branch['profit'] ?? 0;
-                            $margin = $branch['margin'] ?? 0;
-                            
-                            // Calculate growth (you would need to compare with previous period data)
-                            $growth = 0; // Placeholder - you would need to implement this
-                            
-                            // Format numbers
-                            $formattedRevenue = number_format($revenue, 2);
-                            $formattedExpenses = number_format($expenses, 2);
-                            $formattedProfit = number_format($profit, 2);
-                            $formattedMargin = number_format($margin, 1);
-                            
-                            // Determine growth color
-                            $growthClass = $growth >= 0 ? 'bg-green-100 text-green-600 border-green-200' : 'bg-red-100 text-red-600 border-red-200';
-                            $growthIcon = $growth >= 0 ? 'fa-arrow-up' : 'fa-arrow-down';
-                            $growthDisplay = abs($growth);
-                            ?>
-                            <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
-                                <td class="px-4 py-3.5 text-sm text-sidebar-text font-medium">
-                                    <div class="flex items-center">
-                                        <i class="fas fa-store mr-2 text-sidebar-accent"></i>
-                                        <div>
-                                            <div><?php echo $branchName; ?></div>
-                                            <div class="text-xs text-gray-500"><?php echo $location; ?></div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo $serviceCount; ?></td>
-                                <td class="px-4 py-3.5 text-sm font-medium text-sidebar-text">₱<?php echo $formattedRevenue; ?></td>
-                                <td class="px-4 py-3.5 text-sm text-sidebar-text">₱<?php echo $formattedExpenses; ?></td>
-                                <td class="px-4 py-3.5 text-sm font-medium text-sidebar-text">₱<?php echo $formattedProfit; ?></td>
-                                <td class="px-4 py-3.5 text-sm">
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <?php echo $growthClass; ?> border">
-                                        <i class="fas <?php echo $growthIcon; ?> mr-1"></i> <?php echo $formattedMargin; ?>%
-                                    </span>
-                                </td>
-                            </tr>
-                            <?php
-                        }
-                    } else {
-                        ?>
-                        <tr>
-                            <td colspan="6" class="px-4 py-3.5 text-sm text-center text-sidebar-text">No branch data available for the current month.</td>
-                        </tr>
-                        <?php
-                    }
-                    ?>
-                </tbody>
+                  <?php
+                  // Fetch branch performance data
+                  $branchQuery = "SELECT 
+                                      b.branch_id,
+                                      b.branch_name,
+                                      COALESCE(s.service_count, 0) AS service_count,
+                                      COALESCE(s.revenue, 0) AS revenue,
+                                      COALESCE(e.expenses, 0) AS expenses,
+                                      COALESCE(s.revenue, 0) - (COALESCE(s.capital_total, 0) + COALESCE(e.expenses, 0)) AS profit,
+                                      CASE 
+                                          WHEN COALESCE(s.revenue, 0) > 0 THEN 
+                                              (COALESCE(s.revenue, 0) - (COALESCE(s.capital_total, 0) + COALESCE(e.expenses, 0))) / COALESCE(s.revenue, 0) * 100
+                                          ELSE 0 
+                                      END AS margin
+                                  FROM 
+                                      branch_tb b
+                                  LEFT JOIN (
+                                      SELECT 
+                                          s.branch_id,
+                                          COUNT(DISTINCT s.sales_id) AS service_count,
+                                          SUM(s.amount_paid) AS revenue,
+                                          SUM(sv.capital_price) AS capital_total
+                                      FROM 
+                                          sales_tb s
+                                      LEFT JOIN 
+                                          services_tb sv ON s.service_id = sv.service_id
+                                      WHERE 
+                                          MONTH(s.get_timestamp) = ? AND YEAR(s.get_timestamp) = ?
+                                      GROUP BY 
+                                          s.branch_id
+                                  ) s ON b.branch_id = s.branch_id
+                                  LEFT JOIN (
+                                      SELECT 
+                                          branch_id,
+                                          SUM(price) AS expenses
+                                      FROM 
+                                          expense_tb
+                                      WHERE 
+                                          MONTH(date) = ? AND YEAR(date) = ?
+                                      GROUP BY 
+                                          branch_id
+                                  ) e ON b.branch_id = e.branch_id
+                                  WHERE b.branch_id IN (1, 2)
+                                  ORDER BY 
+                                      b.branch_name ASC;
+                                  ";
+                  
+                  $stmt = $conn->prepare($branchQuery);
+                  $stmt->bind_param("iiii", $currentMonth, $currentYear, $currentMonth, $currentYear);
+                  $stmt->execute();
+                  $branchResult = $stmt->get_result();
+                  
+                  if ($branchResult->num_rows > 0) {
+                      while ($branch = $branchResult->fetch_assoc()) {
+                          $branchName = htmlspecialchars($branch['branch_name']);
+                          $serviceCount = $branch['service_count'] ?? 0;
+                          $revenue = $branch['revenue'] ?? 0;
+                          $expenses = $branch['expenses'] ?? 0;
+                          $profit = $branch['profit'] ?? 0;
+                          $margin = $branch['margin'] ?? 0;
+                          
+                          // Calculate growth (you would need to compare with previous period data)
+                          $growth = 0; // Placeholder - you would need to implement this
+                          
+                          // Format numbers
+                          $formattedRevenue = number_format($revenue, 2);
+                          $formattedExpenses = number_format($expenses, 2);
+                          $formattedProfit = number_format($profit, 2);
+                          $formattedMargin = number_format($margin, 1);
+                          
+                          // Determine growth color
+                          $growthClass = $growth >= 0 ? 'bg-green-100 text-green-600 border-green-200' : 'bg-red-100 text-red-600 border-red-200';
+                          $growthIcon = $growth >= 0 ? 'fa-arrow-up' : 'fa-arrow-down';
+                          $growthDisplay = abs($growth);
+                          ?>
+                          <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
+                              <td class="px-4 py-3.5 text-sm text-sidebar-text font-medium">
+                                  <div class="flex items-center">
+                                      <i class="fas fa-store mr-2 text-sidebar-accent"></i>
+                                      <div>
+                                          <div><?php echo $branchName; ?></div>
+                                      </div>
+                                  </div>
+                              </td>
+                              <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo $serviceCount; ?></td>
+                              <td class="px-4 py-3.5 text-sm font-medium text-sidebar-text">₱<?php echo $formattedRevenue; ?></td>
+                              <td class="px-4 py-3.5 text-sm text-sidebar-text">₱<?php echo $formattedExpenses; ?></td>
+                              <td class="px-4 py-3.5 text-sm font-medium text-sidebar-text">₱<?php echo $formattedProfit; ?></td>
+                              <td class="px-4 py-3.5 text-sm">
+                                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <?php echo $growthClass; ?> border">
+                                      <i class="fas <?php echo $growthIcon; ?> mr-1"></i> <?php echo $formattedMargin; ?>%
+                                  </span>
+                              </td>
+                          </tr>
+                          <?php
+                      }
+                  } else {
+                      ?>
+                      <tr>
+                          <td colspan="6" class="px-4 py-3.5 text-sm text-center text-sidebar-text">No branch data available for the current month.</td>
+                      </tr>
+                      <?php
+                  }
+                  ?>
+              </tbody>
             </table>
         </div>
     </div>
