@@ -969,7 +969,7 @@ foreach ($serviceData as $service => $branches) {
                                   <div class="flex items-center">
                                       <i class="fas fa-store mr-2 text-sidebar-accent"></i>
                                       <div>
-                                        <div id="branchName"><?php echo $branchName; ?></div>
+                                        <div class="branch-name"><?php echo $branchName; ?></div>
                                       </div>
                                   </div>
                               </td>
@@ -1561,10 +1561,11 @@ foreach ($serviceData as $service => $branches) {
 <script src="tailwind.js"></script>
 <script src="script.js"></script>
 <script>
-  const branchDiv = document.getElementById('branchName');
-  if (branchDiv) {
-    branchDiv.textContent = branchDiv.textContent.toUpperCase();
-  }
+  document.querySelectorAll('.branch-name').forEach(div => {
+    div.textContent = div.textContent
+      .toLowerCase()
+      .replace(/\b\w/g, char => char.toUpperCase()); // Title Case
+  });
 </script>
     <script>
 var options = {
