@@ -843,7 +843,7 @@ function closeImageModal() {
 // Edit Profile Button Functionality
 document.getElementById('edit-profile-btn').addEventListener('click', function() {
     // Redirect to the edit profile page
-    window.location.href = 'edit-profile.php';
+    window.location.href = 'edit-profile-modal';
 });
 
 // Initialize tooltips if any
