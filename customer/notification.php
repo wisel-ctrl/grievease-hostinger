@@ -858,70 +858,90 @@ document.addEventListener('click', function(event) {
                         ?>
                         
                         <!-- ID Validation Notification -->
-                        <div class="bg-white border-l-4 <?php echo $border_color; ?> rounded-xl shadow-md overflow-hidden notification-animate hover:shadow-lg transition-all duration-300">
-                            <div class="flex flex-col">
-                                <div class="flex-1 py-4 px-4 sm:py-5 sm:px-7">
-                                    <div class="flex flex-col sm:flex-row justify-between">
-                                        <div>
-                                            <div class="flex items-center justify-between mb-2">
-                                                <span class="<?php echo $id_status_class; ?> text-xs px-2 py-1 rounded-full inline-flex items-center">
-                                                    <i class="<?php echo $id_icon; ?> mr-1 text-xs"></i>
-                                                    ID: <?php echo $id_status; ?>
-                                                </span>
-                                                <!-- Mobile Timestamp -->
-                                                <div class="sm:hidden bg-cream rounded-lg p-1.5 text-xs">
-                                                    <p class="text-gray-700 flex items-center">
-                                                        <i class="far fa-clock mr-1 text-gold text-xs"></i>
-                                                        <?php echo date('M d', strtotime($id_validation['upload_at'])); ?>
-                                                    </p>
-                                                </div>
-                                            </div>
-                                            <h3 class="text-navy text-base sm:text-lg font-hedvig mt-1">
-                                                ID Verification
-                                            </h3>
-                                            <p class="text-gray-600 text-xs sm:text-sm mt-1 flex items-center">
-                                                <i class="fas fa-id-card mr-1 text-gold text-xs"></i> 
-                                                <?php 
-                                                if ($id_validation['is_validated'] === 'denied' && !empty($id_validation['decline_reason'])) {
-                                                    echo "Reason: " . htmlspecialchars($id_validation['decline_reason']);
-                                                } else {
-                                                    echo "Uploaded on " . date('M d, Y', strtotime($id_validation['upload_at']));
-                                                }
-                                                ?>
-                                            </p>
-                                        </div>
-                                        <div class="hidden sm:block mt-2 sm:mt-0 bg-cream rounded-lg p-2 text-xs">
-                                            <p class="text-gray-700 flex items-center">
-                                                <i class="far fa-clock mr-1 text-gold text-xs"></i>
-                                                <?php echo time_elapsed_string($id_validation['upload_at']); ?>
-                                            </p>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="mt-3 flex flex-wrap gap-2 items-center justify-between">
-                                        <?php if (!empty($id_validation['image_path'])): ?>
-                                            <button onclick="viewIdImage('<?php echo htmlspecialchars($id_validation['image_path']); ?>')" 
-    class="<?php 
-        if($id_validation['is_validated'] === 'no') echo 'bg-yellow-600 hover:bg-yellow-700';
-        elseif($id_validation['is_validated'] === 'valid') echo 'bg-green-600 hover:bg-green-700';
-        elseif($id_validation['is_validated'] === 'denied') echo 'bg-red-600 hover:bg-red-700';
-        else echo 'bg-gray-600 hover:bg-gray-700';
-    ?> text-white px-3 py-1.5 rounded-lg text-xs font-medium transition flex items-center">
-    <i class="fas fa-image mr-1 text-xs"></i> View ID
-</button>
-                                        <?php else: ?>
-                                            <span class="text-gray-500 text-xs">No ID image available</span>
-                                        <?php endif; ?>
-                                        
-                                        <!-- Timestamp for Desktop -->
-                                        <div class="text-xs text-gray-500 flex items-center">
-                                            <i class="fas fa-history mr-1 text-xs"></i> 
-                                            <?php echo time_elapsed_string($id_validation['upload_at']); ?>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+<div class="bg-white border-l-4 <?php echo $border_color; ?> rounded-xl shadow-md overflow-hidden notification-animate hover:shadow-lg transition-all duration-300">
+    <div class="flex flex-col">
+        <div class="flex-1 py-4 px-4 sm:py-5 sm:px-7">
+            <!-- Top Row - Now using flex layout with space-between -->
+            <div class="flex justify-between items-start mb-1">
+                <!-- Left Column - Status -->
+                <div class="flex flex-col items-start">
+                    <span class="<?php echo $id_status_class; ?> text-xs px-2 py-1 rounded-full inline-flex items-center">
+                        <i class="<?php echo $id_icon; ?> mr-1 text-xs"></i>
+                        ID: <?php echo $id_status; ?>
+                    </span>
+                    
+                    <!-- Title -->
+                    <h3 class="text-navy text-base sm:text-lg font-hedvig mt-2">
+                        ID Verification
+                    </h3>
+                    
+                    <?php if ($id_validation['is_validated'] === 'denied' && !empty($id_validation['decline_reason'])): ?>
+                        <p class="text-gray-600 text-xs sm:text-sm mt-1">
+                            <i class="fas fa-comment-alt mr-1 text-gold text-xs"></i> 
+                            Reason: <?php echo htmlspecialchars($id_validation['decline_reason']); ?>
+                        </p>
+                    <?php endif; ?>
+                </div>
+                
+                <!-- Right Column - Date/Time -->
+                <div class="flex flex-col items-end">
+                    <!-- Date/Time Badge - Same as booking notification -->
+                    <div class="bg-cream rounded-lg p-1 text-xs flex items-center space-x-1">
+                        <p class="text-gray-700 flex items-center">
+                            <i class="far fa-calendar mr-1 text-gold text-xs"></i>
+                            <?php echo date('M d', strtotime($id_validation['upload_at'])); ?>
+                        </p>
+                        <p class="text-gray-700 flex items-center">
+                            <i class="far fa-clock mr-1 text-gold text-xs"></i>
+                            <?php echo date('h:i A', strtotime($id_validation['upload_at'])); ?>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ID Validation Details -->
+            <div class="mt-2">
+                <p class="text-gray-700 text-xs sm:text-sm">
+                    <?php 
+                        switch($id_validation['is_validated']) {
+                            case 'no':
+                                echo "Your ID verification is pending review by our staff. We will update you soon.";
+                                break;
+                            case 'valid':
+                                echo "Your ID has been successfully verified. Thank you for your submission.";
+                                break;
+                            case 'denied':
+                                echo "We were unable to verify your ID. Please check the reason and upload a new one if needed.";
+                                break;
+                        }
+                    ?>
+                </p>
+            </div>
+            
+            <div class="mt-3 flex flex-wrap gap-2 items-center justify-between">
+                <?php if (!empty($id_validation['image_path'])): ?>
+                    <button onclick="viewIdImage('<?php echo htmlspecialchars($id_validation['image_path']); ?>')" 
+                        class="<?php 
+                            if($id_validation['is_validated'] === 'no') echo 'bg-yellow-600 hover:bg-yellow-700';
+                            elseif($id_validation['is_validated'] === 'valid') echo 'bg-green-600 hover:bg-green-700';
+                            elseif($id_validation['is_validated'] === 'denied') echo 'bg-red-600 hover:bg-red-700';
+                            else echo 'bg-gray-600 hover:bg-gray-700';
+                        ?> text-white px-3 py-1.5 rounded-lg text-xs font-medium transition flex items-center">
+                        <i class="fas fa-image mr-1 text-xs"></i> View ID
+                    </button>
+                <?php else: ?>
+                    <span class="text-gray-500 text-xs">No ID image available</span>
+                <?php endif; ?>
+                
+                <!-- Timestamp -->
+                <div class="text-xs text-gray-500 flex items-center">
+                    <i class="fas fa-history mr-1 text-xs"></i> 
+                    <?php echo time_elapsed_string($id_validation['upload_at']); ?>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
                     <?php endif; ?>
                 <?php endforeach; ?>
             </div>
