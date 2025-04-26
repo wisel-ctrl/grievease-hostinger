@@ -568,19 +568,31 @@ $current_page_bookings = array_slice($filtered_bookings, ($page - 1) * $items_pe
                             <div class="flex-1 py-4 px-4 md:py-5 md:px-7">
                                 <div class="flex flex-col md:flex-row justify-between">
                                     <div>
-                                        <span class="<?php echo $status_badge_bg; ?> <?php echo $status_text_color; ?> text-xs px-2 py-1 rounded-full inline-flex items-center">
-                                            <i class="<?php echo $status_icon; ?> mr-1 text-xs"></i>
-                                            <?php echo htmlspecialchars($booking['status']); ?>
-                                        </span>
+                                        <!-- Status and Title -->
+                                        <div class="flex justify-between items-start">
+                                            <span class="<?php echo $status_badge_bg; ?> <?php echo $status_text_color; ?> text-xs px-2 py-1 rounded-full inline-flex items-center">
+                                                <i class="<?php echo $status_icon; ?> mr-1 text-xs"></i>
+                                                <?php echo htmlspecialchars($booking['status']); ?>
+                                            </span>
+                                            
+                                            <!-- Branch name on small screens (top right) -->
+                                            <p class="text-gray-600 text-sm flex items-center md:hidden">
+                                                <i class="fas fa-map-marker-alt mr-1 text-gold"></i> 
+                                                <?php echo htmlspecialchars($booking['branch_name']); ?>
+                                            </p>
+                                        </div>
+                                        
                                         <h3 class="text-navy text-base md:text-lg font-hedvig mt-1">
                                             <?php echo htmlspecialchars($booking['service_name']); ?>
                                         </h3>
-                                        <p class="text-gray-600 text-sm mt-1 flex items-center">
+                                    </div>
+                                    
+                                    <div class="mt-2 md:mt-0 bg-cream rounded-lg p-2 text-xs">
+                                        <!-- Branch name on medium screens and up (with dates) -->
+                                        <p class="text-gray-700 flex items-center mb-1 hidden md:flex">
                                             <i class="fas fa-map-marker-alt mr-1 text-gold"></i> 
                                             <?php echo htmlspecialchars($booking['branch_name']); ?>
                                         </p>
-                                    </div>
-                                    <div class="mt-2 md:mt-0 bg-cream rounded-lg p-2 text-xs">
                                         <p class="text-gray-700 flex items-center mb-1">
                                             <i class="far fa-calendar mr-1 text-gold"></i>
                                             <?php echo date('M d, Y', strtotime($booking['booking_date'])); ?>
@@ -633,6 +645,8 @@ $current_page_bookings = array_slice($filtered_bookings, ($page - 1) * $items_pe
                     </div>
                 <?php endforeach; ?>
             </div>
+            <?php endif; ?>
+        </div>
             
             <!-- Pagination -->
             <?php if ($total_filtered_pages > 1): ?>
