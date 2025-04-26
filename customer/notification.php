@@ -863,8 +863,8 @@ $current_page_items = array_slice($filtered_items, ($page - 1) * $items_per_page
             <div class="absolute inset-0 bg-gray-800 opacity-80"></div>
         </div>
         
-        <!-- Modal content with improved styling -->
-        <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl w-full">
+        <!-- Modal content with wider styling -->
+        <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-5xl w-full">
             <!-- Header with more prominent styling -->
             <div class="bg-indigo-600 px-6 py-4 flex justify-between items-center">
                 <h3 class="text-xl font-semibold text-white">Booking Details</h3>
@@ -878,7 +878,7 @@ $current_page_items = array_slice($filtered_items, ($page - 1) * $items_per_page
             <!-- Content area with better spacing -->
             <div class="bg-white px-6 py-5">
                 <!-- Loading indicator -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="bookingDetailsContent">
+                <div id="bookingDetailsContent">
                     <!-- Details will be loaded here via JavaScript -->
                 </div>
             </div>
@@ -911,7 +911,7 @@ $current_page_items = array_slice($filtered_items, ($page - 1) * $items_per_page
     function viewBookingDetails(bookingId, status) {
     // Show loading state with improved spinner
     document.getElementById('bookingDetailsContent').innerHTML = `
-        <div class="col-span-2 flex flex-col items-center justify-center py-12">
+        <div class="flex flex-col items-center justify-center py-12">
             <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500 mb-4"></div>
             <p class="text-gray-600">Loading booking details...</p>
         </div>`;
@@ -926,7 +926,7 @@ $current_page_items = array_slice($filtered_items, ($page - 1) * $items_per_page
         .then(data => {
             if (data.error) {
                 document.getElementById('bookingDetailsContent').innerHTML = `
-                    <div class="col-span-2 text-center py-8">
+                    <div class="text-center py-8">
                         <div class="bg-red-50 border-l-4 border-red-400 p-4 rounded-md">
                             <div class="flex items-center">
                                 <div class="flex-shrink-0">
@@ -964,112 +964,119 @@ $current_page_items = array_slice($filtered_items, ($page - 1) * $items_per_page
                     }
                 };
                 
-                // Create the HTML content with improved styling
+                // Create the HTML content with horizontal layout to reduce scrolling
                 let htmlContent = `
-                    <div class="col-span-2">
-                        <div class="flex items-center mb-4">
-                            <div class="h-8 w-1 bg-indigo-500 rounded-full mr-3"></div>
-                            <h4 class="text-lg font-semibold text-gray-800">Deceased Information</h4>
-                        </div>
-                        <div class="bg-gray-50 p-4 rounded-lg mb-6 shadow-sm border border-gray-100">
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-y-3">
-                                <div>
-                                    <p class="text-sm text-gray-500">Full Name</p>
-                                    <p class="font-medium">${data.deceased_lname}, ${data.deceased_fname} ${data.deceased_midname || ''} ${data.deceased_suffix || ''}</p>
-                                </div>
-                                <div>
-                                    <p class="text-sm text-gray-500">Address</p>
-                                    <p class="font-medium">${data.deceased_address}</p>
-                                </div>
-                                <div>
-                                    <p class="text-sm text-gray-500">Birth Date</p>
-                                    <p class="font-medium">${formatDate(data.deceased_birth)}</p>
-                                </div>
-                                <div>
-                                    <p class="text-sm text-gray-500">Date of Death</p>
-                                    <p class="font-medium">${formatDate(data.deceased_dodeath)}</p>
-                                </div>
-                                <div>
-                                    <p class="text-sm text-gray-500">Date of Burial</p>
-                                    <p class="font-medium">${formatDate(data.deceased_dateOfBurial)}</p>
-                                </div>
-                                <div>
-                                    <p class="text-sm text-gray-500">With Cremation</p>
-                                    <p class="font-medium">${data.with_cremate === 'yes' ? 'Yes' : 'No'}</p>
+                    <!-- Main info in 3-column layout -->
+                    <div class="flex flex-col lg:flex-row gap-6 mb-6">
+                        <!-- Column 1: Deceased Information -->
+                        <div class="flex-1">
+                            <div class="flex items-center mb-4">
+                                <div class="h-8 w-1 bg-indigo-500 rounded-full mr-3"></div>
+                                <h4 class="text-lg font-semibold text-gray-800">Deceased Information</h4>
+                            </div>
+                            <div class="bg-gray-50 p-4 rounded-lg shadow-sm border border-gray-100 h-full">
+                                <div class="space-y-3">
+                                    <div>
+                                        <p class="text-sm text-gray-500">Full Name</p>
+                                        <p class="font-medium">${data.deceased_lname}, ${data.deceased_fname} ${data.deceased_midname || ''} ${data.deceased_suffix || ''}</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm text-gray-500">Address</p>
+                                        <p class="font-medium">${data.deceased_address}</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm text-gray-500">Birth Date</p>
+                                        <p class="font-medium">${formatDate(data.deceased_birth)}</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm text-gray-500">Date of Death</p>
+                                        <p class="font-medium">${formatDate(data.deceased_dodeath)}</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm text-gray-500">Date of Burial</p>
+                                        <p class="font-medium">${formatDate(data.deceased_dateOfBurial)}</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm text-gray-500">With Cremation</p>
+                                        <p class="font-medium">${data.with_cremate === 'yes' ? 'Yes' : 'No'}</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    
-                    <div>
-                        <div class="flex items-center mb-4">
-                            <div class="h-8 w-1 bg-indigo-500 rounded-full mr-3"></div>
-                            <h4 class="text-lg font-semibold text-gray-800">Service Details</h4>
-                        </div>
-                        <div class="bg-gray-50 p-4 rounded-lg mb-6 shadow-sm border border-gray-100">
-                            <div class="space-y-3">
-                                <div>
-                                    <p class="text-sm text-gray-500">Service</p>
-                                    <p class="font-medium">${data.service_name}</p>
-                                </div>
-                                <div>
-                                    <p class="text-sm text-gray-500">Branch</p>
-                                    <p class="font-medium">${data.branch_name}</p>
-                                </div>
-                                <div>
-                                    <p class="text-sm text-gray-500">Initial Price</p>
-                                    <p class="font-medium">₱${parseFloat(data.initial_price).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</p>
-                                </div>
-                                <div>
-                                    <p class="text-sm text-gray-500">Amount Paid</p>
-                                    <p class="font-medium">₱${parseFloat(data.amount_paid || 0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</p>
+                        
+                        <!-- Column 2: Service Details -->
+                        <div class="flex-1">
+                            <div class="flex items-center mb-4">
+                                <div class="h-8 w-1 bg-indigo-500 rounded-full mr-3"></div>
+                                <h4 class="text-lg font-semibold text-gray-800">Service Details</h4>
+                            </div>
+                            <div class="bg-gray-50 p-4 rounded-lg shadow-sm border border-gray-100 h-full">
+                                <div class="space-y-3">
+                                    <div>
+                                        <p class="text-sm text-gray-500">Service</p>
+                                        <p class="font-medium">${data.service_name}</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm text-gray-500">Branch</p>
+                                        <p class="font-medium">${data.branch_name}</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm text-gray-500">Initial Price</p>
+                                        <p class="font-medium">₱${parseFloat(data.initial_price).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm text-gray-500">Amount Paid</p>
+                                        <p class="font-medium">₱${parseFloat(data.amount_paid || 0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    
-                    <div>
-                        <div class="flex items-center mb-4">
-                            <div class="h-8 w-1 bg-indigo-500 rounded-full mr-3"></div>
-                            <h4 class="text-lg font-semibold text-gray-800">Booking Information</h4>
-                        </div>
-                        <div class="bg-gray-50 p-4 rounded-lg mb-6 shadow-sm border border-gray-100">
-                            <div class="space-y-3">
-                                <div>
-                                    <p class="text-sm text-gray-500">Status</p>
-                                    <p><span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium ${getStatusColorClass(data.status)}">${data.status}</span></p>
-                                </div>
-                                <div>
-                                    <p class="text-sm text-gray-500">Booking Date</p>
-                                    <p class="font-medium">${formattedBookingDate}</p>
-                                </div>
-                                ${data.accepted_date ? `
-                                <div>
-                                    <p class="text-sm text-gray-500">${data.status} Date</p>
-                                    <p class="font-medium">${new Date(data.accepted_date).toLocaleString()}</p>
-                                </div>` : ''}
-                                <div>
-                                    <p class="text-sm text-gray-500">Reference Code</p>
-                                    <p class="font-medium">${data.reference_code || 'N/A'}</p>
+                        
+                        <!-- Column 3: Booking Information -->
+                        <div class="flex-1">
+                            <div class="flex items-center mb-4">
+                                <div class="h-8 w-1 bg-indigo-500 rounded-full mr-3"></div>
+                                <h4 class="text-lg font-semibold text-gray-800">Booking Information</h4>
+                            </div>
+                            <div class="bg-gray-50 p-4 rounded-lg shadow-sm border border-gray-100 h-full">
+                                <div class="space-y-3">
+                                    <div>
+                                        <p class="text-sm text-gray-500">Status</p>
+                                        <p><span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium ${getStatusColorClass(data.status)}">${data.status}</span></p>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm text-gray-500">Booking Date</p>
+                                        <p class="font-medium">${formattedBookingDate}</p>
+                                    </div>
+                                    ${data.accepted_date ? `
+                                    <div>
+                                        <p class="text-sm text-gray-500">${data.status} Date</p>
+                                        <p class="font-medium">${new Date(data.accepted_date).toLocaleString()}</p>
+                                    </div>` : ''}
+                                    <div>
+                                        <p class="text-sm text-gray-500">Reference Code</p>
+                                        <p class="font-medium">${data.reference_code || 'N/A'}</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                     
                     ${(data.deathcert_url || data.payment_url) ? `
-                    <div class="col-span-2">
+                    <!-- Attachments Section -->
+                    <div class="mb-2">
                         <div class="flex items-center mb-4">
                             <div class="h-8 w-1 bg-indigo-500 rounded-full mr-3"></div>
                             <h4 class="text-lg font-semibold text-gray-800">Attachments</h4>
                         </div>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 bg-gray-50 p-4 rounded-lg shadow-sm border border-gray-100">
+                        <div class="grid grid-cols-2 gap-6 bg-gray-50 p-4 rounded-lg shadow-sm border border-gray-100">
                             ${data.deathcert_url ? `
                                 <div class="col-span-1">
                                     <p class="text-sm text-gray-500 mb-2">Death Certificate</p>
                                     <div class="relative group">
                                         <img src="booking/${data.deathcert_url}" 
                                             alt="Death Certificate" 
-                                            class="w-full h-auto rounded border border-gray-200 transition-all duration-300 cursor-pointer hover:opacity-90"
+                                            class="w-full max-h-64 object-contain rounded border border-gray-200 transition-all duration-300 cursor-pointer hover:opacity-90"
                                             onload="this.nextElementSibling.textContent = this.naturalWidth + '×' + this.naturalHeight + 'px'"
                                             onclick="window.open('booking/${data.deathcert_url}', '_blank')">
                                         <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
@@ -1085,7 +1092,7 @@ $current_page_items = array_slice($filtered_items, ($page - 1) * $items_per_page
                             ` : `
                                 <div class="col-span-1">
                                     <p class="text-sm text-gray-500 mb-2">Death Certificate</p>
-                                    <div class="w-full h-48 bg-gray-100 rounded border border-gray-200 flex items-center justify-center">
+                                    <div class="w-full h-40 bg-gray-100 rounded border border-gray-200 flex items-center justify-center">
                                         <p class="text-gray-400">Not Available</p>
                                     </div>
                                 </div>
@@ -1097,7 +1104,7 @@ $current_page_items = array_slice($filtered_items, ($page - 1) * $items_per_page
                                     <div class="relative group">
                                         <img src="booking/${data.payment_url}" 
                                             alt="Payment Receipt" 
-                                            class="w-full h-auto rounded border border-gray-200 transition-all duration-300 cursor-pointer hover:opacity-90"
+                                            class="w-full max-h-64 object-contain rounded border border-gray-200 transition-all duration-300 cursor-pointer hover:opacity-90"
                                             onload="this.nextElementSibling.textContent = this.naturalWidth + '×' + this.naturalHeight + 'px'"
                                             onclick="window.open('booking/${data.payment_url}', '_blank')">
                                         <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
@@ -1113,7 +1120,7 @@ $current_page_items = array_slice($filtered_items, ($page - 1) * $items_per_page
                             ` : `
                                 <div class="col-span-1">
                                     <p class="text-sm text-gray-500 mb-2">Payment Receipt</p>
-                                    <div class="w-full h-48 bg-gray-100 rounded border border-gray-200 flex items-center justify-center">
+                                    <div class="w-full h-40 bg-gray-100 rounded border border-gray-200 flex items-center justify-center">
                                         <p class="text-gray-400">Not Available</p>
                                     </div>
                                 </div>
@@ -1129,16 +1136,17 @@ $current_page_items = array_slice($filtered_items, ($page - 1) * $items_per_page
         .catch(error => {
             console.error('Error:', error);
             document.getElementById('bookingDetailsContent').innerHTML = `
-                <div class="col-span-2 text-center py-8">
+                <div class="text-center py-8">
                     <div class="bg-red-50 border-l-4 border-red-400 p-4 rounded-md">
                         <div class="flex items-center">
                             <div class="flex-shrink-0">
                                 <svg class="h-5 w-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
-                                </svg>
-                            </div>
-                            <div class="ml-3">
-                                <p class="text-sm text-red-700">Failed to load booking details. Please try again.</p>
+                                    </svg>
+                                </div>
+                                <div class="ml-3">
+                                    <p class="text-sm text-red-700">Failed to load booking details. Please try again.</p>
+                                </div>
                             </div>
                         </div>
                     </div>
