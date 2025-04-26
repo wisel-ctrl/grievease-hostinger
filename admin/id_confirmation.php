@@ -78,7 +78,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && isset($_
             $_SESSION['message'] = "ID request denied. Reason: " . htmlspecialchars($decline_reason);
             $_SESSION['message_type'] = "info";
         }
-    }    
+    } 
     // Redirect to refresh the page
     header("Location: id_confirmation.php");
     exit();
@@ -447,6 +447,7 @@ $denied = $result->fetch_assoc()['count'];
     </div>
 </div>
 
+
 <script>
     // Image modal functionality
     function openModal(imagePath) {
@@ -501,54 +502,142 @@ $denied = $result->fetch_assoc()['count'];
         });
     }
     
-    function confirmDeny(formId) {
-        const declineReasons = [
-            'Incomplete Document Visibility',
-            'Cropped or Cut-off Text',
-            'Blurry or Low-Quality Image',
-            'Glare or Shadows',
-            'Missing Critical Details'
-        ];
-        
-        // Create HTML for the select dropdown
-        let selectHtml = '<select id="swalDeclineReason" class="w-full mt-3 p-2 border border-gray-300 rounded focus:ring-yellow-500 focus:border-yellow-500">';
-        selectHtml += '<option value="">Select a reason for decline</option>';
-        declineReasons.forEach(reason => {
-            selectHtml += `<option value="${reason}">${reason}</option>`;
-        });
-        selectHtml += '</select>';
-        
-        Swal.fire({
-            title: 'Deny ID Verification',
-            html: `Are you sure you want to deny this ID verification?<br><br>${selectHtml}`,
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#EF4444',
-            cancelButtonColor: '#6B7280',
-            confirmButtonText: 'Confirm Denial',
-            cancelButtonText: 'Cancel',
-            focusConfirm: false,
-            preConfirm: () => {
-                const reason = document.getElementById('swalDeclineReason').value;
-                if (!reason) {
-                    Swal.showValidationMessage('Please select a reason for decline');
-                    return false;
-                }
-                return reason;
-            }
-        }).then((result) => {
-            if (result.isConfirmed) {
-                const form = document.getElementById(formId);
-                // Create a hidden input for the decline reason
-                const input = document.createElement('input');
-                input.type = 'hidden';
-                input.name = 'decline_reason';
-                input.value = result.value;
-                form.appendChild(input);
-                form.submit();
-            }
-        });
+let currentDenyFormId = null;
+
+function openCustomReasonModal(formId) {
+    currentDenyFormId = formId;
+    document.getElementById('customReasonModal').classList.remove('hidden');
+}
+
+function closeCustomReasonModal() {
+    document.getElementById('customReasonModal').classList.add('hidden');
+    document.getElementById('customDeclineReason').value = '';
+}
+
+function cancelCustomReason() {
+    closeCustomReasonModal();
+    // Reopen the SweetAlert
+    confirmDeny(currentDenyFormId);
+}
+
+function saveCustomReason() {
+    const customReason = document.getElementById('customDeclineReason').value.trim();
+    if (!customReason) {
+        Swal.fire('Error', 'Please enter a decline reason', 'error');
+        return;
     }
+    
+    // Submit the form with the custom reason
+    const form = document.getElementById(currentDenyFormId);
+    
+    // Remove any existing hidden input for decline_reason
+    const existingInput = form.querySelector('input[name="decline_reason"]');
+    if (existingInput) {
+        form.removeChild(existingInput);
+    }
+    
+    // Add the custom reason to the form
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'decline_reason';
+    input.value = customReason;
+    form.appendChild(input);
+    
+    // Submit the form
+    form.submit();
+}
+
+function confirmDeny(formId) {
+    const declineReasons = [
+        'Incomplete Document Visibility',
+        'Cropped or Cut-off Text',
+        'Blurry or Low-Quality Image',
+        'Glare or Shadows',
+        'Missing Critical Details',
+        'Others...'
+    ];
+    
+    // Create HTML for the select dropdown
+    let selectHtml = '<select id="swalDeclineReason" class="w-full mt-3 p-2 border border-gray-300 rounded focus:ring-yellow-500 focus:border-yellow-500">';
+    selectHtml += '<option value="">Select a reason for decline</option>';
+    declineReasons.forEach(reason => {
+        selectHtml += `<option value="${reason}">${reason}</option>`;
+    });
+    selectHtml += '</select>';
+    
+    Swal.fire({
+        title: 'Deny ID Verification',
+        html: `Are you sure you want to deny this ID verification?<br><br>${selectHtml}`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#EF4444',
+        cancelButtonColor: '#6B7280',
+        confirmButtonText: 'Confirm Decline',
+        cancelButtonText: 'Cancel',
+        focusConfirm: false,
+        preConfirm: () => {
+            const reason = document.getElementById('swalDeclineReason').value;
+            if (!reason) {
+                Swal.showValidationMessage('Please select a reason for decline');
+                return false;
+            }
+            
+            if (reason === 'Others...') {
+                // Show custom reason modal and prevent form submission
+                openCustomReasonModal(formId);
+                return false;
+            }
+            
+            return reason;
+        }
+    }).then((result) => {
+        if (result.isConfirmed && result.value) {
+            const form = document.getElementById(formId);
+            
+            // Remove any existing hidden input for decline_reason
+            const existingInput = form.querySelector('input[name="decline_reason"]');
+            if (existingInput) {
+                form.removeChild(existingInput);
+            }
+            
+            // Add the selected reason to the form
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'decline_reason';
+            input.value = result.value;
+            form.appendChild(input);
+            
+            // Submit the form
+            form.submit();
+        }
+    });
+    
+    // Add event listener for the select change
+    setTimeout(() => {
+        const selectElement = document.getElementById('swalDeclineReason');
+        if (selectElement) {
+            selectElement.addEventListener('change', function() {
+                if (this.value === 'Others...') {
+                    // Close the SweetAlert and open custom reason modal
+                    Swal.close();
+                    openCustomReasonModal(formId);
+                }
+            });
+        }
+    }, 100);
+}
 </script>
+
+<!-- Custom Decline Reason Modal -->
+<div id="customReasonModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999] hidden">
+    <div class="bg-white rounded-lg p-6 w-full max-w-md">
+        <h3 class="text-lg font-medium mb-4">Enter Custom Decline Reason</h3>
+        <textarea id="customDeclineReason" class="w-full p-3 border border-gray-300 rounded mb-4" rows="4" placeholder="Please specify the reason for declining..."></textarea>
+        <div class="flex justify-end space-x-3">
+            <button onclick="cancelCustomReason()" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">Cancel</button>
+            <button onclick="saveCustomReason()" class="px-4 py-2 bg-yellow-600 text-white rounded-md hover:bg-yellow-700">Save Reason</button>
+        </div>
+    </div>
+</div>
 </body>
 </html>
