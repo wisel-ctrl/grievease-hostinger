@@ -824,9 +824,12 @@ $current_page_items = array_slice($filtered_items, ($page - 1) * $items_per_page
 
         <!-- ID Image Modal -->
 <div id="idImageModal" class="fixed inset-0 z-50 hidden overflow-y-auto">
+    <!-- Blurred Backdrop (added this div) -->
+    <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+    
     <div class="flex items-center justify-center min-h-screen">
-        <div class="rounded-lg max-w-2xl w-full mx-4 relative overflow-hidden">
-            <!-- Dynamic Header - Background color will be set by JavaScript -->
+        <div class="rounded-lg max-w-2xl w-full mx-4 relative overflow-hidden z-10"> <!-- Added z-10 -->
+            <!-- Dynamic Header -->
             <div id="idModalHeader" class="px-4 py-3 bg-yellow-600">
                 <h3 class="text-lg font-semibold text-white flex items-center justify-between">
                     <span>
@@ -839,7 +842,7 @@ $current_page_items = array_slice($filtered_items, ($page - 1) * $items_per_page
                 </h3>
             </div>
             
-            <!-- Content (white background) -->
+            <!-- Content -->
             <div class="bg-white p-4">
                 <div class="flex justify-center">
                     <img id="modalIdImage" src="" alt="Uploaded ID" class="max-w-full max-h-[70vh] rounded border border-gray-200">
