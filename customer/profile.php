@@ -840,12 +840,6 @@ function closeImageModal() {
     }, 300);
 }
 
-// Edit Profile Button Functionality
-document.getElementById('edit-profile-btn').addEventListener('click', function() {
-    // Redirect to the edit profile page
-    window.location.href = 'edit-profile-modal';
-});
-
 // Initialize tooltips if any
 function initTooltips() {
     const tooltips = document.querySelectorAll('[data-tooltip]');
