@@ -808,10 +808,15 @@ document.addEventListener('click', function(event) {
                                     </div>
                                     
                                     <div class="mt-3 flex flex-wrap gap-2 items-center justify-between">
-                                        <button onclick="viewBookingDetails(<?php echo $booking['booking_id']; ?>, '<?php echo $booking['status']; ?>')" 
-                                            class="bg-yellow-600 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition flex items-center">
-                                            <i class="fas fa-eye mr-1 text-xs"></i> View Details
-                                        </button>
+                                    <button onclick="viewBookingDetails(<?php echo $booking['booking_id']; ?>, '<?php echo $booking['status']; ?>')" 
+    class="<?php 
+        if($booking['status'] === 'Pending') echo 'bg-yellow-600 hover:bg-yellow-700';
+        elseif($booking['status'] === 'Accepted') echo 'bg-green-600 hover:bg-green-700';
+        elseif($booking['status'] === 'Declined') echo 'bg-red-600 hover:bg-red-700';
+        else echo 'bg-gray-600 hover:bg-gray-700';
+    ?> text-white px-3 py-1.5 rounded-lg text-xs font-medium transition flex items-center">
+    <i class="fas fa-eye mr-1 text-xs"></i> View Details
+</button>
                                         
                                         <!-- Timestamp -->
                                         <div class="text-xs text-gray-500 flex items-center">
@@ -899,9 +904,14 @@ document.addEventListener('click', function(event) {
                                     <div class="mt-3 flex flex-wrap gap-2 items-center justify-between">
                                         <?php if (!empty($id_validation['image_path'])): ?>
                                             <button onclick="viewIdImage('<?php echo htmlspecialchars($id_validation['image_path']); ?>')" 
-                                                class="bg-navy text-white px-3 py-1.5 rounded-lg text-xs font-medium transition flex items-center">
-                                                <i class="fas fa-image mr-1 text-xs"></i> View ID
-                                            </button>
+    class="<?php 
+        if($id_validation['is_validated'] === 'no') echo 'bg-yellow-600 hover:bg-yellow-700';
+        elseif($id_validation['is_validated'] === 'valid') echo 'bg-green-600 hover:bg-green-700';
+        elseif($id_validation['is_validated'] === 'denied') echo 'bg-red-600 hover:bg-red-700';
+        else echo 'bg-gray-600 hover:bg-gray-700';
+    ?> text-white px-3 py-1.5 rounded-lg text-xs font-medium transition flex items-center">
+    <i class="fas fa-image mr-1 text-xs"></i> View ID
+</button>
                                         <?php else: ?>
                                             <span class="text-gray-500 text-xs">No ID image available</span>
                                         <?php endif; ?>
