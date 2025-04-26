@@ -498,24 +498,56 @@ $current_page_items = array_slice($filtered_items, ($page - 1) * $items_per_page
 
     <!-- Dashboard Layout -->
     <div class="flex flex-col lg:flex-row gap-4">
-        <!-- Left Sidebar: Filter Controls - Horizontal scrollable on mobile -->
+        <!-- Left Sidebar: Filter Controls - Dropdown on mobile, Regular on desktop -->
         <div class="lg:w-1/4 mb-4 lg:mb-0">
-            <div class="bg-white rounded-lg shadow-sm p-4 sticky top-20">
+            <!-- Mobile Dropdown Filter -->
+            <div class="lg:hidden bg-white rounded-lg shadow-sm p-4">
+                <div class="flex items-center justify-between mb-2">
+                    <h2 class="text-navy text-lg">Filter by Status</h2>
+                    <span class="text-xs text-navy flex items-center">
+                        <span class="mr-1">Current:</span>
+                        <span class="font-medium">
+                            <?php 
+                            $filter_name = ucfirst($current_filter);
+                            if($current_filter === 'all') { echo "All Notifications"; }
+                            else { echo $filter_name; }
+                            ?>
+                        </span>
+                    </span>
+                </div>
+                <select id="mobileFilterDropdown" class="w-full px-3 py-2 bg-white border border-input-border rounded-md focus:outline-none focus:ring-1 focus:ring-yellow-600/50 text-sm" onchange="window.location.href=this.value">
+                    <option value="?filter=all" <?php echo $current_filter === 'all' ? 'selected' : ''; ?>>
+                        All Notifications (<?php echo $notifications_count['total']; ?>)
+                    </option>
+                    <option value="?filter=pending" <?php echo $current_filter === 'pending' ? 'selected' : ''; ?>>
+                        Pending (<?php echo $notifications_count['pending']; ?>)
+                    </option>
+                    <option value="?filter=accepted" <?php echo $current_filter === 'accepted' ? 'selected' : ''; ?>>
+                        Accepted (<?php echo $notifications_count['accepted']; ?>)
+                    </option>
+                    <option value="?filter=declined" <?php echo $current_filter === 'declined' ? 'selected' : ''; ?>>
+                        Declined (<?php echo $notifications_count['declined']; ?>)
+                    </option>
+                </select>
+            </div>
+            
+            <!-- Desktop Filter Buttons -->
+            <div class="hidden lg:block bg-white rounded-lg shadow-sm p-4 sticky top-20">
                 <h2 class="text-navy text-lg mb-3">Filter by Status</h2>
                 
-                <!-- Filter Buttons - Horizontal scrollable menu on small screens -->
-                <div class="flex flex-nowrap lg:flex-col overflow-x-auto lg:overflow-visible space-x-2 lg:space-x-0 lg:space-y-1.5 pb-2 lg:pb-0">
+                <!-- Filter Buttons -->
+                <div class="space-y-1.5">
                     <a href="?filter=all" 
-                       class="flex-shrink-0 lg:w-full <?php echo $current_filter === 'all' ? 'bg-navy text-white filter-active' : 'bg-white hover:bg-navy/10 border border-input-border text-navy'; ?> px-3 py-2 rounded-md text-xs font-medium flex items-center justify-between group transition-all duration-200">
+                       class="w-full <?php echo $current_filter === 'all' ? 'bg-navy text-white filter-active' : 'bg-white hover:bg-navy/10 border border-input-border text-navy'; ?> px-3 py-2 rounded-md text-xs font-medium flex items-center justify-between group transition-all duration-200">
                         <span class="flex items-center">
                             <i class="fas fa-inbox mr-2"></i>
-                            <span>All</span>
+                            <span>All Notifications</span>
                         </span>
                         <span class="<?php echo $current_filter === 'all' ? 'bg-white text-navy' : 'bg-navy/20 text-navy'; ?> w-5 h-5 rounded-full flex items-center justify-center font-bold text-xs"><?php echo $notifications_count['total']; ?></span>
                     </a>
                     
                     <a href="?filter=pending" 
-                       class="flex-shrink-0 lg:w-full <?php echo $current_filter === 'pending' ? 'bg-yellow-600 text-white filter-active' : 'bg-white hover:bg-yellow-600/10 border border-input-border text-navy'; ?> px-3 py-2 rounded-md text-xs font-medium flex items-center justify-between group transition-all duration-200">
+                       class="w-full <?php echo $current_filter === 'pending' ? 'bg-yellow-600 text-white filter-active' : 'bg-white hover:bg-yellow-600/10 border border-input-border text-navy'; ?> px-3 py-2 rounded-md text-xs font-medium flex items-center justify-between group transition-all duration-200">
                         <span class="flex items-center">
                             <span class="notification-dot <?php echo $current_filter === 'pending' ? 'bg-white' : 'bg-yellow-600'; ?> mr-2"></span>
                             <span>Pending</span>
@@ -524,7 +556,7 @@ $current_page_items = array_slice($filtered_items, ($page - 1) * $items_per_page
                     </a>
                     
                     <a href="?filter=accepted" 
-                       class="flex-shrink-0 lg:w-full <?php echo $current_filter === 'accepted' ? 'bg-success text-white filter-active' : 'bg-white hover:bg-success/10 border border-input-border text-navy'; ?> px-3 py-2 rounded-md text-xs font-medium flex items-center justify-between group transition-all duration-200">
+                       class="w-full <?php echo $current_filter === 'accepted' ? 'bg-success text-white filter-active' : 'bg-white hover:bg-success/10 border border-input-border text-navy'; ?> px-3 py-2 rounded-md text-xs font-medium flex items-center justify-between group transition-all duration-200">
                         <span class="flex items-center">
                             <span class="notification-dot <?php echo $current_filter === 'accepted' ? 'bg-white' : 'bg-success'; ?> mr-2"></span>
                             <span>Accepted</span>
@@ -533,7 +565,7 @@ $current_page_items = array_slice($filtered_items, ($page - 1) * $items_per_page
                     </a>
                     
                     <a href="?filter=declined" 
-                       class="flex-shrink-0 lg:w-full <?php echo $current_filter === 'declined' ? 'bg-error text-white filter-active' : 'bg-white hover:bg-error/10 border border-input-border text-navy'; ?> px-3 py-2 rounded-md text-xs font-medium flex items-center justify-between group transition-all duration-200">
+                       class="w-full <?php echo $current_filter === 'declined' ? 'bg-error text-white filter-active' : 'bg-white hover:bg-error/10 border border-input-border text-navy'; ?> px-3 py-2 rounded-md text-xs font-medium flex items-center justify-between group transition-all duration-200">
                         <span class="flex items-center">
                             <span class="notification-dot <?php echo $current_filter === 'declined' ? 'bg-white' : 'bg-error'; ?> mr-2"></span>
                             <span>Declined</span>
