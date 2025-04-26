@@ -942,7 +942,7 @@ $current_page_items = array_slice($filtered_items, ($page - 1) * $items_per_page
                     <div class="flex justify-between items-center mb-6 bg-gray-50 p-3 sm:p-4 rounded-lg">
                         <div class="flex items-center">
                             <div class="bg-yellow-600 rounded-full p-2 mr-3">
-                                <i class="fas fa-hashtag text-sidebar-accent"></i>
+                                <i class="fas fa-hashtag text-white"></i>
                             </div>
                             <div>
                                 <p class="text-sm text-gray-500">Booking ID</p>
