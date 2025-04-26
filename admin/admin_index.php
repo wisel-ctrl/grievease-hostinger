@@ -876,6 +876,11 @@ foreach ($serviceData as $service => $branches) {
                                 <i class="fas fa-credit-card text-sidebar-accent"></i> Expenses
                             </div>
                         </th>
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(3)">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fas fa-coins text-sidebar-accent"></i> Capital
+                            </div>
+                        </th>
                         <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(4)">
                             <div class="flex items-center gap-1.5">
                                 <i class="fas fa-chart-line text-sidebar-accent"></i> Profit
@@ -897,7 +902,8 @@ foreach ($serviceData as $service => $branches) {
                                     COALESCE(s.service_count, 0) AS service_count,
                                     COALESCE(s.revenue, 0) AS revenue,
                                     COALESCE(e.expenses, 0) AS expenses,
-                                    COALESCE(s.revenue, 0) - (COALESCE(s.capital_total, 0) + COALESCE(e.expenses, 0)) AS profit,
+                                    COALESCE(s.capital_total, 0) AS capital_total,
+                                    (COALESCE(s.revenue, 0) - (COALESCE(s.capital_total, 0) + COALESCE(e.expenses, 0))) AS profit,
                                     CASE 
                                         WHEN COALESCE(s.revenue, 0) > 0 THEN 
                                             (COALESCE(s.revenue, 0) - (COALESCE(s.capital_total, 0) + COALESCE(e.expenses, 0))) / COALESCE(s.revenue, 0) * 100
@@ -931,7 +937,8 @@ foreach ($serviceData as $service => $branches) {
                                     GROUP BY 
                                         branch_id
                                 ) e ON b.branch_id = e.branch_id
-                                WHERE b.branch_id IN (1, 2)
+                                WHERE 
+                                    b.branch_id IN (1, 2)
                                 ORDER BY 
                                     b.branch_name ASC
                                 ";
@@ -946,13 +953,15 @@ foreach ($serviceData as $service => $branches) {
                         $branchName = htmlspecialchars($branch['branch_name']);
                         $serviceCount = $branch['service_count'] ?? 0;
                         $revenue = $branch['revenue'] ?? 0;
-                        $expenses = $branch['expenses'] + $branch['capital_total'] ?? 0;
+                        $expenses = $branch['expenses'] ?? 0;
+                        $capitalTotal = $branch['capital_total'] ?? 0;
                         $profit = $branch['profit'] ?? 0;
                         $margin = $branch['margin'] ?? 0;
                         
                         // Format numbers
                         $formattedRevenue = number_format($revenue, 2);
                         $formattedExpenses = number_format($expenses, 2);
+                        $formattedCapital = number_format($capitalTotal, 2);
                         $formattedProfit = number_format($profit, 2);
                         $formattedMargin = number_format($margin, 1);
                         
@@ -976,6 +985,7 @@ foreach ($serviceData as $service => $branches) {
                             <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo $serviceCount; ?></td>
                             <td class="px-4 py-3.5 text-sm font-medium text-sidebar-text">₱<?php echo $formattedRevenue; ?></td>
                             <td class="px-4 py-3.5 text-sm text-sidebar-text">₱<?php echo $formattedExpenses; ?></td>
+                            <td class="px-4 py-3.5 text-sm text-sidebar-text">₱<?php echo $formattedCapital; ?></td>
                             <td class="px-4 py-3.5 text-sm font-medium text-sidebar-text">₱<?php echo $formattedProfit; ?></td>
                             <td class="px-4 py-3.5 text-sm">
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <?php echo $profitClass; ?> border">
@@ -988,7 +998,7 @@ foreach ($serviceData as $service => $branches) {
                 } else {
                     ?>
                     <tr>
-                        <td colspan="6" class="px-4 py-3.5 text-sm text-center text-sidebar-text">No branch data available for the current month.</td>
+                        <td colspan="7" class="px-4 py-3.5 text-sm text-center text-sidebar-text">No branch data available for the current month.</td>
                     </tr>
                     <?php
                 }
