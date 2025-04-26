@@ -793,75 +793,86 @@ header("Pragma: no-cache");
                 }
 
                 function closeDeclineReasonModal() {
-                    const modal = document.getElementById('declineReasonModal');
-                    const content = modal.querySelector('.transform');
-                    
-                    content.classList.add('scale-95', 'opacity-0');
-                    content.classList.remove('scale-100');
-                    
-                    setTimeout(() => {
-                        modal.classList.add('hidden');
-                        modal.classList.remove('flex');
-                        document.body.style.overflow = 'auto';
-                    }, 200);
-                }
+    const modal = document.getElementById('declineReasonModal');
+    const modalContent = modal.querySelector('.transform');
+    
+    // Add animation for closing
+    modalContent.classList.add('scale-95', 'opacity-0');
+    modalContent.classList.remove('scale-100');
+    
+    // Wait for animation to complete before hiding
+    setTimeout(() => {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+        document.body.style.overflow = 'auto';
+    }, 300);
+}
 
-                function openImageModal(imagePath) {
-                    // Set the source of the enlarged image
-                    document.getElementById('enlargedImage').src = imagePath;
-                    
-                    // Show the modal with animation
-                    const modal = document.getElementById('imageModal');
-                    modal.classList.remove('hidden');
-                    modal.classList.add('flex');
-                    modal.style.opacity = '0';
-                    
-                    // Fade in animation
-                    setTimeout(() => {
-                        modal.style.opacity = '1';
-                    }, 10);
-                    
-                    // Prevent scrolling of the background
-                    document.body.style.overflow = 'hidden';
-                }
+function openImageModal(imageSrc) {
+    // Set the image source
+    document.getElementById('enlargedImage').src = imageSrc;
+    
+    // Show the modal with animation
+    const modal = document.getElementById('imageModal');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    modal.style.opacity = '0';
+    
+    // Animate fade in
+    setTimeout(() => {
+        modal.style.opacity = '1';
+    }, 10);
+    
+    document.body.style.overflow = 'hidden';
+}
 
-                function closeImageModal() {
-                    // Fade out animation
-                    const modal = document.getElementById('imageModal');
-                    modal.style.opacity = '0';
-                    
-                    setTimeout(() => {
-                        // Hide the modal
-                        modal.classList.add('hidden');
-                        modal.classList.remove('flex');
-                        
-                        // Restore scrolling
-                        document.body.style.overflow = 'auto';
-                    }, 300);
-                }
+function closeImageModal() {
+    const modal = document.getElementById('imageModal');
+    
+    // Animate fade out
+    modal.style.opacity = '0';
+    
+    // Wait for animation to complete before hiding
+    setTimeout(() => {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+        document.body.style.overflow = 'auto';
+    }, 300);
+}
 
-                // Close modal when clicking outside the image container
-                document.getElementById('imageModal').addEventListener('click', function(event) {
-                    if (event.target === this) {
-                        closeImageModal();
-                    }
-                });
+// Edit Profile Button Functionality
+document.getElementById('edit-profile-btn').addEventListener('click', function() {
+    // Redirect to the edit profile page
+    window.location.href = 'edit-profile.php';
+});
 
-                // Close modal with Escape key
-                document.addEventListener('keydown', function(event) {
-                    if (event.key === 'Escape') {
-                        if (!document.getElementById('imageModal').classList.contains('hidden')) {
-                            closeImageModal();
-                        }
-                        if (!document.getElementById('declineReasonModal').classList.contains('hidden')) {
-                            closeDeclineReasonModal();
-                        }
-                    }
-                });
-                </script>
-            </div>
-        </div>
-    </div>
+// Initialize tooltips if any
+function initTooltips() {
+    const tooltips = document.querySelectorAll('[data-tooltip]');
+    tooltips.forEach(tooltip => {
+        // Initialize tooltip logic here if using a library
+        // or implement custom tooltip behavior
+    });
+}
+
+// Initialize the page
+document.addEventListener('DOMContentLoaded', function() {
+    initTooltips();
+    
+    // Check for URL parameters that might indicate we should show modals
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('show_decline_reason') === 'true') {
+        // Get the reason from the database or URL if available
+        const reason = '<?php echo htmlspecialchars($decline_reason); ?>';
+        if (reason) {
+            openDeclineReasonModal(reason);
+        }
+    }
+});
+</script>
+</div>
+</div>
+</div>
 </div>
                     
                     <!-- Bookings Tab -->
