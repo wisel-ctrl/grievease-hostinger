@@ -739,7 +739,7 @@ document.addEventListener('click', function(event) {
     <div class="flex flex-col">
         <div class="flex-1 py-4 px-4 sm:py-5 sm:px-7">
             <!-- Top Row - Status and Timestamp/Branch -->
-            <div class="flex justify-between items-start mb-2">
+            <div class="flex justify-between items-start mb-1">  <!-- Changed mb-2 to mb-1 -->
                 <!-- Status Badge -->
                 <span class="<?php echo $status_bg; ?> <?php echo $status_text_color; ?> text-xs px-2 py-1 rounded-full inline-flex items-center">
                     <i class="<?php echo $status_icon; ?> mr-1 text-xs"></i>
@@ -768,8 +768,8 @@ document.addEventListener('click', function(event) {
                 </div>
             </div>
 
-            <!-- Service Name -->
-            <h3 class="text-navy text-base sm:text-lg font-hedvig mt-1">
+            <!-- Service Name - Moved up by reducing margin-top -->
+            <h3 class="text-navy text-base sm:text-lg font-hedvig">  <!-- Removed mt-1 -->
                 <?php echo htmlspecialchars($booking['service_name']); ?>
             </h3>
             
