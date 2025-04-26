@@ -249,7 +249,7 @@ $paeteMetrics = getBranchMetrics($conn, 1); // Paete branch_id = 1
 
 // Get monthly revenue data for the last 6 months
 $monthlyRevenueData = [];
-for ($i = 5; $i >= 0; $i--) {
+for ($i = 11; $i >= 0; $i--) {
     $date = new DateTime();
     $date->modify("-$i months");
     $month = $date->format('m');
