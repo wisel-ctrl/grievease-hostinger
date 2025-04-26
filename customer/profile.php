@@ -527,6 +527,7 @@ header("Pragma: no-cache");
 <div class="mt-8 pt-6 border-t border-gray-200">
     <h3 class="font-hedvig text-lg text-navy mb-4">Uploaded ID</h3>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Left column for status and information -->
         <div>
             <div class="flex justify-between items-start mb-1">
                 <?php if ($uploadedImagePath): ?>
@@ -580,20 +581,23 @@ header("Pragma: no-cache");
                 <?php endif; ?>
             </div>
 
-            <?php if ($uploadedImagePath): ?>
-                <div class="relative">
-                    <!-- Thumbnail image that opens the modal when clicked -->
-                    <img 
-                        src="<?php echo '../uploads/valid_ids/' . htmlspecialchars($uploadedImagePath); ?>" 
-                        alt="Uploaded ID"
-                        class="mt-2 rounded-lg shadow border w-48 h-auto cursor-pointer hover:opacity-90 transition-opacity"
-                        onclick="openImageModal('<?php echo '../uploads/valid_ids/' . htmlspecialchars($uploadedImagePath); ?>')"
-                    >
-                </div>
-            <?php else: ?>
+            <?php if (!$uploadedImagePath): ?>
                 <p class="text-sm text-gray-400 italic">No ID uploaded yet.</p>
             <?php endif; ?>
         </div>
+        
+        <!-- Right column for the image -->
+        <?php if ($uploadedImagePath): ?>
+            <div class="relative">
+                <!-- Thumbnail image that opens the modal when clicked -->
+                <img 
+                    src="<?php echo '../uploads/valid_ids/' . htmlspecialchars($uploadedImagePath); ?>" 
+                    alt="Uploaded ID"
+                    class="mt-2 rounded-lg shadow border w-full max-w-md h-auto cursor-pointer hover:opacity-90 transition-opacity"
+                    onclick="openImageModal('<?php echo '../uploads/valid_ids/' . htmlspecialchars($uploadedImagePath); ?>')"
+                >
+            </div>
+        <?php endif; ?>
     </div>
 </div>
 
