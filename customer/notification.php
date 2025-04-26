@@ -255,29 +255,7 @@ $total_filtered_pages = ceil($total_filtered / $items_per_page);
 // Get current page items
 $current_page_items = array_slice($filtered_items, ($page - 1) * $items_per_page, $items_per_page);
 
-// Get requested page
-$page = isset($_GET['page']) ? intval($_GET['page']) : 1;
-$items_per_page = 5;
-$total_pages = ceil(count($bookings) / $items_per_page);
-if ($page < 1) $page = 1;
-if ($page > $total_pages && $total_pages > 0) $page = $total_pages;
 
-// Filter and paginate bookings
-$filtered_bookings = [];
-foreach ($bookings as $booking) {
-    if ($current_filter === 'all' || 
-        ($current_filter === 'pending' && $booking['status'] === 'Pending') ||
-        ($current_filter === 'accepted' && $booking['status'] === 'Accepted') ||
-        ($current_filter === 'declined' && $booking['status'] === 'Declined')) {
-        $filtered_bookings[] = $booking;
-    }
-}
-
-$total_filtered = count($filtered_bookings);
-$total_filtered_pages = ceil($total_filtered / $items_per_page);
-
-// Get current page items
-$current_page_bookings = array_slice($filtered_bookings, ($page - 1) * $items_per_page, $items_per_page);
 ?>
 
 <script src="customer_support.js"></script>
@@ -589,7 +567,7 @@ $current_page_bookings = array_slice($filtered_bookings, ($page - 1) * $items_pe
             <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-xs"></i>
         </div>
         
-        <?php if (empty($current_page_bookings)): ?>
+        <?php if (empty($current_page_items)): ?>
         <!-- No Notifications Message -->
         <div class="bg-white rounded-md shadow-md p-6 text-center">
             <div class="rounded-full bg-gray-100 p-3 inline-flex items-center justify-center mb-3">
