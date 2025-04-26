@@ -749,19 +749,19 @@ document.addEventListener('DOMContentLoaded', function() {
         </button>
     </div>
 
-    <!-- Booking Details Modal - Enhanced with Traditional Modal UI style and sticky footer -->
-<div id="bookingDetailsModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4 hidden">
-    <div class="w-full max-w-5xl bg-white rounded-2xl shadow-xl overflow-hidden flex flex-col max-h-[90vh] md:max-h-[80vh]">
+    <!-- Booking Details Modal - Styled for Funeral Service Management System -->
+<div id="bookingDetailsModal" class="fixed inset-0 z-50 flex items-center justify-center bg-navy bg-opacity-70 p-4 hidden">
+    <div class="w-full max-w-5xl bg-white rounded-2xl shadow-card overflow-hidden flex flex-col max-h-[90vh] md:max-h-[80vh]">
         <!-- Header - Fixed at top -->
-        <div class="bg-cream p-4 md:p-8">
+        <div class="bg-cream p-4 md:p-8 border-b border-gold/30">
             <div class="flex justify-between items-center mb-4">
                 <div class="sm:flex sm:items-center">
-                    <div class="bg-navy/10 rounded-full p-3 mr-4">
-                        <i class="fas fa-info-circle text-navy text-xl"></i>
+                    <div class="bg-gold/20 rounded-full p-3 mr-4">
+                        <i class="fas fa-info-circle text-gold text-xl"></i>
                     </div>
                     <h3 class="text-2xl leading-6 font-hedvig text-navy">Booking Details</h3>
                 </div>
-                <button onclick="closeModal()" class="text-gray-500 hover:text-navy">
+                <button onclick="closeModal()" class="text-navy hover:text-gold transition-colors">
                     <i class="fas fa-times text-xl md:text-2xl"></i>
                 </button>
             </div>
@@ -777,13 +777,14 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
         
         <!-- Footer - Fixed at bottom -->
-        <div class="bg-gray-50 px-6 py-4 flex justify-end border-t border-gray-200 sticky bottom-0">
-            <button type="button" onclick="closeModal()" class="bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg shadow-md transition-all duration-300">
+        <div class="bg-cream px-6 py-4 flex justify-end border-t border-gold/30 sticky bottom-0">
+            <button type="button" onclick="closeModal()" class="bg-gold hover:bg-darkgold text-white px-6 py-3 rounded-lg shadow-md transition-all duration-300">
                 Close
             </button>
         </div>
     </div>
 </div>
+
     <?php include 'customService/chat_elements.html'; ?>
     
     <script>
@@ -804,8 +805,8 @@ document.addEventListener('DOMContentLoaded', function() {
         // Show loading state with improved animation
         document.getElementById('bookingDetailsContent').innerHTML = `
             <div class="col-span-2 flex flex-col items-center justify-center py-10">
-                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-600"></div>
-                <p class="mt-3 text-gray-600">Loading details...</p>
+                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-gold"></div>
+                <p class="mt-3 text-navy font-hedvig">Loading details...</p>
             </div>
         `;
         
@@ -824,7 +825,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             <div class="bg-error/10 rounded-full p-4 mx-auto w-16 h-16 flex items-center justify-center mb-4">
                                 <i class="fas fa-exclamation-circle text-error text-2xl"></i>
                             </div>
-                            <p class="text-error">${data.error}</p>
+                            <p class="text-error font-inter">${data.error}</p>
                         </div>
                     `;
                 } else {
@@ -846,8 +847,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                     switch(data.status) {
                         case 'Pending':
-                            statusColorClass = 'text-yellow-600';
-                            statusBgClass = 'bg-yellow-600/20';
+                            statusColorClass = 'text-gold';
+                            statusBgClass = 'bg-gold/20';
                             statusIcon = 'fas fa-clock';
                             break;
                         case 'Accepted':
@@ -861,8 +862,8 @@ document.addEventListener('DOMContentLoaded', function() {
                             statusIcon = 'fas fa-times-circle';
                             break;
                         default:
-                            statusColorClass = 'text-gray-700';
-                            statusBgClass = 'bg-gray-200';
+                            statusColorClass = 'text-navy';
+                            statusBgClass = 'bg-navy/10';
                             statusIcon = 'fas fa-info-circle';
                     }
                     
@@ -870,18 +871,18 @@ document.addEventListener('DOMContentLoaded', function() {
                     let htmlContent = `
                         <div class="col-span-2">
                             <div class="flex items-center mb-3">
-                                <i class="fas fa-user text-navy bg-navy/10 p-2 rounded-full mr-3"></i>
-                                <h4 class="font-semibold text-navy text-lg">Deceased Information</h4>
+                                <i class="fas fa-user text-gold bg-gold/10 p-2 rounded-full mr-3"></i>
+                                <h4 class="font-playfair text-navy text-lg">Deceased Information</h4>
                             </div>
-                            <div class="bg-cream p-4 rounded-lg mb-6">
+                            <div class="bg-cream p-4 rounded-lg mb-6 border border-gold/20">
                                 <div class="grid grid-cols-2 gap-4">
                                     <div>
                                         <p class="mb-2"><span class="font-medium text-navy">Full Name:</span></p>
-                                        <p class="bg-white px-3 py-2 rounded-md">${data.deceased_lname}, ${data.deceased_fname} ${data.deceased_midname || ''}</p>
+                                        <p class="bg-white px-3 py-2 rounded-md border border-gold/10">${data.deceased_lname}, ${data.deceased_fname} ${data.deceased_midname || ''}</p>
                                     </div>
                                     <div>
                                         <p class="mb-2"><span class="font-medium text-navy">Date of Death:</span></p>
-                                        <p class="bg-white px-3 py-2 rounded-md">${formatDate(data.date_of_death)}</p>
+                                        <p class="bg-white px-3 py-2 rounded-md border border-gold/10">${formatDate(data.date_of_death)}</p>
                                     </div>
                                 </div>
                             </div>
@@ -889,26 +890,26 @@ document.addEventListener('DOMContentLoaded', function() {
 
                         <div class="col-span-2">
                             <div class="flex items-center mb-3">
-                                <i class="fas fa-calendar-alt text-navy bg-navy/10 p-2 rounded-full mr-3"></i>
-                                <h4 class="font-semibold text-navy text-lg">Service Details</h4>
+                                <i class="fas fa-calendar-alt text-gold bg-gold/10 p-2 rounded-full mr-3"></i>
+                                <h4 class="font-playfair text-navy text-lg">Service Details</h4>
                             </div>
-                            <div class="bg-cream p-4 rounded-lg mb-6">
+                            <div class="bg-cream p-4 rounded-lg mb-6 border border-gold/20">
                                 <div class="grid grid-cols-2 gap-4">
                                     <div>
                                         <p class="mb-2"><span class="font-medium text-navy">Service Type:</span></p>
-                                        <p class="bg-white px-3 py-2 rounded-md">${data.service_name}</p>
+                                        <p class="bg-white px-3 py-2 rounded-md border border-gold/10">${data.service_name}</p>
                                     </div>
                                     <div>
                                         <p class="mb-2"><span class="font-medium text-navy">Branch:</span></p>
-                                        <p class="bg-white px-3 py-2 rounded-md">${data.branch_name}</p>
+                                        <p class="bg-white px-3 py-2 rounded-md border border-gold/10">${data.branch_name}</p>
                                     </div>
                                     <div>
                                         <p class="mb-2"><span class="font-medium text-navy">Date & Time:</span></p>
-                                        <p class="bg-white px-3 py-2 rounded-md">${formattedBookingDate}</p>
+                                        <p class="bg-white px-3 py-2 rounded-md border border-gold/10">${formattedBookingDate}</p>
                                     </div>
                                     <div>
                                         <p class="mb-2"><span class="font-medium text-navy">Status:</span></p>
-                                        <p class="bg-white px-3 py-2 rounded-md">
+                                        <p class="bg-white px-3 py-2 rounded-md border border-gold/10">
                                             <span class="${statusBgClass} ${statusColorClass} inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium">
                                                 <i class="${statusIcon} mr-1"></i> ${data.status}
                                             </span>
@@ -920,17 +921,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
                         <div class="col-span-2">
                             <div class="flex items-center mb-3">
-                                <i class="fas fa-comment-alt text-navy bg-navy/10 p-2 rounded-full mr-3"></i>
-                                <h4 class="font-semibold text-navy text-lg">Additional Information</h4>
+                                <i class="fas fa-comment-alt text-gold bg-gold/10 p-2 rounded-full mr-3"></i>
+                                <h4 class="font-playfair text-navy text-lg">Additional Information</h4>
                             </div>
-                            <div class="bg-cream p-4 rounded-lg">
+                            <div class="bg-cream p-4 rounded-lg border border-gold/20">
                                 <p class="mb-2"><span class="font-medium text-navy">Special Instructions:</span></p>
-                                <p class="bg-white px-3 py-2 rounded-md min-h-[60px]">${data.special_instructions || 'No special instructions provided.'}</p>
+                                <p class="bg-white px-3 py-2 rounded-md min-h-[60px] border border-gold/10">${data.special_instructions || 'No special instructions provided.'}</p>
                                 
                                 ${data.admin_message ? `
                                 <div class="mt-4">
                                     <p class="mb-2"><span class="font-medium text-navy">Message from Staff:</span></p>
-                                    <p class="bg-white px-3 py-2 rounded-md">${data.admin_message}</p>
+                                    <p class="bg-white px-3 py-2 rounded-md border border-gold/10">${data.admin_message}</p>
                                 </div>
                                 ` : ''}
                             </div>
@@ -946,7 +947,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <div class="bg-error/10 rounded-full p-4 mx-auto w-16 h-16 flex items-center justify-center mb-4">
                             <i class="fas fa-exclamation-triangle text-error text-2xl"></i>
                         </div>
-                        <p class="text-error">Failed to load booking details. Please try again.</p>
+                        <p class="text-error font-inter">Failed to load booking details. Please try again.</p>
                     </div>
                 `;
                 console.error('Error fetching booking details:', error);
