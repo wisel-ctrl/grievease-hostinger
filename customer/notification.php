@@ -868,7 +868,7 @@ $current_page_items = array_slice($filtered_items, ($page - 1) * $items_per_page
     </button>
     
     <!-- Modal Header -->
-    <div class="px-4 sm:px-6 py-4 sm:py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
+    <div class="px-4 sm:px-6 py-4 sm:py-5 border-b bg-yellow-600 border-gray-200">
       <h3 id="modal-package-title" class="text-lg sm:text-xl font-bold text-white flex items-center">
         Booking Details
       </h3>
