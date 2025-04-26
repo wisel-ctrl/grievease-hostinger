@@ -439,44 +439,44 @@ $current_page_bookings = array_slice($filtered_bookings, ($page - 1) * $items_pe
     <!-- Main Content Container -->
     <div class="container mx-auto px-4 py-8 max-w-screen-xl mt-[var(--navbar-height)]">
         <!-- Page Header with gradient background -->
-        <div class="bg-gradient-to-b from-yellow-600/10 to-transparent rounded-xl py-10 px-6 mb-10 shadow-sm">
-            <div class="max-w-3xl mx-auto text-center">
-                <h1 class="text-4xl md:text-5xl font-hedvig text-navy mb-4">Notifications</h1>
-                <p class="text-dark text-lg max-w-2xl mx-auto leading-relaxed">Stay updated with important information about your services and arrangements.</p>
-                <div class="w-24 h-1 bg-yellow-600 mx-auto mt-4 rounded-full"></div>
-                
-                <!-- Notification Summary Cards -->
-                <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4 max-w-2xl mx-auto">
-                    <div class="bg-white rounded-xl shadow-md p-5 hover-scale">
-                        <div class="flex flex-col items-center">
-                            <div class="rounded-full bg-error/10 p-3 mb-2">
-                                <i class="fas fa-clock text-error text-xl"></i>
-                            </div>
-                            <div class="text-error font-bold text-3xl"><?php echo $notifications_count['pending']; ?></div>
-                            <div class="text-gray-600 font-medium">Pending</div>
-                        </div>
+        <div class="bg-gradient-to-b from-yellow-600/10 to-transparent rounded-xl py-8 px-6 mb-10 shadow-sm">
+    <div class="max-w-3xl mx-auto text-center">
+        <h1 class="text-4xl md:text-5xl font-hedvig text-navy mb-3">Notifications</h1>
+        <p class="text-dark text-lg max-w-2xl mx-auto leading-relaxed">Stay updated with important information about your services and arrangements.</p>
+        <div class="w-24 h-1 bg-yellow-600 mx-auto mt-3 rounded-full"></div>
+        
+        <!-- Notification Summary Cards -->
+        <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4 max-w-2xl mx-auto">
+            <div class="bg-white rounded-xl shadow-md p-3 hover-scale">
+                <div class="flex flex-col items-center">
+                    <div class="rounded-full bg-error/10 p-2 mb-1">
+                        <i class="fas fa-clock text-error text-lg"></i>
                     </div>
-                    <div class="bg-white rounded-xl shadow-md p-5 hover-scale">
-                        <div class="flex flex-col items-center">
-                            <div class="rounded-full bg-success/10 p-3 mb-2">
-                                <i class="fas fa-check-circle text-success text-xl"></i>
-                            </div>
-                            <div class="text-success font-bold text-3xl"><?php echo $notifications_count['accepted']; ?></div>
-                            <div class="text-gray-600 font-medium">Accepted</div>
-                        </div>
+                    <div class="text-error font-bold text-2xl"><?php echo $notifications_count['pending']; ?></div>
+                    <div class="text-gray-600 text-sm">Pending</div>
+                </div>
+            </div>
+            <div class="bg-white rounded-xl shadow-md p-3 hover-scale">
+                <div class="flex flex-col items-center">
+                    <div class="rounded-full bg-success/10 p-2 mb-1">
+                        <i class="fas fa-check-circle text-success text-lg"></i>
                     </div>
-                    <div class="bg-white rounded-xl shadow-md p-5 hover-scale">
-                        <div class="flex flex-col items-center">
-                            <div class="rounded-full bg-navy/10 p-3 mb-2">
-                                <i class="fas fa-bell text-navy text-xl"></i>
-                            </div>
-                            <div class="text-navy font-bold text-3xl"><?php echo $notifications_count['total']; ?></div>
-                            <div class="text-gray-600 font-medium">Total</div>
-                        </div>
+                    <div class="text-success font-bold text-2xl"><?php echo $notifications_count['accepted']; ?></div>
+                    <div class="text-gray-600 text-sm">Accepted</div>
+                </div>
+            </div>
+            <div class="bg-white rounded-xl shadow-md p-3 hover-scale">
+                <div class="flex flex-col items-center">
+                    <div class="rounded-full bg-navy/10 p-2 mb-1">
+                        <i class="fas fa-bell text-navy text-lg"></i>
                     </div>
+                    <div class="text-navy font-bold text-2xl"><?php echo $notifications_count['total']; ?></div>
+                    <div class="text-gray-600 text-sm">Total</div>
                 </div>
             </div>
         </div>
+    </div>
+</div>
 
         <!-- Dashboard Layout -->
         <div class="flex flex-col lg:flex-row gap-6">
