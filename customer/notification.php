@@ -439,38 +439,38 @@ $current_page_bookings = array_slice($filtered_bookings, ($page - 1) * $items_pe
     <!-- Main Content Container -->
     <div class="container mx-auto px-4 py-8 max-w-screen-xl mt-[var(--navbar-height)]">
         <!-- Page Header with gradient background -->
-        <div class="bg-gradient-to-b from-yellow-600/10 to-transparent rounded-xl py-8 px-6 mb-10 shadow-sm">
-    <div class="max-w-3xl mx-auto text-center">
-        <h1 class="text-4xl md:text-5xl font-hedvig text-navy mb-3">Notifications</h1>
-        <p class="text-dark text-lg max-w-2xl mx-auto leading-relaxed">Stay updated with important information about your services and arrangements.</p>
-        <div class="w-24 h-1 bg-yellow-600 mx-auto mt-3 rounded-full"></div>
+        <div class="bg-gradient-to-b from-yellow-600/10 to-transparent rounded-lg py-6 px-4 mb-6 shadow-sm">
+    <div class="max-w-2xl mx-auto text-center">
+        <h1 class="text-3xl font-hedvig text-navy mb-2">Notifications</h1>
+        <p class="text-dark text-base mx-auto">Stay updated with important information about your services.</p>
+        <div class="w-16 h-1 bg-yellow-600 mx-auto mt-2 rounded-full"></div>
         
-        <!-- Notification Summary Cards -->
-        <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4 max-w-2xl mx-auto">
-            <div class="bg-white rounded-xl shadow-md p-3 hover-scale">
+        <!-- Notification Summary Cards - Compact Version -->
+        <div class="mt-4 grid grid-cols-3 gap-2 mx-auto">
+            <div class="bg-white rounded-lg shadow-sm p-3 hover-scale">
                 <div class="flex flex-col items-center">
                     <div class="rounded-full bg-error/10 p-2 mb-1">
-                        <i class="fas fa-clock text-error text-lg"></i>
+                        <i class="fas fa-clock text-error text-sm"></i>
                     </div>
-                    <div class="text-error font-bold text-2xl"><?php echo $notifications_count['pending']; ?></div>
+                    <div class="text-error font-bold text-xl"><?php echo $notifications_count['pending']; ?></div>
                     <div class="text-gray-600 text-sm">Pending</div>
                 </div>
             </div>
-            <div class="bg-white rounded-xl shadow-md p-3 hover-scale">
+            <div class="bg-white rounded-lg shadow-sm p-3 hover-scale">
                 <div class="flex flex-col items-center">
                     <div class="rounded-full bg-success/10 p-2 mb-1">
-                        <i class="fas fa-check-circle text-success text-lg"></i>
+                        <i class="fas fa-check-circle text-success text-sm"></i>
                     </div>
-                    <div class="text-success font-bold text-2xl"><?php echo $notifications_count['accepted']; ?></div>
+                    <div class="text-success font-bold text-xl"><?php echo $notifications_count['accepted']; ?></div>
                     <div class="text-gray-600 text-sm">Accepted</div>
                 </div>
             </div>
-            <div class="bg-white rounded-xl shadow-md p-3 hover-scale">
+            <div class="bg-white rounded-lg shadow-sm p-3 hover-scale">
                 <div class="flex flex-col items-center">
                     <div class="rounded-full bg-navy/10 p-2 mb-1">
-                        <i class="fas fa-bell text-navy text-lg"></i>
+                        <i class="fas fa-bell text-navy text-sm"></i>
                     </div>
-                    <div class="text-navy font-bold text-2xl"><?php echo $notifications_count['total']; ?></div>
+                    <div class="text-navy font-bold text-xl"><?php echo $notifications_count['total']; ?></div>
                     <div class="text-gray-600 text-sm">Total</div>
                 </div>
             </div>
