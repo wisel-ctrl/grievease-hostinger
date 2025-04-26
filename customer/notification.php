@@ -1109,7 +1109,7 @@ function getStatusClass(status) {
             
             <!-- Quick Links -->
             <div>
-                <h3 class="text-lg font-semibold mb-4 text-white">Quick Links</h3>
+                <h3 class="text-lg mb-4 text-white">Quick Links</h3>
                 <ul class="space-y-2">
                     <li><a href="index.php" class="text-gray-400 hover:text-white transition">Home</a></li>
                     <li><a href="about.php" class="text-gray-400 hover:text-white transition">About Us</a></li>
@@ -1121,7 +1121,7 @@ function getStatusClass(status) {
             
             <!-- Services -->
             <div>
-                <h3 class="text-lg font-semibold mb-4 text-white">Our Services</h3>
+                <h3 class="text-lg  mb-4 text-white">Our Services</h3>
                 <ul class="space-y-2">
                     <li><a href="traditional_funeral.php" class="text-gray-400 hover:text-white transition">Traditional Funeral</a></li>
                     <li><a href="lifeplan.php" class="text-gray-400 hover:text-white transition">Life Plan Packages</a></li>
@@ -1133,7 +1133,7 @@ function getStatusClass(status) {
             
             <!-- Contact -->
             <div>
-                <h3 class="text-lg font-semibold mb-4 text-white">Contact Us</h3>
+                <h3 class="text-lg mb-4 text-white">Contact Us</h3>
                 <ul class="space-y-2">
                     <li class="flex items-start">
                         <i class="fas fa-map-marker-alt mt-1 mr-2 text-yellow-600"></i>
