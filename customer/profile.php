@@ -443,7 +443,7 @@ header("Pragma: no-cache");
     <div id="personal-info" class="tab-content">
         <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
             <!-- Header with enhanced styling -->
-            <div class="p-6 border-b border-gray-100 flex justify-between items-center">
+            <div class="p-6 border-b border-gray-100 flex justify-between items-center bg-gradient-to-r from-blue-50 to-white">
                 <h3 class="font-hedvig text-xl text-navy">Personal Information</h3>
                 <button id="edit-profile-btn" class="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-md transition-colors">
                     <i class="fas fa-pencil-alt mr-1"></i> Edit Profile
@@ -559,73 +559,116 @@ header("Pragma: no-cache");
                     </div>
                 </div>
                 
-                <!-- Uploaded Documents Section - with enhanced UI -->
+                <!-- Uploaded Documents Section - with enhanced UI and right column layout -->
                 <div class="mt-8 pt-6 border-t border-gray-200">
-                    <h3 class="font-hedvig text-lg text-navy mb-4 flex items-center">
-                        <svg class="w-5 h-5 mr-2 text-navy" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd"></path>
-                        </svg>
-                        Uploaded ID
-                    </h3>
+                    <div class="flex justify-between items-start mb-4">
+                        <h3 class="font-hedvig text-lg text-navy flex items-center">
+                            <svg class="w-5 h-5 mr-2 text-navy" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd"></path>
+                            </svg>
+                            Uploaded ID
+                        </h3>
+                    </div>
+                    
+                    <!-- Two-column layout for ID section -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Left column: Status information -->
                         <div>
-                            <div class="flex justify-between items-start mb-3">
-                                <?php if ($uploadedImagePath): ?>
-                                    <?php
-                                        // Fetch the validation status and decline reason from valid_id_tb
-                                        $status_query = "SELECT is_validated, decline_reason FROM valid_id_tb WHERE id = ?";
-                                        $status_stmt = $conn->prepare($status_query);
-                                        $status_stmt->bind_param("i", $user_id);
-                                        $status_stmt->execute();
-                                        $status_result = $status_stmt->get_result();
-                                        $status_row = $status_result->fetch_assoc();
-                                        $id_status = $status_row ? $status_row['is_validated'] : 'no';
-                                        $decline_reason = $status_row ? $status_row['decline_reason'] : '';
-                                        $status_stmt->close();
-                                        $conn->close();
-                                        
-                                        // Define status label style based on status value
-                                        switch ($id_status) {
-                                            case 'no':
-                                                $statusText = 'PENDING';
-                                                $statusClass = 'bg-yellow-100 text-yellow-800';
-                                                $iconSvg = '<svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path></svg>';
-                                                break;
-                                            case 'valid':
-                                                $statusText = 'APPROVED';
-                                                $statusClass = 'bg-green-100 text-green-800';
-                                                $iconSvg = '<svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>';
-                                                break;
-                                            case 'denied':
-                                                $statusText = 'DECLINED';
-                                                $statusClass = 'bg-red-100 text-red-800';
-                                                $iconSvg = '<svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path></svg>';
-                                                break;
-                                            default:
-                                                $statusText = 'PENDING';
-                                                $statusClass = 'bg-yellow-100 text-yellow-800';
-                                                $iconSvg = '<svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path></svg>';
-                                                break;
-                                        }
-                                    ?>
+                            <?php if ($uploadedImagePath): ?>
+                                <?php
+                                    // Fetch the validation status and decline reason from valid_id_tb
+                                    $status_query = "SELECT is_validated, decline_reason FROM valid_id_tb WHERE id = ?";
+                                    $status_stmt = $conn->prepare($status_query);
+                                    $status_stmt->bind_param("i", $user_id);
+                                    $status_stmt->execute();
+                                    $status_result = $status_stmt->get_result();
+                                    $status_row = $status_result->fetch_assoc();
+                                    $id_status = $status_row ? $status_row['is_validated'] : 'no';
+                                    $decline_reason = $status_row ? $status_row['decline_reason'] : '';
+                                    $status_stmt->close();
+                                    $conn->close();
                                     
-                                    <div class="flex items-center mt-2 mb-2">
-                                        <span class="text-sm text-gray-600 mr-2">Verification Status:</span>
+                                    // Define status label style based on status value
+                                    switch ($id_status) {
+                                        case 'no':
+                                            $statusText = 'PENDING';
+                                            $statusClass = 'bg-yellow-100 text-yellow-800';
+                                            $iconSvg = '<svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path></svg>';
+                                            $statusDescription = "Your ID is currently being reviewed by our team. This usually takes 1-2 business days.";
+                                            break;
+                                        case 'valid':
+                                            $statusText = 'APPROVED';
+                                            $statusClass = 'bg-green-100 text-green-800';
+                                            $iconSvg = '<svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>';
+                                            $statusDescription = "Your ID has been verified successfully. Your account now has full access to all features.";
+                                            break;
+                                        case 'denied':
+                                            $statusText = 'DECLINED';
+                                            $statusClass = 'bg-red-100 text-red-800';
+                                            $iconSvg = '<svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path></svg>';
+                                            $statusDescription = "Your ID verification was declined. Please check the reason below and upload a new ID.";
+                                            break;
+                                        default:
+                                            $statusText = 'PENDING';
+                                            $statusClass = 'bg-yellow-100 text-yellow-800';
+                                            $iconSvg = '<svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path></svg>';
+                                            $statusDescription = "Your ID is currently being reviewed by our team. This usually takes 1-2 business days.";
+                                            break;
+                                    }
+                                ?>
+                                
+                                <div class="bg-gray-50 rounded-lg p-4">
+                                    <h4 class="text-navy text-md font-medium mb-2">ID Verification Status</h4>
+                                    <div class="flex items-center mb-3">
                                         <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium <?php echo $statusClass; ?>">
                                             <?php echo $iconSvg; ?>
                                             <?php echo $statusText; ?>
-                                            <?php if ($id_status === 'denied' && $decline_reason): ?>
-                                                <!-- Info icon for declined status with improved tooltip styling -->
-                                                <svg class="w-4 h-4 ml-1 cursor-pointer hover:text-red-700 transition-colors" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" 
-                                                     onclick="openDeclineReasonModal('<?php echo htmlspecialchars($decline_reason); ?>')">
-                                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2h-1V9z" clip-rule="evenodd"></path>
-                                                </svg>
-                                            <?php endif; ?>
                                         </span>
                                     </div>
-                                <?php endif; ?>
-                            </div>
-
+                                    
+                                    <p class="text-sm text-gray-600 mb-4"><?php echo $statusDescription; ?></p>
+                                    
+                                    <?php if ($id_status === 'denied' && $decline_reason): ?>
+                                        <div class="bg-red-50 border-l-4 border-red-400 p-3 rounded">
+                                            <div class="flex items-start">
+                                                <svg class="w-5 h-5 text-red-500 mt-0.5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                                                </svg>
+                                                <div>
+                                                    <p class="text-sm font-medium text-red-800">Reason: <?php echo htmlspecialchars($decline_reason); ?></p>
+                                                    <button 
+                                                        class="text-xs text-red-600 hover:text-red-800 mt-1 underline"
+                                                        onclick="openDeclineReasonModal('<?php echo htmlspecialchars($decline_reason); ?>')"
+                                                    >
+                                                        More details
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    <?php endif; ?>
+                                </div>
+                            <?php else: ?>
+                                <div class="bg-gray-50 rounded-lg p-4">
+                                    <h4 class="text-navy text-md font-medium mb-2">ID Verification</h4>
+                                    <p class="text-sm text-gray-600 mb-3">
+                                        Upload a government-issued ID to verify your identity.
+                                    </p>
+                                    <div class="border-l-4 border-blue-400 bg-blue-50 p-3 rounded">
+                                        <div class="flex">
+                                            <svg class="w-5 h-5 text-blue-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2h-1V9z" clip-rule="evenodd"></path>
+                                            </svg>
+                                            <p class="text-sm text-blue-700">
+                                                Account verification gives you access to all platform features.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                        
+                        <!-- Right column: ID image -->
+                        <div class="flex items-center justify-center">
                             <?php if ($uploadedImagePath): ?>
                                 <div class="relative border border-gray-200 rounded-lg p-2 inline-block">
                                     <!-- Image with overlay effect on hover -->
@@ -633,7 +676,7 @@ header("Pragma: no-cache");
                                         <img 
                                             src="<?php echo '../uploads/valid_ids/' . htmlspecialchars($uploadedImagePath); ?>" 
                                             alt="Uploaded ID"
-                                            class="rounded-lg shadow w-48 h-auto cursor-pointer transition-all group-hover:opacity-90"
+                                            class="rounded-lg shadow w-60 h-auto cursor-pointer transition-all group-hover:opacity-90"
                                             onclick="openImageModal('<?php echo '../uploads/valid_ids/' . htmlspecialchars($uploadedImagePath); ?>')"
                                         >
                                         <!-- Hover overlay with zoom icon -->
@@ -649,11 +692,14 @@ header("Pragma: no-cache");
                                     <p class="text-xs text-center text-gray-500 mt-2">Click to enlarge</p>
                                 </div>
                             <?php else: ?>
-                                <div class="border border-dashed border-gray-300 rounded-lg p-8 text-center">
-                                    <svg class="w-12 h-12 text-gray-300 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <div class="border border-dashed border-gray-300 rounded-lg p-8 text-center w-full">
+                                    <svg class="w-16 h-16 text-gray-300 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                                     </svg>
-                                    <p class="text-gray-400 italic">No ID uploaded yet.</p>
+                                    <p class="text-gray-500 font-medium mb-2">No ID uploaded yet</p>
+                                    <button class="px-4 py-2 bg-navy text-white text-sm rounded hover:bg-blue-800 transition-colors">
+                                        Upload ID
+                                    </button>
                                 </div>
                             <?php endif; ?>
                         </div>
