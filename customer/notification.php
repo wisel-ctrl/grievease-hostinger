@@ -490,8 +490,8 @@ $current_page_items = array_slice($filtered_items, ($page - 1) * $items_per_page
         <!-- Page Header with subtle background -->
         <div class="bg-dark rounded-xl py-8 px-6 mb-10">
             <div class="max-w-3xl mx-auto text-center">
-                <h1 class="text-4xl md:text-5xl font-hedvig text-cream/60 mb-3">Notifications</h1>
-                <p class="text-cream/60 text-lg max-w-2xl mx-auto">Stay updated with important information about your services and arrangements.</p>
+                <h1 class="text-4xl md:text-5xl font-hedvig text-cream/30 mb-3">Notifications</h1>
+                <p class="text-cream/30 text-lg max-w-2xl mx-auto">Stay updated with important information about your services and arrangements.</p>
                 <div class="w-16 h-1 bg-yellow-600 mx-auto mt-4"></div>
                 
             </div>
