@@ -214,6 +214,18 @@ header("Pragma: no-cache");
             --navbar-height: 64px; /* Define the height of the navbar */
             --section-spacing: 4rem; /* Standardized spacing between sections */
         }
+        #imageModal {
+    transition: opacity 0.3s ease;
+    z-index: 9999;
+}
+
+#imageModal.hidden {
+    display: none;
+}
+
+#imageModal.flex {
+    display: flex;
+}
     </style>
 </head>
 <body class="bg-cream overflow-x-hidden w-full max-w-full m-0 p-0 font-hedvig">
@@ -809,36 +821,58 @@ header("Pragma: no-cache");
                 }
 
                 function openImageModal(imageSrc) {
-                    // Set the image source
-                    document.getElementById('enlargedImage').src = imageSrc;
-                    
-                    // Show the modal with animation
-                    const modal = document.getElementById('imageModal');
-                    modal.classList.remove('hidden');
-                    modal.classList.add('flex');
-                    modal.style.opacity = '0';
-                    
-                    // Animate fade in
-                    setTimeout(() => {
-                        modal.style.opacity = '1';
-                    }, 10);
-                    
-                    document.body.style.overflow = 'hidden';
-                }
+    // Set the image source
+    const enlargedImg = document.getElementById('enlargedImage');
+    enlargedImg.src = imageSrc;
+    
+    // Show the modal
+    const modal = document.getElementById('imageModal');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    
+    // Reset opacity for animation
+    modal.style.opacity = '0';
+    
+    // Animate fade in
+    setTimeout(() => {
+        modal.style.opacity = '1';
+    }, 10);
+    
+    // Prevent scrolling
+    document.body.style.overflow = 'hidden';
+    
+    // Add click handler to close when clicking outside image
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            closeImageModal();
+        }
+    });
+}
 
-                function closeImageModal() {
-                    const modal = document.getElementById('imageModal');
-                    
-                    // Animate fade out
-                    modal.style.opacity = '0';
-                    
-                    // Wait for animation to complete before hiding
-                    setTimeout(() => {
-                        modal.classList.add('hidden');
-                        modal.classList.remove('flex');
-                        document.body.style.overflow = 'auto';
-                    }, 300);
-                }
+function closeImageModal() {
+    const modal = document.getElementById('imageModal');
+    
+    // Animate fade out
+    modal.style.opacity = '0';
+    
+    // Wait for animation to complete before hiding
+    setTimeout(() => {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+        document.body.style.overflow = 'auto';
+    }, 300);
+}
+
+// Add event listener to close button in modal
+document.querySelector('#imageModal button').addEventListener('click', closeImageModal);
+
+// If images are added dynamically, use event delegation
+document.addEventListener('click', function(e) {
+    if (e.target.closest('[onclick^="openImageModal"]')) {
+        const imgSrc = e.target.getAttribute('onclick').match(/openImageModal\('([^']+)'/)[1];
+        openImageModal(imgSrc);
+    }
+});
 
                 // Edit Profile Button Functionality
                 document.getElementById('edit-profile-btn').addEventListener('click', function() {
