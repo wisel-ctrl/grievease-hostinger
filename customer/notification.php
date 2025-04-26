@@ -824,7 +824,7 @@ $current_page_items = array_slice($filtered_items, ($page - 1) * $items_per_page
 
         <!-- ID Image Modal -->
         <div id="idImageModal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-black bg-opacity-75">
-            <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="flex items-center justify-center min-h-screen">
                 <div class="bg-white rounded-lg max-w-2xl w-full mx-4 relative">
                     <button onclick="closeIdImageModal()" class="absolute top-2 right-2 text-gray-500 hover:text-gray-700">
                         <i class="fas fa-times text-xl"></i>
@@ -843,6 +843,17 @@ $current_page_items = array_slice($filtered_items, ($page - 1) * $items_per_page
                 </div>
             </div>
         </div>
+        
+        <script>
+        function viewIdImage(imagePath) {
+            document.getElementById('modalIdImage').src = imagePath;
+            document.getElementById('idImageModal').classList.remove('hidden');
+        }
+        
+        function closeIdImageModal() {
+            document.getElementById('idImageModal').classList.add('hidden');
+        }
+        </script>
         
         <!-- Booking Details Modal -->
         <div id="bookingDetailsModal" class="fixed inset-0 z-50 hidden overflow-y-auto">
