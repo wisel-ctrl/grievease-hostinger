@@ -443,7 +443,7 @@ header("Pragma: no-cache");
     <div id="personal-info" class="tab-content">
         <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
             <!-- Header with enhanced styling -->
-            <div class="p-6 border-b border-gray-100 flex justify-between items-center ">
+            <div class="p-6 border-b border-gray-100 flex justify-between items-center bg-gradient-to-r from-blue-50 to-white">
                 <h3 class="font-hedvig text-xl text-navy">Personal Information</h3>
                 <button id="edit-profile-btn" class="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-md transition-colors">
                     <i class="fas fa-pencil-alt mr-1"></i> Edit Profile
@@ -794,21 +794,23 @@ header("Pragma: no-cache");
 
                 function closeDeclineReasonModal() {
                     const modal = document.getElementById('declineReasonModal');
-                    const content = modal.querySelector('.transform');
+                    const modalContent = modal.querySelector('.transform');
                     
-                    content.classList.add('scale-95', 'opacity-0');
-                    content.classList.remove('scale-100');
+                    // Add animation for closing
+                    modalContent.classList.add('scale-95', 'opacity-0');
+                    modalContent.classList.remove('scale-100');
                     
+                    // Wait for animation to complete before hiding
                     setTimeout(() => {
                         modal.classList.add('hidden');
                         modal.classList.remove('flex');
                         document.body.style.overflow = 'auto';
-                    }, 200);
+                    }, 300);
                 }
 
-                function openImageModal(imagePath) {
-                    // Set the source of the enlarged image
-                    document.getElementById('enlargedImage').src = imagePath;
+                function openImageModal(imageSrc) {
+                    // Set the image source
+                    document.getElementById('enlargedImage').src = imageSrc;
                     
                     // Show the modal with animation
                     const modal = document.getElementById('imageModal');
@@ -816,45 +818,54 @@ header("Pragma: no-cache");
                     modal.classList.add('flex');
                     modal.style.opacity = '0';
                     
-                    // Fade in animation
+                    // Animate fade in
                     setTimeout(() => {
                         modal.style.opacity = '1';
                     }, 10);
                     
-                    // Prevent scrolling of the background
                     document.body.style.overflow = 'hidden';
                 }
 
                 function closeImageModal() {
-                    // Fade out animation
                     const modal = document.getElementById('imageModal');
+                    
+                    // Animate fade out
                     modal.style.opacity = '0';
                     
+                    // Wait for animation to complete before hiding
                     setTimeout(() => {
-                        // Hide the modal
                         modal.classList.add('hidden');
                         modal.classList.remove('flex');
-                        
-                        // Restore scrolling
                         document.body.style.overflow = 'auto';
                     }, 300);
                 }
 
-                // Close modal when clicking outside the image container
-                document.getElementById('imageModal').addEventListener('click', function(event) {
-                    if (event.target === this) {
-                        closeImageModal();
-                    }
+                // Edit Profile Button Functionality
+                document.getElementById('edit-profile-btn').addEventListener('click', function() {
+                    // Redirect to the edit profile page
+                    window.location.href = 'edit-profile.php';
                 });
 
-                // Close modal with Escape key
-                document.addEventListener('keydown', function(event) {
-                    if (event.key === 'Escape') {
-                        if (!document.getElementById('imageModal').classList.contains('hidden')) {
-                            closeImageModal();
-                        }
-                        if (!document.getElementById('declineReasonModal').classList.contains('hidden')) {
-                            closeDeclineReasonModal();
+                // Initialize tooltips if any
+                function initTooltips() {
+                    const tooltips = document.querySelectorAll('[data-tooltip]');
+                    tooltips.forEach(tooltip => {
+                        // Initialize tooltip logic here if using a library
+                        // or implement custom tooltip behavior
+                    });
+                }
+
+                // Initialize the page
+                document.addEventListener('DOMContentLoaded', function() {
+                    initTooltips();
+                    
+                    // Check for URL parameters that might indicate we should show modals
+                    const urlParams = new URLSearchParams(window.location.search);
+                    if (urlParams.get('show_decline_reason') === 'true') {
+                        // Get the reason from the database or URL if available
+                        const reason = '<?php echo htmlspecialchars($decline_reason); ?>';
+                        if (reason) {
+                            openDeclineReasonModal(reason);
                         }
                     }
                 });
