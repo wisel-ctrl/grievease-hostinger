@@ -175,9 +175,6 @@ $formattedRevenue = number_format($totalRevenue, 2);
 
 ?>
 <?php
-// Function to calculate branch metrics
-// Function to calculate branch metrics
-// Function to calculate branch metrics
 function getBranchMetrics($conn, $branchId) {
   $metrics = [
       'revenue' => 0,
@@ -248,7 +245,6 @@ $pilaMetrics = getBranchMetrics($conn, 2); // Pila branch_id = 2
 $paeteMetrics = getBranchMetrics($conn, 1); // Paete branch_id = 1
 
 // Get monthly revenue data for the last 6 months
-// PHP code modification
 $monthlyRevenueData = [];
 $monthLabels = [];
 
@@ -271,7 +267,53 @@ for ($i = 11; $i >= 0; $i--) {
     
     $monthlyRevenueData[] = $data['revenue'] ?? 0;
 }
+?>
+<?php
+// Get monthly revenue data for Pila branch (branch_id = 2)
+$pilaMonthlyRevenue = [];
+for ($i = 11; $i >= 0; $i--) {
+    $date = new DateTime();
+    $date->modify("-$i months");
+    $month = $date->format('m');
+    $year = $date->format('Y');
+    
+    $query = "SELECT SUM(amount_paid) as revenue FROM sales_tb 
+              WHERE branch_id = 2 AND MONTH(get_timestamp) = ? AND YEAR(get_timestamp) = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("ii", $month, $year);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $data = $result->fetch_assoc();
+    
+    $pilaMonthlyRevenue[] = $data['revenue'] ?? 0;
+}
 
+// Get monthly revenue data for Paete branch (branch_id = 1)
+$paeteMonthlyRevenue = [];
+for ($i = 11; $i >= 0; $i--) {
+    $date = new DateTime();
+    $date->modify("-$i months");
+    $month = $date->format('m');
+    $year = $date->format('Y');
+    
+    $query = "SELECT SUM(amount_paid) as revenue FROM sales_tb 
+              WHERE branch_id = 1 AND MONTH(get_timestamp) = ? AND YEAR(get_timestamp) = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("ii", $month, $year);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $data = $result->fetch_assoc();
+    
+    $paeteMonthlyRevenue[] = $data['revenue'] ?? 0;
+}
+
+// Generate month labels
+$monthLabels = [];
+for ($i = 11; $i >= 0; $i--) {
+    $date = new DateTime();
+    $date->modify("-$i months");
+    $monthLabels[] = $date->format('M Y');
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -598,7 +640,7 @@ for ($i = 11; $i >= 0; $i--) {
     </div>
     <div class="p-4 sm:p-5">
       <div class="w-full h-48 md:h-64">
-        <canvas id="branchRevenueChart" style="width: 100%; height: 100%;"></canvas>
+        <div id="branchRevenueChart" style="width: 100%; height: 100%;"></div>
       </div>
     </div>
   </div>
@@ -1448,6 +1490,131 @@ var options = {
 
 var chart = new ApexCharts(document.querySelector("#revenueChart"), options);
 chart.render();
+</script>
+
+<script>
+// Get the revenue data for both branches
+var pilaRevenue = <?php echo $pilaMetrics['revenue']; ?>;
+var paeteRevenue = <?php echo $paeteMetrics['revenue']; ?>;
+
+var branchRevenueOptions = {
+  series: [
+    {
+      name: 'Pila Branch',
+      data: <?php echo json_encode($pilaMonthlyRevenue); ?>
+    },
+    {
+      name: 'Paete Branch',
+      data: <?php echo json_encode($paeteMonthlyRevenue); ?>
+    }
+  ],
+  chart: {
+    type: 'bar',
+    height: '100%',
+    width: '100%',
+    stacked: false, // Set to true if you want stacked bars
+    toolbar: {
+      show: true, // This enables the toolbar with zoom/export options
+      tools: {
+        download: true, // Show download options
+        selection: true,
+        zoom: true,
+        zoomin: true,
+        zoomout: true,
+        pan: true,
+        reset: true
+      },
+      export: {
+        csv: {
+          filename: 'branch-revenue-comparison',
+          columnDelimiter: ',',
+          headerCategory: 'Month',
+          headerValue: 'Revenue (₱)',
+        },
+        png: {
+          filename: 'branch-revenue-comparison',
+        },
+        svg: {
+          filename: 'branch-revenue-comparison',
+        }
+      }
+    }
+  },
+  plotOptions: {
+    bar: {
+      horizontal: false,
+      columnWidth: '80%',
+      endingShape: 'rounded',
+      borderRadius: 4
+    },
+  },
+  dataLabels: {
+    enabled: false
+  },
+  colors: ['#4f46e5', '#10b981'], // Different colors for each branch
+  stroke: {
+    show: true,
+    width: 2,
+    colors: ['transparent']
+  },
+  xaxis: {
+    categories: <?php echo json_encode($monthLabels); ?>,
+    labels: {
+      style: {
+        fontSize: '12px',
+        fontWeight: 500
+      },
+      rotate: -45, // Rotate labels if they're too long
+      hideOverlappingLabels: true
+    }
+  },
+  yaxis: {
+    title: {
+      text: 'Revenue (₱)'
+    },
+    labels: {
+      formatter: function(val) {
+        return "₱" + val.toLocaleString();
+      }
+    }
+  },
+  fill: {
+    opacity: 1
+  },
+  tooltip: {
+    y: {
+      formatter: function(val) {
+        return "₱" + val.toLocaleString();
+      }
+    }
+  },
+  legend: {
+    position: 'top',
+    horizontalAlign: 'center',
+    offsetY: 0,
+    markers: {
+      width: 12,
+      height: 12,
+      radius: 12,
+    }
+  },
+  responsive: [{
+    breakpoint: 768,
+    options: {
+      chart: {
+        height: 400
+      },
+      xaxis: {
+        labels: {
+          rotate: -45
+        }
+      }
+    }
+  }]
+};
+
+var branchRevenueChart = new ApexCharts(document.querySelector("#branchRevenueChart"), branchRevenueOptions);
+branchRevenueChart.render();
 </script>
   </body>
 </html>
