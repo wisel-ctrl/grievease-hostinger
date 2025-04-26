@@ -108,7 +108,7 @@ header("Pragma: no-cache");
                     $regions[] = $row;
                 }
 
-                $conn->close();
+ 
                 $addressDB->close();
 ?>
 <!DOCTYPE html>
@@ -514,21 +514,112 @@ header("Pragma: no-cache");
                 
                 <!-- New Uploaded Documents Section -->
                 <div class="mt-8 pt-6 border-t border-gray-200">
-                    <h3 class="font-hedvig text-lg text-navy mb-4">Uploaded Documents</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-500 mb-1">Uploaded ID</label>
-
-                            <?php if ($uploadedImagePath): ?>
-                                <img src="<?php echo '../uploads/valid_ids/' . htmlspecialchars($uploadedImagePath); ?>" 
-                                    alt="Uploaded ID"
-                                    class="mt-2 rounded-lg shadow border w-48 h-auto">
-                            <?php else: ?>
-                                <p class="text-sm text-gray-400 italic">No ID uploaded yet.</p>
-                            <?php endif; ?>
-                        </div>
+    <h3 class="font-hedvig text-lg text-navy mb-4">Uploaded ID</h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+            <div class="flex justify-between items-start mb-1">
+                <?php if ($uploadedImagePath): ?>
+                    <?php
+                        // Fetch the validation status from valid_id_tb
+                        $status_query = "SELECT is_validated FROM valid_id_tb WHERE id = ?";
+                        $status_stmt = $conn->prepare($status_query);
+                        $status_stmt->bind_param("i", $user_id);
+                        $status_stmt->execute();
+                        $status_result = $status_stmt->get_result();
+                        $status_row = $status_result->fetch_assoc();
+                        $id_status = $status_row ? $status_row['is_validated'] : 'no';
+                        $status_stmt->close();
+                        $conn->close();
+                        
+                        // Define status label style based on status value
+                        switch ($id_status) {
+                            case 'no':
+                                $statusText = 'PENDING';
+                                $statusClass = 'bg-yellow-100 text-yellow-800';
+                                break;
+                            case 'valid':
+                                $statusText = 'APPROVED';
+                                $statusClass = 'bg-green-100 text-green-800';
+                                break;
+                            case 'denied':
+                                $statusText = 'DECLINED';
+                                $statusClass = 'bg-red-100 text-red-800';
+                                break;
+                            default:
+                                $statusText = 'PENDING';
+                                $statusClass = 'bg-yellow-100 text-yellow-800';
+                                break;
+                        }
+                    ?>
+                    
+                    <div class="flex items-center mt-2 mb-2">
+                        <span class="text-sm text-gray-600 mr-2">Upload ID Status:</span>
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <?php echo $statusClass; ?>">
+                            <?php echo $statusText; ?>
+                        </span>
                     </div>
+                <?php endif; ?>
+            </div>
+
+            <?php if ($uploadedImagePath): ?>
+                <div class="relative">
+                    <!-- Thumbnail image that opens the modal when clicked -->
+                    <img 
+                        src="<?php echo '../uploads/valid_ids/' . htmlspecialchars($uploadedImagePath); ?>" 
+                        alt="Uploaded ID"
+                        class="mt-2 rounded-lg shadow border w-48 h-auto cursor-pointer hover:opacity-90 transition-opacity"
+                        onclick="openImageModal('<?php echo '../uploads/valid_ids/' . htmlspecialchars($uploadedImagePath); ?>')"
+                    >
                 </div>
+            <?php else: ?>
+                <p class="text-sm text-gray-400 italic">No ID uploaded yet.</p>
+            <?php endif; ?>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for enlarged image -->
+<div id="imageModal" class="fixed inset-0 z-50 hidden bg-black bg-opacity-80 flex items-center justify-center p-4">
+    <img id="enlargedImage" src="" alt="Enlarged ID" class="max-w-full max-h-[90vh] object-contain">
+</div>
+
+<!-- JavaScript for modal functionality -->
+<script>
+function openImageModal(imagePath) {
+    // Set the source of the enlarged image
+    document.getElementById('enlargedImage').src = imagePath;
+    
+    // Show the modal
+    document.getElementById('imageModal').classList.remove('hidden');
+    document.getElementById('imageModal').classList.add('flex');
+    
+    // Prevent scrolling of the background
+    document.body.style.overflow = 'hidden';
+}
+
+function closeImageModal() {
+    // Hide the modal
+    document.getElementById('imageModal').classList.add('hidden');
+    document.getElementById('imageModal').classList.remove('flex');
+    
+    // Restore scrolling
+    document.body.style.overflow = 'auto';
+}
+
+// Close modal when clicking outside the image container
+document.getElementById('imageModal').addEventListener('click', function(event) {
+    if (event.target === this) {
+        closeImageModal();
+    }
+});
+
+// Close modal with Escape key
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape' && !document.getElementById('imageModal').classList.contains('hidden')) {
+        closeImageModal();
+    }
+});
+</script>
 
             </div>
         </div>

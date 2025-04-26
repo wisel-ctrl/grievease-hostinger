@@ -80,11 +80,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             
             // Insert or update user's ID image path in valid_id_tb table
-            $query = "INSERT INTO valid_id_tb (id, image_path) 
-            VALUES (?, ?) 
-            ON DUPLICATE KEY UPDATE image_path = VALUES(image_path)";
+           date_default_timezone_set('Asia/Manila'); // Set timezone to Philippine time
+            $upload_at = date('Y-m-d H:i:s');
+            
+            $query = "INSERT INTO valid_id_tb (id, image_path, upload_at) 
+                      VALUES (?, ?, ?) 
+                      ON DUPLICATE KEY UPDATE 
+                          image_path = VALUES(image_path),
+                          upload_at = VALUES(upload_at)";
+            
             $stmt = $conn->prepare($query);
-            $stmt->bind_param("is", $user_id, $destination); // full path stored
+            $stmt->bind_param("iss", $user_id, $destination, $upload_at); // bind PHP time
             $stmt->execute();
             $stmt->close();
             
