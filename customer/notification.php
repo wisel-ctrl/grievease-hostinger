@@ -589,115 +589,89 @@ $current_page_items = array_slice($filtered_items, ($page - 1) * $items_per_page
         <!-- Notifications Container -->
         <div class="space-y-3" id="notificationsContainer">
             <?php foreach ($current_page_items as $item): ?>
-    <?php if ($item['type'] === 'booking'): ?>
-        <!-- BOOKING NOTIFICATION - Use your existing booking notification display code -->
-        <?php 
-            $booking = $item['data']; // Get the booking data
-            
-            // Define notification style based on booking status
-            $status_color = '';
-            $status_bg = '';
-            $status_icon = '';
-            
-            switch ($booking['status']) {
-                case 'Pending':
-                    $status_color = 'border-yellow-600';
-                    $status_bg = 'bg-yellow-600/10';
-                    $status_icon = 'fas fa-clock';
-                    $status_text_color = 'text-yellow-600';
-                    $btn_color = 'bg-yellow-600 hover:bg-yellow-700';
-                    $status_badge_bg = 'bg-yellow-600/20';
-                    break;
-                case 'Accepted':
-                    $status_color = 'border-success';
-                    $status_bg = 'bg-success/10';
-                    $status_icon = 'fas fa-check-circle';
-                    $status_text_color = 'text-success';
-                    $btn_color = 'bg-success hover:bg-success/90';
-                    $status_badge_bg = 'bg-success/20';
-                    break;
-                case 'Declined':
-                    $status_color = 'border-error';
-                    $status_bg = 'bg-error/10';
-                    $status_icon = 'fas fa-times-circle';
-                    $status_text_color = 'text-error';
-                    $btn_color = 'bg-error hover:bg-error/90';
-                    $status_badge_bg = 'bg-error/20';
-                    break;
-            }
-        ?>
+                <?php if ($item['type'] === 'booking'): ?>
+    <?php 
+        $booking = $item['data']; // Get the booking data
+        
+        // Define notification style based on booking status
+        $border_color = '';
+        $status_bg = '';
+        $status_icon = '';
+        $status_text_color = '';
+        
+        switch ($booking['status']) {
+            case 'Pending':
+                $border_color = 'border-yellow-600';
+                $status_bg = 'bg-yellow-600/20';
+                $status_icon = 'fas fa-clock';
+                $status_text_color = 'text-yellow-600';
+                break;
+            case 'Accepted':
+                $border_color = 'border-success';
+                $status_bg = 'bg-success/20';
+                $status_icon = 'fas fa-check-circle';
+                $status_text_color = 'text-success';
+                break;
+            case 'Declined':
+                $border_color = 'border-error';
+                $status_bg = 'bg-error/20';
+                $status_icon = 'fas fa-times-circle';
+                $status_text_color = 'text-error';
+                break;
+        }
+    ?>
                 
-                <div class="bg-white border-l-3 <?php echo $status_color; ?> rounded-md shadow-sm overflow-hidden notification-animate">
-                    <div class="flex flex-col md:flex-row">
-                    <div class="<?php echo $status_bg; ?> py-6 px-4 md:w-16 flex items-center justify-center">
-                                            <i class="<?php echo $status_icon; ?> <?php echo $status_text_color; ?> text-xl"></i>
-                                        </div>
-                        <!-- Notification Content -->
-                        <div class="flex-1 px-4 py-3">
-                            <div class="flex flex-col md:flex-row justify-between">
-                                <div>
-                                    <span class="<?php echo $status_text_color; ?> font-medium text-xs">
-                                        <?php echo htmlspecialchars($booking['status']); ?>
-                                    </span>
-                                    <h3 class="text-navy text-base font-medium">
-                                        <?php echo htmlspecialchars($booking['service_name']); ?>
-                                    </h3>
-                                    <p class="text-gray-600 text-xs mt-0.5">
-                                        <i class="fas fa-map-marker-alt mr-1"></i> 
-                                        <?php echo htmlspecialchars($booking['branch_name']); ?>
-                                    </p>
-                                </div>
-                                <div class="mt-1 md:mt-0">
-                                    <p class="text-xs text-gray-500">
-                                        <i class="far fa-calendar mr-1"></i>
-                                        <?php echo date('M d, Y', strtotime($booking['booking_date'])); ?>
-                                    </p>
-                                    <p class="text-xs text-gray-500">
-                                        <i class="far fa-clock mr-1"></i>
-                                        <?php echo date('h:i A', strtotime($booking['booking_date'])); ?>
-                                    </p>
-                                </div>
-                            </div>
-                            
-                            <!-- Booking Details -->
-                            <div class="mt-2">
-                                <p class="text-gray-700 text-xs">
-                                    <?php 
-                                        // Create a description based on status
-                                        switch($booking['status']) {
-                                            case 'Pending':
-                                                echo "Your booking request is being reviewed by our staff. We will update you soon.";
-                                                break;
-                                            case 'Accepted':
-                                                echo "Your booking has been confirmed. Please arrive 15 minutes before your scheduled time.";
-                                                break;
-                                            case 'Declined':
-                                                echo "We apologize, but we were unable to accommodate your booking request.";
-                                                if (!empty($booking['admin_message'])) {
-                                                    echo " Reason: " . htmlspecialchars($booking['admin_message']);
-                                                }
-                                                break;
-                                        }
-                                    ?>
-                                </p>
-                            </div>
-                            
-                            <!-- Action Buttons -->
-                            <div class="mt-3 flex flex-wrap gap-2">
-                                <button onclick="viewBookingDetails(<?php echo $booking['booking_id']; ?>, '<?php echo $booking['status']; ?>')" 
-                                    class="<?php echo $btn_color; ?> text-white px-3 py-1.5 rounded-md text-xs hover:shadow-sm transition">
-                                    <i class="fas fa-eye mr-1"></i> View Details
-                                </button>
-                            </div>
-                            
-                            <!-- Timestamp -->
-                            <div class="mt-2 text-xs text-gray-500">
-                                <i class="fas fa-history mr-1"></i> 
-                                <?php echo time_elapsed_string($booking['booking_date']); ?>
-                            </div>
-                        </div>
+                <!-- Booking Notification with consistent styling -->
+    <div class="bg-white border-l-4 <?php echo $border_color; ?> rounded-xl shadow-md overflow-hidden notification-animate hover:shadow-lg transition-all duration-300">
+        <div class="flex flex-col md:flex-row">
+            <div class="flex-1 py-5 px-7">
+                <div class="flex flex-col md:flex-row justify-between">
+                    <div>
+                        <span class="<?php echo $status_bg; ?> <?php echo $status_text_color; ?> text-xs px-2 py-1 rounded-full inline-flex items-center">
+                            <i class="<?php echo $status_icon; ?> mr-1 text-xs"></i>
+                            Booking Status: <?php echo htmlspecialchars($booking['status']); ?>
+                        </span>
+                        <h3 class="text-navy text-lg font-hedvig mt-1">
+                            <?php echo htmlspecialchars($booking['service_name']); ?>
+                        </h3>
+                        <p class="text-gray-600 text-sm mt-1 flex items-center">
+                            <i class="fas fa-map-marker-alt mr-1 text-gold"></i> 
+                            <?php echo htmlspecialchars($booking['branch_name']); ?>
+                        </p>
+                        <?php if ($booking['status'] === 'Declined' && !empty($booking['admin_message'])): ?>
+                            <p class="text-gray-600 text-sm mt-1">
+                                <i class="fas fa-comment-alt mr-1 text-gold"></i> 
+                                Reason: <?php echo htmlspecialchars($booking['admin_message']); ?>
+                            </p>
+                        <?php endif; ?>
+                    </div>
+                    <div class="mt-2 md:mt-0 bg-cream rounded-lg p-2 text-xs">
+                        <p class="text-gray-700 flex items-center">
+                            <i class="far fa-calendar mr-1 text-gold"></i>
+                            <?php echo date('M d, Y', strtotime($booking['booking_date'])); ?>
+                        </p>
+                        <p class="text-gray-700 flex items-center mt-1">
+                            <i class="far fa-clock mr-1 text-gold"></i>
+                            <?php echo date('h:i A', strtotime($booking['booking_date'])); ?>
+                        </p>
                     </div>
                 </div>
+                
+                <div class="mt-3 flex flex-wrap gap-2 items-center justify-between">
+                    <button onclick="viewBookingDetails(<?php echo $booking['booking_id']; ?>, '<?php echo $booking['status']; ?>')" 
+                        class="bg-navy text-white px-3 py-1.5 rounded-lg text-xs font-medium transition flex items-center">
+                        <i class="fas fa-eye mr-1"></i> View Details
+                    </button>
+                    
+                    <!-- Timestamp -->
+                    <div class="text-xs text-gray-500 flex items-center">
+                        <i class="fas fa-history mr-1"></i> 
+                        <?php echo time_elapsed_string($booking['booking_date']); ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
            <?php elseif ($item['type'] === 'id_validation'): ?>
         <!-- ID VALIDATION NOTIFICATION -->
         <?php 
