@@ -441,7 +441,7 @@ $current_page_bookings = array_slice($filtered_bookings, ($page - 1) * $items_pe
         <!-- Page Header with gradient background -->
         <div class="bg-gradient-to-b from-yellow-600/10 to-transparent rounded-lg py-6 px-4 mb-6 shadow-sm">
     <div class="max-w-2xl mx-auto text-center">
-        <h1 class="text-3xl font-hedvig text-navy mb-2">Notifications</h1>
+        <h1 class="text-5xl font-hedvig text-navy mb-2">Notifications</h1>
         <p class="text-dark text-base mx-auto">Stay updated with important information about your services.</p>
         <div class="w-16 h-1 bg-yellow-600 mx-auto mt-2 rounded-full"></div>
         
