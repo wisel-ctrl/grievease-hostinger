@@ -1115,33 +1115,14 @@ function renderBookingDetails(data) {
     document.getElementById('bookingDetailsContent').innerHTML = htmlContent;
 }
 
-// Update the closeModal function to animate the closing
 function closeModal() {
-        // Get modal elements
-        const modal = document.getElementById('bookingDetailsModal');
-        const modalContent = document.getElementById('bookingModalContent');
-        
-        // Animate out
-        modalContent.classList.remove('opacity-100', 'scale-100');
-        modalContent.classList.add('opacity-0', 'scale-95');
-        
-        // Wait for animation to complete before hiding
-        setTimeout(() => {
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-            // Restore body scroll
-            document.body.style.overflow = '';
-        }, 300);
-    }
-    // Add event listener to close modal when clicking on backdrop
-    document.addEventListener('click', function(event) {
-        const modal = document.getElementById('bookingDetailsModal');
-        const modalContent = document.getElementById('bookingModalContent');
-        
-        if (modal && !modal.classList.contains('hidden') && !modalContent.contains(event.target) && event.target.id === 'bookingModalBackdrop') {
-            closeModal();
-        }
-    });
+    // Hide the modal with fade-out effect
+    const modal = document.getElementById('bookingDetailsModal');
+    modal.classList.add('hidden');
+    
+    // Restore body scroll
+    document.body.style.overflow = '';
+}
 function openImageViewer(imageSrc, title) {
     // Create image viewer modal if it doesn't exist
     if (!document.getElementById('imageViewerModal')) {
