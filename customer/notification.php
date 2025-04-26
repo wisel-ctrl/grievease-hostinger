@@ -749,36 +749,42 @@ document.addEventListener('DOMContentLoaded', function() {
         </button>
     </div>
 
-    <!-- Booking Details Modal - Enhanced design -->
-    <div id="bookingDetailsModal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center">
-        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-            <!-- Modal content -->
-            <div class="inline-block align-bottom bg-white rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
-                <div class="absolute top-4 right-4">
-                    <button type="button" onclick="closeModal()" class="text-gray-400 hover:text-gray-600 focus:outline-none">
-                        <i class="fas fa-times text-xl"></i>
-                    </button>
-                </div>
-                
-                <div class="bg-white px-6 pt-8 pb-6">
-                    <div class="sm:flex sm:items-center mb-6">
+    <!-- Booking Details Modal - Enhanced with Traditional Modal UI style -->
+<div id="bookingDetailsModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4 hidden">
+    <div class="w-full max-w-5xl bg-white rounded-2xl shadow-xl overflow-hidden max-h-[90vh] md:max-h-[80vh]">
+        <!-- Scroll container -->
+        <div class="modal-scroll-container overflow-y-auto max-h-[90vh] md:max-h-[80vh]">
+            <!-- Modal Header with Close Button -->
+            <div class="bg-cream p-4 md:p-8">
+                <div class="flex justify-between items-center mb-4">
+                    <div class="sm:flex sm:items-center">
                         <div class="bg-navy/10 rounded-full p-3 mr-4">
                             <i class="fas fa-info-circle text-navy text-xl"></i>
                         </div>
                         <h3 class="text-2xl leading-6 font-hedvig text-navy">Booking Details</h3>
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="bookingDetailsContent">
-                        <!-- Details will be loaded here via JavaScript -->
-                    </div>
-                </div>
-                <div class="bg-gray-50 px-6 py-4 flex justify-end">
-                    <button type="button" onclick="closeModal()" class="inline-flex justify-center rounded-lg border border-gray-300 shadow-sm px-5 py-2.5 bg-white text-navy font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-600 transition">
-                        Close
+                    <button onclick="closeModal()" class="text-gray-500 hover:text-navy">
+                        <i class="fas fa-times text-xl md:text-2xl"></i>
                     </button>
                 </div>
             </div>
+            
+            <!-- Modal Content -->
+            <div class="bg-white px-6 pt-4 pb-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="bookingDetailsContent">
+                    <!-- Details will be loaded here via JavaScript -->
+                </div>
+            </div>
+            
+            <!-- Modal Footer -->
+            <div class="bg-gray-50 px-6 py-4 flex justify-end border-t border-gray-200">
+                <button type="button" onclick="closeModal()" class="bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg shadow-md transition-all duration-300">
+                    Close
+                </button>
+            </div>
         </div>
     </div>
+</div>
     
     <?php include 'customService/chat_elements.html'; ?>
     
