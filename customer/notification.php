@@ -485,109 +485,49 @@ $current_page_items = array_slice($filtered_items, ($page - 1) * $items_per_page
 </div>
     </nav>
     
-    <!-- Main Content Container -->
-<div class="container mx-auto px-4 py-6 sm:py-8 max-w-screen-xl mt-[var(--navbar-height)]">
-    <!-- Page Header with subtle background -->
-    <div class="bg-dark rounded-xl py-6 px-4 sm:py-8 sm:px-6 mb-6 sm:mb-10">
-        <div class="max-w-3xl mx-auto text-center">
-            <h1 class="text-3xl sm:text-4xl md:text-5xl font-hedvig text-cream/70 mb-2 sm:mb-3">Notifications</h1>
-            <p class="text-cream/70 text-base sm:text-lg max-w-2xl mx-auto">Stay updated with important information about your services and arrangements.</p>
-            <div class="w-16 h-1 bg-yellow-600 mx-auto mt-3 sm:mt-4"></div>
-        </div>
+    <!-- Mobile Dropdown Filter - Updated to match desktop style -->
+<div class="lg:hidden bg-white rounded-lg shadow-sm p-4">
+    <h2 class="text-navy text-lg mb-3">Filter by Status</h2>
+    
+    <!-- Filter Buttons - Styled to match desktop -->
+    <div class="space-y-1.5">
+        <a href="?filter=all" 
+           class="w-full <?php echo $current_filter === 'all' ? 'bg-navy text-white filter-active' : 'bg-white hover:bg-navy/10 border border-input-border text-navy'; ?> px-3 py-2 rounded-md text-xs font-medium flex items-center justify-between group transition-all duration-200">
+            <span class="flex items-center">
+                <i class="fas fa-inbox mr-2"></i>
+                <span>All Notifications</span>
+            </span>
+            <span class="<?php echo $current_filter === 'all' ? 'bg-white text-navy' : 'bg-navy/20 text-navy'; ?> w-5 h-5 rounded-full flex items-center justify-center font-bold text-xs"><?php echo $notifications_count['total']; ?></span>
+        </a>
+        
+        <a href="?filter=pending" 
+           class="w-full <?php echo $current_filter === 'pending' ? 'bg-yellow-600 text-white filter-active' : 'bg-white hover:bg-yellow-600/10 border border-input-border text-navy'; ?> px-3 py-2 rounded-md text-xs font-medium flex items-center justify-between group transition-all duration-200">
+            <span class="flex items-center">
+                <span class="notification-dot <?php echo $current_filter === 'pending' ? 'bg-white' : 'bg-yellow-600'; ?> mr-2"></span>
+                <span>Pending</span>
+            </span>
+            <span class="<?php echo $current_filter === 'pending' ? 'bg-white text-yellow-600' : 'bg-yellow-600/20 text-yellow-600'; ?> w-5 h-5 rounded-full flex items-center justify-center font-bold text-xs"><?php echo $notifications_count['pending']; ?></span>
+        </a>
+        
+        <a href="?filter=accepted" 
+           class="w-full <?php echo $current_filter === 'accepted' ? 'bg-success text-white filter-active' : 'bg-white hover:bg-success/10 border border-input-border text-navy'; ?> px-3 py-2 rounded-md text-xs font-medium flex items-center justify-between group transition-all duration-200">
+            <span class="flex items-center">
+                <span class="notification-dot <?php echo $current_filter === 'accepted' ? 'bg-white' : 'bg-success'; ?> mr-2"></span>
+                <span>Accepted</span>
+            </span>
+            <span class="<?php echo $current_filter === 'accepted' ? 'bg-white text-success' : 'bg-success/20 text-success'; ?> w-5 h-5 rounded-full flex items-center justify-center font-bold text-xs"><?php echo $notifications_count['accepted']; ?></span>
+        </a>
+        
+        <a href="?filter=declined" 
+           class="w-full <?php echo $current_filter === 'declined' ? 'bg-error text-white filter-active' : 'bg-white hover:bg-error/10 border border-input-border text-navy'; ?> px-3 py-2 rounded-md text-xs font-medium flex items-center justify-between group transition-all duration-200">
+            <span class="flex items-center">
+                <span class="notification-dot <?php echo $current_filter === 'declined' ? 'bg-white' : 'bg-error'; ?> mr-2"></span>
+                <span>Declined</span>
+            </span>
+            <span class="<?php echo $current_filter === 'declined' ? 'bg-white text-error' : 'bg-error/20 text-error'; ?> w-5 h-5 rounded-full flex items-center justify-center font-bold text-xs"><?php echo $notifications_count['declined']; ?></span>
+        </a>
     </div>
-
-    <!-- Dashboard Layout -->
-    <div class="flex flex-col lg:flex-row gap-4">
-        <!-- Left Sidebar: Filter Controls - Button-style filters on mobile and desktop -->
-        <div class="lg:w-1/4 mb-4 lg:mb-0">
-            <!-- Mobile Filter Buttons (shown as a vertical list) -->
-            <div class="lg:hidden bg-white rounded-lg shadow-sm p-4">
-                <h2 class="text-navy text-lg mb-3">Filter by Status</h2>
-                
-                <!-- Filter Buttons - Same style as desktop but for mobile -->
-                <div class="space-y-1.5">
-                    <a href="?filter=all" 
-                       class="w-full <?php echo $current_filter === 'all' ? 'bg-navy text-white filter-active' : 'bg-white hover:bg-navy/10 border border-input-border text-navy'; ?> px-3 py-2 rounded-md text-xs font-medium flex items-center justify-between group transition-all duration-200">
-                        <span class="flex items-center">
-                            <i class="fas fa-inbox mr-2"></i>
-                            <span>All Notifications</span>
-                        </span>
-                        <span class="<?php echo $current_filter === 'all' ? 'bg-white text-navy' : 'bg-navy/20 text-navy'; ?> w-5 h-5 rounded-full flex items-center justify-center font-bold text-xs"><?php echo $notifications_count['total']; ?></span>
-                    </a>
-                    
-                    <a href="?filter=pending" 
-                       class="w-full <?php echo $current_filter === 'pending' ? 'bg-yellow-600 text-white filter-active' : 'bg-white hover:bg-yellow-600/10 border border-input-border text-navy'; ?> px-3 py-2 rounded-md text-xs font-medium flex items-center justify-between group transition-all duration-200">
-                        <span class="flex items-center">
-                            <span class="notification-dot <?php echo $current_filter === 'pending' ? 'bg-white' : 'bg-yellow-600'; ?> mr-2"></span>
-                            <span>Pending</span>
-                        </span>
-                        <span class="<?php echo $current_filter === 'pending' ? 'bg-white text-yellow-600' : 'bg-yellow-600/20 text-yellow-600'; ?> w-5 h-5 rounded-full flex items-center justify-center font-bold text-xs"><?php echo $notifications_count['pending']; ?></span>
-                    </a>
-                    
-                    <a href="?filter=accepted" 
-                       class="w-full <?php echo $current_filter === 'accepted' ? 'bg-success text-white filter-active' : 'bg-white hover:bg-success/10 border border-input-border text-navy'; ?> px-3 py-2 rounded-md text-xs font-medium flex items-center justify-between group transition-all duration-200">
-                        <span class="flex items-center">
-                            <span class="notification-dot <?php echo $current_filter === 'accepted' ? 'bg-white' : 'bg-success'; ?> mr-2"></span>
-                            <span>Accepted</span>
-                        </span>
-                        <span class="<?php echo $current_filter === 'accepted' ? 'bg-white text-success' : 'bg-success/20 text-success'; ?> w-5 h-5 rounded-full flex items-center justify-center font-bold text-xs"><?php echo $notifications_count['accepted']; ?></span>
-                    </a>
-                    
-                    <a href="?filter=declined" 
-                       class="w-full <?php echo $current_filter === 'declined' ? 'bg-error text-white filter-active' : 'bg-white hover:bg-error/10 border border-input-border text-navy'; ?> px-3 py-2 rounded-md text-xs font-medium flex items-center justify-between group transition-all duration-200">
-                        <span class="flex items-center">
-                            <span class="notification-dot <?php echo $current_filter === 'declined' ? 'bg-white' : 'bg-error'; ?> mr-2"></span>
-                            <span>Declined</span>
-                        </span>
-                        <span class="<?php echo $current_filter === 'declined' ? 'bg-white text-error' : 'bg-error/20 text-error'; ?> w-5 h-5 rounded-full flex items-center justify-center font-bold text-xs"><?php echo $notifications_count['declined']; ?></span>
-                    </a>
-                </div>
-            </div>
-            
-            <!-- Desktop Filter Buttons (unchanged) -->
-            <div class="hidden lg:block bg-white rounded-lg shadow-sm p-4 sticky top-20">
-                <h2 class="text-navy text-lg mb-3">Filter by Status</h2>
-                
-                <!-- Filter Buttons -->
-                <div class="space-y-1.5">
-                    <a href="?filter=all" 
-                       class="w-full <?php echo $current_filter === 'all' ? 'bg-navy text-white filter-active' : 'bg-white hover:bg-navy/10 border border-input-border text-navy'; ?> px-3 py-2 rounded-md text-xs font-medium flex items-center justify-between group transition-all duration-200">
-                        <span class="flex items-center">
-                            <i class="fas fa-inbox mr-2"></i>
-                            <span>All Notifications</span>
-                        </span>
-                        <span class="<?php echo $current_filter === 'all' ? 'bg-white text-navy' : 'bg-navy/20 text-navy'; ?> w-5 h-5 rounded-full flex items-center justify-center font-bold text-xs"><?php echo $notifications_count['total']; ?></span>
-                    </a>
-                    
-                    <a href="?filter=pending" 
-                       class="w-full <?php echo $current_filter === 'pending' ? 'bg-yellow-600 text-white filter-active' : 'bg-white hover:bg-yellow-600/10 border border-input-border text-navy'; ?> px-3 py-2 rounded-md text-xs font-medium flex items-center justify-between group transition-all duration-200">
-                        <span class="flex items-center">
-                            <span class="notification-dot <?php echo $current_filter === 'pending' ? 'bg-white' : 'bg-yellow-600'; ?> mr-2"></span>
-                            <span>Pending</span>
-                        </span>
-                        <span class="<?php echo $current_filter === 'pending' ? 'bg-white text-yellow-600' : 'bg-yellow-600/20 text-yellow-600'; ?> w-5 h-5 rounded-full flex items-center justify-center font-bold text-xs"><?php echo $notifications_count['pending']; ?></span>
-                    </a>
-                    
-                    <a href="?filter=accepted" 
-                       class="w-full <?php echo $current_filter === 'accepted' ? 'bg-success text-white filter-active' : 'bg-white hover:bg-success/10 border border-input-border text-navy'; ?> px-3 py-2 rounded-md text-xs font-medium flex items-center justify-between group transition-all duration-200">
-                        <span class="flex items-center">
-                            <span class="notification-dot <?php echo $current_filter === 'accepted' ? 'bg-white' : 'bg-success'; ?> mr-2"></span>
-                            <span>Accepted</span>
-                        </span>
-                        <span class="<?php echo $current_filter === 'accepted' ? 'bg-white text-success' : 'bg-success/20 text-success'; ?> w-5 h-5 rounded-full flex items-center justify-center font-bold text-xs"><?php echo $notifications_count['accepted']; ?></span>
-                    </a>
-                    
-                    <a href="?filter=declined" 
-                       class="w-full <?php echo $current_filter === 'declined' ? 'bg-error text-white filter-active' : 'bg-white hover:bg-error/10 border border-input-border text-navy'; ?> px-3 py-2 rounded-md text-xs font-medium flex items-center justify-between group transition-all duration-200">
-                        <span class="flex items-center">
-                            <span class="notification-dot <?php echo $current_filter === 'declined' ? 'bg-white' : 'bg-error'; ?> mr-2"></span>
-                            <span>Declined</span>
-                        </span>
-                        <span class="<?php echo $current_filter === 'declined' ? 'bg-white text-error' : 'bg-error/20 text-error'; ?> w-5 h-5 rounded-full flex items-center justify-center font-bold text-xs"><?php echo $notifications_count['declined']; ?></span>
-                    </a>
-                </div>
-            </div>
-        </div>
+</div>
         
         <!-- Right Content: Notifications List -->
         <div class="lg:w-3/4">
