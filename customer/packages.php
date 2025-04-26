@@ -245,14 +245,15 @@ $conn->close();
             transform: translateY(-8px);
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
         }
-        @media (min-width: 768px) {
-    .form-section {
+        /* Add this to your existing CSS */
+@media (min-width: 768px) {
+    #lifeplanModal .form-section {
         display: block !important;
     }
 }
 
 @media (max-width: 767px) {
-    .form-section:not(.force-show) {
+    #lifeplanModal .form-section:not(.force-show) {
         display: none !important;
     }
 }
@@ -1552,27 +1553,43 @@ if (continueBtn && backBtn && detailsSection && formSection) {
     });
 }
 
-    if (continueToLifeplanFormBtn && backToLifeplanDetailsBtn && lifeplanDetailsSection && lifeplanFormSection) {
+    // Update your existing Lifeplan button handlers
+if (continueToLifeplanFormBtn && backToLifeplanDetailsBtn && lifeplanDetailsSection && lifeplanFormSection) {
     continueToLifeplanFormBtn.addEventListener('click', function() {
         lifeplanDetailsSection.classList.add('hidden');
         lifeplanFormSection.classList.remove('hidden');
+        // Force show on mobile when navigating to form
+        lifeplanFormSection.classList.add('force-show');
     });
     
     backToLifeplanDetailsBtn.addEventListener('click', function() {
         lifeplanFormSection.classList.add('hidden');
+        lifeplanFormSection.classList.remove('force-show');
         lifeplanDetailsSection.classList.remove('hidden');
     });
 }
     
-    // Make sure the modal close button works for both sections
     // Update your close modal handler
 document.querySelectorAll('.closeModalBtn').forEach(btn => {
     btn.addEventListener('click', function() {
-        document.getElementById('traditionalModal').classList.add('hidden');
-        // Reset to show details when modal is reopened
-        detailsSection.classList.remove('hidden');
-        formSection.classList.add('hidden');
-        formSection.classList.remove('force-show');
+        const traditionalModal = document.getElementById('traditionalModal');
+        const lifeplanModal = document.getElementById('lifeplanModal');
+        
+        if (!traditionalModal.classList.contains('hidden')) {
+            traditionalModal.classList.add('hidden');
+            // Reset to show details when modal is reopened
+            document.querySelector('#traditionalModal .details-section').classList.remove('hidden');
+            document.querySelector('#traditionalModal .form-section').classList.add('hidden');
+            document.querySelector('#traditionalModal .form-section').classList.remove('force-show');
+        }
+        
+        if (!lifeplanModal.classList.contains('hidden')) {
+            lifeplanModal.classList.add('hidden');
+            // Reset to show details when modal is reopened
+            document.querySelector('#lifeplanModal .details-section').classList.remove('hidden');
+            document.querySelector('#lifeplanModal .form-section').classList.add('hidden');
+            document.querySelector('#lifeplanModal .form-section').classList.remove('force-show');
+        }
     });
 });
 
@@ -1854,15 +1871,22 @@ document.getElementById('lifeplanServiceBtn').addEventListener('click', function
     });
 
     // Function to close all modals
-    function closeAllModals() {
-        document.getElementById('traditionalModal').classList.add('hidden');
-        document.getElementById('lifeplanModal').classList.add('hidden');
-        document.getElementById('serviceTypeModal').classList.add('hidden');
-        
-        // Reset traditional modal to show details section
-        detailsSection.classList.remove('hidden');
-        formSection.classList.add('hidden');
-    }
+    // Update your closeAllModals function
+function closeAllModals() {
+    document.getElementById('traditionalModal').classList.add('hidden');
+    document.getElementById('lifeplanModal').classList.add('hidden');
+    document.getElementById('serviceTypeModal').classList.add('hidden');
+    
+    // Reset traditional modal to show details section
+    document.querySelector('#traditionalModal .details-section').classList.remove('hidden');
+    document.querySelector('#traditionalModal .form-section').classList.add('hidden');
+    document.querySelector('#traditionalModal .form-section').classList.remove('force-show');
+    
+    // Reset lifeplan modal to show details section
+    document.querySelector('#lifeplanModal .details-section').classList.remove('hidden');
+    document.querySelector('#lifeplanModal .form-section').classList.add('hidden');
+    document.querySelector('#lifeplanModal .form-section').classList.remove('force-show');
+}
 
     // Close modals when pressing Escape key
     document.addEventListener('keydown', function(event) {
@@ -2170,25 +2194,36 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // Add this to your existing JavaScript
+// Update your existing resize handler to include lifeplan modal
 window.addEventListener('resize', function() {
     const traditionalModal = document.getElementById('traditionalModal');
+    const lifeplanModal = document.getElementById('lifeplanModal');
+    
     if (!traditionalModal.classList.contains('hidden')) {
-        const detailsSection = document.querySelector('.details-section');
-        const formSection = document.querySelector('.form-section');
-        const isMobileView = window.innerWidth < 768;
-        
-        if (isMobileView) {
-            // If switching to mobile view, ensure form is hidden if we were on details
-            if (!detailsSection.classList.contains('hidden')) {
-                formSection.classList.add('hidden');
-            }
-        } else {
-            // If switching to desktop view, show both sections
-            detailsSection.classList.remove('hidden');
-            formSection.classList.remove('hidden');
-        }
+        handleModalResize('traditionalModal');
+    }
+    
+    if (!lifeplanModal.classList.contains('hidden')) {
+        handleModalResize('lifeplanModal');
     }
 });
+function handleModalResize(modalId) {
+    const modalPrefix = modalId === 'traditionalModal' ? '' : 'lifeplan';
+    const detailsSection = document.querySelector(`#${modalId} .details-section`);
+    const formSection = document.querySelector(`#${modalId} .form-section`);
+    const isMobileView = window.innerWidth < 768;
+    
+    if (isMobileView) {
+        // If switching to mobile view, ensure form is hidden if we were on details
+        if (!detailsSection.classList.contains('hidden')) {
+            formSection.classList.add('hidden');
+        }
+    } else {
+        // If switching to desktop view, show both sections
+        detailsSection.classList.remove('hidden');
+        formSection.classList.remove('hidden');
+    }
+}
 </script>
 </body>
 </html>
