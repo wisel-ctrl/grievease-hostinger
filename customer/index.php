@@ -110,10 +110,15 @@ header("Pragma: no-cache");
                     $stmt->close();
                 }
                 
-                // Initialize variables
-$percentage = 25;
+// Initialize variables
+$percentage = 25; // Base 25% for account creation
 $status_text = "25% Complete";
-$check_icons = [];
+$check_icons = [[
+    'icon' => 'fa-user-circle',
+    'color' => 'text-success',
+    'text' => 'Account Created'
+]];
+$incomplete_steps = [];
 
 // Check verification status
 $user_query = "SELECT is_verified, branch_loc FROM users WHERE id = ?";
@@ -125,26 +130,28 @@ $user_result = $stmt->get_result();
 if ($user_result->num_rows > 0) {
     $user = $user_result->fetch_assoc();
     
-    // Check email verification (50%)
+    // Email verification adds +25% (total 50%)
     if ($user['is_verified'] == 1) {
-        $percentage = 50;
-        $status_text = "50% Complete";
+        $percentage += 25;
         $check_icons[] = [
             'icon' => 'fa-check-circle',
             'color' => 'text-success',
             'text' => 'Account Verified'
         ];
+    } else {
+        $incomplete_steps[] = 'Account Verification';
     }
     
-    // Check branch selection (60%)
+    // Branch selection adds +20% (total 70% if both previous steps done)
     if ($user['branch_loc'] != 'unknown') {
-        $percentage = 60;
-        $status_text = "60% Complete";
+        $percentage += 20;
         $check_icons[] = [
             'icon' => 'fa-map-marker-alt',
             'color' => 'text-success',
             'text' => 'Branch Selected'
         ];
+    } else {
+        $incomplete_steps[] = 'Branch Selection';
     }
     
     // Check ID validation status
@@ -157,35 +164,45 @@ if ($user_result->num_rows > 0) {
     if ($id_result->num_rows > 0) {
         $id_data = $id_result->fetch_assoc();
         
-        // ID uploaded but not yet validated (80%)
+        // ID uploaded adds +20% (total 90% if all previous steps done)
         if ($id_data['is_validated'] == 'no') {
-            $percentage = 80;
-            $status_text = "80% Complete";
+            $percentage += 20;
             $check_icons[] = [
                 'icon' => 'fa-id-card',
                 'color' => 'text-success',
                 'text' => 'ID Uploaded'
             ];
+            $incomplete_steps[] = 'ID Verification';
         }
-        // ID fully validated (100%)
+        // ID validated adds +30% (total 100% - can exceed 100% if branch missing)
         elseif ($id_data['is_validated'] == 'valid') {
-            $percentage = 100;
-            $status_text = "100% Complete";
+            $percentage += 30;
             $check_icons[] = [
                 'icon' => 'fa-check-circle',
                 'color' => 'text-success',
                 'text' => 'ID Verified'
             ];
         }
+    } else {
+        $incomplete_steps[] = 'ID Upload';
     }
 }
 
-// Default check icon for account creation
-array_unshift($check_icons, [
-    'icon' => 'fa-user-circle',
-    'color' => 'text-success',
-    'text' => 'Account Created'
-]);
+// Cap at 100% but show penalty if branch is missing
+if ($percentage >= 100) {
+    if (in_array('Branch Selection', $incomplete_steps)) {
+        $percentage = 80; // Penalty for missing branch
+        $status_text = "80% Complete (Branch Missing)";
+    } else {
+        $percentage = 100;
+        $status_text = "100% Complete";
+    }
+} else {
+    $status_text = "$percentage% Complete";
+}
+
+// Ensure minimum 25% and maximum 100% (before penalty)
+$percentage = min(max($percentage, 25), 100);
                 
                 $conn->close();
 ?>
