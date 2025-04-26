@@ -867,8 +867,8 @@ $current_page_items = array_slice($filtered_items, ($page - 1) * $items_per_page
       <i class="fas fa-times"></i>
     </button>
     
-    <!-- Modal Header - Will be dynamically styled based on status -->
-    <div id="modalHeader" class="px-4 sm:px-6 py-4 sm:py-5 border-b border-gray-200">
+    <!-- Modal Header -->
+    <div class="px-4 sm:px-6 py-4 sm:py-5 border-b bg-yellow-600 border-gray-200">
       <h3 id="modal-package-title" class="text-lg sm:text-xl font-bold text-white flex items-center">
         Booking Details
       </h3>
@@ -913,6 +913,24 @@ $current_page_items = array_slice($filtered_items, ($page - 1) * $items_per_page
     // Show the modal
     document.getElementById('bookingDetailsModal').classList.remove('hidden');
     
+    // Set modal header color based on status
+    const modalHeader = document.querySelector('#bookingDetailsModal .bg-yellow-600');
+    modalHeader.classList.remove('bg-yellow-600');
+    
+    switch(status.toLowerCase()) {
+        case 'pending':
+            modalHeader.classList.add('bg-yellow-600');
+            break;
+        case 'accepted':
+            modalHeader.classList.add('bg-green-600');
+            break;
+        case 'declined':
+            modalHeader.classList.add('bg-red-600');
+            break;
+        default:
+            modalHeader.classList.add('bg-gray-600');
+    }
+    
     // Fetch booking details via AJAX
     fetch(`notification/get_booking_details.php?booking_id=${bookingId}`)
         .then(response => response.json())
@@ -936,19 +954,26 @@ $current_page_items = array_slice($filtered_items, ($page - 1) * $items_per_page
                     return date.toLocaleDateString();
                 };
                 
-                // Set header background based on status
-                const headerBgClass = getHeaderBgClass(data.status);
-                document.getElementById('modalHeader').className = `px-4 sm:px-6 py-4 sm:py-5 border-b border-gray-200 ${headerBgClass}`;
-                
-                // Set icon background color based on status
-                const iconBgClass = getIconBgClass(data.status);
+                // Determine icon color based on status
+                let iconBgColor = 'bg-yellow-600';
+                switch(data.status.toLowerCase()) {
+                    case 'accepted':
+                        iconBgColor = 'bg-green-600';
+                        break;
+                    case 'declined':
+                        iconBgColor = 'bg-red-600';
+                        break;
+                    case 'pending':
+                    default:
+                        iconBgColor = 'bg-yellow-600';
+                }
                 
                 // Create the HTML content
                 let htmlContent = `
                     <!-- Booking ID and Status Banner -->
                     <div class="flex justify-between items-center mb-6 bg-gray-50 p-3 sm:p-4 rounded-lg">
                         <div class="flex items-center">
-                            <div class="${iconBgClass} rounded-full p-2 mr-3">
+                            <div class="${iconBgColor} rounded-full p-2 mr-3">
                                 <i class="fas fa-hashtag text-white"></i>
                             </div>
                             <div>
@@ -1136,42 +1161,6 @@ function getStatusColorClass(status) {
             return 'bg-gray-100 text-gray-700';
     }
 }
-
-// Helper function for header backgrounds based on status
-function getHeaderBgClass(status) {
-    switch(status.toLowerCase()) {
-        case 'pending':
-            return 'bg-gradient-to-r from-sidebar-accent to-darkgold';
-        case 'accepted':
-        case 'approved':
-            return 'bg-gradient-to-r from-green-600 to-green-500';
-        case 'completed':
-            return 'bg-gradient-to-r from-blue-600 to-blue-500';
-        case 'declined':
-        case 'cancelled':
-            return 'bg-gradient-to-r from-red-600 to-red-500';
-        default:
-            return 'bg-gradient-to-r from-gray-700 to-gray-600';
-    }
-}
-
-// Helper function for icon backgrounds based on status
-function getIconBgClass(status) {
-    switch(status.toLowerCase()) {
-        case 'pending':
-            return 'bg-sidebar-accent';
-        case 'accepted':
-        case 'approved':
-            return 'bg-green-600';
-        case 'completed':
-            return 'bg-blue-600';
-        case 'declined':
-        case 'cancelled':
-            return 'bg-red-600';
-        default:
-            return 'bg-navy';
-    }
-}       
 
 function closeBookingDetailsModal() {
     document.getElementById('bookingDetailsModal').classList.add('hidden');
