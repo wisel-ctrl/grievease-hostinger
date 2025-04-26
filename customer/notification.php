@@ -856,30 +856,42 @@ $current_page_items = array_slice($filtered_items, ($page - 1) * $items_per_page
         </script>
         
         <!-- Booking Details Modal -->
-        <div id="bookingDetailsModal" class="fixed inset-0 z-50 hidden overflow-y-auto">
-            <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-                <!-- Background overlay -->
-                <div class="fixed inset-0 transition-opacity" aria-hidden="true">
-                    <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+<div id="bookingDetailsModal" class="fixed inset-0 z-50 hidden overflow-y-auto">
+    <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <!-- Background overlay with improved opacity -->
+        <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+            <div class="absolute inset-0 bg-gray-800 opacity-80"></div>
+        </div>
+        
+        <!-- Modal content with improved styling -->
+        <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl w-full">
+            <!-- Header with more prominent styling -->
+            <div class="bg-indigo-600 px-6 py-4 flex justify-between items-center">
+                <h3 class="text-xl font-semibold text-white">Booking Details</h3>
+                <button type="button" onclick="closeModal()" class="text-white hover:text-gray-200 focus:outline-none">
+                    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <!-- Content area with better spacing -->
+            <div class="bg-white px-6 py-5">
+                <!-- Loading indicator -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="bookingDetailsContent">
+                    <!-- Details will be loaded here via JavaScript -->
                 </div>
-                
-                <!-- Modal content -->
-                <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl w-full">
-                    <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                        <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Booking Details</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="bookingDetailsContent">
-                            <!-- Details will be loaded here via JavaScript -->
-                        </div>
-                    </div>
-                    <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                        <button type="button" onclick="closeModal()" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
-                            Close
-                        </button>
-                    </div>
-                </div>
+            </div>
+            
+            <!-- Footer with better button styling -->
+            <div class="bg-gray-50 px-6 py-4 flex justify-end">
+                <button type="button" onclick="closeModal()" class="inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-5 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-200">
+                    Close
+                </button>
             </div>
         </div>
     </div>
+</div>
 
     <?php include 'customService/chat_elements.html'; ?>
     
@@ -897,11 +909,16 @@ $current_page_items = array_slice($filtered_items, ($page - 1) * $items_per_page
     }
 
     function viewBookingDetails(bookingId, status) {
-    // Show loading state
-    document.getElementById('bookingDetailsContent').innerHTML = '<div class="col-span-2 flex justify-center py-8"><i class="fas fa-spinner fa-spin text-2xl text-blue-500"></i></div>';
+    // Show loading state with improved spinner
+    document.getElementById('bookingDetailsContent').innerHTML = `
+        <div class="col-span-2 flex flex-col items-center justify-center py-12">
+            <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500 mb-4"></div>
+            <p class="text-gray-600">Loading booking details...</p>
+        </div>`;
     
     // Show the modal
     document.getElementById('bookingDetailsModal').classList.remove('hidden');
+    document.body.classList.add('overflow-hidden'); // Prevent background scrolling
     
     // Fetch booking details via AJAX
     fetch(`notification/get_booking_details.php?booking_id=${bookingId}`)
@@ -909,9 +926,19 @@ $current_page_items = array_slice($filtered_items, ($page - 1) * $items_per_page
         .then(data => {
             if (data.error) {
                 document.getElementById('bookingDetailsContent').innerHTML = `
-                    <div class="col-span-2 text-center py-8 text-red-500">
-                        <i class="fas fa-exclamation-circle text-2xl mb-2"></i>
-                        <p>${data.error}</p>
+                    <div class="col-span-2 text-center py-8">
+                        <div class="bg-red-50 border-l-4 border-red-400 p-4 rounded-md">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0">
+                                    <svg class="h-5 w-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                                    </svg>
+                                </div>
+                                <div class="ml-3">
+                                    <p class="text-sm text-red-700">${data.error}</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 `;
             } else {
@@ -926,79 +953,169 @@ $current_page_items = array_slice($filtered_items, ($page - 1) * $items_per_page
                     return date.toLocaleDateString();
                 };
                 
-                // Create the HTML content
+                // Helper function for status colors
+                const getStatusColorClass = (status) => {
+                    switch(status.toLowerCase()) {
+                        case 'pending': return 'bg-yellow-100 text-yellow-800';
+                        case 'approved': case 'accepted': return 'bg-green-100 text-green-800';
+                        case 'rejected': case 'cancelled': return 'bg-red-100 text-red-800';
+                        case 'completed': return 'bg-blue-100 text-blue-800';
+                        default: return 'bg-gray-100 text-gray-800';
+                    }
+                };
+                
+                // Create the HTML content with improved styling
                 let htmlContent = `
                     <div class="col-span-2">
-                        <h4 class="font-semibold text-gray-700 mb-2">Deceased Information</h4>
-                        <div class="bg-gray-50 p-3 rounded-lg mb-4">
-                            <p><span class="font-medium">Full Name:</span> ${data.deceased_lname}, ${data.deceased_fname} ${data.deceased_midname || ''} ${data.deceased_suffix || ''}</p>
-                            <p><span class="font-medium">Address:</span> ${data.deceased_address}</p>
-                            <p><span class="font-medium">Birth Date:</span> ${formatDate(data.deceased_birth)}</p>
-                            <p><span class="font-medium">Date of Death:</span> ${formatDate(data.deceased_dodeath)}</p>
-                            <p><span class="font-medium">Date of Burial:</span> ${formatDate(data.deceased_dateOfBurial)}</p>
-                            <p><span class="font-medium">With Cremation:</span> ${data.with_cremate === 'yes' ? 'Yes' : 'No'}</p>
+                        <div class="flex items-center mb-4">
+                            <div class="h-8 w-1 bg-indigo-500 rounded-full mr-3"></div>
+                            <h4 class="text-lg font-semibold text-gray-800">Deceased Information</h4>
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded-lg mb-6 shadow-sm border border-gray-100">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-y-3">
+                                <div>
+                                    <p class="text-sm text-gray-500">Full Name</p>
+                                    <p class="font-medium">${data.deceased_lname}, ${data.deceased_fname} ${data.deceased_midname || ''} ${data.deceased_suffix || ''}</p>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-500">Address</p>
+                                    <p class="font-medium">${data.deceased_address}</p>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-500">Birth Date</p>
+                                    <p class="font-medium">${formatDate(data.deceased_birth)}</p>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-500">Date of Death</p>
+                                    <p class="font-medium">${formatDate(data.deceased_dodeath)}</p>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-500">Date of Burial</p>
+                                    <p class="font-medium">${formatDate(data.deceased_dateOfBurial)}</p>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-500">With Cremation</p>
+                                    <p class="font-medium">${data.with_cremate === 'yes' ? 'Yes' : 'No'}</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     
                     <div>
-                        <h4 class="font-semibold text-gray-700 mb-2">Service Details</h4>
-                        <div class="bg-gray-50 p-3 rounded-lg mb-4">
-                            <p><span class="font-medium">Service:</span> ${data.service_name}</p>
-                            <p><span class="font-medium">Branch:</span> ${data.branch_name}</p>
-                            <p><span class="font-medium">Initial Price:</span> ₱${parseFloat(data.initial_price).toFixed(2)}</p>
-                            <p><span class="font-medium">Amount Paid:</span> ₱${parseFloat(data.amount_paid || 0).toFixed(2)}</p>
+                        <div class="flex items-center mb-4">
+                            <div class="h-8 w-1 bg-indigo-500 rounded-full mr-3"></div>
+                            <h4 class="text-lg font-semibold text-gray-800">Service Details</h4>
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded-lg mb-6 shadow-sm border border-gray-100">
+                            <div class="space-y-3">
+                                <div>
+                                    <p class="text-sm text-gray-500">Service</p>
+                                    <p class="font-medium">${data.service_name}</p>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-500">Branch</p>
+                                    <p class="font-medium">${data.branch_name}</p>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-500">Initial Price</p>
+                                    <p class="font-medium">₱${parseFloat(data.initial_price).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</p>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-500">Amount Paid</p>
+                                    <p class="font-medium">₱${parseFloat(data.amount_paid || 0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     
                     <div>
-                        <h4 class="font-semibold text-gray-700 mb-2">Booking Information</h4>
-                        <div class="bg-gray-50 p-3 rounded-lg mb-4">
-                            <p><span class="font-medium">Status:</span> <span class="px-2 py-1 rounded text-xs ${getStatusColorClass(data.status)}">${data.status}</span></p>
-                            <p><span class="font-medium">Booking Date:</span> ${formattedBookingDate}</p>
-                            ${data.accepted_date ? `<p><span class="font-medium">${data.status} Date:</span> ${new Date(data.accepted_date).toLocaleString()}</p>` : ''}
-                            <p><span class="font-medium">Reference Code:</span> ${data.reference_code || 'N/A'}</p>
+                        <div class="flex items-center mb-4">
+                            <div class="h-8 w-1 bg-indigo-500 rounded-full mr-3"></div>
+                            <h4 class="text-lg font-semibold text-gray-800">Booking Information</h4>
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded-lg mb-6 shadow-sm border border-gray-100">
+                            <div class="space-y-3">
+                                <div>
+                                    <p class="text-sm text-gray-500">Status</p>
+                                    <p><span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium ${getStatusColorClass(data.status)}">${data.status}</span></p>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-500">Booking Date</p>
+                                    <p class="font-medium">${formattedBookingDate}</p>
+                                </div>
+                                ${data.accepted_date ? `
+                                <div>
+                                    <p class="text-sm text-gray-500">${data.status} Date</p>
+                                    <p class="font-medium">${new Date(data.accepted_date).toLocaleString()}</p>
+                                </div>` : ''}
+                                <div>
+                                    <p class="text-sm text-gray-500">Reference Code</p>
+                                    <p class="font-medium">${data.reference_code || 'N/A'}</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     
                     ${(data.deathcert_url || data.payment_url) ? `
                     <div class="col-span-2">
-                        <h4 class="font-semibold text-gray-700 mb-2">Attachments</h4>
-                        <div class="grid grid-cols-2 gap-4 bg-gray-50 p-3 rounded-lg">
+                        <div class="flex items-center mb-4">
+                            <div class="h-8 w-1 bg-indigo-500 rounded-full mr-3"></div>
+                            <h4 class="text-lg font-semibold text-gray-800">Attachments</h4>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 bg-gray-50 p-4 rounded-lg shadow-sm border border-gray-100">
                             ${data.deathcert_url ? `
                                 <div class="col-span-1">
-                                    <p class="font-medium mb-2">Death Certificate:</p>
-                                    <img src="booking/${data.deathcert_url}" 
-                                        alt="Death Certificate" 
-                                        class="w-full h-auto rounded border border-gray-200"
-                                        onload="this.nextElementSibling.textContent = this.naturalWidth + '×' + this.naturalHeight + 'px'">
-                                    <p class="text-sm text-gray-500 mt-1 text-center"></p>
+                                    <p class="text-sm text-gray-500 mb-2">Death Certificate</p>
+                                    <div class="relative group">
+                                        <img src="booking/${data.deathcert_url}" 
+                                            alt="Death Certificate" 
+                                            class="w-full h-auto rounded border border-gray-200 transition-all duration-300 cursor-pointer hover:opacity-90"
+                                            onload="this.nextElementSibling.textContent = this.naturalWidth + '×' + this.naturalHeight + 'px'"
+                                            onclick="window.open('booking/${data.deathcert_url}', '_blank')">
+                                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <div class="bg-black bg-opacity-50 rounded-full p-2">
+                                                <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path>
+                                                </svg>
+                                            </div>
+                                        </div>
+                                        <p class="text-xs text-gray-500 mt-1 text-center"></p>
+                                    </div>
                                 </div>
                             ` : `
                                 <div class="col-span-1">
-                                    <p class="font-medium mb-2">Death Certificate:</p>
-                                    <div class="w-full h-40 bg-gray-100 rounded border border-gray-200 flex items-center justify-center">
-                                        <p class="text-gray-400">N/A</p>
+                                    <p class="text-sm text-gray-500 mb-2">Death Certificate</p>
+                                    <div class="w-full h-48 bg-gray-100 rounded border border-gray-200 flex items-center justify-center">
+                                        <p class="text-gray-400">Not Available</p>
                                     </div>
-                                    <p class="text-sm text-gray-500 mt-1 text-center">0×0 px</p>
                                 </div>
                             `}
                             
                             ${data.payment_url ? `
                                 <div class="col-span-1">
-                                    <p class="font-medium mb-2">Payment Receipt:</p>
-                                    <img src="booking/${data.payment_url}" 
-                                        alt="Payment Receipt" 
-                                        class="w-full h-auto rounded border border-gray-200"
-                                        onload="this.nextElementSibling.textContent = this.naturalWidth + '×' + this.naturalHeight + 'px'">
-                                    <p class="text-sm text-gray-500 mt-1 text-center"></p>
+                                    <p class="text-sm text-gray-500 mb-2">Payment Receipt</p>
+                                    <div class="relative group">
+                                        <img src="booking/${data.payment_url}" 
+                                            alt="Payment Receipt" 
+                                            class="w-full h-auto rounded border border-gray-200 transition-all duration-300 cursor-pointer hover:opacity-90"
+                                            onload="this.nextElementSibling.textContent = this.naturalWidth + '×' + this.naturalHeight + 'px'"
+                                            onclick="window.open('booking/${data.payment_url}', '_blank')">
+                                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <div class="bg-black bg-opacity-50 rounded-full p-2">
+                                                <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path>
+                                                </svg>
+                                            </div>
+                                        </div>
+                                        <p class="text-xs text-gray-500 mt-1 text-center"></p>
+                                    </div>
                                 </div>
                             ` : `
                                 <div class="col-span-1">
-                                    <p class="font-medium mb-2">Payment Receipt:</p>
-                                    <div class="w-full h-40 bg-gray-100 rounded border border-gray-200 flex items-center justify-center">
-                                        <p class="text-gray-400">N/A</p>
+                                    <p class="text-sm text-gray-500 mb-2">Payment Receipt</p>
+                                    <div class="w-full h-48 bg-gray-100 rounded border border-gray-200 flex items-center justify-center">
+                                        <p class="text-gray-400">Not Available</p>
                                     </div>
-                                    <p class="text-sm text-gray-500 mt-1 text-center">0×0 px</p>
                                 </div>
                             `}
                         </div>
@@ -1012,9 +1129,19 @@ $current_page_items = array_slice($filtered_items, ($page - 1) * $items_per_page
         .catch(error => {
             console.error('Error:', error);
             document.getElementById('bookingDetailsContent').innerHTML = `
-                <div class="col-span-2 text-center py-8 text-red-500">
-                    <i class="fas fa-exclamation-circle text-2xl mb-2"></i>
-                    <p>Failed to load booking details. Please try again.</p>
+                <div class="col-span-2 text-center py-8">
+                    <div class="bg-red-50 border-l-4 border-red-400 p-4 rounded-md">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0">
+                                <svg class="h-5 w-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                                </svg>
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-sm text-red-700">Failed to load booking details. Please try again.</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             `;
         });
@@ -1022,7 +1149,25 @@ $current_page_items = array_slice($filtered_items, ($page - 1) * $items_per_page
 
 function closeModal() {
     document.getElementById('bookingDetailsModal').classList.add('hidden');
+    document.body.classList.remove('overflow-hidden'); // Re-enable background scrolling
 }
+
+// Close modal when clicking outside the content
+document.addEventListener('DOMContentLoaded', function() {
+    const modal = document.getElementById('bookingDetailsModal');
+    modal.addEventListener('click', function(event) {
+        if (event.target === modal) {
+            closeModal();
+        }
+    });
+    
+    // Close modal with escape key
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape' && !modal.classList.contains('hidden')) {
+            closeModal();
+        }
+    });
+});
 
 function getStatusColorClass(status) {
     switch(status) {
