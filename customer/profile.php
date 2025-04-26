@@ -887,6 +887,18 @@ imageTriggers.forEach(trigger => {
     });
 });
 
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM fully loaded'); // Debug log
+    
+    const modal = document.getElementById('imageModal');
+    console.log('Image modal on load:', modal ? 'Exists' : 'Does not exist'); // Debug log
+    
+    if (modal) {
+        console.log('Modal initial classes:', modal.classList); // Debug log
+        console.log('Modal initial style:', modal.style); // Debug log
+    }
+});
+
 // Initialize tooltips if any
 function initTooltips() {
     const tooltips = document.querySelectorAll('[data-tooltip]');
