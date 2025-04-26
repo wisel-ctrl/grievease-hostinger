@@ -656,6 +656,29 @@ $current_page_items = array_slice($filtered_items, ($page - 1) * $items_per_page
                         </p>
                     </div>
                 </div>
+
+                <!-- Booking Details -->
+                <div class="mt-2">
+                                <p class="text-gray-700 text-xs">
+                                    <?php 
+                                        // Create a description based on status
+                                        switch($booking['status']) {
+                                            case 'Pending':
+                                                echo "Your booking request is being reviewed by our staff. We will update you soon.";
+                                                break;
+                                            case 'Accepted':
+                                                echo "Your booking has been confirmed. Please arrive 15 minutes before your scheduled time.";
+                                                break;
+                                            case 'Declined':
+                                                echo "We apologize, but we were unable to accommodate your booking request.";
+                                                if (!empty($booking['admin_message'])) {
+                                                    echo " Reason: " . htmlspecialchars($booking['admin_message']);
+                                                }
+                                                break;
+                                        }
+                                    ?>
+                                </p>
+                            </div>
                 
                 <div class="mt-3 flex flex-wrap gap-2 items-center justify-between">
                     <button onclick="viewBookingDetails(<?php echo $booking['booking_id']; ?>, '<?php echo $booking['status']; ?>')" 
