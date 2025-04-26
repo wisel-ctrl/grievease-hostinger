@@ -933,7 +933,7 @@ foreach ($serviceData as $service => $branches) {
                                 ) e ON b.branch_id = e.branch_id
                                 WHERE b.branch_id IN (1, 2)
                                 ORDER BY 
-                                    b.branch_name ASC;
+                                    b.branch_name ASC
                                 ";
                 
                 $stmt = $conn->prepare($branchQuery);
