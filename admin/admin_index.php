@@ -946,7 +946,7 @@ foreach ($serviceData as $service => $branches) {
                         $branchName = htmlspecialchars($branch['branch_name']);
                         $serviceCount = $branch['service_count'] ?? 0;
                         $revenue = $branch['revenue'] ?? 0;
-                        $expenses = $branch['expenses'] ?? 0;
+                        $expenses = $branch['expenses'] + $branch['capital_total'] ?? 0;
                         $profit = $branch['profit'] ?? 0;
                         $margin = $branch['margin'] ?? 0;
                         
