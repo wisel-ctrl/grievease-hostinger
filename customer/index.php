@@ -629,134 +629,156 @@ $show_id_card = !$has_id || strtolower($id_data['is_validated']) != 'valid';
         </div>
         
         <!-- Status Cards Row -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <!-- Payment Status Card -->
-            <div class="bg-white rounded-xl shadow-lg p-6 dashboard-card transition-all duration-300">
-                <div class="flex items-start justify-between mb-4">
-                    <div>
-                        <p class="text-sm text-gray-500 font-medium">Payment Status</p>
-                        <h3 class="text-xl font-hedvig text-navy">Pending Payment</h3>
-                    </div>
-                    <div class="w-10 h-10 rounded-full bg-yellow-600/10 flex items-center justify-center">
-                        <i class="fas fa-credit-card text-yellow-600"></i>
-                    </div>
-                </div>
-                <p class="text-sm text-dark mb-4">Your Traditional Funeral package payment is due by March 28, 2025.</p>
-                <a href="profile.php#payment-info" class="text-sm text-yellow-600 hover:text-darkgold font-medium flex items-center">
-                    Make Payment <i class="fas fa-arrow-right ml-2"></i>
-                </a>
+<div class="grid grid-cols-1 gap-6 mb-8 dashboard-cards-container">
+    <!-- Payment Status Card -->
+    <div class="bg-white rounded-xl shadow-lg p-6 dashboard-card transition-all duration-300">
+        <div class="flex items-start justify-between mb-4">
+            <div>
+                <p class="text-sm text-gray-500 font-medium">Payment Status</p>
+                <h3 class="text-xl font-hedvig text-navy">Pending Payment</h3>
             </div>
+            <div class="w-10 h-10 rounded-full bg-yellow-600/10 flex items-center justify-center">
+                <i class="fas fa-credit-card text-yellow-600"></i>
+            </div>
+        </div>
+        <p class="text-sm text-dark mb-4">Your Traditional Funeral package payment is due by March 28, 2025.</p>
+        <a href="profile.php#payment-info" class="text-sm text-yellow-600 hover:text-darkgold font-medium flex items-center">
+            Make Payment <i class="fas fa-arrow-right ml-2"></i>
+        </a>
+    </div>
+    
+    <?php if ($show_booking_card): ?>
+    <!-- Booking Status Card -->
+    <div class="bg-white rounded-xl shadow-lg p-6 dashboard-card transition-all duration-300">
+        <div class="flex items-start justify-between mb-4">
+            <div>
+                <p class="text-sm text-gray-500 font-medium">Booking Status</p>
+                <h3 class="text-xl font-hedvig <?= $booking_status_class ?>"><?= $booking_status ?></h3>
+            </div>
+            <div class="w-10 h-10 rounded-full <?= $booking_bg_class ?> flex items-center justify-center">
+                <i class="fas 
+                    <?= $booking_status === 'Approved' ? 'fa-check-circle' : '' ?>
+                    <?= $booking_status === 'Pending' ? 'fa-hourglass-half' : '' ?>
+                    <?= $booking_status === 'Declined' ? 'fa-times-circle' : '' ?>
+                    <?= $booking_status === 'No Booking' ? 'fa-calendar-plus' : '' ?>
+                    <?= $booking_icon_class ?>">
+                </i>
+            </div>
+        </div>
+        <p class="text-sm text-dark mb-4"><?= $booking_message ?></p>
+        <a href="<?= $booking_redirect_url ?>" class="text-sm text-yellow-600 hover:text-darkgold font-medium flex items-center">
+            <?= $booking_link_text ?> <i class="fas fa-arrow-right ml-2"></i>
+        </a>
+    </div>
+    <?php endif; ?>
+    
+    <?php if ($show_profile_card): ?>
+    <!-- Profile Completion Card -->
+    <div class="bg-white rounded-xl shadow-lg p-6 dashboard-card transition-all duration-300">
+        <div class="flex items-start justify-between mb-4">
+            <div>
+                <p class="text-sm text-gray-500 font-medium">Profile Completion</p>
+                <h3 class="text-xl font-hedvig text-navy"><?= $status_text ?></h3>
+            </div>
+            <div class="w-10 h-10 rounded-full bg-yellow-600/10 flex items-center justify-center">
+                <i class="fas fa-user-circle text-yellow-600"></i>
+            </div>
+        </div>
+        
+        <!-- Progress bar -->
+        <div class="w-full bg-gray-200 rounded-full h-2.5 mb-4">
+            <div class="bg-yellow-600 h-2.5 rounded-full" style="width: <?= $percentage ?>%"></div>
+        </div>
+        
+        <!-- Completion steps -->
+        <div class="space-y-2 mb-4">
+            <?php foreach ($check_icons as $item): ?>
+            <div class="flex items-center text-sm">
+                <i class="fas <?= $item['icon'] ?> <?= $item['color'] ?> mr-2"></i>
+                <span><?= $item['text'] ?></span>
+            </div>
+            <?php endforeach; ?>
             
-            <?php if ($show_booking_card): ?>
-            <!-- Booking Status Card -->
-            <div class="bg-white rounded-xl shadow-lg p-6 dashboard-card transition-all duration-300">
-                <div class="flex items-start justify-between mb-4">
-                    <div>
-                        <p class="text-sm text-gray-500 font-medium">Booking Status</p>
-                        <h3 class="text-xl font-hedvig <?= $booking_status_class ?>"><?= $booking_status ?></h3>
+            <?php if ($percentage < 100): ?>
+                <?php if (!in_array('Account Verified', array_column($check_icons, 'text'))): ?>
+                    <div class="flex items-center text-sm text-gray-400">
+                        <i class="far fa-circle mr-2"></i>
+                        <span>Verify Account</span>
                     </div>
-                    <div class="w-10 h-10 rounded-full <?= $booking_bg_class ?> flex items-center justify-center">
-                        <i class="fas 
-                            <?= $booking_status === 'Approved' ? 'fa-check-circle' : '' ?>
-                            <?= $booking_status === 'Pending' ? 'fa-hourglass-half' : '' ?>
-                            <?= $booking_status === 'Declined' ? 'fa-times-circle' : '' ?>
-                            <?= $booking_status === 'No Booking' ? 'fa-calendar-plus' : '' ?>
-                            <?= $booking_icon_class ?>">
-                        </i>
-                    </div>
-                </div>
-                <p class="text-sm text-dark mb-4"><?= $booking_message ?></p>
-                <a href="<?= $booking_redirect_url ?>" class="text-sm text-yellow-600 hover:text-darkgold font-medium flex items-center">
-                    <?= $booking_link_text ?> <i class="fas fa-arrow-right ml-2"></i>
-                </a>
-            </div>
-            <?php endif; ?>
-            
-            <?php if ($show_profile_card): ?>
-            <!-- Profile Completion Card -->
-            <div class="bg-white rounded-xl shadow-lg p-6 dashboard-card transition-all duration-300">
-                <div class="flex items-start justify-between mb-4">
-                    <div>
-                        <p class="text-sm text-gray-500 font-medium">Profile Completion</p>
-                        <h3 class="text-xl font-hedvig text-navy"><?= $status_text ?></h3>
-                    </div>
-                    <div class="w-10 h-10 rounded-full bg-yellow-600/10 flex items-center justify-center">
-                        <i class="fas fa-user-circle text-yellow-600"></i>
-                    </div>
-                </div>
+                <?php endif; ?>
                 
-                <!-- Progress bar -->
-                <div class="w-full bg-gray-200 rounded-full h-2.5 mb-4">
-                    <div class="bg-yellow-600 h-2.5 rounded-full" style="width: <?= $percentage ?>%"></div>
-                </div>
-                
-                <!-- Completion steps -->
-                <div class="space-y-2 mb-4">
-                    <?php foreach ($check_icons as $item): ?>
-                    <div class="flex items-center text-sm">
-                        <i class="fas <?= $item['icon'] ?> <?= $item['color'] ?> mr-2"></i>
-                        <span><?= $item['text'] ?></span>
+                <?php if (!in_array('Branch Selected', array_column($check_icons, 'text'))): ?>
+                    <div class="flex items-center text-sm text-gray-400">
+                        <i class="far fa-circle mr-2"></i>
+                        <span>Select Branch</span>
                     </div>
-                    <?php endforeach; ?>
-                    
-                    <?php if ($percentage < 100): ?>
-                        <?php if (!in_array('Account Verified', array_column($check_icons, 'text'))): ?>
-                            <div class="flex items-center text-sm text-gray-400">
-                                <i class="far fa-circle mr-2"></i>
-                                <span>Verify Account</span>
-                            </div>
-                        <?php endif; ?>
-                        
-                        <?php if (!in_array('Branch Selected', array_column($check_icons, 'text'))): ?>
-                            <div class="flex items-center text-sm text-gray-400">
-                                <i class="far fa-circle mr-2"></i>
-                                <span>Select Branch</span>
-                            </div>
-                        <?php endif; ?>
-                        
-                        <?php if (!in_array('ID Uploaded', array_column($check_icons, 'text')) && !in_array('ID Verified', array_column($check_icons, 'text'))): ?>
-                            <div class="flex items-center text-sm text-gray-400">
-                                <i class="far fa-circle mr-2"></i>
-                                <span>Upload ID</span>
-                            </div>
-                        <?php endif; ?>
-                        
-                        <?php if (in_array('ID Uploaded', array_column($check_icons, 'text')) && !in_array('ID Verified', array_column($check_icons, 'text'))): ?>
-                            <div class="flex items-center text-sm text-gray-400">
-                                <i class="far fa-circle mr-2"></i>
-                                <span>Verify ID</span>
-                            </div>
-                        <?php endif; ?>
-                    <?php endif; ?>
-                </div>
+                <?php endif; ?>
                 
-                <a href="profile.php#personal-info" class="text-sm text-yellow-600 hover:text-darkgold font-medium flex items-center">
-                    <?= $percentage < 100 ? 'Complete Profile' : 'View Profile' ?> <i class="fas fa-arrow-right ml-2"></i>
-                </a>
-            </div>
-            <?php endif; ?>
-            
-            <?php if ($show_id_card): ?>
-            <!-- ID Verification Card -->
-            <div class="bg-white rounded-xl shadow-lg p-6 dashboard-card transition-all duration-300">
-                <div class="flex items-start justify-between mb-4">
-                    <div>
-                        <p class="text-sm text-gray-500 font-medium">ID Verification</p>
-                        <h3 class="text-xl font-hedvig <?= $status_class ?>"><?= $status ?></h3>
+                <?php if (!in_array('ID Uploaded', array_column($check_icons, 'text')) && !in_array('ID Verified', array_column($check_icons, 'text'))): ?>
+                    <div class="flex items-center text-sm text-gray-400">
+                        <i class="far fa-circle mr-2"></i>
+                        <span>Upload ID</span>
                     </div>
-                    <div class="w-10 h-10 rounded-full <?= $bg_class ?> flex items-center justify-center">
-                        <i class="fas fa-id-card <?= $icon_class ?>"></i>
+                <?php endif; ?>
+                
+                <?php if (in_array('ID Uploaded', array_column($check_icons, 'text')) && !in_array('ID Verified', array_column($check_icons, 'text'))): ?>
+                    <div class="flex items-center text-sm text-gray-400">
+                        <i class="far fa-circle mr-2"></i>
+                        <span>Verify ID</span>
                     </div>
-                </div>
-                
-                <p class="text-sm text-dark mb-4"><?= $message ?></p>
-                
-                <a href="<?= $redirect_url ?>" class="text-sm text-yellow-600 hover:text-darkgold font-medium flex items-center">
-                    <?= $link_text ?> <i class="fas fa-arrow-right ml-2"></i>
-                </a>
-            </div>
+                <?php endif; ?>
             <?php endif; ?>
         </div>
+        
+        <a href="profile.php#personal-info" class="text-sm text-yellow-600 hover:text-darkgold font-medium flex items-center">
+            <?= $percentage < 100 ? 'Complete Profile' : 'View Profile' ?> <i class="fas fa-arrow-right ml-2"></i>
+        </a>
+    </div>
+    <?php endif; ?>
+    
+    <?php if ($show_id_card): ?>
+    <!-- ID Verification Card -->
+    <div class="bg-white rounded-xl shadow-lg p-6 dashboard-card transition-all duration-300">
+        <div class="flex items-start justify-between mb-4">
+            <div>
+                <p class="text-sm text-gray-500 font-medium">ID Verification</p>
+                <h3 class="text-xl font-hedvig <?= $status_class ?>"><?= $status ?></h3>
+            </div>
+            <div class="w-10 h-10 rounded-full <?= $bg_class ?> flex items-center justify-center">
+                <i class="fas fa-id-card <?= $icon_class ?>"></i>
+            </div>
+        </div>
+        
+        <p class="text-sm text-dark mb-4"><?= $message ?></p>
+        
+        <a href="<?= $redirect_url ?>" class="text-sm text-yellow-600 hover:text-darkgold font-medium flex items-center">
+            <?= $link_text ?> <i class="fas fa-arrow-right ml-2"></i>
+        </a>
+    </div>
+    <?php endif; ?>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Get the container and count visible cards
+    const cardsContainer = document.querySelector('.dashboard-cards-container');
+    const visibleCards = cardsContainer.querySelectorAll('.dashboard-card').length;
+    
+    // Apply appropriate grid classes based on number of visible cards
+    if (visibleCards === 1) {
+        cardsContainer.classList.add('grid-cols-1');
+        cardsContainer.querySelectorAll('.dashboard-card').forEach(card => {
+            card.classList.add('py-4'); // Reduced height for single card
+        });
+    } else if (visibleCards === 2) {
+        cardsContainer.classList.add('sm:grid-cols-2');
+    } else if (visibleCards === 3) {
+        cardsContainer.classList.add('sm:grid-cols-2', 'lg:grid-cols-3');
+    } else if (visibleCards >= 4) {
+        cardsContainer.classList.add('sm:grid-cols-2', 'lg:grid-cols-4');
+    }
+});
+</script>
         
         <!-- Services Section -->
 <div class="mb-4">
