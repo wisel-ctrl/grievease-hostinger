@@ -938,9 +938,6 @@ header("Pragma: no-cache");
                             </div>
                         </div>
                     </div>
-</div>
-</div>
-</div>
                     
                     <!-- Transaction Logs Tab -->
 <div id="transaction-logs" class="tab-content">
