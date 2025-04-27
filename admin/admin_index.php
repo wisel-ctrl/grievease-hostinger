@@ -1426,11 +1426,11 @@ foreach ($serviceData as $service => $branches) {
   
   <!-- Responsive Table Container with improved spacing -->
   <div class="overflow-x-auto scrollbar-thin" id="inventoryTableContainer">
-    <div id="inventoryLoadingIndicator" class="hidden absolute inset-0 bg-white bg-opacity-50 flex items-center justify-center">
+    <div id="inventoryLoadingIndicator" class="absolute inset-0 bg-white bg-opacity-50 flex items-center justify-center">
       <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-sidebar-accent"></div>
     </div>
     
-    <!-- Responsive Table with improved spacing and horizontal scroll for small screens -->
+    <!-- Responsive Table -->
     <div class="min-w-full">
       <table class="w-full">
         <thead>
@@ -1472,90 +1472,21 @@ foreach ($serviceData as $service => $branches) {
             </th>
           </tr>
         </thead>
-        <tbody>
-          <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
-            <td class="px-4 py-3.5 text-sm text-sidebar-text">Premium Casket</td>
-            <td class="px-4 py-3.5 text-sm text-sidebar-text font-medium">CSK-001</td>
-            <td class="px-4 py-3.5 text-sm">
-              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-600 border border-red-200">
-                <i class="fas fa-exclamation-circle mr-1"></i> Depleted
-              </span>
-            </td>
-            <td class="px-4 py-3.5 text-sm text-sidebar-text">Mar 15, 2025</td>
-            <td class="px-4 py-3.5 text-sm font-medium text-sidebar-text">0</td>
-            <td class="px-4 py-3.5 text-sm text-sidebar-text">Downtown</td>
-            <td class="px-4 py-3.5 text-sm">
-              <div class="flex space-x-2">
-                <button class="p-2 bg-purple-100 text-purple-600 rounded-lg hover:bg-purple-200 transition-all tooltip" title="Add Stock">
-                  <i class="fas fa-plus"></i>
-                </button>
-                <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="View Details">
-                  <i class="fas fa-eye"></i>
-                </button>
-              </div>
-            </td>
-          </tr>
-          <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
-            <td class="px-4 py-3.5 text-sm text-sidebar-text">Prayer Cards</td>
-            <td class="px-4 py-3.5 text-sm text-sidebar-text font-medium">PRC-011</td>
-            <td class="px-4 py-3.5 text-sm">
-              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-600 border border-yellow-200">
-                <i class="fas fa-exclamation-triangle mr-1"></i> Low Stock
-              </span>
-            </td>
-            <td class="px-4 py-3.5 text-sm text-sidebar-text">Mar 14, 2025</td>
-            <td class="px-4 py-3.5 text-sm font-medium text-sidebar-text">25</td>
-            <td class="px-4 py-3.5 text-sm text-sidebar-text">Westside</td>
-            <td class="px-4 py-3.5 text-sm">
-              <div class="flex space-x-2">
-                <button class="p-2 bg-purple-100 text-purple-600 rounded-lg hover:bg-purple-200 transition-all tooltip" title="Add Stock">
-                  <i class="fas fa-plus"></i>
-                </button>
-                <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="View Details">
-                  <i class="fas fa-eye"></i>
-                </button>
-              </div>
-            </td>
-          </tr>
-          <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
-            <td class="px-4 py-3.5 text-sm text-sidebar-text">Cremation Urns</td>
-            <td class="px-4 py-3.5 text-sm text-sidebar-text font-medium">URN-032</td>
-            <td class="px-4 py-3.5 text-sm">
-              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-600 border border-green-200">
-                <i class="fas fa-check-circle mr-1"></i> Restocked
-              </span>
-            </td>
-            <td class="px-4 py-3.5 text-sm text-sidebar-text">Mar 13, 2025</td>
-            <td class="px-4 py-3.5 text-sm font-medium text-sidebar-text">+15</td>
-            <td class="px-4 py-3.5 text-sm text-sidebar-text">Downtown</td>
-            <td class="px-4 py-3.5 text-sm">
-              <div class="flex space-x-2">
-                <button class="p-2 bg-purple-100 text-purple-600 rounded-lg hover:bg-purple-200 transition-all tooltip" title="Add Stock">
-                  <i class="fas fa-plus"></i>
-                </button>
-                <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="View Details">
-                  <i class="fas fa-eye"></i>
-                </button>
-              </div>
-            </td>
-          </tr>
+        <tbody id="inventoryLogsBody">
+          <!-- Data will be loaded here via JavaScript -->
         </tbody>
       </table>
     </div>
   </div>
   
-  <!-- Sticky Pagination Footer with improved spacing -->
+  <!-- Pagination Footer -->
   <div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
-    <div class="text-sm text-gray-500 text-center sm:text-left">
-      Showing 1 - 3 of 18 activities
+    <div id="paginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
+      Loading data...
     </div>
-    <div class="flex space-x-2">
+    <div class="flex space-x-2" id="paginationControls">
       <button class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover opacity-50 cursor-not-allowed" disabled>&laquo;</button>
-      
       <button class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm bg-sidebar-accent text-white">1</button>
-      <button class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">2</button>
-      <button class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">3</button>
-      
       <button class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">&raquo;</button>
     </div>
   </div>
@@ -1570,6 +1501,7 @@ foreach ($serviceData as $service => $branches) {
 
 <script src="tailwind.js"></script>
 <script src="script.js"></script>
+
 <script>
   document.querySelectorAll('.branch-name').forEach(div => {
     div.textContent = div.textContent
@@ -1577,6 +1509,211 @@ foreach ($serviceData as $service => $branches) {
       .replace(/\b\w/g, char => char.toUpperCase()); // Title Case
   });
 </script>
+
+<script>
+// Function to load inventory logs with your exact query structure
+function loadInventoryLogs(page = 1) {
+    const loadingIndicator = document.getElementById('inventoryLoadingIndicator');
+    const tableBody = document.getElementById('inventoryLogsBody');
+    const paginationInfo = document.getElementById('paginationInfo');
+    const paginationControls = document.getElementById('paginationControls');
+    
+    loadingIndicator.classList.remove('hidden');
+    tableBody.innerHTML = '';
+    
+    fetch(`dashboard/fetch_inventory_logs.php?page=${page}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Clear any existing rows
+                tableBody.innerHTML = '';
+                
+                // Populate table with logs
+                data.logs.forEach(log => {
+                    const row = document.createElement('tr');
+                    row.className = 'border-b border-sidebar-border hover:bg-sidebar-hover transition-colors';
+                    
+                    // Determine badge styling
+                    const badgeStyles = {
+                        'Depleted': 'bg-red-100 text-red-600 border-red-200',
+                        'Low Stock': 'bg-yellow-100 text-yellow-600 border-yellow-200',
+                        'Restocked': 'bg-green-100 text-green-600 border-green-200',
+                        'Added': 'bg-green-100 text-green-600 border-green-200',
+                        'Removed': 'bg-orange-100 text-orange-600 border-orange-200',
+                        'Adjusted': 'bg-blue-100 text-blue-600 border-blue-200'
+                    };
+                    
+                    const badgeClass = badgeStyles[log.activity_type] || 'bg-gray-100 text-gray-600 border-gray-200';
+                    const badgeIcon = getActivityIcon(log.activity_type);
+                    
+                    // Format date
+                    const activityDate = new Date(log.activity_date);
+                    const formattedDate = activityDate.toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+                    
+                    // Format quantity
+                    const quantityDisplay = formatQuantityChange(log.quantity_change, log.old_quantity, log.new_quantity);
+                    
+                    row.innerHTML = `
+                        <td class="px-4 py-3.5 text-sm text-sidebar-text">${log.item_name}</td>
+                        <td class="px-4 py-3.5 text-sm text-sidebar-text">
+                            <span class="inline-block bg-gray-100 rounded-full px-2 py-1 text-xs font-medium">
+                                ID: ${log.inventory_id}
+                            </span>
+                        </td>
+                        <td class="px-4 py-3.5 text-sm">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${badgeClass} border">
+                                <i class="fas ${badgeIcon} mr-1"></i> ${log.activity_type}
+                            </span>
+                        </td>
+                        <td class="px-4 py-3.5 text-sm text-sidebar-text">${formattedDate}</td>
+                        <td class="px-4 py-3.5 text-sm font-medium text-sidebar-text">
+                            ${quantityDisplay}
+                        </td>
+                        <td class="px-4 py-3.5 text-sm text-sidebar-text">${log.branch_name || 'N/A'}</td>
+                        <td class="px-4 py-3.5 text-sm">
+                            <div class="flex space-x-2">
+                                <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" 
+                                        title="View Details" onclick="viewLogDetails(${log.log_id})">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+                
+                // Update pagination info
+                updatePaginationInfo(paginationInfo, page, data.perPage, data.total);
+                
+                // Update pagination controls
+                updatePaginationControls(paginationControls, page, data.perPage, data.total);
+                
+            } else {
+                showError(tableBody, data.error);
+            }
+        })
+        .catch(error => {
+            showError(tableBody, error.message);
+        })
+        .finally(() => {
+            loadingIndicator.classList.add('hidden');
+        });
+}
+
+// Helper function to get appropriate icon for activity type
+function getActivityIcon(activityType) {
+    const icons = {
+        'Depleted': 'fa-exclamation-circle',
+        'Low Stock': 'fa-exclamation-triangle',
+        'Restocked': 'fa-boxes',
+        'Added': 'fa-plus-circle',
+        'Removed': 'fa-minus-circle',
+        'Adjusted': 'fa-adjust'
+    };
+    return icons[activityType] || 'fa-info-circle';
+}
+
+// Helper function to format quantity display
+function formatQuantityChange(change, oldQty, newQty) {
+    const changeSymbol = change > 0 ? '+' : '';
+    return `
+        <div class="flex flex-col">
+            <span class="font-medium ${change > 0 ? 'text-green-600' : change < 0 ? 'text-red-600' : 'text-gray-600'}">
+                ${changeSymbol}${change}
+            </span>
+            <span class="text-xs text-gray-500 mt-1">
+                ${oldQty} → ${newQty}
+            </span>
+        </div>
+    `;
+}
+
+// Helper function to update pagination info
+function updatePaginationInfo(element, currentPage, perPage, totalItems) {
+    const startItem = (currentPage - 1) * perPage + 1;
+    const endItem = Math.min(currentPage * perPage, totalItems);
+    element.innerHTML = `
+        Showing <span class="font-medium">${startItem}-${endItem}</span> of 
+        <span class="font-medium">${totalItems}</span> activities
+    `;
+}
+
+// Helper function to update pagination controls
+function updatePaginationControls(container, currentPage, perPage, totalItems) {
+    const totalPages = Math.ceil(totalItems / perPage);
+    
+    let html = `
+        <button class="px-3.5 py-1.5 border rounded text-sm ${
+            currentPage <= 1 ? 'border-gray-300 text-gray-400 cursor-not-allowed' : 'border-sidebar-border hover:bg-sidebar-hover'
+        }" ${currentPage <= 1 ? 'disabled' : ''} onclick="loadInventoryLogs(${currentPage - 1})">
+            &laquo;
+        </button>
+    `;
+    
+    // Show page numbers
+    for (let i = 1; i <= totalPages; i++) {
+        html += `
+            <button class="px-3.5 py-1.5 border rounded text-sm ${
+                i === currentPage ? 'bg-sidebar-accent text-white border-sidebar-accent' : 'border-sidebar-border hover:bg-sidebar-hover'
+            }" onclick="loadInventoryLogs(${i})">
+                ${i}
+            </button>
+        `;
+    }
+    
+    html += `
+        <button class="px-3.5 py-1.5 border rounded text-sm ${
+            currentPage >= totalPages ? 'border-gray-300 text-gray-400 cursor-not-allowed' : 'border-sidebar-border hover:bg-sidebar-hover'
+        }" ${currentPage >= totalPages ? 'disabled' : ''} onclick="loadInventoryLogs(${currentPage + 1})">
+            &raquo;
+        </button>
+    `;
+    
+    container.innerHTML = html;
+}
+
+// Helper function to show error message
+function showError(container, message) {
+    container.innerHTML = `
+        <tr>
+            <td colspan="7" class="px-4 py-3.5 text-sm text-center text-red-600">
+                <i class="fas fa-exclamation-circle mr-2"></i>
+                Error loading data: ${escapeHtml(message)}
+            </td>
+        </tr>
+    `;
+}
+
+// Helper function to escape HTML
+function escapeHtml(unsafe) {
+    if (!unsafe) return '';
+    return unsafe.toString()
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+// View log details
+function viewLogDetails(logId) {
+    // Implement your detail view logic here
+    console.log('Viewing details for log ID:', logId);
+    // Example: window.location.href = `inventory_log_details.php?id=${logId}`;
+}
+
+// Initial load
+document.addEventListener('DOMContentLoaded', () => {
+    loadInventoryLogs();
+});
+</script>
+
     <script>
 var options = {
   series: [{
