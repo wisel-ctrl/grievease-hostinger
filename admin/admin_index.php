@@ -1573,7 +1573,7 @@ function loadInventoryLogs(page = 1) {
                         <td class="px-4 py-3.5 text-sm font-medium text-sidebar-text">
                             ${quantityDisplay}
                         </td>
-                        <td class="px-4 py-3.5 text-sm text-sidebar-text">${branch_name || 'N/A'}</td>
+                        <td class="px-4 py-3.5 text-sm text-sidebar-text">${branchName || 'N/A'}</td>
                     `;
                     tableBody.appendChild(row);
                 });
