@@ -1471,107 +1471,111 @@ header("Pragma: no-cache");
 
 <!-- Change Password Modal -->
 <div id="change-password-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto">
-    <!-- Modal Backdrop -->
-    <div class="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm"></div>
+  <!-- Modal Backdrop -->
+  <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+  
+  <!-- Modal Content -->
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-md mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+    <!-- Close Button -->
+    <button type="button" id="close-change-password-modal" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors">
+      <i class="fas fa-times"></i>
+    </button>
     
-    <!-- Modal Content -->
-    <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 z-10 transform transition-all duration-300 scale-95 opacity-0">
-        <!-- Modal Header -->
-        <div class="bg-gradient-to-r from-yellow-600 to-white flex justify-between items-center p-4 sm:p-6 flex-shrink-0 rounded-t-2xl">
-            <h3 class="text-xl sm:text-2xl font-bold text-white">Change Password</h3>
-            <button type="button" id="close-change-password-modal" class="bg-black bg-opacity-20 hover:bg-opacity-30 rounded-full p-2 sm:p-3 text-white hover:text-white transition-all duration-200">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-                </svg>
-            </button>
+    <!-- Modal Header -->
+    <div class="px-4 sm:px-6 py-4 sm:py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
+      <h3 class="text-lg sm:text-xl font-bold text-white flex items-center">
+        Change Password
+      </h3>
+    </div>
+    
+    <!-- Modal Body -->
+    <div class="px-4 sm:px-6 py-4 sm:py-5">
+      <p class="text-gray-600 text-base mb-4">Enter your current password and choose a new strong password.</p>
+      
+      <form class="space-y-4 sm:space-y-6" id="password-form" method="POST" action="profile/update_password.php">
+        <!-- Current Password -->
+        <div>
+          <label for="current-password" class="block text-sm font-medium text-gray-700 mb-1 sm:mb-2">Current Password*</label>
+          <div class="relative">
+            <input type="password" id="current-password" name="current-password" required class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent text-sm sm:text-base">
+            <span class="password-toggle absolute right-3 sm:right-4 top-1/2 transform -translate-y-1/2 text-gray-600 cursor-pointer" data-target="current-password">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="eye-show">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="eye-hide hidden">
+                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                <line x1="1" y1="1" x2="23" y2="23"></line>
+              </svg>
+            </span>
+          </div>
+          <p id="current-password-error" class="mt-1 text-sm text-red-600 hidden"></p>
         </div>
         
-        <!-- Modal Body -->
-        <div class="p-4 sm:p-6 space-y-4 sm:space-y-6">
-            <p class="text-gray-600 text-base mb-4">Enter your current password and choose a new strong password.</p>
-            
-            <form class="space-y-4 sm:space-y-6" id="password-form" method="POST" action="profile/update_password.php">
-                <!-- Current Password -->
-                <div>
-                    <label for="current-password" class="block text-sm font-medium text-gray-700 mb-1 sm:mb-2">Current Password*</label>
-                    <div class="relative">
-                        <input type="password" id="current-password" name="current-password" required class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base">
-                        <span class="password-toggle absolute right-3 sm:right-4 top-1/2 transform -translate-y-1/2 text-gray-600 cursor-pointer" data-target="current-password">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="eye-show">
-                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                                <circle cx="12" cy="12" r="3"></circle>
-                            </svg>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="eye-hide hidden">
-                                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
-                                <line x1="1" y1="1" x2="23" y2="23"></line>
-                            </svg>
-                        </span>
-                    </div>
-                    <p id="current-password-error" class="mt-1 text-sm text-red-600 hidden"></p>
-                </div>
-                
-                <!-- New Password -->
-                <div>
-                    <label for="new-password" class="block text-sm font-medium text-gray-700 mb-1 sm:mb-2">New Password*</label>
-                    <div class="relative">
-                        <input type="password" id="new-password" name="new-password" required class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base">
-                        <span class="password-toggle absolute right-3 sm:right-4 top-1/2 transform -translate-y-1/2 text-gray-600 cursor-pointer" data-target="new-password">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="eye-show">
-                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                                <circle cx="12" cy="12" r="3"></circle>
-                            </svg>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="eye-hide hidden">
-                                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
-                                <line x1="1" y1="1" x2="23" y2="23"></line>
-                            </svg>
-                        </span>
-                    </div>
-                    <p id="new-password-error" class="mt-1 text-sm text-red-600 hidden"></p>
-                    <div class="mt-2 text-xs text-gray-500">
-                        Password must:
-                        <ul class="list-disc list-inside ml-1 space-y-1 mt-1">
-                            <li id="length-check" class="text-gray-500">Be at least 8 characters long</li>
-                            <li id="uppercase-check" class="text-gray-500">Contain at least one uppercase letter</li>
-                            <li id="lowercase-check" class="text-gray-500">Contain at least one lowercase letter</li>
-                            <li id="number-check" class="text-gray-500">Contain at least one number</li>
-                            <li id="special-check" class="text-gray-500">Contain at least one special character</li>
-                        </ul>
-                    </div>
-                </div>
-                
-                <!-- Confirm Password -->
-                <div>
-                    <label for="confirm-password" class="block text-sm font-medium text-gray-700 mb-1 sm:mb-2">Confirm New Password*</label>
-                    <div class="relative">
-                        <input type="password" id="confirm-password" name="confirm-password" required class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base">
-                        <span class="password-toggle absolute right-3 sm:right-4 top-1/2 transform -translate-y-1/2 text-gray-600 cursor-pointer" data-target="confirm-password">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="eye-show">
-                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                                <circle cx="12" cy="12" r="3"></circle>
-                            </svg>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="eye-hide hidden">
-                                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
-                                <line x1="1" y1="1" x2="23" y2="23"></line>
-                            </svg>
-                        </span>
-                    </div>
-                    <p id="confirm-password-error" class="mt-1 text-sm text-red-600 hidden"></p>
-                </div>
-            </form>
+        <!-- New Password -->
+        <div>
+          <label for="new-password" class="block text-sm font-medium text-gray-700 mb-1 sm:mb-2">New Password*</label>
+          <div class="relative">
+            <input type="password" id="new-password" name="new-password" required class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent text-sm sm:text-base">
+            <span class="password-toggle absolute right-3 sm:right-4 top-1/2 transform -translate-y-1/2 text-gray-600 cursor-pointer" data-target="new-password">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="eye-show">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="eye-hide hidden">
+                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                <line x1="1" y1="1" x2="23" y2="23"></line>
+              </svg>
+            </span>
+          </div>
+          <p id="new-password-error" class="mt-1 text-sm text-red-600 hidden"></p>
+          <div class="mt-2 text-xs text-gray-500">
+            Password must:
+            <ul class="list-disc list-inside ml-1 space-y-1 mt-1">
+              <li id="length-check" class="text-gray-500">Be at least 8 characters long</li>
+              <li id="uppercase-check" class="text-gray-500">Contain at least one uppercase letter</li>
+              <li id="lowercase-check" class="text-gray-500">Contain at least one lowercase letter</li>
+              <li id="number-check" class="text-gray-500">Contain at least one number</li>
+              <li id="special-check" class="text-gray-500">Contain at least one special character</li>
+            </ul>
+          </div>
         </div>
-            
-        <!-- Modal Footer -->
-        <div class="p-4 sm:p-6 flex flex-col sm:flex-row sm:justify-end gap-3 sm:gap-4 border-t border-gray-200">
-            <button class="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-3 bg-white border border-yellow-600 text-gray-800 rounded-lg font-semibold hover:bg-gray-100 transition-colors text-sm sm:text-base" id="cancel-change-password">Cancel</button>
-            <button type="submit" id="submit-change-password" class="w-full sm:w-auto px-5 sm:px-7 py-2 sm:py-3 bg-yellow-600 text-white rounded-lg font-semibold hover:bg-yellow-700 transition-colors flex items-center justify-center sm:justify-start text-sm sm:text-base">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
-                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                </svg>
-                Update Password
-            </button>
+        
+        <!-- Confirm Password -->
+        <div>
+          <label for="confirm-password" class="block text-sm font-medium text-gray-700 mb-1 sm:mb-2">Confirm New Password*</label>
+          <div class="relative">
+            <input type="password" id="confirm-password" name="confirm-password" required class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent text-sm sm:text-base">
+            <span class="password-toggle absolute right-3 sm:right-4 top-1/2 transform -translate-y-1/2 text-gray-600 cursor-pointer" data-target="confirm-password">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="eye-show">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="eye-hide hidden">
+                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                <line x1="1" y1="1" x2="23" y2="23"></line>
+              </svg>
+            </span>
+          </div>
+          <p id="confirm-password-error" class="mt-1 text-sm text-red-600 hidden"></p>
         </div>
+      </form>
     </div>
+    
+    <!-- Modal Footer -->
+    <div class="px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row sm:justify-end gap-2 sm:gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
+      <button class="w-full sm:w-auto px-4 sm:px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center" id="cancel-change-password">
+        Cancel
+      </button>
+      <button type="submit" id="submit-change-password" class="w-full sm:w-auto px-5 sm:px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+        </svg>
+        Update Password
+      </button>
+    </div>
+  </div>
 </div>
 
 
