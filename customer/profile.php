@@ -854,10 +854,7 @@ header("Pragma: no-cache");
         }
     });
     
-    // Handle edit profile button click
-    document.getElementById('edit-profile-btn').addEventListener('click', function() {
-        window.location.href = 'edit_profile.php';
-    });
+    
 </script>
                     
                     <!-- Bookings Tab -->
