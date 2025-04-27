@@ -1294,84 +1294,84 @@ header("Pragma: no-cache");
                 </button>
                 
                 <!-- Address Information Section -->
-                <div class="bg-white rounded-lg p-4 sm:p-5 border border-gray-200 shadow-sm">
-                    <h4 class="font-semibold text-gray-800 mb-3 sm:mb-4 flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 sm:mr-3 text-sidebar-accent">
-                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                            <polyline points="9 22 9 12 15 12 15 22"></polyline>
-                        </svg>
-                        Address Information
-                    </h4>
-                    
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-                        <!-- Region Dropdown -->
-                        <div class="relative">
-                            <select id="region" name="region" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent appearance-none text-sm sm:text-base" onchange="updateProvinces()">
-                                <option value="" selected disabled>Select Region</option>
-                                <?php foreach ($regions as $region_option): ?>
-                                    <option value="<?php echo $region_option['region_id']; ?>" <?php echo ($region_option['region_name'] == $region) ? 'selected' : ''; ?>>
-                                        <?php echo htmlspecialchars($region_option['region_name']); ?>
-                                    </option>
-                                <?php endforeach; ?>
-                            </select>
-                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 sm:px-3 text-gray-700">
-                                <svg class="h-4 w-4 sm:h-5 sm:w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                                </svg>
-                            </div>
-                        </div>
-                        
-                        <!-- Province Dropdown -->
-                        <div class="relative">
-                            <select id="province" name="province" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent appearance-none text-sm sm:text-base" onchange="updateCities()" disabled>
-                                <option value="" selected disabled>Select Province</option>
-                            </select>
-                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 sm:px-3 text-gray-700">
-                                <svg class="h-4 w-4 sm:h-5 sm:w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                                </svg>
-                            </div>
-                        </div>
-                        
-                        <!-- City/Municipality Dropdown -->
-                        <div class="relative">
-                            <select id="city" name="city" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent appearance-none text-sm sm:text-base" onchange="updateBarangays()" disabled>
-                                <option value="" selected disabled>Select City/Municipality</option>
-                            </select>
-                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 sm:px-3 text-gray-700">
-                                <svg class="h-4 w-4 sm:h-5 sm:w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                                </svg>
-                            </div>
-                        </div>
-                        
-                        <!-- Barangay Dropdown -->
-                        <div class="relative">
-                            <select id="barangay" name="barangay" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent appearance-none text-sm sm:text-base" disabled>
-                                <option value="" selected disabled>Select Barangay</option>
-                            </select>
-                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 sm:px-3 text-gray-700">
-                                <svg class="h-4 w-4 sm:h-5 sm:w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                                </svg>
-                            </div>
-                        </div>
-                        
-                        <!-- Street Address Manual Input (full width) -->
-                        <div class="sm:col-span-2">
-                            <input type="text" id="street_address" name="street_address" placeholder="Street Address (House/Lot/Unit No., Building, Street Name)" 
-                                   value="<?php echo htmlspecialchars($street_address); ?>" 
-                                   class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base">
-                        </div>
-                        
-                        <!-- Zip/Postal Code -->
-                        <div class="sm:col-span-2">
-                            <input type="text" id="zip" name="zip" placeholder="Zip/Postal Code" 
-                                   value="<?php echo htmlspecialchars($zip_code); ?>" 
-                                   class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base">
-                        </div>
-                    </div>
-                </div>
+<div class="bg-white rounded-lg p-4 sm:p-5 border border-gray-200 shadow-sm">
+    <h4 class="font-semibold text-gray-800 mb-3 sm:mb-4 flex items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 sm:mr-3 text-sidebar-accent">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+        </svg>
+        Address Information
+    </h4>
+    
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+        <!-- Region Dropdown -->
+        <div class="relative">
+            <select id="region" name="region" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent appearance-none text-sm sm:text-base" onchange="updateProvinces()">
+                <option value="" selected disabled>Select Region</option>
+                <?php foreach ($regions as $region_option): ?>
+                    <option value="<?php echo $region_option['region_id']; ?>" <?php echo ($region_option['region_name'] == $region) ? 'selected' : ''; ?>>
+                        <?php echo htmlspecialchars($region_option['region_name']); ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 sm:px-3 text-gray-700">
+                <svg class="h-4 w-4 sm:h-5 sm:w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+            </div>
+        </div>
+        
+        <!-- Province Dropdown -->
+        <div class="relative">
+            <select id="province" name="province" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent appearance-none text-sm sm:text-base" onchange="updateCities()" disabled>
+                <option value="" selected disabled>Select Province</option>
+            </select>
+            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 sm:px-3 text-gray-700">
+                <svg class="h-4 w-4 sm:h-5 sm:w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+            </div>
+        </div>
+        
+        <!-- City/Municipality Dropdown -->
+        <div class="relative">
+            <select id="city" name="city" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent appearance-none text-sm sm:text-base" onchange="updateBarangays()" disabled>
+                <option value="" selected disabled>Select City/Municipality</option>
+            </select>
+            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 sm:px-3 text-gray-700">
+                <svg class="h-4 w-4 sm:h-5 sm:w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+            </div>
+        </div>
+        
+        <!-- Barangay Dropdown -->
+        <div class="relative">
+            <select id="barangay" name="barangay" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent appearance-none text-sm sm:text-base" disabled>
+                <option value="" selected disabled>Select Barangay</option>
+            </select>
+            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 sm:px-3 text-gray-700">
+                <svg class="h-4 w-4 sm:h-5 sm:w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+            </div>
+        </div>
+        
+        <!-- Street Address and Zip Code on the same row -->
+        <div class="sm:col-span-1">
+            <input type="text" id="street_address" name="street_address" placeholder="Street Address (House/Lot/Unit No., Building, Street Name)" 
+                   value="<?php echo htmlspecialchars($street_address); ?>" 
+                   class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base">
+        </div>
+        
+        <!-- Zip/Postal Code -->
+        <div class="sm:col-span-1">
+            <input type="text" id="zip" name="zip" placeholder="Zip/Postal Code" 
+                   value="<?php echo htmlspecialchars($zip_code); ?>" 
+                   class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base">
+        </div>
+    </div>
+</div>
                 
                 <!-- Document Uploads Section - Only show if ID is not approved -->
 <?php if ($id_status !== 'valid'): ?>
