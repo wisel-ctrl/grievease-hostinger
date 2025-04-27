@@ -800,25 +800,21 @@ header("Pragma: no-cache");
         document.body.style.overflow = 'auto';
     }
     
-    // Enhanced reupload ID function
-function reuploadID() {
-    console.log('Reupload ID function called');
+    function reuploadID() {
+    // Close the decline reason modal first 
+     console.log('Reupload ID function called');
     closeDeclineReasonModal();
     
     // Open the edit profile modal
     const modal = document.getElementById('edit-profile-modal');
     modal.classList.remove('hidden');
-    
-    // Force reflow to ensure smooth animation
-    void modal.offsetWidth;
-    
     modal.classList.remove('opacity-0', 'scale-95');
     modal.classList.add('opacity-100', 'scale-100');
     
     // Load address data (if needed)
     setTimeout(loadAddressData, 100);
     
-    // Scroll to the ID upload section with a slight delay
+    // Scroll to the ID upload section with a slight delay to ensure the modal is fully open
     setTimeout(() => {
         const idUploadSection = document.querySelector('label[for="id-upload"]');
         if (idUploadSection) {
@@ -836,34 +832,19 @@ function reuploadID() {
     }, 500);
 }
 
-// Enhanced edit profile modal functions
-function openEditProfileModal() {
-    const modal = document.getElementById('edit-profile-modal');
-    modal.classList.remove('hidden');
-    
-    // Force reflow to ensure smooth animation
-    void modal.offsetWidth;
-    
-    modal.classList.remove('opacity-0', 'scale-95');
-    modal.classList.add('opacity-100', 'scale-100');
-    
-    // Load address data
-    setTimeout(loadAddressData, 100);
-}
-
-// Initialize all modal functionality
+// Ensure the edit profile button listener is properly attached
 document.addEventListener('DOMContentLoaded', function() {
-    // Set up edit profile button
     const editProfileBtn = document.getElementById('edit-profile-btn');
     if (editProfileBtn) {
-        editProfileBtn.addEventListener('click', openEditProfileModal);
+        editProfileBtn.addEventListener('click', function() {
+            const modal = document.getElementById('edit-profile-modal');
+            modal.classList.remove('hidden');
+            modal.classList.remove('opacity-0', 'scale-95');
+            modal.classList.add('opacity-100', 'scale-100');
+            setTimeout(loadAddressData, 100);
+        });
     }
-    
-    // Set up close button for edit profile modal
-    const closeEditProfileBtn = document.getElementById('close-edit-profile-modal');
-    if (closeEditProfileBtn) {
-        closeEditProfileBtn.addEventListener('click', closeEditProfileModal);
-    }
+});
     
     // Close modals when clicking outside
     window.addEventListener('click', function(event) {
@@ -873,9 +854,6 @@ document.addEventListener('DOMContentLoaded', function() {
         if (event.target === document.getElementById('declineReasonModal')) {
             closeDeclineReasonModal();
         }
-        if (event.target === document.getElementById('edit-profile-modal')) {
-            closeEditProfileModal();
-        }
     });
     
     // Close modals with escape key
@@ -883,21 +861,8 @@ document.addEventListener('DOMContentLoaded', function() {
         if (event.key === 'Escape') {
             closeImageModal();
             closeDeclineReasonModal();
-            closeEditProfileModal();
         }
     });
-    
-    // Set up mobile menu toggle
-    function toggleMenu() {
-        const mobileMenu = document.getElementById('mobile-menu');
-        mobileMenu.classList.toggle('hidden');
-    }
-    
-    const menuToggleBtn = document.querySelector('[onclick="toggleMenu()"]');
-    if (menuToggleBtn) {
-        menuToggleBtn.addEventListener('click', toggleMenu);
-    }
-}); 
     
     
 </script>
@@ -2019,6 +1984,7 @@ function createErrorElement(fieldId) {
     return errorElement;
 }
 
+// Define the modal functions
 function closeEditProfileModal() {
     const modal = document.getElementById('edit-profile-modal');
     modal.classList.add('opacity-0', 'scale-95');
