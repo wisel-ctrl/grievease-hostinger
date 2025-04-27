@@ -1200,22 +1200,24 @@ header("Pragma: no-cache");
 <!-- Edit Profile Modal -->
 <div id="edit-profile-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto">
     <!-- Modal Backdrop -->
-    <div class="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm"></div>
+    <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
     
     <!-- Modal Content -->
-    <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-4xl mx-4 z-10 transform transition-all duration-300 scale-95 opacity-0 max-h-[90vh] overflow-y-auto">
+    <div class="relative bg-white rounded-xl shadow-card w-full max-w-4xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+        <!-- Close Button -->
+        <button type="button" id="close-edit-profile-modal" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors">
+            <i class="fas fa-times"></i>
+        </button>
+        
         <!-- Modal Header -->
-        <div class="bg-gradient-to-r from-yellow-600 to-white flex justify-between items-center p-4 sm:p-6 md:p-8 flex-shrink-0 rounded-t-2xl">
-            <h3 class="text-xl sm:text-2xl font-bold text-white">Edit Profile</h3>
-            <button type="button" id="close-edit-profile-modal" class="bg-black bg-opacity-20 hover:bg-opacity-30 rounded-full p-2 sm:p-3 text-white hover:text-white transition-all duration-200">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-                </svg>
-            </button>
+        <div class="px-4 sm:px-6 py-4 sm:py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
+            <h3 class="text-lg sm:text-xl font-bold text-white flex items-center">
+                Edit Profile
+            </h3>
         </div>
         
         <!-- Modal Body -->
-        <div class="p-4 sm:p-6 md:p-8 space-y-4 sm:space-y-6">
+        <div class="px-4 sm:px-6 py-4 sm:py-5">
             <p class="text-gray-600 text-base sm:text-lg mb-4 sm:mb-6">Update your personal information below. Fields marked with * are required.</p>
             
             <form class="space-y-4 sm:space-y-6" id="profile-form" method="POST" action="profile/update_profile.php" enctype="multipart/form-data">
@@ -1256,19 +1258,19 @@ header("Pragma: no-cache");
                 </div>
                 
                 <div class="grid sm:grid-cols-2 gap-4 sm:gap-6">
-                <div>
-                    <label for="email" class="block text-sm font-medium text-gray-700 mb-1 sm:mb-2">Email Address*</label>
-                    <div class="relative">
-                        <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($email); ?>" required readonly class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg bg-gray-100 cursor-not-allowed text-sm sm:text-base">
-                        <span class="absolute right-3 sm:right-4 top-1/2 transform -translate-y-1/2 text-yellow-600">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-                                <polyline points="22,6 12,13 2,6"></polyline>
-                            </svg>
-                        </span>
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-gray-700 mb-1 sm:mb-2">Email Address*</label>
+                        <div class="relative">
+                            <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($email); ?>" required readonly class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg bg-gray-100 cursor-not-allowed text-sm sm:text-base">
+                            <span class="absolute right-3 sm:right-4 top-1/2 transform -translate-y-1/2 text-yellow-600">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                    <polyline points="22,6 12,13 2,6"></polyline>
+                                </svg>
+                            </span>
+                        </div>
                     </div>
-                </div>
-                    
+                        
                     <div>
                         <label for="phone" class="block text-sm font-medium text-gray-700 mb-1 sm:mb-2">Phone Number*</label>
                         <div class="relative">
@@ -1283,7 +1285,7 @@ header("Pragma: no-cache");
                     </div>
                 </div>
                 
-                <button id="open-change-password-modal" class="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-3 bg-navy border border-yellow-600 text-white rounded-lg font-semibold hover:bg-navy border border-yellow-600 text-yellow-400">
+                <button id="open-change-password-modal" class="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-3 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 inline">
                         <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
                         <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
@@ -1291,11 +1293,10 @@ header("Pragma: no-cache");
                     Change Password
                 </button>
                 
-                
                 <!-- Address Information Section -->
-                <div class="bg-navy p-4 sm:p-6 rounded-xl">
-                    <h4 class="text-lg sm:text-xl font-bold text-white flex items-center mb-4 sm:mb-6">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 sm:mr-3 text-yellow-600">
+                <div class="bg-white rounded-lg p-4 sm:p-5 border border-gray-200 shadow-sm">
+                    <h4 class="font-semibold text-gray-800 mb-3 sm:mb-4 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 sm:mr-3 text-sidebar-accent">
                             <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
                             <polyline points="9 22 9 12 15 12 15 22"></polyline>
                         </svg>
@@ -1373,9 +1374,9 @@ header("Pragma: no-cache");
                 </div>
                 
                 <!-- Document Uploads Section -->
-                <div class="bg-navy p-4 sm:p-6 rounded-xl space-y-4 sm:space-y-6">
-                    <h4 class="text-lg sm:text-xl font-bold text-white flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 sm:mr-3 text-yellow-600">
+                <div class="bg-white rounded-lg p-4 sm:p-5 border border-gray-200 shadow-sm">
+                    <h4 class="font-semibold text-gray-800 mb-3 sm:mb-4 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 sm:mr-3 text-sidebar-accent">
                             <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
                             <polyline points="13 2 13 9 20 9"></polyline>
                         </svg>
@@ -1385,16 +1386,16 @@ header("Pragma: no-cache");
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                         <!-- ID Upload -->
                         <div>
-                            <label for="id-upload" class="block text-sm font-medium text-white mb-2 sm:mb-3">Government-Issued ID*</label>
+                            <label for="id-upload" class="block text-sm font-medium text-gray-700 mb-2 sm:mb-3">Government-Issued ID*</label>
                             <div class="flex flex-col sm:flex-row gap-4">
                                 <div class="flex-1">
                                     <div class="flex items-center justify-center w-full">
-                                        <label for="id-upload" class="flex flex-col border-4 border-dashed border-gray-300 hover:bg-gray-100 hover:border-yellow-600 rounded-lg p-4 sm:p-6 group text-center cursor-pointer">
+                                        <label for="id-upload" class="flex flex-col border-4 border-dashed border-gray-300 hover:bg-gray-100 hover:border-sidebar-accent rounded-lg p-4 sm:p-6 group text-center cursor-pointer">
                                             <div class="flex flex-col items-center justify-center">
-                                                <svg class="w-8 h-8 sm:w-12 sm:h-12 text-gray-400 group-hover:text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                <svg class="w-8 h-8 sm:w-12 sm:h-12 text-gray-400 group-hover:text-sidebar-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                                                 </svg>
-                                                <p class="text-sm sm:text-base text-gray-500 group-hover:text-yellow-600 mt-2">Upload Government ID</p>
+                                                <p class="text-sm sm:text-base text-gray-500 group-hover:text-sidebar-accent mt-2">Upload Government ID</p>
                                                 <p class="text-xs sm:text-sm text-gray-500">(JPG, PNG)</p>
                                                 <p class="text-xs text-gray-500 mt-1">Max file size: 5MB</p>
                                             </div>
@@ -1405,7 +1406,7 @@ header("Pragma: no-cache");
                                 <!-- Image Preview -->
                                 <div class="flex-1">
                                     <div class="border border-gray-300 rounded-lg p-4 h-full">
-                                        <h5 class="text-sm font-medium text-white mb-2">ID Preview</h5>
+                                        <h5 class="text-sm font-medium text-gray-700 mb-2">ID Preview</h5>
                                         <div id="image-preview-container" class="flex items-center justify-center bg-gray-100 rounded-lg h-48 overflow-hidden">
                                             <p class="text-gray-500 text-sm">Preview will appear here</p>
                                         </div>
@@ -1416,9 +1417,9 @@ header("Pragma: no-cache");
                         
                         <!-- Example of a Correct ID Upload - Stack on mobile -->
                         <div class="sm:block">
-                            <h5 class="block text-sm font-medium text-white mb-2 sm:mb-3">Example of a Correct ID Upload</h5>
+                            <h5 class="block text-sm font-medium text-gray-700 mb-2 sm:mb-3">Example of a Correct ID Upload</h5>
                             <div class="bg-blue-50 border-l-4 border-blue-500 p-3 sm:p-4">
-                                <h5 class="font-bold text-navy mb-1 sm:mb-2 text-sm sm:text-base">Example of a Correct ID Upload</h5>
+                                <h5 class="font-bold text-gray-800 mb-1 sm:mb-2 text-sm sm:text-base">Example of a Correct ID Upload</h5>
                                 <ul class="list-disc list-inside text-xs sm:text-sm text-blue-700 space-y-1 sm:space-y-2">
                                     <li>Full document clearly visible</li>
                                     <li>No glare or shadows</li>
@@ -1442,10 +1443,12 @@ header("Pragma: no-cache");
         </div>
             
         <!-- Modal Footer -->
-        <div class="p-4 sm:p-6 md:p-8 flex flex-col sm:flex-row sm:justify-end gap-3 sm:gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
-            <button class="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-3 bg-white border border-yellow-600 text-gray-800 rounded-lg font-semibold hover:bg-gray-100 transition-colors text-sm sm:text-base" onclick="closeEditProfileModal()">Cancel</button>
-            <button type="submit" class="w-full sm:w-auto px-5 sm:px-7 py-2 sm:py-3 bg-yellow-600 text-white rounded-lg font-semibold hover:bg-yellow-700 transition-colors flex items-center justify-center sm:justify-start text-sm sm:text-base">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" sm:width="20" sm:height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
+        <div class="px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row sm:justify-end gap-2 sm:gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
+            <button class="w-full sm:w-auto px-4 sm:px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center" onclick="closeEditProfileModal()">
+                Cancel
+            </button>
+            <button type="submit" class="w-full sm:w-auto px-5 sm:px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
                     <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
                     <polyline points="17 21 17 13 7 13 7 21"></polyline>
                     <polyline points="7 3 7 8 15 8"></polyline>
