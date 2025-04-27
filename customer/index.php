@@ -622,9 +622,11 @@ $show_id_card = !$has_id || strtolower($id_data['is_validated']) != 'valid';
                 </h1>
                 <p class="text-white/80 max-w-lg mb-6 fade-in-up delay-1">Here you can manage your services, track payments, and get updates on your requests.</p>
                 <div class="flex flex-wrap gap-3 fade-in-up delay-2">
-                    <a href="packages.php" class="bg-yellow-600 hover:bg-darkgold text-white px-5 py-2 rounded-lg text-sm font-medium transition-colors pulse-slow">Explore Packages</a>
-                    <a href="profile.php" class="bg-white/20 hover:bg-white/30 text-white px-5 py-2 rounded-lg text-sm font-medium transition-colors backdrop-blur-sm"><i class="fas fa-user-edit mr-2"></i>Complete Your Profile</a>
-                </div>
+    <a href="packages.php" class="bg-yellow-600 hover:bg-darkgold text-white px-5 py-2 rounded-lg text-sm font-medium transition-colors pulse-slow">Explore Packages</a>
+    <?php if ($percentage < 100): ?>
+        <a href="profile.php" class="bg-white/20 hover:bg-white/30 text-white px-5 py-2 rounded-lg text-sm font-medium transition-colors backdrop-blur-sm"><i class="fas fa-user-edit mr-2"></i>Complete Your Profile</a>
+    <?php endif; ?>
+</div>
             </div>
         </div>
         
