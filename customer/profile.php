@@ -718,6 +718,31 @@ header("Pragma: no-cache");
     </div>
 </div>
 
+<script>
+    // Add this near the top of your JavaScript
+const idStatus = '<?php echo $id_status; ?>';
+
+// Modify the edit profile modal opening function
+document.getElementById('edit-profile-btn').addEventListener('click', function() {
+    // Show modal first
+    const modal = document.getElementById('edit-profile-modal');
+    modal.classList.remove('hidden');
+    modal.classList.remove('opacity-0', 'scale-95');
+    modal.classList.add('opacity-100', 'scale-100');
+    
+    // Hide ID upload section if already approved
+    const idUploadSection = document.querySelector('.bg-white.rounded-lg.p-4.sm\\:p-5.border.border-gray-200.shadow-sm');
+    if (idStatus === 'valid') {
+        idUploadSection.style.display = 'none';
+    } else {
+        idUploadSection.style.display = 'block';
+    }
+    
+    // Then load address data
+    setTimeout(loadAddressData, 100);
+});
+</script>
+
 <!-- Modal for enlarged image - improved version -->
 <div id="imageModal" class="fixed inset-0 z-50 hidden bg-black bg-opacity-80 flex items-center justify-center p-4">
     <div class="relative max-w-4xl w-full mx-auto">
