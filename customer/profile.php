@@ -1205,12 +1205,12 @@ header("Pragma: no-cache");
     <!-- Modal Content -->
     <div class="relative bg-white rounded-xl shadow-card w-full max-w-4xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
         <!-- Close Button -->
-        <button type="button" id="close-edit-profile-modal" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors">
+        <button type="button" id="close-edit-profile-modal" class="absolute top-4 right-4 text-navy hover:text-dark transition-colors">
             <i class="fas fa-times"></i>
         </button>
         
         <!-- Modal Header -->
-        <div class="px-4 sm:px-6 py-4 sm:py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
+        <div class="px-4 sm:px-6 py-4 sm:py-5 border-b bg-gradient-to-r from-yellow-600 to-darkgold border-gray-200">
             <h3 class="text-lg sm:text-xl font-bold text-white flex items-center">
                 Edit Profile
             </h3>
@@ -1444,7 +1444,7 @@ header("Pragma: no-cache");
             
         <!-- Modal Footer -->
         <div class="px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row sm:justify-end gap-2 sm:gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
-            <button class="w-full sm:w-auto px-4 sm:px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center" onclick="closeEditProfileModal()">
+            <button class="w-full sm:w-auto px-4 sm:px-5 py-2 bg-white border border-yellow-600 text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center" onclick="closeEditProfileModal()">
                 Cancel
             </button>
             <button type="submit" class="w-full sm:w-auto px-5 sm:px-6 py-2 bg-gradient-to-r from-yellow-600 to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center">
