@@ -1525,6 +1525,9 @@ function loadInventoryLogs(page = 1) {
                 
                 // Populate table with logs
                 data.logs.forEach(log => {
+                    const branchName = log.branch_name
+                    ? log.branch_name.charAt(0).toUpperCase() + log.branch_name.slice(1)
+                    : 'N/A';
                     const row = document.createElement('tr');
                     row.className = 'border-b border-sidebar-border hover:bg-sidebar-hover transition-colors';
                     
@@ -1553,7 +1556,7 @@ function loadInventoryLogs(page = 1) {
                     
                     // Format quantity
                     const quantityDisplay = formatQuantityChange(log.quantity_change, log.old_quantity, log.new_quantity);
-                    
+
                     row.innerHTML = `
                         <td class="px-4 py-3.5 text-sm text-sidebar-text">${log.item_name}</td>
                         <td class="px-4 py-3.5 text-sm text-sidebar-text">
@@ -1570,7 +1573,7 @@ function loadInventoryLogs(page = 1) {
                         <td class="px-4 py-3.5 text-sm font-medium text-sidebar-text">
                             ${quantityDisplay}
                         </td>
-                        <td class="px-4 py-3.5 text-sm text-sidebar-text">${log.branch_name || 'N/A'}</td>
+                        <td class="px-4 py-3.5 text-sm text-sidebar-text">${branch_name || 'N/A'}</td>
                     `;
                     tableBody.appendChild(row);
                 });
