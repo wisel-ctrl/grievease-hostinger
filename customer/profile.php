@@ -214,6 +214,9 @@ header("Pragma: no-cache");
             --navbar-height: 64px; /* Define the height of the navbar */
             --section-spacing: 4rem; /* Standardized spacing between sections */
         }
+        #change-password-modal {
+    display: flex !important;
+}
     </style>
 </head>
 <body class="bg-cream overflow-x-hidden w-full max-w-full m-0 p-0 font-hedvig">
