@@ -836,15 +836,14 @@ document.addEventListener('click', function(event) {
     </div>
 </div>
                     <?php elseif ($item['type'] === 'id_validation'): ?>
-                    <!-- ID VALIDATION NOTIFICATION -->
                     <?php 
                         $id_validation = $item['data'];
                         $id_status = 'Not Submitted';
                         $id_status_class = 'bg-gray-200 text-gray-800';
                         $id_icon = 'fas fa-question-circle';
                         $border_color = 'border-gray-400';
-                        $timestamp = $id_validation['upload_at']; // Default to upload time
-                
+                        
+                        // Determine which timestamp to use based on status
                         if ($id_validation) {
                             switch ($id_validation['is_validated']) {
                                 case 'no':
@@ -859,14 +858,14 @@ document.addEventListener('click', function(event) {
                                     $id_status_class = 'bg-success/20 text-success';
                                     $id_icon = 'fas fa-check-circle';
                                     $border_color = 'border-success';
-                                    $timestamp = $id_validation['accepted_at'] ?? $id_validation['upload_at']; // Fallback to upload time if accepted_at is null
+                                    $timestamp = $id_validation['accepted_at'] ?? $id_validation['upload_at'];
                                     break;
                                 case 'denied':
                                     $id_status = 'Declined';
                                     $id_status_class = 'bg-error/20 text-error';
                                     $id_icon = 'fas fa-times-circle';
                                     $border_color = 'border-error';
-                                    $timestamp = $id_validation['decline_at'] ?? $id_validation['upload_at']; // Fallback to upload time if decline_at is null
+                                    $timestamp = $id_validation['decline_at'] ?? $id_validation['upload_at'];
                                     break;
                             }
                         }
@@ -910,7 +909,7 @@ document.addEventListener('click', function(event) {
                             <i class="far fa-clock mr-1 text-gold text-xs"></i>
                             <?php 
                             if (!empty($timestamp)) {
-                                $date = new DateTime($timestamp); // Remove timezone conversion
+                                $date = new DateTime($timestamp);
                                 echo $date->format('h:i A');
                             } else {
                                 echo 'N/A';
@@ -958,10 +957,7 @@ document.addEventListener('click', function(event) {
                 <!-- Timestamp -->
                 <div class="text-xs text-gray-500 flex items-center">
                     <i class="fas fa-history mr-1 text-xs"></i> 
-                    <?php 
-                    // Remove timezone conversion here too
-                    echo time_elapsed_string($id_validation['upload_at']); 
-                    ?>
+                    <?php echo time_elapsed_string($timestamp); ?>
                 </div>
             </div>
         </div>
