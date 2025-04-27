@@ -800,14 +800,33 @@ header("Pragma: no-cache");
         document.body.style.overflow = 'auto';
     }
     
-    // Function to handle ID reupload
     function reuploadID() {
-        // Close the modal first
-        closeDeclineReasonModal();
-        
-        // Redirect to ID upload page or open upload dialog
-        window.location.href = 'upload_id.php';
-    }
+    // Close the decline reason modal first
+    closeDeclineReasonModal();
+    
+    // Open the edit profile modal
+    const modal = document.getElementById('edit-profile-modal');
+    modal.classList.remove('hidden');
+    modal.classList.remove('opacity-0', 'scale-95');
+    modal.classList.add('opacity-100', 'scale-100');
+    
+    // Load address data (if needed)
+    setTimeout(loadAddressData, 100);
+    
+    // After a short delay (to allow the modal to open), scroll to the document upload section
+    setTimeout(() => {
+        const uploadSection = document.querySelector('.bg-white.rounded-lg.p-4.sm\\:p-5.border.border-gray-200.shadow-sm');
+        if (uploadSection) {
+            uploadSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            
+            // Optional: add a highlight effect
+            uploadSection.classList.add('ring-2', 'ring-yellow-500', 'animate-pulse');
+            setTimeout(() => {
+                uploadSection.classList.remove('ring-2', 'ring-yellow-500', 'animate-pulse');
+            }, 2000);
+        }
+    }, 500);
+}
     
     // Close modals when clicking outside
     window.addEventListener('click', function(event) {
