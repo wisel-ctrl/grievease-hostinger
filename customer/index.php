@@ -762,79 +762,23 @@ $show_id_card = !$has_id || strtolower($id_data['is_validated']) != 'valid';
 document.addEventListener('DOMContentLoaded', function() {
     // Get the container and count visible cards
     const cardsContainer = document.querySelector('.dashboard-cards-container');
-    const visibleCards = cardsContainer.querySelectorAll('.dashboard-card');
-    const cardCount = visibleCards.length;
+    const visibleCards = cardsContainer.querySelectorAll('.dashboard-card').length;
     
     // Apply appropriate grid classes based on number of visible cards
-    if (cardCount === 1) {
-        // Enhanced single card layout
-        cardsContainer.classList.add('grid-cols-1', 'max-w-3xl', 'mx-auto');
-        
-        const singleCard = visibleCards[0];
-        // Make the card more elegant with a subtle gradient background
-        singleCard.classList.add('single-card-enhanced');
-        singleCard.classList.remove('p-6');
-        singleCard.classList.add('p-8', 'border-l-4', 'border-yellow-600');
-        
-        // Create a wrap for content to allow for horizontal layout on larger screens
-        const cardContent = singleCard.innerHTML;
-        singleCard.innerHTML = `
-            <div class="md:flex md:justify-between md:items-center">
-                ${cardContent}
-            </div>
-        `;
-        
-        // Add some animation
-        singleCard.style.animation = 'fadeIn 0.6s ease-in-out';
-    } else if (cardCount === 2) {
+    if (visibleCards === 1) {
+        cardsContainer.classList.add('grid-cols-1');
+        cardsContainer.querySelectorAll('.dashboard-card').forEach(card => {
+            card.classList.add('py-4'); // Reduced height for single card
+        });
+    } else if (visibleCards === 2) {
         cardsContainer.classList.add('sm:grid-cols-2');
-    } else if (cardCount === 3) {
+    } else if (visibleCards === 3) {
         cardsContainer.classList.add('sm:grid-cols-2', 'lg:grid-cols-3');
-    } else if (cardCount >= 4) {
+    } else if (visibleCards >= 4) {
         cardsContainer.classList.add('sm:grid-cols-2', 'lg:grid-cols-4');
     }
 });
 </script>
-
-<style>
-/* Enhanced styles for single card display */
-.single-card-enhanced {
-    background: linear-gradient(to right, #ffffff, #fcfaf5);
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-    transition: all 0.3s ease;
-}
-
-.single-card-enhanced:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.1), 0 10px 15px -5px rgba(0, 0, 0, 0.05);
-}
-
-@keyframes fadeIn {
-    from { opacity: 0.7; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-/* Make sure the icon is more prominent in single card view */
-.single-card-enhanced .w-10.h-10 {
-    width: 3rem;
-    height: 3rem;
-}
-
-/* Improve typography in single card view */
-@media (min-width: 768px) {
-    .single-card-enhanced h3 {
-        font-size: 1.5rem;
-    }
-    
-    .single-card-enhanced p {
-        font-size: 1rem;
-    }
-    
-    .single-card-enhanced a {
-        font-size: 1rem;
-    }
-}
-</style>
         
         <!-- Services Section -->
 <div class="mb-4">
