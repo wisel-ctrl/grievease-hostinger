@@ -443,7 +443,7 @@ header("Pragma: no-cache");
     <div id="personal-info" class="tab-content">
         <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
             <!-- Header with gradient background -->
-            <div class="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 border-b border-gray-100 flex justify-between items-center">
+            <div class="p-6 border-b border-gray-100 flex justify-between items-center">
                 <h3 class="font-hedvig text-xl text-navy font-semibold">Personal Information</h3>
                 <button id="edit-profile-btn" class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg transition-all transform hover:scale-105 flex items-center shadow-sm">
                     <i class="fas fa-pencil-alt mr-2"></i> Edit Profile
@@ -451,16 +451,7 @@ header("Pragma: no-cache");
             </div>
             
             <div class="p-6">
-                <!-- Personal Information Card -->
-                <div class="bg-blue-50 rounded-lg p-4 mb-6 border-l-4 border-blue-500">
-                    <div class="flex items-center text-blue-700 mb-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        <span class="font-medium">Basic Details</span>
-                    </div>
-                    <p class="text-sm text-gray-600">Your personal information is used for identification and communication purposes.</p>
-                </div>
+                
                 
                 <!-- Information Grid with improved styling -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -494,7 +485,7 @@ header("Pragma: no-cache");
                     
                     <!-- Contact Information Section -->
                     <div class="col-span-1 md:col-span-2 mt-4">
-                        <div class="flex items-center text-green-700 mb-2">
+                        <div class="flex items-center text-navy mb-2">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                             </svg>
@@ -503,7 +494,7 @@ header("Pragma: no-cache");
                     </div>
                     
                     <!-- Email -->
-                    <div class="bg-green-50 p-4 rounded-lg transition-all hover:shadow-md">
+                    <div class="p-4 rounded-lg transition-all hover:shadow-md">
                         <label class="block text-sm font-medium text-gray-500 mb-1">Email Address</label>
                         <p class="text-navy font-medium flex items-center">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -514,7 +505,7 @@ header("Pragma: no-cache");
                     </div>
                     
                     <!-- Phone -->
-                    <div class="bg-green-50 p-4 rounded-lg transition-all hover:shadow-md">
+                    <div class="p-4 rounded-lg transition-all hover:shadow-md">
                         <label class="block text-sm font-medium text-gray-500 mb-1">Phone Number</label>
                         <p class="text-navy <?= empty($phone_number) ? 'opacity-60 italic text-gray-500' : 'font-medium flex items-center' ?>">
                             <?php if(!empty($phone_number)): ?>
@@ -527,7 +518,7 @@ header("Pragma: no-cache");
                     </div>
                     
                     <!-- Birthdate -->
-                    <div class="bg-purple-50 p-4 rounded-lg transition-all hover:shadow-md">
+                    <div class="p-4 rounded-lg transition-all hover:shadow-md">
                         <label class="block text-sm font-medium text-gray-500 mb-1">Date of Birth</label>
                         <p class="text-navy font-medium flex items-center">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -539,7 +530,7 @@ header("Pragma: no-cache");
                     
                     <!-- Address Section -->
                     <div class="col-span-1 md:col-span-2 mt-4">
-                        <div class="flex items-center text-indigo-700 mb-2">
+                        <div class="flex items-center text-navy mb-2">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -549,7 +540,7 @@ header("Pragma: no-cache");
                     </div>
                     
                     <!-- Region -->
-                    <div class="bg-indigo-50 p-4 rounded-lg transition-all hover:shadow-md">
+                    <div class="p-4 rounded-lg transition-all hover:shadow-md">
                         <label class="block text-sm font-medium text-gray-500 mb-1">Region</label>
                         <p class="text-navy <?= empty($region) ? 'opacity-60 italic text-gray-500' : 'font-medium' ?>">
                             <?= !empty($region) ? htmlspecialchars($region) : 'N/A' ?>
@@ -557,7 +548,7 @@ header("Pragma: no-cache");
                     </div>
                     
                     <!-- Province -->
-                    <div class="bg-indigo-50 p-4 rounded-lg transition-all hover:shadow-md">
+                    <div class="p-4 rounded-lg transition-all hover:shadow-md">
                         <label class="block text-sm font-medium text-gray-500 mb-1">Province</label>
                         <p class="text-navy <?= empty($province) ? 'opacity-60 italic text-gray-500' : 'font-medium' ?>">
                             <?= !empty($province) ? htmlspecialchars($province) : 'N/A' ?>
@@ -565,7 +556,7 @@ header("Pragma: no-cache");
                     </div>
                     
                     <!-- City -->
-                    <div class="bg-indigo-50 p-4 rounded-lg transition-all hover:shadow-md">
+                    <div class="p-4 rounded-lg transition-all hover:shadow-md">
                         <label class="block text-sm font-medium text-gray-500 mb-1">City</label>
                         <p class="text-navy <?= empty($city) ? 'opacity-60 italic text-gray-500' : 'font-medium' ?>">
                             <?= !empty($city) ? htmlspecialchars($city) : 'N/A' ?>
@@ -573,7 +564,7 @@ header("Pragma: no-cache");
                     </div>
                     
                     <!-- Barangay -->
-                    <div class="bg-indigo-50 p-4 rounded-lg transition-all hover:shadow-md">
+                    <div class="p-4 rounded-lg transition-all hover:shadow-md">
                         <label class="block text-sm font-medium text-gray-500 mb-1">Barangay</label>
                         <p class="text-navy <?= empty($barangay) ? 'opacity-60 italic text-gray-500' : 'font-medium' ?>">
                             <?= !empty($barangay) ? htmlspecialchars($barangay) : 'N/A' ?>
@@ -581,7 +572,7 @@ header("Pragma: no-cache");
                     </div>
                     
                     <!-- Street Address -->
-                    <div class="bg-indigo-50 p-4 rounded-lg transition-all hover:shadow-md">
+                    <div class="p-4 rounded-lg transition-all hover:shadow-md">
                         <label class="block text-sm font-medium text-gray-500 mb-1">Street Address</label>
                         <p class="text-navy <?= empty($street_address) ? 'opacity-60 italic text-gray-500' : 'font-medium' ?>">
                             <?= !empty($street_address) ? htmlspecialchars($street_address) : 'N/A' ?>
@@ -589,7 +580,7 @@ header("Pragma: no-cache");
                     </div>
                     
                     <!-- Zip Code -->
-                    <div class="bg-indigo-50 p-4 rounded-lg transition-all hover:shadow-md">
+                    <div class="p-4 rounded-lg transition-all hover:shadow-md">
                         <label class="block text-sm font-medium text-gray-500 mb-1">Zip/Postal Code</label>
                         <p class="text-navy <?= empty($zip_code) ? 'opacity-60 italic text-gray-500' : 'font-medium' ?>">
                             <?= !empty($zip_code) ? htmlspecialchars($zip_code) : 'N/A' ?>
