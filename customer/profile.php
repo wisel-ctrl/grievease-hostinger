@@ -813,22 +813,37 @@ header("Pragma: no-cache");
     // Load address data (if needed)
     setTimeout(loadAddressData, 100);
     
+    // Scroll to the ID upload section with a slight delay to ensure the modal is fully open
     setTimeout(() => {
-    const idUploadSection = document.querySelector('label[for="id-upload"]');
-    if (idUploadSection) {
-        idUploadSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        
-        // Highlight the upload area
-        const uploadContainer = idUploadSection.closest('.flex.flex-col.sm\\:flex-row.gap-4');
-        if (uploadContainer) {
-            uploadContainer.classList.add('ring-2', 'ring-yellow-500', 'animate-pulse');
-            setTimeout(() => {
-                uploadContainer.classList.remove('ring-2', 'ring-yellow-500', 'animate-pulse');
-            }, 2000);
+        const idUploadSection = document.querySelector('label[for="id-upload"]');
+        if (idUploadSection) {
+            idUploadSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            
+            // Highlight the upload area
+            const uploadContainer = idUploadSection.closest('.flex.flex-col.sm\\:flex-row.gap-4');
+            if (uploadContainer) {
+                uploadContainer.classList.add('ring-2', 'ring-yellow-500', 'animate-pulse');
+                setTimeout(() => {
+                    uploadContainer.classList.remove('ring-2', 'ring-yellow-500', 'animate-pulse');
+                }, 2000);
+            }
         }
+    }, 500);
+}
+
+// Ensure the edit profile button listener is properly attached
+document.addEventListener('DOMContentLoaded', function() {
+    const editProfileBtn = document.getElementById('edit-profile-btn');
+    if (editProfileBtn) {
+        editProfileBtn.addEventListener('click', function() {
+            const modal = document.getElementById('edit-profile-modal');
+            modal.classList.remove('hidden');
+            modal.classList.remove('opacity-0', 'scale-95');
+            modal.classList.add('opacity-100', 'scale-100');
+            setTimeout(loadAddressData, 100);
+        });
     }
-}, 500);
-    }
+});
     
     // Close modals when clicking outside
     window.addEventListener('click', function(event) {
