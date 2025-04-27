@@ -726,7 +726,9 @@ header("Pragma: no-cache");
             </div>
         </div>
     </div>
+                            </div>
 </div>
+
 
 
 <!-- Modal for enlarged image - improved version -->
@@ -938,6 +940,7 @@ header("Pragma: no-cache");
                             </div>
                         </div>
                     </div>
+</div>
                     
                     <!-- Transaction Logs Tab -->
 <div id="transaction-logs" class="tab-content">
@@ -1133,6 +1136,7 @@ header("Pragma: no-cache");
     </div>
     </div>
     </div>
+</div>
                     
     <!-- Footer -->
     <footer class="bg-black font-playfair text-white py-12">
@@ -1466,8 +1470,6 @@ header("Pragma: no-cache");
         </div>
     </div>
 </div>
-                </div>
-                </div>
 
 <!-- Change Password Modal -->
 <div id="change-password-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto">
