@@ -1199,136 +1199,101 @@ header("Pragma: no-cache");
                     
 <!-- Edit Profile Modal -->
 <div id="edit-profile-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto">
-    <!-- Modal Backdrop with improved blur effect -->
-    <div class="fixed inset-0 bg-black bg-opacity-70 backdrop-blur-sm transition-opacity duration-300"></div>
+    <!-- Modal Backdrop -->
+    <div class="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm"></div>
     
-    <!-- Modal Content with smoother animations and drop shadow -->
+    <!-- Modal Content -->
     <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-4xl mx-4 z-10 transform transition-all duration-300 scale-95 opacity-0 max-h-[90vh] overflow-y-auto">
-        <!-- Modal Header with gradient enhancement -->
-        <div class="bg-gradient-to-r from-yellow-600 via-yellow-500 to-white flex justify-between items-center p-4 sm:p-6 md:p-8 flex-shrink-0 rounded-t-2xl">
-            <h3 class="text-xl sm:text-2xl font-bold text-white drop-shadow-md">Edit Profile</h3>
-            <button type="button" id="close-edit-profile-modal" class="bg-black bg-opacity-20 hover:bg-opacity-30 rounded-full p-2 sm:p-3 text-white hover:text-white transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-yellow-400">
+        <!-- Modal Header -->
+        <div class="bg-gradient-to-r from-yellow-600 to-white flex justify-between items-center p-4 sm:p-6 md:p-8 flex-shrink-0 rounded-t-2xl">
+            <h3 class="text-xl sm:text-2xl font-bold text-white">Edit Profile</h3>
+            <button type="button" id="close-edit-profile-modal" class="bg-black bg-opacity-20 hover:bg-opacity-30 rounded-full p-2 sm:p-3 text-white hover:text-white transition-all duration-200">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
                 </svg>
             </button>
         </div>
         
-        <!-- Modal Body with improved spacing and organization -->
+        <!-- Modal Body -->
         <div class="p-4 sm:p-6 md:p-8 space-y-4 sm:space-y-6">
-            <!-- Progress Indicator -->
-            <div class="w-full bg-gray-100 rounded-full h-2 mb-2">
-                <div class="bg-yellow-600 h-2 rounded-full w-1/3" id="profile-completion-indicator"></div>
-            </div>
-            <div class="flex justify-between text-xs text-gray-500 mb-4">
-                <span>Profile Completion</span>
-                <span id="profile-completion-percentage">33%</span>
-            </div>
-            
-            <p class="text-gray-600 text-base sm:text-lg mb-4 sm:mb-6">Update your personal information below. Fields marked with <span class="text-red-500">*</span> are required.</p>
+            <p class="text-gray-600 text-base sm:text-lg mb-4 sm:mb-6">Update your personal information below. Fields marked with * are required.</p>
             
             <form class="space-y-4 sm:space-y-6" id="profile-form" method="POST" action="profile/update_profile.php" enctype="multipart/form-data">
-                <!-- Personal Information Section with card styling -->
-                <div class="bg-gray-50 p-4 sm:p-6 rounded-xl border border-gray-200">
-                    <h4 class="text-lg sm:text-xl font-bold text-navy flex items-center mb-4 sm:mb-6">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 sm:mr-3 text-yellow-600">
-                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                            <circle cx="12" cy="7" r="4"></circle>
-                        </svg>
-                        Personal Information
-                    </h4>
-                
-                    <div class="grid sm:grid-cols-2 gap-4 sm:gap-6">
-                        <div>
-                            <label for="firstName" class="block text-sm font-medium text-gray-700 mb-1 sm:mb-2">First Name <span class="text-red-500">*</span></label>
-                            <input type="text" id="firstName" name="firstName" value="<?php echo htmlspecialchars($first_name); ?>" required class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base">
-                        </div>
-                        
-                        <div>
-                            <label for="lastName" class="block text-sm font-medium text-gray-700 mb-1 sm:mb-2">Last Name <span class="text-red-500">*</span></label>
-                            <input type="text" id="lastName" name="lastName" value="<?php echo htmlspecialchars($last_name); ?>" required class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base">
-                        </div>
+                <div class="grid sm:grid-cols-2 gap-4 sm:gap-6">
+                    <div>
+                        <label for="firstName" class="block text-sm font-medium text-gray-700 mb-1 sm:mb-2">First Name*</label>
+                        <input type="text" id="firstName" name="firstName" value="<?php echo htmlspecialchars($first_name); ?>" required class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base">
                     </div>
                     
-                    <div class="grid sm:grid-cols-2 gap-4 sm:gap-6 mt-4">
-                        <div>
-                            <label for="middleName" class="block text-sm font-medium text-gray-700 mb-1 sm:mb-2">Middle Name</label>
-                            <input type="text" id="middleName" name="middleName" value="<?php echo htmlspecialchars($middle_name); ?>" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base">
-                        </div>
-                        
-                        <div>
-                            <label for="suffix" class="block text-sm font-medium text-gray-700 mb-1 sm:mb-2">Suffix</label>
-                            <select id="suffix" name="suffix" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base">
-                                <option value=""></option>
-                                <option value="Jr" <?php echo (isset($user['suffix']) && $user['suffix'] == 'Jr' ? 'selected' : ''); ?>>Jr</option>
-                                <option value="Sr" <?php echo (isset($user['suffix']) && $user['suffix'] == 'Sr' ? 'selected' : ''); ?>>Sr</option>
-                                <option value="II" <?php echo (isset($user['suffix']) && $user['suffix'] == 'II' ? 'selected' : ''); ?>>II</option>
-                                <option value="III" <?php echo (isset($user['suffix']) && $user['suffix'] == 'III' ? 'selected' : ''); ?>>III</option>
-                                <option value="IV" <?php echo (isset($user['suffix']) && $user['suffix'] == 'IV' ? 'selected' : ''); ?>>IV</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="mt-4">
-                        <label for="dob" class="block text-sm font-medium text-gray-700 mb-1 sm:mb-2">Date of Birth</label>
-                        <div class="relative">
-                            <input type="date" id="dob" name="dob" value="<?php echo htmlspecialchars($birthdate); ?>" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base">
-                            <div class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                                    <line x1="16" y1="2" x2="16" y2="6"></line>
-                                    <line x1="8" y1="2" x2="8" y2="6"></line>
-                                    <line x1="3" y1="10" x2="21" y2="10"></line>
-                                </svg>
-                            </div>
-                        </div>
-                        <p class="text-xs text-gray-500 mt-1">You must be at least 18 years old</p>
-                    </div>
-                    
-                    <div class="grid sm:grid-cols-2 gap-4 sm:gap-6 mt-4">
-                        <div>
-                            <label for="email" class="block text-sm font-medium text-gray-700 mb-1 sm:mb-2">Email Address <span class="text-red-500">*</span></label>
-                            <div class="relative">
-                                <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($email); ?>" required readonly class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg bg-gray-100 cursor-not-allowed text-sm sm:text-base">
-                                <div class="absolute right-3 sm:right-4 top-1/2 transform -translate-y-1/2 text-yellow-600 flex items-center space-x-1">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-                                        <polyline points="22,6 12,13 2,6"></polyline>
-                                    </svg>
-                                    <span class="text-xs text-gray-500">Verified</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div>
-                            <label for="phone" class="block text-sm font-medium text-gray-700 mb-1 sm:mb-2">Phone Number <span class="text-red-500">*</span></label>
-                            <div class="relative">
-                                <input type="tel" id="phone" name="phone" pattern="^(\+63\d{10}|0\d{10}|\d{10})$"
-                                title="Phone number (09XXXXXXXXX or +639XXXXXXXXX)" value="<?php echo htmlspecialchars($phone_number); ?>" required class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent pr-10 text-sm sm:text-base">
-                                <span class="absolute right-3 sm:right-4 top-1/2 transform -translate-y-1/2 text-yellow-600">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
-                                    </svg>
-                                </span>
-                            </div>
-                            <p class="text-xs text-gray-500 mt-1">Format: 09XXXXXXXXX or +639XXXXXXXXX</p>
-                        </div>
-                    </div>
-                    
-                    <!-- Password Change Button with improved styling -->
-                    <div class="mt-6">
-                        <button id="open-change-password-modal" type="button" class="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-3 bg-navy border border-yellow-600 text-white rounded-lg font-semibold hover:bg-navy hover:border-yellow-400 hover:text-yellow-300 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-yellow-500">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 inline">
-                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                            </svg>
-                            Change Password
-                        </button>
+                    <div>
+                        <label for="lastName" class="block text-sm font-medium text-gray-700 mb-1 sm:mb-2">Last Name*</label>
+                        <input type="text" id="lastName" name="lastName" value="<?php echo htmlspecialchars($last_name); ?>" required class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base">
                     </div>
                 </div>
                 
-                <!-- Address Information Section with improved styling -->
-                <div class="bg-navy p-4 sm:p-6 rounded-xl shadow-md">
+                <div class="grid sm:grid-cols-2 gap-4 sm:gap-6">
+                    <div>
+                        <label for="middleName" class="block text-sm font-medium text-gray-700 mb-1 sm:mb-2">Middle Name</label>
+                        <input type="text" id="middleName" name="middleName" value="<?php echo htmlspecialchars($middle_name); ?>" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base">
+                    </div>
+                    
+                    <div>
+                        <label for="suffix" class="block text-sm font-medium text-gray-700 mb-1 sm:mb-2">Suffix</label>
+                        <select id="suffix" name="suffix" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base">
+                            <option value=""></option>
+                            <option value="Jr" <?php echo (isset($user['suffix']) && $user['suffix'] == 'Jr' ? 'selected' : ''); ?>>Jr</option>
+                            <option value="Sr" <?php echo (isset($user['suffix']) && $user['suffix'] == 'Sr' ? 'selected' : ''); ?>>Sr</option>
+                            <option value="II" <?php echo (isset($user['suffix']) && $user['suffix'] == 'II' ? 'selected' : ''); ?>>II</option>
+                            <option value="III" <?php echo (isset($user['suffix']) && $user['suffix'] == 'III' ? 'selected' : ''); ?>>III</option>
+                            <option value="IV" <?php echo (isset($user['suffix']) && $user['suffix'] == 'IV' ? 'selected' : ''); ?>>IV</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label for="dob" class="block text-sm font-medium text-gray-700 mb-1 sm:mb-2">Date of Birth</label>
+                    <input type="date" id="dob" name="dob" value="<?php echo htmlspecialchars($birthdate); ?>" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base">
+                </div>
+                
+                <div class="grid sm:grid-cols-2 gap-4 sm:gap-6">
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700 mb-1 sm:mb-2">Email Address*</label>
+                    <div class="relative">
+                        <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($email); ?>" required readonly class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg bg-gray-100 cursor-not-allowed text-sm sm:text-base">
+                        <span class="absolute right-3 sm:right-4 top-1/2 transform -translate-y-1/2 text-yellow-600">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                <polyline points="22,6 12,13 2,6"></polyline>
+                            </svg>
+                        </span>
+                    </div>
+                </div>
+                    
+                    <div>
+                        <label for="phone" class="block text-sm font-medium text-gray-700 mb-1 sm:mb-2">Phone Number*</label>
+                        <div class="relative">
+                            <input type="tel" id="phone" name="phone"  pattern="^(\+63\d{10}|0\d{10}|\d{10})$"
+                            title="Phone number (09XXXXXXXXX or +639XXXXXXXXX)" value="<?php echo htmlspecialchars($phone_number); ?>" required class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent pr-10 text-sm sm:text-base">
+                            <span class="absolute right-3 sm:right-4 top-1/2 transform -translate-y-1/2 text-yellow-600">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                                </svg>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                
+                <button id="open-change-password-modal" class="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-3 bg-navy border border-yellow-600 text-white rounded-lg font-semibold hover:bg-navy border border-yellow-600 text-yellow-400">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 inline">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                    Change Password
+                </button>
+                
+                
+                <!-- Address Information Section -->
+                <div class="bg-navy p-4 sm:p-6 rounded-xl">
                     <h4 class="text-lg sm:text-xl font-bold text-white flex items-center mb-4 sm:mb-6">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 sm:mr-3 text-yellow-600">
                             <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
@@ -1338,9 +1303,8 @@ header("Pragma: no-cache");
                     </h4>
                     
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-                        <!-- Region Dropdown with improved UI -->
+                        <!-- Region Dropdown -->
                         <div class="relative">
-                            <label for="region" class="block text-sm font-medium text-white mb-1 sm:mb-2">Region <span class="text-red-500">*</span></label>
                             <select id="region" name="region" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent appearance-none text-sm sm:text-base" onchange="updateProvinces()">
                                 <option value="" selected disabled>Select Region</option>
                                 <?php foreach ($regions as $region_option): ?>
@@ -1358,7 +1322,6 @@ header("Pragma: no-cache");
                         
                         <!-- Province Dropdown -->
                         <div class="relative">
-                            <label for="province" class="block text-sm font-medium text-white mb-1 sm:mb-2">Province <span class="text-red-500">*</span></label>
                             <select id="province" name="province" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent appearance-none text-sm sm:text-base" onchange="updateCities()" disabled>
                                 <option value="" selected disabled>Select Province</option>
                             </select>
@@ -1371,7 +1334,6 @@ header("Pragma: no-cache");
                         
                         <!-- City/Municipality Dropdown -->
                         <div class="relative">
-                            <label for="city" class="block text-sm font-medium text-white mb-1 sm:mb-2">City/Municipality <span class="text-red-500">*</span></label>
                             <select id="city" name="city" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent appearance-none text-sm sm:text-base" onchange="updateBarangays()" disabled>
                                 <option value="" selected disabled>Select City/Municipality</option>
                             </select>
@@ -1384,7 +1346,6 @@ header("Pragma: no-cache");
                         
                         <!-- Barangay Dropdown -->
                         <div class="relative">
-                            <label for="barangay" class="block text-sm font-medium text-white mb-1 sm:mb-2">Barangay <span class="text-red-500">*</span></label>
                             <select id="barangay" name="barangay" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent appearance-none text-sm sm:text-base" disabled>
                                 <option value="" selected disabled>Select Barangay</option>
                             </select>
@@ -1395,26 +1356,24 @@ header("Pragma: no-cache");
                             </div>
                         </div>
                         
-                        <!-- Street Address Manual Input (full width) with improved UI -->
+                        <!-- Street Address Manual Input (full width) -->
                         <div class="sm:col-span-2">
-                            <label for="street_address" class="block text-sm font-medium text-white mb-1 sm:mb-2">Street Address <span class="text-red-500">*</span></label>
-                            <input type="text" id="street_address" name="street_address" placeholder="House/Lot/Unit No., Building, Street Name" 
+                            <input type="text" id="street_address" name="street_address" placeholder="Street Address (House/Lot/Unit No., Building, Street Name)" 
                                    value="<?php echo htmlspecialchars($street_address); ?>" 
                                    class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base">
                         </div>
                         
-                        <!-- Zip/Postal Code with improved UI -->
+                        <!-- Zip/Postal Code -->
                         <div class="sm:col-span-2">
-                            <label for="zip" class="block text-sm font-medium text-white mb-1 sm:mb-2">ZIP/Postal Code <span class="text-red-500">*</span></label>
-                            <input type="text" id="zip" name="zip" placeholder="e.g. 1234" 
+                            <input type="text" id="zip" name="zip" placeholder="Zip/Postal Code" 
                                    value="<?php echo htmlspecialchars($zip_code); ?>" 
                                    class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base">
                         </div>
                     </div>
                 </div>
                 
-                <!-- Document Uploads Section with improved UI -->
-                <div class="bg-navy p-4 sm:p-6 rounded-xl space-y-4 sm:space-y-6 shadow-md">
+                <!-- Document Uploads Section -->
+                <div class="bg-navy p-4 sm:p-6 rounded-xl space-y-4 sm:space-y-6">
                     <h4 class="text-lg sm:text-xl font-bold text-white flex items-center">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 sm:mr-3 text-yellow-600">
                             <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
@@ -1424,18 +1383,18 @@ header("Pragma: no-cache");
                     </h4>
                     
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-                        <!-- ID Upload with improved UI -->
+                        <!-- ID Upload -->
                         <div>
-                            <label for="id-upload" class="block text-sm font-medium text-white mb-2 sm:mb-3">Government-Issued ID <span class="text-red-500">*</span></label>
+                            <label for="id-upload" class="block text-sm font-medium text-white mb-2 sm:mb-3">Government-Issued ID*</label>
                             <div class="flex flex-col sm:flex-row gap-4">
                                 <div class="flex-1">
                                     <div class="flex items-center justify-center w-full">
-                                        <label for="id-upload" class="flex flex-col border-4 border-dashed border-gray-300 hover:bg-gray-100 hover:border-yellow-600 rounded-lg p-4 sm:p-6 group text-center cursor-pointer transition-all duration-200">
+                                        <label for="id-upload" class="flex flex-col border-4 border-dashed border-gray-300 hover:bg-gray-100 hover:border-yellow-600 rounded-lg p-4 sm:p-6 group text-center cursor-pointer">
                                             <div class="flex flex-col items-center justify-center">
-                                                <svg class="w-8 h-8 sm:w-12 sm:h-12 text-gray-400 group-hover:text-yellow-600 transition-colors duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                <svg class="w-8 h-8 sm:w-12 sm:h-12 text-gray-400 group-hover:text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                                                 </svg>
-                                                <p class="text-sm sm:text-base text-gray-500 group-hover:text-yellow-600 mt-2 font-medium">Upload Government ID</p>
+                                                <p class="text-sm sm:text-base text-gray-500 group-hover:text-yellow-600 mt-2">Upload Government ID</p>
                                                 <p class="text-xs sm:text-sm text-gray-500">(JPG, PNG)</p>
                                                 <p class="text-xs text-gray-500 mt-1">Max file size: 5MB</p>
                                             </div>
@@ -1443,7 +1402,7 @@ header("Pragma: no-cache");
                                         </label>
                                     </div>
                                 </div>
-                                <!-- Image Preview with improved UI -->
+                                <!-- Image Preview -->
                                 <div class="flex-1">
                                     <div class="border border-gray-300 rounded-lg p-4 h-full">
                                         <h5 class="text-sm font-medium text-white mb-2">ID Preview</h5>
@@ -1455,11 +1414,11 @@ header("Pragma: no-cache");
                             </div>
                         </div>
                         
-                        <!-- Example of a Correct ID Upload with improved UI -->
+                        <!-- Example of a Correct ID Upload - Stack on mobile -->
                         <div class="sm:block">
                             <h5 class="block text-sm font-medium text-white mb-2 sm:mb-3">Example of a Correct ID Upload</h5>
-                            <div class="bg-blue-50 border-l-4 border-blue-500 p-3 sm:p-4 rounded-r">
-                                <h5 class="font-bold text-navy mb-1 sm:mb-2 text-sm sm:text-base">Guidelines for ID Upload</h5>
+                            <div class="bg-blue-50 border-l-4 border-blue-500 p-3 sm:p-4">
+                                <h5 class="font-bold text-navy mb-1 sm:mb-2 text-sm sm:text-base">Example of a Correct ID Upload</h5>
                                 <ul class="list-disc list-inside text-xs sm:text-sm text-blue-700 space-y-1 sm:space-y-2">
                                     <li>Full document clearly visible</li>
                                     <li>No glare or shadows</li>
@@ -1470,17 +1429,11 @@ header("Pragma: no-cache");
                                 </ul>
                                 <div class="mt-2 sm:mt-3 flex justify-center">
                                     <div class="flex flex-col sm:flex-row sm:space-x-4 space-y-2 sm:space-y-0">
-                                        <div class="relative w-full sm:w-1/2 max-w-md">
-                                            <img src="../image/wrongID.jpg" alt="Incorrect ID Upload" class="w-full rounded border border-red-300">
-                                            <div class="absolute top-2 right-2 bg-red-500 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center">✕</div>
-                                        </div>
-                                        <div class="relative w-full sm:w-1/2 max-w-md">
-                                            <img src="../image/rightID.jpg" alt="Correct ID Upload" class="w-full rounded border border-green-300">
-                                            <div class="absolute top-2 right-2 bg-green-500 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center">✓</div>
-                                        </div>
+                                        <img src="../image/wrongID.jpg" alt="Incorrect ID Upload" class="w-full sm:w-1/2 max-w-md">
+                                        <img src="../image/rightID.jpg" alt="Correct ID Upload" class="w-full sm:w-1/2 max-w-md">
                                     </div>
                                 </div>
-                                <p class="text-xs text-blue-600 mt-1 sm:mt-2 text-center">Left: Poor Upload, Right: Correct Upload</p>
+                                <p class="text-xs text-blue-600 mt-1 sm:mt-2 text-center">Top/Left: Poor Upload, Bottom/Right: Correct Upload</p>
                             </div>
                         </div>
                     </div>
@@ -1488,20 +1441,18 @@ header("Pragma: no-cache");
             </form>
         </div>
             
-        <!-- Modal Footer with sticky positioning and improved buttons -->
-<div class="p-4 sm:p-6 md:p-8 flex flex-col sm:flex-row sm:justify-end gap-3 sm:gap-4 border-t border-gray-200 sticky bottom-0 bg-white shadow-lg z-10">
-    <button type="button" id="cancel-profile-edit" class="px-4 sm:px-6 py-2 sm:py-3 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-400">
-        Cancel
-    </button>
-    <button type="submit" form="profile-form" class="px-4 sm:px-6 py-2 sm:py-3 bg-yellow-600 text-white rounded-lg font-medium hover:bg-yellow-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-yellow-500 flex items-center justify-center">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
-            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
-            <polyline points="17 21 17 13 7 13 7 21"></polyline>
-            <polyline points="7 3 7 8 15 8"></polyline>
-        </svg>
-        Save Changes
-    </button>
-</div>
+        <!-- Modal Footer -->
+        <div class="p-4 sm:p-6 md:p-8 flex flex-col sm:flex-row sm:justify-end gap-3 sm:gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
+            <button class="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-3 bg-white border border-yellow-600 text-gray-800 rounded-lg font-semibold hover:bg-gray-100 transition-colors text-sm sm:text-base" onclick="closeEditProfileModal()">Cancel</button>
+            <button type="submit" class="w-full sm:w-auto px-5 sm:px-7 py-2 sm:py-3 bg-yellow-600 text-white rounded-lg font-semibold hover:bg-yellow-700 transition-colors flex items-center justify-center sm:justify-start text-sm sm:text-base">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" sm:width="20" sm:height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
+                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                    <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                    <polyline points="7 3 7 8 15 8"></polyline>
+                </svg>
+                Save Changes
+            </button>
+        </div>
     </div>
 </div>
 
