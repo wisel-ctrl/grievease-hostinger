@@ -103,23 +103,7 @@
         </div>
     </div>
 
-    <!-- CTA Section -->
-    <div class="w-full flex items-center justify-center mt-16 px-8">
-        <div class="max-w-4xl w-full bg-navy rounded-2xl overflow-hidden shadow-xl" style="height: 320px;">
-            <div class="grid grid-cols-1 lg:grid-cols-2 h-full">
-                <div class="p-8 flex flex-col justify-center h-full">
-                    <h2 class="text-3xl font-hedvig text-white mb-4">Have Questions About Our Terms?</h2>
-                    <p class="text-white/80 mb-6">Our team is available to clarify any concerns or questions you may have about our services and terms.</p>
-                    <div class="flex flex-col sm:flex-row gap-4">
-                        <button class="bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg shadow-md transition-all duration-300">Contact Us</button>
-                        <button class="bg-transparent border-2 border-white/30 hover:border-white/50 text-white px-6 py-3 rounded-lg shadow-md transition-all duration-300">Schedule a Consultation</button>
-                    </div>
-                </div>
-                <div class="hidden lg:block bg-cover bg-center h-full" style="background-image: url('Landing_Page/Landing_images/sampleImageLANG.jpg');"></div>
-            </div>
-        </div>
-    </div>
 
-    <!-- Footer (Optional, can be added based on the original site's footer) -->
+    <?php include 'footer.php' ?>
 </body>
 </html>
