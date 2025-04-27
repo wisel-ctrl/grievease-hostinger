@@ -43,14 +43,16 @@ header("Pragma: no-cache");
 require_once '../db_connect.php';
 
 // Process ID validation requests
+// Process ID validation requests
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && isset($_POST['id'])) {
     $id = filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT);
     $action = filter_input(INPUT_POST, 'action', FILTER_SANITIZE_STRING);
+    $current_timestamp = date('Y-m-d H:i:s'); // Get current timestamp
     
     if ($action === 'approve') {
-        // Update ID status to valid
-        $stmt = $conn->prepare("UPDATE valid_id_tb SET is_validated = 'valid' WHERE id = ?");
-        $stmt->bind_param("i", $id);
+        // Update ID status to valid and set accepted_at timestamp
+        $stmt = $conn->prepare("UPDATE valid_id_tb SET is_validated = 'valid', accepted_at = ? WHERE id = ?");
+        $stmt->bind_param("si", $current_timestamp, $id);
         $stmt->execute();
         
         // Also update the user's validated_id status
@@ -69,9 +71,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && isset($_
             $_SESSION['message'] = "Please select a reason for declining the ID.";
             $_SESSION['message_type'] = "error";
         } else {
-            // Update ID status to denied with reason
-            $stmt = $conn->prepare("UPDATE valid_id_tb SET is_validated = 'denied', decline_reason = ? WHERE id = ?");
-            $stmt->bind_param("si", $decline_reason, $id);
+            // Update ID status to denied with reason and set decline_at timestamp
+            $stmt = $conn->prepare("UPDATE valid_id_tb SET is_validated = 'denied', decline_reason = ?, decline_at = ? WHERE id = ?");
+            $stmt->bind_param("ssi", $decline_reason, $current_timestamp, $id);
             $stmt->execute();
             
             // Set info message
