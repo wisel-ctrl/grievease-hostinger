@@ -813,20 +813,21 @@ header("Pragma: no-cache");
     // Load address data (if needed)
     setTimeout(loadAddressData, 100);
     
-    // After a short delay (to allow the modal to open), scroll to the document upload section
     setTimeout(() => {
-        const uploadSection = document.querySelector('.bg-white.rounded-lg.p-4.sm\\:p-5.border.border-gray-200.shadow-sm');
-        if (uploadSection) {
-            uploadSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            
-            // Optional: add a highlight effect
-            uploadSection.classList.add('ring-2', 'ring-yellow-500', 'animate-pulse');
+    const idUploadSection = document.querySelector('label[for="id-upload"]');
+    if (idUploadSection) {
+        idUploadSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        
+        // Highlight the upload area
+        const uploadContainer = idUploadSection.closest('.flex.flex-col.sm\\:flex-row.gap-4');
+        if (uploadContainer) {
+            uploadContainer.classList.add('ring-2', 'ring-yellow-500', 'animate-pulse');
             setTimeout(() => {
-                uploadSection.classList.remove('ring-2', 'ring-yellow-500', 'animate-pulse');
+                uploadContainer.classList.remove('ring-2', 'ring-yellow-500', 'animate-pulse');
             }, 2000);
         }
-    }, 500);
-}
+    }
+}, 500);
     
     // Close modals when clicking outside
     window.addEventListener('click', function(event) {
