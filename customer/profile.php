@@ -445,6 +445,14 @@ header("Pragma: no-cache");
             <!-- Header with enhanced styling -->
             <div class="p-6 border-b border-gray-100 flex justify-between items-center ">
                 <h3 class="font-hedvig text-xl text-navy">Personal Information</h3>
+
+                <button id="open-change-password-modal" class="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-3 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 inline">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                    Change Password
+                </button>
                 <button id="edit-profile-btn" class="px-4 py-2 bg-yellow-600 hover:bg-darkgold text-white rounded-md transition-colors">
                     <i class="fas fa-pencil-alt mr-1"></i> Edit Profile
                 </button>
@@ -1438,14 +1446,6 @@ header("Pragma: no-cache");
 </div>
 <?php endif; ?>
             </form>
-
-            <button id="open-change-password-modal" class="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-3 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 inline">
-                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                    </svg>
-                    Change Password
-                </button>
         </div>
             
         <!-- Modal Footer -->
