@@ -407,33 +407,39 @@ header("Pragma: no-cache");
                         <h3 class="font-hedvig text-xl text-navy">Account Management</h3>
                     </div>
                     <nav class="p-4">
-                        <ul class="space-y-1">
-                            <li>
-                                <a href="#" class="profile-tab flex items-center p-3 rounded-lg bg-yellow-600/10 text-yellow-600" data-tab="personal-info">
-                                    <i class="fas fa-user-circle mr-3"></i>
-                                    <span>Personal Information</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#" class="profile-tab flex items-center p-3 rounded-lg hover:bg-gray-50 text-navy" data-tab="bookings">
-                                    <i class="fas fa-calendar-check mr-3"></i>
-                                    <span>My Bookings</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#" class="profile-tab flex items-center p-3 rounded-lg hover:bg-gray-50 text-navy" data-tab="transaction-logs">
-                                    <i class="fas fa-credit-card mr-3"></i>
-                                    <span>Payment History</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="../logout.php" class="flex items-center p-3 rounded-lg hover:bg-gray-50 text-red-500">
-                                    <i class="fas fa-sign-out-alt mr-3"></i>
-                                    <span>Log Out</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </nav>
+    <ul class="space-y-1">
+        <li>
+            <a href="#" class="profile-tab flex items-center p-3 rounded-lg bg-yellow-600/10 text-yellow-600" data-tab="personal-info">
+                <i class="fas fa-user-circle mr-3"></i>
+                <span>Personal Information</span>
+            </a>
+        </li>
+        <li>
+            <a href="#" class="profile-tab flex items-center p-3 rounded-lg hover:bg-gray-50 text-navy" data-tab="bookings">
+                <i class="fas fa-calendar-check mr-3"></i>
+                <span>My Bookings</span>
+            </a>
+        </li>
+        <li>
+            <a href="#" class="profile-tab flex items-center p-3 rounded-lg hover:bg-gray-50 text-navy" data-tab="transaction-logs">
+                <i class="fas fa-credit-card mr-3"></i>
+                <span>Payment History</span>
+            </a>
+        </li>
+        <li>
+            <a href="#" id="change-password-tab" class="profile-tab flex items-center p-3 rounded-lg hover:bg-gray-50 text-navy">
+                <i class="fas fa-key mr-3"></i>
+                <span>Change Password</span>
+            </a>
+        </li>
+        <li>
+            <a href="../logout.php" class="flex items-center p-3 rounded-lg hover:bg-gray-50 text-red-500">
+                <i class="fas fa-sign-out-alt mr-3"></i>
+                <span>Log Out</span>
+            </a>
+        </li>
+    </ul>
+</nav>
                 </div>
             </div>
             
@@ -1284,14 +1290,6 @@ header("Pragma: no-cache");
                     </div>
                 </div>
                 
-                <button id="open-change-password-modal" class="w-auto px-4 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg text-sm font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 inline">
-                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                    </svg>
-                    Change Password
-                </button>
-                
                 <!-- Address Information Section -->
                 <div class="bg-white rounded-lg p-3 border border-gray-200 shadow-sm">
                     <h4 class="font-semibold text-gray-800 mb-2 flex items-center text-sm">
@@ -1454,6 +1452,22 @@ header("Pragma: no-cache");
         </div>
     </div>
 </div>
+
+<!-- Add this JavaScript to handle the new tab click -->
+<script>
+document.getElementById('change-password-tab').addEventListener('click', function(e) {
+    e.preventDefault();
+    openChangePasswordModal();
+    
+    // Remove active class from all tabs and add to this one
+    document.querySelectorAll('.profile-tab').forEach(tab => {
+        tab.classList.remove('bg-yellow-600/10', 'text-yellow-600');
+        tab.classList.add('hover:bg-gray-50', 'text-navy');
+    });
+    this.classList.add('bg-yellow-600/10', 'text-yellow-600');
+    this.classList.remove('hover:bg-gray-50', 'text-navy');
+});
+</script>
 
 <!-- Change Password Modal -->
 <div id="change-password-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto">
