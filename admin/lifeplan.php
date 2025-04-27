@@ -102,7 +102,7 @@ if ($conn) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LifePlan - GrievEase</title>
+    <title>GrievEase - LifePlan</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="tailwind.js"></script>
