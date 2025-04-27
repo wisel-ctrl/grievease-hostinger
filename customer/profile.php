@@ -2231,32 +2231,6 @@ document.getElementById('id-upload').addEventListener('change', function(e) {
 </script>
 
 <script>
-// Password change modal functions
-function openChangePasswordModal() {
-    const modal = document.getElementById('change-password-modal');
-    modal.classList.remove('hidden');
-    
-    // Animate opening
-    setTimeout(() => {
-        modal.querySelector('.relative').classList.remove('scale-95', 'opacity-0');
-        modal.querySelector('.relative').classList.add('scale-100', 'opacity-100');
-    }, 10);
-    
-    // Reset form
-    document.getElementById('password-form').reset();
-    clearPasswordValidationState();
-}
-
-function closeChangePasswordModal() {
-    const modal = document.getElementById('change-password-modal');
-    modal.querySelector('.relative').classList.remove('opacity-100', 'scale-100');
-    modal.querySelector('.relative').classList.add('opacity-0', 'scale-95');
-    
-    // After animation completes, hide the modal
-    setTimeout(() => {
-        modal.classList.add('hidden');
-    }, 300);
-}
 
 // Toggle password visibility
 function setupPasswordToggle() {
