@@ -1223,7 +1223,7 @@ header("Pragma: no-cache");
             <form class="space-y-4 sm:space-y-6" id="profile-form" method="POST" action="profile/update_profile.php" enctype="multipart/form-data">
                 <div class="grid sm:grid-cols-2 gap-4 sm:gap-6">
                     <div>
-                        <label for="firstName" class="block text-sm font-medium text-gray-700 mb-1 sm:mb-2">First Name*</label>
+                        <label for="firstName" class="block text-sm font-medium text-gray-700 mb-1 sm:mb-2">First Name<span class="text-red">*</span></label>
                         <input type="text" id="firstName" name="firstName" value="<?php echo htmlspecialchars($first_name); ?>" required class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base">
                     </div>
                     
