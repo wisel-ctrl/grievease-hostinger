@@ -1455,18 +1455,48 @@ header("Pragma: no-cache");
 
 <!-- Add this JavaScript to handle the new tab click -->
 <script>
-document.getElementById('change-password-tab').addEventListener('click', function(e) {
-    e.preventDefault();
-    openChangePasswordModal();
-    
-    // Remove active class from all tabs and add to this one
-    document.querySelectorAll('.profile-tab').forEach(tab => {
-        tab.classList.remove('bg-yellow-600/10', 'text-yellow-600');
-        tab.classList.add('hover:bg-gray-50', 'text-navy');
+document.addEventListener('DOMContentLoaded', function() {
+    // Set up change password modal
+    document.getElementById('change-password-tab').addEventListener('click', function(e) {
+        console.log('Change password tab clicked'); // Add this line
+        e.preventDefault();
+        openChangePasswordModal();
+        
+        // Update tab styling
+        document.querySelectorAll('.profile-tab').forEach(tab => {
+            tab.classList.remove('bg-yellow-600/10', 'text-yellow-600');
+            tab.classList.add('hover:bg-gray-50', 'text-navy');
+        });
+        this.classList.add('bg-yellow-600/10', 'text-yellow-600');
+        this.classList.remove('hover:bg-gray-50', 'text-navy');
     });
-    this.classList.add('bg-yellow-600/10', 'text-yellow-600');
-    this.classList.remove('hover:bg-gray-50', 'text-navy');
+
+    // Close modal button
+    document.getElementById('close-change-password-modal').addEventListener('click', closeChangePasswordModal);
+    document.getElementById('cancel-change-password').addEventListener('click', closeChangePasswordModal);
 });
+
+// Function to open change password modal
+function openChangePasswordModal() {
+    const modal = document.getElementById('change-password-modal');
+    modal.classList.remove('hidden');
+    modal.classList.remove('opacity-0', 'scale-95');
+    modal.classList.add('opacity-100', 'scale-100');
+    document.body.style.overflow = 'hidden';
+}
+
+// Function to close change password modal
+function closeChangePasswordModal() {
+    const modal = document.getElementById('change-password-modal');
+    modal.classList.add('opacity-0', 'scale-95');
+    modal.classList.remove('opacity-100', 'scale-100');
+    
+    // After animation completes, hide the modal
+    setTimeout(() => {
+        modal.classList.add('hidden');
+        document.body.style.overflow = 'auto';
+    }, 300);
+}
 </script>
 
 <!-- Change Password Modal -->
@@ -1558,21 +1588,21 @@ document.getElementById('change-password-tab').addEventListener('click', functio
                     <p id="confirm-password-error" class="mt-1 text-sm text-red-600 hidden"></p>
                 </div>
             </form>
-        </div>
+            </div>
             
-        <!-- Modal Footer -->
-        <div class="p-4 sm:p-6 flex flex-col sm:flex-row sm:justify-end gap-3 sm:gap-4 border-t border-gray-200">
-            <button class="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-3 bg-white border border-yellow-600 text-gray-800 rounded-lg font-semibold hover:bg-gray-100 transition-colors text-sm sm:text-base" id="cancel-change-password">Cancel</button>
-            <button type="submit" id="submit-change-password" class="w-full sm:w-auto px-5 sm:px-7 py-2 sm:py-3 bg-yellow-600 text-white rounded-lg font-semibold hover:bg-yellow-700 transition-colors flex items-center justify-center sm:justify-start text-sm sm:text-base">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
-                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                </svg>
-                Update Password
-            </button>
+            <!-- Modal Footer -->
+            <div class="p-4 sm:p-6 flex flex-col sm:flex-row sm:justify-end gap-3 sm:gap-4 border-t border-gray-200">
+                <button class="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-3 bg-white border border-yellow-600 text-gray-800 rounded-lg font-semibold hover:bg-gray-100 transition-colors text-sm sm:text-base" id="cancel-change-password">Cancel</button>
+                <button type="submit" id="submit-change-password" class="w-full sm:w-auto px-5 sm:px-7 py-2 sm:py-3 bg-yellow-600 text-white rounded-lg font-semibold hover:bg-yellow-700 transition-colors flex items-center justify-center sm:justify-start text-sm sm:text-base">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                    Update Password
+                </button>
+            </div>
         </div>
     </div>
-</div>
 
 
 <script>
