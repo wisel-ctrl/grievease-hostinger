@@ -63,7 +63,7 @@ try {
     $stmt = $conn->prepare("INSERT INTO inventory_logs 
             (inventory_id, branch_id, old_quantity, new_quantity, quantity_change, 
              activity_type, activity_date, user_id)
-            VALUES (?, ?, ?, ?, ?, NOW(), ?)");
+            VALUES (?, ?, ?, ?, ?, ?, NOW(), ?)");
     $stmt->bind_param("iiiiisi", $inventoryId, $branchID, $oldQuantity, $newQuantity, 
                       $quantityChange, $activityType, $userId);
     $stmt->execute();
