@@ -44,6 +44,7 @@
         }
     </script>
 </head>
+<?php include 'navbar.php' ?>
 <body class="bg-cream text-dark font-inter">
     <!-- Full-Page Hero Section -->
     <div class="relative w-full h-[50vh] overflow-hidden">
