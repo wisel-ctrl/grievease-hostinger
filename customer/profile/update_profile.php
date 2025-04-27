@@ -10,6 +10,9 @@ if (!isset($_SESSION['user_id'])) {
 
 require_once '../../addressDB.php';
 
+date_default_timezone_set('Asia/Manila');
+
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $user_id = $_SESSION['user_id'];
     
@@ -80,7 +83,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             
             // Insert or update user's ID image path in valid_id_tb table
-           date_default_timezone_set('Asia/Manila'); // Set timezone to Philippine time
             $upload_at = date('Y-m-d H:i:s');
             
             $query = "INSERT INTO valid_id_tb (id, image_path, upload_at) 
@@ -90,7 +92,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                           upload_at = VALUES(upload_at)";
             
             $stmt = $conn->prepare($query);
-            $stmt->bind_param("iss", $user_id, $destination, $upload_at); // bind PHP time
+            $stmt->bind_param("iss", $user_id, $destination, $upload_at);
             $stmt->execute();
             $stmt->close();
             
@@ -249,4 +251,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     echo json_encode(['success' => false, 'message' => 'Invalid request method']);
     exit();
 }
+
 ?>

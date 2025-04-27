@@ -903,8 +903,7 @@ document.addEventListener('click', function(event) {
                             <i class="far fa-clock mr-1 text-gold text-xs"></i>
                             <?php 
                             if (!empty($timestamp)) {
-                                $date = new DateTime($timestamp, new DateTimeZone('UTC'));
-                                $date->setTimezone(new DateTimeZone('Asia/Manila'));
+                                $date = new DateTime($timestamp); // Remove timezone conversion
                                 echo $date->format('h:i A');
                             } else {
                                 echo 'N/A';
@@ -952,7 +951,10 @@ document.addEventListener('click', function(event) {
                 <!-- Timestamp -->
                 <div class="text-xs text-gray-500 flex items-center">
                     <i class="fas fa-history mr-1 text-xs"></i> 
-                    <?php echo time_elapsed_string((new DateTime($id_validation['upload_at'], new DateTimeZone('UTC')))->setTimezone(new DateTimeZone('Asia/Manila'))->format('Y-m-d H:i:s')); ?>
+                    <?php 
+                    // Remove timezone conversion here too
+                    echo time_elapsed_string($id_validation['upload_at']); 
+                    ?>
                 </div>
             </div>
         </div>
