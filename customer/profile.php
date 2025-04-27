@@ -1286,13 +1286,13 @@ header("Pragma: no-cache");
                     </div>
                 </div>
                 
-                <button id="open-change-password-modal" class="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-3 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 inline">
-                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                    </svg>
-                    Change Password
-                </button>
+                <button id="open-change-password-modal" class="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-3 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center" onclick="event.stopPropagation(); openChangePasswordModal()">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 inline">
+        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+    </svg>
+    Change Password
+</button>
                 
                 <!-- Address Information Section -->
                 <div class="bg-white rounded-lg p-4 sm:p-5 border border-gray-200 shadow-sm">
@@ -2484,7 +2484,10 @@ function handleChangePasswordSubmit() {
 // Initialize all change password related functionality
 document.addEventListener('DOMContentLoaded', function() {
     // Set up open/close modal buttons
-    document.getElementById('open-change-password-modal').addEventListener('click', openChangePasswordModal);
+    document.getElementById('open-change-password-modal').addEventListener('click', function(e) {
+    e.stopPropagation();  // This prevents the event from bubbling up
+    openChangePasswordModal();
+});
     document.getElementById('close-change-password-modal').addEventListener('click', closeChangePasswordModal);
     document.getElementById('cancel-change-password').addEventListener('click', closeChangePasswordModal);
     
