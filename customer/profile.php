@@ -442,149 +442,120 @@ header("Pragma: no-cache");
     <!-- Personal Information Tab -->
     <div id="personal-info" class="tab-content">
         <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
-            <!-- Header with gradient background -->
-            <div class="p-6 border-b border-gray-100 flex justify-between items-center">
-                <h3 class="font-hedvig text-xl text-navy font-semibold">Personal Information</h3>
-                <button id="edit-profile-btn" class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg transition-all transform hover:scale-105 flex items-center shadow-sm">
-                    <i class="fas fa-pencil-alt mr-2"></i> Edit Profile
+            <!-- Header with enhanced styling -->
+            <div class="p-6 border-b border-gray-100 flex justify-between items-center bg-gradient-to-r from-blue-50 to-white">
+                <h3 class="font-hedvig text-xl text-navy">Personal Information</h3>
+                <button id="edit-profile-btn" class="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-md transition-colors">
+                    <i class="fas fa-pencil-alt mr-1"></i> Edit Profile
                 </button>
             </div>
             
+            <!-- Content area with improved spacing and grouping -->
             <div class="p-6">
-                
-                
-                <!-- Information Grid with improved styling -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- First Name -->
-                    <div class="bg-gray-50 p-4 rounded-lg transition-all hover:shadow-md">
-                        <label class="block text-sm font-medium text-gray-500 mb-1">First Name</label>
-                        <p class="text-navy font-medium"><?php echo htmlspecialchars($first_name); ?></p>
-                    </div>
-                    
-                    <!-- Last Name -->
-                    <div class="bg-gray-50 p-4 rounded-lg transition-all hover:shadow-md">
-                        <label class="block text-sm font-medium text-gray-500 mb-1">Last Name</label>
-                        <p class="text-navy font-medium"><?php echo htmlspecialchars($last_name); ?></p>
-                    </div>
-                    
-                    <!-- Middle Name -->
-                    <div class="bg-gray-50 p-4 rounded-lg transition-all hover:shadow-md">
-                        <label class="block text-sm font-medium text-gray-500 mb-1">Middle Name</label>
-                        <p class="text-navy <?= empty($middle_name) ? 'opacity-60 italic text-gray-500' : 'font-medium' ?>">
-                            <?= !empty($middle_name) ? htmlspecialchars($middle_name) : 'N/A' ?>
-                        </p>
-                    </div>
-                    
-                    <!-- Suffix -->
-                    <div class="bg-gray-50 p-4 rounded-lg transition-all hover:shadow-md">
-                        <label class="block text-sm font-medium text-gray-500 mb-1">Suffix</label>
-                        <p class="text-navy <?= empty($suffix) ? 'opacity-60 italic text-gray-500' : 'font-medium' ?>">
-                            <?= !empty($suffix) ? htmlspecialchars($suffix) : 'N/A' ?>
-                        </p>
-                    </div>
-                    
-                    <!-- Contact Information Section -->
-                    <div class="col-span-1 md:col-span-2 mt-4">
-                        <div class="flex items-center text-navy mb-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                            </svg>
-                            <span class="font-medium">Contact Information</span>
+                    <!-- Name section with visual grouping -->
+                    <div class="col-span-1 md:col-span-2 mb-2">
+                        <h4 class="text-navy text-lg font-medium mb-3 pb-2 border-b border-gray-100">Name Details</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-500 mb-1">First Name</label>
+                                <p class="text-navy font-medium"><?php echo htmlspecialchars($first_name); ?></p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-500 mb-1">Last Name</label>
+                                <p class="text-navy font-medium"><?php echo htmlspecialchars($last_name); ?></p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-500 mb-1">Middle Name</label>
+                                <p class="text-navy <?= empty($middle_name) ? 'opacity-60 italic text-gray-500' : 'font-medium' ?>">
+                                    <?= !empty($middle_name) ? htmlspecialchars($middle_name) : 'N/A' ?>
+                                </p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-500 mb-1">Suffix</label>
+                                <p class="text-navy <?= empty($suffix) ? 'opacity-60 italic text-gray-500' : 'font-medium' ?>">
+                                    <?= !empty($suffix) ? htmlspecialchars($suffix) : 'N/A' ?>
+                                </p>
+                            </div>
                         </div>
                     </div>
                     
-                    <!-- Email -->
-                    <div class="p-4 rounded-lg transition-all hover:shadow-md">
-                        <label class="block text-sm font-medium text-gray-500 mb-1">Email Address</label>
-                        <p class="text-navy font-medium flex items-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                            </svg>
-                            <?php echo htmlspecialchars($email); ?>
-                        </p>
-                    </div>
-                    
-                    <!-- Phone -->
-                    <div class="p-4 rounded-lg transition-all hover:shadow-md">
-                        <label class="block text-sm font-medium text-gray-500 mb-1">Phone Number</label>
-                        <p class="text-navy <?= empty($phone_number) ? 'opacity-60 italic text-gray-500' : 'font-medium flex items-center' ?>">
-                            <?php if(!empty($phone_number)): ?>
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                                </svg>
-                            <?php endif; ?>
-                            <?= !empty($phone_number) ? htmlspecialchars($phone_number) : 'N/A' ?>
-                        </p>
-                    </div>
-                    
-                    <!-- Birthdate -->
-                    <div class="p-4 rounded-lg transition-all hover:shadow-md">
-                        <label class="block text-sm font-medium text-gray-500 mb-1">Date of Birth</label>
-                        <p class="text-navy font-medium flex items-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                            </svg>
-                            <?php echo date('F d, Y', strtotime($birthdate)); ?>
-                        </p>
-                    </div>
-                    
-                    <!-- Address Section -->
-                    <div class="col-span-1 md:col-span-2 mt-4">
-                        <div class="flex items-center text-navy mb-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                            </svg>
-                            <span class="font-medium">Address Information</span>
+                    <!-- Contact section -->
+                    <div class="col-span-1 md:col-span-2 mb-2">
+                        <h4 class="text-navy text-lg font-medium mb-3 pb-2 border-b border-gray-100">Contact Information</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-500 mb-1">Email Address</label>
+                                <p class="text-navy font-medium flex items-center">
+                                    <svg class="w-4 h-4 mr-2 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
+                                        <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
+                                    </svg>
+                                    <?php echo htmlspecialchars($email); ?>
+                                </p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-500 mb-1">Phone Number</label>
+                                <p class="text-navy <?= empty($phone_number) ? 'opacity-60 italic text-gray-500' : 'font-medium' ?> flex items-center">
+                                    <svg class="w-4 h-4 mr-2 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"></path>
+                                    </svg>
+                                    <?= !empty($phone_number) ? htmlspecialchars($phone_number) : 'N/A' ?>
+                                </p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-500 mb-1">Date of Birth</label>
+                                <p class="text-navy font-medium flex items-center">
+                                    <svg class="w-4 h-4 mr-2 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    <?php echo date('F d, Y', strtotime($birthdate)); ?>
+                                </p>
+                            </div>
                         </div>
                     </div>
                     
-                    <!-- Region -->
-                    <div class="p-4 rounded-lg transition-all hover:shadow-md">
-                        <label class="block text-sm font-medium text-gray-500 mb-1">Region</label>
-                        <p class="text-navy <?= empty($region) ? 'opacity-60 italic text-gray-500' : 'font-medium' ?>">
-                            <?= !empty($region) ? htmlspecialchars($region) : 'N/A' ?>
-                        </p>
-                    </div>
-                    
-                    <!-- Province -->
-                    <div class="p-4 rounded-lg transition-all hover:shadow-md">
-                        <label class="block text-sm font-medium text-gray-500 mb-1">Province</label>
-                        <p class="text-navy <?= empty($province) ? 'opacity-60 italic text-gray-500' : 'font-medium' ?>">
-                            <?= !empty($province) ? htmlspecialchars($province) : 'N/A' ?>
-                        </p>
-                    </div>
-                    
-                    <!-- City -->
-                    <div class="p-4 rounded-lg transition-all hover:shadow-md">
-                        <label class="block text-sm font-medium text-gray-500 mb-1">City</label>
-                        <p class="text-navy <?= empty($city) ? 'opacity-60 italic text-gray-500' : 'font-medium' ?>">
-                            <?= !empty($city) ? htmlspecialchars($city) : 'N/A' ?>
-                        </p>
-                    </div>
-                    
-                    <!-- Barangay -->
-                    <div class="p-4 rounded-lg transition-all hover:shadow-md">
-                        <label class="block text-sm font-medium text-gray-500 mb-1">Barangay</label>
-                        <p class="text-navy <?= empty($barangay) ? 'opacity-60 italic text-gray-500' : 'font-medium' ?>">
-                            <?= !empty($barangay) ? htmlspecialchars($barangay) : 'N/A' ?>
-                        </p>
-                    </div>
-                    
-                    <!-- Street Address -->
-                    <div class="p-4 rounded-lg transition-all hover:shadow-md">
-                        <label class="block text-sm font-medium text-gray-500 mb-1">Street Address</label>
-                        <p class="text-navy <?= empty($street_address) ? 'opacity-60 italic text-gray-500' : 'font-medium' ?>">
-                            <?= !empty($street_address) ? htmlspecialchars($street_address) : 'N/A' ?>
-                        </p>
-                    </div>
-                    
-                    <!-- Zip Code -->
-                    <div class="p-4 rounded-lg transition-all hover:shadow-md">
-                        <label class="block text-sm font-medium text-gray-500 mb-1">Zip/Postal Code</label>
-                        <p class="text-navy <?= empty($zip_code) ? 'opacity-60 italic text-gray-500' : 'font-medium' ?>">
-                            <?= !empty($zip_code) ? htmlspecialchars($zip_code) : 'N/A' ?>
-                        </p>
+                    <!-- Address section -->
+                    <div class="col-span-1 md:col-span-2 mb-2">
+                        <h4 class="text-navy text-lg font-medium mb-3 pb-2 border-b border-gray-100">Address Information</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-500 mb-1">Region</label>
+                                <p class="text-navy <?= empty($region) ? 'opacity-60 italic text-gray-500' : 'font-medium' ?>">
+                                    <?= !empty($region) ? htmlspecialchars($region) : 'N/A' ?>
+                                </p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-500 mb-1">Province</label>
+                                <p class="text-navy <?= empty($province) ? 'opacity-60 italic text-gray-500' : 'font-medium' ?>">
+                                    <?= !empty($province) ? htmlspecialchars($province) : 'N/A' ?>
+                                </p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-500 mb-1">City</label>
+                                <p class="text-navy <?= empty($city) ? 'opacity-60 italic text-gray-500' : 'font-medium' ?>">
+                                    <?= !empty($city) ? htmlspecialchars($city) : 'N/A' ?>
+                                </p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-500 mb-1">Barangay</label>
+                                <p class="text-navy <?= empty($barangay) ? 'opacity-60 italic text-gray-500' : 'font-medium' ?>">
+                                    <?= !empty($barangay) ? htmlspecialchars($barangay) : 'N/A' ?>
+                                </p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-500 mb-1">Street Address</label>
+                                <p class="text-navy <?= empty($street_address) ? 'opacity-60 italic text-gray-500' : 'font-medium' ?>">
+                                    <?= !empty($street_address) ? htmlspecialchars($street_address) : 'N/A' ?>
+                                </p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-500 mb-1">Zip/Postal Code</label>
+                                <p class="text-navy <?= empty($zip_code) ? 'opacity-60 italic text-gray-500' : 'font-medium' ?>">
+                                    <?= !empty($zip_code) ? htmlspecialchars($zip_code) : 'N/A' ?>
+                                </p>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 
