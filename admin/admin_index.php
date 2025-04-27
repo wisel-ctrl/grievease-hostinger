@@ -1465,11 +1465,6 @@ foreach ($serviceData as $service => $branches) {
                 <i class="fas fa-building text-sidebar-accent"></i> Branch
               </div>
             </th>
-            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text whitespace-nowrap">
-              <div class="flex items-center gap-1.5">
-                <i class="fas fa-cogs text-sidebar-accent"></i> Actions
-              </div>
-            </th>
           </tr>
         </thead>
         <tbody id="inventoryLogsBody">
@@ -1576,14 +1571,6 @@ function loadInventoryLogs(page = 1) {
                             ${quantityDisplay}
                         </td>
                         <td class="px-4 py-3.5 text-sm text-sidebar-text">${log.branch_name || 'N/A'}</td>
-                        <td class="px-4 py-3.5 text-sm">
-                            <div class="flex space-x-2">
-                                <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" 
-                                        title="View Details" onclick="viewLogDetails(${log.log_id})">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                            </div>
-                        </td>
                     `;
                     tableBody.appendChild(row);
                 });
