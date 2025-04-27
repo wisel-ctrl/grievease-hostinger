@@ -1357,18 +1357,21 @@ header("Pragma: no-cache");
             </div>
         </div>
         
-        <!-- Street Address and Zip Code on the same row -->
-        <div class="sm:col-span-1">
-            <input type="text" id="street_address" name="street_address" placeholder="Street Address (House/Lot/Unit No., Building, Street Name)" 
-                   value="<?php echo htmlspecialchars($street_address); ?>" 
-                   class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base">
-        </div>
-        
-        <!-- Zip/Postal Code -->
-        <div class="sm:col-span-1">
-            <input type="text" id="zip" name="zip" placeholder="Zip/Postal Code" 
-                   value="<?php echo htmlspecialchars($zip_code); ?>" 
-                   class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base">
+        <!-- Street Address and Zip Code row -->
+        <div class="sm:col-span-2 flex flex-col sm:flex-row gap-4 sm:gap-6">
+            <!-- Street Address (takes remaining space) -->
+            <div class="flex-grow">
+                <input type="text" id="street_address" name="street_address" placeholder="Street Address (House/Lot/Unit No., Building, Street Name)" 
+                       value="<?php echo htmlspecialchars($street_address); ?>" 
+                       class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base">
+            </div>
+            
+            <!-- Zip/Postal Code (smaller width) -->
+            <div class="sm:w-32">
+                <input type="text" id="zip" name="zip" placeholder="Postal Code" 
+                       value="<?php echo htmlspecialchars($zip_code); ?>" 
+                       class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base">
+            </div>
         </div>
     </div>
 </div>
