@@ -217,6 +217,52 @@ function time_elapsed_string($datetime) {
     return 'just now';
 }
 
+function time_elapsed_string_booking($datetime, $full = false) {
+    $now = new DateTime('now', new DateTimeZone('Asia/Manila'));
+    $ago = new DateTime($datetime, new DateTimeZone('Asia/Manila'));
+    $diff = $now->diff($ago);
+
+    // Calculate total differences without creating dynamic properties
+    $totalSeconds = $diff->s + ($diff->i * 60) + ($diff->h * 3600) + ($diff->d * 86400) + ($diff->m * 2592000) + ($diff->y * 31536000);
+    $totalMinutes = floor($totalSeconds / 60);
+    $totalHours = floor($totalSeconds / 3600);
+    $totalDays = floor($totalSeconds / 86400);
+    $totalWeeks = floor($totalDays / 7);
+    $totalMonths = floor($totalDays / 30);
+    $totalYears = floor($totalDays / 365);
+
+    // Determine which unit to use
+    if ($totalYears > 0) {
+        $unit = 'year';
+        $value = $totalYears;
+    } elseif ($totalMonths > 0) {
+        $unit = 'month';
+        $value = $totalMonths;
+    } elseif ($totalWeeks > 0) {
+        $unit = 'week';
+        $value = $totalWeeks;
+    } elseif ($totalDays > 0) {
+        $unit = 'day';
+        $value = $totalDays;
+    } elseif ($totalHours > 0) {
+        $unit = 'hour';
+        $value = $totalHours;
+    } elseif ($totalMinutes > 0) {
+        $unit = 'minute';
+        $value = $totalMinutes;
+    } else {
+        $unit = 'second';
+        $value = $totalSeconds;
+    }
+
+    // Handle pluralization
+    if ($value > 1) {
+        $unit .= 's';
+    }
+
+    return "$value $unit ago";
+}
+
 // Handle filtering
 $current_filter = 'all';
 if (isset($_GET['filter'])) {
@@ -841,8 +887,18 @@ document.addEventListener('click', function(event) {
                 <!-- Timestamp -->
                 <div class="text-xs text-gray-500 flex items-center">
                     <i class="fas fa-history mr-1 text-xs"></i> 
-                    <?php echo time_elapsed_string($booking['booking_date']); ?>
+                    <?php 
+                        // Determine which timestamp to use based on status
+                        $timestamp = $booking['booking_date'];
+                        if ($booking['status'] === 'Accepted' && !empty($booking['accepted_date'])) {
+                            $timestamp = $booking['accepted_date'];
+                        } elseif ($booking['status'] === 'Declined' && !empty($booking['decline_date'])) {
+                            $timestamp = $booking['decline_date'];
+                        }
+                        echo time_elapsed_string_booking($timestamp); 
+                    ?>
                 </div>
+
             </div>
         </div>
     </div>
