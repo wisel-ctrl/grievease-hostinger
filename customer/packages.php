@@ -1043,6 +1043,8 @@ $conn->close();
                             <input type="text" id="traditionalDeceasedStreet" name="deceasedStreet" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" placeholder="Enter detailed street address">
                         </div>
                         
+                        <input type="hidden" id="deceasedAddress" name="deceasedAddress">
+                        
                         <div class="flex items-center mt-3 md:mt-4">
                             <input type="checkbox" id="traditionalWithCremate" name="with_cremate" value="yes" class="h-4 w-4 text-yellow-600 focus:ring-yellow-500 border-gray-300 rounded">
                             <label for="traditionalWithCremate" class="ml-2 block text-sm text-navy">
@@ -1125,6 +1127,185 @@ $conn->close();
         </div>
     </div>
 </div>
+
+<script>
+    // Enhanced address dropdown functions with AJAX for traditional form
+function updateTraditionalProvinces() {
+    const regionId = document.getElementById('traditionalDeceasedRegion').value;
+    const provinceDropdown = document.getElementById('traditionalDeceasedProvince');
+    
+    if (!regionId) {
+        provinceDropdown.disabled = true;
+        document.getElementById('traditionalDeceasedCity').disabled = true;
+        document.getElementById('traditionalDeceasedBarangay').disabled = true;
+        return;
+    }
+    
+    // Fetch provinces via AJAX
+    fetch('address/get_provinces.php?region_id=' + regionId)
+        .then(response => response.json())
+        .then(data => {
+            provinceDropdown.innerHTML = '<option value="">Select Province</option>';
+            data.forEach(province => {
+                provinceDropdown.innerHTML += `<option value="${province.province_id}">${province.province_name}</option>`;
+            });
+            provinceDropdown.disabled = false;
+            
+            // Reset dependent dropdowns
+            document.getElementById('traditionalDeceasedCity').innerHTML = '<option value="">Select City/Municipality</option>';
+            document.getElementById('traditionalDeceasedCity').disabled = true;
+            document.getElementById('traditionalDeceasedBarangay').innerHTML = '<option value="">Select Barangay</option>';
+            document.getElementById('traditionalDeceasedBarangay').disabled = true;
+        })
+        .catch(error => {
+            console.error('Error fetching provinces:', error);
+        });
+}
+
+function updateTraditionalCities() {
+    const provinceId = document.getElementById('traditionalDeceasedProvince').value;
+    const cityDropdown = document.getElementById('traditionalDeceasedCity');
+    
+    if (!provinceId) {
+        cityDropdown.disabled = true;
+        document.getElementById('traditionalDeceasedBarangay').disabled = true;
+        return;
+    }
+    
+    // Fetch cities via AJAX
+    fetch('address/get_cities.php?province_id=' + provinceId)
+        .then(response => response.json())
+        .then(data => {
+            cityDropdown.innerHTML = '<option value="">Select City/Municipality</option>';
+            data.forEach(city => {
+                cityDropdown.innerHTML += `<option value="${city.municipality_id}">${city.municipality_name}</option>`;
+            });
+            cityDropdown.disabled = false;
+            
+            // Reset dependent dropdown
+            document.getElementById('traditionalDeceasedBarangay').innerHTML = '<option value="">Select Barangay</option>';
+            document.getElementById('traditionalDeceasedBarangay').disabled = true;
+        })
+        .catch(error => {
+            console.error('Error fetching cities:', error);
+        });
+}
+
+function updateTraditionalBarangays() {
+    const cityId = document.getElementById('traditionalDeceasedCity').value;
+    const barangayDropdown = document.getElementById('traditionalDeceasedBarangay');
+    
+    if (!cityId) {
+        barangayDropdown.disabled = true;
+        return;
+    }
+    
+    // Fetch barangays via AJAX
+    fetch('address/get_barangays.php?city_id=' + cityId)
+        .then(response => response.json())
+        .then(data => {
+            barangayDropdown.innerHTML = '<option value="">Select Barangay</option>';
+            data.forEach(barangay => {
+                barangayDropdown.innerHTML += `<option value="${barangay.barangay_id}">${barangay.barangay_name}</option>`;
+            });
+            barangayDropdown.disabled = false;
+        })
+        .catch(error => {
+            console.error('Error fetching barangays:', error);
+        });
+}
+
+// Initialize the dropdowns when the page loads
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM Content Loaded');
+    
+    // Load regions via AJAX
+    fetch('address/get_regions.php')
+        .then(response => {
+            console.log('Regions response status:', response.status);
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Regions data:', data);
+            const regionDropdown = document.getElementById('traditionalDeceasedRegion');
+            
+            // Check if dropdown exists
+            if (regionDropdown) {
+                regionDropdown.innerHTML = '<option value="">Select Region</option>';
+                data.forEach(region => {
+                    regionDropdown.innerHTML += `<option value="${region.region_id}">${region.region_name}</option>`;
+                });
+            } else {
+                console.error('traditionalDeceasedRegion dropdown not found in the DOM');
+            }
+        })
+        .catch(error => {
+            console.error('Error loading regions:', error);
+        });
+    
+    // Set up event listeners
+    const regionElement = document.getElementById('traditionalDeceasedRegion');
+    const provinceElement = document.getElementById('traditionalDeceasedProvince');
+    const cityElement = document.getElementById('traditionalDeceasedCity');
+    
+    if (regionElement) {
+        regionElement.addEventListener('change', updateTraditionalProvinces);
+    } else {
+        console.error('traditionalDeceasedRegion element not found for event listener');
+    }
+    
+    if (provinceElement) {
+        provinceElement.addEventListener('change', updateTraditionalCities);
+    } else {
+        console.error('traditionalDeceasedProvince element not found for event listener');
+    }
+    
+    if (cityElement) {
+        cityElement.addEventListener('change', updateTraditionalBarangays);
+    } else {
+        console.error('traditionalDeceasedCity element not found for event listener');
+    }
+});
+
+// Add this function to combine address components
+function combineAddress() {
+    const region = document.getElementById('traditionalDeceasedRegion');
+    const province = document.getElementById('traditionalDeceasedProvince');
+    const city = document.getElementById('traditionalDeceasedCity');
+    const barangay = document.getElementById('traditionalDeceasedBarangay');
+    const street = document.getElementById('traditionalDeceasedStreet');
+    
+    // Create an address object
+    const address = {
+        region: region.options[region.selectedIndex]?.text || '',
+        province: province.options[province.selectedIndex]?.text || '',
+        city: city.options[city.selectedIndex]?.text || '',
+        barangay: barangay.options[barangay.selectedIndex]?.text || '',
+        street: street.value || ''
+    };
+    
+    // Convert to JSON string and store in a hidden input
+    return JSON.stringify(address);
+}
+
+// Add this to your form submission handler
+document.querySelector('form').addEventListener('submit', function(e) {
+    // Create or update hidden input with combined address
+    let addressInput = document.getElementById('deceasedAddress');
+    if (!addressInput) {
+        addressInput = document.createElement('input');
+        addressInput.type = 'hidden';
+        addressInput.name = 'deceasedAddress';
+        addressInput.id = 'deceasedAddress';
+        this.appendChild(addressInput);
+    }
+    addressInput.value = combineAddress();
+});
+
+</script>
 
 <!-- Add this script at the end -->
 <script>
@@ -1251,41 +1432,6 @@ function hideGcashPreview() {
     document.getElementById('removeGcash').classList.add('hidden');
 }
 
-// You would need to add code here to handle the cascading dropdowns for region, province, city, barangay
-// For example:
-document.getElementById('traditionalDeceasedRegion').addEventListener('change', function() {
-    // Code to populate province dropdown based on selected region
-    const selectedRegion = this.value;
-    const provinceDropdown = document.getElementById('traditionalDeceasedProvince');
-    
-    // Clear existing options
-    provinceDropdown.innerHTML = '<option value="">Select Province</option>';
-    
-    // Add logic to populate provinces based on selected region
-    // This would typically involve an API call or using predefined data
-});
-
-document.getElementById('traditionalDeceasedProvince').addEventListener('change', function() {
-    // Code to populate city dropdown based on selected province
-    const selectedProvince = this.value;
-    const cityDropdown = document.getElementById('traditionalDeceasedCity');
-    
-    // Clear existing options
-    cityDropdown.innerHTML = '<option value="">Select City/Municipality</option>';
-    
-    // Add logic to populate cities based on selected province
-});
-
-document.getElementById('traditionalDeceasedCity').addEventListener('change', function() {
-    // Code to populate barangay dropdown based on selected city
-    const selectedCity = this.value;
-    const barangayDropdown = document.getElementById('traditionalDeceasedBarangay');
-    
-    // Clear existing options
-    barangayDropdown.innerHTML = '<option value="">Select Barangay</option>';
-    
-    // Add logic to populate barangays based on selected city
-});
 
 
 </script>
