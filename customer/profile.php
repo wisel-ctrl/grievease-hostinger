@@ -436,7 +436,6 @@ header("Pragma: no-cache");
                     </nav>
                 </div>
     </div>
-    </div>
             
             <!-- Right Content Area -->
 <div class="lg:col-span-2">
