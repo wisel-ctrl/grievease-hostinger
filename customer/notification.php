@@ -72,7 +72,7 @@ if ($page < 1) $page = 1;
 
 // Get user's ID validation status
 $user_id = $_SESSION['user_id'];
-$id_validation_query = "SELECT is_validated, decline_reason, upload_at, image_path FROM valid_id_tb WHERE id = ?";
+$id_validation_query = "SELECT is_validated, decline_reason, upload_at, accepted_at, decline_at, image_path FROM valid_id_tb WHERE id = ?";
 $id_validation_stmt = $conn->prepare($id_validation_query);
 $id_validation_stmt->bind_param("i", $user_id);
 $id_validation_stmt->execute();
@@ -744,7 +744,7 @@ document.addEventListener('click', function(event) {
                 <div class="flex flex-col items-start">
                     <span class="<?php echo $status_bg; ?> <?php echo $status_text_color; ?> text-xs px-2 py-1 rounded-full inline-flex items-center">
                         <i class="<?php echo $status_icon; ?> mr-1 text-xs"></i>
-                        <?php echo htmlspecialchars($booking['status']); ?>
+                        <p>Booking: <?php echo htmlspecialchars($booking['status']); ?></p>
                     </span>
                     
                     <!-- Service Name -->
@@ -770,7 +770,11 @@ document.addEventListener('click', function(event) {
                         </p>
                         <p class="text-gray-700 flex items-center">
                             <i class="far fa-clock mr-1 text-gold text-xs"></i>
-                            <?php echo date('h:i A', strtotime($booking['booking_date'])); ?>
+                            <?php 
+                                $date = new DateTime($booking['booking_date'], new DateTimeZone('UTC'));
+                                $date->setTimezone(new DateTimeZone('Asia/Manila'));
+                                echo $date->format('h:i A'); 
+                            ?>
                         </p>
                     </div>
                     
@@ -825,37 +829,41 @@ document.addEventListener('click', function(event) {
     </div>
 </div>
                     <?php elseif ($item['type'] === 'id_validation'): ?>
-                        <!-- ID VALIDATION NOTIFICATION -->
-                        <?php 
-                            $id_validation = $item['data'];
-                            $id_status = 'Not Submitted';
-                            $id_status_class = 'bg-gray-200 text-gray-800';
-                            $id_icon = 'fas fa-question-circle';
-                            $border_color = 'border-gray-400';
-
-                            if ($id_validation) {
-                                switch ($id_validation['is_validated']) {
-                                    case 'no':
-                                        $id_status = 'Pending';
-                                        $id_status_class = 'bg-yellow-600/20 text-yellow-600';
-                                        $id_icon = 'fas fa-clock';
-                                        $border_color = 'border-yellow-600';
-                                        break;
-                                    case 'valid':
-                                        $id_status = 'Accepted';
-                                        $id_status_class = 'bg-success/20 text-success';
-                                        $id_icon = 'fas fa-check-circle';
-                                        $border_color = 'border-success';
-                                        break;
-                                    case 'denied':
-                                        $id_status = 'Declined';
-                                        $id_status_class = 'bg-error/20 text-error';
-                                        $id_icon = 'fas fa-times-circle';
-                                        $border_color = 'border-error';
-                                        break;
-                                }
+                    <!-- ID VALIDATION NOTIFICATION -->
+                    <?php 
+                        $id_validation = $item['data'];
+                        $id_status = 'Not Submitted';
+                        $id_status_class = 'bg-gray-200 text-gray-800';
+                        $id_icon = 'fas fa-question-circle';
+                        $border_color = 'border-gray-400';
+                        $timestamp = $id_validation['upload_at']; // Default to upload time
+                
+                        if ($id_validation) {
+                            switch ($id_validation['is_validated']) {
+                                case 'no':
+                                    $id_status = 'Pending';
+                                    $id_status_class = 'bg-yellow-600/20 text-yellow-600';
+                                    $id_icon = 'fas fa-clock';
+                                    $border_color = 'border-yellow-600';
+                                    $timestamp = $id_validation['upload_at'];
+                                    break;
+                                case 'valid':
+                                    $id_status = 'Accepted';
+                                    $id_status_class = 'bg-success/20 text-success';
+                                    $id_icon = 'fas fa-check-circle';
+                                    $border_color = 'border-success';
+                                    $timestamp = $id_validation['accepted_at'] ?? $id_validation['upload_at']; // Fallback to upload time if accepted_at is null
+                                    break;
+                                case 'denied':
+                                    $id_status = 'Declined';
+                                    $id_status_class = 'bg-error/20 text-error';
+                                    $id_icon = 'fas fa-times-circle';
+                                    $border_color = 'border-error';
+                                    $timestamp = $id_validation['decline_at'] ?? $id_validation['upload_at']; // Fallback to upload time if decline_at is null
+                                    break;
                             }
-                        ?>
+                        }
+                    ?>
                         
                         <!-- ID Validation Notification -->
 <div class="bg-white border-l-4 <?php echo $border_color; ?> rounded-xl shadow-md overflow-hidden notification-animate hover:shadow-lg transition-all duration-300">
@@ -889,11 +897,19 @@ document.addEventListener('click', function(event) {
                     <div class="bg-cream rounded-lg p-1 text-xs flex items-center space-x-1">
                         <p class="text-gray-700 flex items-center">
                             <i class="far fa-calendar mr-1 text-gold text-xs"></i>
-                            <?php echo date('M d', strtotime($id_validation['upload_at'])); ?>
+                            <?php echo date('M d', strtotime($timestamp)); ?>
                         </p>
                         <p class="text-gray-700 flex items-center">
                             <i class="far fa-clock mr-1 text-gold text-xs"></i>
-                            <?php echo date('h:i A', strtotime($id_validation['upload_at'])); ?>
+                            <?php 
+                            if (!empty($timestamp)) {
+                                $date = new DateTime($timestamp, new DateTimeZone('UTC'));
+                                $date->setTimezone(new DateTimeZone('Asia/Manila'));
+                                echo $date->format('h:i A');
+                            } else {
+                                echo 'N/A';
+                            }
+                            ?>
                         </p>
                     </div>
                 </div>
@@ -936,7 +952,7 @@ document.addEventListener('click', function(event) {
                 <!-- Timestamp -->
                 <div class="text-xs text-gray-500 flex items-center">
                     <i class="fas fa-history mr-1 text-xs"></i> 
-                    <?php echo time_elapsed_string($id_validation['upload_at']); ?>
+                    <?php echo time_elapsed_string((new DateTime($id_validation['upload_at'], new DateTimeZone('UTC')))->setTimezone(new DateTimeZone('Asia/Manila'))->format('Y-m-d H:i:s')); ?>
                 </div>
             </div>
         </div>
