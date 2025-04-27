@@ -1510,7 +1510,7 @@ var projectedIncomeOptions = {
     }
   },
   title: {
-    text: 'Projected Income (Based on Discounted Price)',
+    text: 'Projected Income (If all payments have been settled)',
     align: 'left',
     style: {
       fontSize: '14px',
