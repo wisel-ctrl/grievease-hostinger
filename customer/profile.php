@@ -214,22 +214,7 @@ header("Pragma: no-cache");
             --navbar-height: 64px; /* Define the height of the navbar */
             --section-spacing: 4rem; /* Standardized spacing between sections */
         }
-        /* Edit Profile Modal */
-#edit-profile-modal {
-    display: none;
-    transition: opacity 0.3s ease, transform 0.3s ease;
-}
-
-#edit-profile-modal .relative {
-    transform: scale(0.95);
-    opacity: 0;
-    transition: all 0.3s ease;
-}
-
-#edit-profile-modal.active .relative {
-    transform: scale(1);
-    opacity: 1;
-}
+        
     </style>
 </head>
 <body class="bg-cream overflow-x-hidden w-full max-w-full m-0 p-0 font-hedvig">
