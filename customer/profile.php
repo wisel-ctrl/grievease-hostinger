@@ -436,6 +436,9 @@ header("Pragma: no-cache");
                     </nav>
                 </div>
             </div>
+    </div>
+    </div>
+    </div>
             
             <!-- Right Content Area -->
 <div class="lg:col-span-2">
@@ -728,6 +731,7 @@ header("Pragma: no-cache");
     </div>
                             </div>
 </div>
+                            </div>
 
 
 
@@ -1137,7 +1141,7 @@ header("Pragma: no-cache");
     </div>
     </div>
 </div>
-</div>
+</div>  
                     
     <!-- Footer -->
     <footer class="bg-black font-playfair text-white py-12">
