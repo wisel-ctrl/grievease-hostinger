@@ -174,6 +174,31 @@ if ($prevCompletedCount > 0) {
 $formattedRevenue = number_format($totalRevenue, 2);
 ?>
 <?php
+// Get monthly projected income data (sum of discounted_price) for the last 12 months
+$monthlyProjectedIncomeData = [];
+$monthLabels = [];
+
+for ($i = 11; $i >= 0; $i--) {
+    $date = new DateTime();
+    $date->modify("-$i months");
+    $month = $date->format('m');
+    $year = $date->format('Y');
+    
+    // Save the month name for our labels
+    $monthLabels[] = $date->format('M');
+    
+    $query = "SELECT SUM(discounted_price) as projected_income FROM sales_tb 
+              WHERE MONTH(get_timestamp) = ? AND YEAR(get_timestamp) = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("ii", $month, $year);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $data = $result->fetch_assoc();
+    
+    $monthlyProjectedIncomeData[] = $data['projected_income'] ?? 0;
+}
+?>
+<?php
 function getBranchMetrics($conn, $branchId) {
   $metrics = [
       'revenue' => 0,
@@ -644,14 +669,14 @@ foreach ($serviceData as $service => $branches) {
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-6 md:mb-8">
   <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 w-full">
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 p-4 sm:p-5 border-b border-sidebar-border">
-      <h3 class="font-medium text-sidebar-text">Services by Type</h3>
+      <h3 class="font-medium text-sidebar-text">Supposedly Revenue</h3>
       <button class="px-3 py-2 border border-sidebar-border rounded-md text-sm flex items-center text-sidebar-text hover:bg-sidebar-hover transition-all duration-300">
         <i class="fas fa-download mr-2"></i> Export
       </button>
     </div>
     <div class="p-4 sm:p-5">
       <div class="w-full h-48 md:h-64">
-        <canvas id="servicesChart" style="width: 100%; height: 100%;"></canvas>
+        <div id="projectedIncomeChart" style="width: 100%; height: 100%;"></div>
       </div>
     </div>
   </div>
@@ -1405,7 +1430,99 @@ var options = {
 var chart = new ApexCharts(document.querySelector("#revenueChart"), options);
 chart.render();
 </script>
+<script>
+// Projected Income Chart (using discounted_price instead of amount_paid)
+var projectedIncomeOptions = {
+  series: [{
+    name: "Projected Income",
+    data: <?php echo json_encode($monthlyProjectedIncomeData); ?>
+  }],
+  chart: {
+    type: 'area',
+    height: '100%',
+    width: '100%',
+    animations: {
+      enabled: true,
+      easing: 'easeout',
+      speed: 800
+    },
+    toolbar: {
+      show: true,
+      tools: {
+        download: true,
+        selection: true,
+        zoom: true,
+        zoomin: true,
+        zoomout: true,
+        pan: true,
+        reset: true
+      },
+      export: {
+        csv: {
+          filename: 'projected-income',
+          columnDelimiter: ',',
+          headerCategory: 'Month',
+          headerValue: 'Projected Income (₱)',
+        },
+        png: {
+          filename: 'projected-income',
+        },
+        svg: {
+          filename: 'projected-income',
+        }
+      }
+    }
+  },
+  colors: ['#3b82f6'], // Different color from revenue chart
+  dataLabels: {
+    enabled: false
+  },
+  stroke: {
+    curve: 'smooth',
+    width: 2
+  },
+  fill: {
+    type: 'gradient',
+    gradient: {
+      shadeIntensity: 1,
+      opacityFrom: 0.7,
+      opacityTo: 0.3,
+    }
+  },
+  xaxis: {
+    categories: <?php echo json_encode($monthLabels); ?>,
+  },
+  yaxis: {
+    title: {
+      text: 'Projected Income (₱)'
+    },
+    labels: {
+      formatter: function(val) {
+        return "₱" + val.toLocaleString()
+      }
+    }
+  },
+  tooltip: {
+    y: {
+      formatter: function(val) {
+        return "₱" + val.toLocaleString()
+      }
+    }
+  },
+  title: {
+    text: 'Projected Income (Based on Discounted Price)',
+    align: 'left',
+    style: {
+      fontSize: '14px',
+      fontWeight: 'bold',
+      color: '#333'
+    }
+  }
+};
 
+var projectedIncomeChart = new ApexCharts(document.querySelector("#projectedIncomeChart"), projectedIncomeOptions);
+projectedIncomeChart.render();
+</script>
 <script>
 // Get the revenue data for both branches
 var pilaRevenue = <?php echo $pilaMetrics['revenue']; ?>;
