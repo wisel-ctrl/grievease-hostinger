@@ -1545,7 +1545,7 @@ header("Pragma: no-cache");
         <div>
           <label for="confirm-password" class="block text-sm font-medium text-gray-700 mb-1 sm:mb-2">Confirm New Password*</label>
           <div class="relative">
-            <input type="password" id="confirm-password" name="confirm-password" required class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent text-sm sm:text-base">
+            <input type="password" id="confirm-password" name="confirm-password" required class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base">
             <span class="password-toggle absolute right-3 sm:right-4 top-1/2 transform -translate-y-1/2 text-gray-600 cursor-pointer" data-target="confirm-password">
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="eye-show">
                 <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
@@ -1564,10 +1564,10 @@ header("Pragma: no-cache");
     
     <!-- Modal Footer -->
     <div class="px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row sm:justify-end gap-2 sm:gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
-      <button class="w-full sm:w-auto px-4 sm:px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center" id="cancel-change-password">
+      <button class="w-full sm:w-auto px-4 sm:px-5 py-2 bg-white border border-yellow-600 text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center" id="cancel-change-password">
         Cancel
       </button>
-      <button type="submit" id="submit-change-password" class="w-full sm:w-auto px-5 sm:px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center">
+      <button type="submit" id="submit-change-password" class="w-full sm:w-auto px-5 sm:px-6 py-2 bg-gradient-to-r from-yellow-600 to-yellow-700 text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
           <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
           <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
