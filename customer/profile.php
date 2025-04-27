@@ -1210,7 +1210,7 @@ header("Pragma: no-cache");
         </button>
         
         <!-- Modal Header -->
-        <div class="px-4 sm:px-6 py-4 sm:py-5 border-b bg-gradient-to-r from-yellow-600 to-darkgold border-gray-200">
+        <div class="px-4 sm:px-6 py-4 sm:py-5 border-b bg-gradient-to-r from-yellow-600 to-yellow-700 border-gray-200">
             <h3 class="text-lg sm:text-xl font-bold text-white flex items-center">
                 Edit Profile
             </h3>
@@ -1447,7 +1447,7 @@ header("Pragma: no-cache");
             <button class="w-full sm:w-auto px-4 sm:px-5 py-2 bg-white border border-yellow-600 text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center" onclick="closeEditProfileModal()">
                 Cancel
             </button>
-            <button type="submit" class="w-full sm:w-auto px-5 sm:px-6 py-2 bg-gradient-to-r from-yellow-600 to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center">
+            <button type="submit" class="w-full sm:w-auto px-5 sm:px-6 py-2 bg-gradient-to-r from-yellow-600 to-yellow-700 text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
                     <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
                     <polyline points="17 21 17 13 7 13 7 21"></polyline>
