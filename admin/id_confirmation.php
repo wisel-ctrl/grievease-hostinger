@@ -47,12 +47,15 @@ require_once '../db_connect.php';
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && isset($_POST['id'])) {
     $id = filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT);
     $action = filter_input(INPUT_POST, 'action', FILTER_SANITIZE_STRING);
-    $current_timestamp = date('Y-m-d H:i:s'); // Get current timestamp
     
+    $ph_timezone = new DateTimeZone('Asia/Manila');
+    $current_time = new DateTime('now', $ph_timezone);
+    $ph_time = $current_time->format('Y-m-d H:i:s');
+
     if ($action === 'approve') {
         // Update ID status to valid and set accepted_at timestamp
         $stmt = $conn->prepare("UPDATE valid_id_tb SET is_validated = 'valid', accepted_at = ? WHERE id = ?");
-        $stmt->bind_param("si", $current_timestamp, $id);
+        $stmt->bind_param("si", $ph_time, $id);
         $stmt->execute();
         
         // Also update the user's validated_id status
@@ -73,7 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && isset($_
         } else {
             // Update ID status to denied with reason and set decline_at timestamp
             $stmt = $conn->prepare("UPDATE valid_id_tb SET is_validated = 'denied', decline_reason = ?, decline_at = ? WHERE id = ?");
-            $stmt->bind_param("ssi", $decline_reason, $current_timestamp, $id);
+            $stmt->bind_param("ssi", $decline_reason, $ph_time, $id);
             $stmt->execute();
             
             // Set info message
