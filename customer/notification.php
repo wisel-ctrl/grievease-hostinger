@@ -188,8 +188,15 @@ $conn->close();
 
 // Function to calculate time elapsed
 function time_elapsed_string($datetime) {
-    $now = new DateTime;
-    $ago = new DateTime($datetime);
+    // Set the timezone to Asia/Manila for both current time and the comparison time
+    $manila_timezone = new DateTimeZone('Asia/Manila');
+    
+    // Current time in Manila timezone
+    $now = new DateTime('now', $manila_timezone);
+    
+    // The datetime to compare (from database) - assume it's already in Manila time
+    $ago = new DateTime($datetime, $manila_timezone);
+    
     $diff = $now->diff($ago);
 
     if ($diff->y > 0) {
