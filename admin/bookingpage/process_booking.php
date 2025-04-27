@@ -1,4 +1,5 @@
 <?php
+date_default_timezone_set('Asia/Manila');
 session_start();
 require_once '../../db_connect.php';
 
@@ -24,6 +25,8 @@ if (!isset($_POST['action'])) {
     echo json_encode(['success' => false, 'message' => 'No action specified']);
     exit;
 }
+
+$conn->query("SET time_zone = '+08:00'");
 
 // Handle different actions
 switch ($_POST['action']) {
@@ -90,8 +93,11 @@ function handleAcceptBooking($conn) {
     $conn->begin_transaction();
 
     try {
-        // Update booking status
-        $stmt = $conn->prepare("UPDATE booking_tb SET status='Accepted', accepted_date=NOW() WHERE booking_id=?");
+        // Update booking status with PH time
+        $stmt = $conn->prepare("UPDATE booking_tb 
+                SET status='Accepted', 
+                    accepted_date = CONVERT_TZ(NOW(), 'SYSTEM', '+08:00') 
+                WHERE booking_id=?");
         $stmt->bind_param("i", $bookingId);
         $stmt->execute();
         
@@ -99,6 +105,7 @@ function handleAcceptBooking($conn) {
             throw new Exception("Booking not found");
         }
 
+        // Rest of your existing code...
         // Get customer ID
         $stmt = $conn->prepare("SELECT customerID FROM booking_tb WHERE booking_id=?");
         $stmt->bind_param("i", $bookingId);
@@ -159,10 +166,14 @@ function handleAcceptBooking($conn) {
 
 function handleDeclineBooking($conn) {
     // Validate required fields for decline
-    if (!isset($_POST['bookingId']) || !isset($_POST['reason'])) {
+    $required = ['bookingId', 'reason'];
+    $missing = array_diff($required, array_keys($_POST));
+
+    if (!empty($missing)) {
         echo json_encode([
             'success' => false,
-            'message' => 'Missing required fields for decline'
+            'message' => 'Missing required fields for decline',
+            'missing_fields' => $missing
         ]);
         exit;
     }
@@ -174,23 +185,26 @@ function handleDeclineBooking($conn) {
     $conn->begin_transaction();
 
     try {
-        // Update booking status to Declined and add reason
-        $stmt = $conn->prepare("UPDATE booking_tb SET status = 'Declined', reason_for_decline = ?, decline_date = NOW() WHERE booking_id = ?");
+        // Update booking status to Declined and add reason with PH time
+        $stmt = $conn->prepare("UPDATE booking_tb 
+                               SET status = 'Declined', 
+                                   reason_for_decline = ?, 
+                                   decline_date = CONVERT_TZ(NOW(), 'SYSTEM', '+08:00') 
+                               WHERE booking_id = ? AND status = 'Pending'");
         $stmt->bind_param("si", $reason, $bookingId);
         $stmt->execute();
         
         if ($stmt->affected_rows === 0) {
-            throw new Exception("Booking not found or already processed");
+            throw new Exception("Booking not found, already processed, or not in Pending status");
         }
 
         $conn->commit();
 
-        // You might want to add notification logic here (email to customer, etc.)
-        
         echo json_encode([
             'success' => true,
             'message' => 'Booking declined successfully',
-            'booking_id' => $bookingId
+            'booking_id' => $bookingId,
+            'decline_date' => date('Y-m-d H:i:s') // Return current server time for reference
         ]);
 
     } catch (Exception $e) {

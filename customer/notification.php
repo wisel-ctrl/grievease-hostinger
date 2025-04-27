@@ -773,13 +773,25 @@ document.addEventListener('click', function(event) {
                     <div class="bg-cream rounded-lg p-1 text-xs flex items-center space-x-1">
                         <p class="text-gray-700 flex items-center">
                             <i class="far fa-calendar mr-1 text-gold text-xs"></i>
-                            <?php echo date('M d', strtotime($booking['booking_date'])); ?>
+                            <?php 
+                                // Determine which date to show based on status
+                                $displayDate = $booking['booking_date'];
+                                if ($booking['status'] === 'Accepted' && !empty($booking['accepted_date'])) {
+                                    $displayDate = $booking['accepted_date'];
+                                } elseif ($booking['status'] === 'Declined' && !empty($booking['decline_date'])) {
+                                    $displayDate = $booking['decline_date'];
+                                }
+                                                                
+                                // Convert to Manila timezone and format
+                                $date = new DateTime($displayDate, new DateTimeZone('Asia/Manila'));
+                                $date->setTimezone(new DateTimeZone('Asia/Manila'));
+                                echo $date->format('M d');
+                            ?>
                         </p>
                         <p class="text-gray-700 flex items-center">
                             <i class="far fa-clock mr-1 text-gold text-xs"></i>
                             <?php 
-                                $date = new DateTime($booking['booking_date'], new DateTimeZone('UTC'));
-                                $date->setTimezone(new DateTimeZone('Asia/Manila'));
+                                // Same date object, just format time differently
                                 echo $date->format('h:i A'); 
                             ?>
                         </p>
