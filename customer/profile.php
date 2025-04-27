@@ -1137,6 +1137,7 @@ header("Pragma: no-cache");
     </div>
     </div>
 </div>
+</div>
                     
     <!-- Footer -->
     <footer class="bg-black font-playfair text-white py-12">
