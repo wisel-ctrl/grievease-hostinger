@@ -728,6 +728,7 @@ header("Pragma: no-cache");
     </div>
 </div>
                             </div>
+                            </div>
 
 
 <!-- Modal for enlarged image - improved version -->
