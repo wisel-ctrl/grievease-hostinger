@@ -1467,6 +1467,7 @@ header("Pragma: no-cache");
     </div>
 </div>
                 </div>
+                </div>
 
 <!-- Change Password Modal -->
 <div id="change-password-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto">
