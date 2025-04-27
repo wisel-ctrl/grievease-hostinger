@@ -828,6 +828,7 @@ header("Pragma: no-cache");
         }
     }
 }, 500);
+    }
     
     // Close modals when clicking outside
     window.addEventListener('click', function(event) {
