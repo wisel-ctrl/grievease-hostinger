@@ -214,6 +214,22 @@ header("Pragma: no-cache");
             --navbar-height: 64px; /* Define the height of the navbar */
             --section-spacing: 4rem; /* Standardized spacing between sections */
         }
+        /* Edit Profile Modal */
+#edit-profile-modal {
+    display: none;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+#edit-profile-modal .relative {
+    transform: scale(0.95);
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+
+#edit-profile-modal.active .relative {
+    transform: scale(1);
+    opacity: 1;
+}
     </style>
 </head>
 <body class="bg-cream overflow-x-hidden w-full max-w-full m-0 p-0 font-hedvig">
@@ -801,20 +817,27 @@ header("Pragma: no-cache");
     }
     
     function reuploadID() {
-    // Close the decline reason modal first 
-     console.log('Reupload ID function called');
+    console.log('Reupload ID function called');
     closeDeclineReasonModal();
     
-    // Open the edit profile modal
+    // Get the edit profile modal
     const modal = document.getElementById('edit-profile-modal');
+    
+    // Reset modal state
     modal.classList.remove('hidden');
+    modal.style.display = 'flex'; // Force display style
+    
+    // Trigger reflow to ensure CSS transitions work
+    void modal.offsetWidth;
+    
+    // Apply active classes
     modal.classList.remove('opacity-0', 'scale-95');
     modal.classList.add('opacity-100', 'scale-100');
     
-    // Load address data (if needed)
+    // Load address data
     setTimeout(loadAddressData, 100);
     
-    // Scroll to the ID upload section with a slight delay to ensure the modal is fully open
+    // Scroll to the ID upload section
     setTimeout(() => {
         const idUploadSection = document.querySelector('label[for="id-upload"]');
         if (idUploadSection) {
@@ -1670,15 +1693,21 @@ function loadAddressData() {
     }
 }
 
-// Call loadAddressData when edit modal opens
 document.getElementById('edit-profile-btn').addEventListener('click', function() {
-    // Show modal first
     const modal = document.getElementById('edit-profile-modal');
+    
+    // Reset modal state
     modal.classList.remove('hidden');
+    modal.style.display = 'flex'; // Force display style
+    
+    // Trigger reflow to ensure CSS transitions work
+    void modal.offsetWidth;
+    
+    // Apply active classes
     modal.classList.remove('opacity-0', 'scale-95');
     modal.classList.add('opacity-100', 'scale-100');
     
-    // Then load address data
+    // Load address data
     setTimeout(loadAddressData, 100);
 });
 // Enhanced address dropdown functions with AJAX
@@ -1984,15 +2013,15 @@ function createErrorElement(fieldId) {
     return errorElement;
 }
 
-// Define the modal functions
 function closeEditProfileModal() {
     const modal = document.getElementById('edit-profile-modal');
-    modal.classList.add('opacity-0', 'scale-95');
-    modal.classList.remove('opacity-100', 'scale-100');
+    modal.querySelector('.relative').classList.remove('opacity-100', 'scale-100');
+    modal.querySelector('.relative').classList.add('opacity-0', 'scale-95');
     
     // After animation completes, hide the modal
     setTimeout(() => {
         modal.classList.add('hidden');
+        modal.style.display = 'none'; // Reset display style
     }, 300);
 }
 
