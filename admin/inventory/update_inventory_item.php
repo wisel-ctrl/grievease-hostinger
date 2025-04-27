@@ -26,7 +26,7 @@ $conn->begin_transaction();
 
 try {
     // First get current quantity from database
-    $stmt = $conn->prepare("SELECT quantity FROM inventory_tb WHERE inventory_id = ?");
+    $stmt = $conn->prepare("SELECT quantity, branch_id FROM inventory_tb WHERE inventory_id = ?");
     $stmt->bind_param("i", $inventoryId);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -35,6 +35,7 @@ try {
     
     $oldQuantity = (int)$currentItem['quantity'];
     $quantityChange = $newQuantity - $oldQuantity;
+    $branchID = (int)$currentItem['branch_id'];
     
     // Determine activity type based on quantity change
     $activityType = 'Adjusted';
@@ -60,10 +61,10 @@ try {
     
     // Log the inventory change
     $stmt = $conn->prepare("INSERT INTO inventory_logs 
-            (inventory_id, old_quantity, new_quantity, quantity_change, 
+            (inventory_id, branch_id, old_quantity, new_quantity, quantity_change, 
              activity_type, activity_date, user_id)
             VALUES (?, ?, ?, ?, ?, NOW(), ?)");
-    $stmt->bind_param("iiiisi", $inventoryId, $oldQuantity, $newQuantity, 
+    $stmt->bind_param("iiiiisi", $inventoryId, $branchID, $oldQuantity, $newQuantity, 
                       $quantityChange, $activityType, $userId);
     $stmt->execute();
     $stmt->close();
