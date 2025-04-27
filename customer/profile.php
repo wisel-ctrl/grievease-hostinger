@@ -801,7 +801,8 @@ header("Pragma: no-cache");
     }
     
     function reuploadID() {
-    // Close the decline reason modal first
+    // Close the decline reason modal first 
+    console.log('Reupload ID function called');
     closeDeclineReasonModal();
     
     // Open the edit profile modal
