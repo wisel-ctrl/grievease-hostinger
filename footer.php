@@ -79,7 +79,7 @@
                 <p class="text-yellow-600">&copy; 2025 Vjay Relova Funeral Services. All rights reserved.</p>
                 <div class="mt-2">
                     <a href="privacy_policy.php" class="text-gray-400 hover:text-white transition mx-2">Privacy Policy</a>
-                    <a href="#" class="text-gray-400 hover:text-white transition mx-2">Terms of Service</a>
+                    <a href="termsofservice.php" class="text-gray-400 hover:text-white transition mx-2">Terms of Service</a>
                 </div>
             </div>
         </div>
