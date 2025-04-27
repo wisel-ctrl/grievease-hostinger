@@ -4,6 +4,9 @@ session_start();
 require_once '../../db_connect.php'; // Make sure this file contains your database connection
 require_once 'sms_notification.php';
 
+// Set timezone to Philippines
+date_default_timezone_set('Asia/Manila');
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Check if user is logged in
     if (!isset($_SESSION['user_id'])) {
@@ -77,6 +80,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $with_cremate = isset($_POST['with_cremate']) && $_POST['with_cremate'] === 'yes' ? 'yes' : 'no';
     $initial_price = $_POST['packagePrice'];
     $reference_code = $_POST['referenceNumber'];
+    $booking_date = date('Y-m-d H:i:s'); // Current date/time in PH timezone
 
     try {
         // Insert into database
@@ -85,18 +89,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 customerID, deceased_fname, deceased_midname, deceased_lname, deceased_suffix,
                 deceased_address, deceased_birth, deceased_dodeath, deceased_dateOfBurial,
                 service_id, with_cremate, branch_id, initial_price, deathcert_url,
-                payment_url, reference_code
+                payment_url, reference_code, booking_date
             ) VALUES (
-                ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+                ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
             )
         ");
 
         $stmt->bind_param(
-            "issssssssisdssss",
+            "issssssssisdsssss",
             $customerID, $deceased_fname, $deceased_midname, $deceased_lname, $deceased_suffix,
             $deceased_address, $deceased_birth, $deceased_dodeath, $deceased_dateOfBurial,
             $service_id, $with_cremate, $branch_id, $initial_price, $deathCertPath,
-            $paymentPath, $reference_code
+            $paymentPath, $reference_code, $booking_date
         );
 
         if ($stmt->execute()) {
@@ -130,5 +134,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 } else {
     echo json_encode(['success' => false, 'message' => 'Invalid request method']);
 }
-
 ?>
