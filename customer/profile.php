@@ -438,278 +438,427 @@ header("Pragma: no-cache");
             </div>
             
             <!-- Right Content Area -->
-            <div class="lg:col-span-2">
-                <!-- Personal Information Tab -->
-                <div id="personal-info" class="tab-content">
+<div class="lg:col-span-2">
+    <!-- Personal Information Tab -->
+    <div id="personal-info" class="tab-content">
         <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
-            <div class="p-6 border-b border-gray-100 flex justify-between items-center">
-                <h3 class="font-hedvig text-xl text-navy">Personal Information</h3>
-                <button id="edit-profile-btn" class="text-yellow-600 hover:text-yellow-700">
-                    <i class="fas fa-pencil-alt mr-1"></i> Edit
+            <!-- Header with gradient background -->
+            <div class="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 border-b border-gray-100 flex justify-between items-center">
+                <h3 class="font-hedvig text-xl text-navy font-semibold">Personal Information</h3>
+                <button id="edit-profile-btn" class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg transition-all transform hover:scale-105 flex items-center shadow-sm">
+                    <i class="fas fa-pencil-alt mr-2"></i> Edit Profile
                 </button>
             </div>
+            
             <div class="p-6">
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-            <label class="block text-sm font-medium text-gray-500 mb-1">First Name</label>
-            <p class="text-navy"> <?php echo htmlspecialchars($first_name); ?></p>
-        </div>
-        <div>
-            <label class="block text-sm font-medium text-gray-500 mb-1">Last Name</label>
-            <p class="text-navy"><?php echo htmlspecialchars($last_name); ?></p>
-        </div>
-        <div>
-            <label class="block text-sm font-medium text-gray-500 mb-1">Middle Name</label>
-            <p class="text-navy <?= empty($middle_name) ? 'opacity-60 italic text-gray-500' : '' ?>">
-                <?= !empty($middle_name) ? htmlspecialchars($middle_name) : 'N/A' ?>
-            </p>
-        </div>
-        <div>
-            <label class="block text-sm font-medium text-gray-500 mb-1">Suffix</label>
-            <p class="text-navy <?= empty($suffix) ? 'opacity-60 italic text-gray-500' : '' ?>">
-                <?= !empty($suffix) ? htmlspecialchars($suffix) : 'N/A' ?>
-            </p>
-        </div>
-        <div>
-            <label class="block text-sm font-medium text-gray-500 mb-1">Email Address</label>
-            <p class="text-navy"><?php echo htmlspecialchars($email); ?></p>
-        </div>
-        <div>
-            <label class="block text-sm font-medium text-gray-500 mb-1">Phone Number</label>
-            <p class="text-navy <?= empty($phone_number) ? 'opacity-60 italic text-gray-500' : '' ?>">
-                <?= !empty($phone_number) ? htmlspecialchars($phone_number) : 'N/A' ?>
-            </p>
-        </div>
-        <div>
-            <label class="block text-sm font-medium text-gray-500 mb-1">Date of Birth</label>
-            <p class="text-navy"><?php echo date('F d Y', strtotime($birthdate)); ?></p>
-        </div>
-        <div>
-            <label class="block text-sm font-medium text-gray-500 mb-1">Region</label>
-            <p class="text-navy <?= empty($region) ? 'opacity-60 italic text-gray-500' : '' ?>">
-                <?= !empty($region) ? htmlspecialchars($region) : 'N/A' ?>
-            </p>
-        </div>
-        <div>
-            <label class="block text-sm font-medium text-gray-500 mb-1">Province</label>
-            <p class="text-navy <?= empty($province) ? 'opacity-60 italic text-gray-500' : '' ?>">
-                <?= !empty($province) ? htmlspecialchars($province) : 'N/A' ?>
-            </p>
-        </div>
-        <div>
-            <label class="block text-sm font-medium text-gray-500 mb-1">City</label>
-            <p class="text-navy <?= empty($city) ? 'opacity-60 italic text-gray-500' : '' ?>">
-                <?= !empty($city) ? htmlspecialchars($city) : 'N/A' ?>
-            </p>
-        </div>
-        <div>
-            <label class="block text-sm font-medium text-gray-500 mb-1">Barangay</label>
-            <p class="text-navy <?= empty($barangay) ? 'opacity-60 italic text-gray-500' : '' ?>">
-                <?= !empty($barangay) ? htmlspecialchars($barangay) : 'N/A' ?>
-            </p>
-        </div>
-        <div>
-            <label class="block text-sm font-medium text-gray-500 mb-1">Street Address</label>
-            <p class="text-navy <?= empty($street_address) ? 'opacity-60 italic text-gray-500' : '' ?>">
-                <?= !empty($street_address) ? htmlspecialchars($street_address) : 'N/A' ?>
-            </p>
-        </div>
-        <div>
-            <label class="block text-sm font-medium text-gray-500 mb-1">Zip/Postal Code</label>
-            <p class="text-navy <?= empty($zip_code) ? 'opacity-60 italic text-gray-500' : '' ?>">
-                <?= !empty($zip_code) ? htmlspecialchars($zip_code) : 'N/A' ?>
-            </p>
-        </div>
-    </div>
+                <!-- Personal Information Card -->
+                <div class="bg-blue-50 rounded-lg p-4 mb-6 border-l-4 border-blue-500">
+                    <div class="flex items-center text-blue-700 mb-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span class="font-medium">Basic Details</span>
+                    </div>
+                    <p class="text-sm text-gray-600">Your personal information is used for identification and communication purposes.</p>
+                </div>
                 
-                <!-- New Uploaded Documents Section -->
-                <!-- New Uploaded Documents Section -->
-<div class="mt-8 pt-6 border-t border-gray-200">
-    <h3 class="font-hedvig text-lg text-navy mb-4">Uploaded ID</h3>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-            <div class="flex justify-between items-start mb-1">
-                <?php if ($uploadedImagePath): ?>
-                    <?php
-                        // Fetch the validation status and decline reason from valid_id_tb
-                        $status_query = "SELECT is_validated, decline_reason FROM valid_id_tb WHERE id = ?";
-                        $status_stmt = $conn->prepare($status_query);
-                        $status_stmt->bind_param("i", $user_id);
-                        $status_stmt->execute();
-                        $status_result = $status_stmt->get_result();
-                        $status_row = $status_result->fetch_assoc();
-                        $id_status = $status_row ? $status_row['is_validated'] : 'no';
-                        $decline_reason = $status_row ? $status_row['decline_reason'] : '';
-                        $status_stmt->close();
-                        $conn->close();
-                        
-                        // Define status label style based on status value
-                        switch ($id_status) {
-                            case 'no':
-                                $statusText = 'PENDING';
-                                $statusClass = 'bg-yellow-100 text-yellow-800';
-                                break;
-                            case 'valid':
-                                $statusText = 'APPROVED';
-                                $statusClass = 'bg-green-100 text-green-800';
-                                break;
-                            case 'denied':
-                                $statusText = 'DECLINED';
-                                $statusClass = 'bg-red-100 text-red-800';
-                                break;
-                            default:
-                                $statusText = 'PENDING';
-                                $statusClass = 'bg-yellow-100 text-yellow-800';
-                                break;
-                        }
-                    ?>
+                <!-- Information Grid with improved styling -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- First Name -->
+                    <div class="bg-gray-50 p-4 rounded-lg transition-all hover:shadow-md">
+                        <label class="block text-sm font-medium text-gray-500 mb-1">First Name</label>
+                        <p class="text-navy font-medium"><?php echo htmlspecialchars($first_name); ?></p>
+                    </div>
                     
-                    <div class="flex items-center mt-2 mb-2">
-                        <span class="text-sm text-gray-600 mr-2">Uploaded ID Status:</span>
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <?php echo $statusClass; ?>">
-                            <?php echo $statusText; ?>
-                            <?php if ($id_status === 'denied' && $decline_reason): ?>
-                                <!-- Info icon for declined status -->
-                                <svg class="w-4 h-4 ml-1 cursor-pointer" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" 
-                                     onclick="openDeclineReasonModal('<?php echo htmlspecialchars($decline_reason); ?>')">
-                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2h-1V9z" clip-rule="evenodd"></path>
+                    <!-- Last Name -->
+                    <div class="bg-gray-50 p-4 rounded-lg transition-all hover:shadow-md">
+                        <label class="block text-sm font-medium text-gray-500 mb-1">Last Name</label>
+                        <p class="text-navy font-medium"><?php echo htmlspecialchars($last_name); ?></p>
+                    </div>
+                    
+                    <!-- Middle Name -->
+                    <div class="bg-gray-50 p-4 rounded-lg transition-all hover:shadow-md">
+                        <label class="block text-sm font-medium text-gray-500 mb-1">Middle Name</label>
+                        <p class="text-navy <?= empty($middle_name) ? 'opacity-60 italic text-gray-500' : 'font-medium' ?>">
+                            <?= !empty($middle_name) ? htmlspecialchars($middle_name) : 'N/A' ?>
+                        </p>
+                    </div>
+                    
+                    <!-- Suffix -->
+                    <div class="bg-gray-50 p-4 rounded-lg transition-all hover:shadow-md">
+                        <label class="block text-sm font-medium text-gray-500 mb-1">Suffix</label>
+                        <p class="text-navy <?= empty($suffix) ? 'opacity-60 italic text-gray-500' : 'font-medium' ?>">
+                            <?= !empty($suffix) ? htmlspecialchars($suffix) : 'N/A' ?>
+                        </p>
+                    </div>
+                    
+                    <!-- Contact Information Section -->
+                    <div class="col-span-1 md:col-span-2 mt-4">
+                        <div class="flex items-center text-green-700 mb-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                            </svg>
+                            <span class="font-medium">Contact Information</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Email -->
+                    <div class="bg-green-50 p-4 rounded-lg transition-all hover:shadow-md">
+                        <label class="block text-sm font-medium text-gray-500 mb-1">Email Address</label>
+                        <p class="text-navy font-medium flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                            </svg>
+                            <?php echo htmlspecialchars($email); ?>
+                        </p>
+                    </div>
+                    
+                    <!-- Phone -->
+                    <div class="bg-green-50 p-4 rounded-lg transition-all hover:shadow-md">
+                        <label class="block text-sm font-medium text-gray-500 mb-1">Phone Number</label>
+                        <p class="text-navy <?= empty($phone_number) ? 'opacity-60 italic text-gray-500' : 'font-medium flex items-center' ?>">
+                            <?php if(!empty($phone_number)): ?>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                                 </svg>
                             <?php endif; ?>
-                        </span>
+                            <?= !empty($phone_number) ? htmlspecialchars($phone_number) : 'N/A' ?>
+                        </p>
                     </div>
-                <?php endif; ?>
-            </div>
-
-            <?php if ($uploadedImagePath): ?>
-                <div class="relative">
-                    <!-- Thumbnail image that opens the modal when clicked -->
-                    <img 
-                        src="<?php echo '../uploads/valid_ids/' . htmlspecialchars($uploadedImagePath); ?>" 
-                        alt="Uploaded ID"
-                        class="mt-2 rounded-lg shadow border w-48 h-auto cursor-pointer hover:opacity-90 transition-opacity"
-                        onclick="openImageModal('<?php echo '../uploads/valid_ids/' . htmlspecialchars($uploadedImagePath); ?>')"
-                    >
+                    
+                    <!-- Birthdate -->
+                    <div class="bg-purple-50 p-4 rounded-lg transition-all hover:shadow-md">
+                        <label class="block text-sm font-medium text-gray-500 mb-1">Date of Birth</label>
+                        <p class="text-navy font-medium flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            <?php echo date('F d, Y', strtotime($birthdate)); ?>
+                        </p>
+                    </div>
+                    
+                    <!-- Address Section -->
+                    <div class="col-span-1 md:col-span-2 mt-4">
+                        <div class="flex items-center text-indigo-700 mb-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                            <span class="font-medium">Address Information</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Region -->
+                    <div class="bg-indigo-50 p-4 rounded-lg transition-all hover:shadow-md">
+                        <label class="block text-sm font-medium text-gray-500 mb-1">Region</label>
+                        <p class="text-navy <?= empty($region) ? 'opacity-60 italic text-gray-500' : 'font-medium' ?>">
+                            <?= !empty($region) ? htmlspecialchars($region) : 'N/A' ?>
+                        </p>
+                    </div>
+                    
+                    <!-- Province -->
+                    <div class="bg-indigo-50 p-4 rounded-lg transition-all hover:shadow-md">
+                        <label class="block text-sm font-medium text-gray-500 mb-1">Province</label>
+                        <p class="text-navy <?= empty($province) ? 'opacity-60 italic text-gray-500' : 'font-medium' ?>">
+                            <?= !empty($province) ? htmlspecialchars($province) : 'N/A' ?>
+                        </p>
+                    </div>
+                    
+                    <!-- City -->
+                    <div class="bg-indigo-50 p-4 rounded-lg transition-all hover:shadow-md">
+                        <label class="block text-sm font-medium text-gray-500 mb-1">City</label>
+                        <p class="text-navy <?= empty($city) ? 'opacity-60 italic text-gray-500' : 'font-medium' ?>">
+                            <?= !empty($city) ? htmlspecialchars($city) : 'N/A' ?>
+                        </p>
+                    </div>
+                    
+                    <!-- Barangay -->
+                    <div class="bg-indigo-50 p-4 rounded-lg transition-all hover:shadow-md">
+                        <label class="block text-sm font-medium text-gray-500 mb-1">Barangay</label>
+                        <p class="text-navy <?= empty($barangay) ? 'opacity-60 italic text-gray-500' : 'font-medium' ?>">
+                            <?= !empty($barangay) ? htmlspecialchars($barangay) : 'N/A' ?>
+                        </p>
+                    </div>
+                    
+                    <!-- Street Address -->
+                    <div class="bg-indigo-50 p-4 rounded-lg transition-all hover:shadow-md">
+                        <label class="block text-sm font-medium text-gray-500 mb-1">Street Address</label>
+                        <p class="text-navy <?= empty($street_address) ? 'opacity-60 italic text-gray-500' : 'font-medium' ?>">
+                            <?= !empty($street_address) ? htmlspecialchars($street_address) : 'N/A' ?>
+                        </p>
+                    </div>
+                    
+                    <!-- Zip Code -->
+                    <div class="bg-indigo-50 p-4 rounded-lg transition-all hover:shadow-md">
+                        <label class="block text-sm font-medium text-gray-500 mb-1">Zip/Postal Code</label>
+                        <p class="text-navy <?= empty($zip_code) ? 'opacity-60 italic text-gray-500' : 'font-medium' ?>">
+                            <?= !empty($zip_code) ? htmlspecialchars($zip_code) : 'N/A' ?>
+                        </p>
+                    </div>
                 </div>
-            <?php else: ?>
-                <p class="text-sm text-gray-400 italic">No ID uploaded yet.</p>
-            <?php endif; ?>
+                
+                <!-- Uploaded Documents Section with improved styling -->
+                <div class="mt-8 pt-6 border-t border-gray-200">
+                    <div class="flex items-center mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-navy mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" />
+                        </svg>
+                        <h3 class="font-hedvig text-lg text-navy font-semibold">Uploaded ID</h3>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="bg-gray-50 p-5 rounded-lg border border-gray-200">
+                            <?php if ($uploadedImagePath): ?>
+                                <?php
+                                    // Fetch the validation status and decline reason from valid_id_tb
+                                    $status_query = "SELECT is_validated, decline_reason FROM valid_id_tb WHERE id = ?";
+                                    $status_stmt = $conn->prepare($status_query);
+                                    $status_stmt->bind_param("i", $user_id);
+                                    $status_stmt->execute();
+                                    $status_result = $status_stmt->get_result();
+                                    $status_row = $status_result->fetch_assoc();
+                                    $id_status = $status_row ? $status_row['is_validated'] : 'no';
+                                    $decline_reason = $status_row ? $status_row['decline_reason'] : '';
+                                    $status_stmt->close();
+                                    $conn->close();
+                                    
+                                    // Define status label style based on status value
+                                    switch ($id_status) {
+                                        case 'no':
+                                            $statusText = 'PENDING';
+                                            $statusClass = 'bg-yellow-100 text-yellow-800 border border-yellow-200';
+                                            $iconColor = 'text-yellow-500';
+                                            $icon = '<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>';
+                                            break;
+                                        case 'valid':
+                                            $statusText = 'APPROVED';
+                                            $statusClass = 'bg-green-100 text-green-800 border border-green-200';
+                                            $iconColor = 'text-green-500';
+                                            $icon = '<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>';
+                                            break;
+                                        case 'denied':
+                                            $statusText = 'DECLINED';
+                                            $statusClass = 'bg-red-100 text-red-800 border border-red-200';
+                                            $iconColor = 'text-red-500';
+                                            $icon = '<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>';
+                                            break;
+                                        default:
+                                            $statusText = 'PENDING';
+                                            $statusClass = 'bg-yellow-100 text-yellow-800 border border-yellow-200';
+                                            $iconColor = 'text-yellow-500';
+                                            $icon = '<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>';
+                                            break;
+                                    }
+                                ?>
+                                
+                                <div class="flex items-center mb-4">
+                                    <div class="flex items-center flex-grow">
+                                        <span class="text-sm text-gray-600 mr-2">ID Status:</span>
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium <?php echo $statusClass; ?>">
+                                            <svg class="w-4 h-4 mr-1 <?php echo $iconColor; ?>" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                                <?php echo $icon; ?>
+                                            </svg>
+                                            <?php echo $statusText; ?>
+                                        </span>
+                                    </div>
+                                    
+                                    <?php if ($id_status === 'denied' && $decline_reason): ?>
+                                        <button 
+                                            class="text-red-600 hover:text-red-800 text-sm flex items-center transition-colors" 
+                                            onclick="openDeclineReasonModal('<?php echo htmlspecialchars($decline_reason); ?>')"
+                                        >
+                                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2h-1V9z" clip-rule="evenodd"></path>
+                                            </svg>
+                                            View Details
+                                        </button>
+                                    <?php endif; ?>
+                                </div>
+                                
+                                <div class="relative group">
+                                    <!-- Container with hover effect -->
+                                    <div class="relative border-2 border-gray-200 rounded-lg overflow-hidden transition-all group-hover:border-blue-400 shadow-sm group-hover:shadow-md">
+                                        <!-- Thumbnail image that opens the modal when clicked -->
+                                        <img 
+                                            src="<?php echo '../uploads/valid_ids/' . htmlspecialchars($uploadedImagePath); ?>" 
+                                            alt="Uploaded ID"
+                                            class="w-full h-auto cursor-pointer hover:opacity-90 transition-opacity"
+                                            onclick="openImageModal('<?php echo '../uploads/valid_ids/' . htmlspecialchars($uploadedImagePath); ?>')"
+                                        >
+                                        
+                                        <!-- Overlay with view button -->
+                                        <div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <button class="bg-white text-navy px-4 py-2 rounded-lg shadow-lg flex items-center transition-transform transform hover:scale-105"
+                                                onclick="openImageModal('<?php echo '../uploads/valid_ids/' . htmlspecialchars($uploadedImagePath); ?>')">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                                </svg>
+                                                View Full Size
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Caption -->
+                                    <p class="text-xs text-gray-500 mt-2 text-center">Click on the image to view in full size</p>
+                                </div>
+                            <?php else: ?>
+                                <div class="flex flex-col items-center justify-center py-8 px-4 border-2 border-dashed border-gray-300 rounded-lg text-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    </svg>
+                                    <p class="text-sm text-gray-600 font-medium">No ID uploaded yet</p>
+                                    <p class="text-xs text-gray-500 mt-1">Upload a valid ID to verify your account</p>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                        
+                        <div class="hidden md:block">
+                            <div class="bg-blue-50 p-5 rounded-lg border border-blue-100 h-full">
+                                <h4 class="font-medium text-navy mb-3 flex items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    ID Upload Guidelines
+                                </h4>
+                                <ul class="space-y-2 text-sm text-gray-600">
+                                    <li class="flex items-start">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-500 mt-0.5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                        </svg>
+                                        Upload a clear, well-lit photo showing the entire ID
+                                    </li>
+                                    <li class="flex items-start">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-500 mt-0.5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                        </svg>
+                                        Ensure all four corners and edges are visible
+                                    </li>
+                                    <li class="flex items-start">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-500 mt-0.5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                        </svg>
+                                        All text should be sharp and readable
+                                    </li>
+                                    <li class="flex items-start">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-500 mt-0.5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                        </svg>
+                                        Avoid glare, shadows, or reflections
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
-<!-- Modal for enlarged image -->
+<!-- Modal for enlarged image - improved version -->
 <div id="imageModal" class="fixed inset-0 z-50 hidden bg-black bg-opacity-80 flex items-center justify-center p-4">
-    <img id="enlargedImage" src="" alt="Enlarged ID" class="max-w-full max-h-[90vh] object-contain">
+    <div class="relative max-w-4xl w-full mx-auto">
+        <button onclick="closeImageModal()" class="absolute -top-10 right-0 text-white hover:text-gray-300 transition-colors">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+        </button>
+        <img id="enlargedImage" src="" alt="Enlarged ID" class="max-w-full max-h-[80vh] object-contain rounded-lg shadow-2xl">
+    </div>
 </div>
 
-<!-- Modal for decline reason -->
+<!-- Modal for decline reason - improved version -->
 <div id="declineReasonModal" class="fixed inset-0 z-50 hidden bg-black bg-opacity-80 flex items-center justify-center p-4">
-    <div class="bg-white rounded-lg p-6 max-w-md w-full">
+    <div class="bg-white rounded-lg p-6 max-w-md w-full shadow-2xl">
         <div class="flex justify-between items-center mb-4">
-            <h3 class="text-lg font-bold text-red-600">ID Verification Declined</h3>
-            <button onclick="closeDeclineReasonModal()" class="text-gray-500 hover:text-gray-700">
+            <h3 class="text-lg font-bold text-red-600 flex items-center">
+                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Completing the SVG from where it was cut off -->
+                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                </svg>
+                Reason for Decline
+            </h3>
+            <button onclick="closeDeclineReasonModal()" class="text-gray-500 hover:text-gray-700 transition-colors">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                 </svg>
             </button>
         </div>
-        <div class="space-y-4">
-            <div class="flex items-start">
-                <svg class="w-5 h-5 text-red-500 mt-0.5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
-                </svg>
-                <div>
-                    <p id="declineReasonText" class="font-medium text-gray-800"></p>
-                    <p id="declineExplanation" class="text-sm text-gray-600 mt-1"></p>
-                </div>
-            </div>
+        <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+            <p id="declineReason" class="text-gray-700"></p>
         </div>
-        <div class="mt-6 flex justify-end">
-            <button onclick="closeDeclineReasonModal()" class="px-4 py-2 bg-navy text-white rounded-md hover:bg-navy-dark transition-colors">
-                Understood
+        <div class="flex justify-end">
+            <button onclick="closeDeclineReasonModal()" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium px-4 py-2 rounded-lg transition-colors">
+                Close
+            </button>
+            <button onclick="reuploadID()" class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-lg ml-3 transition-colors">
+                Reupload ID
             </button>
         </div>
     </div>
 </div>
 
-<!-- JavaScript for modal functionality -->
+<!-- JavaScript to handle modals -->
 <script>
-// Decline reason explanations
-const declineExplanations = {
-    'Incomplete Document': 'Your ID upload was declined because the entire document was not visible. Ensure all edges and text (like "REPUBLIC OF THE PHILIPPINES") are fully captured without cuts.',
-    'Cropped or Cut-off Text': 'Parts of your ID (e.g., headers or personal details) were cropped out. Zoom out to show the full document, including all four corners.',
-    'Blurry or Low-Quality Image': 'The photo was unclear, making text unreadable. Retake in bright light, hold steady, and ensure sharp focus before uploading.',
-    'Glare or Shadows': 'Bright spots or dark shadows covered details. Avoid flash, adjust lighting, and position the ID flat to prevent reflections.',
-    'Missing Critical Details': 'Key info (name, ID number, photo) was missing or hidden. Double-check that all personal details are clear and unobstructed.'
-};
-
-function openDeclineReasonModal(reason) {
-    document.getElementById('declineReasonText').textContent = reason;
-    
-    // Set the explanation if we have one, otherwise hide it
-    const explanationElement = document.getElementById('declineExplanation');
-    if (declineExplanations[reason]) {
-        explanationElement.textContent = declineExplanations[reason];
-        explanationElement.style.display = 'block';
-    } else {
-        explanationElement.style.display = 'none';
+    // Function to open image modal
+    function openImageModal(imageSrc) {
+        document.getElementById('enlargedImage').src = imageSrc;
+        document.getElementById('imageModal').classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
     }
     
-    // Show the modal
-    document.getElementById('declineReasonModal').classList.remove('hidden');
-    document.body.style.overflow = 'hidden';
-}
-
-function closeDeclineReasonModal() {
-    document.getElementById('declineReasonModal').classList.add('hidden');
-    document.body.style.overflow = 'auto';
-}
-
-function openImageModal(imagePath) {
-    // Set the source of the enlarged image
-    document.getElementById('enlargedImage').src = imagePath;
-    
-    // Show the modal
-    document.getElementById('imageModal').classList.remove('hidden');
-    document.getElementById('imageModal').classList.add('flex');
-    
-    // Prevent scrolling of the background
-    document.body.style.overflow = 'hidden';
-}
-
-function closeImageModal() {
-    // Hide the modal
-    document.getElementById('imageModal').classList.add('hidden');
-    document.getElementById('imageModal').classList.remove('flex');
-    
-    // Restore scrolling
-    document.body.style.overflow = 'auto';
-}
-
-// Close modal when clicking outside the image container
-document.getElementById('imageModal').addEventListener('click', function(event) {
-    if (event.target === this) {
-        closeImageModal();
+    // Function to close image modal
+    function closeImageModal() {
+        document.getElementById('imageModal').classList.add('hidden');
+        document.body.style.overflow = 'auto';
     }
-});
-
-// Close modal with Escape key
-document.addEventListener('keydown', function(event) {
-    if (event.key === 'Escape') {
-        if (!document.getElementById('imageModal').classList.contains('hidden')) {
+    
+    // Function to open decline reason modal
+    function openDeclineReasonModal(reason) {
+        document.getElementById('declineReason').textContent = reason;
+        document.getElementById('declineReasonModal').classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+    
+    // Function to close decline reason modal
+    function closeDeclineReasonModal() {
+        document.getElementById('declineReasonModal').classList.add('hidden');
+        document.body.style.overflow = 'auto';
+    }
+    
+    // Function to handle ID reupload
+    function reuploadID() {
+        // Close the modal first
+        closeDeclineReasonModal();
+        
+        // Redirect to ID upload page or open upload dialog
+        window.location.href = 'upload_id.php';
+    }
+    
+    // Close modals when clicking outside
+    window.addEventListener('click', function(event) {
+        if (event.target === document.getElementById('imageModal')) {
             closeImageModal();
         }
-        if (!document.getElementById('declineReasonModal').classList.contains('hidden')) {
+        if (event.target === document.getElementById('declineReasonModal')) {
             closeDeclineReasonModal();
         }
-    }
-});
+    });
+    
+    // Close modals with escape key
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            closeImageModal();
+            closeDeclineReasonModal();
+        }
+    });
+    
+    // Handle edit profile button click
+    document.getElementById('edit-profile-btn').addEventListener('click', function() {
+        window.location.href = 'edit_profile.php';
+    });
 </script>
-
-
-            </div>
-        </div>
-    </div>
                     
                     <!-- Bookings Tab -->
                     <div id="bookings" class="tab-content">
