@@ -801,43 +801,33 @@ header("Pragma: no-cache");
     }
     
     function reuploadID() {
-    console.log('Reupload ID function called');
+    // Close the decline reason modal first
     closeDeclineReasonModal();
     
-    // Get the edit profile modal
+    // Open the edit profile modal
     const modal = document.getElementById('edit-profile-modal');
-    
-    // Reset modal state
     modal.classList.remove('hidden');
-    modal.style.display = 'flex'; // Force display style
-    
-    // Trigger reflow to ensure CSS transitions work
-    void modal.offsetWidth;
-    
-    // Apply active classes
     modal.classList.remove('opacity-0', 'scale-95');
     modal.classList.add('opacity-100', 'scale-100');
     
-    // Load address data
+    // Load address data (if needed)
     setTimeout(loadAddressData, 100);
     
-    // Scroll to the ID upload section
     setTimeout(() => {
-        const idUploadSection = document.querySelector('label[for="id-upload"]');
-        if (idUploadSection) {
-            idUploadSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            
-            // Highlight the upload area
-            const uploadContainer = idUploadSection.closest('.flex.flex-col.sm\\:flex-row.gap-4');
-            if (uploadContainer) {
-                uploadContainer.classList.add('ring-2', 'ring-yellow-500', 'animate-pulse');
-                setTimeout(() => {
-                    uploadContainer.classList.remove('ring-2', 'ring-yellow-500', 'animate-pulse');
-                }, 2000);
-            }
+    const idUploadSection = document.querySelector('label[for="id-upload"]');
+    if (idUploadSection) {
+        idUploadSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        
+        // Highlight the upload area
+        const uploadContainer = idUploadSection.closest('.flex.flex-col.sm\\:flex-row.gap-4');
+        if (uploadContainer) {
+            uploadContainer.classList.add('ring-2', 'ring-yellow-500', 'animate-pulse');
+            setTimeout(() => {
+                uploadContainer.classList.remove('ring-2', 'ring-yellow-500', 'animate-pulse');
+            }, 2000);
         }
-    }, 500);
-}
+    }
+}, 500);
 
 // Ensure the edit profile button listener is properly attached
 document.addEventListener('DOMContentLoaded', function() {
@@ -870,6 +860,7 @@ document.addEventListener('DOMContentLoaded', function() {
             closeDeclineReasonModal();
         }
     });
+}
     
     
 </script>
