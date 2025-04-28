@@ -552,53 +552,39 @@ document.addEventListener('DOMContentLoaded', function() {
     };
   }
 
-  // Process the data
-  const rawCasketData = <?php echo json_encode($casketData); ?>;
+// Create the heatmap chart with improved configuration
+const rawCasketData = <?php echo json_encode($casketData); ?>;
 const heatmapData = processDataForHeatmap(rawCasketData);
 
-// Create the heatmap chart with improved configuration
+// Create the heatmap chart following the requested design
 var options = {
   series: heatmapData.series,
   chart: {
+    height: 350,
     type: 'heatmap',
-    height: 450, // Increase height for better readability in single column
-    toolbar: { show: false },
-    animations: { enabled: false },
-    parentHeightOffset: 0,
-    redrawOnParentResize: true
   },
   stroke: {
-    width: 1,
-    colors: ['#fff']
+    width: 0
   },
   plotOptions: {
     heatmap: {
-      radius: 6, // Reduced radius for better spacing
+      radius: 30,
       enableShades: false,
-      useFillColorAsStroke: true,
-      distributed: false,
       colorScale: {
         ranges: [
-          { from: 0, to: 25, color: '#D1E8FF' }, // Lighter blue for low values
-          { from: 26, to: 50, color: '#008FFB' },
-          { from: 51, to: 75, color: '#00CC96' }, // Adjusted green
-          { from: 76, to: 100, color: '#00E396' },
-          { from: 101, to: 150, color: '#FEB019' }
-        ]
-      }
+          { from: 0, to: 50, color: '#008FFB' },
+          { from: 51, to: 100, color: '#00E396' },
+          { from: 101, to: 150, color: '#FEB019' },
+        ],
+      },
     }
   },
   dataLabels: {
     enabled: true,
     style: {
-      colors: ['#000'], // Black text for better visibility on lighter colors
-      fontSize: '12px', // Increased font size
-      fontFamily: 'Helvetica, Arial, sans-serif',
-      fontWeight: 'bold'
+      colors: ['#fff']
     },
     formatter: function(val, opts) {
-      if (val == 0) return ''; // Hide zero values to reduce clutter
-      
       if (opts.seriesIndex >= 0 && opts.dataPointIndex >= 0) {
         const point = heatmapData.series[opts.seriesIndex].data[opts.dataPointIndex];
         if (point.forecast) {
@@ -606,8 +592,7 @@ var options = {
         }
       }
       return val;
-    },
-    offsetY: 0
+    }
   },
   xaxis: {
     type: 'category',
@@ -615,38 +600,11 @@ var options = {
     labels: {
       formatter: function(value) {
         return value.split('-')[1] + '/' + value.split('-')[0].slice(2);
-      },
-      style: {
-        fontSize: '11px'
-      },
-      rotate: -45,
-      hideOverlappingLabels: false // Show all labels in single column layout
-    },
-    tooltip: { enabled: false },
-    axisBorder: { show: true }, // Show borders for better separation
-    axisTicks: { show: true }
-  },
-  yaxis: {
-    labels: {
-      style: {
-        fontSize: '12px' // Increased font size
-      },
-      offsetX: 5
+      }
     }
   },
-  legend: {
-    show: true,
-    position: 'bottom'
-  },
-  grid: {
-    padding: {
-      top: 20,
-      right: 20, // Increased padding
-      bottom: 20, // Increased padding
-      left: 20 // Increased padding
-    },
-    xaxis: { lines: { show: true } }, // Show grid lines for better readability
-    yaxis: { lines: { show: true } }
+  title: {
+    text: 'Casket Demand Forecast',
   },
   tooltip: {
     custom: function({ series, seriesIndex, dataPointIndex, w }) {
@@ -656,73 +614,15 @@ var options = {
       const isForecast = w.config.series[seriesIndex].data[dataPointIndex].forecast;
       
       return `
-        <div class="p-3 bg-white border border-gray-200 rounded shadow">
-          <div class="font-bold text-base">${item}</div>
-          <div class="mt-1"><strong>Month:</strong> ${month}</div>
-          <div><strong>Units Sold:</strong> ${value}</div>
-          ${isForecast ? '<div class="text-yellow-600 font-medium mt-1">Forecasted Value</div>' : ''}
+        <div class="p-2 bg-white border border-gray-200 rounded shadow">
+          <div class="font-bold">${item}</div>
+          <div>Month: ${month}</div>
+          <div>Sold: ${value}</div>
+          ${isForecast ? '<div class="text-yellow-600">Forecasted Value</div>' : ''}
         </div>
       `;
     }
-  },
-  title: {
-    text: 'Casket Sales & Demand Forecast',
-    align: 'left',
-    style: {
-      fontSize: '16px',
-      fontWeight: 'bold'
-    }
-  },
-  subtitle: {
-    text: 'Historical data and forecast predictions',
-    align: 'left',
-    style: {
-      fontSize: '13px',
-      color: '#6c757d'
-    }
-  },
-  responsive: [
-    {
-      breakpoint: 1024,
-      options: {
-        chart: {
-          height: 400
-        }
-      }
-    },
-    {
-      breakpoint: 768,
-      options: {
-        chart: {
-          height: 380
-        },
-        dataLabels: {
-          enabled: false // Hide labels on smaller screens to prevent clutter
-        },
-        plotOptions: {
-          heatmap: {
-            radius: 4
-          }
-        }
-      }
-    },
-    {
-      breakpoint: 480,
-      options: {
-        chart: {
-          height: 300
-        },
-        legend: {
-          position: 'bottom'
-        },
-        xaxis: {
-          labels: {
-            rotate: -90 // More rotation on smallest screens
-          }
-        }
-      }
-    }
-  ]
+  }
 };
 
 // Render the chart
