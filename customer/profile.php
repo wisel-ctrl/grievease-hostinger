@@ -612,6 +612,7 @@ header("Pragma: no-cache");
         </div>
     </div>
 </div>
+                    </div>
                     
                     <!-- Address section taking full width -->
                     <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden col-span-1 lg:col-span-2">
