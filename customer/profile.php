@@ -543,38 +543,6 @@ header("Pragma: no-cache");
             
             <!-- Content area with improved spacing and grouping -->
             <div class="p-8">
-                <!-- Profile summary card at the top -->
-                <div class="flex flex-col md:flex-row items-center bg-gray-50 p-6 rounded-xl mb-8 border border-gray-100">
-                    <div class="bg-navy h-24 w-24 rounded-full flex items-center justify-center text-white text-3xl font-bold mb-4 md:mb-0 md:mr-6">
-                        <?php echo strtoupper(substr($first_name, 0, 1) . substr($last_name, 0, 1)); ?>
-                    </div>
-                    <div class="text-center md:text-left md:flex-1">
-                        <h4 class="text-2xl font-semibold text-navy"><?php echo htmlspecialchars(ucwords($first_name . ' ' . $last_name)); ?></h4>
-                        <p class="text-gray-500 flex items-center justify-center md:justify-start mt-1">
-                            <svg class="w-4 h-4 mr-2 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
-                                <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
-                            </svg>
-                            <?php echo htmlspecialchars($email); ?>
-                        </p>
-                        <?php if(!empty($phone_number)): ?>
-                        <p class="text-gray-500 flex items-center justify-center md:justify-start mt-1">
-                            <svg class="w-4 h-4 mr-2 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"></path>
-                            </svg>
-                            <?php echo htmlspecialchars($phone_number); ?>
-                        </p>
-                        <?php endif; ?>
-                    </div>
-                    <div class="mt-4 md:mt-0">
-                        <span class="inline-flex items-center px-3 py-1 rounded-lg text-sm font-medium bg-blue-100 text-blue-800">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                            </svg>
-                            Member since <?php echo date('M Y', strtotime($created_at)); ?>
-                        </span>
-                    </div>
-                </div>
 
                 <!-- Information sections with card-based layout -->
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -903,86 +871,6 @@ header("Pragma: no-cache");
                                         <span>Avoid glare, shadows, or reflections</span>
                                     </li>
                                 </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Account security section (new) -->
-                <div class="mt-8 pt-6 border-t border-gray-200">
-                    <div class="flex items-center mb-6">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-navy mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                        </svg>
-                        <h3 class="font-hedvig text-xl text-navy font-semibold">Account Security</h3>
-                    </div>
-                    
-                    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-                        <div class="p-6">
-                            <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6 pb-6 border-b border-gray-100">
-                                <div class="flex items-start mb-4 md:mb-0">
-                                    <div class="bg-green-100 p-2 rounded-full mr-4">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                                        </svg>
-                                    </div>
-                                    <div>
-                                        <h4 class="text-lg font-medium text-navy mb-1">Password Protection</h4>
-                                        <p class="text-sm text-gray-600">
-                                            It's recommended to change your password regularly for optimal security.
-                                        </p>
-                                    </div>
-                                </div>
-                                <button id="open-change-password-modal-alt" onclick="openChangePasswordModal()" class="px-4 py-2 bg-navy text-white rounded-lg hover:bg-blue-800 transition-colors flex items-center justify-center whitespace-nowrap">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                                    </svg>
-                                    Change Password
-                                </button>
-                            </div>
-                            
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div class="bg-gray-50 rounded-lg p-4">
-                                    <div class="flex items-center mb-3">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                        </svg>
-                                        <h5 class="font-medium text-navy">Security Tips</h5>
-                                    </div>
-                                    <ul class="space-y-2 text-sm text-gray-600">
-                                        <li class="flex items-start">
-                                            <svg class="w-4 h-4 text-blue-500 mt-0.5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                                            </svg>
-                                            Use a unique password for each online account
-                                        </li>
-                                        <li class="flex items-start">
-                                            <svg class="w-4 h-4 text-blue-500 mt-0.5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                                            </svg>
-                                            Include numbers, symbols, and mixed case letters
-                                        </li>
-                                        <li class="flex items-start">
-                                            <svg class="w-4 h-4 text-blue-500 mt-0.5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                                            </svg>
-                                            Avoid using personal information in your password
-                                        </li>
-                                    </ul>
-                                </div>
-                                
-                                <div class="bg-gray-50 rounded-lg p-4">
-                                    <div class="flex items-center mb-3">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                        </svg>
-                                        <h5 class="font-medium text-navy">Account Activity</h5>
-                                    </div>
-                                    <div class="text-sm text-gray-600">
-                                        <p class="mb-2">Last login: <span class="font-medium text-navy"><?php echo date('F d, Y h:i A', strtotime($last_login)); ?></span></p>
-                                        <p>Last password change: <span class="font-medium text-navy"><?php echo !empty($last_password_change) ? date('F d, Y', strtotime($last_password_change)) : 'N/A'; ?></span></p>
-                                    </div>
-                                </div>
                             </div>
                         </div>
                     </div>
