@@ -370,7 +370,7 @@ function calculateLinearRegressionForecast(historicalData, forecastMonths = 6) {
 if (historicalRevenueData && historicalRevenueData.length > 0) {
     const regressionResults = calculateLinearRegressionForecast(historicalRevenueData, 6);
     
-    // Calculate forecast accuracy metrics (simplified example)
+    // Calculate forecast accuracy metrics
     const lastActual = regressionResults.historicalChartData[regressionResults.historicalChartData.length - 1].y;
     const firstForecast = regressionResults.forecastData[0].y;
     const forecastAccuracy = 100 - Math.abs((firstForecast - lastActual) / lastActual * 100);
@@ -378,36 +378,41 @@ if (historicalRevenueData && historicalRevenueData.length > 0) {
     // Update the forecast accuracy display
     document.querySelector('.forecast-accuracy-value').textContent = forecastAccuracy.toFixed(1) + '%';
     
-    // Create the chart
+    // Create the chart with explicit line styles
     var options = {
         series: [{
             name: 'Actual Revenue',
             data: regressionResults.historicalChartData,
+            color: '#3A57E8', // Explicit color for actual
             stroke: {
                 width: 3,
                 curve: 'smooth',
-                dashArray: 0 // Solid line for actual data
+                lineCap: 'round',
+                dashArray: 0 // Ensures solid line
             }
         }, {
             name: 'Forecasted Revenue',
             data: regressionResults.forecastData,
+            color: '#FF5733', // Explicit color for forecast
             stroke: {
                 width: 3,
                 curve: 'smooth',
-                dashArray: 5 // Dashed line for forecast
+                dashArray: [5, 5] // Explicit dashed pattern
             }
         }],
         chart: {
             height: 350,
             type: 'line',
+            animations: {
+                enabled: false // More precise rendering
+            }
         },
         xaxis: {
             type: 'datetime',
             tickAmount: 10,
             labels: {
                 formatter: function(value) {
-                    const date = new Date(value);
-                    return date.toLocaleString('default', { month: 'short', year: 'numeric' });
+                    return new Date(value).toLocaleDateString('default', { month: 'short', year: 'numeric' });
                 }
             }
         },
@@ -419,7 +424,6 @@ if (historicalRevenueData && historicalRevenueData.length > 0) {
                 color: '#666'
             }
         },
-        colors: ['#3A57E8', '#FF5733'], // First color for actual, second for forecast
         markers: {
             size: 4,
             hover: {
@@ -435,20 +439,17 @@ if (historicalRevenueData && historicalRevenueData.length > 0) {
                     return '$' + value.toLocaleString();
                 }
             }
-        },
-        forecastDataPoints: {
-            count: 6
         }
     };
 
     var chart = new ApexCharts(document.querySelector("#salesForecastChart"), options);
     chart.render();
     
-    // Update the forecast card values
+    // Update forecast summary
     const totalForecast = regressionResults.forecastData.reduce((sum, point) => sum + point.y, 0);
-    document.querySelector('.sales-forecast-value').textContent = '$' + totalForecast.toLocaleString(undefined, {maximumFractionDigits: 0});
+    document.querySelector('.sales-forecast-value').textContent = '$' + Math.round(totalForecast).toLocaleString();
 } else {
-    document.querySelector("#salesForecastChart").innerHTML = '<div class="p-4 text-center text-gray-500">No revenue data available for forecasting</div>';
+    document.querySelector("#salesForecastChart").innerHTML = '<div class="p-4 text-center text-gray-500">No revenue data available</div>';
 }
 
   // Demand Prediction Chart
