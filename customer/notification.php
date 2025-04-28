@@ -760,6 +760,12 @@ document.addEventListener('click', function(event) {
                     <?php if ($item['type'] === 'booking'): ?>
                         <?php 
                             $booking = $item['data'];
+                            
+                            // Skip this notification if booking is cancelled
+                            if (isset($booking['is_cancelled']) && $booking['is_cancelled'] == 1) {
+                                continue;
+                            }
+                            
                             $border_color = '';
                             $status_bg = '';
                             $status_icon = '';

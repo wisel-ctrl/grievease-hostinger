@@ -1037,115 +1037,135 @@ document.addEventListener('DOMContentLoaded', function() {
     
 </script>
                     
-                    <!-- Bookings Tab -->
-                    <div id="bookings" class="tab-content">
-                        <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
-                            <div class="p-6 border-b border-gray-100">
-                                <h3 class="font-hedvig text-xl text-navy">My Bookings</h3>
-                            </div>
-                            <div class="p-6">
-                                <!-- Active Booking -->
-                                <div class="bg-yellow-600/5 border border-yellow-600/20 rounded-lg p-4 mb-6">
-                                    <div class="flex items-center justify-between mb-3">
-                                        <div>
-                                            <span class="bg-yellow-600/10 text-yellow-600 text-xs px-2 py-1 rounded-full">Active</span>
-                                        </div>
-                                        <p class="text-sm text-gray-500">Booking ID: #GE-2025-1234</p>
-                                    </div>
-                                    <h4 class="font-hedvig text-lg text-navy mb-2">Traditional Funeral Package</h4>
-                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
-                                        <div>
-                                            <p class="text-sm text-gray-500">Service Date</p>
-                                            <p class="text-navy">March 15, 2025</p>
-                                        </div>
-                                        <div>
-                                            <p class="text-sm text-gray-500">Service Time</p>
-                                            <p class="text-navy">10:00 AM - 12:00 PM</p>
-                                        </div>
-                                        <div>
-                                            <p class="text-sm text-gray-500">Total Amount</p>
-                                            <p class="text-navy font-bold">$4,995.00</p>
-                                        </div>
-                                    </div>
-                                    <div class="flex justify-end">
-                                        <button class="bg-navy/5 text-navy px-3 py-1 rounded hover:bg-navy/10 transition text-sm mr-2">
-                                            <i class="fas fa-file-alt mr-1"></i> View Details
-                                        </button>
-                                        <button class="modify-booking bg-yellow-600 text-white px-3 py-1 rounded hover:bg-yellow-700 transition text-sm mr-2" data-booking="GE-2025-1234">
-                                            <i class="fas fa-edit mr-1"></i> Modify
-                                        </button>
-                                        <button class="cancel-booking bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition text-sm" data-booking="GE-2025-1234">
-                                            <i class="fas fa-times mr-1"></i> Cancel
-                                        </button>
-                                    </div>
-                                </div>
-                                
-                                <!-- Past Booking -->
-                                <div class="border border-gray-200 rounded-lg p-4 mb-6">
-                                    <div class="flex items-center justify-between mb-3">
-                                        <div>
-                                            <span class="bg-green-500/10 text-green-500 text-xs px-2 py-1 rounded-full">Completed</span>
-                                        </div>
-                                        <p class="text-sm text-gray-500">Booking ID: #GE-2025-0987</p>
-                                    </div>
-                                    <h4 class="font-hedvig text-lg text-navy mb-2">Memorial Service Package</h4>
-                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
-                                        <div>
-                                            <p class="text-sm text-gray-500">Service Date</p>
-                                            <p class="text-navy">January 20, 2025</p>
-                                        </div>
-                                        <div>
-                                            <p class="text-sm text-gray-500">Service Time</p>
-                                            <p class="text-navy">2:00 PM - 4:00 PM</p>
-                                        </div>
-                                        <div>
-                                            <p class="text-sm text-gray-500">Total Amount</p>
-                                            <p class="text-navy font-bold">$2,895.00</p>
-                                        </div>
-                                    </div>
-                                    <div class="flex justify-end">
-                                        <button class="bg-navy/5 text-navy px-3 py-1 rounded hover:bg-navy/10 transition text-sm">
-                                            <i class="fas fa-file-alt mr-1"></i> View Details
-                                        </button>
-                                    </div>
-                                </div>
-                                
-                                <!-- Life Plan Booking -->
-                                <div class="border border-gray-200 rounded-lg p-4">
-                                    <div class="flex items-center justify-between mb-3">
-                                        <div>
-                                            <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">Life Plan</span>
-                                        </div>
-                                        <p class="text-sm text-gray-500">Plan ID: #GE-PLAN-2025-5678</p>
-                                    </div>
-                                    <h4 class="font-hedvig text-lg text-navy mb-2">Premium Life Plan</h4>
-                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
-                                        <div>
-                                            <p class="text-sm text-gray-500">Payment Schedule</p>
-                                            <p class="text-navy">Monthly</p>
-                                        </div>
-                                        <div>
-                                            <p class="text-sm text-gray-500">Next Payment</p>
-                                            <p class="text-navy">April 15, 2025</p>
-                                        </div>
-                                        <div>
-                                            <p class="text-sm text-gray-500">Monthly Payment</p>
-                                            <p class="text-navy font-bold">$85.00</p>
-                                        </div>
-                                    </div>
-                                    <div class="flex justify-end">
-                                        <button class="bg-navy/5 text-navy px-3 py-1 rounded hover:bg-navy/10 transition text-sm mr-2">
-                                            <i class="fas fa-file-alt mr-1"></i> View Details
-                                        </button>
-                                        <button class="modify-booking bg-yellow-600 text-white px-3 py-1 rounded hover:bg-yellow-700 transition text-sm" data-booking="GE-PLAN-2025-5678">
-                                            <i class="fas fa-edit mr-1"></i> Modify Plan
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+<!-- Bookings Tab -->
+<div id="bookings" class="tab-content">
+    <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
+        <div class="p-6 border-b border-gray-100">
+            <h3 class="font-hedvig text-xl text-navy">My Bookings</h3>
+        </div>
+        <div class="p-6">
+            <?php
+            // Fetch all bookings for the current customer
+            $query = "SELECT b.*, s.service_name, s.selling_price, br.branch_name 
+                  FROM booking_tb b
+                  JOIN services_tb s ON b.service_id = s.service_id
+                  JOIN branch_tb br ON b.branch_id = br.branch_id
+                  WHERE b.customerID = ? AND b.is_cancelled = 0
+                  ORDER BY CASE 
+                      WHEN b.status = 'Pending' THEN 1
+                      WHEN b.status = 'Accepted' THEN 2
+                      WHEN b.status = 'Declined' THEN 3
+                      ELSE 4
+                  END, b.booking_date DESC";
                     
+            $stmt = $conn->prepare($query);
+            $stmt->bind_param("i", $user_id);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            
+            if ($result->num_rows > 0) {
+                while ($booking = $result->fetch_assoc()) {
+                    // Determine status color and text
+                    $status_class = '';
+                    $status_text = '';
+                    switch ($booking['status']) {
+                        case 'Pending':
+                            $status_class = 'bg-yellow-600/10 text-yellow-600';
+                            $status_text = 'Pending';
+                            break;
+                        case 'Accepted':
+                            $status_class = 'bg-green-500/10 text-green-500';
+                            $status_text = 'Active';
+                            break;
+                        case 'Declined':
+                            $status_class = 'bg-red-500/10 text-red-500';
+                            $status_text = 'Declined';
+                            break;
+                    }
+                    
+                    // Format dates
+                    $booking_date = date('F j, Y', strtotime($booking['booking_date']));
+                    $burial_date = $booking['deceased_dateOfBurial'] ? date('F j, Y', strtotime($booking['deceased_dateOfBurial'])) : 'Not set';
+                    
+                    // Format deceased name
+                    $deceased_name = $booking['deceased_lname'] . ', ' . $booking['deceased_fname'];
+                    if (!empty($booking['deceased_midname'])) {
+                        $deceased_name .= ' ' . $booking['deceased_midname'];
+                    }
+                    if (!empty($booking['deceased_suffix'])) {
+                        $deceased_name .= ' ' . $booking['deceased_suffix'];
+                    }
+                    
+                    // Format price
+                    $price = number_format($booking['selling_price'], 2);
+                    $amount_paid = $booking['amount_paid'] ? number_format($booking['amount_paid'], 2) : '0.00';
+                    $balance = number_format($booking['selling_price'] - ($booking['amount_paid'] ?? 0), 2);
+            ?>
+            <div class="<?php echo $booking['status'] === 'Pending' ? 'bg-yellow-600/5 border-yellow-600/20' : 'border-gray-200'; ?> border rounded-lg p-4 mb-6">
+                <div class="flex items-center justify-between mb-3">
+                    <div>
+                        <span class="<?php echo $status_class; ?> text-xs px-2 py-1 rounded-full"><?php echo $status_text; ?></span>
+                    </div>
+                    <p class="text-sm text-gray-500">Booking ID: <?php echo $booking['booking_id']; ?></p>
+                </div>
+                <h4 class="font-hedvig text-lg text-navy mb-2"><?php echo $booking['service_name']; ?></h4>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
+                    <div>
+                        <p class="text-sm text-gray-500">Deceased Name</p>
+                        <p class="text-navy"><?php echo $deceased_name; ?></p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500">Branch</p>
+                        <p class="text-navy"><?php echo $booking['branch_name']; ?></p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500">Burial Date</p>
+                        <p class="text-navy"><?php echo $burial_date; ?></p>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
+                    <div>
+                        <p class="text-sm text-gray-500">Total Amount</p>
+                        <p class="text-navy font-bold">₱<?php echo $price; ?></p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500">Amount Paid</p>
+                        <p class="text-navy">₱<?php echo $amount_paid; ?></p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500">Balance</p>
+                        <p class="text-navy">₱<?php echo $balance; ?></p>
+                    </div>
+                </div>
+                <div class="flex justify-end">
+                    <button class="view-details bg-navy/5 text-navy px-3 py-1 rounded hover:bg-navy/10 transition text-sm mr-2" data-booking="<?php echo $booking['booking_id']; ?>">
+                        <i class="fas fa-file-alt mr-1"></i> View Details
+                    </button>
+                    <?php if ($booking['status'] === 'Pending'): ?>
+                    <button class="modify-booking bg-yellow-600 text-white px-3 py-1 rounded hover:bg-yellow-700 transition text-sm mr-2" data-booking="<?php echo $booking['booking_id']; ?>">
+                        <i class="fas fa-edit mr-1"></i> Modify
+                    </button>
+                    <button class="cancel-booking bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition text-sm" data-booking="<?php echo $booking['booking_id']; ?>">
+                        <i class="fas fa-times mr-1"></i> Cancel
+                    </button>
+                    <?php elseif ($booking['status'] === 'Accepted'): ?>
+                    <button class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition text-sm mr-2">
+                        <i class="fas fa-receipt mr-1"></i> View Receipt
+                    </button>
+                    <?php endif; ?>
+                </div>
+            </div>
+            <?php
+                }
+            } else {
+                echo '<p class="text-gray-500">You have no bookings yet.</p>';
+            }
+            $stmt->close();
+            ?>
+        </div>
+    </div>
+</div>
+
                     <!-- Transaction Logs Tab -->
 <div id="transaction-logs" class="tab-content">
     <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
@@ -1762,6 +1782,595 @@ document.addEventListener('DOMContentLoaded', function() {
     </div>
   </div>
 </div>
+
+
+<!-- View Details Modal -->
+<div id="viewDetailsModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+        <div class="p-6 border-b border-gray-200 flex justify-between items-center">
+            <h3 class="font-hedvig text-xl text-navy">Booking Details</h3>
+            <button class="close-modal text-gray-500 hover:text-gray-700">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="p-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div>
+                    <h4 class="font-semibold text-navy mb-3">Service Information</h4>
+                    <div class="space-y-2">
+                        <p><span class="text-gray-500">Service:</span> <span id="detail-service" class="text-navy"></span></p>
+                        <p><span class="text-gray-500">Branch:</span> <span id="detail-branch" class="text-navy"></span></p>
+                        <p><span class="text-gray-500">Status:</span> <span id="detail-status" class="text-navy"></span></p>
+                        <p><span class="text-gray-500">Booking Date:</span> <span id="detail-booking-date" class="text-navy"></span></p>
+                        <p><span class="text-gray-500">Total Amount:</span> <span id="detail-total" class="text-navy font-bold"></span></p>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-navy mb-3">Deceased Information</h4>
+                    <div class="space-y-2">
+                        <p><span class="text-gray-500">Name:</span> <span id="detail-deceased-name" class="text-navy"></span></p>
+                        <p><span class="text-gray-500">Birth Date:</span> <span id="detail-birth" class="text-navy"></span></p>
+                        <p><span class="text-gray-500">Date of Death:</span> <span id="detail-dod" class="text-navy"></span></p>
+                        <p><span class="text-gray-500">Burial Date:</span> <span id="detail-burial" class="text-navy"></span></p>
+                        <p><span class="text-gray-500">Address:</span> <span id="detail-address" class="text-navy"></span></p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mb-6">
+                <h4 class="font-semibold text-navy mb-3">Payment Information</h4>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-gray-50 p-3 rounded">
+                        <p class="text-gray-500 text-sm">Amount Paid</p>
+                        <p id="detail-paid" class="text-navy font-bold"></p>
+                    </div>
+                    <div class="bg-gray-50 p-3 rounded">
+                        <p class="text-gray-500 text-sm">Balance</p>
+                        <p id="detail-balance" class="text-navy font-bold"></p>
+                    </div>
+                    <div class="bg-gray-50 p-3 rounded">
+                        <p class="text-gray-500 text-sm">Reference Code</p>
+                        <p id="detail-reference" class="text-navy"></p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex justify-end space-x-3">
+                <button class="close-modal bg-gray-100 text-gray-700 px-4 py-2 rounded hover:bg-gray-200 transition">
+                    Close
+                </button>
+                <button id="viewDeathCertBtn" class="bg-navy text-white px-4 py-2 rounded hover:bg-navy/90 transition">
+                    <i class="fas fa-file-medical mr-2"></i> View Death Certificate
+                </button>
+                <button id="viewPaymentBtn" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition">
+                    <i class="fas fa-receipt mr-2"></i> View Payment Proof
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modify Booking Modal -->
+<div id="modifyBookingModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+        <div class="p-6 border-b border-gray-200 flex justify-between items-center">
+            <h3 class="font-hedvig text-xl text-navy">Modify Booking</h3>
+            <button class="close-modal text-gray-500 hover:text-gray-700">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="p-6">
+            <form id="modifyBookingForm">
+                <input type="hidden" id="modify-booking-id" name="booking_id">
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div>
+                        <h4 class="font-semibold text-navy mb-3">Service Information</h4>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-gray-500 text-sm mb-1">Service Package</label>
+                                <select name="service_id" class="w-full border border-gray-300 rounded px-3 py-2" required>
+                                    <?php
+                                    $services_query = "SELECT service_id, service_name, selling_price FROM services_tb WHERE status = 'Active'";
+                                    $services_result = $conn->query($services_query);
+                                    while ($service = $services_result->fetch_assoc()) {
+                                        echo "<option value='{$service['service_id']}' data-price='{$service['selling_price']}'>{$service['service_name']} (₱" . number_format($service['selling_price'], 2) . ")</option>";
+                                    }
+                                    ?>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-gray-500 text-sm mb-1">Branch Location</label>
+                                <select name="branch_id" class="w-full border border-gray-300 rounded px-3 py-2" required>
+                                    <?php
+                                    $branches_query = "SELECT branch_id, branch_name FROM branch_tb";
+                                    $branches_result = $conn->query($branches_query);
+                                    while ($branch = $branches_result->fetch_assoc()) {
+                                        echo "<option value='{$branch['branch_id']}'>{$branch['branch_name']}</option>";
+                                    }
+                                    ?>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-gray-500 text-sm mb-1">Burial Date</label>
+                                <input type="date" name="deceased_dateOfBurial" class="w-full border border-gray-300 rounded px-3 py-2" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-navy mb-3">Deceased Information</h4>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-gray-500 text-sm mb-1">First Name</label>
+                                <input type="text" name="deceased_fname" class="w-full border border-gray-300 rounded px-3 py-2" required>
+                            </div>
+                            <div>
+                                <label class="block text-gray-500 text-sm mb-1">Middle Name</label>
+                                <input type="text" name="deceased_midname" class="w-full border border-gray-300 rounded px-3 py-2">
+                            </div>
+                            <div>
+                                <label class="block text-gray-500 text-sm mb-1">Last Name</label>
+                                <input type="text" name="deceased_lname" class="w-full border border-gray-300 rounded px-3 py-2" required>
+                            </div>
+                            <div>
+                                <label class="block text-gray-500 text-sm mb-1">Suffix</label>
+                                <input type="text" name="deceased_suffix" class="w-full border border-gray-300 rounded px-3 py-2">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-6">
+                    <h4 class="font-semibold text-navy mb-3">Additional Information</h4>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-gray-500 text-sm mb-1">Birth Date</label>
+                            <input type="date" name="deceased_birth" class="w-full border border-gray-300 rounded px-3 py-2">
+                        </div>
+                        <div>
+                            <label class="block text-gray-500 text-sm mb-1">Date of Death</label>
+                            <input type="date" name="deceased_dodeath" class="w-full border border-gray-300 rounded px-3 py-2">
+                        </div>
+                        <div>
+                            <label class="block text-gray-500 text-sm mb-1">Address</label>
+                            <textarea name="deceased_address" rows="2" class="w-full border border-gray-300 rounded px-3 py-2"></textarea>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" name="with_cremate" id="with_cremate" class="mr-2">
+                            <label for="with_cremate" class="text-gray-500 text-sm">Include Cremation Service</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex justify-end space-x-3">
+                    <button type="button" class="close-modal bg-gray-100 text-gray-700 px-4 py-2 rounded hover:bg-gray-200 transition">
+                        Cancel
+                    </button>
+                    <button type="submit" class="bg-navy text-white px-4 py-2 rounded hover:bg-navy/90 transition">
+                        <i class="fas fa-save mr-2"></i> Save Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Cancel Booking Modal -->
+<div id="cancelBookingModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-lg w-full max-w-md mx-4">
+        <div class="p-6 border-b border-gray-200 flex justify-between items-center">
+            <h3 class="font-hedvig text-xl text-navy">Cancel Booking</h3>
+            <button class="close-modal text-gray-500 hover:text-gray-700">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="p-6">
+            <form id="cancelBookingForm">
+                <input type="hidden" id="cancel-booking-id" name="booking_id">
+                <p class="mb-4">Are you sure you want to cancel this booking?</p>
+                <p class="mb-4 text-red-600 font-semibold">Please note that your downpayment will NOT be refunded if you proceed with cancellation.</p>
+                
+                <div class="mb-4">
+                    <label class="block text-gray-500 text-sm mb-1">Reason for Cancellation</label>
+                    <textarea name="cancel_reason" rows="3" class="w-full border border-gray-300 rounded px-3 py-2" required></textarea>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-gray-500 text-sm mb-1">OTP Verification</label>
+                    <div class="flex items-center space-x-2">
+                        <input type="text" name="otp" id="otpInput" class="border border-gray-300 rounded px-3 py-2 flex-1" placeholder="Enter OTP" required>
+                        <button type="button" id="sendOtpBtn" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
+                            Send OTP
+                        </button>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-1">We'll send a verification code to your email</p>
+                </div>
+                
+                <div class="flex justify-end space-x-3">
+                    <button type="button" class="close-modal bg-gray-100 text-gray-700 px-4 py-2 rounded hover:bg-gray-200 transition">
+                        No, Keep Booking
+                    </button>
+                    <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition">
+                        <i class="fas fa-times mr-2"></i> Confirm Cancellation
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+    </div>
+</div>
+
+<!-- View Document Modal (for death cert and payment proof) -->
+<div id="viewDocumentModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-lg w-full max-w-4xl max-h-[90vh] overflow-hidden">
+        <div class="p-6 border-b border-gray-200 flex justify-between items-center">
+            <h3 class="font-hedvig text-xl text-navy" id="document-modal-title">Document</h3>
+            <button class="close-modal text-gray-500 hover:text-gray-700">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="p-6 flex justify-center">
+            <img id="document-image" src="" alt="Document" class="max-w-full max-h-[70vh]">
+        </div>
+        <div class="p-4 border-t border-gray-200 flex justify-end">
+            <button class="close-modal bg-navy text-white px-4 py-2 rounded hover:bg-navy/90 transition">
+                Close
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Success Notification -->
+<div id="successNotification" class="fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded shadow-lg z-50 hidden">
+    <div class="flex items-center">
+        <i class="fas fa-check-circle mr-2"></i>
+        <span id="successMessage">Operation completed successfully!</span>
+    </div>
+</div>
+
+<!-- Error Notification -->
+<div id="errorNotification" class="fixed top-4 right-4 bg-red-500 text-white px-4 py-2 rounded shadow-lg z-50 hidden">
+    <div class="flex items-center">
+        <i class="fas fa-exclamation-circle mr-2"></i>
+        <span id="errorMessage">An error occurred. Please try again.</span>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // View Details Modal
+    const viewDetailsButtons = document.querySelectorAll('.view-details');
+    const viewDetailsModal = document.getElementById('viewDetailsModal');
+    
+    viewDetailsButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const bookingId = this.getAttribute('data-booking');
+            fetchBookingDetails(bookingId);
+        });
+    });
+
+    // Modify Booking Modal
+    const modifyButtons = document.querySelectorAll('.modify-booking');
+    const modifyModal = document.getElementById('modifyBookingModal');
+    
+    modifyButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const bookingId = this.getAttribute('data-booking');
+            fetchBookingForModification(bookingId);
+        });
+    });
+
+    // Cancel Booking Modal
+    const cancelButtons = document.querySelectorAll('.cancel-booking');
+    const cancelModal = document.getElementById('cancelBookingModal');
+    
+    cancelButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const bookingId = this.getAttribute('data-booking');
+            document.getElementById('cancel-booking-id').value = bookingId;
+            cancelModal.classList.remove('hidden');
+        });
+    });
+
+    // View Document Buttons
+    const viewDeathCertBtn = document.getElementById('viewDeathCertBtn');
+    const viewPaymentBtn = document.getElementById('viewPaymentBtn');
+    const viewDocumentModal = document.getElementById('viewDocumentModal');
+    
+    let currentDocumentType = '';
+    let currentDocumentUrl = '';
+    
+    viewDeathCertBtn.addEventListener('click', function() {
+        currentDocumentType = 'death_cert';
+        showDocument('Death Certificate', currentDocumentUrl);
+    });
+    
+    viewPaymentBtn.addEventListener('click', function() {
+        currentDocumentType = 'payment_proof';
+        showDocument('Payment Proof', currentDocumentUrl);
+    });
+
+    // Close Modal Buttons
+    const closeModalButtons = document.querySelectorAll('.close-modal');
+    closeModalButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            viewDetailsModal.classList.add('hidden');
+            modifyModal.classList.add('hidden');
+            cancelModal.classList.add('hidden');
+            viewDocumentModal.classList.add('hidden');
+        });
+    });
+
+    // Form Submissions
+    document.getElementById('modifyBookingForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        submitBookingModification();
+    });
+    
+    document.getElementById('cancelBookingForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        submitBookingCancellation();
+    });
+
+    // Click outside modal to close
+    window.addEventListener('click', function(e) {
+        if (e.target === viewDetailsModal) viewDetailsModal.classList.add('hidden');
+        if (e.target === modifyModal) modifyModal.classList.add('hidden');
+        if (e.target === cancelModal) cancelModal.classList.add('hidden');
+        if (e.target === viewDocumentModal) viewDocumentModal.classList.add('hidden');
+    });
+
+    // Functions
+    function fetchBookingDetails(bookingId) {
+        fetch(`profile/fetch_booking_details.php?booking_id=${bookingId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Populate the view details modal
+                    document.getElementById('detail-service').textContent = data.service_name;
+                    document.getElementById('detail-branch').textContent = data.branch_name;
+                    document.getElementById('detail-status').textContent = data.status;
+                    document.getElementById('detail-booking-date').textContent = formatDate(data.booking_date);
+                    document.getElementById('detail-total').textContent = `₱${parseFloat(data.selling_price).toFixed(2)}`;
+                    
+                    // Deceased info
+                    let deceasedName = `${data.deceased_lname}, ${data.deceased_fname}`;
+                    if (data.deceased_midname) deceasedName += ` ${data.deceased_midname}`;
+                    if (data.deceased_suffix) deceasedName += ` ${data.deceased_suffix}`;
+                    
+                    document.getElementById('detail-deceased-name').textContent = deceasedName;
+                    document.getElementById('detail-birth').textContent = data.deceased_birth ? formatDate(data.deceased_birth) : 'Not provided';
+                    document.getElementById('detail-dod').textContent = data.deceased_dodeath ? formatDate(data.deceased_dodeath) : 'Not provided';
+                    document.getElementById('detail-burial').textContent = data.deceased_dateOfBurial ? formatDate(data.deceased_dateOfBurial) : 'Not set';
+                    document.getElementById('detail-address').textContent = data.deceased_address || 'Not provided';
+                    
+                    // Payment info
+                    document.getElementById('detail-paid').textContent = `₱${(data.amount_paid || 0).toFixed(2)}`;
+                    const balance = parseFloat(data.selling_price) - parseFloat(data.amount_paid || 0);
+                    document.getElementById('detail-balance').textContent = `₱${balance.toFixed(2)}`;
+                    document.getElementById('detail-reference').textContent = data.reference_code || 'N/A';
+                    
+                    // Store document URL for viewing
+                    currentDocumentUrl = data.death_certificate || '';
+                    
+                    // Show the modal
+                    viewDetailsModal.classList.remove('hidden');
+                } else {
+                    showError(data.message || 'Failed to fetch booking details');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showError('An error occurred while fetching booking details');
+            });
+    }
+
+    function fetchBookingForModification(bookingId) {
+        fetch(`profile/fetch_booking_for_modification.php?booking_id=${bookingId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Populate the modify form
+                    document.getElementById('modify-booking-id').value = data.booking_id;
+                    
+                    // Set service and branch
+                    const serviceSelect = document.querySelector('#modifyBookingForm select[name="service_id"]');
+                    const branchSelect = document.querySelector('#modifyBookingForm select[name="branch_id"]');
+                    
+                    if (serviceSelect) {
+                        serviceSelect.value = data.service_id;
+                    }
+                    
+                    if (branchSelect) {
+                        branchSelect.value = data.branch_id;
+                    }
+                    
+                    // Set dates
+                    document.querySelector('#modifyBookingForm input[name="deceased_dateOfBurial"]').value = data.deceased_dateOfBurial ? formatDateForInput(data.deceased_dateOfBurial) : '';
+                    
+                    // Set deceased info
+                    document.querySelector('#modifyBookingForm input[name="deceased_fname"]').value = data.deceased_fname || '';
+                    document.querySelector('#modifyBookingForm input[name="deceased_midname"]').value = data.deceased_midname || '';
+                    document.querySelector('#modifyBookingForm input[name="deceased_lname"]').value = data.deceased_lname || '';
+                    document.querySelector('#modifyBookingForm input[name="deceased_suffix"]').value = data.deceased_suffix || '';
+                    document.querySelector('#modifyBookingForm input[name="deceased_birth"]').value = data.deceased_birth ? formatDateForInput(data.deceased_birth) : '';
+                    document.querySelector('#modifyBookingForm input[name="deceased_dodeath"]').value = data.deceased_dodeath ? formatDateForInput(data.deceased_dodeath) : '';
+                    document.querySelector('#modifyBookingForm textarea[name="deceased_address"]').value = data.deceased_address || '';
+                    document.querySelector('#modifyBookingForm input[name="with_cremate"]').checked = data.with_cremate == 1;
+                    
+                    // Show the modal
+                    modifyModal.classList.remove('hidden');
+                } else {
+                    showError(data.message || 'Failed to fetch booking for modification');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showError('An error occurred while fetching booking for modification');
+            });
+    }
+
+    function submitBookingModification() {
+        const form = document.getElementById('modifyBookingForm');
+        const formData = new FormData(form);
+        
+        fetch('profile/update_booking.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showSuccess('Booking updated successfully!');
+                modifyModal.classList.add('hidden');
+                // Refresh the bookings list
+                setTimeout(() => location.reload(), 1500);
+            } else {
+                showError(data.message || 'Failed to update booking');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showError('An error occurred while updating booking');
+        });
+    }
+    
+// Function to send OTP
+document.getElementById('sendOtpBtn').addEventListener('click', function() {
+    const bookingId = document.getElementById('cancel-booking-id').value;
+    if (!bookingId) {
+        showError('No booking selected');
+        return;
+    }
+    
+    // Disable button to prevent multiple clicks
+    const otpBtn = this;
+    otpBtn.disabled = true;
+    otpBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Sending...';
+    
+    fetch('profile/send_cancel_otp.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ booking_id: bookingId })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showSuccess('OTP sent to your email!');
+            document.getElementById('otpInput').focus();
+        } else {
+            showError(data.message || 'Failed to send OTP');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showError('Failed to send OTP');
+    })
+    .finally(() => {
+        otpBtn.disabled = false;
+        otpBtn.textContent = 'Send OTP';
+    });
+});
+
+// Form submission handler
+document.getElementById('cancelBookingForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const form = this;
+    const formData = new FormData(form);
+    const submitBtn = form.querySelector('button[type="submit"]');
+    
+    // Disable submit button during processing
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Processing...';
+    
+    fetch('profile/cancel_booking.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showSuccess('Booking cancelled successfully!');
+            // Close modal and update UI without full page reload
+            document.getElementById('cancelBookingModal').classList.add('hidden');
+            
+            // Option 1: If you're using a bookings list, refresh just that section
+            // loadBookings(); // Your function to reload bookings
+            
+            // Option 2: If you must reload, delay slightly for user to see success message
+            setTimeout(() => {
+                // Only reload if necessary
+                if (window.location.pathname.includes('profile')) {
+                    window.location.reload();
+                } else {
+                    // Update UI as needed
+                }
+            }, 1500);
+        } else {
+            showError(data.message || 'Failed to cancel booking');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showError('An error occurred while cancelling booking');
+    })
+    .finally(() => {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="fas fa-times mr-2"></i> Confirm Cancellation';
+    });
+});
+
+// Remove the redundant submitBookingCancellation() function
+
+    function showDocument(title, url) {
+        if (!url) {
+            showError('Document not available');
+            return;
+        }
+        
+        document.getElementById('document-modal-title').textContent = title;
+        document.getElementById('document-image').src = url;
+        viewDocumentModal.classList.remove('hidden');
+    }
+
+    function formatDate(dateString) {
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        return new Date(dateString).toLocaleDateString('en-US', options);
+    }
+
+    function formatDateForInput(dateString) {
+        const date = new Date(dateString);
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+
+    function showSuccess(message) {
+        const notification = document.getElementById('successNotification');
+        document.getElementById('successMessage').textContent = message;
+        notification.classList.remove('hidden');
+        
+        setTimeout(() => {
+            notification.classList.add('hidden');
+        }, 5000);
+    }
+
+    function showError(message) {
+        const notification = document.getElementById('errorNotification');
+        document.getElementById('errorMessage').textContent = message;
+        notification.classList.remove('hidden');
+        
+        setTimeout(() => {
+            notification.classList.add('hidden');
+        }, 5000);
+    }
+});
+</script>
 
 <script>
     
