@@ -554,108 +554,155 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Process the data
   const rawCasketData = <?php echo json_encode($casketData); ?>;
-  const heatmapData = processDataForHeatmap(rawCasketData);
+const heatmapData = processDataForHeatmap(rawCasketData);
 
-  // Create the heatmap chart
-  var options = {
-    series: heatmapData.series,
-    chart: {
-      height: 350,
-      type: 'heatmap',
-    },
-    stroke: {
-      width: 0
-    },
-    plotOptions: {
-      heatmap: {
-        radius: 30,
-        enableShades: false,
-        colorScale: {
-          ranges: [{
-              from: 0,
-              to: 50,
-              color: '#008FFB'
-            },
-            {
-              from: 51,
-              to: 100,
-              color: '#00E396'
-            },
-            {
-              from: 101,
-              to: 150,
-              color: '#FEB019'
-            },
-          ],
-        },
-      }
-    },
-    dataLabels: {
-      enabled: true,
-      style: {
-        colors: ['#fff']
+// Calculate dynamic height based on number of items
+const itemCount = heatmapData.items.length;
+const dynamicHeight = Math.max(350, itemCount * 40); // Minimum 350px, or 40px per item
+
+// Create the heatmap chart
+var options = {
+  series: heatmapData.series,
+  chart: {
+    height: dynamicHeight,
+    type: 'heatmap',
+    toolbar: {
+      show: false
+    }
+  },
+  stroke: {
+    width: 0
+  },
+  plotOptions: {
+    heatmap: {
+      radius: 25, // Slightly reduced radius for better fit
+      enableShades: false,
+      useFillColorAsStroke: false,
+      distributed: false,
+      colorScale: {
+        ranges: [{
+            from: 0,
+            to: 50,
+            color: '#008FFB'
+          },
+          {
+            from: 51,
+            to: 100,
+            color: '#00E396'
+          },
+          {
+            from: 101,
+            to: 150,
+            color: '#FEB019'
+          },
+        ],
       },
-      formatter: function(val, opts) {
-        // Add (F) indicator for forecasted values
-        if (opts.seriesIndex >= 0 && opts.dataPointIndex >= 0) {
-          const point = heatmapData.series[opts.seriesIndex].data[opts.dataPointIndex];
-          if (point.forecast) {
-            return val + ' (F)';
-          }
-        }
-        return val;
-      }
+    }
+  },
+  dataLabels: {
+    enabled: true,
+    style: {
+      colors: ['#fff'],
+      fontSize: '12px',
+      fontFamily: 'Helvetica, Arial, sans-serif',
+      fontWeight: 'bold'
     },
-    xaxis: {
-      type: 'category',
-      categories: heatmapData.months,
-      labels: {
-        formatter: function(value) {
-          // Shorten month label for better display
-          return value.split('-')[1] + '/' + value.split('-')[0].slice(2);
+    formatter: function(val, opts) {
+      if (opts.seriesIndex >= 0 && opts.dataPointIndex >= 0) {
+        const point = heatmapData.series[opts.seriesIndex].data[opts.dataPointIndex];
+        if (point.forecast) {
+          return val + ' (F)';
         }
+      }
+      return val;
+    }
+  },
+  xaxis: {
+    type: 'category',
+    categories: heatmapData.months,
+    labels: {
+      formatter: function(value) {
+        return value.split('-')[1] + '/' + value.split('-')[0].slice(2);
+      },
+      style: {
+        fontSize: '12px'
       }
     },
     tooltip: {
-      custom: function({ series, seriesIndex, dataPointIndex, w }) {
-        const item = w.config.series[seriesIndex].name;
-        const month = w.config.xaxis.categories[dataPointIndex];
-        const value = series[seriesIndex][dataPointIndex];
-        const isForecast = w.config.series[seriesIndex].data[dataPointIndex].forecast;
-        
-        return `
-          <div class="p-2 bg-white border border-gray-200 rounded shadow">
-            <div class="font-bold">${item}</div>
-            <div>Month: ${month}</div>
-            <div>Sold: ${value}</div>
-            ${isForecast ? '<div class="text-yellow-600">Forecasted Value</div>' : ''}
-          </div>
-        `;
-      }
-    },
-    title: {
-      text: 'Casket Sales Heatmap with Forecast',
-      align: 'center'
-    },
-    annotations: {
-      xaxis: [{
-        x: heatmapData.months[heatmapData.months.length - 6],
-        strokeDashArray: 0,
-        borderColor: '#FF4560',
-        label: {
-          borderColor: '#FF4560',
-          style: {
-            color: '#fff',
-            background: '#FF4560'
-          },
-          text: 'Forecast Start'
-        }
-      }]
+      enabled: false
     }
-  };
+  },
+  yaxis: {
+    labels: {
+      style: {
+        fontSize: '12px'
+      }
+    }
+  },
+  grid: {
+    padding: {
+      top: 20,
+      right: 20,
+      bottom: 20,
+      left: 20
+    }
+  },
+  tooltip: {
+    custom: function({ series, seriesIndex, dataPointIndex, w }) {
+      const item = w.config.series[seriesIndex].name;
+      const month = w.config.xaxis.categories[dataPointIndex];
+      const value = series[seriesIndex][dataPointIndex];
+      const isForecast = w.config.series[seriesIndex].data[dataPointIndex].forecast;
+      
+      return `
+        <div class="p-2 bg-white border border-gray-200 rounded shadow">
+          <div class="font-bold">${item}</div>
+          <div>Month: ${month}</div>
+          <div>Sold: ${value}</div>
+          ${isForecast ? '<div class="text-yellow-600">Forecasted Value</div>' : ''}
+        </div>
+      `;
+    }
+  },
+  title: {
+    text: 'Casket Sales Heatmap with Forecast',
+    align: 'center',
+    style: {
+      fontSize: '16px',
+      fontWeight: 'bold'
+    }
+  },
+  annotations: {
+    xaxis: [{
+      x: heatmapData.months[heatmapData.months.length - 6],
+      strokeDashArray: 0,
+      borderColor: '#FF4560',
+      label: {
+        borderColor: '#FF4560',
+        style: {
+          color: '#fff',
+          background: '#FF4560',
+          fontSize: '12px'
+        },
+        text: 'Forecast Start'
+      }
+    }]
+  }
+};
 
-  var chart = new ApexCharts(document.querySelector("#demandPredictionChart"), options);
-  chart.render();
+// Adjust container width to maintain aspect ratio
+const container = document.querySelector("#demandPredictionChart");
+if (container) {
+  const itemCount = heatmapData.items.length;
+  const monthCount = heatmapData.months.length;
+  const calculatedWidth = Math.max(800, monthCount * 40); // Adjust based on month count
+  
+  container.style.width = `${calculatedWidth}px`;
+  container.style.height = `${dynamicHeight}px`;
+}
+
+var chart = new ApexCharts(document.querySelector("#demandPredictionChart"), options);
+chart.render();
 
 
   // Payment Methods Chart
