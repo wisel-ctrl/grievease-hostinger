@@ -67,7 +67,7 @@ header("Pragma: no-cache");
 
                 // Get user's first name from database
                 $user_id = $_SESSION['user_id'];
-                $query = "SELECT first_name, middle_name, last_name, suffix, email, phone_number, birthdate, 
+                $query = "SELECT first_name, middle_name, last_name, email, phone_number, birthdate, 
                         region, city, province, barangay, street_address, zip_code FROM users WHERE id = ?";
                 $stmt = $conn->prepare($query);
                 $stmt->bind_param("i", $user_id);
@@ -77,7 +77,6 @@ header("Pragma: no-cache");
                 $first_name = $row['first_name']; // We're confident user_id exists
                 $last_name = $row['last_name'];
                 $middle_name = $row['middle_name'];
-                $suffix = $row['suffix'];
                 $email = $row['email'];
                 $phone_number = $row['phone_number'];
                 $birthdate = $row['birthdate'];
@@ -557,12 +556,6 @@ header("Pragma: no-cache");
                                 <label class="block text-sm font-medium text-gray-500 mb-1">Middle Name</label>
                                 <p class="text-navy <?= empty($middle_name) ? 'opacity-60 italic text-gray-500' : 'font-medium' ?>">
                                     <?= !empty($middle_name) ? htmlspecialchars(ucwords($middle_name)) : 'N/A' ?>
-                                </p>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-500 mb-1">Suffix</label>
-                                <p class="text-navy <?= empty($suffix) ? 'opacity-60 italic text-gray-500' : 'font-medium' ?>">
-                                    <?= !empty($suffix) ? htmlspecialchars($suffix) : 'N/A' ?>
                                 </p>
                             </div>
                         </div>
@@ -1388,17 +1381,6 @@ document.addEventListener('DOMContentLoaded', function() {
                             <input type="text" id="middleName" name="middleName" value="<?php echo htmlspecialchars($middle_name); ?>" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base">
                         </div>
                         
-                        <div>
-                            <label for="suffix" class="block text-sm font-medium text-gray-700 mb-1 sm:mb-2">Suffix</label>
-                            <select id="suffix" name="suffix" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base">
-                                <option value=""></option>
-                                <option value="Jr" <?php echo (isset($user['suffix']) && $user['suffix'] == 'Jr' ? 'selected' : ''); ?>>Jr</option>
-                                <option value="Sr" <?php echo (isset($user['suffix']) && $user['suffix'] == 'Sr' ? 'selected' : ''); ?>>Sr</option>
-                                <option value="II" <?php echo (isset($user['suffix']) && $user['suffix'] == 'II' ? 'selected' : ''); ?>>II</option>
-                                <option value="III" <?php echo (isset($user['suffix']) && $user['suffix'] == 'III' ? 'selected' : ''); ?>>III</option>
-                                <option value="IV" <?php echo (isset($user['suffix']) && $user['suffix'] == 'IV' ? 'selected' : ''); ?>>IV</option>
-                            </select>
-                        </div>
                     </div>
 
                     <div>
