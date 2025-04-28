@@ -219,9 +219,8 @@ while ($row = $casketResult->fetch_assoc()) {
 </div>
 
 <!-- Main Analytics Section -->
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
-  <!-- Sales Forecasting -->
-    <!-- Sales Forecast Card -->
+<div class="grid grid-cols-1 gap-4 mb-6">
+  <!-- Sales Forecast Card -->
   <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
       <!-- Card header with brighter gradient background -->
       <div class="bg-gradient-to-r from-blue-100 to-blue-200 px-6 py-4">
@@ -250,10 +249,9 @@ while ($row = $casketResult->fetch_assoc()) {
   <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300">
     <div class="flex justify-between items-center p-5 border-b border-sidebar-border">
       <h3 class="font-medium text-sidebar-text">Demand Prediction</h3>
-      
     </div>
     <div class="p-5">
-    <div class="relative" style="padding-bottom: 60%; min-height: 300px;">
+      <div class="relative" style="padding-bottom: 60%; min-height: 300px;">
         <div id="demandPredictionChart" class="absolute top-0 left-0 w-full h-full"></div>
       </div>
     </div>
@@ -291,7 +289,7 @@ while ($row = $casketResult->fetch_assoc()) {
       </button>
     </div>
   </div>
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 p-5">
+  <div class="grid grid-cols-1 gap-6 p-5">
     <div>
       <canvas id="paymentTimelineChart" class="h-64"></canvas>
     </div>
@@ -724,62 +722,7 @@ chart.render();
     }
   });
 
-  // Customer Segments Chart
-  const customerSegmentsCtx = document.getElementById('customerSegmentsChart').getContext('2d');
-  const customerSegmentsChart = new Chart(customerSegmentsCtx, {
-    type: 'radar',
-    data: {
-      labels: ['Prompt Payment', 'Payment Consistency', 'Full Payment', 'Service Value', 'Repeat Business'],
-      datasets: [{
-        label: 'Premium Customers',
-        data: [90, 85, 95, 100, 80],
-        backgroundColor: 'rgba(59, 130, 246, 0.2)',
-        borderColor: 'rgba(59, 130, 246, 1)',
-        borderWidth: 2,
-        pointRadius: 4,
-        pointBackgroundColor: 'rgba(59, 130, 246, 1)'
-      }, {
-        label: 'Standard Customers',
-        data: [75, 70, 85, 70, 65],
-        backgroundColor: 'rgba(139, 92, 246, 0.2)',
-        borderColor: 'rgba(139, 92, 246, 1)',
-        borderWidth: 2,
-        pointRadius: 4,
-        pointBackgroundColor: 'rgba(139, 92, 246, 1)'
-      }, {
-        label: 'At-Risk Customers',
-        data: [40, 45, 60, 55, 30],
-        backgroundColor: 'rgba(220, 38, 38, 0.2)',
-        borderColor: 'rgba(220, 38, 38, 1)',
-        borderWidth: 2,
-        pointRadius: 4,
-        pointBackgroundColor: 'rgba(220, 38, 38, 1)'
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: {
-          position: 'top',
-          labels: {
-            boxWidth: 10,
-            usePointStyle: true
-          }
-        }
-      },
-      scales: {
-        r: {
-          angleLines: {
-            display: true
-          },
-          suggestedMin: 0,
-          suggestedMax: 100
-        }
-      }
-    }
-  });
-
+  
   
 });
 </script>
