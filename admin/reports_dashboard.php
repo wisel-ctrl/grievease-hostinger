@@ -251,7 +251,7 @@ while ($row = $casketResult->fetch_assoc()) {
       <h3 class="font-medium text-sidebar-text">Demand Prediction</h3>
     </div>
     <div class="p-5">
-      <div class="relative" style="padding-bottom: 60%; min-height: 300px;">
+      <div class="relative" style=" min-height: 300px;">
         <div id="demandPredictionChart" class="absolute top-0 left-0 w-full h-full"></div>
       </div>
     </div>
