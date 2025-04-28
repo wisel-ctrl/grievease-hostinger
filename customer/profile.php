@@ -801,20 +801,27 @@ header("Pragma: no-cache");
     }
     
     function reuploadID() {
-    // Close the decline reason modal first 
-     console.log('Reupload ID function called');
+    console.log('Reupload ID function called');
     closeDeclineReasonModal();
     
-    // Open the edit profile modal
+    // Get the edit profile modal
     const modal = document.getElementById('edit-profile-modal');
     
+    // Reset modal state
+    modal.classList.remove('hidden');
+    modal.style.display = 'flex'; // Force display style
+    
+    // Trigger reflow to ensure CSS transitions work
+    void modal.offsetWidth;
+    
+    // Apply active classes
     modal.classList.remove('opacity-0', 'scale-95');
     modal.classList.add('opacity-100', 'scale-100');
     
-    // Load address data (if needed)
+    // Load address data
     setTimeout(loadAddressData, 100);
     
-    // Scroll to the ID upload section with a slight delay to ensure the modal is fully open
+    // Scroll to the ID upload section
     setTimeout(() => {
         const idUploadSection = document.querySelector('label[for="id-upload"]');
         if (idUploadSection) {
