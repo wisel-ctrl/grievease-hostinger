@@ -58,7 +58,6 @@ $_SESSION['last_activity'] = time();
 header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Cache-Control: post-check=0, pre-check=0", false);
 header("Pragma: no-cache");
-
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -187,7 +186,7 @@ header("Pragma: no-cache");
     </div>
     <div class="p-4">
       <div style="height: 250px; width: 100%;">
-        <canvas id="salesForecastChart"></canvas>
+        <div id="salesForecastChart"></div>
       </div>
     </div>
     <div class="px-5 pb-5">
@@ -300,84 +299,56 @@ document.addEventListener('DOMContentLoaded', function() {
   window.addEventListener('resize', resizeCharts);
 
   // Sales Forecasting Chart
-  const salesForecastCtx = document.getElementById('salesForecastChart').getContext('2d');
-  const salesForecastChart = new Chart(salesForecastCtx, {
-    type: 'line',
-    data: {
-      labels: ['Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'],
-      datasets: [{
-        label: 'Actual Sales',
-        data: [98650, 102350, 107800, null, null, null],
-        backgroundColor: 'rgba(59, 130, 246, 0.2)',
-        borderColor: 'rgba(59, 130, 246, 1)',
-        borderWidth: 2,
-        pointRadius: 4,
-        tension: 0.1
-      }, {
-        label: 'Forecast',
-        data: [98650, 102350, 107800, 115400, 126900, 142850],
-        backgroundColor: 'rgba(139, 92, 246, 0.1)',
-        borderColor: 'rgba(139, 92, 246, 1)',
-        borderWidth: 2,
-        borderDash: [5, 5],
-        pointRadius: 3,
-        tension: 0.1
-      }, {
-        label: 'Upper Bound',
-        data: [98650, 102350, 107800, 121400, 135700, 153200],
-        backgroundColor: 'rgba(139, 92, 246, 0)',
-        borderColor: 'rgba(139, 92, 246, 0.3)',
-        borderWidth: 1,
-        pointRadius: 0,
-        tension: 0.1,
-        fill: '+1'
-      }, {
-        label: 'Lower Bound',
-        data: [98650, 102350, 107800, 109400, 118100, 132500],
-        backgroundColor: 'rgba(139, 92, 246, 0.1)',
-        borderColor: 'rgba(139, 92, 246, 0.3)',
-        borderWidth: 1,
-        pointRadius: 0,
-        tension: 0.1,
-        fill: false
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: {
-          position: 'top',
-          labels: {
-            boxWidth: 10,
-            usePointStyle: true
-          }
+  var options = {
+          series: [{
+          name: 'Sales',
+          data: [4, 3, 10, 9, 29, 19, 22, 9, 12, 7, 19, 5, 13, 9, 17, 2, 7, 5]
+        }],
+          chart: {
+          height: 350,
+          type: 'line',
         },
-        tooltip: {
-          mode: 'index',
-          intersect: false
-        }
-      },
-      scales: {
-        y: {
-          beginAtZero: false,
-          grid: {
-            drawBorder: false
-          },
-          ticks: {
-            callback: function(value) {
-              return '$' + value.toLocaleString();
+        forecastDataPoints: {
+          count: 7
+        },
+        stroke: {
+          width: 5,
+          curve: 'smooth'
+        },
+        xaxis: {
+          type: 'datetime',
+          categories: ['1/11/2000', '2/11/2000', '3/11/2000', '4/11/2000', '5/11/2000', '6/11/2000', '7/11/2000', '8/11/2000', '9/11/2000', '10/11/2000', '11/11/2000', '12/11/2000', '1/11/2001', '2/11/2001', '3/11/2001','4/11/2001' ,'5/11/2001' ,'6/11/2001'],
+          tickAmount: 10,
+          labels: {
+            formatter: function(value, timestamp, opts) {
+              return opts.dateFormatter(new Date(timestamp), 'dd MMM')
             }
           }
         },
-        x: {
-          grid: {
-            display: false
+        title: {
+          text: 'Forecast',
+          align: 'left',
+          style: {
+            fontSize: "16px",
+            color: '#666'
           }
+        },
+        fill: {
+          type: 'gradient',
+          gradient: {
+            shade: 'dark',
+            gradientToColors: [ '#FDD835'],
+            shadeIntensity: 1,
+            type: 'horizontal',
+            opacityFrom: 1,
+            opacityTo: 1,
+            stops: [0, 100, 100, 100]
+          },
         }
-      }
-    }
-  });
+        };
+
+        var chart = new ApexCharts(document.querySelector("#salesForecastChart"), options);
+        chart.render();
 
   // Demand Prediction Chart
   const demandPredictionCtx = document.getElementById('demandPredictionChart').getContext('2d');
