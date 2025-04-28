@@ -246,28 +246,37 @@ while ($row = $casketResult->fetch_assoc()) {
   </div>
   
   <!-- Demand Prediction -->
-  <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300">
-    <div class="flex justify-between items-center p-5 border-b border-sidebar-border">
-      <h3 class="font-medium text-sidebar-text">Demand Prediction</h3>
+  <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden mb-6">
+    <!-- Card header with brighter gradient background -->
+    <div class="bg-gradient-to-r from-purple-100 to-purple-200 px-6 py-4">
+      <div class="flex items-center justify-between mb-1">
+        <h3 class="text-sm font-medium text-gray-700">Demand Prediction</h3>
+        <div class="w-10 h-10 rounded-full bg-white/90 text-purple-600 flex items-center justify-center">
+          <i class="fas fa-box-open"></i>
+        </div>
+      </div>
     </div>
+    
     <div class="p-5">
-      <div class="relative" style=" min-height: 300px;">
+      <div class="relative" style="height: 400px; min-height: 400px;">
         <div id="demandPredictionChart" class="absolute top-0 left-0 w-full h-full"></div>
       </div>
     </div>
-    <div class="px-5 pb-5">
-      <div class="flex justify-between text-sm text-gray-600" id="demandPredictionStats">
-        <div>
-          <div class="font-medium">Top Casket</div>
-          <div id="topCasketValue">Premium Casket</div>
+    
+    <!-- Card footer with statistics -->
+    <div class="px-6 py-4 bg-white border-t border-gray-100">
+      <div class="grid grid-cols-3 gap-4 text-sm">
+        <div class="bg-gray-50 p-3 rounded-lg">
+          <div class="font-medium text-gray-600 mb-1">Top Casket</div>
+          <div id="topCasketValue" class="font-bold text-gray-800">Premium Casket</div>
         </div>
-        <div>
-          <div class="font-medium">Growth Rate</div>
-          <div id="growthRateValue" class="text-green-600">+14.2%</div>
+        <div class="bg-gray-50 p-3 rounded-lg">
+          <div class="font-medium text-gray-600 mb-1">Growth Rate</div>
+          <div id="growthRateValue" class="font-bold text-green-600">+14.2%</div>
         </div>
-        <div>
-          <div class="font-medium">Seasonality Impact</div>
-          <div id="seasonalityImpactValue">Medium</div>
+        <div class="bg-gray-50 p-3 rounded-lg">
+          <div class="font-medium text-gray-600 mb-1">Seasonality Impact</div>
+          <div id="seasonalityImpactValue" class="font-bold text-yellow-600">Medium</div>
         </div>
       </div>
     </div>
@@ -637,14 +646,15 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
 // Create the heatmap chart with improved configuration
+// Create the heatmap chart with improved configuration
 const rawCasketData = <?php echo json_encode($casketData); ?>;
 const heatmapData = processDataForHeatmap(rawCasketData);
 
-// Create the heatmap chart with enhanced design
+// Create the heatmap chart with enhanced design that matches sales forecast style
 var options = {
   series: heatmapData.series,
   chart: {
-    height: 350,
+    height: 380, // Increased height for better visibility
     type: 'heatmap',
     toolbar: {
       show: true,
@@ -673,21 +683,31 @@ var options = {
     },
     fontFamily: 'Inter, Helvetica, sans-serif',
     background: '#fff',
-    foreColor: '#4B5563'
+    foreColor: '#4B5563',
+    dropShadow: {
+      enabled: true,
+      top: 3,
+      left: 2,
+      blur: 4,
+      opacity: 0.1
+    }
   },
   stroke: {
-    width: 0
+    width: 1,
+    colors: ['#fff']
   },
   plotOptions: {
     heatmap: {
-      radius: 30,
-      enableShades: false,
+      radius: 0,
+      enableShades: true,
       colorScale: {
         ranges: [
-          { from: 0, to: 0, color: '#F3F4F6' }, // Empty cells
-          { from: 1, to: 50, color: '#008FFB' },
-          { from: 51, to: 100, color: '#00E396' },
-          { from: 101, to: 150, color: '#FEB019' },
+          { from: 0, to: 0, color: '#F3F4F6', name: 'No Data' },
+          { from: 1, to: 25, color: '#DBEAFE', name: 'Low' },
+          { from: 26, to: 50, color: '#93C5FD', name: 'Medium-Low' },
+          { from: 51, to: 75, color: '#3B82F6', name: 'Medium' },
+          { from: 76, to: 100, color: '#1D4ED8', name: 'Medium-High' },
+          { from: 101, to: 1000, color: '#1E3A8A', name: 'High' }
         ],
       },
     }
@@ -696,9 +716,10 @@ var options = {
     enabled: true,
     style: {
       colors: ['#fff'],
-      fontSize: '13px',
+      fontSize: '12px',
       fontWeight: 600,
-      fontFamily: 'Inter, Helvetica, sans-serif'
+      fontFamily: 'Inter, Helvetica, sans-serif',
+      textShadow: '0px 0px 2px rgba(0,0,0,0.5)'
     },
     formatter: function(val, opts) {
       if (val === 0) return ''; // Don't show zeros
@@ -732,6 +753,13 @@ var options = {
     axisTicks: {
       show: true,
       color: '#E5E7EB',
+    },
+    title: {
+      text: 'Month',
+      style: {
+        fontSize: '14px',
+        fontWeight: 600
+      }
     }
   },
   yaxis: {
@@ -740,11 +768,18 @@ var options = {
         fontSize: '12px',
         fontWeight: 500
       }
+    },
+    title: {
+      text: 'Product Type',
+      style: {
+        fontSize: '14px',
+        fontWeight: 600
+      }
     }
   },
   title: {
     text: 'Casket Demand Forecast',
-    align: 'center',
+    align: 'left',
     style: {
       fontSize: '16px',
       fontWeight: 600,
@@ -753,7 +788,7 @@ var options = {
   },
   subtitle: {
     text: 'Historical sales and predicted future demand',
-    align: 'center',
+    align: 'left',
     style: {
       fontSize: '13px',
       color: '#6B7280'
@@ -766,6 +801,10 @@ var options = {
       enabled: false
     }
   },
+  legend: {
+    show: true,
+    position: 'bottom'
+  },
   tooltip: {
     custom: function({ series, seriesIndex, dataPointIndex, w }) {
       const item = w.config.series[seriesIndex].name;
@@ -773,16 +812,21 @@ var options = {
       const value = series[seriesIndex][dataPointIndex];
       const isForecast = w.config.series[seriesIndex].data[dataPointIndex].forecast;
       
+      // Parse the date for better formatting
+      const [year, monthNum] = month.split('-');
+      const date = new Date(parseInt(year), parseInt(monthNum) - 1);
+      const formattedDate = date.toLocaleDateString('default', { month: 'long', year: 'numeric' });
+      
       return `
         <div class="p-3 bg-white border border-gray-200 rounded-lg shadow-lg">
           <div class="text-lg font-bold text-gray-800 mb-1">${item}</div>
           <div class="grid grid-cols-2 gap-1 text-sm">
             <div class="text-gray-500">Month:</div>
-            <div class="font-medium">${month}</div>
+            <div class="font-medium">${formattedDate}</div>
             <div class="text-gray-500">Units Sold:</div>
             <div class="font-medium">${value}</div>
           </div>
-          ${isForecast ? '<div class="mt-2 py-1 px-2 bg-yellow-100 text-yellow-800 rounded text-xs font-medium">Forecasted Value</div>' : ''}
+          ${isForecast ? '<div class="mt-2 py-1 px-2 bg-blue-100 text-blue-800 rounded text-xs font-medium">Forecasted Value</div>' : ''}
         </div>
       `;
     }
@@ -809,9 +853,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Style based on positive/negative growth
     if (heatmapData.growthRate >= 0) {
-      growthRateElement.className = 'text-green-600';
+      growthRateElement.className = 'text-green-600 font-medium';
     } else {
-      growthRateElement.className = 'text-red-600';
+      growthRateElement.className = 'text-red-600 font-medium';
     }
   }
   
@@ -822,11 +866,11 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Style based on impact level
     if (heatmapData.seasonalityImpact === 'Low') {
-      seasonalityElement.className = 'text-blue-600';
+      seasonalityElement.className = 'text-blue-600 font-medium';
     } else if (heatmapData.seasonalityImpact === 'Medium') {
-      seasonalityElement.className = 'text-yellow-600';  
+      seasonalityElement.className = 'text-yellow-600 font-medium';  
     } else {
-      seasonalityElement.className = 'text-red-600';
+      seasonalityElement.className = 'text-red-600 font-medium';
     }
   }
 });
