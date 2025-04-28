@@ -262,6 +262,24 @@ $conn->close();
         display: none !important;
     }
 }
+/* Additional styles for scrollbar */
+.modal-scroll-container {
+    scrollbar-width: thin;
+    scrollbar-color: #d4a933 #f5f5f5;
+}
+
+.modal-scroll-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.modal-scroll-container::-webkit-scrollbar-track {
+    background: #f5f5f5;
+}
+
+.modal-scroll-container::-webkit-scrollbar-thumb {
+    background-color: #d4a933;
+    border-radius: 6px;
+}
     </style>
 </head>
 <body class="bg-cream overflow-x-hidden w-full max-w-full m-0 p-0 font-hedvig">
