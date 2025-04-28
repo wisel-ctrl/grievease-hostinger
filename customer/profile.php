@@ -542,7 +542,7 @@ header("Pragma: no-cache");
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <!-- Name section with visual grouping -->
                     <div class="col-span-1 md:col-span-2 mb-2">
-                        <h4 class="text-navy text-lg font-medium mb-3 pb-2 border-b border-gray-100">Name Details</h4>
+                        <h4 class="bg-gray-200 text-navy text-lg font-medium mb-3 pb-2 border-b border-gray-100">Name Details</h4>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
                                 <label class="block text-sm font-medium text-gray-500 mb-1">First Name</label>
