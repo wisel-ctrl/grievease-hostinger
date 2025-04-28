@@ -817,63 +817,46 @@ header("Pragma: no-cache");
                         </div>
                         
                         <div class="hidden md:block">
-                            <div class="bg-blue-50 p-6 rounded-lg border border-blue-100 h-full">
-                                <h4 class="font-medium text-navy mb-4 flex items-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-                                    ID Verification Guidelines
-                                </h4>
-                                
-                                <div class="bg-white rounded-lg p-4 mb-4 border border-blue-100">
-                                    <div class="flex items-center mb-2">
-                                        <div class="bg-blue-100 p-1 rounded-full mr-3">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                                            </svg>
-                                        </div>
-                                        <p class="text-navy font-medium">Why verify your identity?</p>
-                                    </div>
-                                    <p class="text-sm text-gray-600 ml-9">
-                                        ID verification helps us keep our community secure and enables full access to all platform features.
-                                    </p>
-                                </div>
-                                
-                                <ul class="space-y-3 text-sm text-gray-600">
-                                    <li class="flex items-start bg-white p-3 rounded-lg border border-blue-100">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500 mt-0.5 mr-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                                        </svg>
-                                        <span>Upload a clear, well-lit photo showing the entire ID</span>
-                                    </li>
-                                    <li class="flex items-start bg-white p-3 rounded-lg border border-blue-100">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500 mt-0.5 mr-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                                        </svg>
-                                        <span>Ensure all four corners and edges are visible</span>
-                                    </li>
-                                    <li class="flex items-start bg-white p-3 rounded-lg border border-blue-100">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500 mt-0.5 mr-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                                        </svg>
-                                        <span>All text should be sharp and readable</span>
-                                    </li>
-                                    <li class="flex items-start bg-white p-3 rounded-lg border border-blue-100">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500 mt-0.5 mr-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                                        </svg>
-                                        <span>Avoid glare, shadows, or reflections</span>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <div class="bg-blue-50 p-5 rounded-lg border border-blue-100 h-full">
+                <h4 class="font-medium text-navy mb-3 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    ID Upload Guidelines
+                </h4>
+                <ul class="space-y-2 text-sm text-gray-600">
+                    <li class="flex items-start">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-500 mt-0.5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        Upload a clear, well-lit photo showing the entire ID
+                    </li>
+                    <li class="flex items-start">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-500 mt-0.5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        Ensure all four corners and edges are visible
+                    </li>
+                    <li class="flex items-start">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-500 mt-0.5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        All text should be sharp and readable
+                    </li>
+                    <li class="flex items-start">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-500 mt-0.5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        Avoid glare, shadows, or reflections
+                    </li>
+                </ul>
             </div>
         </div>
     </div>
 </div>
-
+            </div>
+        </div>
+    </div>
 
 
 <!-- Modal for enlarged image - improved version -->
