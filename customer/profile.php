@@ -542,76 +542,81 @@ header("Pragma: no-cache");
             </div>
             
             <!-- Content area with improved spacing and grouping -->
-<div class="p-8">
-    <!-- Information sections with card-based layout -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <!-- Basic Information section with visual grouping -->
-        <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-            <div class="bg-navy bg-opacity-10 px-6 py-4 border-b border-gray-200">
-                <h4 class="flex items-center text-navy text-lg font-semibold">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                    </svg>
-                    Basic Information
-                </h4>
-            </div>
-            <div class="p-6 space-y-4">
-                <div class="bg-gray-50 p-4 rounded-lg">
-                    <label class="block text-xs font-medium text-gray-500 mb-1">Full Name</label>
-                    <div class="flex flex-wrap gap-2">
-                        <span class="text-navy font-medium text-lg"><?php echo htmlspecialchars(ucwords($first_name)); ?></span>
-                        <span class="text-navy <?= empty($middle_name) ? 'hidden' : 'font-medium text-lg' ?>">
-                            <?= !empty($middle_name) ? htmlspecialchars(ucwords($middle_name)) : '' ?>
-                        </span>
-                        <span class="text-navy font-medium text-lg"><?php echo htmlspecialchars(ucwords($last_name)); ?></span>
+            <div class="p-8">
+
+
+                <!-- Information sections with card-based layout -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Name section with visual grouping -->
+                    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                        <div class="bg-navy bg-opacity-10 px-6 py-4 border-b border-gray-200">
+                            <h4 class="flex items-center text-navy text-lg font-semibold">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                </svg>
+                                Name Details
+                            </h4>
+                        </div>
+                        <div class="p-6 space-y-4">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <label class="block text-xs font-medium text-gray-500 mb-1">First Name</label>
+                                    <p class="text-navy font-medium text-lg"><?php echo htmlspecialchars(ucwords($first_name)); ?></p>
+                                </div>
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <label class="block text-xs font-medium text-gray-500 mb-1">Last Name</label>
+                                    <p class="text-navy font-medium text-lg"><?php echo htmlspecialchars(ucwords($last_name)); ?></p>
+                                </div>
+                            </div>
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <label class="block text-xs font-medium text-gray-500 mb-1">Middle Name</label>
+                                <p class="text-navy <?= empty($middle_name) ? 'opacity-60 italic text-gray-500' : 'font-medium text-lg' ?>">
+                                    <?= !empty($middle_name) ? htmlspecialchars(ucwords($middle_name)) : 'N/A' ?>
+                                </p>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div class="bg-gray-50 p-4 rounded-lg">
-                    <label class="block text-xs font-medium text-gray-500 mb-1">Date of Birth</label>
-                    <p class="text-navy font-medium flex items-center">
-                        <svg class="w-4 h-4 mr-2 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"></path>
-                        </svg>
-                        <?php echo date('F d, Y', strtotime($birthdate)); ?>
-                    </p>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Contact section -->
-        <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-            <div class="bg-navy bg-opacity-10 px-6 py-4 border-b border-gray-200">
-                <h4 class="flex items-center text-navy text-lg font-semibold">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                    </svg>
-                    Contact Information
-                </h4>
-            </div>
-            <div class="p-6 space-y-4">
-                <div class="bg-gray-50 p-4 rounded-lg">
-                    <label class="block text-xs font-medium text-gray-500 mb-1">Email Address</label>
-                    <p class="text-navy font-medium flex items-center">
-                        <svg class="w-4 h-4 mr-2 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
-                            <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
-                        </svg>
-                        <?php echo htmlspecialchars($email); ?>
-                    </p>
-                </div>
-                <div class="bg-gray-50 p-4 rounded-lg">
-                    <label class="block text-xs font-medium text-gray-500 mb-1">Phone Number</label>
-                    <p class="text-navy <?= empty($phone_number) ? 'opacity-60 italic text-gray-500' : 'font-medium' ?> flex items-center">
-                        <svg class="w-4 h-4 mr-2 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"></path>
-                        </svg>
-                        <?= !empty($phone_number) ? htmlspecialchars($phone_number) : 'N/A' ?>
-                    </p>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+                    
+                    <!-- Contact section -->
+                    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                        <div class="bg-navy bg-opacity-10 px-6 py-4 border-b border-gray-200">
+                            <h4 class="flex items-center text-navy text-lg font-semibold">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                </svg>
+                                Contact Information
+                            </h4>
+                        </div>
+                        <div class="p-6 space-y-4">
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <label class="block text-xs font-medium text-gray-500 mb-1">Email Address</label>
+                                <p class="text-navy font-medium flex items-center">
+                                    <svg class="w-4 h-4 mr-2 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
+                                        <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
+                                    </svg>
+                                    <?php echo htmlspecialchars($email); ?>
+                                </p>
+                            </div>
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <label class="block text-xs font-medium text-gray-500 mb-1">Phone Number</label>
+                                <p class="text-navy <?= empty($phone_number) ? 'opacity-60 italic text-gray-500' : 'font-medium' ?> flex items-center">
+                                    <svg class="w-4 h-4 mr-2 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"></path>
+                                    </svg>
+                                    <?= !empty($phone_number) ? htmlspecialchars($phone_number) : 'N/A' ?>
+                                </p>
+                            </div>
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <label class="block text-xs font-medium text-gray-500 mb-1">Date of Birth</label>
+                                <p class="text-navy font-medium flex items-center">
+                                    <svg class="w-4 h-4 mr-2 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    <?php echo date('F d, Y', strtotime($birthdate)); ?>
+                                </p>
+                            </div>
+                        </div>
                     </div>
                     
                     <!-- Address section taking full width -->
