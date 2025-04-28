@@ -366,6 +366,7 @@ function calculateLinearRegressionForecast(historicalData, forecastMonths = 6) {
 }
 
 // Only proceed if we have historical data
+// Only proceed if we have historical data
 if (historicalRevenueData && historicalRevenueData.length > 0) {
     const regressionResults = calculateLinearRegressionForecast(historicalRevenueData, 6);
     
@@ -391,8 +392,9 @@ if (historicalRevenueData && historicalRevenueData.length > 0) {
             type: 'line',
         },
         stroke: {
-            width: 5,
-            curve: 'smooth'
+            width: 3,
+            curve: 'smooth',
+            dashArray: [0, 5] // 0 for solid line (first series), 5 for dashed (second series)
         },
         xaxis: {
             type: 'datetime',
@@ -412,19 +414,7 @@ if (historicalRevenueData && historicalRevenueData.length > 0) {
                 color: '#666'
             }
         },
-        fill: {
-            type: 'gradient',
-            gradient: {
-                shade: 'dark',
-                gradientToColors: ['#FDD835'],
-                shadeIntensity: 1,
-                type: 'horizontal',
-                opacityFrom: 1,
-                opacityTo: 1,
-                stops: [0, 100, 100, 100]
-            },
-        },
-        colors: ['#3A57E8', '#FF5733'],
+        colors: ['#3A57E8', '#FF5733'], // First color for actual, second for forecast
         markers: {
             size: 4,
             hover: {
