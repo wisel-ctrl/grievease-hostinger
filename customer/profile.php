@@ -762,6 +762,19 @@ header("Pragma: no-cache");
                                 </div>
                             <?php endif; ?>
                         </div>
+                        <!-- In the "Uploaded Documents Section" where the no ID message is displayed -->
+<?php if ($uploadedImagePath): ?>
+    <!-- Existing code for when there is an uploaded ID -->
+<?php else: ?>
+    <div class="flex flex-col items-center justify-center py-8 px-4 border-2 border-dashed border-gray-300 rounded-lg text-center cursor-pointer hover:bg-gray-50 transition-colors"
+         onclick="openEditProfileToIDUpload()">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+        </svg>
+        <p class="text-sm text-gray-600 font-medium">No ID uploaded yet</p>
+        <p class="text-xs text-gray-500 mt-1">Upload a valid ID to verify your account</p>
+    </div>
+<?php endif; ?>
                         
                         <div class="hidden md:block">
                             <div class="bg-blue-50 p-5 rounded-lg border border-blue-100 h-full">
@@ -941,6 +954,34 @@ document.addEventListener('DOMContentLoaded', function() {
             closeDeclineReasonModal();
         }
     });
+
+    function openEditProfileToIDUpload() {
+    // Open the edit profile modal
+    const modal = document.getElementById('edit-profile-modal');
+    modal.classList.remove('hidden');
+    modal.classList.remove('opacity-0', 'scale-95');
+    modal.classList.add('opacity-100', 'scale-100');
+    
+    // Load address data (if needed)
+    setTimeout(loadAddressData, 100);
+    
+    // Scroll to the ID upload section with a slight delay to ensure the modal is fully open
+    setTimeout(() => {
+        const idUploadSection = document.querySelector('label[for="id-upload"]');
+        if (idUploadSection) {
+            idUploadSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            
+            // Highlight the upload area
+            const uploadContainer = idUploadSection.closest('.flex.flex-col.sm\\:flex-row.gap-4');
+            if (uploadContainer) {
+                uploadContainer.classList.add('ring-2', 'ring-yellow-500', 'animate-pulse');
+                setTimeout(() => {
+                    uploadContainer.classList.remove('ring-2', 'ring-yellow-500', 'animate-pulse');
+                }, 2000);
+            }
+        }
+    }, 500);
+}
     
     
 </script>
