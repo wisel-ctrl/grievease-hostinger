@@ -611,85 +611,86 @@ header("Pragma: no-cache");
                     </div>
                 </div>
                 
-                <!-- Address section taking full width -->
-                <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden col-span-1 lg:col-span-2">
-                    <div class="bg-navy bg-opacity-10 px-4 py-3 sm:px-6 sm:py-4 border-b border-gray-200">
-                        <h4 class="flex items-center text-navy text-base sm:text-lg font-semibold">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                            </svg>
-                            Address Information
-                        </h4>
-                    </div>
-                    <div class="p-4 sm:p-6">
-                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-                            <div class="bg-gray-50 p-3 sm:p-4 rounded-lg">
-                                <label class="block text-xs font-medium text-gray-500 mb-1">Region</label>
-                                <p class="text-navy <?= empty($region) ? 'opacity-60 italic text-gray-500' : 'font-medium' ?> text-sm sm:text-base">
-                                    <?= !empty($region) ? htmlspecialchars($region) : 'N/A' ?>
-                                </p>
-                            </div>
-                            <div class="bg-gray-50 p-3 sm:p-4 rounded-lg">
-                                <label class="block text-xs font-medium text-gray-500 mb-1">Province</label>
-                                <p class="text-navy <?= empty($province) ? 'opacity-60 italic text-gray-500' : 'font-medium' ?> text-sm sm:text-base">
-                                    <?= !empty($province) ? htmlspecialchars($province) : 'N/A' ?>
-                                </p>
-                            </div>
-                            <div class="bg-gray-50 p-3 sm:p-4 rounded-lg">
-                                <label class="block text-xs font-medium text-gray-500 mb-1">City</label>
-                                <p class="text-navy <?= empty($city) ? 'opacity-60 italic text-gray-500' : 'font-medium' ?> text-sm sm:text-base">
-                                    <?= !empty($city) ? htmlspecialchars($city) : 'N/A' ?>
-                                </p>
-                            </div>
-                            <div class="bg-gray-50 p-3 sm:p-4 rounded-lg">
-                                <label class="block text-xs font-medium text-gray-500 mb-1">Barangay</label>
-                                <p class="text-navy <?= empty($barangay) ? 'opacity-60 italic text-gray-500' : 'font-medium' ?> text-sm sm:text-base">
-                                    <?= !empty($barangay) ? htmlspecialchars($barangay) : 'N/A' ?>
-                                </p>
-                            </div>
-                            <div class="bg-gray-50 p-3 sm:p-4 rounded-lg">
-                                <label class="block text-xs font-medium text-gray-500 mb-1">Street Address</label>
-                                <p class="text-navy <?= empty($street_address) ? 'opacity-60 italic text-gray-500' : 'font-medium' ?> text-sm sm:text-base">
-                                    <?= !empty($street_address) ? htmlspecialchars($street_address) : 'N/A' ?>
-                                </p>
-                            </div>
-                            <div class="bg-gray-50 p-3 sm:p-4 rounded-lg">
-                                <label class="block text-xs font-medium text-gray-500 mb-1">Zip/Postal Code</label>
-                                <p class="text-navy <?= empty($zip_code) ? 'opacity-60 italic text-gray-500' : 'font-medium' ?> text-sm sm:text-base">
-                                    <?= !empty($zip_code) ? htmlspecialchars($zip_code) : 'N/A' ?>
-                                </p>
-                            </div>
-                        </div>
-                        
-                        <?php if (!empty($street_address) && !empty($city)): ?>
-                        <div class="mt-3 sm:mt-4">
-                            <div class="bg-gray-50 p-3 sm:p-4 rounded-lg border border-gray-200">
-                                <div class="flex items-center mb-1 sm:mb-2">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 text-navy mr-1 sm:mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
-                                    </svg>
-                                    <label class="text-xs sm:text-sm font-medium text-gray-700">Complete Address</label>
-                                </div>
-                                <p class="text-navy font-medium text-sm sm:text-base">
-                                    <?php 
-                                        $address_parts = array_filter([
-                                            $street_address,
-                                            $barangay,
-                                            $city,
-                                            $province,
-                                            $region,
-                                            $zip_code
-                                        ]);
-                                        echo htmlspecialchars(implode(', ', $address_parts));
-                                    ?>
-                                </p>
-                            </div>
-                        </div>
-                        <?php endif; ?>
-                    </div>
-                </div>
+               <!-- Address section taking full width -->
+<div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden col-span-1 lg:col-span-2">
+    <div class="bg-navy bg-opacity-10 px-4 py-3 sm:px-6 sm:py-4 border-b border-gray-200">
+        <h4 class="flex items-center text-navy text-base sm:text-lg font-semibold">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            Address Information
+        </h4>
+    </div>
+    <div class="p-4 sm:p-6">
+        <!-- Changed grid to 2 columns on small screens, 3 columns on larger screens -->
+        <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+            <div class="bg-gray-50 p-3 sm:p-4 rounded-lg">
+                <label class="block text-xs font-medium text-gray-500 mb-1">Region</label>
+                <p class="text-navy <?= empty($region) ? 'opacity-60 italic text-gray-500' : 'font-medium' ?> text-sm sm:text-base">
+                    <?= !empty($region) ? htmlspecialchars($region) : 'N/A' ?>
+                </p>
             </div>
+            <div class="bg-gray-50 p-3 sm:p-4 rounded-lg">
+                <label class="block text-xs font-medium text-gray-500 mb-1">Province</label>
+                <p class="text-navy <?= empty($province) ? 'opacity-60 italic text-gray-500' : 'font-medium' ?> text-sm sm:text-base">
+                    <?= !empty($province) ? htmlspecialchars($province) : 'N/A' ?>
+                </p>
+            </div>
+            <div class="bg-gray-50 p-3 sm:p-4 rounded-lg">
+                <label class="block text-xs font-medium text-gray-500 mb-1">City</label>
+                <p class="text-navy <?= empty($city) ? 'opacity-60 italic text-gray-500' : 'font-medium' ?> text-sm sm:text-base">
+                    <?= !empty($city) ? htmlspecialchars($city) : 'N/A' ?>
+                </p>
+            </div>
+            <div class="bg-gray-50 p-3 sm:p-4 rounded-lg">
+                <label class="block text-xs font-medium text-gray-500 mb-1">Barangay</label>
+                <p class="text-navy <?= empty($barangay) ? 'opacity-60 italic text-gray-500' : 'font-medium' ?> text-sm sm:text-base">
+                    <?= !empty($barangay) ? htmlspecialchars($barangay) : 'N/A' ?>
+                </p>
+            </div>
+            <div class="bg-gray-50 p-3 sm:p-4 rounded-lg col-span-2">
+                <label class="block text-xs font-medium text-gray-500 mb-1">Street Address</label>
+                <p class="text-navy <?= empty($street_address) ? 'opacity-60 italic text-gray-500' : 'font-medium' ?> text-sm sm:text-base">
+                    <?= !empty($street_address) ? htmlspecialchars($street_address) : 'N/A' ?>
+                </p>
+            </div>
+            <div class="bg-gray-50 p-3 sm:p-4 rounded-lg">
+                <label class="block text-xs font-medium text-gray-500 mb-1">Zip/Postal Code</label>
+                <p class="text-navy <?= empty($zip_code) ? 'opacity-60 italic text-gray-500' : 'font-medium' ?> text-sm sm:text-base">
+                    <?= !empty($zip_code) ? htmlspecialchars($zip_code) : 'N/A' ?>
+                </p>
+            </div>
+        </div>
+        
+        <?php if (!empty($street_address) && !empty($city)): ?>
+        <!-- Complete address remains full width -->
+        <div class="mt-3 sm:mt-4">
+            <div class="bg-gray-50 p-3 sm:p-4 rounded-lg border border-gray-200">
+                <div class="flex items-center mb-1 sm:mb-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 text-navy mr-1 sm:mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                    </svg>
+                    <label class="text-xs sm:text-sm font-medium text-gray-700">Complete Address</label>
+                </div>
+                <p class="text-navy font-medium text-sm sm:text-base">
+                    <?php 
+                        $address_parts = array_filter([
+                            $street_address,
+                            $barangay,
+                            $city,
+                            $province,
+                            $region,
+                            $zip_code
+                        ]);
+                        echo htmlspecialchars(implode(', ', $address_parts));
+                    ?>
+                </p>
+            </div>
+        </div>
+        <?php endif; ?>
+    </div>
+</div>
             
             <!-- ID Upload Section with improved layout -->
             <div class="mt-6 sm:mt-8 pt-4 sm:pt-6 border-t border-gray-200">
