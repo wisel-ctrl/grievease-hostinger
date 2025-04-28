@@ -556,54 +556,50 @@ document.addEventListener('DOMContentLoaded', function() {
   const rawCasketData = <?php echo json_encode($casketData); ?>;
 const heatmapData = processDataForHeatmap(rawCasketData);
 
-// Calculate dynamic height based on number of items
+// Calculate dimensions based on data size
 const itemCount = heatmapData.items.length;
-const dynamicHeight = Math.max(350, itemCount * 40); // Minimum 350px, or 40px per item
+const monthCount = heatmapData.months.length;
+const cellSize = 40; // Base size for each cell
+const headerHeight = 50; // Space for title and axis labels
+
+// Calculate dynamic dimensions
+const dynamicHeight = Math.max(350, headerHeight + (itemCount * cellSize));
+const dynamicWidth = Math.max(800, monthCount * cellSize);
 
 // Create the heatmap chart
 var options = {
   series: heatmapData.series,
   chart: {
     height: dynamicHeight,
+    width: dynamicWidth,
     type: 'heatmap',
-    toolbar: {
-      show: false
-    }
+    toolbar: { show: false },
+    animations: { enabled: false } // Improves rendering performance
   },
   stroke: {
-    width: 0
+    width: 1,
+    colors: ['#fff'] // White border around circles
   },
   plotOptions: {
     heatmap: {
-      radius: 25, // Slightly reduced radius for better fit
+      radius: cellSize * 0.35, // Perfect circle size relative to cell
       enableShades: false,
-      useFillColorAsStroke: false,
+      useFillColorAsStroke: true,
       distributed: false,
       colorScale: {
-        ranges: [{
-            from: 0,
-            to: 50,
-            color: '#008FFB'
-          },
-          {
-            from: 51,
-            to: 100,
-            color: '#00E396'
-          },
-          {
-            from: 101,
-            to: 150,
-            color: '#FEB019'
-          },
-        ],
-      },
+        ranges: [
+          { from: 0, to: 50, color: '#008FFB' },
+          { from: 51, to: 100, color: '#00E396' },
+          { from: 101, to: 150, color: '#FEB019' }
+        ]
+      }
     }
   },
   dataLabels: {
     enabled: true,
     style: {
       colors: ['#fff'],
-      fontSize: '12px',
+      fontSize: '10px',
       fontFamily: 'Helvetica, Arial, sans-serif',
       fontWeight: 'bold'
     },
@@ -615,7 +611,8 @@ var options = {
         }
       }
       return val;
-    }
+    },
+    offsetY: -1 // Fine-tune label position
   },
   xaxis: {
     type: 'category',
@@ -625,27 +622,32 @@ var options = {
         return value.split('-')[1] + '/' + value.split('-')[0].slice(2);
       },
       style: {
-        fontSize: '12px'
-      }
+        fontSize: '10px',
+        cssClass: 'heatmap-xaxis-label'
+      },
+      rotate: -45, // Diagonal labels for better fit
+      hideOverlappingLabels: true
     },
-    tooltip: {
-      enabled: false
-    }
+    tooltip: { enabled: false },
+    axisBorder: { show: false }
   },
   yaxis: {
     labels: {
       style: {
-        fontSize: '12px'
-      }
+        fontSize: '11px'
+      },
+      offsetX: 5 // Add some spacing
     }
   },
   grid: {
     padding: {
       top: 20,
-      right: 20,
-      bottom: 20,
-      left: 20
-    }
+      right: 10,
+      bottom: 10,
+      left: 10
+    },
+    xaxis: { lines: { show: false } },
+    yaxis: { lines: { show: false } }
   },
   tooltip: {
     custom: function({ series, seriesIndex, dataPointIndex, w }) {
@@ -668,9 +670,11 @@ var options = {
     text: 'Casket Sales Heatmap with Forecast',
     align: 'center',
     style: {
-      fontSize: '16px',
-      fontWeight: 'bold'
-    }
+      fontSize: '14px',
+      fontWeight: 'bold',
+      cssClass: 'heatmap-title'
+    },
+    margin: 10
   },
   annotations: {
     xaxis: [{
@@ -682,25 +686,32 @@ var options = {
         style: {
           color: '#fff',
           background: '#FF4560',
-          fontSize: '12px'
+          fontSize: '10px'
         },
-        text: 'Forecast Start'
+        text: 'Forecast Start',
+        offsetY: 5
       }
     }]
   }
 };
 
-// Adjust container width to maintain aspect ratio
-const container = document.querySelector("#demandPredictionChart");
-if (container) {
-  const itemCount = heatmapData.items.length;
-  const monthCount = heatmapData.months.length;
-  const calculatedWidth = Math.max(800, monthCount * 40); // Adjust based on month count
-  
-  container.style.width = `${calculatedWidth}px`;
-  container.style.height = `${dynamicHeight}px`;
-}
+// Apply CSS to prevent label overlap
+const style = document.createElement('style');
+style.textContent = `
+  .heatmap-xaxis-label {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    max-width: ${cellSize}px;
+    display: inline-block;
+    overflow: hidden;
+  }
+  .heatmap-title {
+    margin-bottom: 5px !important;
+  }
+`;
+document.head.appendChild(style);
 
+// Render the chart
 var chart = new ApexCharts(document.querySelector("#demandPredictionChart"), options);
 chart.render();
 
