@@ -542,7 +542,7 @@ header("Pragma: no-cache");
             </div>
             
                 <!-- Content area with improved spacing and grouping -->
-                <div class="p-8">
+            <div class="p-8">
 
 <!-- Information sections with card-based layout -->
 <div class="grid grid-cols-1 gap-6">
@@ -556,19 +556,19 @@ header("Pragma: no-cache");
                 Basic Information
             </h4>
         </div>
-        <div class="p-6 space-y-4">
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div class="bg-gray-50 p-4 rounded-lg">
+        <div class="p-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                <div class="bg-gray-50 p-4 rounded-lg h-full">
                     <label class="block text-xs font-medium text-gray-500 mb-1">First Name</label>
                     <p class="text-navy font-medium text-lg"><?php echo htmlspecialchars(ucwords($first_name)); ?></p>
                 </div>
-                <div class="bg-gray-50 p-4 rounded-lg">
+                <div class="bg-gray-50 p-4 rounded-lg h-full">
                     <label class="block text-xs font-medium text-gray-500 mb-1">Middle Name</label>
                     <p class="text-navy <?= empty($middle_name) ? 'opacity-60 italic text-gray-500' : 'font-medium text-lg' ?>">
                         <?= !empty($middle_name) ? htmlspecialchars(ucwords($middle_name)) : 'N/A' ?>
                     </p>
                 </div>
-                <div class="bg-gray-50 p-4 rounded-lg">
+                <div class="bg-gray-50 p-4 rounded-lg h-full">
                     <label class="block text-xs font-medium text-gray-500 mb-1">Last Name</label>
                     <p class="text-navy font-medium text-lg"><?php echo htmlspecialchars(ucwords($last_name)); ?></p>
                 </div>
@@ -595,9 +595,9 @@ header("Pragma: no-cache");
                 Contact Information
             </h4>
         </div>
-        <div class="p-6 space-y-4">
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div class="bg-gray-50 p-4 rounded-lg">
+        <div class="p-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="bg-gray-50 p-4 rounded-lg h-full">
                     <label class="block text-xs font-medium text-gray-500 mb-1">Email Address</label>
                     <p class="text-navy font-medium flex items-center">
                         <svg class="w-4 h-4 mr-2 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
@@ -607,7 +607,7 @@ header("Pragma: no-cache");
                         <?php echo htmlspecialchars($email); ?>
                     </p>
                 </div>
-                <div class="bg-gray-50 p-4 rounded-lg">
+                <div class="bg-gray-50 p-4 rounded-lg h-full">
                     <label class="block text-xs font-medium text-gray-500 mb-1">Phone Number</label>
                     <p class="text-navy <?= empty($phone_number) ? 'opacity-60 italic text-gray-500' : 'font-medium' ?> flex items-center">
                         <svg class="w-4 h-4 mr-2 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
@@ -620,7 +620,6 @@ header("Pragma: no-cache");
         </div>
     </div>
     
-                    
                     <!-- Address section taking full width -->
                     <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden col-span-1 lg:col-span-2">
                         <div class="bg-navy bg-opacity-10 px-6 py-4 border-b border-gray-200">
