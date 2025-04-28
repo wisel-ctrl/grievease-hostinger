@@ -294,7 +294,7 @@ require_once '../db_connect.php'; // Database connection
                         ?>
                     </div>
                     <span class="hidden md:inline text-sm">
-                        <?php echo htmlspecialchars($first_name . ' ' . $last_name); ?>
+                    <?php echo htmlspecialchars(ucwords($first_name . ' ' . $last_name)); ?>
                     </span>
 
                         <i class="fas fa-chevron-down text-xs"></i>
@@ -302,7 +302,7 @@ require_once '../db_connect.php'; // Database connection
                     
                     <div class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-card overflow-hidden invisible group-hover:visible transition-all duration-300 opacity-0 group-hover:opacity-100">
                         <div class="p-3 border-b border-gray-100">
-                            <p class="text-sm font-medium text-navy"><?php echo htmlspecialchars($first_name . ' ' . $last_name); ?></p>
+                            <p class="text-sm font-medium text-navy"><?php echo htmlspecialchars(ucwords($first_name . ' ' . $last_name)); ?></p>
                             <p class="text-xs text-gray-500"><?php echo htmlspecialchars($email); ?></p>
                         </div>
                         <div class="py-1">
