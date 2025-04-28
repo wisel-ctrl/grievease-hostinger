@@ -89,6 +89,40 @@ header("Pragma: no-cache");
                 $zip_code = $row['zip_code'];
 
                 $uploadedImagePath = null;
+                
+                // Get notification count for the current user
+                $notifications_count = [
+                    'total' => 0,
+                    'pending' => 0,
+                    'accepted' => 0,
+                    'declined' => 0
+                ];
+                
+                if (isset($_SESSION['user_id'])) {
+                    $user_id = $_SESSION['user_id'];
+                    $query = "SELECT status FROM booking_tb WHERE customerID = ?";
+                    $stmt = $conn->prepare($query);
+                    $stmt->bind_param("i", $user_id);
+                    $stmt->execute();
+                    $result = $stmt->get_result();
+                    
+                    while ($booking = $result->fetch_assoc()) {
+                        $notifications_count['total']++;
+                        
+                        switch ($booking['status']) {
+                            case 'Pending':
+                                $notifications_count['pending']++;
+                                break;
+                            case 'Accepted':
+                                $notifications_count['accepted']++;
+                                break;
+                            case 'Declined':
+                                $notifications_count['declined']++;
+                                break;
+                        }
+                    }
+                    $stmt->close();
+                }
 
                 // Fetch the uploaded ID image from valid_id_tb
                 $query = "SELECT image_path FROM valid_id_tb WHERE id = ?";
@@ -256,7 +290,11 @@ header("Pragma: no-cache");
             <div class="hidden md:flex items-center space-x-4">
                 <a href="notification.php" class="relative text-white hover:text-yellow-600 transition-colors">
                     <i class="fas fa-bell"></i>
-                    <span class="absolute -top-2 -right-2 bg-yellow-600 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">2</span>
+                    <?php if ($notifications_count['pending'] > 0): ?>
+                    <span class="absolute -top-2 -right-2 bg-yellow-600 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                        <?php echo $notifications_count['pending']; ?>
+                    </span>
+                    <?php endif; ?>
                 </a>
                 
                 <div class="relative group">
@@ -801,7 +839,8 @@ header("Pragma: no-cache");
     }
     
     function reuploadID() {
-    // Close the decline reason modal first
+    // Close the decline reason modal first 
+     console.log('Reupload ID function called');
     closeDeclineReasonModal();
     
     // Open the edit profile modal
@@ -813,34 +852,33 @@ header("Pragma: no-cache");
     // Load address data (if needed)
     setTimeout(loadAddressData, 100);
     
+    // Scroll to the ID upload section with a slight delay to ensure the modal is fully open
     setTimeout(() => {
-    const idUploadSection = document.querySelector('label[for="id-upload"]');
-    if (idUploadSection) {
-        idUploadSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        
-        // Highlight the upload area
-        const uploadContainer = idUploadSection.closest('.flex.flex-col.sm\\:flex-row.gap-4');
-        if (uploadContainer) {
-            uploadContainer.classList.add('ring-2', 'ring-yellow-500', 'animate-pulse');
-            setTimeout(() => {
-                uploadContainer.classList.remove('ring-2', 'ring-yellow-500', 'animate-pulse');
-            }, 2000);
+        const idUploadSection = document.querySelector('label[for="id-upload"]');
+        if (idUploadSection) {
+            idUploadSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            
+            // Highlight the upload area
+            const uploadContainer = idUploadSection.closest('.flex.flex-col.sm\\:flex-row.gap-4');
+            if (uploadContainer) {
+                uploadContainer.classList.add('ring-2', 'ring-yellow-500', 'animate-pulse');
+                setTimeout(() => {
+                    uploadContainer.classList.remove('ring-2', 'ring-yellow-500', 'animate-pulse');
+                }, 2000);
+            }
         }
-    }
-}, 500);
+    }, 500);
+}
 
+// Ensure the edit profile button listener is properly attached
 document.addEventListener('DOMContentLoaded', function() {
-    // Call loadAddressData when edit modal opens
     const editProfileBtn = document.getElementById('edit-profile-btn');
     if (editProfileBtn) {
         editProfileBtn.addEventListener('click', function() {
-            // Show modal first
             const modal = document.getElementById('edit-profile-modal');
             modal.classList.remove('hidden');
             modal.classList.remove('opacity-0', 'scale-95');
             modal.classList.add('opacity-100', 'scale-100');
-            
-            // Then load address data
             setTimeout(loadAddressData, 100);
         });
     }
@@ -863,7 +901,6 @@ document.addEventListener('DOMContentLoaded', function() {
             closeDeclineReasonModal();
         }
     });
-}
     
     
 </script>
@@ -1241,8 +1278,8 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400 text-sm">
                 <p class="text-yellow-600">&copy; 2025 Vjay Relova Funeral Services. All rights reserved.</p>
                 <div class="mt-2">
-                    <a href="privacy_policy.php" class="text-gray-400 hover:text-white transition mx-2">Privacy Policy</a>
-                    <a href="#" class="text-gray-400 hover:text-white transition mx-2">Terms of Service</a>
+                    <a href="..\privacy_policy.php" class="text-gray-400 hover:text-white transition mx-2">Privacy Policy</a>
+                    <a href="..\termsofservice.php" class="text-gray-400 hover:text-white transition mx-2">Terms of Service</a>
                 </div>
             </div>
         </div>
