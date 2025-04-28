@@ -473,162 +473,6 @@ document.addEventListener('DOMContentLoaded', function() {
       document.querySelector("#salesForecastChart").innerHTML = '<div class="p-4 text-center text-gray-500">No revenue data available</div>';
   }
 
-  // Demand Prediction Chart
-   
-//   SELECT 
-//      DATE_FORMAT(sale_date, '%Y-%m') AS sale_month,
-//      item_name,
-//      COUNT(*) AS casket_sold
-//  FROM 
-//      analytics_tb
-//  JOIN 
-//      inventory_tb 
-//  ON 
-//      casket_id = inventory_id
-//  WHERE 
-//      casket_id IS NOT NULL
-//  GROUP BY 
-//      sale_month, item_name
-//  ORDER BY 
-//      sale_month, item_name;
-// Process the data into heatmap format
-  function processDataForHeatmap(data, forecastMonths = 6) {
-    // Get unique item names
-    const items = [...new Set(data.map(d => d.item_name))];
-    
-    // Get unique months (sorted)
-    const months = [...new Set(data.map(d => d.sale_month))].sort();
-    
-    // Generate forecast months
-    const lastDate = new Date(months[months.length-1] + '-01');
-    const forecastDates = [];
-    for (let i = 1; i <= forecastMonths; i++) {
-      lastDate.setMonth(lastDate.getMonth() + 1);
-      const year = lastDate.getFullYear();
-      const month = String(lastDate.getMonth() + 1).padStart(2, '0');
-      forecastDates.push(`${year}-${month}`);
-    }
-    
-    // Combine actual and forecast months
-    const allMonths = [...months, ...forecastDates];
-    
-    // Create series for each item
-    const series = items.map(item => {
-      const itemData = data.filter(d => d.item_name === item);
-      
-      // Create data points for actual months
-      const actualData = months.map(month => {
-        const found = itemData.find(d => d.sale_month === month);
-        return {
-          x: month,
-          y: found ? found.casket_sold : 0
-        };
-      });
-      
-      // Create forecast data points (simple linear regression for demo)
-      // In a real app, you'd use a proper forecasting model
-      const lastActual = actualData[actualData.length - 1].y;
-      const growthRate = 0.05; // 5% monthly growth (adjust based on your data)
-      
-      const forecastData = forecastDates.map((month, i) => {
-        const forecastValue = Math.round(lastActual * Math.pow(1 + growthRate, i + 1));
-        return {
-          x: month,
-          y: forecastValue,
-          forecast: true
-        };
-      });
-      
-      return {
-        name: item,
-        data: [...actualData, ...forecastData]
-      };
-    });
-    
-    return {
-      items,
-      months: allMonths,
-      series
-    };
-  }
-
-// Create the heatmap chart with improved configuration
-const rawCasketData = <?php echo json_encode($casketData); ?>;
-const heatmapData = processDataForHeatmap(rawCasketData);
-
-// Create the heatmap chart following the requested design
-var options = {
-  series: heatmapData.series,
-  chart: {
-    height: 350,
-    type: 'heatmap',
-  },
-  stroke: {
-    width: 0
-  },
-  plotOptions: {
-    heatmap: {
-      radius: 30,
-      enableShades: false,
-      colorScale: {
-        ranges: [
-          { from: 0, to: 50, color: '#008FFB' },
-          { from: 51, to: 100, color: '#00E396' },
-          { from: 101, to: 150, color: '#FEB019' },
-        ],
-      },
-    }
-  },
-  dataLabels: {
-    enabled: true,
-    style: {
-      colors: ['#fff']
-    },
-    formatter: function(val, opts) {
-      if (opts.seriesIndex >= 0 && opts.dataPointIndex >= 0) {
-        const point = heatmapData.series[opts.seriesIndex].data[opts.dataPointIndex];
-        if (point.forecast) {
-          return val + ' (F)';
-        }
-      }
-      return val;
-    }
-  },
-  xaxis: {
-    type: 'category',
-    categories: heatmapData.months,
-    labels: {
-      formatter: function(value) {
-        return value.split('-')[1] + '/' + value.split('-')[0].slice(2);
-      }
-    }
-  },
-  title: {
-    text: 'Casket Demand Forecast',
-  },
-  tooltip: {
-    custom: function({ series, seriesIndex, dataPointIndex, w }) {
-      const item = w.config.series[seriesIndex].name;
-      const month = w.config.xaxis.categories[dataPointIndex];
-      const value = series[seriesIndex][dataPointIndex];
-      const isForecast = w.config.series[seriesIndex].data[dataPointIndex].forecast;
-      
-      return `
-        <div class="p-2 bg-white border border-gray-200 rounded shadow">
-          <div class="font-bold">${item}</div>
-          <div>Month: ${month}</div>
-          <div>Sold: ${value}</div>
-          ${isForecast ? '<div class="text-yellow-600">Forecasted Value</div>' : ''}
-        </div>
-      `;
-    }
-  }
-};
-
-// Render the chart
-var chart = new ApexCharts(document.querySelector("#demandPredictionChart"), options);
-chart.render();
-
 
   // Payment Methods Chart
   const paymentMethodsCtx = document.getElementById('paymentMethodsChart').getContext('2d');
@@ -676,6 +520,315 @@ chart.render();
 
   
   
+});
+</script>
+
+<script>
+  function processDataForHeatmap(data, forecastMonths = 6) {
+    // Get unique item names
+    const items = [...new Set(data.map(d => d.item_name))];
+    
+    // Get unique months (sorted)
+    const months = [...new Set(data.map(d => d.sale_month))].sort();
+    
+    // Generate forecast months
+    const lastDate = new Date(months[months.length-1] + '-01');
+    const forecastDates = [];
+    for (let i = 1; i <= forecastMonths; i++) {
+      lastDate.setMonth(lastDate.getMonth() + 1);
+      const year = lastDate.getFullYear();
+      const month = String(lastDate.getMonth() + 1).padStart(2, '0');
+      forecastDates.push(`${year}-${month}`);
+    }
+    
+    // Combine actual and forecast months
+    const allMonths = [...months, ...forecastDates];
+    
+    // Calculate total sales per item to find top casket
+    const itemTotals = {};
+    items.forEach(item => {
+      itemTotals[item] = data
+        .filter(d => d.item_name === item)
+        .reduce((sum, d) => sum + d.casket_sold, 0);
+    });
+    
+    // Find the top casket (highest total sales)
+    const topCasket = Object.keys(itemTotals).reduce((a, b) => 
+      itemTotals[a] > itemTotals[b] ? a : b
+    );
+    
+    // Calculate overall growth rate
+    let overallGrowthRate = 0;
+    let seasonalityImpact = "Low";
+    
+    // Create series for each item
+    const series = items.map(item => {
+      const itemData = data.filter(d => d.item_name === item);
+      
+      // Create data points for actual months
+      const actualData = months.map(month => {
+        const found = itemData.find(d => d.sale_month === month);
+        return {
+          x: month,
+          y: found ? found.casket_sold : 0
+        };
+      });
+      
+      // Calculate growth rate for this item based on historical data
+      let growthRate = 0.05; // Default 5%
+      
+      if (actualData.length >= 2) {
+        // Look at last few months to calculate growth rate
+        const recentValues = actualData.slice(-3).map(d => d.y).filter(y => y > 0);
+        if (recentValues.length >= 2) {
+          const oldest = recentValues[0];
+          const newest = recentValues[recentValues.length - 1];
+          if (oldest > 0) {
+            growthRate = (newest / oldest - 1) / recentValues.length;
+            // Cap growth rate between -20% and +30%
+            growthRate = Math.max(-0.2, Math.min(0.3, growthRate));
+          }
+        }
+      }
+      
+      // If this is the top casket, use its growth rate for display
+      if (item === topCasket) {
+        overallGrowthRate = growthRate;
+        
+        // Calculate seasonality impact by looking at variance
+        if (actualData.length >= 4) {
+          const values = actualData.map(d => d.y);
+          const avg = values.reduce((sum, val) => sum + val, 0) / values.length;
+          const variance = values.reduce((sum, val) => sum + Math.pow(val - avg, 2), 0) / values.length;
+          const stdDev = Math.sqrt(variance);
+          const variationCoeff = stdDev / avg;
+          
+          if (variationCoeff < 0.1) seasonalityImpact = "Low";
+          else if (variationCoeff < 0.25) seasonalityImpact = "Medium";
+          else seasonalityImpact = "High";
+        }
+      }
+      
+      // Create forecast data points with calculated growth rate
+      const lastActual = actualData[actualData.length - 1].y;
+      const forecastData = forecastDates.map((month, i) => {
+        const forecastValue = Math.round(lastActual * Math.pow(1 + growthRate, i + 1));
+        return {
+          x: month,
+          y: forecastValue,
+          forecast: true
+        };
+      });
+      
+      return {
+        name: item,
+        data: [...actualData, ...forecastData]
+      };
+    });
+    
+    return {
+      items,
+      months: allMonths,
+      series,
+      topCasket,
+      growthRate: overallGrowthRate,
+      seasonalityImpact
+    };
+  }
+
+// Create the heatmap chart with improved configuration
+const rawCasketData = <?php echo json_encode($casketData); ?>;
+const heatmapData = processDataForHeatmap(rawCasketData);
+
+// Create the heatmap chart with enhanced design
+var options = {
+  series: heatmapData.series,
+  chart: {
+    height: 350,
+    type: 'heatmap',
+    toolbar: {
+      show: true,
+      tools: {
+        download: true,
+        selection: false,
+        zoom: false,
+        zoomin: false,
+        zoomout: false,
+        pan: false,
+        reset: false
+      }
+    },
+    animations: {
+      enabled: true,
+      easing: 'easeinout',
+      speed: 800,
+      animateGradually: {
+        enabled: true,
+        delay: 150
+      },
+      dynamicAnimation: {
+        enabled: true,
+        speed: 350
+      }
+    },
+    fontFamily: 'Inter, Helvetica, sans-serif',
+    background: '#fff',
+    foreColor: '#4B5563'
+  },
+  stroke: {
+    width: 0
+  },
+  plotOptions: {
+    heatmap: {
+      radius: 30,
+      enableShades: false,
+      colorScale: {
+        ranges: [
+          { from: 0, to: 0, color: '#F3F4F6' }, // Empty cells
+          { from: 1, to: 50, color: '#008FFB' },
+          { from: 51, to: 100, color: '#00E396' },
+          { from: 101, to: 150, color: '#FEB019' },
+        ],
+      },
+    }
+  },
+  dataLabels: {
+    enabled: true,
+    style: {
+      colors: ['#fff'],
+      fontSize: '13px',
+      fontWeight: 600,
+      fontFamily: 'Inter, Helvetica, sans-serif'
+    },
+    formatter: function(val, opts) {
+      if (val === 0) return ''; // Don't show zeros
+      
+      if (opts.seriesIndex >= 0 && opts.dataPointIndex >= 0) {
+        const point = heatmapData.series[opts.seriesIndex].data[opts.dataPointIndex];
+        if (point.forecast) {
+          return val + ' (F)';
+        }
+      }
+      return val;
+    }
+  },
+  xaxis: {
+    type: 'category',
+    categories: heatmapData.months,
+    labels: {
+      formatter: function(value) {
+        return value.split('-')[1] + '/' + value.split('-')[0].slice(2);
+      },
+      style: {
+        fontSize: '12px',
+        fontWeight: 500
+      },
+      rotateAlways: false
+    },
+    axisBorder: {
+      show: true,
+      color: '#E5E7EB',
+    },
+    axisTicks: {
+      show: true,
+      color: '#E5E7EB',
+    }
+  },
+  yaxis: {
+    labels: {
+      style: {
+        fontSize: '12px',
+        fontWeight: 500
+      }
+    }
+  },
+  title: {
+    text: 'Casket Demand Forecast',
+    align: 'center',
+    style: {
+      fontSize: '16px',
+      fontWeight: 600,
+      color: '#111827'
+    }
+  },
+  subtitle: {
+    text: 'Historical sales and predicted future demand',
+    align: 'center',
+    style: {
+      fontSize: '13px',
+      color: '#6B7280'
+    }
+  },
+  theme: {
+    mode: 'light',
+    palette: 'palette1',
+    monochrome: {
+      enabled: false
+    }
+  },
+  tooltip: {
+    custom: function({ series, seriesIndex, dataPointIndex, w }) {
+      const item = w.config.series[seriesIndex].name;
+      const month = w.config.xaxis.categories[dataPointIndex];
+      const value = series[seriesIndex][dataPointIndex];
+      const isForecast = w.config.series[seriesIndex].data[dataPointIndex].forecast;
+      
+      return `
+        <div class="p-3 bg-white border border-gray-200 rounded-lg shadow-lg">
+          <div class="text-lg font-bold text-gray-800 mb-1">${item}</div>
+          <div class="grid grid-cols-2 gap-1 text-sm">
+            <div class="text-gray-500">Month:</div>
+            <div class="font-medium">${month}</div>
+            <div class="text-gray-500">Units Sold:</div>
+            <div class="font-medium">${value}</div>
+          </div>
+          ${isForecast ? '<div class="mt-2 py-1 px-2 bg-yellow-100 text-yellow-800 rounded text-xs font-medium">Forecasted Value</div>' : ''}
+        </div>
+      `;
+    }
+  }
+};
+
+// Render the chart
+var chart = new ApexCharts(document.querySelector("#demandPredictionChart"), options);
+chart.render();
+
+// Update the summary information boxes with calculated values
+document.addEventListener('DOMContentLoaded', function() {
+  // Update Top Casket
+  const topCasketNameElement = document.querySelector('.flex.justify-between .font-medium:first-of-type + div');
+  if (topCasketNameElement && heatmapData.topCasket) {
+    topCasketNameElement.textContent = heatmapData.topCasket;
+  }
+  
+  // Update Growth Rate
+  const growthRateElement = document.querySelector('.flex.justify-between .font-medium:nth-of-type(2) + div');
+  if (growthRateElement && heatmapData.growthRate !== undefined) {
+    const formattedGrowthRate = (heatmapData.growthRate * 100).toFixed(1) + '%';
+    growthRateElement.textContent = (heatmapData.growthRate >= 0 ? '+' : '') + formattedGrowthRate;
+    
+    // Style based on positive/negative growth
+    if (heatmapData.growthRate >= 0) {
+      growthRateElement.className = 'text-green-600';
+    } else {
+      growthRateElement.className = 'text-red-600';
+    }
+  }
+  
+  // Update Seasonality Impact
+  const seasonalityElement = document.querySelector('.flex.justify-between .font-medium:nth-of-type(3) + div');
+  if (seasonalityElement && heatmapData.seasonalityImpact) {
+    seasonalityElement.textContent = heatmapData.seasonalityImpact;
+    
+    // Style based on impact level
+    if (heatmapData.seasonalityImpact === 'Low') {
+      seasonalityElement.className = 'text-blue-600';
+    } else if (heatmapData.seasonalityImpact === 'Medium') {
+      seasonalityElement.className = 'text-yellow-600';  
+    } else {
+      seasonalityElement.className = 'text-red-600';
+    }
+  }
 });
 </script>
     <script src="script.js"></script>
