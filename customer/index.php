@@ -81,7 +81,8 @@ header("Pragma: no-cache");
                     'total' => 0,
                     'pending' => 0,
                     'accepted' => 0,
-                    'declined' => 0
+                    'declined' => 0,
+                    'id_validation' => 0
                 ];
 
                 if (isset($_SESSION['user_id'])) {
@@ -108,6 +109,21 @@ header("Pragma: no-cache");
                         }
                     }
                     $stmt->close();
+                    
+                    // Get ID validation status
+                $query = "SELECT is_validated FROM valid_id_tb WHERE id = ?";
+                $stmt = $conn->prepare($query);
+                $stmt->bind_param("i", $user_id);
+                $stmt->execute();
+                $result = $stmt->get_result();
+                
+                if ($id_validation = $result->fetch_assoc()) {
+                    if ($id_validation['is_validated'] == 'no') {
+                        $notifications_count['id_validation']++;
+                        $notifications_count['total']++;
+                    }
+                }
+                $stmt->close();
                 }
                 
 // PROFILE CONFIRMATION
@@ -492,9 +508,9 @@ $show_id_card = !$has_id || strtolower($id_data['is_validated']) != 'valid';
             <div class="hidden md:flex items-center space-x-4">
                 <a href="notification.php" class="relative text-white hover:text-yellow-600 transition-colors">
                     <i class="fas fa-bell"></i>
-                    <?php if ($notifications_count['pending'] > 0): ?>
+                    <?php if ($notifications_count['pending'] > 0 || $notifications_count['id_validation'] > 0): ?>
                     <span class="absolute -top-2 -right-2 bg-yellow-600 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
-                        <?php echo $notifications_count['pending']; ?>
+                        <?php echo $notifications_count['pending'] + $notifications_count['id_validation']; ?>
                     </span>
                     <?php endif; ?>
                 </a>
@@ -530,14 +546,14 @@ $show_id_card = !$has_id || strtolower($id_data['is_validated']) != 'valid';
             <!-- mobile menu header -->
             <div class="md:hidden flex justify-between items-center px-4 py-3 border-b border-gray-700">
         <div class="flex items-center space-x-4">
-            <a href="notification.php" class="relative text-white hover:text-yellow-600 transition-colors">
-                <i class="fas fa-bell text-xl"></i>
-                <?php if ($notifications_count['pending'] > 0): ?>
-                <span class="absolute -top-2 -right-2 bg-yellow-600 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
-                    <?php echo $notifications_count['pending']; ?>
-                </span>
-                <?php endif; ?>
-            </a>
+                <a href="notification.php" class="relative text-white hover:text-yellow-600 transition-colors">
+                    <i class="fas fa-bell"></i>
+                    <?php if ($notifications_count['pending'] > 0 || $notifications_count['id_validation'] > 0): ?>
+                    <span class="absolute -top-2 -right-2 bg-yellow-600 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                        <?php echo $notifications_count['pending'] + $notifications_count['id_validation']; ?>
+                    </span>
+                    <?php endif; ?>
+                </a>
             <button onclick="toggleMenu()" class="focus:outline-none text-white">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
