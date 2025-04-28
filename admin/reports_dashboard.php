@@ -205,7 +205,7 @@ while ($row = $revenueResult->fetch_assoc()) {
               <span class="text-2xl md:text-3xl font-bold text-gray-800 sales-forecast-value">$0</span>
           </div>
       </div>
-      
+      <div id="salesForecastChart"></div>
       <!-- Card footer with change indicator -->
       <div class="px-6 py-3 bg-white border-t border-gray-100">
           <div class="flex items-center text-emerald-600">
