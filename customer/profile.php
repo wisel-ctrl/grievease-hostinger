@@ -515,7 +515,329 @@ header("Pragma: no-cache");
     </div>
             
             <!-- Right Content Area -->
-            <div class="bg-yellow-50 p-3 rounded-full mb-4">
+            <div class="lg:col-span-2">
+    <!-- Personal Information Tab -->
+    <div id="personal-info" class="tab-content">
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
+            <!-- Header with enhanced styling -->
+            <div class="bg-navy p-6 border-b border-gray-100 flex justify-between items-center">
+                <h3 class="font-hedvig text-2xl text-white font-semibold">Personal Information</h3>
+                
+                <div class="flex space-x-3">
+                    <button id="open-change-password-modal" class="px-4 py-2 bg-white border border-yellow-700 text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 inline">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                        </svg>
+                        Change Password
+                    </button>
+                    <button id="edit-profile-btn" class="px-4 py-2 bg-yellow-600 hover:bg-darkgold text-white rounded-md transition-colors flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                        </svg>
+                        Edit Profile
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Content area with improved spacing and grouping -->
+            <div class="p-8">
+                <!-- Profile summary card at the top -->
+                <div class="flex flex-col md:flex-row items-center bg-gray-50 p-6 rounded-xl mb-8 border border-gray-100">
+                    <div class="bg-navy h-24 w-24 rounded-full flex items-center justify-center text-white text-3xl font-bold mb-4 md:mb-0 md:mr-6">
+                        <?php echo strtoupper(substr($first_name, 0, 1) . substr($last_name, 0, 1)); ?>
+                    </div>
+                    <div class="text-center md:text-left md:flex-1">
+                        <h4 class="text-2xl font-semibold text-navy"><?php echo htmlspecialchars(ucwords($first_name . ' ' . $last_name)); ?></h4>
+                        <p class="text-gray-500 flex items-center justify-center md:justify-start mt-1">
+                            <svg class="w-4 h-4 mr-2 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
+                                <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
+                            </svg>
+                            <?php echo htmlspecialchars($email); ?>
+                        </p>
+                        <?php if(!empty($phone_number)): ?>
+                        <p class="text-gray-500 flex items-center justify-center md:justify-start mt-1">
+                            <svg class="w-4 h-4 mr-2 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"></path>
+                            </svg>
+                            <?php echo htmlspecialchars($phone_number); ?>
+                        </p>
+                        <?php endif; ?>
+                    </div>
+                    <div class="mt-4 md:mt-0">
+                        <span class="inline-flex items-center px-3 py-1 rounded-lg text-sm font-medium bg-blue-100 text-blue-800">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            Member since <?php echo date('M Y', strtotime($created_at)); ?>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Information sections with card-based layout -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Name section with visual grouping -->
+                    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                        <div class="bg-navy bg-opacity-10 px-6 py-4 border-b border-gray-200">
+                            <h4 class="flex items-center text-navy text-lg font-semibold">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                </svg>
+                                Name Details
+                            </h4>
+                        </div>
+                        <div class="p-6 space-y-4">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <label class="block text-xs font-medium text-gray-500 mb-1">First Name</label>
+                                    <p class="text-navy font-medium text-lg"><?php echo htmlspecialchars(ucwords($first_name)); ?></p>
+                                </div>
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <label class="block text-xs font-medium text-gray-500 mb-1">Last Name</label>
+                                    <p class="text-navy font-medium text-lg"><?php echo htmlspecialchars(ucwords($last_name)); ?></p>
+                                </div>
+                            </div>
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <label class="block text-xs font-medium text-gray-500 mb-1">Middle Name</label>
+                                <p class="text-navy <?= empty($middle_name) ? 'opacity-60 italic text-gray-500' : 'font-medium text-lg' ?>">
+                                    <?= !empty($middle_name) ? htmlspecialchars(ucwords($middle_name)) : 'N/A' ?>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Contact section -->
+                    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                        <div class="bg-navy bg-opacity-10 px-6 py-4 border-b border-gray-200">
+                            <h4 class="flex items-center text-navy text-lg font-semibold">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                </svg>
+                                Contact Information
+                            </h4>
+                        </div>
+                        <div class="p-6 space-y-4">
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <label class="block text-xs font-medium text-gray-500 mb-1">Email Address</label>
+                                <p class="text-navy font-medium flex items-center">
+                                    <svg class="w-4 h-4 mr-2 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
+                                        <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
+                                    </svg>
+                                    <?php echo htmlspecialchars($email); ?>
+                                </p>
+                            </div>
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <label class="block text-xs font-medium text-gray-500 mb-1">Phone Number</label>
+                                <p class="text-navy <?= empty($phone_number) ? 'opacity-60 italic text-gray-500' : 'font-medium' ?> flex items-center">
+                                    <svg class="w-4 h-4 mr-2 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"></path>
+                                    </svg>
+                                    <?= !empty($phone_number) ? htmlspecialchars($phone_number) : 'N/A' ?>
+                                </p>
+                            </div>
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <label class="block text-xs font-medium text-gray-500 mb-1">Date of Birth</label>
+                                <p class="text-navy font-medium flex items-center">
+                                    <svg class="w-4 h-4 mr-2 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    <?php echo date('F d, Y', strtotime($birthdate)); ?>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Address section taking full width -->
+                    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden col-span-1 lg:col-span-2">
+                        <div class="bg-navy bg-opacity-10 px-6 py-4 border-b border-gray-200">
+                            <h4 class="flex items-center text-navy text-lg font-semibold">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                                Address Information
+                            </h4>
+                        </div>
+                        <div class="p-6">
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <label class="block text-xs font-medium text-gray-500 mb-1">Region</label>
+                                    <p class="text-navy <?= empty($region) ? 'opacity-60 italic text-gray-500' : 'font-medium' ?>">
+                                        <?= !empty($region) ? htmlspecialchars($region) : 'N/A' ?>
+                                    </p>
+                                </div>
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <label class="block text-xs font-medium text-gray-500 mb-1">Province</label>
+                                    <p class="text-navy <?= empty($province) ? 'opacity-60 italic text-gray-500' : 'font-medium' ?>">
+                                        <?= !empty($province) ? htmlspecialchars($province) : 'N/A' ?>
+                                    </p>
+                                </div>
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <label class="block text-xs font-medium text-gray-500 mb-1">City</label>
+                                    <p class="text-navy <?= empty($city) ? 'opacity-60 italic text-gray-500' : 'font-medium' ?>">
+                                        <?= !empty($city) ? htmlspecialchars($city) : 'N/A' ?>
+                                    </p>
+                                </div>
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <label class="block text-xs font-medium text-gray-500 mb-1">Barangay</label>
+                                    <p class="text-navy <?= empty($barangay) ? 'opacity-60 italic text-gray-500' : 'font-medium' ?>">
+                                        <?= !empty($barangay) ? htmlspecialchars($barangay) : 'N/A' ?>
+                                    </p>
+                                </div>
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <label class="block text-xs font-medium text-gray-500 mb-1">Street Address</label>
+                                    <p class="text-navy <?= empty($street_address) ? 'opacity-60 italic text-gray-500' : 'font-medium' ?>">
+                                        <?= !empty($street_address) ? htmlspecialchars($street_address) : 'N/A' ?>
+                                    </p>
+                                </div>
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <label class="block text-xs font-medium text-gray-500 mb-1">Zip/Postal Code</label>
+                                    <p class="text-navy <?= empty($zip_code) ? 'opacity-60 italic text-gray-500' : 'font-medium' ?>">
+                                        <?= !empty($zip_code) ? htmlspecialchars($zip_code) : 'N/A' ?>
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            <?php if (!empty($street_address) && !empty($city)): ?>
+                            <div class="mt-4">
+                                <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                                    <div class="flex items-center mb-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-navy mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                                        </svg>
+                                        <label class="text-sm font-medium text-gray-700">Complete Address</label>
+                                    </div>
+                                    <p class="text-navy font-medium">
+                                        <?php 
+                                            $address_parts = array_filter([
+                                                $street_address,
+                                                $barangay,
+                                                $city,
+                                                $province,
+                                                $region,
+                                                $zip_code
+                                            ]);
+                                            echo htmlspecialchars(implode(', ', $address_parts));
+                                        ?>
+                                    </p>
+                                </div>
+                            </div>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- ID Upload Section with improved layout -->
+                <div class="mt-8 pt-6 border-t border-gray-200">
+                    <div class="flex items-center mb-6">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-navy mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" />
+                        </svg>
+                        <h3 class="font-hedvig text-xl text-navy font-semibold">Identity Verification</h3>
+                    </div>
+    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="bg-white p-5 rounded-lg border border-gray-200 shadow-sm">
+                            <?php if ($uploadedImagePath): ?>
+                                <?php
+                                    // Fetch the validation status and decline reason from valid_id_tb
+                                    $status_query = "SELECT is_validated, decline_reason FROM valid_id_tb WHERE id = ?";
+                                    $status_stmt = $conn->prepare($status_query);
+                                    $status_stmt->bind_param("i", $user_id);
+                                    $status_stmt->execute();
+                                    $status_result = $status_stmt->get_result();
+                                    $status_row = $status_result->fetch_assoc();
+                                    $id_status = $status_row ? $status_row['is_validated'] : 'no';
+                                    $decline_reason = $status_row ? $status_row['decline_reason'] : '';
+                                    $status_stmt->close();
+                                    
+                                    // Define status label style based on status value
+                                    switch ($id_status) {
+                                        case 'no':
+                                            $statusText = 'PENDING';
+                                            $statusClass = 'bg-yellow-100 text-yellow-800 border border-yellow-200';
+                                            $iconColor = 'text-yellow-500';
+                                            $icon = '<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>';
+                                            break;
+                                        case 'valid':
+                                            $statusText = 'APPROVED';
+                                            $statusClass = 'bg-green-100 text-green-800 border border-green-200';
+                                            $iconColor = 'text-green-500';
+                                            $icon = '<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>';
+                                            break;
+                                        case 'denied':
+                                            $statusText = 'DECLINED';
+                                            $statusClass = 'bg-red-100 text-red-800 border border-red-200';
+                                            $iconColor = 'text-red-500';
+                                            $icon = '<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>';
+                                            break;
+                                        default:
+                                            $statusText = 'PENDING';
+                                            $statusClass = 'bg-yellow-100 text-yellow-800 border border-yellow-200';
+                                            $iconColor = 'text-yellow-500';
+                                            $icon = '<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>';
+                                            break;
+                                    }
+                                ?>
+                                
+                                <div class="flex items-center justify-between mb-4 bg-gray-50 p-3 rounded-lg">
+                                    <div class="flex items-center">
+                                        <span class="text-sm font-medium text-gray-700 mr-2">Verification Status:</span>
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium <?php echo $statusClass; ?>">
+                                            <svg class="w-4 h-4 mr-1 <?php echo $iconColor; ?>" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                                <?php echo $icon; ?>
+                                            </svg>
+                                            <?php echo $statusText; ?>
+                                        </span>
+                                    </div>
+                                    
+                                    <?php if ($id_status === 'denied' && $decline_reason): ?>
+                                        <button 
+                                            class="text-red-600 hover:text-red-800 text-sm flex items-center transition-colors" 
+                                            onclick="openDeclineReasonModal('<?php echo htmlspecialchars($decline_reason); ?>')"
+                                        >
+                                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" clip-rule="evenodd"></path>
+                                            </svg>
+                                            View Details
+                                        </button>
+                                    <?php endif; ?>
+                                </div>
+                                
+                                <div class="relative group">
+                                    <!-- Container with enhanced hover effect -->
+                                    <div class="relative border-2 border-gray-200 rounded-lg overflow-hidden transition-all duration-300 group-hover:border-blue-400 shadow-sm group-hover:shadow-md">
+                                        <!-- Thumbnail image that opens the modal when clicked -->
+                                        <img 
+                                            src="<?php echo '../uploads/valid_ids/' . htmlspecialchars($uploadedImagePath); ?>" 
+                                            alt="Uploaded ID"
+                                            class="w-full h-auto cursor-pointer hover:opacity-90 transition-opacity"
+                                            onclick="openImageModal('<?php echo '../uploads/valid_ids/' . htmlspecialchars($uploadedImagePath); ?>')"
+                                        >
+                                        
+                                        <!-- Enhanced overlay with view button -->
+                                        <div class="absolute inset-0 bg-navy bg-opacity-70 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                            <button class="bg-white text-navy px-4 py-2 rounded-lg shadow-lg flex items-center transition-transform transform hover:scale-105 hover:bg-yellow-50"
+                                                onclick="openImageModal('<?php echo '../uploads/valid_ids/' . htmlspecialchars($uploadedImagePath); ?>')">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                                </svg>
+                                                View Full Size
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Enhanced caption -->
+                                    <p class="text-xs text-gray-500 mt-2 text-center">Click on the image to view in full size</p>
+                                </div>
+                            <?php else: ?>
+                                <div class="flex flex-col items-center justify-center py-10 px-4 border-2 border-dashed border-gray-300 rounded-lg text-center cursor-pointer hover:bg-gray-50 transition-colors"
+                                     onclick="openEditProfileToIDUpload()">
+                                     <div class="bg-yellow-50 p-3 rounded-full mb-4">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                         </svg>
