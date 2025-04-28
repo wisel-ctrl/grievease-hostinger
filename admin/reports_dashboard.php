@@ -382,19 +382,24 @@ if (historicalRevenueData && historicalRevenueData.length > 0) {
     var options = {
         series: [{
             name: 'Actual Revenue',
-            data: regressionResults.historicalChartData
+            data: regressionResults.historicalChartData,
+            stroke: {
+                width: 3,
+                curve: 'smooth',
+                dashArray: 0 // Solid line for actual data
+            }
         }, {
             name: 'Forecasted Revenue',
-            data: regressionResults.forecastData
+            data: regressionResults.forecastData,
+            stroke: {
+                width: 3,
+                curve: 'smooth',
+                dashArray: 5 // Dashed line for forecast
+            }
         }],
         chart: {
             height: 350,
             type: 'line',
-        },
-        stroke: {
-            width: 3,
-            curve: 'smooth',
-            dashArray: [0, 5] // 0 for solid line (first series), 5 for dashed (second series)
         },
         xaxis: {
             type: 'datetime',
