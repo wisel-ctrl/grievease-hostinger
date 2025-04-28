@@ -624,7 +624,7 @@ header("Pragma: no-cache");
     </div>
     <div class="p-4 sm:p-6">
         <!-- Grid layout -->
-        <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+        <div class="grid grid-cols-2 gap-3 sm:gap-4">
             <!-- Region -->
             <div class="bg-gray-50 p-3 sm:p-4 rounded-lg">
                 <label class="block text-xs font-medium text-gray-500 mb-1">Region</label>
@@ -657,14 +657,16 @@ header("Pragma: no-cache");
                 </p>
             </div>
             
-            <!-- Street Address + Zip Code Row -->
-            <div class="bg-gray-50 p-3 sm:p-4 rounded-lg col-span-2 sm:col-span-1">
+            <!-- Street Address (always 2 columns, even on small screens) -->
+            <div class="bg-gray-50 p-3 sm:p-4 rounded-lg">
                 <label class="block text-xs font-medium text-gray-500 mb-1">Street Address</label>
                 <p class="text-navy <?= empty($street_address) ? 'opacity-60 italic text-gray-500' : 'font-medium' ?> text-sm sm:text-base">
                     <?= !empty($street_address) ? htmlspecialchars($street_address) : 'N/A' ?>
                 </p>
             </div>
-            <div class="bg-gray-50 p-3 sm:p-4 rounded-lg sm:col-span-1">
+            
+            <!-- Zip Code (always 2 columns, even on small screens) -->
+            <div class="bg-gray-50 p-3 sm:p-4 rounded-lg">
                 <label class="block text-xs font-medium text-gray-500 mb-1">Zip Code</label>
                 <p class="text-navy <?= empty($zip_code) ? 'opacity-60 italic text-gray-500' : 'font-medium' ?> text-sm sm:text-base">
                     <?= !empty($zip_code) ? htmlspecialchars($zip_code) : 'N/A' ?>
