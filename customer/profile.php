@@ -521,7 +521,7 @@ header("Pragma: no-cache");
         <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
             <!-- Header with enhanced styling -->
             <div class="bg-navy p-6 border-b border-gray-100 flex justify-between items-center">
-                <h3 class="font-hedvig text-xl text-navy">Personal Information</h3>
+                <h3 class="font-hedvig text-xl text-white">Personal Information</h3>
                 
                 <div class="flex space-x-3"> <!-- Added a flex container with spacing -->
                     <button id="open-change-password-modal" class="px-4 py-2 bg-white border border-yellow-700 text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center">
