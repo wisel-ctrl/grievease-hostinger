@@ -703,13 +703,15 @@ var options = {
       enableShades: true,
       colorScale: {
         ranges: [
-          { from: 0, to: 0, color: '#F3F4F6', name: 'No Data' },
-          { from: 1, to: 10, color: '#DBEAFE', name: 'Very Low (1-10)' },
-          { from: 11, to: 20, color: '#93C5FD', name: 'Low (11-20)' },
-          { from: 21, to: 30, color: '#60A5FA', name: 'Medium (21-30)' },
-          { from: 31, to: 40, color: '#3B82F6', name: 'High (31-40)' },
-          { from: 41, to: 50, color: '#2563EB', name: 'Very High (41-50)' }
-        ],
+        { from: 0, to: 0, color: '#F3F4F6', name: 'No Data' },
+        { from: 1, to: 5, color: '#E0F2FE', name: 'Very Low (1-5)' },
+        { from: 6, to: 10, color: '#BAE6FD', name: 'Low (6-10)' },
+        { from: 11, to: 15, color: '#7DD3FC', name: 'Low-Medium (11-15)' },
+        { from: 16, to: 20, color: '#38BDF8', name: 'Medium (16-20)' },
+        { from: 21, to: 30, color: '#0EA5E9', name: 'Medium-High (21-30)' },
+        { from: 31, to: 40, color: '#0284C7', name: 'High (31-40)' },
+        { from: 41, to: 50, color: '#0369A1', name: 'Very High (41-50)' }
+      ],
       },
     }
   },
