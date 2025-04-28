@@ -1448,22 +1448,20 @@ document.addEventListener('DOMContentLoaded', function() {
                                 </div>
                             </div>
                             
-                            <!-- Street Address and Zip Code on same row -->
-<div class="sm:col-span-2 grid grid-cols-1 sm:grid-cols-4 gap-4">
-    <!-- Street Address (taking 3/4 of the width) -->
-    <div class="sm:col-span-3">
-        <input type="text" id="street_address" name="street_address" placeholder="Street Address (House/Lot/Unit No., Building, Street Name)" 
-               value="<?php echo htmlspecialchars($street_address); ?>" 
-               class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base">
-    </div>
-    
-    <!-- Zip/Postal Code (taking 1/4 of the width) -->
-    <div class="sm:col-span-1">
-        <input type="text" id="zip" name="zip" placeholder="Zip Code" 
-               value="<?php echo htmlspecialchars($zip_code); ?>" 
-               class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base">
-    </div>
-</div>
+                            <!-- Street Address Manual Input (full width) -->
+                            <div class="sm:col-span-2">
+                                <input type="text" id="street_address" name="street_address" placeholder="Street Address (House/Lot/Unit No., Building, Street Name)" 
+                                       value="<?php echo htmlspecialchars($street_address); ?>" 
+                                       class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base">
+                            </div>
+                            
+                            <!-- Zip/Postal Code -->
+                            <div class="sm:col-span-2">
+                                <input type="text" id="zip" name="zip" placeholder="Zip/Postal Code" 
+                                       value="<?php echo htmlspecialchars($zip_code); ?>" 
+                                       class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base">
+                            </div>
+                        </div>
                     </div>
                     
                     <?php if ($id_status !== 'valid'): ?>
