@@ -647,6 +647,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Create the heatmap chart with improved configuration
 // Create the heatmap chart with improved configuration
+// Create the heatmap chart with improved configuration
 const rawCasketData = <?php echo json_encode($casketData); ?>;
 const heatmapData = processDataForHeatmap(rawCasketData);
 
@@ -703,11 +704,11 @@ var options = {
       colorScale: {
         ranges: [
           { from: 0, to: 0, color: '#F3F4F6', name: 'No Data' },
-          { from: 1, to: 25, color: '#DBEAFE', name: 'Low' },
-          { from: 26, to: 50, color: '#93C5FD', name: 'Medium-Low' },
-          { from: 51, to: 75, color: '#3B82F6', name: 'Medium' },
-          { from: 76, to: 100, color: '#1D4ED8', name: 'Medium-High' },
-          { from: 101, to: 1000, color: '#1E3A8A', name: 'High' }
+          { from: 1, to: 10, color: '#DBEAFE', name: 'Very Low (1-10)' },
+          { from: 11, to: 20, color: '#93C5FD', name: 'Low (11-20)' },
+          { from: 21, to: 30, color: '#60A5FA', name: 'Medium (21-30)' },
+          { from: 31, to: 40, color: '#3B82F6', name: 'High (31-40)' },
+          { from: 41, to: 50, color: '#2563EB', name: 'Very High (41-50)' }
         ],
       },
     }
