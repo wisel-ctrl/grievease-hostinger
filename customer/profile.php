@@ -1310,7 +1310,8 @@ document.addEventListener('DOMContentLoaded', function() {
     
     <!-- Modal Content -->
     <div class="relative bg-white rounded-xl shadow-card w-full max-w-4xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
-        <!-- Close Button -->
+    <div class="modal-scroll-container overflow-y-auto max-h-[90vh]">    
+    <!-- Close Button -->
         <button type="button" id="close-edit-profile-modal" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors">
             <i class="fas fa-times"></i>
         </button>
