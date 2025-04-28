@@ -58,6 +58,25 @@ $_SESSION['last_activity'] = time();
 header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Cache-Control: post-check=0, pre-check=0", false);
 header("Pragma: no-cache");
+
+// Fetch monthly revenue data for forecasting
+$revenueQuery = "SELECT 
+    DATE_FORMAT(sale_date, '%Y-%m-01') as month_start,
+    SUM(discounted_price) as monthly_revenue
+FROM 
+    analytics_tb
+GROUP BY 
+    DATE_FORMAT(sale_date, '%Y-%m-01')
+ORDER BY 
+    month_start";
+$revenueStmt = $conn->prepare($revenueQuery);
+$revenueStmt->execute();
+$revenueResult = $revenueStmt->get_result();
+$revenueData = [];
+while ($row = $revenueResult->fetch_assoc()) {
+    $revenueData[] = $row;
+}  
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -69,8 +88,34 @@ header("Pragma: no-cache");
     <script src="https://cdn.tailwindcss.com"></script>
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>  
+    
+    <style>
+    #salesForecastChart .apexcharts-tooltip {
+        background: #fff;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        border-radius: 0.375rem;
+        border: 1px solid #e5e7eb;
+    }
+    #salesForecastChart .apexcharts-tooltip-title {
+        background: #f3f4f6 !important;
+        border-bottom: 1px solid #e5e7eb !important;
+        font-weight: 600;
+    }
+    .forecast-dot {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        margin-right: 6px;
+    }
+    .forecast-dot.actual {
+        background-color: #3A57E8;
+    }
+    .forecast-dot.forecast {
+        background-color: #FF5733;
+    }
+</style>    
 </head>
 <body class="flex bg-gray-50">
 
@@ -171,41 +216,29 @@ header("Pragma: no-cache");
 <!-- Main Analytics Section -->
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
   <!-- Sales Forecasting -->
-  <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300">
-    <div class="flex flex-wrap justify-between items-center p-4 border-b border-sidebar-border">
-      <h3 class="font-medium text-sidebar-text">Sales Forecasting</h3>
-      <div class="flex flex-wrap space-x-2 mt-2 sm:mt-0">
-        <select class="px-2 py-1 border border-sidebar-border rounded-md text-sm text-sidebar-text bg-white">
-          <option>Next 6 Months</option>
-          <option>Next Year</option>
-          <option>Next Quarter</option>
-        </select>
-        <button class="px-2 py-1 border border-sidebar-border rounded-md text-sm flex items-center text-sidebar-text hover:bg-sidebar-hover transition-all duration-300">
-          <i class="fas fa-download mr-1"></i> Export
-        </button>
+    <!-- Sales Forecast Card -->
+  <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
+      <!-- Card header with brighter gradient background -->
+      <div class="bg-gradient-to-r from-blue-100 to-blue-200 px-6 py-4">
+          <div class="flex items-center justify-between mb-1">
+              <h3 class="text-sm font-medium text-gray-700">Sales Forecast (Next 6 Months)</h3>
+              <div class="w-10 h-10 rounded-full bg-white/90 text-blue-600 flex items-center justify-center">
+                  <i class="fas fa-chart-line"></i>
+              </div>
+          </div>
+          <div class="flex items-end">
+              <span class="text-2xl md:text-3xl font-bold text-gray-800 sales-forecast-value">$0</span>
+          </div>
       </div>
-    </div>
-    <div class="p-4">
-      <div style="height: 250px; width: 100%;">
-        <div id="salesForecastChart"></div>
+      
+      <!-- Card footer with change indicator -->
+      <div class="px-6 py-3 bg-white border-t border-gray-100">
+          <div class="flex items-center text-emerald-600">
+              <i class="fas fa-arrow-up mr-1.5 text-xs"></i>
+              <span class="font-medium text-xs forecast-accuracy-value">0% </span>
+              <span class="text-xs text-gray-500 ml-1">forecast accuracy</span>
+          </div>
       </div>
-    </div>
-    <div class="px-5 pb-5">
-      <div class="flex justify-between text-sm text-gray-600">
-        <div>
-          <div class="font-medium">Forecast Accuracy</div>
-          <div class="text-green-600">92.7%</div>
-        </div>
-        <div>
-          <div class="font-medium">Confidence Interval</div>
-          <div>±5.3%</div>
-        </div>
-        <div>
-          <div class="font-medium">Trend</div>
-          <div class="text-green-600">Upward</div>
-        </div>
-      </div>
-    </div>
   </div>
   
   <!-- Demand Prediction -->
@@ -286,6 +319,10 @@ header("Pragma: no-cache");
 
 <!-- JavaScript for Charts -->
 <script>
+    // Pass PHP data to JavaScript
+    const historicalRevenueData = <?php echo json_encode($revenueData); ?>;
+</script>
+<script>
 document.addEventListener('DOMContentLoaded', function() {
   // Adjust chart sizing for better responsiveness
   const resizeCharts = function() {
@@ -300,56 +337,149 @@ document.addEventListener('DOMContentLoaded', function() {
   window.addEventListener('resize', resizeCharts);
 
   // Sales Forecasting Chart
-  var options = {
-          series: [{
-          name: 'Sales',
-          data: [4, 3, 10, 9, 29, 19, 22, 9, 12, 7, 19, 5, 13, 9, 17, 2, 7, 5]
+  // Sales Forecasting Chart with Linear Regression
+function calculateLinearRegressionForecast(historicalData, forecastMonths = 6) {
+    // Convert historical data to numerical format
+    const dataPoints = historicalData.map((item, index) => ({
+        x: index,
+        y: parseFloat(item.monthly_revenue),
+        date: new Date(item.month_start)
+    }));
+    
+    // Calculate means
+    const meanX = dataPoints.reduce((sum, point) => sum + point.x, 0) / dataPoints.length;
+    const meanY = dataPoints.reduce((sum, point) => sum + point.y, 0) / dataPoints.length;
+    
+    // Calculate slope (a) and intercept (b)
+    let numerator = 0;
+    let denominator = 0;
+    
+    dataPoints.forEach(point => {
+        numerator += (point.x - meanX) * (point.y - meanY);
+        denominator += Math.pow(point.x - meanX, 2);
+    });
+    
+    const slope = numerator / denominator;
+    const intercept = meanY - slope * meanX;
+    
+    // Generate forecast
+    const forecastData = [];
+    const lastHistoricalDate = new Date(historicalData[historicalData.length - 1].month_start);
+    
+    for (let i = 1; i <= forecastMonths; i++) {
+        const forecastDate = new Date(lastHistoricalDate);
+        forecastDate.setMonth(forecastDate.getMonth() + i);
+        
+        const xValue = dataPoints.length + i - 1;
+        const predictedY = slope * xValue + intercept;
+        
+        forecastData.push({
+            x: forecastDate.getTime(),
+            y: Math.max(0, predictedY) // Ensure revenue doesn't go negative
+        });
+    }
+    
+    return {
+        slope,
+        intercept,
+        forecastData,
+        historicalChartData: dataPoints.map(point => ({
+            x: point.date.getTime(),
+            y: point.y
+        }))
+    };
+}
+
+// Only proceed if we have historical data
+if (historicalRevenueData && historicalRevenueData.length > 0) {
+    const regressionResults = calculateLinearRegressionForecast(historicalRevenueData, 6);
+    
+    // Calculate forecast accuracy metrics (simplified example)
+    const lastActual = regressionResults.historicalChartData[regressionResults.historicalChartData.length - 1].y;
+    const firstForecast = regressionResults.forecastData[0].y;
+    const forecastAccuracy = 100 - Math.abs((firstForecast - lastActual) / lastActual * 100);
+    
+    // Update the forecast accuracy display
+    document.querySelector('.forecast-accuracy-value').textContent = forecastAccuracy.toFixed(1) + '%';
+    
+    // Create the chart
+    var options = {
+        series: [{
+            name: 'Actual Revenue',
+            data: regressionResults.historicalChartData
+        }, {
+            name: 'Forecasted Revenue',
+            data: regressionResults.forecastData
         }],
-          chart: {
-          height: 350,
-          type: 'line',
-        },
-        forecastDataPoints: {
-          count: 7
+        chart: {
+            height: 350,
+            type: 'line',
         },
         stroke: {
-          width: 5,
-          curve: 'smooth'
+            width: 5,
+            curve: 'smooth'
         },
         xaxis: {
-          type: 'datetime',
-          categories: ['1/11/2000', '2/11/2000', '3/11/2000', '4/11/2000', '5/11/2000', '6/11/2000', '7/11/2000', '8/11/2000', '9/11/2000', '10/11/2000', '11/11/2000', '12/11/2000', '1/11/2001', '2/11/2001', '3/11/2001','4/11/2001' ,'5/11/2001' ,'6/11/2001'],
-          tickAmount: 10,
-          labels: {
-            formatter: function(value, timestamp, opts) {
-              return opts.dateFormatter(new Date(timestamp), 'dd MMM')
+            type: 'datetime',
+            tickAmount: 10,
+            labels: {
+                formatter: function(value) {
+                    const date = new Date(value);
+                    return date.toLocaleString('default', { month: 'short', year: 'numeric' });
+                }
             }
-          }
         },
         title: {
-          text: 'Forecast',
-          align: 'left',
-          style: {
-            fontSize: "16px",
-            color: '#666'
-          }
+            text: 'Revenue Forecast',
+            align: 'left',
+            style: {
+                fontSize: "16px",
+                color: '#666'
+            }
         },
         fill: {
-          type: 'gradient',
-          gradient: {
-            shade: 'dark',
-            gradientToColors: [ '#FDD835'],
-            shadeIntensity: 1,
-            type: 'horizontal',
-            opacityFrom: 1,
-            opacityTo: 1,
-            stops: [0, 100, 100, 100]
-          },
+            type: 'gradient',
+            gradient: {
+                shade: 'dark',
+                gradientToColors: ['#FDD835'],
+                shadeIntensity: 1,
+                type: 'horizontal',
+                opacityFrom: 1,
+                opacityTo: 1,
+                stops: [0, 100, 100, 100]
+            },
+        },
+        colors: ['#3A57E8', '#FF5733'],
+        markers: {
+            size: 4,
+            hover: {
+                size: 7
+            }
+        },
+        tooltip: {
+            x: {
+                format: 'MMM yyyy'
+            },
+            y: {
+                formatter: function(value) {
+                    return '$' + value.toLocaleString();
+                }
+            }
+        },
+        forecastDataPoints: {
+            count: 6
         }
-        };
+    };
 
-        var chart = new ApexCharts(document.querySelector("#salesForecastChart"), options);
-        chart.render();
+    var chart = new ApexCharts(document.querySelector("#salesForecastChart"), options);
+    chart.render();
+    
+    // Update the forecast card values
+    const totalForecast = regressionResults.forecastData.reduce((sum, point) => sum + point.y, 0);
+    document.querySelector('.sales-forecast-value').textContent = '$' + totalForecast.toLocaleString(undefined, {maximumFractionDigits: 0});
+} else {
+    document.querySelector("#salesForecastChart").innerHTML = '<div class="p-4 text-center text-gray-500">No revenue data available for forecasting</div>';
+}
 
   // Demand Prediction Chart
   const demandPredictionCtx = document.getElementById('demandPredictionChart').getContext('2d');
