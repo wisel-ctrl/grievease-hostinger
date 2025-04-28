@@ -77,6 +77,36 @@ while ($row = $revenueResult->fetch_assoc()) {
     $revenueData[] = $row;
 }  
 
+$casketQuery = "SELECT 
+    DATE_FORMAT(sale_date, '%Y-%m') AS sale_month,
+    item_name,
+    COUNT(*) AS casket_sold
+FROM 
+    analytics_tb
+JOIN 
+    inventory_tb 
+ON 
+    casket_id = inventory_id
+WHERE 
+    casket_id IS NOT NULL
+GROUP BY 
+    DATE_FORMAT(sale_date, '%Y-%m'), item_name
+ORDER BY 
+    sale_month, item_name";
+
+$casketStmt = $conn->prepare($casketQuery);
+$casketStmt->execute();
+$casketResult = $casketStmt->get_result();
+
+$casketData = [];
+while ($row = $casketResult->fetch_assoc()) {
+    $casketData[] = [
+        'sale_month' => $row['sale_month'],
+        'item_name' => $row['item_name'],
+        'casket_sold' => (int)$row['casket_sold']
+    ];
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -220,16 +250,7 @@ while ($row = $revenueResult->fetch_assoc()) {
   <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300">
     <div class="flex justify-between items-center p-5 border-b border-sidebar-border">
       <h3 class="font-medium text-sidebar-text">Demand Prediction</h3>
-      <div class="flex space-x-2">
-        <select class="px-3 py-2 border border-sidebar-border rounded-md text-sm text-sidebar-text bg-white">
-          <option>By Service Type</option>
-          <option>By Product</option>
-          <option>By Region</option>
-        </select>
-        <button class="px-3 py-2 border border-sidebar-border rounded-md text-sm flex items-center text-sidebar-text hover:bg-sidebar-hover transition-all duration-300">
-          <i class="fas fa-download mr-2"></i> Export
-        </button>
-      </div>
+      
     </div>
     <div class="p-5">
       <div id="demandPredictionChart" class="h-64"></div>
@@ -237,8 +258,8 @@ while ($row = $revenueResult->fetch_assoc()) {
     <div class="px-5 pb-5">
       <div class="flex justify-between text-sm text-gray-600">
         <div>
-          <div class="font-medium">Top Category</div>
-          <div>Premium Services</div>
+          <div class="font-medium">Top Casket</div>
+          <div>Premium Casket</div>
         </div>
         <div>
           <div class="font-medium">Growth Rate</div>
@@ -453,22 +474,188 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   // Demand Prediction Chart
+   
 //   SELECT 
-//     DATE_FORMAT(sale_date, '%Y-%m') AS sale_month,
-//     item_name,
-//     COUNT(*) AS casket_sold
-// FROM 
-//     analytics_tb
-// JOIN 
-//     inventory_tb 
-// ON 
-//     casket_id = inventory_id
-// WHERE 
-//     casket_id IS NOT NULL
-// GROUP BY 
-//     sale_month, item_name
-// ORDER BY 
-//     sale_month, item_name;
+//      DATE_FORMAT(sale_date, '%Y-%m') AS sale_month,
+//      item_name,
+//      COUNT(*) AS casket_sold
+//  FROM 
+//      analytics_tb
+//  JOIN 
+//      inventory_tb 
+//  ON 
+//      casket_id = inventory_id
+//  WHERE 
+//      casket_id IS NOT NULL
+//  GROUP BY 
+//      sale_month, item_name
+//  ORDER BY 
+//      sale_month, item_name;
+// Process the data into heatmap format
+  function processDataForHeatmap(data, forecastMonths = 6) {
+    // Get unique item names
+    const items = [...new Set(data.map(d => d.item_name))];
+    
+    // Get unique months (sorted)
+    const months = [...new Set(data.map(d => d.sale_month))].sort();
+    
+    // Generate forecast months
+    const lastDate = new Date(months[months.length-1] + '-01');
+    const forecastDates = [];
+    for (let i = 1; i <= forecastMonths; i++) {
+      lastDate.setMonth(lastDate.getMonth() + 1);
+      const year = lastDate.getFullYear();
+      const month = String(lastDate.getMonth() + 1).padStart(2, '0');
+      forecastDates.push(`${year}-${month}`);
+    }
+    
+    // Combine actual and forecast months
+    const allMonths = [...months, ...forecastDates];
+    
+    // Create series for each item
+    const series = items.map(item => {
+      const itemData = data.filter(d => d.item_name === item);
+      
+      // Create data points for actual months
+      const actualData = months.map(month => {
+        const found = itemData.find(d => d.sale_month === month);
+        return {
+          x: month,
+          y: found ? found.casket_sold : 0
+        };
+      });
+      
+      // Create forecast data points (simple linear regression for demo)
+      // In a real app, you'd use a proper forecasting model
+      const lastActual = actualData[actualData.length - 1].y;
+      const growthRate = 0.05; // 5% monthly growth (adjust based on your data)
+      
+      const forecastData = forecastDates.map((month, i) => {
+        const forecastValue = Math.round(lastActual * Math.pow(1 + growthRate, i + 1));
+        return {
+          x: month,
+          y: forecastValue,
+          forecast: true
+        };
+      });
+      
+      return {
+        name: item,
+        data: [...actualData, ...forecastData]
+      };
+    });
+    
+    return {
+      items,
+      months: allMonths,
+      series
+    };
+  }
+
+  // Process the data
+  const rawCasketData = <?php echo json_encode($casketData); ?>;
+  const heatmapData = processDataForHeatmap(rawCasketData);
+
+  // Create the heatmap chart
+  var options = {
+    series: heatmapData.series,
+    chart: {
+      height: 350,
+      type: 'heatmap',
+    },
+    stroke: {
+      width: 0
+    },
+    plotOptions: {
+      heatmap: {
+        radius: 30,
+        enableShades: false,
+        colorScale: {
+          ranges: [{
+              from: 0,
+              to: 50,
+              color: '#008FFB'
+            },
+            {
+              from: 51,
+              to: 100,
+              color: '#00E396'
+            },
+            {
+              from: 101,
+              to: 150,
+              color: '#FEB019'
+            },
+          ],
+        },
+      }
+    },
+    dataLabels: {
+      enabled: true,
+      style: {
+        colors: ['#fff']
+      },
+      formatter: function(val, opts) {
+        // Add (F) indicator for forecasted values
+        if (opts.seriesIndex >= 0 && opts.dataPointIndex >= 0) {
+          const point = heatmapData.series[opts.seriesIndex].data[opts.dataPointIndex];
+          if (point.forecast) {
+            return val + ' (F)';
+          }
+        }
+        return val;
+      }
+    },
+    xaxis: {
+      type: 'category',
+      categories: heatmapData.months,
+      labels: {
+        formatter: function(value) {
+          // Shorten month label for better display
+          return value.split('-')[1] + '/' + value.split('-')[0].slice(2);
+        }
+      }
+    },
+    tooltip: {
+      custom: function({ series, seriesIndex, dataPointIndex, w }) {
+        const item = w.config.series[seriesIndex].name;
+        const month = w.config.xaxis.categories[dataPointIndex];
+        const value = series[seriesIndex][dataPointIndex];
+        const isForecast = w.config.series[seriesIndex].data[dataPointIndex].forecast;
+        
+        return `
+          <div class="p-2 bg-white border border-gray-200 rounded shadow">
+            <div class="font-bold">${item}</div>
+            <div>Month: ${month}</div>
+            <div>Sold: ${value}</div>
+            ${isForecast ? '<div class="text-yellow-600">Forecasted Value</div>' : ''}
+          </div>
+        `;
+      }
+    },
+    title: {
+      text: 'Casket Sales Heatmap with Forecast',
+      align: 'center'
+    },
+    annotations: {
+      xaxis: [{
+        x: heatmapData.months[heatmapData.months.length - 6],
+        strokeDashArray: 0,
+        borderColor: '#FF4560',
+        label: {
+          borderColor: '#FF4560',
+          style: {
+            color: '#fff',
+            background: '#FF4560'
+          },
+          text: 'Forecast Start'
+        }
+      }]
+    }
+  };
+
+  var chart = new ApexCharts(document.querySelector("#demandPredictionChart"), options);
+  chart.render();
 
 
   // Payment Methods Chart
