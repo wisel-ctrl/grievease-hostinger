@@ -829,15 +829,18 @@ header("Pragma: no-cache");
     }
 }, 500);
 
-// Ensure the edit profile button listener is properly attached
 document.addEventListener('DOMContentLoaded', function() {
+    // Call loadAddressData when edit modal opens
     const editProfileBtn = document.getElementById('edit-profile-btn');
     if (editProfileBtn) {
         editProfileBtn.addEventListener('click', function() {
+            // Show modal first
             const modal = document.getElementById('edit-profile-modal');
             modal.classList.remove('hidden');
             modal.classList.remove('opacity-0', 'scale-95');
             modal.classList.add('opacity-100', 'scale-100');
+            
+            // Then load address data
             setTimeout(loadAddressData, 100);
         });
     }
