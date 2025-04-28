@@ -256,18 +256,18 @@ while ($row = $casketResult->fetch_assoc()) {
       </div>
     </div>
     <div class="px-5 pb-5">
-      <div class="flex justify-between text-sm text-gray-600">
+      <div class="flex justify-between text-sm text-gray-600" id="demandPredictionStats">
         <div>
           <div class="font-medium">Top Casket</div>
-          <div>Premium Casket</div>
+          <div id="topCasketValue">Premium Casket</div>
         </div>
         <div>
           <div class="font-medium">Growth Rate</div>
-          <div class="text-green-600">+14.2%</div>
+          <div id="growthRateValue" class="text-green-600">+14.2%</div>
         </div>
         <div>
           <div class="font-medium">Seasonality Impact</div>
-          <div>Medium</div>
+          <div id="seasonalityImpactValue">Medium</div>
         </div>
       </div>
     </div>
@@ -796,13 +796,13 @@ chart.render();
 // Update the summary information boxes with calculated values
 document.addEventListener('DOMContentLoaded', function() {
   // Update Top Casket
-  const topCasketNameElement = document.querySelector('.flex.justify-between .font-medium:first-of-type + div');
-  if (topCasketNameElement && heatmapData.topCasket) {
-    topCasketNameElement.textContent = heatmapData.topCasket;
+  const topCasketElement = document.getElementById('topCasketValue');
+  if (topCasketElement && heatmapData.topCasket) {
+    topCasketElement.textContent = heatmapData.topCasket;
   }
   
   // Update Growth Rate
-  const growthRateElement = document.querySelector('.flex.justify-between .font-medium:nth-of-type(2) + div');
+  const growthRateElement = document.getElementById('growthRateValue');
   if (growthRateElement && heatmapData.growthRate !== undefined) {
     const formattedGrowthRate = (heatmapData.growthRate * 100).toFixed(1) + '%';
     growthRateElement.textContent = (heatmapData.growthRate >= 0 ? '+' : '') + formattedGrowthRate;
@@ -816,7 +816,7 @@ document.addEventListener('DOMContentLoaded', function() {
   }
   
   // Update Seasonality Impact
-  const seasonalityElement = document.querySelector('.flex.justify-between .font-medium:nth-of-type(3) + div');
+  const seasonalityElement = document.getElementById('seasonalityImpactValue');
   if (seasonalityElement && heatmapData.seasonalityImpact) {
     seasonalityElement.textContent = heatmapData.seasonalityImpact;
     
