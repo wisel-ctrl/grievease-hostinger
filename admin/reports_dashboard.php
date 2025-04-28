@@ -90,32 +90,7 @@ while ($row = $revenueResult->fetch_assoc()) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>  
     
-    <style>
-    #salesForecastChart .apexcharts-tooltip {
-        background: #fff;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-        border-radius: 0.375rem;
-        border: 1px solid #e5e7eb;
-    }
-    #salesForecastChart .apexcharts-tooltip-title {
-        background: #f3f4f6 !important;
-        border-bottom: 1px solid #e5e7eb !important;
-        font-weight: 600;
-    }
-    .forecast-dot {
-        display: inline-block;
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        margin-right: 6px;
-    }
-    .forecast-dot.actual {
-        background-color: #3A57E8;
-    }
-    .forecast-dot.forecast {
-        background-color: #FF5733;
-    }
-</style>    
+        
 </head>
 <body class="flex bg-gray-50">
 
