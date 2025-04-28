@@ -647,166 +647,160 @@ header("Pragma: no-cache");
                     </div>
                 </div>
                 
-                <!-- Uploaded Documents Section with improved styling -->
-                <div class="mt-8 pt-6 border-t border-gray-200">
-                    <div class="flex items-center mb-4">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-navy mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" />
-                        </svg>
-                        <h3 class="font-hedvig text-lg text-navy font-semibold">Uploaded ID</h3>
+                <!-- In the "Uploaded Documents Section" -->
+<div class="mt-8 pt-6 border-t border-gray-200">
+    <div class="flex items-center mb-4">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-navy mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" />
+        </svg>
+        <h3 class="font-hedvig text-lg text-navy font-semibold">Uploaded ID</h3>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-gray-50 p-5 rounded-lg border border-gray-200">
+            <?php if ($uploadedImagePath): ?>
+                <?php
+                    // Fetch the validation status and decline reason from valid_id_tb
+                    $status_query = "SELECT is_validated, decline_reason FROM valid_id_tb WHERE id = ?";
+                    $status_stmt = $conn->prepare($status_query);
+                    $status_stmt->bind_param("i", $user_id);
+                    $status_stmt->execute();
+                    $status_result = $status_stmt->get_result();
+                    $status_row = $status_result->fetch_assoc();
+                    $id_status = $status_row ? $status_row['is_validated'] : 'no';
+                    $decline_reason = $status_row ? $status_row['decline_reason'] : '';
+                    $status_stmt->close();
+                    
+                    // Define status label style based on status value
+                    switch ($id_status) {
+                        case 'no':
+                            $statusText = 'PENDING';
+                            $statusClass = 'bg-yellow-100 text-yellow-800 border border-yellow-200';
+                            $iconColor = 'text-yellow-500';
+                            $icon = '<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>';
+                            break;
+                        case 'valid':
+                            $statusText = 'APPROVED';
+                            $statusClass = 'bg-green-100 text-green-800 border border-green-200';
+                            $iconColor = 'text-green-500';
+                            $icon = '<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>';
+                            break;
+                        case 'denied':
+                            $statusText = 'DECLINED';
+                            $statusClass = 'bg-red-100 text-red-800 border border-red-200';
+                            $iconColor = 'text-red-500';
+                            $icon = '<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>';
+                            break;
+                        default:
+                            $statusText = 'PENDING';
+                            $statusClass = 'bg-yellow-100 text-yellow-800 border border-yellow-200';
+                            $iconColor = 'text-yellow-500';
+                            $icon = '<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>';
+                            break;
+                    }
+                ?>
+                
+                <div class="flex items-center mb-4">
+                    <div class="flex items-center flex-grow">
+                        <span class="text-sm text-gray-600 mr-2">ID Status:</span>
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium <?php echo $statusClass; ?>">
+                            <svg class="w-4 h-4 mr-1 <?php echo $iconColor; ?>" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                <?php echo $icon; ?>
+                            </svg>
+                            <?php echo $statusText; ?>
+                        </span>
                     </div>
                     
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="bg-gray-50 p-5 rounded-lg border border-gray-200">
-                            <?php if ($uploadedImagePath): ?>
-                                <?php
-                                    // Fetch the validation status and decline reason from valid_id_tb
-                                    $status_query = "SELECT is_validated, decline_reason FROM valid_id_tb WHERE id = ?";
-                                    $status_stmt = $conn->prepare($status_query);
-                                    $status_stmt->bind_param("i", $user_id);
-                                    $status_stmt->execute();
-                                    $status_result = $status_stmt->get_result();
-                                    $status_row = $status_result->fetch_assoc();
-                                    $id_status = $status_row ? $status_row['is_validated'] : 'no';
-                                    $decline_reason = $status_row ? $status_row['decline_reason'] : '';
-                                    $status_stmt->close();
-                                    $conn->close();
-                                    
-                                    // Define status label style based on status value
-                                    switch ($id_status) {
-                                        case 'no':
-                                            $statusText = 'PENDING';
-                                            $statusClass = 'bg-yellow-100 text-yellow-800 border border-yellow-200';
-                                            $iconColor = 'text-yellow-500';
-                                            $icon = '<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>';
-                                            break;
-                                        case 'valid':
-                                            $statusText = 'APPROVED';
-                                            $statusClass = 'bg-green-100 text-green-800 border border-green-200';
-                                            $iconColor = 'text-green-500';
-                                            $icon = '<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>';
-                                            break;
-                                        case 'denied':
-                                            $statusText = 'DECLINED';
-                                            $statusClass = 'bg-red-100 text-red-800 border border-red-200';
-                                            $iconColor = 'text-red-500';
-                                            $icon = '<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>';
-                                            break;
-                                        default:
-                                            $statusText = 'PENDING';
-                                            $statusClass = 'bg-yellow-100 text-yellow-800 border border-yellow-200';
-                                            $iconColor = 'text-yellow-500';
-                                            $icon = '<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>';
-                                            break;
-                                    }
-                                ?>
-                                
-                                <div class="flex items-center mb-4">
-                                    <div class="flex items-center flex-grow">
-                                        <span class="text-sm text-gray-600 mr-2">ID Status:</span>
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium <?php echo $statusClass; ?>">
-                                            <svg class="w-4 h-4 mr-1 <?php echo $iconColor; ?>" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                                <?php echo $icon; ?>
-                                            </svg>
-                                            <?php echo $statusText; ?>
-                                        </span>
-                                    </div>
-                                    
-                                    <?php if ($id_status === 'denied' && $decline_reason): ?>
-                                        <button 
-                                            class="text-red-600 hover:text-red-800 text-sm flex items-center transition-colors" 
-                                            onclick="openDeclineReasonModal('<?php echo htmlspecialchars($decline_reason); ?>')"
-                                        >
-                                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2h-1V9z" clip-rule="evenodd"></path>
-                                            </svg>
-                                            View Details
-                                        </button>
-                                    <?php endif; ?>
-                                </div>
-                                
-                                <div class="relative group">
-                                    <!-- Container with hover effect -->
-                                    <div class="relative border-2 border-gray-200 rounded-lg overflow-hidden transition-all group-hover:border-blue-400 shadow-sm group-hover:shadow-md">
-                                        <!-- Thumbnail image that opens the modal when clicked -->
-                                        <img 
-                                            src="<?php echo '../uploads/valid_ids/' . htmlspecialchars($uploadedImagePath); ?>" 
-                                            alt="Uploaded ID"
-                                            class="w-full h-auto cursor-pointer hover:opacity-90 transition-opacity"
-                                            onclick="openImageModal('<?php echo '../uploads/valid_ids/' . htmlspecialchars($uploadedImagePath); ?>')"
-                                        >
-                                        
-                                        <!-- Overlay with view button -->
-                                        <div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <button class="bg-white text-navy px-4 py-2 rounded-lg shadow-lg flex items-center transition-transform transform hover:scale-105"
-                                                onclick="openImageModal('<?php echo '../uploads/valid_ids/' . htmlspecialchars($uploadedImagePath); ?>')">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                                </svg>
-                                                View Full Size
-                                            </button>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Caption -->
-                                    <p class="text-xs text-gray-500 mt-2 text-center">Click on the image to view in full size</p>
-                                </div>
-                            <?php else: ?>
-                                <?php if ($uploadedImagePath): ?>
-    <!-- Existing code for when there is an uploaded ID -->
-<?php else: ?>
-    <div class="flex flex-col items-center justify-center py-8 px-4 border-2 border-dashed border-gray-300 rounded-lg text-center cursor-pointer hover:bg-gray-50 transition-colors"
-         onclick="openEditProfileToIDUpload()">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-        </svg>
-        <p class="text-sm text-gray-600 font-medium">No ID uploaded yet</p>
-        <p class="text-xs text-gray-500 mt-1">Upload a valid ID to verify your account</p>
-    </div>
-<?php endif; ?>
-                        </div>
-                        <!-- In the "Uploaded Documents Section" where the no ID message is displayed -->
-
+                    <?php if ($id_status === 'denied' && $decline_reason): ?>
+                        <button 
+                            class="text-red-600 hover:text-red-800 text-sm flex items-center transition-colors" 
+                            onclick="openDeclineReasonModal('<?php echo htmlspecialchars($decline_reason); ?>')"
+                        >
+                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" clip-rule="evenodd"></path>
+                            </svg>
+                            View Details
+                        </button>
+                    <?php endif; ?>
+                </div>
+                
+                <div class="relative group">
+                    <!-- Container with hover effect -->
+                    <div class="relative border-2 border-gray-200 rounded-lg overflow-hidden transition-all group-hover:border-blue-400 shadow-sm group-hover:shadow-md">
+                        <!-- Thumbnail image that opens the modal when clicked -->
+                        <img 
+                            src="<?php echo '../uploads/valid_ids/' . htmlspecialchars($uploadedImagePath); ?>" 
+                            alt="Uploaded ID"
+                            class="w-full h-auto cursor-pointer hover:opacity-90 transition-opacity"
+                            onclick="openImageModal('<?php echo '../uploads/valid_ids/' . htmlspecialchars($uploadedImagePath); ?>')"
+                        >
                         
-                        <div class="hidden md:block">
-                            <div class="bg-blue-50 p-5 rounded-lg border border-blue-100 h-full">
-                                <h4 class="font-medium text-navy mb-3 flex items-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-                                    ID Upload Guidelines
-                                </h4>
-                                <ul class="space-y-2 text-sm text-gray-600">
-                                    <li class="flex items-start">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-500 mt-0.5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                                        </svg>
-                                        Upload a clear, well-lit photo showing the entire ID
-                                    </li>
-                                    <li class="flex items-start">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-500 mt-0.5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                                        </svg>
-                                        Ensure all four corners and edges are visible
-                                    </li>
-                                    <li class="flex items-start">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-500 mt-0.5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                                        </svg>
-                                        All text should be sharp and readable
-                                    </li>
-                                    <li class="flex items-start">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-500 mt-0.5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                                        </svg>
-                                        Avoid glare, shadows, or reflections
-                                    </li>
-                                </ul>
-                            </div>
+                        <!-- Overlay with view button -->
+                        <div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button class="bg-white text-navy px-4 py-2 rounded-lg shadow-lg flex items-center transition-transform transform hover:scale-105"
+                                onclick="openImageModal('<?php echo '../uploads/valid_ids/' . htmlspecialchars($uploadedImagePath); ?>')">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                </svg>
+                                View Full Size
+                            </button>
                         </div>
                     </div>
+                    
+                    <!-- Caption -->
+                    <p class="text-xs text-gray-500 mt-2 text-center">Click on the image to view in full size</p>
                 </div>
+            <?php else: ?>
+                <div class="flex flex-col items-center justify-center py-8 px-4 border-2 border-dashed border-gray-300 rounded-lg text-center cursor-pointer hover:bg-gray-50 transition-colors"
+                     onclick="openEditProfileToIDUpload()">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <p class="text-sm text-gray-600 font-medium">No ID uploaded yet</p>
+                    <p class="text-xs text-gray-500 mt-1">Upload a valid ID to verify your account</p>
+                </div>
+            <?php endif; ?>
+        </div>
+        
+        <div class="hidden md:block">
+            <div class="bg-blue-50 p-5 rounded-lg border border-blue-100 h-full">
+                <h4 class="font-medium text-navy mb-3 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    ID Upload Guidelines
+                </h4>
+                <ul class="space-y-2 text-sm text-gray-600">
+                    <li class="flex items-start">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-500 mt-0.5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        Upload a clear, well-lit photo showing the entire ID
+                    </li>
+                    <li class="flex items-start">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-500 mt-0.5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        Ensure all four corners and edges are visible
+                    </li>
+                    <li class="flex items-start">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-500 mt-0.5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        All text should be sharp and readable
+                    </li>
+                    <li class="flex items-start">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-500 mt-0.5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        Avoid glare, shadows, or reflections
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
             </div>
         </div>
     </div>
