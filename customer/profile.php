@@ -520,7 +520,7 @@ header("Pragma: no-cache");
     <div id="personal-info" class="tab-content">
         <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
             <!-- Header with enhanced styling -->
-            <div class="p-6 border-b border-gray-100 flex justify-between items-center">
+            <div class="bg-navy p-6 border-b border-gray-100 flex justify-between items-center">
                 <h3 class="font-hedvig text-xl text-navy">Personal Information</h3>
                 
                 <div class="flex space-x-3"> <!-- Added a flex container with spacing -->
