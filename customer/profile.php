@@ -541,13 +541,12 @@ header("Pragma: no-cache");
                 </div>
             </div>
             
-            <!-- Content area with improved spacing and grouping -->
-            <div class="p-8">
-
-                <!-- Information sections with card-based layout -->
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <!-- Name section with visual grouping -->
-                    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+             <!-- Content area with improved spacing and grouping -->
+             <div class="p-8">
+                <!-- Information sections in single row layout -->
+                <div class="flex flex-col lg:flex-row gap-6">
+                    <!-- Name section -->
+                    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden flex-1">
                         <div class="bg-navy bg-opacity-10 px-6 py-4 border-b border-gray-200">
                             <h4 class="flex items-center text-navy text-lg font-semibold">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -577,7 +576,7 @@ header("Pragma: no-cache");
                     </div>
                     
                     <!-- Contact section -->
-                    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden flex-1">
                         <div class="bg-navy bg-opacity-10 px-6 py-4 border-b border-gray-200">
                             <h4 class="flex items-center text-navy text-lg font-semibold">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -617,6 +616,7 @@ header("Pragma: no-cache");
                             </div>
                         </div>
                     </div>
+                </div>
                     
                     <!-- Address section taking full width -->
                     <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden col-span-1 lg:col-span-2">
