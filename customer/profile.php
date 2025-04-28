@@ -544,7 +544,7 @@ header("Pragma: no-cache");
             <!-- Content area with improved spacing and grouping -->
 <div class="p-8">
     <!-- Information sections with card-based layout -->
-    < class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <!-- Basic Information section with visual grouping -->
         <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
             <div class="bg-navy bg-opacity-10 px-6 py-4 border-b border-gray-200">
@@ -610,7 +610,7 @@ header("Pragma: no-cache");
                 </div>
             </div>
         </div>
-    
+    </div>
 </div>
                     
                     <!-- Address section taking full width -->
