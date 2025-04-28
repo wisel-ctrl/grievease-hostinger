@@ -623,40 +623,49 @@ header("Pragma: no-cache");
         </h4>
     </div>
     <div class="p-4 sm:p-6">
-        <!-- Changed grid to 2 columns on small screens, 3 columns on larger screens -->
+        <!-- Grid layout -->
         <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+            <!-- Region -->
             <div class="bg-gray-50 p-3 sm:p-4 rounded-lg">
                 <label class="block text-xs font-medium text-gray-500 mb-1">Region</label>
                 <p class="text-navy <?= empty($region) ? 'opacity-60 italic text-gray-500' : 'font-medium' ?> text-sm sm:text-base">
                     <?= !empty($region) ? htmlspecialchars($region) : 'N/A' ?>
                 </p>
             </div>
+            
+            <!-- Province -->
             <div class="bg-gray-50 p-3 sm:p-4 rounded-lg">
                 <label class="block text-xs font-medium text-gray-500 mb-1">Province</label>
                 <p class="text-navy <?= empty($province) ? 'opacity-60 italic text-gray-500' : 'font-medium' ?> text-sm sm:text-base">
                     <?= !empty($province) ? htmlspecialchars($province) : 'N/A' ?>
                 </p>
             </div>
+            
+            <!-- City -->
             <div class="bg-gray-50 p-3 sm:p-4 rounded-lg">
                 <label class="block text-xs font-medium text-gray-500 mb-1">City</label>
                 <p class="text-navy <?= empty($city) ? 'opacity-60 italic text-gray-500' : 'font-medium' ?> text-sm sm:text-base">
                     <?= !empty($city) ? htmlspecialchars($city) : 'N/A' ?>
                 </p>
             </div>
+            
+            <!-- Barangay -->
             <div class="bg-gray-50 p-3 sm:p-4 rounded-lg">
                 <label class="block text-xs font-medium text-gray-500 mb-1">Barangay</label>
                 <p class="text-navy <?= empty($barangay) ? 'opacity-60 italic text-gray-500' : 'font-medium' ?> text-sm sm:text-base">
                     <?= !empty($barangay) ? htmlspecialchars($barangay) : 'N/A' ?>
                 </p>
             </div>
-            <div class="bg-gray-50 p-3 sm:p-4 rounded-lg col-span-2">
+            
+            <!-- Street Address + Zip Code Row -->
+            <div class="bg-gray-50 p-3 sm:p-4 rounded-lg col-span-2 sm:col-span-1">
                 <label class="block text-xs font-medium text-gray-500 mb-1">Street Address</label>
                 <p class="text-navy <?= empty($street_address) ? 'opacity-60 italic text-gray-500' : 'font-medium' ?> text-sm sm:text-base">
                     <?= !empty($street_address) ? htmlspecialchars($street_address) : 'N/A' ?>
                 </p>
             </div>
-            <div class="bg-gray-50 p-3 sm:p-4 rounded-lg">
-                <label class="block text-xs font-medium text-gray-500 mb-1">Zip/Postal Code</label>
+            <div class="bg-gray-50 p-3 sm:p-4 rounded-lg sm:col-span-1">
+                <label class="block text-xs font-medium text-gray-500 mb-1">Zip Code</label>
                 <p class="text-navy <?= empty($zip_code) ? 'opacity-60 italic text-gray-500' : 'font-medium' ?> text-sm sm:text-base">
                     <?= !empty($zip_code) ? htmlspecialchars($zip_code) : 'N/A' ?>
                 </p>
@@ -664,7 +673,7 @@ header("Pragma: no-cache");
         </div>
         
         <?php if (!empty($street_address) && !empty($city)): ?>
-        <!-- Complete address remains full width -->
+        <!-- Complete Address (full width) -->
         <div class="mt-3 sm:mt-4">
             <div class="bg-gray-50 p-3 sm:p-4 rounded-lg border border-gray-200">
                 <div class="flex items-center mb-1 sm:mb-2">
@@ -691,6 +700,7 @@ header("Pragma: no-cache");
         <?php endif; ?>
     </div>
 </div>
+                    </div>
             
             <!-- ID Upload Section with improved layout -->
             <div class="mt-6 sm:mt-8 pt-4 sm:pt-6 border-t border-gray-200">
