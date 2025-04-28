@@ -1878,7 +1878,6 @@ function restrictPhoneInput() {
     // Add help text
     const helpText = document.createElement('p');
     helpText.className = 'mt-1 text-xs text-gray-500';
-    helpText.textContent = 'Format: 09XXXXXXXXX or +639XXXXXXXXX';
     phoneInput.parentNode.appendChild(helpText);
     
     phoneInput.addEventListener('keydown', function(e) {
