@@ -1465,6 +1465,7 @@ document.addEventListener('DOMContentLoaded', function() {
     </div>
 </div>
                                     </div>
+                                    </div>
                     
                     <?php if ($id_status !== 'valid'): ?>
                     <!-- Document Uploads Section -->
