@@ -253,7 +253,9 @@ while ($row = $casketResult->fetch_assoc()) {
       
     </div>
     <div class="p-5">
-      <div id="demandPredictionChart" class="h-64"></div>
+    <div class="relative" style="padding-bottom: 60%; min-height: 300px;">
+        <div id="demandPredictionChart" class="absolute top-0 left-0 w-full h-full"></div>
+      </div>
     </div>
     <div class="px-5 pb-5">
       <div class="flex justify-between text-sm text-gray-600">
@@ -556,33 +558,23 @@ document.addEventListener('DOMContentLoaded', function() {
   const rawCasketData = <?php echo json_encode($casketData); ?>;
 const heatmapData = processDataForHeatmap(rawCasketData);
 
-// Calculate dimensions based on data size
-const itemCount = heatmapData.items.length;
-const monthCount = heatmapData.months.length;
-const cellSize = 40; // Base size for each cell
-const headerHeight = 50; // Space for title and axis labels
-
-// Calculate dynamic dimensions
-const dynamicHeight = Math.max(350, headerHeight + (itemCount * cellSize));
-const dynamicWidth = Math.max(800, monthCount * cellSize);
-
-// Create the heatmap chart
+// Create the heatmap chart with responsive configuration
 var options = {
   series: heatmapData.series,
   chart: {
-    height: dynamicHeight,
-    width: dynamicWidth,
     type: 'heatmap',
     toolbar: { show: false },
-    animations: { enabled: false } // Improves rendering performance
+    animations: { enabled: false },
+    parentHeightOffset: 0,
+    redrawOnParentResize: true // Makes chart responsive
   },
   stroke: {
     width: 1,
-    colors: ['#fff'] // White border around circles
+    colors: ['#fff']
   },
   plotOptions: {
     heatmap: {
-      radius: cellSize * 0.35, // Perfect circle size relative to cell
+      radius: 10, // Fixed radius that will scale with container
       enableShades: false,
       useFillColorAsStroke: true,
       distributed: false,
@@ -612,7 +604,7 @@ var options = {
       }
       return val;
     },
-    offsetY: -1 // Fine-tune label position
+    offsetY: -1
   },
   xaxis: {
     type: 'category',
@@ -622,10 +614,9 @@ var options = {
         return value.split('-')[1] + '/' + value.split('-')[0].slice(2);
       },
       style: {
-        fontSize: '10px',
-        cssClass: 'heatmap-xaxis-label'
+        fontSize: '10px'
       },
-      rotate: -45, // Diagonal labels for better fit
+      rotate: -45,
       hideOverlappingLabels: true
     },
     tooltip: { enabled: false },
@@ -636,7 +627,7 @@ var options = {
       style: {
         fontSize: '11px'
       },
-      offsetX: 5 // Add some spacing
+      offsetX: 5
     }
   },
   grid: {
@@ -666,50 +657,23 @@ var options = {
       `;
     }
   },
-  title: {
-    text: 'Casket Sales Heatmap with Forecast',
-    align: 'center',
-    style: {
-      fontSize: '14px',
-      fontWeight: 'bold',
-      cssClass: 'heatmap-title'
-    },
-    margin: 10
-  },
-  annotations: {
-    xaxis: [{
-      x: heatmapData.months[heatmapData.months.length - 6],
-      strokeDashArray: 0,
-      borderColor: '#FF4560',
-      label: {
-        borderColor: '#FF4560',
-        style: {
-          color: '#fff',
-          background: '#FF4560',
-          fontSize: '10px'
-        },
-        text: 'Forecast Start',
-        offsetY: 5
+  responsive: [{
+    breakpoint: 768,
+    options: {
+      chart: {
+        height: '100%'
+      },
+      dataLabels: {
+        enabled: false
+      },
+      plotOptions: {
+        heatmap: {
+          radius: 6
+        }
       }
-    }]
-  }
+    }
+  }]
 };
-
-// Apply CSS to prevent label overlap
-const style = document.createElement('style');
-style.textContent = `
-  .heatmap-xaxis-label {
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    max-width: ${cellSize}px;
-    display: inline-block;
-    overflow: hidden;
-  }
-  .heatmap-title {
-    margin-bottom: 5px !important;
-  }
-`;
-document.head.appendChild(style);
 
 // Render the chart
 var chart = new ApexCharts(document.querySelector("#demandPredictionChart"), options);
