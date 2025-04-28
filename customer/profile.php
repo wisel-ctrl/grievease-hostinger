@@ -248,6 +248,24 @@ header("Pragma: no-cache");
             --navbar-height: 64px; /* Define the height of the navbar */
             --section-spacing: 4rem; /* Standardized spacing between sections */
         }
+        /* Additional styles for scrollbar */
+.modal-scroll-container {
+    scrollbar-width: thin;
+    scrollbar-color: #d4a933 #f5f5f5;
+}
+
+.modal-scroll-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.modal-scroll-container::-webkit-scrollbar-track {
+    background: #f5f5f5;
+}
+
+.modal-scroll-container::-webkit-scrollbar-thumb {
+    background-color: #d4a933;
+    border-radius: 6px;
+}
     </style>
 </head>
 <body class="bg-cream overflow-x-hidden w-full max-w-full m-0 p-0 font-hedvig">
@@ -1551,7 +1569,8 @@ document.addEventListener('DOMContentLoaded', function() {
   
   <!-- Modal Content -->
   <div class="relative bg-white rounded-xl shadow-card w-full max-w-md mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
-    <!-- Close Button -->
+  <div class="modal-scroll-container overflow-y-auto max-h-[90vh]">  
+  <!-- Close Button -->
     <button type="button" id="close-change-password-modal" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors">
       <i class="fas fa-times"></i>
     </button>
