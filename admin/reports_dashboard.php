@@ -221,13 +221,13 @@ $ratioChange = number_format($changes['ratio_change'] ?? 0, 1);
         <!-- Card header with brighter gradient background -->
         <div class="bg-gradient-to-r from-blue-100 to-blue-200 px-6 py-4">
             <div class="flex items-center justify-between mb-1">
-                <h3 class="text-sm font-medium text-gray-700">Sales Forecast (Q2)</h3>
+                <h3 class="text-sm font-medium text-gray-700">Sales Forecast (next 6 Months)</h3>
                 <div class="w-10 h-10 rounded-full bg-white/90 text-blue-600 flex items-center justify-center">
                     <i class="fas fa-chart-line"></i>
                 </div>
             </div>
             <div class="flex items-end">
-                <span class="text-2xl md:text-3xl font-bold text-gray-800">$142,850</span>
+                <span class="text-2xl md:text-3xl font-bold text-gray-800 sales-forecast-value">$142,850</span>
             </div>
         </div>
         
@@ -277,7 +277,7 @@ $ratioChange = number_format($changes['ratio_change'] ?? 0, 1);
                 </div>
             </div>
             <div class="flex items-end">
-                <span class="text-2xl md:text-3xl font-bold text-gray-800">92.4%</span>
+                <span class="text-2xl md:text-3xl font-bold text-gray-800"><?php echo $paymentRatio; ?>%</span>
             </div>
         </div>
         
@@ -303,9 +303,6 @@ $ratioChange = number_format($changes['ratio_change'] ?? 0, 1);
               <div class="w-10 h-10 rounded-full bg-white/90 text-blue-600 flex items-center justify-center">
                   <i class="fas fa-chart-line"></i>
               </div>
-          </div>
-          <div class="flex items-end">
-              <span class="text-2xl md:text-3xl font-bold text-gray-800 sales-forecast-value">$0</span>
           </div>
       </div>
       <div id="salesForecastChart"></div>
@@ -517,6 +514,13 @@ document.addEventListener('DOMContentLoaded', function() {
                   }
               }
           },
+          yaxis: {
+              labels: {
+                  formatter: function(value) {
+                      return '₱' + value.toFixed(2);
+                  }
+              }
+          },
           title: {
               text: 'Revenue Forecast',
               align: 'left',
@@ -537,7 +541,7 @@ document.addEventListener('DOMContentLoaded', function() {
               },
               y: {
                   formatter: function(value) {
-                      return '$' + value.toLocaleString();
+                      return '₱' + value.toLocaleString();
                   }
               }
           }
@@ -548,16 +552,11 @@ document.addEventListener('DOMContentLoaded', function() {
       
       // Update forecast summary
       const totalForecast = regressionResults.forecastData.reduce((sum, point) => sum + point.y, 0);
-      document.querySelector('.sales-forecast-value').textContent = '$' + Math.round(totalForecast).toLocaleString();
+      document.querySelector('.sales-forecast-value').textContent = '₱' + Math.round(totalForecast).toLocaleString();
   } else {
       document.querySelector("#salesForecastChart").innerHTML = '<div class="p-4 text-center text-gray-500">No revenue data available</div>';
   }
 
-
-  
-
-  
-  
 });
 </script>
 
