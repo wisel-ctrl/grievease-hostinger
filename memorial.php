@@ -416,30 +416,27 @@ function addDedicationToGrid(dedication, index) {
     card.innerHTML = `
         <div class="flex flex-col h-full">
             <div class="flex items-center justify-center mb-4">
-                <!-- Small Candle Animation -->
+                <!-- Candle Animation with updated flame style -->
                 <div class="relative w-20 h-32">
                     <!-- Candle -->
                     <div class="absolute left-1/2 transform -translate-x-1/2 bottom-0 w-12">
-                        <!-- Wick -->
-                        <div class="w-0.5 h-3 bg-gray-700 mx-auto mb-0 rounded-t-lg"></div>
-                        
-                        <!-- Flame -->
-                        <div>
-                            <!-- Outer Flame -->
-                            <div class="absolute left-1/2 transform -translate-x-1/2 bottom-[46px] w-4 h-8 bg-yellow-600/80 rounded-full blur-sm" style="animation: flame 1.5s ease-in-out infinite"></div>
-                            
-                            <!-- Inner Flame -->
-                            <div class="absolute left-1/2 transform -translate-x-1/2 bottom-[48px] w-2 h-6 bg-white/90 rounded-full blur-[1px]" style="animation: flame 2s ease-in-out infinite"></div>
+                        <!-- Updated Wick with Flame (matches large candle style) -->
+                        <div class="relative w-1 h-4 bg-gray-700 mx-auto rounded-t-lg">
+                            <!-- Outer Flame (scaled down but same style) -->
+                            <div class="absolute left-1/2 top-[-18px] transform -translate-x-1/2 w-4 h-8 bg-yellow-600/80 rounded-full blur-sm animate-flame"></div>
+
+                            <!-- Inner Flame (scaled down but same style) -->
+                            <div class="absolute left-1/2 top-[-15px] transform -translate-x-1/2 w-2 h-6 bg-white/90 rounded-full blur-[2px] animate-flame"></div>
                         </div>
-                        
-                        <!-- Candle Body -->
+
+                        <!-- Candle Body (unchanged) -->
                         <div class="w-8 h-16 ${gridCandleColors[selectedCandleType].body} mx-auto rounded-t-lg"></div>
-                        
-                        <!-- Candle Base -->
+
+                        <!-- Candle Base (unchanged) -->
                         <div class="w-10 h-2 ${gridCandleColors[selectedCandleType].base} mx-auto rounded-b-lg"></div>
                     </div>
-                    
-                    <!-- Reflection/Glow -->
+
+                    <!-- Reflection/Glow (unchanged) -->
                     <div class="absolute left-1/2 transform -translate-x-1/2 bottom-2 w-32 h-6 bg-yellow-600/20 rounded-full blur-xl" style="animation: glow 3s ease-in-out infinite"></div>
                 </div>
             </div>
@@ -456,6 +453,7 @@ function addDedicationToGrid(dedication, index) {
             </div>
         </div>
     `;
+
     
     // Add it as the first child - new dedications appear at the top
     if (dedicationGrid.firstChild) {
