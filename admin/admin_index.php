@@ -669,7 +669,7 @@ foreach ($serviceData as $service => $branches) {
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-6 md:mb-8">
   <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 w-full">
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 p-4 sm:p-5 border-b border-sidebar-border">
-      <h3 class="font-medium text-sidebar-text">Supposedly Revenue</h3>
+      <h3 class="font-medium text-sidebar-text">Supposed Revenue</h3>
       <button class="px-3 py-2 border border-sidebar-border rounded-md text-sm flex items-center text-sidebar-text hover:bg-sidebar-hover transition-all duration-300">
         <i class="fas fa-download mr-2"></i> Export
       </button>
