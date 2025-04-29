@@ -560,52 +560,55 @@ require_once '../db_connect.php'; // Database connection
                     </div>
                 </div>
                 
-                <!-- Package 3: Custom Memorial -->
-                <div class="package-card min-w-full md:min-w-[33.333%] px-2 sm:px-4">
-                    <div class="bg-white rounded-[20px] shadow-lg overflow-hidden relative group hover:shadow-xl transition-all duration-300 flex flex-col h-full" data-price="custom" data-service="traditional" data-name="Custom Memorial" data-image="image/custom.jpg">
-                        <div class="h-10 sm:h-12 bg-navy flex items-center justify-center">
-                            <h4 class="text-white font-hedvig text-lg sm:text-xl">Custom Memorial</h4>
-                            <div class="absolute top-0 right-0 w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center">
-                                <div class="w-12 h-12 sm:w-16 sm:h-16 bg-yellow-600/90 rotate-45 transform origin-bottom-left"></div>
+                <!-- Package 3: Heritage Memorial -->
+                <div class="package-card min-w-full md:min-w-[33.333%] px-4">
+                    <div class="bg-white rounded-[20px] shadow-lg overflow-hidden relative group hover:shadow-xl transition-all duration-300 flex flex-col h-full" data-price="250000" data-service="traditional" data-name="Heritage Memorial" data-image="image/250.jpg">
+                        <div class="h-12 bg-navy flex items-center justify-center">
+                            <h4 class="text-white font-hedvig text-xl">Heritage Memorial</h4>
+                            <div class="absolute top-0 right-0 w-16 h-16 flex items-center justify-center">
+                                <div class="w-16 h-16 bg-yellow-600/90 rotate-45 transform origin-bottom-left"></div>
                             </div>
                         </div>
-                        <div class="p-4 sm:p-6 flex flex-col flex-grow">
-                            <div class="mb-3 sm:mb-4 flex justify-center">
-                                <img src="../Landing_Page/Landing_images/logo.png" alt="Custom Memorial" class="w-full h-40 sm:h-48 object-cover rounded-lg">
+                        <div class="p-6 flex flex-col flex-grow">
+                            <div class="mb-4 flex justify-center">
+                                <img src="image/250.jpg" alt="Legacy Tribute" class="w-full h-48 object-cover rounded-lg">
                             </div>
-                            <div class="text-center mb-4 sm:mb-6">
-                                <span class="text-2xl sm:text-3xl font-hedvig text-navy">Starting at ₱150,000</span>
-                                <p class="text-xs sm:text-sm text-gray-600 mt-1">Final price depends on selections</p>
+                            <div class="text-center mb-6">
+                                <span class="text-3xl font-hedvig text-navy">₱250,000</span>
                             </div>
-                            <ul class="space-y-2 sm:space-y-3 mb-4 sm:mb-6 flex-grow text-sm sm:text-base">
+                            <ul class="space-y-3 mb-6 flex-grow">
                                 <li class="flex items-start">
-                                    <i class="fas fa-sliders-h mr-2 text-yellow-600 mt-1 flex-shrink-0"></i>
-                                    <span class="text-dark"><strong>Choose your casket</strong> from our selection</span>
+                                    <i class="fas fa-check-circle mr-2 text-yellow-600 mt-1"></i>
+                                    <span class="text-dark">2 sets of flower arrangements</span>
                                 </li>
                                 <li class="flex items-start">
-                                    <i class="fas fa-sliders-h mr-2 text-yellow-600 mt-1 flex-shrink-0"></i>
-                                    <span class="text-dark"><strong>Select flower arrangements</strong> (1-3 sets)</span>
+                                    <i class="fas fa-check-circle mr-2 text-yellow-600 mt-1"></i>
+                                    <span class="text-dark">Standard casket selection</span>
                                 </li>
                                 <li class="flex items-start">
-                                    <i class="fas fa-sliders-h mr-2 text-yellow-600 mt-1 flex-shrink-0"></i>
-                                    <span class="text-dark"><strong>Customize viewing period</strong> to your needs</span>
+                                    <i class="fas fa-check-circle mr-2 text-yellow-600 mt-1"></i>
+                                    <span class="text-dark">Standard viewing period</span>
                                 </li>
                                 <li class="flex items-start">
-                                    <i class="fas fa-sliders-h mr-2 text-yellow-600 mt-1 flex-shrink-0"></i>
-                                    <span class="text-dark"><strong>Add catering options</strong> if desired</span>
+                                    <i class="fas fa-check-circle mr-2 text-yellow-600 mt-1"></i>
+                                    <span class="text-dark">Complete funeral service</span>
                                 </li>
                                 <li class="flex items-start">
-                                    <i class="fas fa-check-circle mr-2 text-yellow-600 mt-1 flex-shrink-0"></i>
-                                    <span class="text-dark">Core funeral services included</span>
+                                    <i class="fas fa-check-circle mr-2 text-yellow-600 mt-1"></i>
+                                    <span class="text-dark">Curtains and lighting</span>
                                 </li>
                                 <li class="flex items-start">
-                                    <i class="fas fa-check-circle mr-2 text-yellow-600 mt-1 flex-shrink-0"></i>
-                                    <span class="text-dark">Personalized assistance throughout</span>
+                                    <i class="fas fa-check-circle mr-2 text-yellow-600 mt-1"></i>
+                                    <span class="text-dark">Water dispenser</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-check-circle mr-2 text-yellow-600 mt-1"></i>
+                                    <span class="text-dark">Tent, chairs, and table</span>
                                 </li>
                             </ul>
-                            <button class="customtraditionalpckg block w-full mt-4 sm:mt-6 bg-yellow-600 hover:bg-yellow-700 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg shadow-md transition-all duration-300 text-center text-sm sm:text-base">
-                                Customize Package
-                            </button>
+                            <a href="package.php" class="block w-full mt-6 bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg shadow-md transition-all duration-300 text-center">
+                                Select Package
+                            </a>
                         </div>
                     </div>
                 </div>
