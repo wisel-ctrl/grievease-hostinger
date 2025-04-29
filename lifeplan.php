@@ -214,7 +214,7 @@
                         <span class="text-dark">Flexible Payment Option</span>
                     </li>
                 </ul>
-                <a href="packages.php" class="block w-full mt-4 bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg shadow-md transition-all duration-300 text-center">
+                <a href="Landing_Page/register.php" class="block w-full mt-4 bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg shadow-md transition-all duration-300 text-center">
                     Select Package
                 </a>
             </div>
