@@ -447,17 +447,85 @@
         let timerInterval;
         
         // Validation functions
-        function validateName(input) {
-            // Allow only letters, spaces between words, and apostrophes
-            const nameRegex = /^[A-Za-zÀ-ÿ]+(['\s][A-Za-zÀ-ÿ]+)*$/;
-            return nameRegex.test(input.value.trim());
+function validateName(input) {
+    // Allow only letters, spaces between words, apostrophes, and hyphens
+    const nameRegex = /^[A-Za-zÀ-ÿ'-]+(\s[A-Za-zÀ-ÿ'-]+)*$/;
+    return nameRegex.test(input.value.trim());
+}
+        
+function validateEmail(input) {
+    // Comprehensive email validation (unchanged)
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return emailRegex.test(input.value.trim());
+}
+
+// Function to prevent invalid input - SPECIFICALLY FOR NAME FIELDS
+function preventNumbersInNames(input) {
+    input.addEventListener('input', function(e) {
+        // Remove any numbers that might have been entered
+        this.value = this.value.replace(/[0-9]/g, '');
+        
+        // Remove leading and trailing spaces
+        this.value = this.value.trim();
+        
+        // Prevent starting with a space or special character
+        if (this.value.startsWith(' ') || this.value.startsWith("'") || this.value.startsWith("-")) {
+            this.value = this.value.replace(/^[\s'-]+/, '');
         }
         
-        function validateEmail(input) {
-            // Comprehensive email validation
-            const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-            return emailRegex.test(input.value.trim());
+        // Remove consecutive spaces or special characters
+        this.value = this.value.replace(/\s+/g, ' ');
+        this.value = this.value.replace(/'+/g, "'");
+        this.value = this.value.replace(/-+/g, "-");
+        
+        // Validate and add/remove error styling
+        if (this.value && !validateName(this)) {
+            this.classList.add('border-error');
+            this.classList.remove('border-success');
+        } else if (this.value) {
+            this.classList.remove('border-error');
+            this.classList.add('border-success');
+        } else {
+            this.classList.remove('border-error');
+            this.classList.remove('border-success');
         }
+    });
+    
+    input.addEventListener('paste', function(e) {
+        e.preventDefault();
+        let pastedText = e.clipboardData.getData('text/plain').trim();
+        
+        // Remove any numbers from pasted text
+        pastedText = pastedText.replace(/[0-9]/g, '');
+        
+        // Validate pasted text
+        if (validateName({ value: pastedText })) {
+            this.value = pastedText;
+            this.classList.remove('border-error');
+            this.classList.add('border-success');
+        } else {
+            this.value = '';
+            this.classList.add('border-error');
+            this.classList.remove('border-success');
+            
+            swal({
+                title: "Invalid Name",
+                text: "Names cannot contain numbers or special characters except apostrophes and hyphens.",
+                icon: "error",
+                button: "OK",
+            });
+        }
+    });
+    
+    input.addEventListener('drop', function(e) {
+        e.preventDefault();
+    });
+}
+
+// Apply validation to specific fields - ONLY NAME FIELDS
+preventNumbersInNames(firstName);
+preventNumbersInNames(lastName);
+preventNumbersInNames(middleName);
         
         function preventInvalidInput(input, validationFunc) {
             input.addEventListener('input', function(e) {
