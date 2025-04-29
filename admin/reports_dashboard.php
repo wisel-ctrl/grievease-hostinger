@@ -286,7 +286,7 @@ while ($row = $casketResult->fetch_assoc()) {
 <!-- Customer Payment Behavior -->
 <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 mb-8">
   <div class="flex justify-between items-center p-5 border-b border-sidebar-border">
-    <h3 class="font-medium text-sidebar-text">Customer Payment Behavior</h3>
+    <h3 class="font-medium text-sidebar-text">Sales & Payment Trends</h3>
     <div class="flex space-x-2">
       <select class="px-3 py-2 border border-sidebar-border rounded-md text-sm text-sidebar-text bg-white">
         <option>Last 6 Months</option>
@@ -298,26 +298,21 @@ while ($row = $casketResult->fetch_assoc()) {
       </button>
     </div>
   </div>
-  <div class="grid grid-cols-1 gap-6 p-5">
-    <div>
-      <canvas id="paymentTimelineChart" class="h-64"></canvas>
-    </div>
-    <div>
-      <canvas id="paymentMethodsChart" class="h-64"></canvas>
-    </div>
+  <div class="p-5">
+    <canvas id="salesSplineChart" class="h-96"></canvas>
   </div>
   <div class="grid grid-cols-1 md:grid-cols-3 gap-5 px-5 pb-5">
     <div class="bg-gray-50 p-4 rounded-lg">
-      <div class="text-sm font-medium text-gray-600 mb-2">Average Days to Payment</div>
-      <div class="text-2xl font-bold text-sidebar-text">14.3 <span class="text-green-600 text-sm font-normal">-2.1 days</span></div>
+      <div class="text-sm font-medium text-gray-600 mb-2">Average Price</div>
+      <div class="text-2xl font-bold text-sidebar-text">$142.30 <span class="text-green-600 text-sm font-normal">+2.1%</span></div>
     </div>
     <div class="bg-gray-50 p-4 rounded-lg">
-      <div class="text-sm font-medium text-gray-600 mb-2">Payment Completion Rate</div>
-      <div class="text-2xl font-bold text-sidebar-text">92.4% <span class="text-green-600 text-sm font-normal">+3.2%</span></div>
+      <div class="text-sm font-medium text-gray-600 mb-2">Average Payment</div>
+      <div class="text-2xl font-bold text-sidebar-text">$128.70 <span class="text-green-600 text-sm font-normal">+1.8%</span></div>
     </div>
     <div class="bg-gray-50 p-4 rounded-lg">
-      <div class="text-sm font-medium text-gray-600 mb-2">Overdue Payments</div>
-      <div class="text-2xl font-bold text-sidebar-text">7.6% <span class="text-green-600 text-sm font-normal">-3.2%</span></div>
+      <div class="text-sm font-medium text-gray-600 mb-2">Payment Ratio</div>
+      <div class="text-2xl font-bold text-sidebar-text">90.4% <span class="text-green-600 text-sm font-normal">+0.8%</span></div>
     </div>
   </div>
 </div>
@@ -483,49 +478,7 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
 
-  // Payment Methods Chart
-  const paymentMethodsCtx = document.getElementById('paymentMethodsChart').getContext('2d');
-  const paymentMethodsChart = new Chart(paymentMethodsCtx, {
-    type: 'doughnut',
-    data: {
-      labels: ['Credit Card', 'Bank Transfer', 'Insurance', 'Payment Plan', 'Other'],
-      datasets: [{
-        data: [42, 28, 18, 10, 2],
-        backgroundColor: [
-          'rgba(59, 130, 246, 0.8)',
-          'rgba(139, 92, 246, 0.8)',
-          'rgba(16, 185, 129, 0.8)',
-          'rgba(245, 158, 11, 0.8)',
-          'rgba(107, 114, 128, 0.8)'
-        ],
-        borderColor: [
-          'rgba(59, 130, 246, 1)',
-          'rgba(139, 92, 246, 1)',
-          'rgba(16, 185, 129, 1)',
-          'rgba(245, 158, 11, 1)',
-          'rgba(107, 114, 128, 1)'
-        ],
-        borderWidth: 1
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: {
-          position: 'right',
-          labels: {
-            boxWidth: 10,
-            usePointStyle: true
-          }
-        },
-        title: {
-          display: true,
-          text: 'Payment Methods (%)'
-        }
-      }
-    }
-  });
+  
 
   
   
