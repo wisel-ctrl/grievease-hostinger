@@ -1050,12 +1050,13 @@ document.addEventListener('DOMContentLoaded', function() {
                   FROM booking_tb b
                   JOIN services_tb s ON b.service_id = s.service_id
                   JOIN branch_tb br ON b.branch_id = br.branch_id
-                  WHERE b.customerID = ? AND b.is_cancelled = 0
+                  WHERE b.customerID = ?
                   ORDER BY CASE 
                       WHEN b.status = 'Pending' THEN 1
                       WHEN b.status = 'Accepted' THEN 2
                       WHEN b.status = 'Declined' THEN 3
-                      ELSE 4
+                      WHEN b.status = 'Cancelled' THEN 4
+                      ELSE 5
                   END, b.booking_date DESC";
                     
             $stmt = $conn->prepare($query);
@@ -1068,6 +1069,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Determine status color and text
                     $status_class = '';
                     $status_text = '';
+                    // Inside your booking display loop, update the status handling:
                     switch ($booking['status']) {
                         case 'Pending':
                             $status_class = 'bg-yellow-600/10 text-yellow-600';
@@ -1081,6 +1083,13 @@ document.addEventListener('DOMContentLoaded', function() {
                             $status_class = 'bg-red-500/10 text-red-500';
                             $status_text = 'Declined';
                             break;
+                        case 'Cancelled':
+                            $status_class = 'bg-gray-500/10 text-gray-500';
+                            $status_text = 'Cancelled';
+                            break;
+                        default:
+                            $status_class = 'bg-blue-500/10 text-blue-500';
+                            $status_text = $booking['status'];
                     }
                     
                     // Format dates
@@ -1101,7 +1110,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     $amount_paid = $booking['amount_paid'] ? number_format($booking['amount_paid'], 2) : '0.00';
                     $balance = number_format($booking['selling_price'] - ($booking['amount_paid'] ?? 0), 2);
             ?>
-            <div class="<?php echo $booking['status'] === 'Pending' ? 'bg-yellow-600/5 border-yellow-600/20' : 'border-gray-200'; ?> border rounded-lg p-4 mb-6">
+            <div class="<?php 
+                    echo $booking['status'] === 'Pending' ? 'bg-yellow-600/5 border-yellow-600/20' : 
+                    ($booking['status'] === 'Cancelled' ? 'bg-gray-100 border-gray-300' : 'border-gray-200'); 
+                ?> border rounded-lg p-4 mb-6">
                 <div class="flex items-center justify-between mb-3">
                     <div>
                         <span class="<?php echo $status_class; ?> text-xs px-2 py-1 rounded-full"><?php echo $status_text; ?></span>
@@ -1141,17 +1153,22 @@ document.addEventListener('DOMContentLoaded', function() {
                     <button class="view-details bg-navy/5 text-navy px-3 py-1 rounded hover:bg-navy/10 transition text-sm mr-2" data-booking="<?php echo $booking['booking_id']; ?>">
                         <i class="fas fa-file-alt mr-1"></i> View Details
                     </button>
+                    
                     <?php if ($booking['status'] === 'Pending'): ?>
-                    <button class="modify-booking bg-yellow-600 text-white px-3 py-1 rounded hover:bg-yellow-700 transition text-sm mr-2" data-booking="<?php echo $booking['booking_id']; ?>">
-                        <i class="fas fa-edit mr-1"></i> Modify
-                    </button>
-                    <button class="cancel-booking bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition text-sm" data-booking="<?php echo $booking['booking_id']; ?>">
-                        <i class="fas fa-times mr-1"></i> Cancel
-                    </button>
+                        <button class="modify-booking bg-yellow-600 text-white px-3 py-1 rounded hover:bg-yellow-700 transition text-sm mr-2" data-booking="<?php echo $booking['booking_id']; ?>">
+                            <i class="fas fa-edit mr-1"></i> Modify
+                        </button>
+                        <button class="cancel-booking bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition text-sm" data-booking="<?php echo $booking['booking_id']; ?>">
+                            <i class="fas fa-times mr-1"></i> Cancel
+                        </button>
                     <?php elseif ($booking['status'] === 'Accepted'): ?>
-                    <button class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition text-sm mr-2">
-                        <i class="fas fa-receipt mr-1"></i> View Receipt
-                    </button>
+                        <button class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition text-sm mr-2">
+                            <i class="fas fa-receipt mr-1"></i> View Receipt
+                        </button>
+                    <?php elseif ($booking['status'] === 'Cancelled'): ?>
+                        <span class="text-gray-500 text-sm py-1 px-3">
+                            <i class="fas fa-ban mr-1"></i> Cancelled
+                        </span>
                     <?php endif; ?>
                 </div>
             </div>
