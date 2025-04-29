@@ -71,7 +71,7 @@ header("Pragma: no-cache");
 <div class="w-full md:w-1/2 max-w-md mx-auto">
     <div class="bg-black bg-opacity-25 backdrop-blur-md rounded-xl p-6 shadow-card">
         <div class="text-center mb-4">
-            <h2 class="text-xl font-hedvig text-white"></h2>
+            <h2 class="text-xl font-hedvig text-white">Login</h2>
         </div>
         
         <form id="loginForm" class="space-y-3">
