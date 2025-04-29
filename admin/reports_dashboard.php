@@ -277,7 +277,7 @@ $ratioChange = number_format($changes['ratio_change'] ?? 0, 1);
                 </div>
             </div>
             <div class="flex items-end">
-                <span class="text-2xl md:text-3xl font-bold text-gray-800">92.4%</span>
+                <span class="text-2xl md:text-3xl font-bold text-gray-800"><?php echo $paymentRatio; ?>%</span>
             </div>
         </div>
         
@@ -304,9 +304,6 @@ $ratioChange = number_format($changes['ratio_change'] ?? 0, 1);
                   <i class="fas fa-chart-line"></i>
               </div>
           </div>
-          <!-- <div class="flex items-end">
-              <span class="text-2xl md:text-3xl font-bold text-gray-800 sales-forecast-value">$0</span>
-          </div> -->
       </div>
       <div id="salesForecastChart"></div>
       <!-- Card footer with change indicator -->
