@@ -370,35 +370,34 @@
     </div>
     
     <!-- Additional Features -->
-    <div class="max-w-6xl mx-auto mt-16 grid grid-cols-1 md:grid-cols-2 gap-8">
-        <!-- Virtual Memorials -->
-        <div class="flex bg-white rounded-lg shadow-md overflow-hidden">
-            <div class="w-1/3 bg-cover bg-center" style="background-image: url('image/image.png');">
-            </div>
-            <div class="w-2/3 p-6">
-                <h3 class="font-hedvig text-xl font-semibold text-navy mb-3">Virtual Memorial Candles</h3>
-                <p class="text-dark/80 text-m mb-4">Light a virtual candle and write a personal dedication to honor your loved one's memory. Share your memorial with family and friends.</p>
-                <a href="memorial.php" class="text-yellow-600 hover:text-yellow-700 inline-flex items-center text-m">
-                    Light a candle
-                    <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                    </svg>
-                </a>
-            </div>
+<div class="max-w-6xl mx-auto mt-16 grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8 px-4 sm:px-6">
+    <!-- Virtual Memorials -->
+    <div class="flex flex-col sm:flex-row bg-white rounded-lg shadow-md overflow-hidden">
+        <div class="h-48 sm:h-auto sm:w-1/3 bg-cover bg-center" style="background-image: url('image/image.png');">
         </div>
-        
-        <!-- Support & Resources -->
-        <div class="flex bg-white rounded-lg shadow-md overflow-hidden">
-            <div class="w-1/3 bg-cover bg-center" style="background-image: url('Landing_Page/Landing_images/black-bg-image.jpg');">
-            </div>
-            <div class="w-2/3 p-6">
-                <h3 class="font-hedvig text-xl font-semibold text-navy mb-3">24/7 Support</h3>
-                <p class="text-dark/80 text-m mb-4">Our compassionate team is always available to provide guidance and support throughout the entire process.</p>
-                
-            </div>
+        <div class="w-full sm:w-2/3 p-4 sm:p-6">
+            <h3 class="font-hedvig text-lg sm:text-xl font-semibold text-navy mb-2 sm:mb-3">Virtual Memorial Candles</h3>
+            <p class="text-dark/80 text-sm sm:text-m mb-3 sm:mb-4">Light a virtual candle and write a personal dedication to honor your loved one's memory. Share your memorial with family and friends.</p>
+            <a href="memorial.php" class="text-yellow-600 hover:text-yellow-700 inline-flex items-center text-sm sm:text-m">
+                Light a candle
+                <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+            </a>
+        </div>
+    </div>
+    
+    <!-- Support & Resources -->
+    <div class="flex flex-col sm:flex-row bg-white rounded-lg shadow-md overflow-hidden">
+        <div class="h-48 sm:h-auto sm:w-1/3 bg-cover bg-center" style="background-image: url('Landing_Page/Landing_images/black-bg-image.jpg');">
+        </div>
+        <div class="w-full sm:w-2/3 p-4 sm:p-6">
+            <h3 class="font-hedvig text-lg sm:text-xl font-semibold text-navy mb-2 sm:mb-3">24/7 Support</h3>
+            <p class="text-dark/80 text-sm sm:text-m mb-3 sm:mb-4">Our compassionate team is always available to provide guidance and support throughout the entire process.</p>
         </div>
     </div>
 </div>
+    </div>
 
          <!-- Testimonials Section -->
          <div class="mb-16 mt-8 mr-8 ml-8 bg-navy/5 py-12 px-6 rounded-xl" data-aos="fade-up">
