@@ -127,6 +127,43 @@ while ($row = $salesResult->fetch_assoc()) {
     $salesData[] = $row;
 }
 
+
+$statsQuery = "SELECT 
+    AVG(discounted_price) as avg_price,
+    AVG(amount_paid) as avg_payment,
+    (SUM(amount_paid) / SUM(discounted_price)) * 100 as payment_ratio,
+    (
+        SELECT (AVG(discounted_price) / 
+               (SELECT AVG(discounted_price) FROM analytics_tb WHERE sale_date < DATE_SUB(CURDATE(), INTERVAL 1 MONTH)) * 100 - 100
+        FROM analytics_tb 
+        WHERE sale_date >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH)
+    ) as price_change,
+    (
+        SELECT (AVG(amount_paid) / 
+               (SELECT AVG(amount_paid) FROM analytics_tb WHERE sale_date < DATE_SUB(CURDATE(), INTERVAL 1 MONTH)) * 100 - 100)
+        FROM analytics_tb 
+        WHERE sale_date >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH)
+    ) as payment_change,
+    (
+        SELECT ((SUM(amount_paid) / SUM(discounted_price)) * 100) / 
+               (SELECT (SUM(amount_paid) / SUM(discounted_price)) * 100 FROM analytics_tb WHERE sale_date < DATE_SUB(CURDATE(), INTERVAL 1 MONTH) * 100 - 100
+        FROM analytics_tb 
+        WHERE sale_date >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH)
+    ) as ratio_change
+FROM analytics_tb";
+
+$statsStmt = $conn->prepare($statsQuery);
+$statsStmt->execute();
+$statsResult = $statsStmt->get_result();
+$stats = $statsResult->fetch_assoc();
+
+// Format the values
+$avgPrice = number_format($stats['avg_price'] ?? 0, 2);
+$avgPayment = number_format($stats['avg_payment'] ?? 0, 2);
+$paymentRatio = number_format($stats['payment_ratio'] ?? 0, 1);
+$priceChange = number_format($stats['price_change'] ?? 0, 1);
+$paymentChange = number_format($stats['payment_change'] ?? 0, 1);
+$ratioChange = number_format($stats['ratio_change'] ?? 0, 1);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -307,30 +344,36 @@ while ($row = $salesResult->fetch_assoc()) {
 <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 mb-8">
   <div class="flex justify-between items-center p-5 border-b border-sidebar-border">
     <h3 class="font-medium text-sidebar-text">Sales & Payment Trends</h3>
-    <div class="flex space-x-2">
-      <select class="px-3 py-2 border border-sidebar-border rounded-md text-sm text-sidebar-text bg-white">
-        <option>Last 6 Months</option>
-        <option>Last Year</option>
-        <option>Last Quarter</option>
-      </select>
-    </div>
+    
   </div>
   <div class="p-5">
     <div id="salesSplineChart" class="h-96"></div>
   </div>
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-5 px-5 pb-5">
-    <div class="bg-gray-50 p-4 rounded-lg">
-      <div class="text-sm font-medium text-gray-600 mb-2">Average Price</div>
-      <div class="text-2xl font-bold text-sidebar-text">$142.30 <span class="text-green-600 text-sm font-normal">+2.1%</span></div>
-    </div>
-    <div class="bg-gray-50 p-4 rounded-lg">
-      <div class="text-sm font-medium text-gray-600 mb-2">Average Payment</div>
-      <div class="text-2xl font-bold text-sidebar-text">$128.70 <span class="text-green-600 text-sm font-normal">+1.8%</span></div>
-    </div>
-    <div class="bg-gray-50 p-4 rounded-lg">
-      <div class="text-sm font-medium text-gray-600 mb-2">Payment Ratio</div>
-      <div class="text-2xl font-bold text-sidebar-text">90.4% <span class="text-green-600 text-sm font-normal">+0.8%</span></div>
-    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-5 px-5 pb-5">
+      <div class="bg-gray-50 p-4 rounded-lg">
+          <div class="text-sm font-medium text-gray-600 mb-2">Average Price</div>
+          <div class="text-2xl font-bold text-sidebar-text">$<?php echo $avgPrice; ?> 
+              <span class="<?php echo ($priceChange >= 0) ? 'text-green-600' : 'text-red-600'; ?> text-sm font-normal">
+                  <?php echo ($priceChange >= 0) ? '+' : ''; ?><?php echo $priceChange; ?>%
+              </span>
+          </div>
+      </div>
+      <div class="bg-gray-50 p-4 rounded-lg">
+          <div class="text-sm font-medium text-gray-600 mb-2">Average Payment</div>
+          <div class="text-2xl font-bold text-sidebar-text">$<?php echo $avgPayment; ?> 
+              <span class="<?php echo ($paymentChange >= 0) ? 'text-green-600' : 'text-red-600'; ?> text-sm font-normal">
+                  <?php echo ($paymentChange >= 0) ? '+' : ''; ?><?php echo $paymentChange; ?>%
+              </span>
+          </div>
+      </div>
+      <div class="bg-gray-50 p-4 rounded-lg">
+          <div class="text-sm font-medium text-gray-600 mb-2">Payment Ratio</div>
+          <div class="text-2xl font-bold text-sidebar-text"><?php echo $paymentRatio; ?>% 
+              <span class="<?php echo ($ratioChange >= 0) ? 'text-green-600' : 'text-red-600'; ?> text-sm font-normal">
+                  <?php echo ($ratioChange >= 0) ? '+' : ''; ?><?php echo $ratioChange; ?>%
+              </span>
+          </div>
+      </div>
   </div>
 </div>
 
