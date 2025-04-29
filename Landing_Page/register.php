@@ -447,11 +447,66 @@
         let timerInterval;
         
         // Validation functions
-function validateName(input) {
-    // Allow only letters, spaces between words, apostrophes, and hyphens
-    const nameRegex = /^[A-Za-zÀ-ÿ'-]+(\s[A-Za-zÀ-ÿ'-]+)*$/;
-    return nameRegex.test(input.value.trim());
+        function validateName(input) {
+    const value = input.value.trim();
+    
+    // Allow letters, apostrophes, hyphens, and spaces (only after 2+ chars)
+    const nameRegex = /^[A-Za-zÀ-ÿ'-]{2,}(?:\s[A-Za-zÀ-ÿ'-]+)*$/;
+    return nameRegex.test(value);
 }
+
+// Function to enforce name field rules (no numbers, no early spaces)
+function enforceNameRules(input) {
+    input.addEventListener('input', function(e) {
+        let newValue = this.value;
+        
+        // Block numbers
+        newValue = newValue.replace(/[0-9]/g, '');
+        
+        // Block space if fewer than 2 non-space characters
+        if ((newValue.match(/[A-Za-zÀ-ÿ'-]/g) || []).length < 2) {
+            newValue = newValue.replace(/\s/g, ''); // Remove all spaces
+        }
+        
+        // Update the input value
+        this.value = newValue;
+        
+        // Validate and update UI
+        if (newValue && !validateName(this)) {
+            this.classList.add('border-error');
+            this.classList.remove('border-success');
+        } else if (newValue) {
+            this.classList.remove('border-error');
+            this.classList.add('border-success');
+        } else {
+            this.classList.remove('border-error', 'border-success');
+        }
+    });
+
+    // Prevent paste/drop of invalid content
+    input.addEventListener('paste', function(e) {
+        e.preventDefault();
+        let pastedText = e.clipboardData.getData('text/plain');
+        
+        // Clean pasted text
+        pastedText = pastedText.replace(/[0-9]/g, '');
+        if ((pastedText.match(/[A-Za-zÀ-ÿ'-]/g) || []).length < 2) {
+            pastedText = pastedText.replace(/\s/g, '');
+        }
+        
+        this.value = pastedText;
+        validateName(this); // Trigger validation
+    });
+
+    input.addEventListener('drop', function(e) {
+        e.preventDefault();
+    });
+}
+
+// Apply to name fields only
+enforceNameRules(firstName);
+enforceNameRules(lastName);
+enforceNameRules(middleName); // Optional middle name
         
 function validateEmail(input) {
     // Comprehensive email validation (unchanged)
