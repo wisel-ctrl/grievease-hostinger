@@ -156,22 +156,23 @@ function toggleMenu() {
                 <!-- Candle Animation Container - Smaller on mobile -->
                 <div class="relative w-full h-32 sm:h-40 mb-2 sm:mb-3 flex items-center justify-center">
                     <!-- Candle -->
-                    <div id="candle" class="relative w-12 sm:w-16">
-                        <!-- Wick with Flame -->
-                        <div class="relative w-1 h-4 sm:h-5 bg-gray-700 mx-auto rounded-t-lg">
-                            <!-- Outer Flame (hidden initially) -->
-                            <div id="flame-outer" class="hidden absolute left-1/2 top-[-20px] sm:top-[-25px] transform -translate-x-1/2 w-5 sm:w-6 h-10 sm:h-12 bg-yellow-600/80 rounded-full blur-sm animate-flame"></div>
-                            
-                            <!-- Inner Flame (hidden initially) -->
-                            <div id="flame-inner" class="hidden absolute left-1/2 top-[-15px] sm:top-[-20px] transform -translate-x-1/2 w-2.5 sm:w-3 h-7 sm:h-9 bg-white/90 rounded-full blur-[2px] animate-flame"></div>
-                        </div>
-                        
-                        <!-- Candle Body - Smaller on mobile -->
-                        <div class="w-10 sm:w-12 h-20 sm:h-24 bg-gradient-to-b from-cream to-white mx-auto rounded-t-lg"></div>
-                        
-                        <!-- Candle Base -->
-                        <div class="w-12 sm:w-16 h-2.5 sm:h-3 bg-gradient-to-b from-cream to-yellow-600/20 mx-auto rounded-b-lg"></div>
-                    </div>
+                    <!-- Candle -->
+<div id="candle" class="relative w-12 sm:w-16">
+    <!-- Wick with Flame -->
+    <div class="relative w-1 h-4 sm:h-5 bg-gray-700 mx-auto rounded-t-lg">
+        <!-- Outer Flame (hidden initially) -->
+        <div id="flame-outer" class="hidden absolute left-1/2 top-[-20px] sm:top-[-25px] transform -translate-x-1/2 w-5 sm:w-6 h-10 sm:h-12 bg-yellow-600/80 rounded-full blur-sm animate-flame"></div>
+        
+        <!-- Inner Flame (hidden initially) -->
+        <div id="flame-inner" class="hidden absolute left-1/2 top-[-15px] sm:top-[-20px] transform -translate-x-1/2 w-2.5 sm:w-3 h-7 sm:h-9 bg-white/90 rounded-full blur-[2px] animate-flame"></div>
+    </div>
+    
+    <!-- Candle Body - Smaller on mobile -->
+    <div class="w-10 sm:w-12 h-20 sm:h-24 bg-gradient-to-b from-cream to-white mx-auto rounded-t-lg"></div>
+    
+    <!-- Candle Base -->
+    <div class="w-12 sm:w-16 h-2.5 sm:h-3 bg-gradient-to-b from-cream to-yellow-600/20 mx-auto rounded-b-lg"></div>
+</div>
                     
                     <!-- Reflection/Glow -->
                     <div id="candle-glow" class="absolute bottom-2 w-36 sm:w-48 h-6 sm:h-8 bg-yellow-600/0 rounded-full blur-xl transition-all duration-1000"></div>
@@ -260,35 +261,37 @@ function toggleMenu() {
 
     <!-- JavaScript -->
     <script>
-        // Modal Control
-const candleModal = document.getElementById('candle-modal');
-const lightCandleBtn = document.getElementById('light-candle');
-const closeCandleBtn = document.getElementById('close-candle');
-
-// Candle Elements
-const flame = document.getElementById('flame');
-const candleGlow = document.getElementById('candle-glow');
-const lightButton = document.getElementById('light-button');
-const dedicationForm = document.getElementById('dedication-form');
-const dedicationConfirmation = document.getElementById('dedication-confirmation');
-
-// Form submission handling
-const submitDedication = document.getElementById('submit-dedication');
-const newDedication = document.getElementById('new-dedication');
-const viewDedications = document.getElementById('view-dedications');
-const dedicationGrid = document.getElementById('dedication-grid'); // Declare dedicationGrid here
-
-// Open Modal
-lightCandleBtn.addEventListener('click', () => {
-    candleModal.classList.remove('opacity-0', 'pointer-events-none');
+        // To this in the lightButton event listener:
+lightButton.addEventListener('click', () => {
+    const flameOuter = document.getElementById('flame-outer');
+    const flameInner = document.getElementById('flame-inner');
+    
+    if (flameOuter.classList.contains('hidden')) {
+        // Light the candle
+        flameOuter.classList.remove('hidden');
+        flameInner.classList.remove('hidden');
+        candleGlow.classList.remove('bg-yellow-600/0');
+        candleGlow.classList.add('bg-yellow-600/30');
+        lightButton.textContent = 'Add Dedication';
+        
+        // Show dedication form after delay
+        setTimeout(() => {
+            dedicationForm.classList.remove('hidden');
+        }, 1000);
+    } else {
+        // If already lit, show the form
+        dedicationForm.classList.remove('hidden');
+    }
 });
 
-// Close Modal
 closeCandleBtn.addEventListener('click', () => {
     candleModal.classList.add('opacity-0', 'pointer-events-none');
     // Reset candle state when modal is closed
     setTimeout(() => {
-        flame.classList.add('hidden');
+        const flameOuter = document.getElementById('flame-outer');
+        const flameInner = document.getElementById('flame-inner');
+        flameOuter.classList.add('hidden');
+        flameInner.classList.add('hidden');
         candleGlow.classList.remove('bg-yellow-600/30');
         candleGlow.classList.add('bg-yellow-600/0');
         lightButton.textContent = 'Light Candle';
