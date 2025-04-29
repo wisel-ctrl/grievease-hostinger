@@ -41,20 +41,8 @@
                 <p class="mb-4">We may collect the following personal information when you use our website, contact us, or arrange for our services:</p>
                 <ul class="list-disc list-inside space-y-2 mb-6 pl-4">
                     <li>Full name and contact information (email, phone number, address)</li>
-                    <li>Information about the deceased, including vital statistics required for documentation</li>
+                    <li>Information about the deceased required for documentation</li>
                     <li>Payment information for service arrangements</li>
-                    <li>Family relationships and next of kin details</li>
-                    <li>Religious preferences and cultural requirements</li>
-                </ul>
-                
-                <h3 class="font-hedvig text-navy text-lg mb-2">Non-Personal Information</h3>
-                <p class="mb-4">We also collect non-personal information that helps us improve our website and services:</p>
-                <ul class="list-disc list-inside space-y-2 pl-4">
-                    <li>Browser type and version</li>
-                    <li>Device information</li>
-                    <li>IP address and general location</li>
-                    <li>Pages visited and navigation patterns</li>
-                    <li>Referral sources</li>
                 </ul>
             </div>
 
@@ -95,10 +83,6 @@
                     <div class="flex items-start">
                         <div class="text-yellow-600 mr-3 mt-1">
                             <i class="fas fa-check-circle"></i>
-                        </div>
-                        <div>
-                            <h4 class="font-hedvig text-navy font-medium">Service Improvement</h4>
-                            <p class="text-sm text-dark">To understand our website usage patterns and enhance our services and user experience.</p>
                         </div>
                     </div>
                 </div>
