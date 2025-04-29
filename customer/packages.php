@@ -1409,7 +1409,8 @@ if (validationStatus !== 'valid') {
     });
 }
 // Death Certificate Upload Preview
-document.getElementById('traditionalDeathCertificate').addEventListener('change', function() {
+// Traditional Death Certificate Upload Preview
+document.getElementById('traditionalDeathCertificate')?.addEventListener('change', function() {
     const file = this.files[0];
     if (!file) {
         hideDeathCertPreview();
@@ -1423,16 +1424,16 @@ document.getElementById('traditionalDeathCertificate').addEventListener('change'
     
     // Show preview container
     const previewContainer = document.getElementById('deathCertPreviewContainer');
-    previewContainer.classList.remove('hidden');
+    previewContainer?.classList.remove('hidden');
     
     // Show remove button
-    document.getElementById('removeDeathCert').classList.remove('hidden');
+    document.getElementById('removeDeathCert')?.classList.remove('hidden');
     
     // Check file type
     if (file.type === 'application/pdf') {
         // PDF Preview
-        document.getElementById('deathCertPdfPreview').classList.remove('hidden');
-        document.getElementById('deathCertImagePreview').classList.add('hidden');
+        document.getElementById('deathCertPdfPreview')?.classList.remove('hidden');
+        document.getElementById('deathCertImagePreview')?.classList.add('hidden');
         
         // Setup PDF viewer button
         document.getElementById('viewDeathCertPdf').onclick = function() {
@@ -1441,19 +1442,22 @@ document.getElementById('traditionalDeathCertificate').addEventListener('change'
         };
     } else {
         // Image Preview
-        document.getElementById('deathCertImagePreview').classList.remove('hidden');
-        document.getElementById('deathCertPdfPreview').classList.add('hidden');
+        document.getElementById('deathCertImagePreview')?.classList.remove('hidden');
+        document.getElementById('deathCertPdfPreview')?.classList.add('hidden');
         
         const reader = new FileReader();
         reader.onload = function(e) {
-            document.getElementById('deathCertImage').src = e.target.result;
+            const imgPreview = document.getElementById('deathCertImage');
+            if (imgPreview) {
+                imgPreview.src = e.target.result;
+            }
         };
         reader.readAsDataURL(file);
     }
 });
 
-// GCash Receipt Upload Preview
-document.getElementById('traditionalGcashReceipt').addEventListener('change', function() {
+// Traditional GCash Receipt Upload Preview
+document.getElementById('traditionalGcashReceipt')?.addEventListener('change', function() {
     const file = this.files[0];
     if (!file) {
         hideGcashPreview();
@@ -1467,16 +1471,16 @@ document.getElementById('traditionalGcashReceipt').addEventListener('change', fu
     
     // Show preview container
     const previewContainer = document.getElementById('gcashPreviewContainer');
-    previewContainer.classList.remove('hidden');
+    previewContainer?.classList.remove('hidden');
     
     // Show remove button
-    document.getElementById('removeGcash').classList.remove('hidden');
+    document.getElementById('removeGcash')?.classList.remove('hidden');
     
     // Check file type
     if (file.type === 'application/pdf') {
         // PDF Preview
-        document.getElementById('gcashPdfPreview').classList.remove('hidden');
-        document.getElementById('gcashImagePreview').classList.add('hidden');
+        document.getElementById('gcashPdfPreview')?.classList.remove('hidden');
+        document.getElementById('gcashImagePreview')?.classList.add('hidden');
         
         // Setup PDF viewer button
         document.getElementById('viewGcashPdf').onclick = function() {
@@ -1485,12 +1489,15 @@ document.getElementById('traditionalGcashReceipt').addEventListener('change', fu
         };
     } else {
         // Image Preview
-        document.getElementById('gcashImagePreview').classList.remove('hidden');
-        document.getElementById('gcashPdfPreview').classList.add('hidden');
+        document.getElementById('gcashImagePreview')?.classList.remove('hidden');
+        document.getElementById('gcashPdfPreview')?.classList.add('hidden');
         
         const reader = new FileReader();
         reader.onload = function(e) {
-            document.getElementById('gcashImage').src = e.target.result;
+            const imgPreview = document.getElementById('gcashImage');
+            if (imgPreview) {
+                imgPreview.src = e.target.result;
+            }
         };
         reader.readAsDataURL(file);
     }
