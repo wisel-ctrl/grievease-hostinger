@@ -787,11 +787,20 @@ $offset = ($current_page - 1) * $bookings_per_page;
     <script>
       let currentBookingIdForPayment = null;
 
-    function openBookingDetails(bookingId) {
+      function openBookingDetails(bookingId) {
   // First, fetch booking details via AJAX
   fetch('bookingpage/get_booking_details.php?id=' + bookingId)
-    .then(response => response.json())
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.json();
+    })
     .then(data => {
+      if (!data || data.error) {
+        throw new Error(data?.error || 'Invalid booking data received');
+      }
+
       // Populate modal with the basic details
       document.getElementById('bookingId').textContent = '#BK-' + 
         new Date(data.booking_date).getFullYear() + '-' + 
@@ -806,7 +815,7 @@ $offset = ($current_page - 1) * $bookings_per_page;
       document.getElementById('serviceDate').textContent = 
         data.deceased_dateOfBurial ? new Date(data.deceased_dateOfBurial).toLocaleDateString('en-US', 
         { month: 'short', day: 'numeric', year: 'numeric' }) : "Not scheduled";
-      document.getElementById('amountPaid').textContent = "₱" + parseFloat(data.amount_paid).toFixed(2);
+      document.getElementById('amountPaid').textContent = "₱" + (parseFloat(data.amount_paid) || 0).toFixed(2);
       
       // Update booking status
       const statusElement = document.getElementById('bookingStatus');
@@ -830,69 +839,64 @@ $offset = ($current_page - 1) * $bookings_per_page;
           </span>`;
       }
       
-      // Debug the data received
-      console.log("Death Certificate URL:", data.deathcert_url);
-      console.log("Payment Proof URL:", data.payment_url);
-      
       // Handle Death Certificate Image
-const deathCertAvailable = document.getElementById('deathCertificateAvailable');
-const deathCertNotAvailable = document.getElementById('deathCertificateNotAvailable');
-
-if (data.deathcert_url && data.deathcert_url !== '') {
-    // Use relative path with ../ to navigate up and then to the customer/booking/uploads folder
-    const deathCertPath = '../customer/booking/uploads/' + data.deathcert_url.replace(/^uploads\//, '');
-    console.log("Death Certificate Path:", deathCertPath);
-    
-    // Check if it's a PDF
-    const isPdf = deathCertPath.toLowerCase().endsWith('.pdf');
-    
-    if (isPdf) {
-        // PDF display
-        deathCertAvailable.innerHTML = `
-            <div class="flex flex-col items-center justify-center py-4 bg-gray-100 p-4 rounded-lg">
-                <i class="fas fa-file-pdf text-red-500 text-4xl mb-2"></i>
-                <p class="text-sm text-gray-600 mb-2">PDF Document</p>
-                <button class="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700 transition-colors"
-                    onclick="window.open('${deathCertPath}', '_blank')">
-                    <i class="fas fa-external-link-alt mr-1"></i> Open PDF
-                </button>
-                <button class="mt-2 text-blue-600 text-sm hover:underline"
-                    onclick="previewPDF('${deathCertPath}')">
-                    <i class="fas fa-eye mr-1"></i> Quick Preview
-                </button>
-            </div>
-        `;
-    } else {
-        // Image display
-        deathCertAvailable.innerHTML = `
-            <div class="relative bg-gray-100 p-1">
-                <img id="deathCertificateImage" alt="Death Certificate" class="mx-auto rounded-md max-h-48 object-contain" />
-                <div class="absolute top-2 right-2">
-                    <button class="bg-white rounded-full p-1 shadow-md hover:bg-gray-100 transition-colors duration-200" 
-                            title="View Full Size" onclick="viewFullSizeImage('${deathCertPath}')">
-                        <i class="fas fa-search-plus text-blue-600"></i>
-                    </button>
-                </div>
-            </div>
-        `;
+      const deathCertAvailable = document.getElementById('deathCertificateAvailable');
+      const deathCertNotAvailable = document.getElementById('deathCertificateNotAvailable');
+      
+      if (data.deathcert_url && data.deathcert_url !== '') {
+        // Use relative path with ../ to navigate up and then to the customer/booking/uploads folder
+        const deathCertPath = '../customer/booking/uploads/' + data.deathcert_url.replace(/^uploads\//, '');
         
-        // Set error handler before setting src
-        const deathCertImage = document.getElementById('deathCertificateImage');
-        deathCertImage.onerror = function() {
+        // Check if it's a PDF
+        const isPdf = deathCertPath.toLowerCase().endsWith('.pdf');
+        
+        if (isPdf) {
+          // PDF display
+          deathCertAvailable.innerHTML = `
+            <div class="flex flex-col items-center justify-center py-4 bg-gray-100 p-4 rounded-lg">
+              <i class="fas fa-file-pdf text-red-500 text-4xl mb-2"></i>
+              <p class="text-sm text-gray-600 mb-2">PDF Document</p>
+              <button class="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700 transition-colors"
+                  onclick="window.open('${deathCertPath}', '_blank')">
+                  <i class="fas fa-external-link-alt mr-1"></i> Open PDF
+              </button>
+              <button class="mt-2 text-blue-600 text-sm hover:underline"
+                  onclick="previewPDF('${deathCertPath}')">
+                  <i class="fas fa-eye mr-1"></i> Quick Preview
+              </button>
+            </div>
+          `;
+        } else {
+          // Image display
+          deathCertAvailable.innerHTML = `
+            <div class="relative bg-gray-100 p-1">
+              <img id="deathCertificateImage" alt="Death Certificate" class="mx-auto rounded-md max-h-48 object-contain" />
+              <div class="absolute top-2 right-2">
+                <button class="bg-white rounded-full p-1 shadow-md hover:bg-gray-100 transition-colors duration-200" 
+                        title="View Full Size" onclick="viewFullSizeImage('${deathCertPath}')">
+                  <i class="fas fa-search-plus text-blue-600"></i>
+                </button>
+              </div>
+            </div>
+          `;
+          
+          // Set error handler before setting src
+          const deathCertImage = document.getElementById('deathCertificateImage');
+          deathCertImage.onerror = function() {
             console.error("Failed to load death certificate image:", deathCertPath);
             deathCertAvailable.classList.add('hidden');
             deathCertNotAvailable.classList.remove('hidden');
-        };
+          };
+          
+          deathCertImage.src = deathCertPath;
+        }
         
-        deathCertImage.src = deathCertPath;
-    }
-    
-    deathCertAvailable.classList.remove('hidden');
-    deathCertNotAvailable.classList.add('hidden');
-} else {
-    deathCertAvailable.classList.add('hidden');
-    deathCertNotAvailable.classList.remove('hidden');
-}
+        deathCertAvailable.classList.remove('hidden');
+        deathCertNotAvailable.classList.add('hidden');
+      } else {
+        deathCertAvailable.classList.add('hidden');
+        deathCertNotAvailable.classList.remove('hidden');
+      }
 
       // Handle Payment Proof Image
       const paymentProofImage = document.getElementById('paymentProofImage');
@@ -901,7 +905,6 @@ if (data.deathcert_url && data.deathcert_url !== '') {
       if (data.payment_url && data.payment_url !== '') {
         // Use relative path with ../ to navigate up and then to the customer/booking/uploads folder
         const paymentProofPath = '../customer/booking/uploads/' + data.payment_url.replace(/^uploads\//, '');
-        console.log("Payment Proof Path:", paymentProofPath);
         
         // Set error handler before setting src
         paymentProofImage.onerror = function() {
@@ -937,7 +940,11 @@ if (data.deathcert_url && data.deathcert_url !== '') {
     })
     .catch(error => {
       console.error('Error:', error);
-      alert('Failed to load booking details. Please try again.');
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Failed to load booking details. Please try again.',
+      });
     });
 }
 
