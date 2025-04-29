@@ -145,27 +145,42 @@ $lastDate = $lastDateStmt->get_result()->fetch_assoc()['max_date'];
 
 // Calculate changes
 $changesQuery = "SELECT 
-    (SELECT AVG(discounted_price) FROM analytics_tb WHERE sale_date >= DATE_SUB(?, INTERVAL 1 MONTH)) / 
-    (SELECT AVG(discounted_price) FROM analytics_tb WHERE sale_date < DATE_SUB(?, INTERVAL 1 MONTH)) * 100 - 100 as price_change,
+    CASE 
+        WHEN (SELECT AVG(discounted_price) FROM analytics_tb WHERE sale_date < DATE_SUB(?, INTERVAL 1 MONTH)) > 0 
+        THEN (SELECT AVG(discounted_price) FROM analytics_tb WHERE sale_date >= DATE_SUB(?, INTERVAL 1 MONTH)) / 
+             (SELECT AVG(discounted_price) FROM analytics_tb WHERE sale_date < DATE_SUB(?, INTERVAL 1 MONTH)) * 100 - 100 
+        ELSE 0 
+    END as price_change,
     
-    (SELECT AVG(amount_paid) FROM analytics_tb WHERE sale_date >= DATE_SUB(?, INTERVAL 1 MONTH)) / 
-    (SELECT AVG(amount_paid) FROM analytics_tb WHERE sale_date < DATE_SUB(?, INTERVAL 1 MONTH)) * 100 - 100 as payment_change,
+    CASE 
+        WHEN (SELECT AVG(amount_paid) FROM analytics_tb WHERE sale_date < DATE_SUB(?, INTERVAL 1 MONTH)) > 0 
+        THEN (SELECT AVG(amount_paid) FROM analytics_tb WHERE sale_date >= DATE_SUB(?, INTERVAL 1 MONTH)) / 
+             (SELECT AVG(amount_paid) FROM analytics_tb WHERE sale_date < DATE_SUB(?, INTERVAL 1 MONTH)) * 100 - 100 
+        ELSE 0 
+    END as payment_change,
     
-    (SELECT (SUM(amount_paid)/SUM(discounted_price)*100) FROM analytics_tb WHERE sale_date >= DATE_SUB(?, INTERVAL 1 MONTH)) / 
-    (SELECT (SUM(amount_paid)/SUM(discounted_price)*100) FROM analytics_tb WHERE sale_date < DATE_SUB(?, INTERVAL 1 MONTH)) * 100 - 100 as ratio_change";
+    CASE 
+        WHEN (SELECT SUM(discounted_price) FROM analytics_tb WHERE sale_date < DATE_SUB(?, INTERVAL 1 MONTH)) > 0 
+             AND (SELECT SUM(amount_paid) FROM analytics_tb WHERE sale_date < DATE_SUB(?, INTERVAL 1 MONTH)) > 0 
+        THEN (SELECT (SUM(amount_paid)/SUM(discounted_price)*100) FROM analytics_tb WHERE sale_date >= DATE_SUB(?, INTERVAL 1 MONTH)) / 
+             (SELECT (SUM(amount_paid)/SUM(discounted_price)*100) FROM analytics_tb WHERE sale_date < DATE_SUB(?, INTERVAL 1 MONTH)) * 100 - 100 
+        ELSE 0 
+    END as ratio_change";
+
 $changesStmt = $conn->prepare($changesQuery);
-$changesStmt->bind_param("ssssss", $lastDate, $lastDate, $lastDate, $lastDate, $lastDate, $lastDate);
+$changesStmt->bind_param("ssssssssss", $lastDate, $lastDate, $lastDate, $lastDate, $lastDate, $lastDate, $lastDate, $lastDate, $lastDate, $lastDate);
 $changesStmt->execute();
 $changes = $changesStmt->get_result()->fetch_assoc();
 
 // Extract values for display
-$avgPrice = number_format($basicStats['avg_price'], 2);
-$avgPayment = number_format($basicStats['avg_payment'], 2);
-$paymentRatio = number_format($basicStats['payment_ratio'], 1);
+// Extract values for display with null checks
+$avgPrice = number_format($basicStats['avg_price'] ?? 0, 2);
+$avgPayment = number_format($basicStats['avg_payment'] ?? 0, 2);
+$paymentRatio = number_format($basicStats['payment_ratio'] ?? 0, 1);
 
-$priceChange = number_format($changes['price_change'], 1);
-$paymentChange = number_format($changes['payment_change'], 1);
-$ratioChange = number_format($changes['ratio_change'], 1);
+$priceChange = number_format($changes['price_change'] ?? 0, 1);
+$paymentChange = number_format($changes['payment_change'] ?? 0, 1);
+$ratioChange = number_format($changes['ratio_change'] ?? 0, 1);
 ?>
 <!DOCTYPE html>
 <html lang="en">
