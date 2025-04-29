@@ -395,6 +395,40 @@ header("Pragma: no-cache");
                     passwordToggle.innerHTML = '<i class="fas fa-eye"></i>';
                 }
             });
+
+            // Prevent spaces in email and password inputs
+            document.getElementById('email').addEventListener('input', function(e) {
+                this.value = this.value.replace(/\s/g, '');
+            });
+
+            document.getElementById('password').addEventListener('input', function(e) {
+                this.value = this.value.replace(/\s/g, '');
+            });
+
+            // Also prevent spaces in the reset email input (for forgot password modal)
+            document.getElementById('resetEmail')?.addEventListener('input', function(e) {
+                this.value = this.value.replace(/\s/g, '');
+            });
+
+            // Prevent spacebar key in email and password inputs
+            document.getElementById('email').addEventListener('keydown', function(e) {
+                if (e.key === ' ') {
+                    e.preventDefault();
+                }
+            });
+
+            document.getElementById('password').addEventListener('keydown', function(e) {
+                if (e.key === ' ') {
+                    e.preventDefault();
+                }
+            });
+
+            // Also prevent spacebar in reset email input
+            document.getElementById('resetEmail')?.addEventListener('keydown', function(e) {
+                if (e.key === ' ') {
+                    e.preventDefault();
+                }
+            });
             
             // Form submission
             document.getElementById('loginForm').addEventListener('submit', function(e) {
@@ -487,6 +521,8 @@ header("Pragma: no-cache");
                 xhr.send(`email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`);
             });
         });
+
+
     </script>
 
     <!-- Add this to your index.html before the closing body tag -->
