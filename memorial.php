@@ -154,7 +154,7 @@ function toggleMenu() {
                 <h3 class="text-lg sm:text-xl font-hedvig text-white mb-2 text-center">Light a Virtual Candle</h3>
                 
                 <!-- Candle Animation Container - Smaller on mobile -->
-                < class="relative w-full h-32 sm:h-40 mb-2 sm:mb-3 flex items-center justify-center">
+                <div class="relative w-full h-32 sm:h-40 mb-2 sm:mb-3 flex items-center justify-center">
                     <!-- Candle -->
                     <div id="candle" class="relative w-12 sm:w-16">
                         <!-- Updated Wick with Flame structure -->
