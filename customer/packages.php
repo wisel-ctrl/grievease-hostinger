@@ -1091,7 +1091,7 @@ $conn->close();
 
                         <!-- QR Code Button and Modal -->
                         <div class="mb-4">
-                            <button type="button" id="showQrCodeBtn" class="w-full bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center justify-center transition-all duration-200">
+                            <button type="button" id="showQrCodeBtn" class="w-full bg-navy hover:bg-navy-600 text-white px-4 py-2 rounded-lg flex items-center justify-center transition-all duration-200">
                                 <i class="fas fa-qrcode mr-2"></i>
                                 <span>View GCash QR Code</span>
                             </button>
