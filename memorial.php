@@ -164,7 +164,7 @@ function toggleMenu() {
                             
                             <!-- Inner Flame -->
                             <div class="absolute left-1/2 top-[-15px] sm:top-[-18px] transform -translate-x-1/2 w-2 sm:w-2.5 h-6 sm:h-8 bg-white/90 rounded-full blur-[2px] animate-flame"></div>
-                        </div>
+</div>
                         
                         <!-- Candle Body - Smaller on mobile -->
                         <div class="w-10 sm:w-12 h-20 sm:h-24 bg-gradient-to-b from-cream to-white mx-auto rounded-t-lg"></div>
