@@ -2463,6 +2463,262 @@ document.getElementById('lifeplanServiceBtn').addEventListener('click', function
         });
     });
 
+    function openLifeplanModal() {
+    const packageName = sessionStorage.getItem('selectedPackageName');
+    const packagePrice = sessionStorage.getItem('selectedPackagePrice');
+    const packageImage = sessionStorage.getItem('selectedPackageImage');
+    const packageFeatures = JSON.parse(sessionStorage.getItem('selectedPackageFeatures') || '[]');
+    
+    document.getElementById('lifeplanPackageName').textContent = packageName;
+    document.getElementById('lifeplanPackagePrice').textContent = `₱${parseInt(packagePrice).toLocaleString()}`;
+    
+    if (packageImage) {
+        document.getElementById('lifeplanPackageImage').src = packageImage;
+        document.getElementById('lifeplanPackageImage').alt = packageName;
+    }
+    
+    const totalPrice = parseInt(packagePrice);
+    
+    document.getElementById('lifeplanTotalPrice').textContent = `₱${totalPrice.toLocaleString()}`;
+    document.getElementById('lifeplanSelectedPackageName').value = packageName;
+    document.getElementById('lifeplanSelectedPackagePrice').value = packagePrice;
+    
+    const featuresList = document.getElementById('lifeplanPackageFeatures');
+    featuresList.innerHTML = '';
+    packageFeatures.forEach(feature => {
+        featuresList.innerHTML += `<li class="flex items-center text-sm text-gray-700">${feature}</li>`;
+    });
+    
+    // Reset file upload preview
+    hideLifeplanGcashPreview();
+    
+    // Reset form fields
+    document.getElementById('lifeplanBookingForm').reset();
+    
+    // Re-attach event listeners for file uploads
+    const gcashInput = document.getElementById('lifeplanGcashReceipt');
+    
+    if (gcashInput) {
+        gcashInput.removeEventListener('change', handleLifeplanGcashUpload);
+        gcashInput.addEventListener('change', handleLifeplanGcashUpload);
+    }
+    
+    // Re-attach remove button listener
+    const removeGcashBtn = document.getElementById('removeLifeplanGcash');
+    
+    if (removeGcashBtn) {
+        removeGcashBtn.removeEventListener('click', removeLifeplanGcash);
+        removeGcashBtn.addEventListener('click', removeLifeplanGcash);
+    }
+    
+    // Initialize payment calculation
+    updateLifeplanPayment();
+    
+    // Reset form section visibility
+    const detailsSection = document.querySelector('#lifeplanModal .details-section');
+    const formSection = document.querySelector('#lifeplanModal .form-section');
+    
+    detailsSection.classList.remove('hidden');
+    formSection.classList.add('hidden');
+    formSection.classList.remove('force-show');
+    
+    // Initialize address fields
+    initializeLifeplanAddressFields();
+    
+    // Show the modal
+    document.getElementById('lifeplanModal').classList.remove('hidden');
+}
+
+// Helper functions for lifeplan file uploads
+function handleLifeplanGcashUpload() {
+    const file = this.files[0];
+    if (!file) {
+        hideLifeplanGcashPreview();
+        return;
+    }
+    
+    // Update file name display
+    const fileName = file.name;
+    document.getElementById('lifeplanGcashFileName').textContent = fileName.length > 20 ? 
+        fileName.substring(0, 17) + '...' : fileName;
+    
+    // Show preview container
+    const previewContainer = document.getElementById('lifeplanGcashPreviewContainer');
+    if (previewContainer) previewContainer.classList.remove('hidden');
+    
+    // Show remove button
+    const removeBtn = document.getElementById('removeLifeplanGcash');
+    if (removeBtn) removeBtn.classList.remove('hidden');
+    
+    // Check file type
+    if (file.type === 'application/pdf') {
+        // PDF Preview
+        const pdfPreview = document.getElementById('lifeplanGcashPdfPreview');
+        const imgPreview = document.getElementById('lifeplanGcashImagePreview');
+        if (pdfPreview) pdfPreview.classList.remove('hidden');
+        if (imgPreview) imgPreview.classList.add('hidden');
+        
+        // Setup PDF viewer button
+        const viewPdfBtn = document.getElementById('viewLifeplanGcashPdf');
+        if (viewPdfBtn) {
+            viewPdfBtn.onclick = function() {
+                const fileURL = URL.createObjectURL(file);
+                window.open(fileURL, '_blank');
+            };
+        }
+    } else {
+        // Image Preview
+        const imgPreview = document.getElementById('lifeplanGcashImagePreview');
+        const pdfPreview = document.getElementById('lifeplanGcashPdfPreview');
+        if (imgPreview) imgPreview.classList.remove('hidden');
+        if (pdfPreview) pdfPreview.classList.add('hidden');
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const imgElement = document.getElementById('lifeplanGcashImage');
+            if (imgElement) {
+                imgElement.src = e.target.result;
+            }
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
+function hideLifeplanGcashPreview() {
+    const previewContainer = document.getElementById('lifeplanGcashPreviewContainer');
+    const imgPreview = document.getElementById('lifeplanGcashImagePreview');
+    const pdfPreview = document.getElementById('lifeplanGcashPdfPreview');
+    const removeBtn = document.getElementById('removeLifeplanGcash');
+    const fileInput = document.getElementById('lifeplanGcashReceipt');
+    const fileNameDisplay = document.getElementById('lifeplanGcashFileName');
+    
+    if (previewContainer) previewContainer.classList.add('hidden');
+    if (imgPreview) imgPreview.classList.add('hidden');
+    if (pdfPreview) pdfPreview.classList.add('hidden');
+    if (removeBtn) removeBtn.classList.add('hidden');
+    if (fileInput) fileInput.value = '';
+    if (fileNameDisplay) fileNameDisplay.textContent = 'No file chosen';
+}
+
+function removeLifeplanGcash() {
+    hideLifeplanGcashPreview();
+}
+
+function updateLifeplanPayment() {
+    const months = parseInt(document.getElementById('lifeplanPaymentTerm').value);
+    const totalPrice = parseInt(sessionStorage.getItem('selectedPackagePrice') || '0');
+    const monthlyPayment = Math.ceil(totalPrice / months);
+    
+    let termText = '';
+    if (months === 60) termText = '5 Years (60 Monthly Payments)';
+    else if (months === 36) termText = '3 Years (36 Monthly Payments)';
+    else if (months === 24) termText = '2 Years (24 Monthly Payments)';
+    else if (months === 12) termText = '1 Year (12 Monthly Payments)';
+    
+    document.getElementById('lifeplanPaymentTermDisplay').textContent = termText;
+    document.getElementById('lifeplanMonthlyPayment').textContent = `₱${monthlyPayment.toLocaleString()}`;
+}
+
+function initializeLifeplanAddressFields() {
+    // Reset address fields
+    document.getElementById('lifeplanHolderRegion').value = '';
+    document.getElementById('lifeplanHolderProvince').value = '';
+    document.getElementById('lifeplanHolderCity').value = '';
+    document.getElementById('lifeplanHolderBarangay').value = '';
+    document.getElementById('lifeplanHolderStreet').value = '';
+    
+    // Re-enable event listeners for address fields
+    document.getElementById('lifeplanHolderRegion').addEventListener('change', updateLifeplanProvinces);
+    document.getElementById('lifeplanHolderProvince').addEventListener('change', updateLifeplanCities);
+    document.getElementById('lifeplanHolderCity').addEventListener('change', updateLifeplanBarangays);
+}
+
+// Lifeplan address dropdown functions
+function updateLifeplanProvinces() {
+    const regionId = document.getElementById('lifeplanHolderRegion').value;
+    const provinceDropdown = document.getElementById('lifeplanHolderProvince');
+    
+    if (!regionId) {
+        provinceDropdown.disabled = true;
+        document.getElementById('lifeplanHolderCity').disabled = true;
+        document.getElementById('lifeplanHolderBarangay').disabled = true;
+        return;
+    }
+    
+    // Fetch provinces via AJAX
+    fetch('address/get_provinces.php?region_id=' + regionId)
+        .then(response => response.json())
+        .then(data => {
+            provinceDropdown.innerHTML = '<option value="">Select Province</option>';
+            data.forEach(province => {
+                provinceDropdown.innerHTML += `<option value="${province.province_id}">${province.province_name}</option>`;
+            });
+            provinceDropdown.disabled = false;
+            
+            // Reset dependent dropdowns
+            document.getElementById('lifeplanHolderCity').innerHTML = '<option value="">Select City/Municipality</option>';
+            document.getElementById('lifeplanHolderCity').disabled = true;
+            document.getElementById('lifeplanHolderBarangay').innerHTML = '<option value="">Select Barangay</option>';
+            document.getElementById('lifeplanHolderBarangay').disabled = true;
+        })
+        .catch(error => {
+            console.error('Error fetching provinces:', error);
+        });
+}
+
+function updateLifeplanCities() {
+    const provinceId = document.getElementById('lifeplanHolderProvince').value;
+    const cityDropdown = document.getElementById('lifeplanHolderCity');
+    
+    if (!provinceId) {
+        cityDropdown.disabled = true;
+        document.getElementById('lifeplanHolderBarangay').disabled = true;
+        return;
+    }
+    
+    // Fetch cities via AJAX
+    fetch('address/get_cities.php?province_id=' + provinceId)
+        .then(response => response.json())
+        .then(data => {
+            cityDropdown.innerHTML = '<option value="">Select City/Municipality</option>';
+            data.forEach(city => {
+                cityDropdown.innerHTML += `<option value="${city.municipality_id}">${city.municipality_name}</option>`;
+            });
+            cityDropdown.disabled = false;
+            
+            // Reset dependent dropdown
+            document.getElementById('lifeplanHolderBarangay').innerHTML = '<option value="">Select Barangay</option>';
+            document.getElementById('lifeplanHolderBarangay').disabled = true;
+        })
+        .catch(error => {
+            console.error('Error fetching cities:', error);
+        });
+}
+
+function updateLifeplanBarangays() {
+    const cityId = document.getElementById('lifeplanHolderCity').value;
+    const barangayDropdown = document.getElementById('lifeplanHolderBarangay');
+    
+    if (!cityId) {
+        barangayDropdown.disabled = true;
+        return;
+    }
+    
+    // Fetch barangays via AJAX
+    fetch('address/get_barangays.php?city_id=' + cityId)
+        .then(response => response.json())
+        .then(data => {
+            barangayDropdown.innerHTML = '<option value="">Select Barangay</option>';
+            data.forEach(barangay => {
+                barangayDropdown.innerHTML += `<option value="${barangay.barangay_id}">${barangay.barangay_name}</option>`;
+            });
+            barangayDropdown.disabled = false;
+        })
+        .catch(error => {
+            console.error('Error fetching barangays:', error);
+        });
+}
+
     // Function to close all modals
     // Update your closeAllModals function
 function closeAllModals() {
