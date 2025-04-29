@@ -128,42 +128,44 @@ while ($row = $salesResult->fetch_assoc()) {
 }
 
 
-$statsQuery = "SELECT 
+$basicStatsQuery = "SELECT 
     AVG(discounted_price) as avg_price,
     AVG(amount_paid) as avg_payment,
-    (SUM(amount_paid) / SUM(discounted_price)) * 100 as payment_ratio,
-    (
-        SELECT (AVG(discounted_price) / 
-               (SELECT AVG(discounted_price) FROM analytics_tb WHERE sale_date < DATE_SUB(CURDATE(), INTERVAL 1 MONTH)) * 100 - 100
-        FROM analytics_tb 
-        WHERE sale_date >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH)
-    ) as price_change,
-    (
-        SELECT (AVG(amount_paid) / 
-               (SELECT AVG(amount_paid) FROM analytics_tb WHERE sale_date < DATE_SUB(CURDATE(), INTERVAL 1 MONTH)) * 100 - 100)
-        FROM analytics_tb 
-        WHERE sale_date >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH)
-    ) as payment_change,
-    (
-        SELECT ((SUM(amount_paid) / SUM(discounted_price)) * 100) / 
-               (SELECT (SUM(amount_paid) / SUM(discounted_price)) * 100 FROM analytics_tb WHERE sale_date < DATE_SUB(CURDATE(), INTERVAL 1 MONTH) * 100 - 100
-        FROM analytics_tb 
-        WHERE sale_date >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH)
-    ) as ratio_change
+    (SUM(amount_paid) / SUM(discounted_price)) * 100 as payment_ratio
 FROM analytics_tb";
+$basicStatsStmt = $conn->prepare($basicStatsQuery);
+$basicStatsStmt->execute();
+$basicStats = $basicStatsStmt->get_result()->fetch_assoc();
 
-$statsStmt = $conn->prepare($statsQuery);
-$statsStmt->execute();
-$statsResult = $statsStmt->get_result();
-$stats = $statsResult->fetch_assoc();
+// Get last month's date from data
+$lastDateQuery = "SELECT MAX(sale_date) as max_date FROM analytics_tb";
+$lastDateStmt = $conn->prepare($lastDateQuery);
+$lastDateStmt->execute();
+$lastDate = $lastDateStmt->get_result()->fetch_assoc()['max_date'];
 
-// Format the values
-$avgPrice = number_format($stats['avg_price'] ?? 0, 2);
-$avgPayment = number_format($stats['avg_payment'] ?? 0, 2);
-$paymentRatio = number_format($stats['payment_ratio'] ?? 0, 1);
-$priceChange = number_format($stats['price_change'] ?? 0, 1);
-$paymentChange = number_format($stats['payment_change'] ?? 0, 1);
-$ratioChange = number_format($stats['ratio_change'] ?? 0, 1);
+// Calculate changes
+$changesQuery = "SELECT 
+    (SELECT AVG(discounted_price) FROM analytics_tb WHERE sale_date >= DATE_SUB(?, INTERVAL 1 MONTH)) / 
+    (SELECT AVG(discounted_price) FROM analytics_tb WHERE sale_date < DATE_SUB(?, INTERVAL 1 MONTH)) * 100 - 100 as price_change,
+    
+    (SELECT AVG(amount_paid) FROM analytics_tb WHERE sale_date >= DATE_SUB(?, INTERVAL 1 MONTH)) / 
+    (SELECT AVG(amount_paid) FROM analytics_tb WHERE sale_date < DATE_SUB(?, INTERVAL 1 MONTH)) * 100 - 100 as payment_change,
+    
+    (SELECT (SUM(amount_paid)/SUM(discounted_price)*100) FROM analytics_tb WHERE sale_date >= DATE_SUB(?, INTERVAL 1 MONTH)) / 
+    (SELECT (SUM(amount_paid)/SUM(discounted_price)*100) FROM analytics_tb WHERE sale_date < DATE_SUB(?, INTERVAL 1 MONTH)) * 100 - 100 as ratio_change";
+$changesStmt = $conn->prepare($changesQuery);
+$changesStmt->bind_param("ssssss", $lastDate, $lastDate, $lastDate, $lastDate, $lastDate, $lastDate);
+$changesStmt->execute();
+$changes = $changesStmt->get_result()->fetch_assoc();
+
+// Extract values for display
+$avgPrice = number_format($basicStats['avg_price'], 2);
+$avgPayment = number_format($basicStats['avg_payment'], 2);
+$paymentRatio = number_format($basicStats['payment_ratio'], 1);
+
+$priceChange = number_format($changes['price_change'], 1);
+$paymentChange = number_format($changes['payment_change'], 1);
+$ratioChange = number_format($changes['ratio_change'], 1);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -340,7 +342,6 @@ $ratioChange = number_format($stats['ratio_change'] ?? 0, 1);
   </div>
 </div>
 
-<!-- Customer Payment Behavior -->
 <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 mb-8">
   <div class="flex justify-between items-center p-5 border-b border-sidebar-border">
     <h3 class="font-medium text-sidebar-text">Sales & Payment Trends</h3>
@@ -349,32 +350,32 @@ $ratioChange = number_format($stats['ratio_change'] ?? 0, 1);
   <div class="p-5">
     <div id="salesSplineChart" class="h-96"></div>
   </div>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-5 px-5 pb-5">
-      <div class="bg-gray-50 p-4 rounded-lg">
-          <div class="text-sm font-medium text-gray-600 mb-2">Average Price</div>
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-5 px-5 pb-5">
+    <div class="bg-gray-50 p-4 rounded-lg">
+        <div class="text-sm font-medium text-gray-600 mb-2">Average Price</div>
           <div class="text-2xl font-bold text-sidebar-text">$<?php echo $avgPrice; ?> 
               <span class="<?php echo ($priceChange >= 0) ? 'text-green-600' : 'text-red-600'; ?> text-sm font-normal">
                   <?php echo ($priceChange >= 0) ? '+' : ''; ?><?php echo $priceChange; ?>%
               </span>
           </div>
-      </div>
-      <div class="bg-gray-50 p-4 rounded-lg">
-          <div class="text-sm font-medium text-gray-600 mb-2">Average Payment</div>
+        </div>
+    <div class="bg-gray-50 p-4 rounded-lg">
+        <div class="text-sm font-medium text-gray-600 mb-2">Average Payment</div>
           <div class="text-2xl font-bold text-sidebar-text">$<?php echo $avgPayment; ?> 
               <span class="<?php echo ($paymentChange >= 0) ? 'text-green-600' : 'text-red-600'; ?> text-sm font-normal">
                   <?php echo ($paymentChange >= 0) ? '+' : ''; ?><?php echo $paymentChange; ?>%
               </span>
           </div>
-      </div>
-      <div class="bg-gray-50 p-4 rounded-lg">
-          <div class="text-sm font-medium text-gray-600 mb-2">Payment Ratio</div>
-          <div class="text-2xl font-bold text-sidebar-text"><?php echo $paymentRatio; ?>% 
-              <span class="<?php echo ($ratioChange >= 0) ? 'text-green-600' : 'text-red-600'; ?> text-sm font-normal">
-                  <?php echo ($ratioChange >= 0) ? '+' : ''; ?><?php echo $ratioChange; ?>%
-              </span>
-          </div>
-      </div>
-  </div>
+        </div>
+    <div class="bg-gray-50 p-4 rounded-lg">
+        <div class="text-sm font-medium text-gray-600 mb-2">Payment Ratio</div>
+        <div class="text-2xl font-bold text-sidebar-text"><?php echo $paymentRatio; ?>% 
+            <span class="<?php echo ($ratioChange >= 0) ? 'text-green-600' : 'text-red-600'; ?> text-sm font-normal">
+                <?php echo ($ratioChange >= 0) ? '+' : ''; ?><?php echo $ratioChange; ?>%
+            </span>
+        </div>
+    </div>
+</div>
 </div>
 
 <!-- JavaScript for Charts -->
