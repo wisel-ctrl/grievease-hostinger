@@ -228,33 +228,26 @@ header("Pragma: no-cache");
         closeModalBtn.addEventListener('click', closeModal);
         modalBackdrop.addEventListener('click', closeModal);
         
-        const sendResetLinkBtn = document.getElementById('sendResetLink');
-if (sendResetLinkBtn) {
-    sendResetLinkBtn.addEventListener('click', function() {
-        const email = document.getElementById('resetEmail').value.trim();
+        // Send reset link button click
+        sendResetLinkBtn.addEventListener('click', function() {
+        const email = resetEmailInput.value.trim();
         
         if (!email) {
             swal({
-                title: "Missing Email",
+                title: "Error",
                 text: "Please enter your email address",
                 icon: "error",
-                button: {
-                    text: "OK",
-                    className: "swal-button--confirm"
-                }
+                button: "OK",
             });
             return;
         }
         
         if (!isValidEmail(email)) {
             swal({
-                title: "Invalid Email",
+                title: "Error",
                 text: "Please enter a valid email address",
                 icon: "error",
-                button: {
-                    text: "OK",
-                    className: "swal-button--confirm"
-                }
+                button: "OK",
             });
             return;
         }
@@ -279,28 +272,22 @@ if (sendResetLinkBtn) {
                     const response = JSON.parse(this.responseText);
                     
                     if (response.status === 'success') {
-                        document.getElementById('resetStep1').classList.add('hidden');
-                        document.getElementById('resetStep2').classList.remove('hidden');
+                        resetStep1.classList.add('hidden');
+                        resetStep2.classList.remove('hidden');
                     } else {
                         swal({
-                            title: "Reset Failed",
+                            title: "Error",
                             text: response.message || "Could not process your request",
                             icon: "error",
-                            button: {
-                                text: "Try Again",
-                                className: "swal-button--confirm"
-                            }
+                            button: "OK",
                         });
                     }
                 } catch (e) {
                     swal({
-                        title: "Server Error",
+                        title: "Error",
                         text: "Invalid server response",
                         icon: "error",
-                        button: {
-                            text: "OK",
-                            className: "swal-button--confirm"
-                        }
+                        button: "OK",
                     });
                 }
             }
@@ -315,17 +302,13 @@ if (sendResetLinkBtn) {
                 title: "Connection Error",
                 text: "Could not connect to the server. Please check your internet connection.",
                 icon: "error",
-                button: {
-                    text: "OK",
-                    className: "swal-button--confirm"
-                }
+                button: "OK",
             });
         };
         
         // Send the email
         xhr.send(`email=${encodeURIComponent(email)}`);
     });
-}
 
         
         // Back to login button click
@@ -361,9 +344,9 @@ if (sendResetLinkBtn) {
         }
         
         function isValidEmail(email) {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-}
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
         
         // Close modal when pressing escape key
         document.addEventListener('keydown', function(e) {
@@ -449,115 +432,95 @@ if (sendResetLinkBtn) {
             
             // Form submission
             document.getElementById('loginForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-    
-    // Validate inputs
-    if (!email || !password) {
-        swal({
-            title: "Missing Information",
-            text: "Please enter both email and password",
-            icon: "error",
-            button: {
-                text: "Try Again",
-                className: "swal-button--confirm"
-            },
-        });
-        return;
-    }
-    
-    // Show loading state
-    const loginButton = this.querySelector('button[type="submit"]');
-    const originalButtonText = loginButton.innerHTML;
-    loginButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Logging in...';
-    loginButton.disabled = true;
-    
-    // Use AJAX to check credentials against multiple tables
-    const xhr = new XMLHttpRequest();
-    xhr.open('POST', 'check_login.php', true);
-    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-    
-    xhr.onload = function() {
-        // Reset button state
-        loginButton.innerHTML = originalButtonText;
-        loginButton.disabled = false;
-        
-        if (this.status === 200) {
-            try {
-                const response = JSON.parse(this.responseText);
+                e.preventDefault();
                 
-                if (response.status === 'success') {
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+                
+                // Validate inputs
+                if (!email || !password) {
                     swal({
-                        title: "Welcome Back!",
-                        text: `You have successfully logged in as ${response.role}.`,
-                        icon: "success",
-                        button: {
-                            text: "Continue",
-                            className: "swal-button--confirm"
-                        },
-                        className: "custom-swal"
-                    }).then(() => {
-                        // Show loader before redirect
-                        showLoader();
-                        // Redirect based on user type
-                        window.location.href = response.redirect;
-                    });
-                } else {
-                    swal({
-                        title: "Login Failed",
-                        text: response.message,
+                        title: "Error",
+                        text: "Please enter both email and password",
                         icon: "error",
-                        button: {
-                            text: "Try Again",
-                            className: "swal-button--confirm"
-                        }
+                        button: "OK",
                     });
+                    return;
                 }
-            } catch (e) {
-                swal({
-                    title: "Server Error",
-                    text: "Invalid server response. Please try again later.",
-                    icon: "error",
-                    button: {
-                        text: "OK",
-                        className: "swal-button--confirm"
+                
+                // Show loading state
+                const loginButton = this.querySelector('button[type="submit"]');
+                const originalButtonText = loginButton.innerHTML;
+                loginButton.innerHTML = 'Logging in...';
+                loginButton.disabled = true;
+                
+                // Use AJAX to check credentials against multiple tables
+                const xhr = new XMLHttpRequest();
+                xhr.open('POST', 'check_login.php', true);
+                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                
+                xhr.onload = function() {
+                    // Reset button state
+                    loginButton.innerHTML = originalButtonText;
+                    loginButton.disabled = false;
+                    
+                    if (this.status === 200) {
+                        try {
+                            const response = JSON.parse(this.responseText);
+                            
+                            if (response.status === 'success') {
+                                swal({
+                                    title: "Welcome Back!",
+                                    text: `You have successfully logged in as ${response.role}.`,
+                                    icon: "success",
+                                    button: "Continue",
+                                }).then(() => {
+                                    // Redirect based on user type
+                                    window.location.href = response.redirect;
+                                });
+                            } else {
+                                swal({
+                                    title: "Login Failed",
+                                    text: response.message,
+                                    icon: "error",
+                                    button: "Try Again",
+                                });
+                            }
+                        } catch (e) {
+                            swal({
+                                title: "Error",
+                                text: "Invalid server response. Please try again later.",
+                                icon: "error",
+                                button: "OK",
+                            });
+                        }
+                    } else {
+                        swal({
+                            title: "Error",
+                            text: "An error occurred during login. Please try again.",
+                            icon: "error",
+                            button: "OK",
+                        });
                     }
-                });
-            }
-        } else {
-            swal({
-                title: "Connection Error",
-                text: "An error occurred during login. Please try again.",
-                icon: "error",
-                button: {
-                    text: "OK",
-                    className: "swal-button--confirm"
-                }
+                };
+                
+                xhr.onerror = function() {
+                    // Reset button state
+                    loginButton.innerHTML = originalButtonText;
+                    loginButton.disabled = false;
+                    
+                    swal({
+                        title: "Connection Error",
+                        text: "Could not connect to the server. Please check your internet connection.",
+                        icon: "error",
+                        button: "OK",
+                    });
+                };
+                
+                // Send the login credentials to the server
+                xhr.send(`email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`);
             });
-        }
-    };
-    
-    xhr.onerror = function() {
-        // Reset button state
-        loginButton.innerHTML = originalButtonText;
-        loginButton.disabled = false;
-        
-        swal({
-            title: "Connection Error",
-            text: "Could not connect to the server. Please check your internet connection.",
-            icon: "error",
-            button: {
-                text: "OK",
-                className: "swal-button--confirm"
-            }
         });
-    };
-    
-    // Send the login credentials to the server
-    xhr.send(`email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`);
-});
 
 
     </script>
@@ -655,166 +618,7 @@ if (sendResetLinkBtn) {
     
     // Hide loader when the page is fully loaded
     window.addEventListener('load', hideLoader);
-
-
-    // Add this to the bottom of your script section before the closing body tag
-document.addEventListener('DOMContentLoaded', function() {
-    // Custom SweetAlert styling
-    // This injects custom CSS for SweetAlert to match your theme
-    const sweetAlertStyles = document.createElement('style');
-    sweetAlertStyles.textContent = `
-        .swal-overlay {
-            background-color: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(5px);
-        }
-        
-        .swal-modal {
-            background-color: #F9F6F0;
-            border-radius: 1rem;
-            border: none;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-            padding: 24px;
-            width: 400px;
-            max-width: 90%;
-        }
-        
-        .swal-title {
-            color: #2D2B30;
-            font-family: 'Hedvig Letters Serif', serif;
-            font-size: 1.5rem;
-            margin-bottom: 12px;
-            font-weight: 600;
-            padding: 0;
-            margin-top: 8px;
-        }
-        
-        .swal-text {
-            color: #2D2B30;
-            font-family: 'Hedvig Letters Serif', serif;
-            font-size: 1rem;
-            text-align: center;
-            line-height: 1.5;
-            padding: 0;
-            margin-bottom: 24px;
-        }
-        
-        .swal-footer {
-            text-align: center;
-            padding: 8px 0 0;
-            margin-top: 0;
-            border-top: none;
-        }
-        
-        .swal-button {
-            padding: 10px 20px;
-            border-radius: 0.5rem;
-            font-family: 'Hedvig Letters Serif', serif;
-            font-size: 0.875rem;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            outline: none !important;
-            box-shadow: none;
-        }
-        
-        .swal-button:focus {
-            box-shadow: 0 0 0 2px rgba(202, 138, 4, 0.4);
-        }
-        
-        .swal-button--confirm {
-            background: linear-gradient(to right, #CA8A04, #B08D50);
-            color: white;
-        }
-        
-        .swal-button--confirm:hover {
-            background: linear-gradient(to right, #b07a03, #9d7d47);
-            color: white;
-        }
-        
-        .swal-button--cancel {
-            background-color: #F1F5F9;
-            color: #2D2B30;
-            border: 1px solid #D3D8E1;
-        }
-        
-        .swal-button--cancel:hover {
-            background-color: #e8edf2;
-        }
-        
-        .swal-icon {
-            width: 65px;
-            height: 65px;
-            border-width: 3px;
-            margin: 0 auto 15px;
-        }
-        
-        .swal-icon--success:before,
-        .swal-icon--success:after,
-        .swal-icon--success__hide-corners {
-            background: none;
-        }
-        
-        .swal-icon--success__line {
-            background-color: #38A169;
-            height: 3px;
-        }
-        
-        .swal-icon--success__ring {
-            border-color: rgba(56, 161, 105, 0.3);
-        }
-        
-        .swal-icon--error__line {
-            background-color: #E53E3E;
-            height: 3px;
-        }
-        
-        .swal-icon--error {
-            border-color: #E53E3E;
-        }
-        
-        .swal-icon--warning {
-            border-color: #CA8A04;
-            color: #CA8A04;
-        }
-        
-        .swal-icon--warning__body,
-        .swal-icon--warning__dot {
-            background-color: #CA8A04;
-        }
-        
-        .swal-icon--info {
-            border-color: #3182ce;
-        }
-        
-        /* Custom animations */
-        @keyframes swalFadeIn {
-            0% { opacity: 0; transform: scale(0.9); }
-            100% { opacity: 1; transform: scale(1); }
-        }
-        
-        .swal-modal {
-            animation: swalFadeIn 0.3s;
-        }
-        
-        /* Loading indicator styles */
-        .swal-content__input, 
-        .swal-content__textarea {
-            border: 1px solid #D3D8E1;
-            border-radius: 0.5rem;
-            font-family: 'Hedvig Letters Serif', serif;
-            padding: 8px 12px;
-            margin-top: 10px;
-            transition: border-color 0.3s;
-        }
-        
-        .swal-content__input:focus, 
-        .swal-content__textarea:focus {
-            border-color: #CA8A04;
-            box-shadow: 0 0 0 2px rgba(202, 138, 4, 0.2);
-            outline: none;
-        }
-    `;
-    document.head.appendChild(sweetAlertStyles);
-});
+    
 </script>
 
 </body>
