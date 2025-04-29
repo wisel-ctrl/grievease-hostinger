@@ -448,10 +448,23 @@
         
         // Validation functions
         function validateName(input) {
-            // Allow only letters, spaces between words, and apostrophes
-            const nameRegex = /^[A-Za-zÀ-ÿ]+(['\s][A-Za-zÀ-ÿ]+)*$/;
-            return nameRegex.test(input.value.trim());
-        }
+    // Allow letters, spaces, apostrophes, and hyphens
+    // First letter must be capitalized, followed by letters, spaces, apostrophes or hyphens
+    const nameRegex = /^[A-Z][A-Za-zÀ-ÿ]+([' -][A-Za-zÀ-ÿ]+)*$/;
+    
+    // Check if input matches the pattern
+    const isValid = nameRegex.test(input.value.trim());
+    
+    // If valid, ensure the value is stored with proper capitalization
+    if (isValid) {
+        // Capitalize first letter and lowercase the rest (except for parts after spaces/apostrophes/hyphens)
+        input.value = input.value.trim().replace(/\w\S*/g, function(txt) {
+            return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+        });
+    }
+    
+    return isValid;
+}
         
         function validateEmail(input) {
             // Comprehensive email validation
@@ -461,6 +474,46 @@
         
         function preventInvalidInput(input, validationFunc) {
             input.addEventListener('input', function(e) {
+                // Get cursor position before any changes
+        const cursorPos = this.selectionStart;
+        
+        // Remove leading and trailing spaces
+        let newValue = this.value.trim();
+        
+        // Prevent starting with a space or dot
+        if (newValue.startsWith(' ') || newValue.startsWith('.')) {
+            newValue = newValue.replace(/^[\s.]+/, '');
+        }
+        
+        // Remove consecutive spaces
+        newValue = newValue.replace(/\s+/g, ' ');
+        
+        // Capitalize first letter if it's a letter
+        if (newValue.length > 0 && /^[a-z]/.test(newValue.charAt(0))) {
+            newValue = newValue.charAt(0).toUpperCase() + newValue.slice(1);
+        }
+        
+        // Update the value
+        this.value = newValue;
+        
+        // Restore cursor position (adjusted for any changes)
+        this.selectionStart = cursorPos;
+        this.selectionEnd = cursorPos;
+        
+        // Validate and add/remove error styling
+        if (this.value && !validationFunc(this)) {
+            this.classList.add('border-error');
+            this.classList.remove('border-success');
+        } else if (this.value) {
+            this.classList.remove('border-error');
+            this.classList.add('border-success');
+        } else {
+            this.classList.remove('border-error');
+            this.classList.remove('border-success');
+        }
+    });
+
+
                 // Remove leading and trailing spaces
                 this.value = this.value.trim();
                 // Prevent starting with a space or dot
@@ -487,26 +540,31 @@
                 e.preventDefault();
                 const pastedText = e.clipboardData.getData('text/plain').trim();
 
-                // Validate pasted text
-                if (validationFunc({ value: pastedText })) {
-                    this.value = pastedText;
-                    this.classList.remove('border-error');
-                    this.classList.add('border-success');
-                } else {
-                    this.value = '';
-                    this.classList.add('border-error');
-                    this.classList.remove('border-success');
+    // Capitalize first letter if it's a letter
+    let processedText = pastedText;
+    if (processedText.length > 0 && /^[a-z]/.test(processedText.charAt(0))) {
+        processedText = processedText.charAt(0).toUpperCase() + processedText.slice(1);
+    }
 
-                    // Optional: Show error toast or alert
-                    swal({
-                        title: "Invalid Input",
-                        text: "Please enter a valid input.",
-                        icon: "error",
-                        button: "OK",
-                    });
-                }
-            });
-        }
+    // Validate pasted text
+    if (validationFunc({ value: processedText })) {
+        this.value = processedText;
+        this.classList.remove('border-error');
+        this.classList.add('border-success');
+    } else {
+        this.value = '';
+        this.classList.add('border-error');
+        this.classList.remove('border-success');
+
+        // Optional: Show error toast or alert
+        swal({
+            title: "Invalid Input",
+            text: "Please enter a valid name (letters and spaces only, first letter capitalized).",
+            icon: "error",
+            button: "OK",
+        });
+    }
+});
         
         // Apply validation to specific fields
         preventInvalidInput(firstName, validateName);
