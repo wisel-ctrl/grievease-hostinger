@@ -121,39 +121,6 @@ function toggleMenu() {
             <h1 class="font-hedvig text-5xl text-white text-shadow-lg mb-4">Memorial Dedications</h1>
             <p class="text-white/80 max-w-3xl mx-auto text-shadow-sm">In remembrance of those we have loved and lost. Each candle represents a dedication made in memory of someone special.</p>
         </div>
-        
-        <!-- Feature Dedication (Largest) -->
-<div class="mb-16">
-    <div class="bg-black/40 backdrop-blur-sm border border-yellow-600/20 rounded-xl p-6 shadow-xl animated-entry">
-        
-        <!-- Flexbox for Side-by-Side Layout -->
-        <div class="md:flex md:items-center md:flex-row gap-8">
-            
-            <!-- Large Candle Animation (Left Side) -->
-            <div class="w-full md:w-1/3 flex justify-center">
-                <div class="relative w-40 h-64">
-                    <!-- Candle -->
-                    <div class="absolute left-1/2 transform -translate-x-1/2 bottom-0 w-24">
-                        <!-- Wick with Flame -->
-                        <div class="relative w-1 h-6 bg-gray-700 mx-auto rounded-t-lg">
-                            <!-- Outer Flame -->
-                            <div class="absolute left-1/2 top-[-35px] transform -translate-x-1/2 w-8 h-16 bg-yellow-600/80 rounded-full blur-sm animate-flame"></div>
-
-                            <!-- Inner Flame -->
-                            <div class="absolute left-1/2 top-[-30px] transform -translate-x-1/2 w-4 h-12 bg-white/90 rounded-full blur-[2px] animate-flame"></div>
-                        </div>
-
-                        <!-- Candle Body -->
-                        <div class="w-16 h-32 bg-gradient-to-b from-cream to-white mx-auto rounded-t-lg"></div>
-
-                        <!-- Candle Base -->
-                        <div class="w-20 h-4 bg-gradient-to-b from-cream to-yellow-600/20 mx-auto rounded-b-lg"></div>
-                    </div>
-
-                    <!-- Reflection/Glow -->
-                    <div class="absolute left-1/2 transform -translate-x-1/2 bottom-4 w-64 h-12 bg-yellow-600/30 rounded-full blur-xl animate-glow"></div>
-                </div>  
-            </div>
 
         
         <!-- Dedication Grid -->
