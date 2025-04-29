@@ -1600,9 +1600,12 @@ document.addEventListener('DOMContentLoaded', function() {
     
     <!-- Zip/Postal Code (taking 1/4 of the width) -->
     <div class="sm:col-span-1">
-        <input type="text" id="zip" name="zip" placeholder="Zip Code" 
-               value="<?php echo htmlspecialchars($zip_code); ?>" 
-               class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base">
+    <input type="text" id="zip" name="zip" placeholder="Zip Code" 
+       value="<?php echo htmlspecialchars($zip_code); ?>" 
+       class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base"
+       pattern="[0-9]*" 
+       maxlength="10"
+       oninput="validateZipCode(this)">
     </div>
 </div>
                                     </div>
@@ -2643,6 +2646,25 @@ function restrictPhoneInput() {
         }
     });
 }
+
+function validateZipCode(input) {
+    // Remove any non-digit characters
+    input.value = input.value.replace(/[^0-9]/g, '');
+    
+    // Optional: Validate length (e.g., 4-10 digits)
+    if (input.value.length < 4 || input.value.length > 10) {
+        showError('zip', 'Zip code must be between 4 and 10 digits');
+    } else {
+        clearError('zip');
+    }
+}
+
+// Prevent pasting non-numeric characters
+document.getElementById('zip').addEventListener('paste', function(e) {
+    e.preventDefault();
+    const pastedText = (e.clipboardData || window.clipboardData).getData('text');
+    this.value = pastedText.replace(/[^0-9]/g, '');
+});
 
 // Date of birth validation - at least 18 years old
 function validateDateOfBirth(dob) {
