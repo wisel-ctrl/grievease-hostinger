@@ -822,32 +822,25 @@ $offset = ($current_page - 1) * $bookings_per_page;
       const deathCertNotAvailable = document.getElementById('deathCertificateNotAvailable');
       const deathCertImage = document.getElementById('deathCertificateImage');
 
-      i// For death certificate
-if (data.deathcert_url && data.deathcert_url !== '') {
-    const deathCertPath = '../customer/booking/uploads/' + data.deathcert_url.replace(/^uploads\//, '');
-    
-    // Check if it's a PDF
-    if (deathCertPath.toLowerCase().endsWith('.pdf')) {
-        deathCertAvailable.innerHTML = `
-            <div class="flex flex-col items-center justify-center p-4">
-                <i class="fas fa-file-pdf text-red-500 text-4xl mb-2"></i>
-                <p class="text-gray-700 mb-2">Death Certificate (PDF)</p>
-                <a href="${deathCertPath}" target="_blank" 
-                   class="px-3 py-1 bg-red-100 text-red-600 rounded hover:bg-red-200">
-                    View PDF
-                </a>
-            </div>`;
-    } else {
-        // Handle as image
+      if (data.deathcert_url && data.deathcert_url !== '') {
+        // Use relative path with ../ to navigate up and then to the customer/booking/uploads folder
+        const deathCertPath = '../customer/booking/uploads/' + data.deathcert_url.replace(/^uploads\//, '');
+        console.log("Death Certificate Path:", deathCertPath);
+        
+        // Set error handler before setting src
         deathCertImage.onerror = function() {
-            deathCertAvailable.classList.add('hidden');
-            deathCertNotAvailable.classList.remove('hidden');
+          console.error("Failed to load death certificate image:", deathCertPath);
+          deathCertAvailable.classList.add('hidden');
+          deathCertNotAvailable.classList.remove('hidden');
         };
+        
         deathCertImage.src = deathCertPath;
-    }
-    deathCertAvailable.classList.remove('hidden');
-    deathCertNotAvailable.classList.add('hidden');
-}
+        deathCertAvailable.classList.remove('hidden');
+        deathCertNotAvailable.classList.add('hidden');
+      } else {
+        deathCertAvailable.classList.add('hidden');
+        deathCertNotAvailable.classList.remove('hidden');
+      }
 
       // Handle Payment Proof Image
       const paymentProofImage = document.getElementById('paymentProofImage');
