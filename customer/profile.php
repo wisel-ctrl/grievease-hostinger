@@ -2725,7 +2725,6 @@ function validateForm() {
     const streetAddress = document.getElementById('street_address').value.trim();
     const zip = document.getElementById('zip').value.trim();
     
-    
     if (!region) {
         isValid = false;
         showError('region', 'Region is required');
@@ -2757,22 +2756,13 @@ function validateForm() {
     if (!streetAddress) {
         isValid = false;
         showError('street_address', 'Street address is required');
-    } else if (streetAddress.length < 5) {
-        isValid = false;
-        showError('street_address', 'Street address must be at least 5 characters');
     } else {
         clearError('street_address');
     }
     
     if (!zip) {
         isValid = false;
-        showError('zip', 'Zip code is required');
-    } else if (!/^\d+$/.test(zip)) {
-        isValid = false;
-        showError('zip', 'Zip code must contain only numbers');
-    } else if (zip.length < 4) {
-        isValid = false;
-        showError('zip', 'Zip code must be at least 4 digits');
+        showError('zip', 'Zip/Postal code is required');
     } else {
         clearError('zip');
     }
@@ -3042,27 +3032,6 @@ document.getElementById('middleName').addEventListener('input', function() {
             }
         });
     });
-
-    // Prevent spaces in zip code field
-    document.getElementById('zip').addEventListener('keydown', function(e) {
-        if (e.key === ' ') {
-            e.preventDefault();
-        }
-    });
-    
-    // Allow spaces in street address but prevent leading/trailing spaces
-    document.getElementById('street_address').addEventListener('keydown', function(e) {
-        if (e.target.selectionStart === 0 && e.key === ' ') {
-            e.preventDefault();
-        }
-    });
-    
-    document.getElementById('street_address').addEventListener('keyup', function(e) {
-        if (this.value.endsWith(' ')) {
-            this.value = this.value.trim();
-        }
-    });
-    
 }
 
 // Update DOMContentLoaded
@@ -3236,7 +3205,7 @@ function setupPasswordFormValidation() {
         }
     });
 
-    const passwordFields = [currentPasswordInput, newPasswordInput, confirmPasswordInput];
+     const passwordFields = [currentPasswordInput, newPasswordInput, confirmPasswordInput];
     passwordFields.forEach(field => {
         field.addEventListener('keydown', function(e) {
             if (e.key === ' ') {
