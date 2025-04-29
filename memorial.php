@@ -157,16 +157,13 @@ function toggleMenu() {
                 <div class="relative w-full h-32 sm:h-40 mb-2 sm:mb-3 flex items-center justify-center">
                     <!-- Candle -->
                     <div id="candle" class="relative w-12 sm:w-16">
-                        <!-- Wick -->
-                        <div class="w-1 h-3 sm:h-4 bg-gray-700 mx-auto mb-0 rounded-t-lg"></div>
-                        
-                        <!-- Flame (hidden initially) -->
-                        <div id="flame" class="hidden">
+                        <!-- Updated Wick with Flame structure -->
+                        <div class="relative w-1 h-4 sm:h-5 bg-gray-700 mx-auto mb-0 rounded-t-lg">
                             <!-- Outer Flame -->
-                            <div class="absolute left-1/2 transform -translate-x-1/2 bottom-[55px] sm:bottom-[70px] w-5 sm:w-6 h-10 sm:h-12 bg-yellow-600/80 rounded-full blur-sm animate-pulse"></div>
+                            <div class="absolute left-1/2 top-[-18px] sm:top-[-22px] transform -translate-x-1/2 w-4 sm:w-5 h-8 sm:h-10 bg-yellow-600/80 rounded-full blur-sm animate-flame"></div>
                             
                             <!-- Inner Flame -->
-                            <div class="absolute left-1/2 transform -translate-x-1/2 bottom-[60px] sm:bottom-[75px] w-2.5 sm:w-3 h-7 sm:h-9 bg-white/90 rounded-full blur-[2px] animate-flame"></div>
+                            <div class="absolute left-1/2 top-[-15px] sm:top-[-18px] transform -translate-x-1/2 w-2 sm:w-2.5 h-6 sm:h-8 bg-white/90 rounded-full blur-[2px] animate-flame"></div>
                         </div>
                         
                         <!-- Candle Body - Smaller on mobile -->
