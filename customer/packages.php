@@ -1088,31 +1088,6 @@ $conn->close();
 
                     <div class="border-b border-gray-200 pb-4 mb-4">
                         <h3 class="text-base md:text-lg font-hedvig text-navy mb-3 md:mb-4">Payment</h3>
-
-                        <!-- QR Code Button and Modal -->
-                        <div class="mb-4">
-                            <button type="button" id="showQrCodeBtn" class="w-full bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center justify-center transition-all duration-200">
-                                <i class="fas fa-qrcode mr-2"></i>
-                                <span>View Payment QR Code</span>
-                            </button>
-                        </div>
-                        
-                        <!-- QR Code Modal -->
-                        <div id="qrCodeModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
-                            <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-                                <div class="flex justify-between items-center mb-4">
-                                    <h3 class="text-lg font-hedvig text-navy">Scan to Pay</h3>
-                                    <button id="closeQrModal" class="text-gray-500 hover:text-navy">
-                                        <i class="fas fa-times text-xl"></i>
-                                    </button>
-                                </div>
-                                <div class="flex flex-col items-center justify-center">
-                                    <img id="qrCodeImage" src="/path/to/qr-placeholder.png" alt="Payment QR Code" class="w-64 h-64 object-contain mb-4">
-                                    <p class="text-center text-sm text-gray-600 mb-2">Scan this QR code with your GCash app to make payment</p>
-                                    <p class="text-center font-bold text-yellow-600" id="qrCodeAmount">Amount: ₱0</p>
-                                </div>
-                            </div>
-                        </div>
                         
                         <!-- GCash Upload with Preview -->
                         <div class="mb-4">
@@ -1185,40 +1160,6 @@ $conn->close();
         </div>
     </div>
 </div>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // QR Code Button and Modal functionality
-    const showQrCodeBtn = document.getElementById('showQrCodeBtn');
-    const qrCodeModal = document.getElementById('qrCodeModal');
-    const closeQrModal = document.getElementById('closeQrModal');
-    const qrCodeAmount = document.getElementById('qrCodeAmount');
-    
-    // Show QR code modal with current amount due
-    showQrCodeBtn.addEventListener('click', function() {
-        // Get current amount due and update in QR modal
-        const amountDue = document.getElementById('traditionalAmountDue').textContent;
-        qrCodeAmount.textContent = 'Amount: ' + amountDue;
-        
-        // TODO: In production, replace with dynamic QR code generation based on amount
-        // For now, we're using a placeholder image
-        
-        qrCodeModal.classList.remove('hidden');
-    });
-    
-    // Close QR code modal
-    closeQrModal.addEventListener('click', function() {
-        qrCodeModal.classList.add('hidden');
-    });
-    
-    // Close modal if clicking outside the modal content
-    qrCodeModal.addEventListener('click', function(e) {
-        if (e.target === qrCodeModal) {
-            qrCodeModal.classList.add('hidden');
-        }
-    });
-});
-</script>
 
 <script>
     // Enhanced address dropdown functions with AJAX for traditional form
