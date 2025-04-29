@@ -155,29 +155,6 @@ function toggleMenu() {
                 </div>  
             </div>
 
-            <!-- Text Content (Right Side) -->
-            <div class="w-full md:w-2/3">
-                <div class="mb-4">
-                    <h2 class="font-hedvig text-2xl text-yellow-600 mb-1">Forever in Our Hearts</h2>
-                    <p class="text-gray-400 text-sm italic">In memory of James Michael Wilson</p>
-                </div>
-                
-                <div class="bg-black/30 rounded-lg p-4 mb-4 border border-gray-700/50">
-                    <p class="text-white/90 italic">
-                        "Dad, your light continues to guide us even in your absence. Your wisdom, your laughter, and your unconditional love live on in our hearts and memories. We miss you every day, but find comfort knowing you're watching over us. Until we meet again."
-                    </p>
-                </div>
-                
-                <div class="flex items-center justify-between text-sm text-gray-400">
-                    <span>Dedicated by: Sarah Wilson</span>
-                    <span>March 10, 2025</span>
-                </div>
-            </div> 
-        </div>
-
-    </div>
-</div>
-
         
         <!-- Dedication Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="dedication-grid">
