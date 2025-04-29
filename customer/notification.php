@@ -1416,91 +1416,61 @@ function getStatusText(status) {
                         <!-- Right Column -->
                         <div class="space-y-3 sm:space-y-4">
                             <!-- Documents -->
-    <div class="bg-white rounded-lg p-4 sm:p-5 border border-gray-200 shadow-sm">
-        <h4 class="text-gray-800 mb-3 sm:mb-4 flex items-center">
-            Documents
-        </h4>
-        
-        <!-- Death Certificate -->
-        <div class="mb-4 sm:mb-5">
-            <h5 class="font-medium text-gray-700 mb-2 flex items-center">
-                Death Certificate
-            </h5>
-            <div class="border border-gray-200 rounded-lg overflow-hidden">
-                ${data.deathcert_url ? `
-                    <div class="relative bg-gray-100 p-1">
-                        ${data.deathcert_url.toLowerCase().endsWith('.pdf') ? `
-                            <div class="flex flex-col items-center justify-center py-4">
-                                <i class="fas fa-file-pdf text-red-500 text-4xl mb-2"></i>
-                                <p class="text-sm text-gray-600 mb-2">PDF Document</p>
-                                <button class="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700 transition-colors"
-                                    onclick="window.open('booking/${data.deathcert_url}', '_blank')">
-                                    <i class="fas fa-external-link-alt mr-1"></i> Open PDF
-                                </button>
-                                <button class="mt-2 text-blue-600 text-sm hover:underline"
-                                    onclick="previewPDF('booking/${data.deathcert_url}')">
-                                    <i class="fas fa-eye mr-1"></i> Quick Preview
-                                </button>
+                            <div class="bg-white rounded-lg p-4 sm:p-5 border border-gray-200 shadow-sm">
+                                <h4 class="text-gray-800 mb-3 sm:mb-4 flex items-center">
+                                    Documents
+                                </h4>
+                                
+                                <!-- Death Certificate -->
+                                <div class="mb-4 sm:mb-5">
+                                    <h5 class="font-medium text-gray-700 mb-2 flex items-center">
+                                        Death Certificate
+                                    </h5>
+                                    <div class="border border-gray-200 rounded-lg overflow-hidden">
+                                        ${data.deathcert_url ? `
+                                            <div class="relative bg-gray-100 p-1">
+                                                <img src="booking/${data.deathcert_url}" alt="Death Certificate" class="mx-auto rounded-md max-h-48 object-contain" />
+                                                <div class="absolute top-2 right-2">
+                                                    <button class="bg-white rounded-full p-1 shadow-md hover:bg-gray-100 transition-colors duration-200" title="View Full Size" 
+                                                    onclick="window.open('booking/${data.deathcert_url}', '_blank')">
+                                                        <i class="fas fa-search-plus text-blue-600"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        ` : `
+                                            <div class="flex flex-col items-center justify-center py-8 px-4 bg-gray-50">
+                                                <i class="fas fa-exclamation-circle text-gray-400 text-3xl mb-2"></i>
+                                                <p class="text-gray-500 text-center">No death certificate has been uploaded yet.</p>
+                                            </div>
+                                        `}
+                                    </div>
+                                </div>
+                                
+                                <!-- Payment Proof -->
+                                <div>
+                                    <h5 class="font-medium text-gray-700 mb-2 flex items-center">
+                                        Payment Proof
+                                    </h5>
+                                    <div class="border border-gray-200 rounded-lg overflow-hidden">
+                                        ${data.payment_url ? `
+                                            <div class="relative bg-gray-100 p-1">
+                                                <img src="booking/${data.payment_url}" alt="Payment Proof" class="mx-auto rounded-md max-h-48 object-contain" />
+                                                <div class="absolute top-2 right-2">
+                                                    <button class="bg-white rounded-full p-1 shadow-md hover:bg-gray-100 transition-colors duration-200" title="View Full Size"
+                                                    onclick="window.open('booking/${data.payment_url}', '_blank')">
+                                                        <i class="fas fa-search-plus text-blue-600"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        ` : `
+                                            <div class="flex flex-col items-center justify-center py-8 px-4 bg-gray-50">
+                                                <i class="fas fa-exclamation-circle text-gray-400 text-3xl mb-2"></i>
+                                                <p class="text-gray-500 text-center">No payment proof has been uploaded yet.</p>
+                                            </div>
+                                        `}
+                                    </div>
+                                </div>
                             </div>
-                        ` : `
-                            <img src="booking/${data.deathcert_url}" alt="Death Certificate" class="mx-auto rounded-md max-h-48 object-contain" />
-                            <div class="absolute top-2 right-2">
-                                <button class="bg-white rounded-full p-1 shadow-md hover:bg-gray-100 transition-colors duration-200" title="View Full Size" 
-                                onclick="window.open('booking/${data.deathcert_url}', '_blank')">
-                                    <i class="fas fa-search-plus text-blue-600"></i>
-                                </button>
-                            </div>
-                        `}
-                    </div>
-                ` : `
-                    <div class="flex flex-col items-center justify-center py-8 px-4 bg-gray-50">
-                        <i class="fas fa-exclamation-circle text-gray-400 text-3xl mb-2"></i>
-                        <p class="text-gray-500 text-center">No death certificate has been uploaded yet.</p>
-                    </div>
-                `}
-            </div>
-        </div>
-        
-        <!-- Payment Proof -->
-        <div>
-            <h5 class="font-medium text-gray-700 mb-2 flex items-center">
-                Payment Proof
-            </h5>
-            <div class="border border-gray-200 rounded-lg overflow-hidden">
-                ${data.payment_url ? `
-                    <div class="relative bg-gray-100 p-1">
-                        ${data.payment_url.toLowerCase().endsWith('.pdf') ? `
-                            <div class="flex flex-col items-center justify-center py-4">
-                                <i class="fas fa-file-pdf text-red-500 text-4xl mb-2"></i>
-                                <p class="text-sm text-gray-600 mb-2">PDF Document</p>
-                                <button class="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700 transition-colors"
-                                    onclick="window.open('booking/${data.payment_url}', '_blank')">
-                                    <i class="fas fa-external-link-alt mr-1"></i> Open PDF
-                                </button>
-                                <button class="mt-2 text-blue-600 text-sm hover:underline"
-                                    onclick="previewPDF('booking/${data.payment_url}')">
-                                    <i class="fas fa-eye mr-1"></i> Quick Preview
-                                </button>
-                            </div>
-                        ` : `
-                            <img src="booking/${data.payment_url}" alt="Payment Proof" class="mx-auto rounded-md max-h-48 object-contain" />
-                            <div class="absolute top-2 right-2">
-                                <button class="bg-white rounded-full p-1 shadow-md hover:bg-gray-100 transition-colors duration-200" title="View Full Size"
-                                onclick="window.open('booking/${data.payment_url}', '_blank')">
-                                    <i class="fas fa-search-plus text-blue-600"></i>
-                                </button>
-                            </div>
-                        `}
-                    </div>
-                ` : `
-                    <div class="flex flex-col items-center justify-center py-8 px-4 bg-gray-50">
-                        <i class="fas fa-exclamation-circle text-gray-400 text-3xl mb-2"></i>
-                        <p class="text-gray-500 text-center">No payment proof has been uploaded yet.</p>
-                    </div>
-                `}
-            </div>
-        </div>
-    </div>
                         </div>
                     </div>
                 `;
@@ -1518,51 +1488,6 @@ function getStatusText(status) {
             `;
         });
 }
-
-// Add this new function to handle PDF previews
-function previewPDF(pdfUrl) {
-    // Create a modal for PDF preview
-    const pdfModal = document.createElement('div');
-    pdfModal.id = 'pdfPreviewModal';
-    pdfModal.className = 'fixed inset-0 z-50 bg-black bg-opacity-75 flex items-center justify-center p-4';
-    pdfModal.innerHTML = `
-        <div class="bg-white rounded-lg w-full max-w-4xl max-h-[90vh] flex flex-col">
-            <div class="flex justify-between items-center bg-gray-800 text-white p-3 rounded-t-lg">
-                <h3 class="text-lg">PDF Preview</h3>
-                <button onclick="document.getElementById('pdfPreviewModal').remove()" class="text-white hover:text-gray-300">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="flex-1 overflow-auto p-4">
-                <iframe src="${pdfUrl}" class="w-full h-full min-h-[70vh]" frameborder="0"></iframe>
-            </div>
-            <div class="bg-gray-100 p-3 rounded-b-lg flex justify-end">
-                <button onclick="window.open('${pdfUrl}', '_blank')" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 mr-2">
-                    <i class="fas fa-external-link-alt mr-2"></i> Open in New Tab
-                </button>
-                <button onclick="document.getElementById('pdfPreviewModal').remove()" class="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700">
-                    Close
-                </button>
-            </div>
-        </div>
-    `;
-    
-    document.body.appendChild(pdfModal);
-}
-
-const style = document.createElement('style');
-style.textContent = `
-    #pdfPreviewModal iframe {
-        width: 100%;
-        height: 100%;
-        min-height: 70vh;
-    }
-    #pdfPreviewModal .modal-content {
-        max-width: 90%;
-        max-height: 90vh;
-    }
-`;
-document.head.appendChild(style);
 
 function closeModal() {
     document.getElementById('bookingDetailsModal').classList.add('hidden');
