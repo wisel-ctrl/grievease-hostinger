@@ -447,58 +447,64 @@
         let timerInterval;
         
         // Validation functions
-        function validateName(input) {
-    // Allow letters, spaces, apostrophes, and hyphens
-    // First letter must be capitalized, followed by letters, spaces, apostrophes or hyphens
-    const nameRegex = /^[A-Z][A-Za-zÀ-ÿ]+([' -][A-Za-zÀ-ÿ]+)*$/;
+        // Update the validateName function
+function validateName(input) {
+    const value = input.value.trim();
     
-    // Check if input matches the pattern
-    const isValid = nameRegex.test(input.value.trim());
-    
-    // If valid, ensure the value is stored with proper capitalization
-    if (isValid) {
-        // Capitalize first letter and lowercase the rest (except for parts after spaces/apostrophes/hyphens)
-        input.value = input.value.trim().replace(/\w\S*/g, function(txt) {
-            return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
-        });
+    // Check if input is empty or only spaces
+    if (value === '') {
+        return false;
     }
     
-    return isValid;
+    // Check if first character is a letter and capitalized
+    if (!/^[A-ZÀ-ÿ]/.test(value.charAt(0))) {
+        return false;
+    }
+    
+    // Check if contains any numbers
+    if (/\d/.test(value)) {
+        return false;
+    }
+    
+    // Check if contains any invalid characters (only letters, spaces, apostrophes, and hyphens allowed)
+    if (!/^[A-Za-zÀ-ÿ]+(?:['\s-][A-Za-zÀ-ÿ]+)*$/.test(value)) {
+        return false;
+    }
+    
+    // Check if contains spaces before at least 2 characters
+    if (value.length < 2 && value.includes(' ')) {
+        return false;
+    }
+    
+    // Check if contains multiple consecutive spaces
+    if (/\s{2,}/.test(value)) {
+        return false;
+    }
+    
+    return true;
 }
+
+// Update the preventInvalidInput function for name fields
+function preventInvalidInput(input, validationFunc) {
+    input.addEventListener('input', function(e) {
+        // Get cursor position before any changes
+        const cursorPosition = this.selectionStart;
         
-        function validateEmail(input) {
-            // Comprehensive email validation
-            const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-            return emailRegex.test(input.value.trim());
+        // Capitalize first letter
+        if (this.value.length === 1) {
+            this.value = this.value.toUpperCase();
         }
         
-        function preventInvalidInput(input, validationFunc) {
-            input.addEventListener('input', function(e) {
-                // Get cursor position before any changes
-        const cursorPos = this.selectionStart;
+        // Remove any numbers
+        this.value = this.value.replace(/\d/g, '');
         
-        // Remove leading and trailing spaces
-        let newValue = this.value.trim();
-        
-        // Prevent starting with a space or dot
-        if (newValue.startsWith(' ') || newValue.startsWith('.')) {
-            newValue = newValue.replace(/^[\s.]+/, '');
+        // Remove leading spaces
+        if (this.value.startsWith(' ')) {
+            this.value = this.value.trimStart();
         }
         
-        // Remove consecutive spaces
-        newValue = newValue.replace(/\s+/g, ' ');
-        
-        // Capitalize first letter if it's a letter
-        if (newValue.length > 0 && /^[a-z]/.test(newValue.charAt(0))) {
-            newValue = newValue.charAt(0).toUpperCase() + newValue.slice(1);
-        }
-        
-        // Update the value
-        this.value = newValue;
-        
-        // Restore cursor position (adjusted for any changes)
-        this.selectionStart = cursorPos;
-        this.selectionEnd = cursorPos;
+        // Remove multiple consecutive spaces
+        this.value = this.value.replace(/\s{2,}/g, ' ');
         
         // Validate and add/remove error styling
         if (this.value && !validationFunc(this)) {
@@ -511,9 +517,58 @@
             this.classList.remove('border-error');
             this.classList.remove('border-success');
         }
+        
+        // Restore cursor position
+        this.setSelectionRange(cursorPosition, cursorPosition);
     });
-
-
+    
+    // Prevent pasting invalid input
+    input.addEventListener('paste', function(e) {
+        e.preventDefault();
+        const pastedText = e.clipboardData.getData('text/plain').trim();
+        
+        // Process pasted text - capitalize first letter and remove numbers
+        let processedText = pastedText.replace(/\d/g, '');
+        if (processedText.length > 0) {
+            processedText = processedText.charAt(0).toUpperCase() + processedText.slice(1);
+        }
+        
+        // Validate processed text
+        if (validationFunc({ value: processedText })) {
+            // Insert at cursor position
+            const startPos = this.selectionStart;
+            const endPos = this.selectionEnd;
+            const currentValue = this.value;
+            
+            this.value = currentValue.substring(0, startPos) + 
+                         processedText + 
+                         currentValue.substring(endPos);
+            
+            this.classList.remove('border-error');
+            this.classList.add('border-success');
+        } else {
+            this.value = '';
+            this.classList.add('border-error');
+            this.classList.remove('border-success');
+            
+            swal({
+                title: "Invalid Input",
+                text: "Please enter a valid name (letters only, no numbers, proper spacing).",
+                icon: "error",
+                button: "OK",
+            });
+        }
+    });
+}
+        
+        function validateEmail(input) {
+            // Comprehensive email validation
+            const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            return emailRegex.test(input.value.trim());
+        }
+        
+        function preventInvalidInput(input, validationFunc) {
+            input.addEventListener('input', function(e) {
                 // Remove leading and trailing spaces
                 this.value = this.value.trim();
                 // Prevent starting with a space or dot
@@ -540,31 +595,26 @@
                 e.preventDefault();
                 const pastedText = e.clipboardData.getData('text/plain').trim();
 
-    // Capitalize first letter if it's a letter
-    let processedText = pastedText;
-    if (processedText.length > 0 && /^[a-z]/.test(processedText.charAt(0))) {
-        processedText = processedText.charAt(0).toUpperCase() + processedText.slice(1);
-    }
+                // Validate pasted text
+                if (validationFunc({ value: pastedText })) {
+                    this.value = pastedText;
+                    this.classList.remove('border-error');
+                    this.classList.add('border-success');
+                } else {
+                    this.value = '';
+                    this.classList.add('border-error');
+                    this.classList.remove('border-success');
 
-    // Validate pasted text
-    if (validationFunc({ value: processedText })) {
-        this.value = processedText;
-        this.classList.remove('border-error');
-        this.classList.add('border-success');
-    } else {
-        this.value = '';
-        this.classList.add('border-error');
-        this.classList.remove('border-success');
-
-        // Optional: Show error toast or alert
-        swal({
-            title: "Invalid Input",
-            text: "Please enter a valid name (letters and spaces only, first letter capitalized).",
-            icon: "error",
-            button: "OK",
-        });
-    }
-});
+                    // Optional: Show error toast or alert
+                    swal({
+                        title: "Invalid Input",
+                        text: "Please enter a valid input.",
+                        icon: "error",
+                        button: "OK",
+                    });
+                }
+            });
+        }
         
         // Apply validation to specific fields
         preventInvalidInput(firstName, validateName);
