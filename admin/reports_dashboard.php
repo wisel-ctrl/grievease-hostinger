@@ -137,40 +137,40 @@ $basicStatsStmt = $conn->prepare($basicStatsQuery);
 $basicStatsStmt->execute();
 $basicStats = $basicStatsStmt->get_result()->fetch_assoc();
 
-// // Get last month's date from data
-// $lastDateQuery = "SELECT MAX(sale_date) as max_date FROM analytics_tb";
-// $lastDateStmt = $conn->prepare($lastDateQuery);
-// $lastDateStmt->execute();
-// $lastDate = $lastDateStmt->get_result()->fetch_assoc()['max_date'];
+// Get last month's date from data
+$lastDateQuery = "SELECT MAX(sale_date) as max_date FROM analytics_tb";
+$lastDateStmt = $conn->prepare($lastDateQuery);
+$lastDateStmt->execute();
+$lastDate = $lastDateStmt->get_result()->fetch_assoc()['max_date'];
 
-// // Calculate changes
-// $changesQuery = "SELECT 
-//     CASE 
-//         WHEN (SELECT AVG(discounted_price) FROM analytics_tb WHERE sale_date < DATE_SUB(?, INTERVAL 1 MONTH)) > 0 
-//         THEN (SELECT AVG(discounted_price) FROM analytics_tb WHERE sale_date >= DATE_SUB(?, INTERVAL 1 MONTH)) / 
-//              (SELECT AVG(discounted_price) FROM analytics_tb WHERE sale_date < DATE_SUB(?, INTERVAL 1 MONTH)) * 100 - 100 
-//         ELSE 0 
-//     END as price_change,
+// Calculate changes
+$changesQuery = "SELECT 
+    CASE 
+        WHEN (SELECT AVG(discounted_price) FROM analytics_tb WHERE sale_date < DATE_SUB(?, INTERVAL 1 MONTH)) > 0 
+        THEN (SELECT AVG(discounted_price) FROM analytics_tb WHERE sale_date >= DATE_SUB(?, INTERVAL 1 MONTH)) / 
+             (SELECT AVG(discounted_price) FROM analytics_tb WHERE sale_date < DATE_SUB(?, INTERVAL 1 MONTH)) * 100 - 100 
+        ELSE 0 
+    END as price_change,
     
-//     CASE 
-//         WHEN (SELECT AVG(amount_paid) FROM analytics_tb WHERE sale_date < DATE_SUB(?, INTERVAL 1 MONTH)) > 0 
-//         THEN (SELECT AVG(amount_paid) FROM analytics_tb WHERE sale_date >= DATE_SUB(?, INTERVAL 1 MONTH)) / 
-//              (SELECT AVG(amount_paid) FROM analytics_tb WHERE sale_date < DATE_SUB(?, INTERVAL 1 MONTH)) * 100 - 100 
-//         ELSE 0 
-//     END as payment_change,
+    CASE 
+        WHEN (SELECT AVG(amount_paid) FROM analytics_tb WHERE sale_date < DATE_SUB(?, INTERVAL 1 MONTH)) > 0 
+        THEN (SELECT AVG(amount_paid) FROM analytics_tb WHERE sale_date >= DATE_SUB(?, INTERVAL 1 MONTH)) / 
+             (SELECT AVG(amount_paid) FROM analytics_tb WHERE sale_date < DATE_SUB(?, INTERVAL 1 MONTH)) * 100 - 100 
+        ELSE 0 
+    END as payment_change,
     
-//     CASE 
-//         WHEN (SELECT SUM(discounted_price) FROM analytics_tb WHERE sale_date < DATE_SUB(?, INTERVAL 1 MONTH)) > 0 
-//              AND (SELECT SUM(amount_paid) FROM analytics_tb WHERE sale_date < DATE_SUB(?, INTERVAL 1 MONTH)) > 0 
-//         THEN (SELECT (SUM(amount_paid)/SUM(discounted_price)*100) FROM analytics_tb WHERE sale_date >= DATE_SUB(?, INTERVAL 1 MONTH)) / 
-//              (SELECT (SUM(amount_paid)/SUM(discounted_price)*100) FROM analytics_tb WHERE sale_date < DATE_SUB(?, INTERVAL 1 MONTH)) * 100 - 100 
-//         ELSE 0 
-//     END as ratio_change";
+    CASE 
+        WHEN (SELECT SUM(discounted_price) FROM analytics_tb WHERE sale_date < DATE_SUB(?, INTERVAL 1 MONTH)) > 0 
+             AND (SELECT SUM(amount_paid) FROM analytics_tb WHERE sale_date < DATE_SUB(?, INTERVAL 1 MONTH)) > 0 
+        THEN (SELECT (SUM(amount_paid)/SUM(discounted_price)*100) FROM analytics_tb WHERE sale_date >= DATE_SUB(?, INTERVAL 1 MONTH)) / 
+             (SELECT (SUM(amount_paid)/SUM(discounted_price)*100) FROM analytics_tb WHERE sale_date < DATE_SUB(?, INTERVAL 1 MONTH)) * 100 - 100 
+        ELSE 0 
+    END as ratio_change";
 
-// $changesStmt = $conn->prepare($changesQuery);
-// $changesStmt->bind_param("ssssssssss", $lastDate, $lastDate, $lastDate, $lastDate, $lastDate, $lastDate, $lastDate, $lastDate, $lastDate, $lastDate);
-// $changesStmt->execute();
-// $changes = $changesStmt->get_result()->fetch_assoc();
+$changesStmt = $conn->prepare($changesQuery);
+$changesStmt->bind_param("ssssssssss", $lastDate, $lastDate, $lastDate, $lastDate, $lastDate, $lastDate, $lastDate, $lastDate, $lastDate, $lastDate);
+$changesStmt->execute();
+$changes = $changesStmt->get_result()->fetch_assoc();
 
 // Extract values for display
 // Extract values for display with null checks
@@ -178,9 +178,9 @@ $avgPrice = number_format($basicStats['avg_price'] ?? 0, 2);
 $avgPayment = number_format($basicStats['avg_payment'] ?? 0, 2);
 $paymentRatio = number_format($basicStats['payment_ratio'] ?? 0, 1);
 
-// $priceChange = number_format($changes['price_change'] ?? 0, 1);
-// $paymentChange = number_format($changes['payment_change'] ?? 0, 1);
-// $ratioChange = number_format($changes['ratio_change'] ?? 0, 1);
+$priceChange = number_format($changes['price_change'] ?? 0, 1);
+$paymentChange = number_format($changes['payment_change'] ?? 0, 1);
+$ratioChange = number_format($changes['ratio_change'] ?? 0, 1);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -369,19 +369,25 @@ $paymentRatio = number_format($basicStats['payment_ratio'] ?? 0, 1);
     <div class="bg-gray-50 p-4 rounded-lg">
         <div class="text-sm font-medium text-gray-600 mb-2">Average Price</div>
           <div class="text-2xl font-bold text-sidebar-text">$<?php echo $avgPrice; ?> 
-              
+              <span class="<?php echo ($priceChange >= 0) ? 'text-green-600' : 'text-red-600'; ?> text-sm font-normal">
+                  <?php echo ($priceChange >= 0) ? '+' : ''; ?><?php echo $priceChange; ?>%
+              </span>
           </div>
         </div>
     <div class="bg-gray-50 p-4 rounded-lg">
         <div class="text-sm font-medium text-gray-600 mb-2">Average Payment</div>
           <div class="text-2xl font-bold text-sidebar-text">$<?php echo $avgPayment; ?> 
-              
+              <span class="<?php echo ($paymentChange >= 0) ? 'text-green-600' : 'text-red-600'; ?> text-sm font-normal">
+                  <?php echo ($paymentChange >= 0) ? '+' : ''; ?><?php echo $paymentChange; ?>%
+              </span>
           </div>
         </div>
     <div class="bg-gray-50 p-4 rounded-lg">
         <div class="text-sm font-medium text-gray-600 mb-2">Payment Ratio</div>
         <div class="text-2xl font-bold text-sidebar-text"><?php echo $paymentRatio; ?>% 
-            
+            <span class="<?php echo ($ratioChange >= 0) ? 'text-green-600' : 'text-red-600'; ?> text-sm font-normal">
+                <?php echo ($ratioChange >= 0) ? '+' : ''; ?><?php echo $ratioChange; ?>%
+            </span>
         </div>
     </div>
 </div>
