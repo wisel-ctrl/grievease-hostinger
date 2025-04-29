@@ -1697,6 +1697,17 @@ function hideGcashPreview() {
                     <div class="border-b border-gray-200 pb-4 mb-4">
                         <h3 class="text-base md:text-lg font-hedvig text-navy mb-3 md:mb-4">Payment Plan</h3>
 
+                        
+                        <div class="mb-3 md:mb-4">
+                            <label class="block text-sm font-medium text-navy mb-1">Payment Term:</label>
+                            <select id="lifeplanPaymentTerm" name="paymentTerm" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                                <option value="60">5 Years (60 Monthly Payments)</option>
+                                <option value="36">3 Years (36 Monthly Payments)</option>
+                                <option value="24">2 Years (24 Monthly Payments)</option>
+                                <option value="12">1 Year (12 Monthly Payments)</option>
+                            </select>
+                        </div>
+
                         <!-- QR Code Button and Modal -->
                         <div class="mb-4">
                             <button type="button" id="showQrCodeBtn" class="w-full bg-navy hover:bg-navy-600 text-white px-4 py-2 rounded-lg flex items-center justify-center transition-all duration-200">
@@ -1720,15 +1731,6 @@ function hideGcashPreview() {
                                     <p class="text-center font-bold text-yellow-600" id="qrCodeAmount">Amount: ₱0</p>
                                 </div>
                             </div>
-                        </div>
-                        <div class="mb-3 md:mb-4">
-                            <label class="block text-sm font-medium text-navy mb-1">Payment Term:</label>
-                            <select id="lifeplanPaymentTerm" name="paymentTerm" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
-                                <option value="60">5 Years (60 Monthly Payments)</option>
-                                <option value="36">3 Years (36 Monthly Payments)</option>
-                                <option value="24">2 Years (24 Monthly Payments)</option>
-                                <option value="12">1 Year (12 Monthly Payments)</option>
-                            </select>
                         </div>
                         
                         <!-- GCash Upload with Preview (Improved UI) -->
