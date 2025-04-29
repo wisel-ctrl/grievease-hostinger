@@ -2943,11 +2943,21 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Enhanced name validation
 function isValidName(name) {
-    // Must contain at least one non-space character and no special chars/numbers
-    return name.trim().length > 0 && 
-           /^[a-zA-Z\s\-'.]+$/.test(name) && 
-           !/^\s+$/.test(name);
+    // Must contain at least one character, no spaces, and no special chars/numbers
+    return name.length > 0 && 
+           /^[a-zA-Z\-'.]+$/.test(name); // Removed \s (spaces) from the regex
 }
+
+// Prevent spacebar in name fields
+function preventSpaces(event) {
+    if (event.key === ' ') {
+        event.preventDefault();
+    }
+}
+
+document.getElementById('firstName').addEventListener('keydown', preventSpaces);
+document.getElementById('lastName').addEventListener('keydown', preventSpaces);
+document.getElementById('middleName').addEventListener('keydown', preventSpaces);
 
 // Real-time validation setup
 function setupRealTimeValidation() {
@@ -2955,38 +2965,38 @@ function setupRealTimeValidation() {
     restrictPhoneInput();
 
     // First Name
-    document.getElementById('firstName').addEventListener('input', function() {
-        const value = this.value.trim();
-        if (!value) {
-            showError('firstName', 'First name is required');
-        } else if (!isValidName(value)) {
-            showError('firstName', 'Only letters, spaces, hyphens, apostrophes and periods allowed');
-        } else {
-            clearError('firstName');
-        }
-    });
+document.getElementById('firstName').addEventListener('input', function() {
+    const value = this.value.trim();
+    if (!value) {
+        showError('firstName', 'First name is required');
+    } else if (!isValidName(value)) {
+        showError('firstName', 'Only letters, hyphens, apostrophes, and periods allowed (no spaces)');
+    } else {
+        clearError('firstName');
+    }
+});
 
-    // Last Name
-    document.getElementById('lastName').addEventListener('input', function() {
-        const value = this.value.trim();
-        if (!value) {
-            showError('lastName', 'Last name is required');
-        } else if (!isValidName(value)) {
-            showError('lastName', 'Only letters, spaces, hyphens, apostrophes and periods allowed');
-        } else {
-            clearError('lastName');
-        }
-    });
+// Last Name
+document.getElementById('lastName').addEventListener('input', function() {
+    const value = this.value.trim();
+    if (!value) {
+        showError('lastName', 'Last name is required');
+    } else if (!isValidName(value)) {
+        showError('lastName', 'Only letters, hyphens, apostrophes, and periods allowed (no spaces)');
+    } else {
+        clearError('lastName');
+    }
+});
 
-    // Middle Name (optional but still validate format)
-    document.getElementById('middleName').addEventListener('input', function() {
-        const value = this.value.trim();
-        if (value && !isValidName(value)) {
-            showError('middleName', 'Only letters, spaces, hyphens, apostrophes and periods allowed');
-        } else {
-            clearError('middleName');
-        }
-    });
+// Middle Name (optional but still validate format)
+document.getElementById('middleName').addEventListener('input', function() {
+    const value = this.value.trim();
+    if (value && !isValidName(value)) {
+        showError('middleName', 'Only letters, hyphens, apostrophes, and periods allowed (no spaces)');
+    } else {
+        clearError('middleName');
+    }
+});
 
     // Phone Number
     document.getElementById('phone').addEventListener('input', function() {
