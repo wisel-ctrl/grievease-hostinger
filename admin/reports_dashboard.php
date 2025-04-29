@@ -107,6 +107,26 @@ while ($row = $casketResult->fetch_assoc()) {
     ];
 }
 
+$salesQuery = "SELECT 
+    DATE_FORMAT(sale_date, '%Y-%m-01') AS month_start, 
+    SUM(discounted_price) AS monthly_revenue, 
+    SUM(amount_paid) AS monthly_amount_paid 
+FROM 
+    analytics_tb 
+GROUP BY 
+    DATE_FORMAT(sale_date, '%Y-%m-01') 
+ORDER BY 
+    month_start";
+
+$salesStmt = $conn->prepare($salesQuery);
+$salesStmt->execute();
+$salesResult = $salesStmt->get_result();
+$salesData = [];
+
+while ($row = $salesResult->fetch_assoc()) {
+    $salesData[] = $row;
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -293,13 +313,10 @@ while ($row = $casketResult->fetch_assoc()) {
         <option>Last Year</option>
         <option>Last Quarter</option>
       </select>
-      <button class="px-3 py-2 border border-sidebar-border rounded-md text-sm flex items-center text-sidebar-text hover:bg-sidebar-hover transition-all duration-300">
-        <i class="fas fa-download mr-2"></i> Export
-      </button>
     </div>
   </div>
   <div class="p-5">
-    <canvas id="salesSplineChart" class="h-96"></canvas>
+    <div id="salesSplineChart" class="h-96"></div>
   </div>
   <div class="grid grid-cols-1 md:grid-cols-3 gap-5 px-5 pb-5">
     <div class="bg-gray-50 p-4 rounded-lg">
@@ -829,6 +846,296 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 </script>
+<script>
+  const salesData = <?php echo json_encode($salesData); ?>;
+
+document.addEventListener('DOMContentLoaded', function() {
+  // Function to calculate simple forecast based on historical data
+  function calculateForecast(historicalData, monthsToForecast = 6) {
+    if (!historicalData || historicalData.length < 2) return [];
+    
+    // Get last few months of data for forecasting
+    const recentData = historicalData.slice(-6);
+    
+    // Calculate average monthly growth rate
+    let totalGrowthRateRevenue = 0;
+    let totalGrowthRatePayment = 0;
+    let countPairs = 0;
+    
+    for (let i = 1; i < recentData.length; i++) {
+      const prevRevenue = parseFloat(recentData[i-1].monthly_revenue);
+      const currRevenue = parseFloat(recentData[i].monthly_revenue);
+      const prevPayment = parseFloat(recentData[i-1].monthly_amount_paid);
+      const currPayment = parseFloat(recentData[i].monthly_amount_paid);
+      
+      if (prevRevenue > 0 && prevPayment > 0) {
+        totalGrowthRateRevenue += (currRevenue / prevRevenue - 1);
+        totalGrowthRatePayment += (currPayment / prevPayment - 1);
+        countPairs++;
+      }
+    }
+    
+    // Average monthly growth rate (with safeguards)
+    const avgGrowthRateRevenue = countPairs > 0 ? totalGrowthRateRevenue / countPairs : 0.05; // Default 5% if no data
+    const avgGrowthRatePayment = countPairs > 0 ? totalGrowthRatePayment / countPairs : 0.05;
+    
+    // Cap growth rates between -15% and +25%
+    const cappedGrowthRateRevenue = Math.max(-0.15, Math.min(0.25, avgGrowthRateRevenue));
+    const cappedGrowthRatePayment = Math.max(-0.15, Math.min(0.25, avgGrowthRatePayment));
+    
+    // Get the last data point's date and values
+    const lastDataPoint = recentData[recentData.length - 1];
+    const lastDate = new Date(lastDataPoint.month_start);
+    const lastRevenue = parseFloat(lastDataPoint.monthly_revenue);
+    const lastPayment = parseFloat(lastDataPoint.monthly_amount_paid);
+    
+    // Generate forecast data
+    const forecastData = [];
+    
+    for (let i = 1; i <= monthsToForecast; i++) {
+      const forecastDate = new Date(lastDate);
+      forecastDate.setMonth(forecastDate.getMonth() + i);
+      
+      const forecastRevenue = lastRevenue * Math.pow(1 + cappedGrowthRateRevenue, i);
+      const forecastPayment = lastPayment * Math.pow(1 + cappedGrowthRatePayment, i);
+      
+      forecastData.push({
+        month_start: forecastDate.toISOString().split('T')[0],
+        monthly_revenue: forecastRevenue.toFixed(2),
+        monthly_amount_paid: forecastPayment.toFixed(2),
+        is_forecast: true
+      });
+    }
+    
+    return forecastData;
+  }
+  
+  // Prepare data for chart
+  if (salesData && salesData.length > 0) {
+    // Calculate forecast for the next 6 months
+    const forecastData = calculateForecast(salesData, 6);
+    
+    // Combine historical and forecast data
+    const combinedData = [...salesData, ...forecastData];
+    
+    // Prepare series data
+    const revenueData = combinedData.map(item => ({
+      x: new Date(item.month_start).getTime(),
+      y: parseFloat(item.monthly_revenue),
+      isForecast: item.is_forecast || false
+    }));
+    
+    const paymentsData = combinedData.map(item => ({
+      x: new Date(item.month_start).getTime(),
+      y: parseFloat(item.monthly_amount_paid),
+      isForecast: item.is_forecast || false
+    }));
+    
+    // Create ApexCharts options
+    const options = {
+      series: [
+        {
+          name: 'Total Price (Discounted)',
+          data: revenueData,
+          color: '#3B82F6', // Blue
+          stroke: {
+            width: 3,
+            curve: 'smooth',
+            lineCap: 'round'
+          }
+        },
+        {
+          name: 'Amount Paid',
+          data: paymentsData,
+          color: '#10B981', // Green
+          stroke: {
+            width: 3,
+            curve: 'smooth',
+            lineCap: 'round'
+          }
+        }
+      ],
+      chart: {
+        height: 380,
+        type: 'area',
+        fontFamily: 'Inter, Helvetica, sans-serif',
+        toolbar: {
+          show: true
+        },
+        zoom: {
+          enabled: false
+        },
+        animations: {
+          enabled: true,
+          easing: 'easeinout',
+          speed: 800,
+          animateGradually: {
+            enabled: true,
+            delay: 150
+          },
+          dynamicAnimation: {
+            enabled: true,
+            speed: 350
+          }
+        }
+      },
+      dataLabels: {
+        enabled: false
+      },
+      stroke: {
+        curve: 'smooth',
+        width: 3
+      },
+      fill: {
+        type: 'gradient',
+        gradient: {
+          shadeIntensity: 1,
+          opacityFrom: 0.4,
+          opacityTo: 0.1,
+          stops: [0, 95, 100]
+        }
+      },
+      grid: {
+        borderColor: '#f1f1f1',
+        strokeDashArray: 4,
+        xaxis: {
+          lines: {
+            show: true
+          }
+        }
+      },
+      xaxis: {
+        type: 'datetime',
+        labels: {
+          formatter: function(value) {
+            return new Date(value).toLocaleDateString('default', { month: 'short', year: 'numeric' });
+          }
+        },
+        title: {
+          text: 'Month',
+          style: {
+            fontSize: '14px',
+            fontWeight: 600,
+            color: '#64748b'
+          }
+        }
+      },
+      yaxis: {
+        title: {
+          text: 'Amount ($)',
+          style: {
+            fontSize: '14px',
+            fontWeight: 600,
+            color: '#64748b'
+          }
+        },
+        labels: {
+          formatter: function(value) {
+            return '$' + value.toLocaleString('en-US', {
+              minimumFractionDigits: 0,
+              maximumFractionDigits: 0
+            });
+          }
+        }
+      },
+      tooltip: {
+        shared: true,
+        x: {
+          format: 'MMM yyyy'
+        },
+        y: {
+          formatter: function(value) {
+            return '$' + value.toLocaleString('en-US', {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2
+            });
+          }
+        },
+        custom: function({ seriesIndex, dataPointIndex, w }) {
+          const point = w.config.series[seriesIndex].data[dataPointIndex];
+          const isForecast = point.isForecast;
+          
+          if (isForecast) {
+            return `<div class="forecast-tooltip">
+                      <div class="forecast-badge">Forecast</div>
+                      <div class="tooltip-content">
+                        ${w.globals.seriesNames[seriesIndex]}: $${point.y.toLocaleString('en-US', {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2
+                        })}
+                      </div>
+                    </div>`;
+          }
+          
+          return undefined; // Use default tooltip
+        }
+      },
+      markers: {
+        size: 4,
+        strokeWidth: 2,
+        hover: {
+          size: 7
+        }
+      },
+      legend: {
+        position: 'top',
+        horizontalAlign: 'right',
+        floating: true,
+        offsetY: -25,
+        offsetX: -5
+      },
+      annotations: {
+        xaxis: [{
+          x: salesData[salesData.length - 1].month_start,
+          strokeDashArray: 0,
+          borderColor: '#775DD0',
+          label: {
+            borderColor: '#775DD0',
+            style: {
+              color: '#fff',
+              background: '#775DD0'
+            },
+            text: 'Current'
+          }
+        }]
+      }
+    };
+    
+    // Render the chart
+    const chart = new ApexCharts(document.querySelector("#salesSplineChart"), options);
+    chart.render();
+    
+    // Add custom styles for forecast tooltip
+    const style = document.createElement('style');
+    style.innerHTML = `
+      .forecast-tooltip {
+        padding: 10px;
+        background: #fff;
+        border-radius: 5px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        border: 1px solid #eee;
+      }
+      .forecast-badge {
+        background: #775DD0;
+        color: white;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 11px;
+        margin-bottom: 5px;
+        display: inline-block;
+      }
+      .tooltip-content {
+        font-size: 13px;
+        font-weight: 500;
+      }
+    `;
+    document.head.appendChild(style);
+  } else {
+    document.querySelector("#salesSplineChart").innerHTML = '<div class="p-4 text-center text-gray-500">No sales data available</div>';
+  }
+});
+</script>
+
     <script src="script.js"></script>
     <script src="tailwind.js"></script>
 </body>
