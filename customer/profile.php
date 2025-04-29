@@ -2725,6 +2725,7 @@ function validateForm() {
     const streetAddress = document.getElementById('street_address').value.trim();
     const zip = document.getElementById('zip').value.trim();
     
+    
     if (!region) {
         isValid = false;
         showError('region', 'Region is required');
@@ -2756,13 +2757,22 @@ function validateForm() {
     if (!streetAddress) {
         isValid = false;
         showError('street_address', 'Street address is required');
+    } else if (streetAddress.length < 5) {
+        isValid = false;
+        showError('street_address', 'Street address must be at least 5 characters');
     } else {
         clearError('street_address');
     }
     
     if (!zip) {
         isValid = false;
-        showError('zip', 'Zip/Postal code is required');
+        showError('zip', 'Zip code is required');
+    } else if (!/^\d+$/.test(zip)) {
+        isValid = false;
+        showError('zip', 'Zip code must contain only numbers');
+    } else if (zip.length < 4) {
+        isValid = false;
+        showError('zip', 'Zip code must be at least 4 digits');
     } else {
         clearError('zip');
     }
