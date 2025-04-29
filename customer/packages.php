@@ -1516,19 +1516,30 @@ document.getElementById('removeGcash').addEventListener('click', function() {
     hideGcashPreview();
 });
 
-// Helper functions
 function hideDeathCertPreview() {
-    document.getElementById('deathCertPreviewContainer').classList.add('hidden');
-    document.getElementById('deathCertImagePreview').classList.add('hidden');
-    document.getElementById('deathCertPdfPreview').classList.add('hidden');
-    document.getElementById('removeDeathCert').classList.add('hidden');
+    document.getElementById('deathCertPreviewContainer')?.classList.add('hidden');
+    document.getElementById('deathCertImagePreview')?.classList.add('hidden');
+    document.getElementById('deathCertPdfPreview')?.classList.add('hidden');
+    document.getElementById('removeDeathCert')?.classList.add('hidden');
+    document.getElementById('traditionalDeathCertificate').value = '';
+    document.getElementById('traditionalDeathCertFileName').textContent = 'No file chosen';
 }
 
 function hideGcashPreview() {
-    document.getElementById('gcashPreviewContainer').classList.add('hidden');
-    document.getElementById('gcashImagePreview').classList.add('hidden');
-    document.getElementById('gcashPdfPreview').classList.add('hidden');
-    document.getElementById('removeGcash').classList.add('hidden');
+    document.getElementById('gcashPreviewContainer')?.classList.add('hidden');
+    document.getElementById('gcashImagePreview')?.classList.add('hidden');
+    document.getElementById('gcashPdfPreview')?.classList.add('hidden');
+    document.getElementById('removeGcash')?.classList.add('hidden');
+    document.getElementById('traditionalGcashReceipt').value = '';
+    document.getElementById('traditionalGcashFileName').textContent = 'No file chosen';
+}
+
+function removeDeathCert() {
+    hideDeathCertPreview();
+}
+
+function removeGcash() {
+    hideGcashPreview();
 }
 
 
@@ -1814,8 +1825,8 @@ function hideGcashPreview() {
 
 <!-- Add this script at the end -->
 <script>
-// GCash Receipt Upload Preview for Lifeplan
-document.getElementById('lifeplanGcashReceipt').addEventListener('change', function() {
+// Lifeplan GCash Receipt Upload Preview
+document.getElementById('lifeplanGcashReceipt')?.addEventListener('change', function() {
     const file = this.files[0];
     if (!file) {
         hideLifeplanGcashPreview();
@@ -1829,16 +1840,16 @@ document.getElementById('lifeplanGcashReceipt').addEventListener('change', funct
     
     // Show preview container
     const previewContainer = document.getElementById('lifeplanGcashPreviewContainer');
-    previewContainer.classList.remove('hidden');
+    previewContainer?.classList.remove('hidden');
     
     // Show remove button
-    document.getElementById('removeLifeplanGcash').classList.remove('hidden');
+    document.getElementById('removeLifeplanGcash')?.classList.remove('hidden');
     
     // Check file type
     if (file.type === 'application/pdf') {
         // PDF Preview
-        document.getElementById('lifeplanGcashPdfPreview').classList.remove('hidden');
-        document.getElementById('lifeplanGcashImagePreview').classList.add('hidden');
+        document.getElementById('lifeplanGcashPdfPreview')?.classList.remove('hidden');
+        document.getElementById('lifeplanGcashImagePreview')?.classList.add('hidden');
         
         // Setup PDF viewer button
         document.getElementById('viewLifeplanGcashPdf').onclick = function() {
@@ -1847,16 +1858,32 @@ document.getElementById('lifeplanGcashReceipt').addEventListener('change', funct
         };
     } else {
         // Image Preview
-        document.getElementById('lifeplanGcashImagePreview').classList.remove('hidden');
-        document.getElementById('lifeplanGcashPdfPreview').classList.add('hidden');
+        document.getElementById('lifeplanGcashImagePreview')?.classList.remove('hidden');
+        document.getElementById('lifeplanGcashPdfPreview')?.classList.add('hidden');
         
         const reader = new FileReader();
         reader.onload = function(e) {
-            document.getElementById('lifeplanGcashImage').src = e.target.result;
+            const imgPreview = document.getElementById('lifeplanGcashImage');
+            if (imgPreview) {
+                imgPreview.src = e.target.result;
+            }
         };
         reader.readAsDataURL(file);
     }
 });
+
+function hideLifeplanGcashPreview() {
+    document.getElementById('lifeplanGcashPreviewContainer')?.classList.add('hidden');
+    document.getElementById('lifeplanGcashImagePreview')?.classList.add('hidden');
+    document.getElementById('lifeplanGcashPdfPreview')?.classList.add('hidden');
+    document.getElementById('removeLifeplanGcash')?.classList.add('hidden');
+    document.getElementById('lifeplanGcashReceipt').value = '';
+    document.getElementById('lifeplanGcashFileName').textContent = 'No file chosen';
+}
+
+function removeLifeplanGcash() {
+    hideLifeplanGcashPreview();
+}
 
 // Remove button functionality for Lifeplan
 document.getElementById('removeLifeplanGcash').addEventListener('click', function() {
@@ -2171,52 +2198,217 @@ document.querySelectorAll('.closeModalBtn').forEach(btn => {
         document.getElementById('traditionalSelectedPackagePrice').value = totalPrice;
     }
 
-    // Function to open traditional modal with package details
     function openTraditionalModal() {
-        const packageName = sessionStorage.getItem('selectedPackageName');
-        const packagePrice = sessionStorage.getItem('selectedPackagePrice');
-        const packageImage = sessionStorage.getItem('selectedPackageImage');
-        const packageFeatures = JSON.parse(sessionStorage.getItem('selectedPackageFeatures') || '[]');
-        
-        const selectedPackage = packagesFromDB.find(pkg => pkg.name === packageName);
-        
-        document.querySelector('#traditionalModal .font-hedvig.text-2xl.text-navy').textContent = 'Book Your Package';
-        
-        document.getElementById('traditionalPackageName').textContent = packageName;
-        document.getElementById('traditionalPackagePrice').textContent = `₱${parseInt(packagePrice).toLocaleString()}`;
-        
-        if (packageImage) {
-            document.getElementById('traditionalPackageImage').src = packageImage;
-            document.getElementById('traditionalPackageImage').alt = packageName;
-        }
-        
-        const totalPrice = parseInt(packagePrice);
-        const downpayment = Math.ceil(totalPrice * 0.3);
-        
-        document.getElementById('traditionalTotalPrice').textContent = `₱${totalPrice.toLocaleString()}`;
-        document.getElementById('traditionalDownpayment').textContent = `₱${downpayment.toLocaleString()}`;
-        document.getElementById('traditionalAmountDue').textContent = `₱${downpayment.toLocaleString()}`;
-
-        // Update mobile view totals
-        document.getElementById('traditionalTotalPriceMobile').textContent = `₱${totalPrice.toLocaleString()}`;
-        document.getElementById('traditionalAmountDueMobile').textContent = `₱${downpayment.toLocaleString()}`;
-
-        const featuresList = document.getElementById('traditionalPackageFeatures');
-        featuresList.innerHTML = '';
-        packageFeatures.forEach(feature => {
-            featuresList.innerHTML += `<li class="flex items-center text-sm text-gray-700">${feature}</li>`;
-        });
-        
-        document.getElementById('traditionalSelectedPackagePrice').value = totalPrice;
-        document.getElementById('traditionalServiceId').value = selectedPackage.id;
-        document.getElementById('traditionalBranchId').value = <?php echo $branch_id; ?>;
-        
-        // Reset form section visibility
-        detailsSection.classList.remove('hidden');
-        formSection.classList.add('hidden');
-        
-        document.getElementById('traditionalModal').classList.remove('hidden');
+    const packageName = sessionStorage.getItem('selectedPackageName');
+    const packagePrice = sessionStorage.getItem('selectedPackagePrice');
+    const packageImage = sessionStorage.getItem('selectedPackageImage');
+    const packageFeatures = JSON.parse(sessionStorage.getItem('selectedPackageFeatures') || '[]');
+    
+    const selectedPackage = packagesFromDB.find(pkg => pkg.name === packageName);
+    
+    document.querySelector('#traditionalModal .font-hedvig.text-2xl.text-navy').textContent = 'Book Your Package';
+    
+    document.getElementById('traditionalPackageName').textContent = packageName;
+    document.getElementById('traditionalPackagePrice').textContent = `₱${parseInt(packagePrice).toLocaleString()}`;
+    
+    if (packageImage) {
+        document.getElementById('traditionalPackageImage').src = packageImage;
+        document.getElementById('traditionalPackageImage').alt = packageName;
     }
+    
+    const totalPrice = parseInt(packagePrice);
+    const downpayment = Math.ceil(totalPrice * 0.3);
+    
+    document.getElementById('traditionalTotalPrice').textContent = `₱${totalPrice.toLocaleString()}`;
+    document.getElementById('traditionalDownpayment').textContent = `₱${downpayment.toLocaleString()}`;
+    document.getElementById('traditionalAmountDue').textContent = `₱${downpayment.toLocaleString()}`;
+
+    // Update mobile view totals
+    document.getElementById('traditionalTotalPriceMobile').textContent = `₱${totalPrice.toLocaleString()}`;
+    document.getElementById('traditionalAmountDueMobile').textContent = `₱${downpayment.toLocaleString()}`;
+
+    const featuresList = document.getElementById('traditionalPackageFeatures');
+    featuresList.innerHTML = '';
+    packageFeatures.forEach(feature => {
+        featuresList.innerHTML += `<li class="flex items-center text-sm text-gray-700">${feature}</li>`;
+    });
+    
+    document.getElementById('traditionalSelectedPackagePrice').value = totalPrice;
+    document.getElementById('traditionalServiceId').value = selectedPackage.id;
+    document.getElementById('traditionalBranchId').value = <?php echo $branch_id; ?>;
+    
+    // Reset file upload previews
+    hideDeathCertPreview();
+    hideGcashPreview();
+    
+    // Reset form fields
+    document.getElementById('traditionalBookingForm').reset();
+    
+    // Re-attach event listeners for file uploads
+    const deathCertInput = document.getElementById('traditionalDeathCertificate');
+    const gcashInput = document.getElementById('traditionalGcashReceipt');
+    
+    if (deathCertInput) {
+        deathCertInput.removeEventListener('change', handleDeathCertUpload);
+        deathCertInput.addEventListener('change', handleDeathCertUpload);
+    }
+    
+    if (gcashInput) {
+        gcashInput.removeEventListener('change', handleGcashUpload);
+        gcashInput.addEventListener('change', handleGcashUpload);
+    }
+    
+    // Re-attach remove button listeners
+    const removeDeathCertBtn = document.getElementById('removeDeathCert');
+    const removeGcashBtn = document.getElementById('removeGcash');
+    
+    if (removeDeathCertBtn) {
+        removeDeathCertBtn.removeEventListener('click', removeDeathCert);
+        removeDeathCertBtn.addEventListener('click', removeDeathCert);
+    }
+    
+    if (removeGcashBtn) {
+        removeGcashBtn.removeEventListener('click', removeGcash);
+        removeGcashBtn.addEventListener('click', removeGcash);
+    }
+    
+    // Reset form section visibility
+    const detailsSection = document.querySelector('#traditionalModal .details-section');
+    const formSection = document.querySelector('#traditionalModal .form-section');
+    
+    detailsSection.classList.remove('hidden');
+    formSection.classList.add('hidden');
+    formSection.classList.remove('force-show');
+    
+    // Show the modal
+    document.getElementById('traditionalModal').classList.remove('hidden');
+    
+    // Initialize address fields
+    initializeAddressFields();
+}
+
+// Helper functions for file uploads
+function handleDeathCertUpload() {
+    const file = this.files[0];
+    if (!file) {
+        hideDeathCertPreview();
+        return;
+    }
+    
+    // Update file name display
+    const fileName = file.name;
+    document.getElementById('traditionalDeathCertFileName').textContent = fileName.length > 20 ? 
+        fileName.substring(0, 17) + '...' : fileName;
+    
+    // Show preview container
+    const previewContainer = document.getElementById('deathCertPreviewContainer');
+    if (previewContainer) previewContainer.classList.remove('hidden');
+    
+    // Show remove button
+    const removeBtn = document.getElementById('removeDeathCert');
+    if (removeBtn) removeBtn.classList.remove('hidden');
+    
+    // Check file type
+    if (file.type === 'application/pdf') {
+        // PDF Preview
+        const pdfPreview = document.getElementById('deathCertPdfPreview');
+        const imgPreview = document.getElementById('deathCertImagePreview');
+        if (pdfPreview) pdfPreview.classList.remove('hidden');
+        if (imgPreview) imgPreview.classList.add('hidden');
+        
+        // Setup PDF viewer button
+        const viewPdfBtn = document.getElementById('viewDeathCertPdf');
+        if (viewPdfBtn) {
+            viewPdfBtn.onclick = function() {
+                const fileURL = URL.createObjectURL(file);
+                window.open(fileURL, '_blank');
+            };
+        }
+    } else {
+        // Image Preview
+        const imgPreview = document.getElementById('deathCertImagePreview');
+        const pdfPreview = document.getElementById('deathCertPdfPreview');
+        if (imgPreview) imgPreview.classList.remove('hidden');
+        if (pdfPreview) pdfPreview.classList.add('hidden');
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const imgElement = document.getElementById('deathCertImage');
+            if (imgElement) {
+                imgElement.src = e.target.result;
+            }
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
+function handleGcashUpload() {
+    const file = this.files[0];
+    if (!file) {
+        hideGcashPreview();
+        return;
+    }
+    
+    // Update file name display
+    const fileName = file.name;
+    document.getElementById('traditionalGcashFileName').textContent = fileName.length > 20 ? 
+        fileName.substring(0, 17) + '...' : fileName;
+    
+    // Show preview container
+    const previewContainer = document.getElementById('gcashPreviewContainer');
+    if (previewContainer) previewContainer.classList.remove('hidden');
+    
+    // Show remove button
+    const removeBtn = document.getElementById('removeGcash');
+    if (removeBtn) removeBtn.classList.remove('hidden');
+    
+    // Check file type
+    if (file.type === 'application/pdf') {
+        // PDF Preview
+        const pdfPreview = document.getElementById('gcashPdfPreview');
+        const imgPreview = document.getElementById('gcashImagePreview');
+        if (pdfPreview) pdfPreview.classList.remove('hidden');
+        if (imgPreview) imgPreview.classList.add('hidden');
+        
+        // Setup PDF viewer button
+        const viewPdfBtn = document.getElementById('viewGcashPdf');
+        if (viewPdfBtn) {
+            viewPdfBtn.onclick = function() {
+                const fileURL = URL.createObjectURL(file);
+                window.open(fileURL, '_blank');
+            };
+        }
+    } else {
+        // Image Preview
+        const imgPreview = document.getElementById('gcashImagePreview');
+        const pdfPreview = document.getElementById('gcashPdfPreview');
+        if (imgPreview) imgPreview.classList.remove('hidden');
+        if (pdfPreview) pdfPreview.classList.add('hidden');
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const imgElement = document.getElementById('gcashImage');
+            if (imgElement) {
+                imgElement.src = e.target.result;
+            }
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
+function initializeAddressFields() {
+    // Reset address fields
+    document.getElementById('traditionalDeceasedRegion').value = '';
+    document.getElementById('traditionalDeceasedProvince').value = '';
+    document.getElementById('traditionalDeceasedCity').value = '';
+    document.getElementById('traditionalDeceasedBarangay').value = '';
+    document.getElementById('traditionalDeceasedStreet').value = '';
+    
+    // Re-enable event listeners for address fields
+    document.getElementById('traditionalDeceasedRegion').addEventListener('change', updateTraditionalProvinces);
+    document.getElementById('traditionalDeceasedProvince').addEventListener('change', updateTraditionalCities);
+    document.getElementById('traditionalDeceasedCity').addEventListener('change', updateTraditionalBarangays);
+}
     
     // Reset addons when modal is opened
     document.querySelectorAll('.traditional-addon').forEach(checkbox => {
