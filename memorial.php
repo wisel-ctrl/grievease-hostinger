@@ -175,8 +175,9 @@ function toggleMenu() {
                     
                     <!-- Reflection/Glow -->
                     <div id="candle-glow" class="absolute bottom-2 w-36 sm:w-48 h-6 sm:h-8 bg-yellow-600/0 rounded-full blur-xl transition-all duration-1000"></div>
-                
-                
+                </div>
+ 
+</div>
                 <!-- Light Button -->
                 <button id="light-button" class="bg-yellow-600 hover:bg-yellow-700 text-white px-4 sm:px-6 py-2 rounded-lg shadow-lg transition-all duration-300 text-sm w-full max-w-xs">
                     Light Candle
