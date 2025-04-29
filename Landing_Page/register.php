@@ -316,6 +316,25 @@
 </div>
     <!-- CALENDAR UI -->
     <script>
+
+        // Close OTP modal when clicking the close button
+document.getElementById('closeOtpModal').addEventListener('click', function() {
+    otpModal.classList.add('hidden');
+    otpModal.classList.remove('flex');
+    clearInterval(timerInterval); // Clear the OTP timer if it's running
+});
+
+// Close OTP modal when clicking outside the modal content
+document.getElementById('otpModalBackdrop').addEventListener('click', function() {
+    otpModal.classList.add('hidden');
+    otpModal.classList.remove('flex');
+    clearInterval(timerInterval); // Clear the OTP timer if it's running
+});
+
+// Prevent clicks inside the modal content from closing the modal
+document.getElementById('otpModalContent').addEventListener('click', function(e) {
+    e.stopPropagation();
+});
         document.addEventListener('DOMContentLoaded', function() {
             const birthdateInput = document.getElementById('birthdate');
             
