@@ -3,7 +3,8 @@ require_once '../../db_connect.php';
 
 $bookingId = $_GET['booking_id'] ?? 0;
 
-$query = "SELECT b.*, s.service_name, s.selling_price, br.branch_name 
+$query = "SELECT b.*, s.service_name, s.selling_price, br.branch_name, 
+                 b.deathcert_url, b.payment_url
           FROM booking_tb b
           JOIN services_tb s ON b.service_id = s.service_id
           JOIN branch_tb br ON b.branch_id = br.branch_id
@@ -16,12 +17,23 @@ $result = $stmt->get_result();
 
 if ($result->num_rows > 0) {
     $booking = $result->fetch_assoc();
-    echo json_encode(['success' => true, ...$booking]);
+    
+    // Construct full URLs
+    $base_url = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]";
+    
+    $deathcert_url = $booking['deathcert_url'] ? $base_url . '/customer/booking/uploads/' . basename($booking['deathcert_url']) : '';
+    $payment_url = $booking['payment_url'] ? $base_url . '/customer/booking/uploads/' . basename($booking['payment_url']) : '';
+    
+    echo json_encode([
+        'success' => true, 
+        ...$booking,
+        'death_certificate' => $deathcert_url,
+        'payment_proof' => $payment_url
+    ]);
 } else {
     echo json_encode(['success' => false, 'message' => 'Booking not found']);
 }
 
 $stmt->close();
 $conn->close();
-
 ?>
