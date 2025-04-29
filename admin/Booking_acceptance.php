@@ -555,21 +555,15 @@ $offset = ($current_page - 1) * $bookings_per_page;
               </h5>
               <div class="border border-gray-200 rounded-lg overflow-hidden">
                 <div id="deathCertificateAvailable" class="text-center">
-                  <div class="relative bg-gray-100 p-1">
-                    <img id="deathCertificateImage" alt="Death Certificate" class="mx-auto rounded-md max-h-48 object-contain" />
-                    <div class="absolute top-2 right-2">
-                      <button class="bg-white rounded-full p-1 shadow-md hover:bg-gray-100 transition-colors duration-200" title="View Full Size">
-                        <i class="fas fa-search-plus text-blue-600"></i>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-                <div id="deathCertificateNotAvailable" class="hidden">
-                  <div class="flex flex-col items-center justify-center py-8 px-4 bg-gray-50">
-                    <i class="fas fa-exclamation-circle text-gray-400 text-3xl mb-2"></i>
-                    <p class="text-gray-500 text-center">No death certificate has been uploaded yet.</p>
-                  </div>
-                </div>
+                <div id="deathCertificateAvailable" class="text-center hidden">
+    <!-- This will be populated dynamically based on file type -->
+</div>
+<div id="deathCertificateNotAvailable" class="hidden">
+    <div class="flex flex-col items-center justify-center py-8 px-4 bg-gray-50">
+        <i class="fas fa-exclamation-circle text-gray-400 text-3xl mb-2"></i>
+        <p class="text-gray-500 text-center">No death certificate has been uploaded yet.</p>
+    </div>
+</div>
               </div>
             </div>
             
@@ -604,6 +598,29 @@ $offset = ($current_page - 1) * $bookings_per_page;
       </button>
     </div>
   </div>
+</div>
+
+<!-- PDF Preview Modal -->
+<div id="pdfPreviewModal" class="fixed inset-0 z-[60] bg-black bg-opacity-75 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-lg w-full max-w-4xl max-h-[90vh] flex flex-col">
+        <div class="flex justify-between items-center bg-gray-800 text-white p-3 rounded-t-lg">
+            <h3 class="text-lg">PDF Preview</h3>
+            <button onclick="closePdfPreview()" class="text-white hover:text-gray-300">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="flex-1 overflow-auto p-4">
+            <iframe id="pdfPreviewFrame" src="" class="w-full h-full min-h-[70vh]" frameborder="0"></iframe>
+        </div>
+        <div class="bg-gray-100 p-3 rounded-b-lg flex justify-end">
+            <button id="openPdfInNewTab" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 mr-2">
+                <i class="fas fa-external-link-alt mr-2"></i> Open in New Tab
+            </button>
+            <button onclick="closePdfPreview()" class="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700">
+                Close
+            </button>
+        </div>
+    </div>
 </div>
 
 <!-- Decline Reason Modal -->
@@ -818,29 +835,64 @@ $offset = ($current_page - 1) * $bookings_per_page;
       console.log("Payment Proof URL:", data.payment_url);
       
       // Handle Death Certificate Image
-      const deathCertAvailable = document.getElementById('deathCertificateAvailable');
-      const deathCertNotAvailable = document.getElementById('deathCertificateNotAvailable');
-      const deathCertImage = document.getElementById('deathCertificateImage');
+const deathCertAvailable = document.getElementById('deathCertificateAvailable');
+const deathCertNotAvailable = document.getElementById('deathCertificateNotAvailable');
 
-      if (data.deathcert_url && data.deathcert_url !== '') {
-        // Use relative path with ../ to navigate up and then to the customer/booking/uploads folder
-        const deathCertPath = '../customer/booking/uploads/' + data.deathcert_url.replace(/^uploads\//, '');
-        console.log("Death Certificate Path:", deathCertPath);
+if (data.deathcert_url && data.deathcert_url !== '') {
+    // Use relative path with ../ to navigate up and then to the customer/booking/uploads folder
+    const deathCertPath = '../customer/booking/uploads/' + data.deathcert_url.replace(/^uploads\//, '');
+    console.log("Death Certificate Path:", deathCertPath);
+    
+    // Check if it's a PDF
+    const isPdf = deathCertPath.toLowerCase().endsWith('.pdf');
+    
+    if (isPdf) {
+        // PDF display
+        deathCertAvailable.innerHTML = `
+            <div class="flex flex-col items-center justify-center py-4 bg-gray-100 p-4 rounded-lg">
+                <i class="fas fa-file-pdf text-red-500 text-4xl mb-2"></i>
+                <p class="text-sm text-gray-600 mb-2">PDF Document</p>
+                <button class="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700 transition-colors"
+                    onclick="window.open('${deathCertPath}', '_blank')">
+                    <i class="fas fa-external-link-alt mr-1"></i> Open PDF
+                </button>
+                <button class="mt-2 text-blue-600 text-sm hover:underline"
+                    onclick="previewPDF('${deathCertPath}')">
+                    <i class="fas fa-eye mr-1"></i> Quick Preview
+                </button>
+            </div>
+        `;
+    } else {
+        // Image display
+        deathCertAvailable.innerHTML = `
+            <div class="relative bg-gray-100 p-1">
+                <img id="deathCertificateImage" alt="Death Certificate" class="mx-auto rounded-md max-h-48 object-contain" />
+                <div class="absolute top-2 right-2">
+                    <button class="bg-white rounded-full p-1 shadow-md hover:bg-gray-100 transition-colors duration-200" 
+                            title="View Full Size" onclick="viewFullSizeImage('${deathCertPath}')">
+                        <i class="fas fa-search-plus text-blue-600"></i>
+                    </button>
+                </div>
+            </div>
+        `;
         
         // Set error handler before setting src
+        const deathCertImage = document.getElementById('deathCertificateImage');
         deathCertImage.onerror = function() {
-          console.error("Failed to load death certificate image:", deathCertPath);
-          deathCertAvailable.classList.add('hidden');
-          deathCertNotAvailable.classList.remove('hidden');
+            console.error("Failed to load death certificate image:", deathCertPath);
+            deathCertAvailable.classList.add('hidden');
+            deathCertNotAvailable.classList.remove('hidden');
         };
         
         deathCertImage.src = deathCertPath;
-        deathCertAvailable.classList.remove('hidden');
-        deathCertNotAvailable.classList.add('hidden');
-      } else {
-        deathCertAvailable.classList.add('hidden');
-        deathCertNotAvailable.classList.remove('hidden');
-      }
+    }
+    
+    deathCertAvailable.classList.remove('hidden');
+    deathCertNotAvailable.classList.add('hidden');
+} else {
+    deathCertAvailable.classList.add('hidden');
+    deathCertNotAvailable.classList.remove('hidden');
+}
 
       // Handle Payment Proof Image
       const paymentProofImage = document.getElementById('paymentProofImage');
@@ -887,6 +939,36 @@ $offset = ($current_page - 1) * $bookings_per_page;
       console.error('Error:', error);
       alert('Failed to load booking details. Please try again.');
     });
+}
+
+function previewPDF(pdfUrl) {
+    const pdfModal = document.getElementById('pdfPreviewModal');
+    const pdfFrame = document.getElementById('pdfPreviewFrame');
+    const openInNewTabBtn = document.getElementById('openPdfInNewTab');
+    
+    // Set the PDF URL to the iframe
+    pdfFrame.src = pdfUrl;
+    
+    // Set up the "Open in New Tab" button
+    openInNewTabBtn.onclick = function() {
+        window.open(pdfUrl, '_blank');
+    };
+    
+    // Show the modal
+    pdfModal.classList.remove('hidden');
+    document.body.classList.add('overflow-hidden');
+}
+
+function closePdfPreview() {
+    const pdfModal = document.getElementById('pdfPreviewModal');
+    const pdfFrame = document.getElementById('pdfPreviewFrame');
+    
+    // Clear the iframe source when closing
+    pdfFrame.src = '';
+    
+    // Hide the modal
+    pdfModal.classList.add('hidden');
+    document.body.classList.remove('overflow-hidden');
 }
 
 // Function to add click handlers to the magnify buttons
