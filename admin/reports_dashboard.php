@@ -514,6 +514,13 @@ document.addEventListener('DOMContentLoaded', function() {
                   }
               }
           },
+          yaxis: {
+              labels: {
+                  formatter: function(value) {
+                      return '₱' + value.toFixed(2);
+                  }
+              }
+          },
           title: {
               text: 'Revenue Forecast',
               align: 'left',
@@ -550,11 +557,6 @@ document.addEventListener('DOMContentLoaded', function() {
       document.querySelector("#salesForecastChart").innerHTML = '<div class="p-4 text-center text-gray-500">No revenue data available</div>';
   }
 
-
-  
-
-  
-  
 });
 </script>
 
