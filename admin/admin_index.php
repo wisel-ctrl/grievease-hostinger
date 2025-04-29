@@ -670,9 +670,7 @@ foreach ($serviceData as $service => $branches) {
   <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 w-full">
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 p-4 sm:p-5 border-b border-sidebar-border">
       <h3 class="font-medium text-sidebar-text">Supposed Revenue</h3>
-      <button class="px-3 py-2 border border-sidebar-border rounded-md text-sm flex items-center text-sidebar-text hover:bg-sidebar-hover transition-all duration-300">
-        <i class="fas fa-download mr-2"></i> Export
-      </button>
+      
     </div>
     <div class="p-4 sm:p-5">
       <div class="w-full h-48 md:h-64">
@@ -684,9 +682,7 @@ foreach ($serviceData as $service => $branches) {
   <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 w-full">
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 p-4 sm:p-5 border-b border-sidebar-border">
       <h3 class="font-medium text-sidebar-text">Monthly Revenue</h3>
-      <button class="px-3 py-2 border border-sidebar-border rounded-md text-sm flex items-center text-sidebar-text hover:bg-sidebar-hover transition-all duration-300">
-        <i class="fas fa-download mr-2"></i> Export
-      </button>
+      
     </div>
     <div class="p-4 sm:p-5">
       <div class="w-full h-48 md:h-64">
@@ -702,9 +698,7 @@ foreach ($serviceData as $service => $branches) {
   <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 w-full">
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 p-4 sm:p-5 border-b border-sidebar-border">
       <h3 class="font-medium text-sidebar-text">Revenue by Branch</h3>
-      <button class="px-3 py-2 border border-sidebar-border rounded-md text-sm flex items-center text-sidebar-text hover:bg-sidebar-hover transition-all duration-300">
-        <i class="fas fa-download mr-2"></i> Export
-      </button>
+      
     </div>
     <div class="p-4 sm:p-5">
     <div class="w-full" style="min-height: 300px; height: 60vh; max-height: 500px;">
@@ -716,9 +710,7 @@ foreach ($serviceData as $service => $branches) {
   <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 w-full">
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 p-4 sm:p-5 border-b border-sidebar-border">
       <h3 class="font-medium text-sidebar-text">Top Selling Packages</h3>
-      <button class="px-3 py-2 border border-sidebar-border rounded-md text-sm flex items-center text-sidebar-text hover:bg-sidebar-hover transition-all duration-300">
-        <i class="fas fa-download mr-2"></i> Export
-      </button>
+      
     </div>
     <div class="p-4 sm:p-5">
       <div class="w-full" style="min-height: 300px; height: 60vh; max-height: 500px;">
@@ -1510,7 +1502,7 @@ var projectedIncomeOptions = {
     }
   },
   title: {
-    text: 'Projected Income (If all payments have been settled)',
+    text: '(If all payments have been settled)',
     align: 'left',
     style: {
       fontSize: '14px',
