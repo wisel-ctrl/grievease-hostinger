@@ -23,13 +23,24 @@ if (empty($email) || empty($password)) {
 }
 
 // Check login using only the users table
-$stmt = $conn->prepare("SELECT id, first_name, last_name, password, user_type FROM users WHERE email = ?");
+$stmt = $conn->prepare("SELECT id, first_name, last_name, password, user_type, is_verified FROM users WHERE email = ?");
 $stmt->bind_param("s", $email);
 $stmt->execute();
 $result = $stmt->get_result();
 
 if ($result->num_rows > 0) {
     $user = $result->fetch_assoc();
+
+    if ($user['is_verified'] != 1) {
+        echo json_encode([
+            'status' => 'error', 
+            'message' => 'Your account is currently on Hold', 
+            'alert_type' => 'warning',
+            'icon' => 'warning',
+            'title' => 'Account On Hold'
+        ]);
+        exit;
+    }
 
     // Use password_verify()
     if (password_verify($password, $user['password'])) {
