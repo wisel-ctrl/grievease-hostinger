@@ -3032,6 +3032,27 @@ document.getElementById('middleName').addEventListener('input', function() {
             }
         });
     });
+
+    // Prevent spaces in zip code field
+    document.getElementById('zip').addEventListener('keydown', function(e) {
+        if (e.key === ' ') {
+            e.preventDefault();
+        }
+    });
+    
+    // Allow spaces in street address but prevent leading/trailing spaces
+    document.getElementById('street_address').addEventListener('keydown', function(e) {
+        if (e.target.selectionStart === 0 && e.key === ' ') {
+            e.preventDefault();
+        }
+    });
+    
+    document.getElementById('street_address').addEventListener('keyup', function(e) {
+        if (this.value.endsWith(' ')) {
+            this.value = this.value.trim();
+        }
+    });
+    
 }
 
 // Update DOMContentLoaded
@@ -3203,6 +3224,15 @@ function setupPasswordFormValidation() {
         } else {
             clearPasswordError('current-password');
         }
+    });
+
+    const passwordFields = [currentPasswordInput, newPasswordInput, confirmPasswordInput];
+    passwordFields.forEach(field => {
+        field.addEventListener('keydown', function(e) {
+            if (e.key === ' ') {
+                e.preventDefault();
+            }
+        });
     });
     
     // New password validation with strength requirements
