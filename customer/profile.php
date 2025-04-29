@@ -1154,16 +1154,17 @@ document.addEventListener('DOMContentLoaded', function() {
                         <i class="fas fa-file-alt mr-1"></i> View Details
                     </button>
                     
-                    <?php if ($booking['status'] === 'Pending'): ?>
+                    <?php if ($booking['status'] === 'Pending' || $booking['status'] === 'Declined'): ?>
+                        <!-- Show Modify button for Pending OR Declined status -->
                         <button class="modify-booking bg-yellow-600 text-white px-3 py-1 rounded hover:bg-yellow-700 transition text-sm mr-2" data-booking="<?php echo $booking['booking_id']; ?>">
                             <i class="fas fa-edit mr-1"></i> Modify
                         </button>
+                    <?php endif; ?>
+                    
+                    <?php if ($booking['status'] === 'Pending'): ?>
+                        <!-- Only show Cancel button for Pending (not for Declined) -->
                         <button class="cancel-booking bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition text-sm" data-booking="<?php echo $booking['booking_id']; ?>">
                             <i class="fas fa-times mr-1"></i> Cancel
-                        </button>
-                    <?php elseif ($booking['status'] === 'Accepted'): ?>
-                        <button class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition text-sm mr-2">
-                            <i class="fas fa-receipt mr-1"></i> View Receipt
                         </button>
                     <?php elseif ($booking['status'] === 'Cancelled'): ?>
                         <span class="text-gray-500 text-sm py-1 px-3">
@@ -1879,6 +1880,8 @@ document.addEventListener('DOMContentLoaded', function() {
         <div class="p-6">
             <form id="modifyBookingForm">
                 <input type="hidden" id="modify-booking-id" name="booking_id">
+                <input type="hidden" id="modify-service-id" name="service_id">
+                <input type="hidden" id="modify-branch-id" name="branch_id">
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                     <div>
@@ -1886,27 +1889,15 @@ document.addEventListener('DOMContentLoaded', function() {
                         <div class="space-y-4">
                             <div>
                                 <label class="block text-gray-500 text-sm mb-1">Service Package</label>
-                                <select name="service_id" class="w-full border border-gray-300 rounded px-3 py-2" required>
-                                    <?php
-                                    $services_query = "SELECT service_id, service_name, selling_price FROM services_tb WHERE status = 'Active'";
-                                    $services_result = $conn->query($services_query);
-                                    while ($service = $services_result->fetch_assoc()) {
-                                        echo "<option value='{$service['service_id']}' data-price='{$service['selling_price']}'>{$service['service_name']} (₱" . number_format($service['selling_price'], 2) . ")</option>";
-                                    }
-                                    ?>
-                                </select>
+                                <div id="display-service-package" class="w-full border border-gray-300 rounded px-3 py-2 bg-gray-50">
+                                    <!-- Service package details will be displayed here -->
+                                </div>
                             </div>
                             <div>
                                 <label class="block text-gray-500 text-sm mb-1">Branch Location</label>
-                                <select name="branch_id" class="w-full border border-gray-300 rounded px-3 py-2" required>
-                                    <?php
-                                    $branches_query = "SELECT branch_id, branch_name FROM branch_tb";
-                                    $branches_result = $conn->query($branches_query);
-                                    while ($branch = $branches_result->fetch_assoc()) {
-                                        echo "<option value='{$branch['branch_id']}'>{$branch['branch_name']}</option>";
-                                    }
-                                    ?>
-                                </select>
+                                <div id="display-branch-location" class="w-full border border-gray-300 rounded px-3 py-2 bg-gray-50">
+                                    <!-- Branch location will be displayed here -->
+                                </div>
                             </div>
                             <div>
                                 <label class="block text-gray-500 text-sm mb-1">Burial Date</label>
@@ -1955,6 +1946,24 @@ document.addEventListener('DOMContentLoaded', function() {
                         <div class="flex items-center">
                             <input type="checkbox" name="with_cremate" id="with_cremate" class="mr-2">
                             <label for="with_cremate" class="text-gray-500 text-sm">Include Cremation Service</label>
+                        </div>
+                    </div>
+                    
+                    <h4 class="font-semibold text-navy mb-3">Document Uploads</h4>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-gray-500 text-sm mb-1">Death Certificate</label>
+                            <input type="file" name="death_certificate" class="w-full border border-gray-300 rounded px-3 py-2">
+                            <?php if (!empty($booking['deathcert_url'])): ?>
+                                <p class="text-sm text-gray-500 mt-1">Current file: <?php echo basename($booking['deathcert_url']); ?></p>
+                            <?php endif; ?>
+                        </div>
+                        <div>
+                            <label class="block text-gray-500 text-sm mb-1">Payment Proof</label>
+                            <input type="file" name="payment_proof" class="w-full border border-gray-300 rounded px-3 py-2">
+                            <?php if (!empty($booking['payment_url'])): ?>
+                                <p class="text-sm text-gray-500 mt-1">Current file: <?php echo basename($booking['payment_url']); ?></p>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>
@@ -2029,6 +2038,7 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
         <div class="p-6 flex justify-center">
             <img id="document-image" src="" alt="Document" class="max-w-full max-h-[70vh]">
+            <iframe id="document-pdf" src="" class="hidden w-full h-[70vh]"></iframe>
         </div>
         <div class="p-4 border-t border-gray-200 flex justify-end">
             <button class="close-modal bg-navy text-white px-4 py-2 rounded hover:bg-navy/90 transition">
@@ -2139,120 +2149,167 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Functions
-    function fetchBookingDetails(bookingId) {
-        fetch(`profile/fetch_booking_details.php?booking_id=${bookingId}`)
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Populate the view details modal
-                    document.getElementById('detail-service').textContent = data.service_name;
-                    document.getElementById('detail-branch').textContent = data.branch_name;
-                    document.getElementById('detail-status').textContent = data.status;
-                    document.getElementById('detail-booking-date').textContent = formatDate(data.booking_date);
-                    document.getElementById('detail-total').textContent = `₱${parseFloat(data.selling_price).toFixed(2)}`;
-                    
-                    // Deceased info
-                    let deceasedName = `${data.deceased_lname}, ${data.deceased_fname}`;
-                    if (data.deceased_midname) deceasedName += ` ${data.deceased_midname}`;
-                    if (data.deceased_suffix) deceasedName += ` ${data.deceased_suffix}`;
-                    
-                    document.getElementById('detail-deceased-name').textContent = deceasedName;
-                    document.getElementById('detail-birth').textContent = data.deceased_birth ? formatDate(data.deceased_birth) : 'Not provided';
-                    document.getElementById('detail-dod').textContent = data.deceased_dodeath ? formatDate(data.deceased_dodeath) : 'Not provided';
-                    document.getElementById('detail-burial').textContent = data.deceased_dateOfBurial ? formatDate(data.deceased_dateOfBurial) : 'Not set';
-                    document.getElementById('detail-address').textContent = data.deceased_address || 'Not provided';
-                    
-                    // Payment info
-                    document.getElementById('detail-paid').textContent = `₱${(data.amount_paid || 0).toFixed(2)}`;
-                    const balance = parseFloat(data.selling_price) - parseFloat(data.amount_paid || 0);
-                    document.getElementById('detail-balance').textContent = `₱${balance.toFixed(2)}`;
-                    document.getElementById('detail-reference').textContent = data.reference_code || 'N/A';
-                    
-                    // Store document URL for viewing
-                    currentDocumentUrl = data.death_certificate || '';
-                    
-                    // Show the modal
-                    viewDetailsModal.classList.remove('hidden');
-                } else {
-                    showError(data.message || 'Failed to fetch booking details');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showError('An error occurred while fetching booking details');
-            });
-    }
-
-    function fetchBookingForModification(bookingId) {
-        fetch(`profile/fetch_booking_for_modification.php?booking_id=${bookingId}`)
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Populate the modify form
-                    document.getElementById('modify-booking-id').value = data.booking_id;
-                    
-                    // Set service and branch
-                    const serviceSelect = document.querySelector('#modifyBookingForm select[name="service_id"]');
-                    const branchSelect = document.querySelector('#modifyBookingForm select[name="branch_id"]');
-                    
-                    if (serviceSelect) {
-                        serviceSelect.value = data.service_id;
-                    }
-                    
-                    if (branchSelect) {
-                        branchSelect.value = data.branch_id;
-                    }
-                    
-                    // Set dates
-                    document.querySelector('#modifyBookingForm input[name="deceased_dateOfBurial"]').value = data.deceased_dateOfBurial ? formatDateForInput(data.deceased_dateOfBurial) : '';
-                    
-                    // Set deceased info
-                    document.querySelector('#modifyBookingForm input[name="deceased_fname"]').value = data.deceased_fname || '';
-                    document.querySelector('#modifyBookingForm input[name="deceased_midname"]').value = data.deceased_midname || '';
-                    document.querySelector('#modifyBookingForm input[name="deceased_lname"]').value = data.deceased_lname || '';
-                    document.querySelector('#modifyBookingForm input[name="deceased_suffix"]').value = data.deceased_suffix || '';
-                    document.querySelector('#modifyBookingForm input[name="deceased_birth"]').value = data.deceased_birth ? formatDateForInput(data.deceased_birth) : '';
-                    document.querySelector('#modifyBookingForm input[name="deceased_dodeath"]').value = data.deceased_dodeath ? formatDateForInput(data.deceased_dodeath) : '';
-                    document.querySelector('#modifyBookingForm textarea[name="deceased_address"]').value = data.deceased_address || '';
-                    document.querySelector('#modifyBookingForm input[name="with_cremate"]').checked = data.with_cremate == 1;
-                    
-                    // Show the modal
-                    modifyModal.classList.remove('hidden');
-                } else {
-                    showError(data.message || 'Failed to fetch booking for modification');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showError('An error occurred while fetching booking for modification');
-            });
-    }
-
-    function submitBookingModification() {
-        const form = document.getElementById('modifyBookingForm');
-        const formData = new FormData(form);
-        
-        fetch('profile/update_booking.php', {
-            method: 'POST',
-            body: formData
-        })
+function fetchBookingDetails(bookingId) {
+    fetch(`profile/fetch_booking_details.php?booking_id=${bookingId}`)
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                showSuccess('Booking updated successfully!');
-                modifyModal.classList.add('hidden');
-                // Refresh the bookings list
-                setTimeout(() => location.reload(), 1500);
+                // Populate the view details modal
+                document.getElementById('detail-service').textContent = data.service_name;
+                document.getElementById('detail-branch').textContent = data.branch_name;
+                document.getElementById('detail-status').textContent = data.status;
+                document.getElementById('detail-booking-date').textContent = formatDate(data.booking_date);
+                document.getElementById('detail-total').textContent = `₱${parseFloat(data.selling_price).toFixed(2)}`;
+                
+                // Deceased info
+                let deceasedName = `${data.deceased_lname}, ${data.deceased_fname}`;
+                if (data.deceased_midname) deceasedName += ` ${data.deceased_midname}`;
+                if (data.deceased_suffix) deceasedName += ` ${data.deceased_suffix}`;
+                
+                document.getElementById('detail-deceased-name').textContent = deceasedName;
+                document.getElementById('detail-birth').textContent = data.deceased_birth ? formatDate(data.deceased_birth) : 'Not provided';
+                document.getElementById('detail-dod').textContent = data.deceased_dodeath ? formatDate(data.deceased_dodeath) : 'Not provided';
+                document.getElementById('detail-burial').textContent = data.deceased_dateOfBurial ? formatDate(data.deceased_dateOfBurial) : 'Not set';
+                document.getElementById('detail-address').textContent = data.deceased_address || 'Not provided';
+                
+                // Payment info
+                document.getElementById('detail-paid').textContent = `₱${(data.amount_paid || 0).toFixed(2)}`;
+                const balance = parseFloat(data.selling_price) - parseFloat(data.amount_paid || 0);
+                document.getElementById('detail-balance').textContent = `₱${balance.toFixed(2)}`;
+                document.getElementById('detail-reference').textContent = data.reference_code || 'N/A';
+                
+                // Store document URLs for viewing
+                currentDeathCertUrl = data.death_certificate || '';
+                currentPaymentUrl = data.payment_proof || '';
+                
+                // ALWAYS show buttons (regardless of status or URL existence)
+                document.getElementById('viewDeathCertBtn').style.display = 'block';
+                document.getElementById('viewPaymentBtn').style.display = 'block';
+                
+                // Show the modal
+                viewDetailsModal.classList.remove('hidden');
             } else {
-                showError(data.message || 'Failed to update booking');
+                showError(data.message || 'Failed to fetch booking details');
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            showError('An error occurred while updating booking');
+            showError('An error occurred while fetching booking details');
         });
+}
+
+// Update your document viewing functions
+viewDeathCertBtn.addEventListener('click', function() {
+    showDocument('Death Certificate', currentDeathCertUrl);
+});
+
+viewPaymentBtn.addEventListener('click', function() {
+    showDocument('Payment Proof', currentPaymentUrl);
+});
+
+function showDocument(title, url) {
+    
+    
+    document.getElementById('document-modal-title').textContent = title;
+    const imgElement = document.getElementById('document-image');
+    const pdfElement = document.getElementById('document-pdf');
+    
+    // Check if the URL is a PDF
+    if (url.toLowerCase().endsWith('.pdf')) {
+        imgElement.style.display = 'none';
+        pdfElement.style.display = 'block';
+        pdfElement.src = url;
+    } else {
+        // For images
+        imgElement.style.display = 'block';
+        pdfElement.style.display = 'none';
+        imgElement.src = url;
     }
     
+    viewDocumentModal.classList.remove('hidden');
+}
+
+function fetchBookingForModification(bookingId) {
+    fetch(`profile/fetch_booking_for_modification.php?booking_id=${bookingId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Populate the modify form
+                const form = document.getElementById('modifyBookingForm');
+                form.reset();
+                
+                // Set booking ID and hidden service/branch IDs
+                document.getElementById('modify-booking-id').value = data.booking_id;
+                document.getElementById('modify-service-id').value = data.service_id;
+                document.getElementById('modify-branch-id').value = data.branch_id;
+                
+                // Display service package and branch name in read-only divs
+                document.getElementById('display-service-package').textContent = data.service_name + 
+                    ' (₱' + parseFloat(data.selling_price).toFixed(2) + ')';
+                document.getElementById('display-branch-location').textContent = data.branch_name;
+                
+                // Set dates
+                form.querySelector('input[name="deceased_dateOfBurial"]').value = data.deceased_dateOfBurial || '';
+                form.querySelector('input[name="deceased_birth"]').value = data.deceased_birth || '';
+                form.querySelector('input[name="deceased_dodeath"]').value = data.deceased_dodeath || '';
+                
+                // Set deceased info
+                form.querySelector('input[name="deceased_fname"]').value = data.deceased_fname || '';
+                form.querySelector('input[name="deceased_midname"]').value = data.deceased_midname || '';
+                form.querySelector('input[name="deceased_lname"]').value = data.deceased_lname || '';
+                form.querySelector('input[name="deceased_suffix"]').value = data.deceased_suffix || '';
+                form.querySelector('textarea[name="deceased_address"]').value = data.deceased_address || '';
+                form.querySelector('input[name="with_cremate"]').checked = data.with_cremate == 'yes' || data.with_cremate == 1;
+                
+                // Show the modal
+                document.getElementById('modifyBookingModal').classList.remove('hidden');
+            } else {
+                showError(data.message || 'Failed to fetch booking for modification');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showError('An error occurred while fetching booking for modification');
+        });
+}
+
+function submitBookingModification() {
+    const form = document.getElementById('modifyBookingForm');
+    const formData = new FormData(form);
+    const submitBtn = form.querySelector('button[type="submit"]');
+    
+    // Disable submit button during processing
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Saving...';
+    
+    fetch('booking/update_booking.php', {
+        method: 'POST',
+        body: formData // FormData will automatically handle file uploads
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showSuccess(data.message || 'Booking updated successfully!');
+            document.getElementById('modifyBookingModal').classList.add('hidden');
+            
+            // Refresh the bookings list after a short delay
+            setTimeout(() => {
+                location.reload();
+            }, 1500);
+        } else {
+            showError(data.message || 'Failed to update booking');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showError('An error occurred while updating booking');
+    })
+    .finally(() => {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="fas fa-save mr-2"></i> Save Changes';
+    });
+}
+
 // Function to send OTP
 document.getElementById('sendOtpBtn').addEventListener('click', function() {
     const bookingId = document.getElementById('cancel-booking-id').value;
@@ -2343,16 +2400,7 @@ document.getElementById('cancelBookingForm').addEventListener('submit', function
 
 // Remove the redundant submitBookingCancellation() function
 
-    function showDocument(title, url) {
-        if (!url) {
-            showError('Document not available');
-            return;
-        }
-        
-        document.getElementById('document-modal-title').textContent = title;
-        document.getElementById('document-image').src = url;
-        viewDocumentModal.classList.remove('hidden');
-    }
+
 
     function formatDate(dateString) {
         const options = { year: 'numeric', month: 'long', day: 'numeric' };
