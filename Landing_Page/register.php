@@ -452,6 +452,21 @@ function validateName(input) {
     const nameRegex = /^[A-Za-zÀ-ÿ'-]+(\s[A-Za-zÀ-ÿ'-]+)*$/;
     return nameRegex.test(input.value.trim());
 }
+
+// Function to capitalize the first letter of each word in name fields
+function autoCapitalizeNames(input) {
+    input.addEventListener('input', function(e) {
+        // Capitalize the first letter of each word
+        this.value = this.value.replace(/\b\w/g, function(char) {
+            return char.toUpperCase();
+        });
+    });
+}
+
+// Apply to name fields only
+autoCapitalizeNames(firstName);
+autoCapitalizeNames(lastName);
+autoCapitalizeNames(middleName); // Optional middle name
         
 function validateEmail(input) {
     // Comprehensive email validation (unchanged)
