@@ -1,18 +1,44 @@
 <?php
+// Start output buffering
+ob_start();
+
 require_once '../../db_connect.php';
 
-// Session handling
-if (session_status() !== PHP_SESSION_ACTIVE) {
-    session_start([
-        'use_strict_mode' => true,
-        'cookie_httponly' => true,
-        'cookie_secure' => true, // Enable if using HTTPS
-        'cookie_samesite' => 'Lax'
-    ]);
+// Standardized session start
+function secureSessionStart() {
+    if (session_status() !== PHP_SESSION_ACTIVE) {
+        session_start([
+            'use_strict_mode' => true,
+            'cookie_httponly' => true,
+            'cookie_secure' => true,
+            'cookie_samesite' => 'Lax',
+            'use_only_cookies' => 1,
+            'cookie_lifetime' => 1800
+        ]);
+    }
+    
+    // Security checks
+    if (isset($_SESSION['last_activity'])) {
+        if (time() - $_SESSION['last_activity'] > 1800) {
+            session_unset();
+            session_destroy();
+            header("Location: ../Landing_Page/login.php?timeout=1");
+            exit();
+        }
+    }
+    $_SESSION['last_activity'] = time();
 }
+
+secureSessionStart();
 
 header('Content-Type: application/json');
 $response = ['success' => false, 'message' => ''];
+
+function logToFile($message) {
+    $logFile = __DIR__ . '/cancellation_errors.log';
+    $timestamp = date('Y-m-d H:i:s');
+    file_put_contents($logFile, "[$timestamp] $message\n", FILE_APPEND);
+}
 
 try {
     // Get input data (handling both JSON and form-data)
@@ -34,8 +60,8 @@ try {
         }
     }
 
-    // Verify OTP session data
-    if (empty($_SESSION['cancel_otp']) || empty($_SESSION['cancel_booking_id']) || empty($_SESSION['otp_created_at'])) {
+    // Verify OTP session data exists
+    if (!isset($_SESSION['cancel_otp']) || !isset($_SESSION['cancel_booking_id']) || !isset($_SESSION['otp_created_at'])) {
         throw new Exception("OTP expired or not requested");
     }
 
@@ -60,10 +86,10 @@ try {
 
     // Update booking status
     $query = "UPDATE booking_tb SET 
-              is_cancelled = 1, 
-              cancelled_date = NOW(), 
-              cancel_reason = ? 
-              WHERE booking_id = ? AND is_cancelled = 0";
+          status = 'Cancelled', 
+          cancelled_date = NOW(), 
+          cancel_reason = ? 
+          WHERE booking_id = ? AND status != 'Cancelled'";
     
     $stmt = $conn->prepare($query);
     $stmt->bind_param("si", $data['cancel_reason'], $data['booking_id']);
@@ -76,8 +102,13 @@ try {
     // Commit transaction
     $conn->commit();
 
-    // Clear session
-    unset($_SESSION['cancel_otp'], $_SESSION['cancel_booking_id'], $_SESSION['otp_created_at'], $_SESSION['otp_email']);
+    // Clear only OTP-related session data
+    unset(
+        $_SESSION['cancel_otp'],
+        $_SESSION['cancel_booking_id'],
+        $_SESSION['otp_created_at'],
+        $_SESSION['otp_email']
+    );
 
     $response['success'] = true;
     $response['message'] = 'Booking cancelled successfully';
@@ -90,6 +121,7 @@ try {
 } finally {
     if (isset($stmt)) $stmt->close();
     $conn->close();
+    ob_end_flush();
     echo json_encode($response);
 }
 ?>
