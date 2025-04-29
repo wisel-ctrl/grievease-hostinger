@@ -1600,12 +1600,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     <!-- Zip/Postal Code (taking 1/4 of the width) -->
     <div class="sm:col-span-1">
-    <input type="text" id="zip" name="zip" placeholder="Zip Code" 
-       value="<?php echo htmlspecialchars($zip_code); ?>" 
-       class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base"
-       pattern="[0-9]*" 
-       maxlength="10"
-       oninput="validateZipCode(this)">
+        <input type="text" id="zip" name="zip" placeholder="Zip Code" 
+               value="<?php echo htmlspecialchars($zip_code); ?>" 
+               class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base">
     </div>
 </div>
                                     </div>
@@ -2647,25 +2644,6 @@ function restrictPhoneInput() {
     });
 }
 
-function validateZipCode(input) {
-    // Remove any non-digit characters
-    input.value = input.value.replace(/[^0-9]/g, '');
-    
-    // Optional: Validate length (e.g., 4-10 digits)
-    if (input.value.length < 4 || input.value.length > 10) {
-        showError('zip', 'Zip code must be between 4 and 10 digits');
-    } else {
-        clearError('zip');
-    }
-}
-
-// Prevent pasting non-numeric characters
-document.getElementById('zip').addEventListener('paste', function(e) {
-    e.preventDefault();
-    const pastedText = (e.clipboardData || window.clipboardData).getData('text');
-    this.value = pastedText.replace(/[^0-9]/g, '');
-});
-
 // Date of birth validation - at least 18 years old
 function validateDateOfBirth(dob) {
     if (!dob) return false;
@@ -2965,21 +2943,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Enhanced name validation
 function isValidName(name) {
-    // Must contain at least one character, no spaces, and no special chars/numbers
-    return name.length > 0 && 
-           /^[a-zA-Z\-'.]+$/.test(name); // Removed \s (spaces) from the regex
+    // Must contain at least one non-space character and no special chars/numbers
+    return name.trim().length > 0 && 
+           /^[a-zA-Z\s\-'.]+$/.test(name) && 
+           !/^\s+$/.test(name);
 }
-
-// Prevent spacebar in name fields
-function preventSpaces(event) {
-    if (event.key === ' ') {
-        event.preventDefault();
-    }
-}
-
-document.getElementById('firstName').addEventListener('keydown', preventSpaces);
-document.getElementById('lastName').addEventListener('keydown', preventSpaces);
-document.getElementById('middleName').addEventListener('keydown', preventSpaces);
 
 // Real-time validation setup
 function setupRealTimeValidation() {
@@ -2987,38 +2955,38 @@ function setupRealTimeValidation() {
     restrictPhoneInput();
 
     // First Name
-document.getElementById('firstName').addEventListener('input', function() {
-    const value = this.value.trim();
-    if (!value) {
-        showError('firstName', 'First name is required');
-    } else if (!isValidName(value)) {
-        showError('firstName', 'Only letters, hyphens, apostrophes, and periods allowed (no spaces)');
-    } else {
-        clearError('firstName');
-    }
-});
+    document.getElementById('firstName').addEventListener('input', function() {
+        const value = this.value.trim();
+        if (!value) {
+            showError('firstName', 'First name is required');
+        } else if (!isValidName(value)) {
+            showError('firstName', 'Only letters, spaces, hyphens, apostrophes and periods allowed');
+        } else {
+            clearError('firstName');
+        }
+    });
 
-// Last Name
-document.getElementById('lastName').addEventListener('input', function() {
-    const value = this.value.trim();
-    if (!value) {
-        showError('lastName', 'Last name is required');
-    } else if (!isValidName(value)) {
-        showError('lastName', 'Only letters, hyphens, apostrophes, and periods allowed (no spaces)');
-    } else {
-        clearError('lastName');
-    }
-});
+    // Last Name
+    document.getElementById('lastName').addEventListener('input', function() {
+        const value = this.value.trim();
+        if (!value) {
+            showError('lastName', 'Last name is required');
+        } else if (!isValidName(value)) {
+            showError('lastName', 'Only letters, spaces, hyphens, apostrophes and periods allowed');
+        } else {
+            clearError('lastName');
+        }
+    });
 
-// Middle Name (optional but still validate format)
-document.getElementById('middleName').addEventListener('input', function() {
-    const value = this.value.trim();
-    if (value && !isValidName(value)) {
-        showError('middleName', 'Only letters, hyphens, apostrophes, and periods allowed (no spaces)');
-    } else {
-        clearError('middleName');
-    }
-});
+    // Middle Name (optional but still validate format)
+    document.getElementById('middleName').addEventListener('input', function() {
+        const value = this.value.trim();
+        if (value && !isValidName(value)) {
+            showError('middleName', 'Only letters, spaces, hyphens, apostrophes and periods allowed');
+        } else {
+            clearError('middleName');
+        }
+    });
 
     // Phone Number
     document.getElementById('phone').addEventListener('input', function() {
@@ -3225,15 +3193,6 @@ function setupPasswordFormValidation() {
         } else {
             clearPasswordError('current-password');
         }
-    });
-
-     const passwordFields = [currentPasswordInput, newPasswordInput, confirmPasswordInput];
-    passwordFields.forEach(field => {
-        field.addEventListener('keydown', function(e) {
-            if (e.key === ' ') {
-                e.preventDefault();
-            }
-        });
     });
     
     // New password validation with strength requirements
