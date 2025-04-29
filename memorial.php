@@ -154,7 +154,7 @@ function toggleMenu() {
                 <h3 class="text-lg sm:text-xl font-hedvig text-white mb-2 text-center">Light a Virtual Candle</h3>
                 
                 <!-- Candle Animation Container - Smaller on mobile -->
-                <div class="relative w-full h-32 sm:h-40 mb-2 sm:mb-3 flex items-center justify-center">
+                < class="relative w-full h-32 sm:h-40 mb-2 sm:mb-3 flex items-center justify-center">
                     <!-- Candle -->
                     <div id="candle" class="relative w-12 sm:w-16">
                         <!-- Updated Wick with Flame structure -->
@@ -175,7 +175,7 @@ function toggleMenu() {
                     
                     <!-- Reflection/Glow -->
                     <div id="candle-glow" class="absolute bottom-2 w-36 sm:w-48 h-6 sm:h-8 bg-yellow-600/0 rounded-full blur-xl transition-all duration-1000"></div>
-                </div>
+                
                 
                 <!-- Light Button -->
                 <button id="light-button" class="bg-yellow-600 hover:bg-yellow-700 text-white px-4 sm:px-6 py-2 rounded-lg shadow-lg transition-all duration-300 text-sm w-full max-w-xs">
