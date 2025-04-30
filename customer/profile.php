@@ -1149,7 +1149,7 @@ document.addEventListener('DOMContentLoaded', function() {
         <span class="<?php echo $status_class; ?> text-xs px-2 py-1 rounded-full"><?php echo $status_text; ?></span>
         <p class="text-sm text-gray-500">Booking ID: <?php echo $booking['booking_id']; ?></p>
     </div>
-    <h4 class="font-hedvig text-lg text-navy mb-2"><?php echo $booking['service_name']; ?></h4>
+    <h4 class="font-hedvig text-lg text-white mb-2"><?php echo $booking['service_name']; ?></h4>
 </div>
                 <div class="p-4 sm:p-6 space-y-3 sm:space-y-4">
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
