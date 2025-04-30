@@ -2098,7 +2098,7 @@ function closeAddEmployeeAccountModal() {
     <!-- Modal Header -->
     <div class="bg-gradient-to-r from-sidebar-accent to-white flex justify-between items-center p-6 flex-shrink-0 rounded-t-xl">
       <h3 class="text-xl font-bold text-white"><i class="fas fa-user-plus"></i> Add Employee Account</h3>
-      <button onclick="closeAddEmployeeAccountModal()" class="bg-black bg-opacity-20 hover:bg-opacity-30 rounded-full p-2 text-white hover:text-white transition-all duration-200">
+      <button onclick="openAddEmployeeAccountModal()" class="bg-black bg-opacity-20 hover:bg-opacity-30 rounded-full p-2 text-white hover:text-white transition-all duration-200">
         <i class="fas fa-times"></i>
       </button>
     </div>
