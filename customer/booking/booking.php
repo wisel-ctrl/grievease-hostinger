@@ -83,31 +83,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $booking_date = date('Y-m-d H:i:s'); // Current date/time in PH timezone
 
     try {
-        
-        // Generate receipt number
-        $receipt_number = 'RCPT-' . mt_rand(100000, 999999); // Generates RCPT- followed by 6 random digits
-        
         // Insert into database
         $stmt = $conn->prepare("
             INSERT INTO booking_tb (
                 customerID, deceased_fname, deceased_midname, deceased_lname, deceased_suffix,
                 deceased_address, deceased_birth, deceased_dodeath, deceased_dateOfBurial,
                 service_id, with_cremate, branch_id, initial_price, deathcert_url,
-                payment_url, reference_code, booking_date, receipt_number
+                payment_url, reference_code, booking_date
             ) VALUES (
-                ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+                ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
             )
         ");
 
-
         $stmt->bind_param(
-            "issssssssisdssssss",
+            "issssssssisdsssss",
             $customerID, $deceased_fname, $deceased_midname, $deceased_lname, $deceased_suffix,
             $deceased_address, $deceased_birth, $deceased_dodeath, $deceased_dateOfBurial,
             $service_id, $with_cremate, $branch_id, $initial_price, $deathCertPath,
-            $paymentPath, $reference_code, $booking_date, $receipt_number
+            $paymentPath, $reference_code, $booking_date
         );
-
 
         if ($stmt->execute()) {
 
