@@ -2065,7 +2065,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
-// Function to open the add employee account modal
 function openAddEmployeeAccountModal() {
   const modal = document.getElementById('addEmployeeAccountModal');
   if (modal) {
@@ -2074,6 +2073,11 @@ function openAddEmployeeAccountModal() {
     
     // Generate password when modal opens
     updateEmpPassword();
+    
+    // Load branch locations if not already loaded
+    loadEmpBranchLocations();
+  } else {
+    console.error("Add Employee Account Modal not found");
   }
 }
 
