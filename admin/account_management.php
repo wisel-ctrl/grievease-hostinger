@@ -2064,8 +2064,8 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
-document.querySelector('.bg-sidebar-accent .fa-plus').closest('button').addEventListener('click', function() {
-        const modal = document.getElementById('addEmployeeAccountModal');
+function openAddEmployeeAccountModal() {
+  const modal = document.getElementById('addEmployeeAccountModal');
         if (modal) {
             modal.classList.remove('hidden');
             modal.classList.add('flex');
@@ -2078,8 +2078,7 @@ document.querySelector('.bg-sidebar-accent .fa-plus').closest('button').addEvent
         } else {
             console.error("Add Employee Account Modal not found");
         }
-    });
-});
+      }
 
 // Function to close the add employee account modal
 function closeAddEmployeeAccountModal() {
