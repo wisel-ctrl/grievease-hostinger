@@ -9,6 +9,7 @@ $lastName = $_POST['last_name'] ?? '';
 $middleName = $_POST['middle_name'] ?? '';
 $email = $_POST['email'] ?? '';
 $phoneNumber = $_POST['phone_number'] ?? '';
+$branchLoc = $_POST['branch_loc'] ?? null;  // Add this line
 
 // Basic validation
 if (empty($firstName) || empty($lastName) || empty($email)) {
@@ -22,11 +23,12 @@ $query = "UPDATE users SET
           middle_name = ?, 
           email = ?, 
           phone_number = ?,
+          branch_loc = ?,
           updated_at = NOW()
           WHERE id = ?";
 
 $stmt = $conn->prepare($query);
-$stmt->bind_param("sssssi", $firstName, $lastName, $middleName, $email, $phoneNumber, $userId);
+$stmt->bind_param("ssssssi", $firstName, $lastName, $middleName, $email, $phoneNumber, $branchLoc, $userId);
 $result = $stmt->execute();
 
 if ($result) {

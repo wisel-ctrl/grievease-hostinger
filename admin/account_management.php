@@ -1791,6 +1791,16 @@ if ($result->num_rows > 0) {
         .then(data => {
             if (data.success) {
                 // Create and show the modal
+                let branchOptions = data.branches.map(branch => {
+                    const branchName = branch.branch_name
+                        .split(' ')
+                        .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+                        .join(' ');
+                    
+                    return `<option value="${branch.branch_id}" ${data.user.branch_loc == branch.branch_id ? 'selected' : ''}>
+                                ${branchName}
+                            </option>`;
+                }).join('');
                 const modal = document.createElement('div');
                 modal.id = 'editCustomerModal';
                 modal.className = 'fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden';
@@ -1817,19 +1827,19 @@ if ($result->num_rows > 0) {
                                 
                                 <div>
                                     <label class="block text-sm font-medium text-sidebar-text mb-1">First Name</label>
-                                    <input type="text" name="first_name" value="${data.user.first_name || ''}" 
+                                    <input type="text" name="first_name" value="${data.user.first_name ? data.user.first_name[0].toUpperCase() + data.user.first_name.slice(1) : ''}" 
                                            class="w-full p-2 border border-input-border rounded focus:ring-gold focus:border-gold">
                                 </div>
                                 
                                 <div>
                                     <label class="block text-sm font-medium text-sidebar-text mb-1">Last Name</label>
-                                    <input type="text" name="last_name" value="${data.user.last_name || ''}" 
+                                    <input type="text" name="last_name" value="${data.user.last_name ? data.user.last_name[0].toUpperCase() + data.user.last_name.slice(1) : ''}" 
                                            class="w-full p-2 border border-input-border rounded focus:ring-gold focus:border-gold">
                                 </div>
                                 
                                 <div>
                                     <label class="block text-sm font-medium text-sidebar-text mb-1">Middle Name</label>
-                                    <input type="text" name="middle_name" value="${data.user.middle_name || ''}" 
+                                    <input type="text" name="middle_name" value="${data.user.middle_name ? data.user.middle_name[0].toUpperCase() + data.user.middle_name.slice(1) : ''}" 
                                            class="w-full p-2 border border-input-border rounded focus:ring-gold focus:border-gold">
                                 </div>
                                 
@@ -1843,6 +1853,14 @@ if ($result->num_rows > 0) {
                                     <label class="block text-sm font-medium text-sidebar-text mb-1">Phone Number</label>
                                     <input type="tel" name="phone_number" value="${data.user.phone_number || ''}" 
                                            class="w-full p-2 border border-input-border rounded focus:ring-gold focus:border-gold">
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-sidebar-text mb-1">Branch Location</label>
+                                    <select name="branch_loc" class="w-full p-2 border border-input-border rounded focus:ring-gold focus:border-gold">
+                                        <option value="">-- Select Branch --</option>
+                                        ${branchOptions}
+                                    </select>
                                 </div>
                             </form>
                         </div>
@@ -1919,6 +1937,18 @@ function openEditEmployeeAccountModal(userId) {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
+                // Generate branch options
+                let branchOptions = data.branches.map(branch => {
+                    const branchName = branch.branch_name
+                        .split(' ')
+                        .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+                        .join(' ');
+                    
+                    return `<option value="${branch.branch_id}" ${data.user.branch_loc == branch.branch_id ? 'selected' : ''}>
+                                ${branchName}
+                            </option>`;
+                }).join('');
+
                 // Create and show the modal
                 const modal = document.createElement('div');
                 modal.id = 'editEmployeeModal';
@@ -1946,19 +1976,19 @@ function openEditEmployeeAccountModal(userId) {
                                 
                                 <div>
                                     <label class="block text-sm font-medium text-sidebar-text mb-1">First Name</label>
-                                    <input type="text" name="first_name" value="${data.user.first_name || ''}" 
+                                    <input type="text" name="first_name" value="${data.user.first_name ? data.user.first_name[0].toUpperCase() + data.user.first_name.slice(1) : ''}" 
                                            class="w-full p-2 border border-input-border rounded focus:ring-gold focus:border-gold">
                                 </div>
                                 
                                 <div>
                                     <label class="block text-sm font-medium text-sidebar-text mb-1">Last Name</label>
-                                    <input type="text" name="last_name" value="${data.user.last_name || ''}" 
+                                    <input type="text" name="last_name" value="${data.user.last_name ? data.user.last_name[0].toUpperCase() + data.user.last_name.slice(1) :  ''}" 
                                            class="w-full p-2 border border-input-border rounded focus:ring-gold focus:border-gold">
                                 </div>
                                 
                                 <div>
                                     <label class="block text-sm font-medium text-sidebar-text mb-1">Middle Name</label>
-                                    <input type="text" name="middle_name" value="${data.user.middle_name || ''}" 
+                                    <input type="text" name="middle_name" value="${data.user.middle_name ? data.user.middle_name[0].toUpperCase() + data.user.middle_name.slice(1) : ''}" 
                                            class="w-full p-2 border border-input-border rounded focus:ring-gold focus:border-gold">
                                 </div>
                                 
@@ -1976,8 +2006,10 @@ function openEditEmployeeAccountModal(userId) {
                                 
                                 <div>
                                     <label class="block text-sm font-medium text-sidebar-text mb-1">Branch Location</label>
-                                    <input type="text" name="branch_loc" value="${data.user.branch_loc || ''}" 
-                                           class="w-full p-2 border border-input-border rounded focus:ring-gold focus:border-gold">
+                                    <select name="branch_loc" class="w-full p-2 border border-input-border rounded focus:ring-gold focus:border-gold">
+                                        <option value="">-- Select Branch --</option>
+                                        ${branchOptions}
+                                    </select>
                                 </div>
                             </form>
                         </div>
