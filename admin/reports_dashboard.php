@@ -388,11 +388,11 @@ $ratioChange = number_format($changes['ratio_change'] ?? 0, 1);
         </div>
     </div>
 </div>
+
+</div>
 <footer class="bg-white rounded-lg shadow-sidebar border border-sidebar-border p-4 text-center text-sm text-gray-500 mt-8">
     <p>© 2025 GrievEase.</p>
   </footer>
-</div>
-
 <!-- JavaScript for Charts -->
 <script>
     // Pass PHP data to JavaScript
