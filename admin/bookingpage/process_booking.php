@@ -55,6 +55,8 @@ function handleAcceptBooking($conn) {
         exit;
     }
 
+    
+
     // Validate and sanitize input data
     $bookingId = intval($_POST['bookingId']);
     $amountPaid = floatval($_POST['amountPaid']);
@@ -91,6 +93,9 @@ function handleAcceptBooking($conn) {
 
     // Database operations
     $conn->begin_transaction();
+    
+        // Generate receipt number
+    $receipt_number = 'RCPT-' . mt_rand(100000, 999999); // Generates RCPT- followed by 6 random digits
 
     try {
         // Update booking status with PH time
@@ -98,9 +103,10 @@ function handleAcceptBooking($conn) {
         SET status='Accepted', 
                 accepted_date = CONVERT_TZ(NOW(), 'SYSTEM', '+08:00'),
                 amount_paid = ?,
-                accepter_decliner = ?
+                accepter_decliner = ?,
+                receipt_number = ?
             WHERE booking_id=?");
-        $stmt->bind_param("dii", $amountPaid, $_SESSION['user_id'], $bookingId);
+        $stmt->bind_param("disi", $amountPaid, $_SESSION['user_id'], $receipt_number, $bookingId);
         $stmt->execute();
         
         if ($stmt->affected_rows === 0) {
