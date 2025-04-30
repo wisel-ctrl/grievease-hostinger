@@ -1578,11 +1578,10 @@ if ($result->num_rows > 0) {
                 </button>
 
                 <!-- Add Employee Account Button -->
-                <button class="px-4 py-2 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm whitespace-nowrap" 
-                        onclick="openAddEmployeeAccountModal()">
-                    <i class="fas fa-plus"></i>
-                    <span>Add Employee Account</span>
-                </button>
+                <button class="px-4 py-2 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm whitespace-nowrap">
+    <i class="fas fa-plus"></i>
+    <span>Add Employee Account</span>
+</button>
             </div>
         </div>
         
@@ -2065,21 +2064,22 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
-function openAddEmployeeAccountModal() {
-  const modal = document.getElementById('addEmployeeAccountModal');
-  if (modal) {
-    modal.classList.remove('hidden');
-    modal.classList.add('flex');
-    
-    // Generate password when modal opens
-    updateEmpPassword();
-    
-    // Load branch locations if not already loaded
-    loadEmpBranchLocations();
-  } else {
-    console.error("Add Employee Account Modal not found");
-  }
-}
+document.querySelector('.bg-sidebar-accent .fa-plus').closest('button').addEventListener('click', function() {
+        const modal = document.getElementById('addEmployeeAccountModal');
+        if (modal) {
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            
+            // Generate password when modal opens
+            updateEmpPassword();
+            
+            // Load branch locations if not already loaded
+            loadEmpBranchLocations();
+        } else {
+            console.error("Add Employee Account Modal not found");
+        }
+    });
+});
 
 // Function to close the add employee account modal
 function closeAddEmployeeAccountModal() {
@@ -2098,7 +2098,7 @@ function closeAddEmployeeAccountModal() {
     <!-- Modal Header -->
     <div class="bg-gradient-to-r from-sidebar-accent to-white flex justify-between items-center p-6 flex-shrink-0 rounded-t-xl">
       <h3 class="text-xl font-bold text-white"><i class="fas fa-user-plus"></i> Add Employee Account</h3>
-      <button onclick="openAddEmployeeAccountModal()" class="bg-black bg-opacity-20 hover:bg-opacity-30 rounded-full p-2 text-white hover:text-white transition-all duration-200">
+      <button onclick="closeAddEmployeeAccountModal()" class="bg-black bg-opacity-20 hover:bg-opacity-30 rounded-full p-2 text-white hover:text-white transition-all duration-200">
         <i class="fas fa-times"></i>
       </button>
     </div>
