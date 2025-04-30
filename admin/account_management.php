@@ -1781,6 +1781,273 @@ if ($result->num_rows > 0) {
     </div>
 </div>
 
+<!--OPEN EDIT CUSTOMER/EMPLOYEE ACCOUNT-->
+<script>
+    
+    function openEditCustomerAccountModal(userId) {
+    // Fetch user details
+    fetch(`editAccount/fetch_customer_details.php?user_id=${userId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Create and show the modal
+                const modal = document.createElement('div');
+                modal.id = 'editCustomerModal';
+                modal.className = 'fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden';
+                modal.innerHTML = `
+                    <div class="bg-white rounded-lg shadow-xl w-full max-w-md">
+                        <!-- Modal Header -->
+                        <div class="flex justify-between items-center p-4 border-b border-sidebar-border">
+                            <h3 class="text-lg font-semibold text-sidebar-text">Edit Customer Account</h3>
+                            <button onclick="closeEditCustomerModal()" class="text-gray-500 hover:text-gray-700">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        
+                        <!-- Modal Body -->
+                        <div class="p-6">
+                            <form id="editCustomerForm" class="space-y-4">
+                                <input type="hidden" name="user_id" value="${data.user.id}">
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-sidebar-text mb-1">Customer ID</label>
+                                    <input type="text" value="#CUST-${String(data.user.id).padStart(3, '0')}" 
+                                           class="w-full p-2 border border-input-border rounded bg-gray-100" readonly>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-sidebar-text mb-1">First Name</label>
+                                    <input type="text" name="first_name" value="${data.user.first_name || ''}" 
+                                           class="w-full p-2 border border-input-border rounded focus:ring-gold focus:border-gold">
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-sidebar-text mb-1">Last Name</label>
+                                    <input type="text" name="last_name" value="${data.user.last_name || ''}" 
+                                           class="w-full p-2 border border-input-border rounded focus:ring-gold focus:border-gold">
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-sidebar-text mb-1">Middle Name</label>
+                                    <input type="text" name="middle_name" value="${data.user.middle_name || ''}" 
+                                           class="w-full p-2 border border-input-border rounded focus:ring-gold focus:border-gold">
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-sidebar-text mb-1">Email</label>
+                                    <input type="email" name="email" value="${data.user.email || ''}" 
+                                           class="w-full p-2 border border-input-border rounded focus:ring-gold focus:border-gold">
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-sidebar-text mb-1">Phone Number</label>
+                                    <input type="tel" name="phone_number" value="${data.user.phone_number || ''}" 
+                                           class="w-full p-2 border border-input-border rounded focus:ring-gold focus:border-gold">
+                                </div>
+                            </form>
+                        </div>
+                        
+                        <!-- Modal Footer -->
+                        <div class="flex justify-end p-4 border-t border-sidebar-border space-x-3">
+                            <button onclick="closeEditCustomerModal()" 
+                                    class="px-4 py-2 border border-input-border rounded text-sidebar-text hover:bg-sidebar-hover">
+                                Cancel
+                            </button>
+                            <button onclick="saveCustomerChanges()" 
+                                    class="px-4 py-2 bg-gold text-white rounded hover:bg-darkgold">
+                                Save Changes
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                document.body.appendChild(modal);
+                modal.classList.remove('hidden');
+                
+                // Add event listener for Escape key
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape') {
+                        closeEditCustomerModal();
+                    }
+                });
+            } else {
+                alert('Failed to fetch customer details: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while fetching customer details');
+        });
+}
+
+function closeEditCustomerModal() {
+    const modal = document.getElementById('editCustomerModal');
+    if (modal) {
+        modal.remove();
+    }
+}
+
+function saveCustomerChanges() {
+    const form = document.getElementById('editCustomerForm');
+    const formData = new FormData(form);
+    
+    fetch('editAccount/update_customer_account.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Customer account updated successfully');
+            closeEditCustomerModal();
+            // Refresh the customer list
+            fetchCustomerAccounts(currentPage, currentSearch, currentSort);
+        } else {
+            alert('Failed to update customer: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        
+    });
+}
+
+//edit employee Accounts
+function openEditEmployeeAccountModal(userId) {
+    // Fetch employee details
+    fetch(`editAccount/fetch_employee_details.php?user_id=${userId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Create and show the modal
+                const modal = document.createElement('div');
+                modal.id = 'editEmployeeModal';
+                modal.className = 'fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden';
+                modal.innerHTML = `
+                    <div class="bg-white rounded-lg shadow-xl w-full max-w-md">
+                        <!-- Modal Header -->
+                        <div class="flex justify-between items-center p-4 border-b border-sidebar-border">
+                            <h3 class="text-lg font-semibold text-sidebar-text">Edit Employee Account</h3>
+                            <button onclick="closeEditEmployeeModal()" class="text-gray-500 hover:text-gray-700">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        
+                        <!-- Modal Body -->
+                        <div class="p-6">
+                            <form id="editEmployeeForm" class="space-y-4">
+                                <input type="hidden" name="user_id" value="${data.user.id}">
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-sidebar-text mb-1">Employee ID</label>
+                                    <input type="text" value="#EMP-${String(data.user.id).padStart(3, '0')}" 
+                                           class="w-full p-2 border border-input-border rounded bg-gray-100" readonly>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-sidebar-text mb-1">First Name</label>
+                                    <input type="text" name="first_name" value="${data.user.first_name || ''}" 
+                                           class="w-full p-2 border border-input-border rounded focus:ring-gold focus:border-gold">
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-sidebar-text mb-1">Last Name</label>
+                                    <input type="text" name="last_name" value="${data.user.last_name || ''}" 
+                                           class="w-full p-2 border border-input-border rounded focus:ring-gold focus:border-gold">
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-sidebar-text mb-1">Middle Name</label>
+                                    <input type="text" name="middle_name" value="${data.user.middle_name || ''}" 
+                                           class="w-full p-2 border border-input-border rounded focus:ring-gold focus:border-gold">
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-sidebar-text mb-1">Email</label>
+                                    <input type="email" name="email" value="${data.user.email || ''}" 
+                                           class="w-full p-2 border border-input-border rounded focus:ring-gold focus:border-gold">
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-sidebar-text mb-1">Phone Number</label>
+                                    <input type="tel" name="phone_number" value="${data.user.phone_number || ''}" 
+                                           class="w-full p-2 border border-input-border rounded focus:ring-gold focus:border-gold">
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-sidebar-text mb-1">Branch Location</label>
+                                    <input type="text" name="branch_loc" value="${data.user.branch_loc || ''}" 
+                                           class="w-full p-2 border border-input-border rounded focus:ring-gold focus:border-gold">
+                                </div>
+                            </form>
+                        </div>
+                        
+                        <!-- Modal Footer -->
+                        <div class="flex justify-end p-4 border-t border-sidebar-border space-x-3">
+                            <button onclick="closeEditEmployeeModal()" 
+                                    class="px-4 py-2 border border-input-border rounded text-sidebar-text hover:bg-sidebar-hover">
+                                Cancel
+                            </button>
+                            <button onclick="saveEmployeeChanges()" 
+                                    class="px-4 py-2 bg-gold text-white rounded hover:bg-darkgold">
+                                Save Changes
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                document.body.appendChild(modal);
+                modal.classList.remove('hidden');
+                
+                // Add event listener for Escape key
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape') {
+                        closeEditEmployeeModal();
+                    }
+                });
+            } else {
+                alert('Failed to fetch employee details: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while fetching employee details');
+        });
+}
+
+function closeEditEmployeeModal() {
+    const modal = document.getElementById('editEmployeeModal');
+    if (modal) {
+        modal.remove();
+    }
+}
+
+function saveEmployeeChanges() {
+    const form = document.getElementById('editEmployeeForm');
+    const formData = new FormData(form);
+    
+    fetch('editAccount/update_employee_account.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Employee account updated successfully');
+            closeEditEmployeeModal();
+            // Refresh the employee list
+            fetchEmployeeAccounts(currentPage, currentSearch, currentSort);
+        } else {
+            alert('Failed to update employee: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+       
+    });
+}
+</script>
+
 <script>
     
     document.querySelector('[onclick="showArchivedCustomer"]').setAttribute('onclick', 'showArchivedCustomer()');
@@ -2955,12 +3222,10 @@ function togglePassword() {
     <!-- Modal content for editing an employee account -->
 </div>
 
-
- 
-
-
 </div>
+
   <script src="script.js"></script>
   <script src="tailwind.js"></script>
+
 </body>
 </html>
