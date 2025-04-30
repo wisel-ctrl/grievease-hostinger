@@ -1,6 +1,6 @@
 <?php
 session_start();
-
+date_default_timezone_set('Asia/Manila'); // Or your appropriate timezone
 // Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
     // Redirect to login page
@@ -185,7 +185,7 @@ for ($i = 11; $i >= 0; $i--) {
     $year = $date->format('Y');
     
     // Save the month name for our labels
-    $monthLabels[] = $date->format('M');
+    $monthLabels[] = $date->format('M Y');
     
     $query = "SELECT SUM(discounted_price) as projected_income FROM sales_tb 
               WHERE MONTH(get_timestamp) = ? AND YEAR(get_timestamp) = ?";
@@ -280,7 +280,7 @@ for ($i = 11; $i >= 0; $i--) {
     $year = $date->format('Y');
     
     // Save the month name for our labels
-    $monthLabels[] = $date->format('M');
+    $monthLabels[] = $date->format('M Y');
     
     $query = "SELECT SUM(amount_paid) as revenue FROM sales_tb 
               WHERE MONTH(get_timestamp) = ? AND YEAR(get_timestamp) = ?";
