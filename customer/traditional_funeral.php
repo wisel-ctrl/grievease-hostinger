@@ -1089,26 +1089,17 @@ require_once '../db_connect.php'; // Database connection
                     
                     <div class="space-y-8">
                         <!-- Casket Selection -->
+                        
                         <div class="border-b border-gray-200 pb-6">
                             <h4 class="text-lg font-hedvig text-navy mb-4">Select Casket</h4>
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <div class="border rounded-lg p-4 cursor-pointer casket-option" data-price="45000" data-name="Standard Wooden Casket">
-                                    <img src="/api/placeholder/300/200" alt="Standard Wooden Casket" class="w-full h-32 object-cover rounded-lg mb-2">
-                                    <h5 class="font-medium mb-1">Standard Wooden Casket</h5>
-                                    <p class="text-yellow-600">₱45,000</p>
-                                </div>
-                                <div class="border rounded-lg p-4 cursor-pointer casket-option" data-price="75000" data-name="Premium Wooden Casket">
-                                    <img src="/api/placeholder/300/200" alt="Premium Wooden Casket" class="w-full h-32 object-cover rounded-lg mb-2">
-                                    <h5 class="font-medium mb-1">Premium Wooden Casket</h5>
-                                    <p class="text-yellow-600">₱75,000</p>
-                                </div>
-                                <div class="border rounded-lg p-4 cursor-pointer casket-option" data-price="120000" data-name="Luxury Metal Casket">
-                                    <img src="/api/placeholder/300/200" alt="Luxury Metal Casket" class="w-full h-32 object-cover rounded-lg mb-2">
-                                    <h5 class="font-medium mb-1">Luxury Metal Casket</h5>
-                                    <p class="text-yellow-600">₱120,000</p>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="casketOptionsContainer">
+                                <!-- Casket options will be loaded here via AJAX -->
+                                <div class="text-center py-8">
+                                    <i class="fas fa-spinner fa-spin text-2xl text-yellow-600"></i>
+                                    <p class="mt-2">Loading casket options...</p>
                                 </div>
                             </div>
-                        </div>
+                        </div>                                                              
                         
                         <!-- Viewing Period Selection -->
                         <div class="border-b border-gray-200 pb-6">
@@ -1660,7 +1651,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <!-- Add this JavaScript code -->
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function() {
     // Show traditional modal directly when package is selected
     document.querySelectorAll('.selectPackageBtn').forEach(button => {
         button.addEventListener('click', function() {
@@ -1798,6 +1789,75 @@ document.addEventListener('DOMContentLoaded', function() {
         // Add booking submission logic here
         alert('Service booking submitted successfully!');
         closeAllModals();
+    });
+
+    // Function to fetch caskets based on branch_id
+    function fetchCasketsByBranch() {
+        // Get the branch_id from session (you may need to pass this from PHP to JS)
+        const branchId = <?php echo isset($_SESSION['branch_loc']) ? $_SESSION['branch_loc'] : 0; ?>;
+        
+        // Make an AJAX request to fetch caskets
+        fetch(`booking/fetch_caskets.php?branch_id=${branchId}`)
+            .then(response => response.json())
+            .then(data => {
+                const container = document.getElementById('casketOptionsContainer');
+                container.innerHTML = '';
+                
+                if (data.length === 0) {
+                    container.innerHTML = '<p class="text-gray-500 col-span-3 text-center py-8">No caskets available for this branch.</p>';
+                    return;
+                }
+                
+                data.forEach(casket => {
+                    const casketOption = document.createElement('div');
+                    casketOption.className = 'border rounded-lg p-4 cursor-pointer casket-option';
+                    casketOption.dataset.price = casket.price;
+                    casketOption.dataset.name = casket.item_name;
+                    casketOption.dataset.id = casket.inventory_id;
+                    
+                    casketOption.innerHTML = `
+                        <img src="${casket.inventory_img || '/api/placeholder/300/200'}" alt="${casket.item_name}" class="w-full h-32 object-cover rounded-lg mb-2">
+                        <h5 class="font-medium mb-1">${casket.item_name}</h5>
+                        <p class="text-yellow-600">₱${casket.price.toLocaleString()}</p>
+                    `;
+                    
+                    casketOption.addEventListener('click', function() {
+                        // Clear previous selection
+                        document.querySelectorAll('.casket-option').forEach(el => {
+                            el.classList.remove('border-yellow-600', 'border-2');
+                        });
+                        
+                        // Mark this option as selected
+                        this.classList.add('border-yellow-600', 'border-2');
+                        
+                        // Store selected casket
+                        selectedCasket = {
+                            id: this.dataset.id,
+                            name: this.dataset.name,
+                            price: parseInt(this.dataset.price)
+                        };
+                        
+                        updateCustomSummary();
+                        checkRequiredSelections();
+                    });
+                    
+                    container.appendChild(casketOption);
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching caskets:', error);
+                document.getElementById('casketOptionsContainer').innerHTML = 
+                    '<p class="text-red-500 col-span-3 text-center py-8">Error loading caskets. Please try again.</p>';
+            });
+    }
+
+    // Call this function when the custom package modal opens
+    document.querySelectorAll('button.customtraditionalpckg').forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            fetchCasketsByBranch();
+            openCustomPackageModal();
+        });
     });
 });
 
