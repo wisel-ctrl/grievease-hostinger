@@ -1025,6 +1025,7 @@ foreach ($serviceData as $service => $branches) {
             <a href="<?php echo '?page=' . min($totalPages, $page + 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover opacity-50 pointer-events-none">&raquo;</a>
         </div>
     </div>
+              </div>
 
 </div>
             
