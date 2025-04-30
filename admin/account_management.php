@@ -127,8 +127,9 @@ $customersResult = mysqli_query($conn, $customersQuery);
                 <h3 class="text-lg font-bold text-sidebar-text whitespace-nowrap">Customer Accounts</h3>
                 
                 <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
+                  
+                <span id="totalCustomers"></span>
                     <i class="fas fa-user-circle"></i>
-                    <span id="totalCustomers"></span>
                 </span>
             </div>
             
@@ -1493,8 +1494,8 @@ if ($result->num_rows > 0) {
                 
                 <!-- Employee counter from PHP can be placed here -->
                 <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
+                <span id="totalEmployees"><?php echo $totalRows; ?></span>
     <i class="fas fa-user-circle"></i>
-    <span id="totalEmployees"><?php echo $totalRows; ?></span>
 </span>
             </div>
             
