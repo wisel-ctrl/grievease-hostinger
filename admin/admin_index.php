@@ -730,6 +730,7 @@ foreach ($serviceData as $service => $branches) {
             <div class="flex items-center gap-3 mb-4 lg:mb-0">
                 <h4 class="text-lg font-bold text-sidebar-text whitespace-nowrap">Branch Performance</h4>
             </div>
+</div>
 
     
     <!-- Responsive Table Container with improved spacing -->
