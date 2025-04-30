@@ -544,25 +544,25 @@ require_once '../db_connect.php'; // Database connection
 <!-- FAQ Accordion -->
 <div class="space-y-6">
             <!-- FAQ Item 1 -->
-            <!-- FAQ Item on lifeplan Planning -->
+            <!-- FAQ Item on Pre-need Planning -->
 <div class="bg-white rounded-lg shadow-md overflow-hidden">
     <button class="faq-question w-full text-left p-6 focus:outline-none">
         <div class="flex justify-between items-center">
-            <h3 class="text-lg font-hedvig text-navy">Do you offer lifeplan funeral plans?</h3>
+            <h3 class="text-lg font-hedvig text-navy">Do you offer lifeplans?</h3>
             <i class="fas fa-chevron-down text-yellow-600 transition-transform duration-300"></i>
         </div>
     </button>
     <div class="faq-answer px-6 pb-6 hidden">
         <div class="border-t border-gray-200 pt-4 mt-2 text-dark">
-            <p>Yes, we offer lifeplan funeral plans for those who wish to arrange their funeral services in advance. Our lifeplan plans offer several advantages:</p>
+            <p>Yes, we offer lifeplans for those who wish to arrange their funeral services in advance. Our pre-need plans offer several advantages:</p>
             <ul class="list-disc ml-6 mt-2 space-y-1">
                 <li>Complete packages with all necessary services included</li>
-                <li>Flexible, negotiable pricing unlike the fixed prices of other lifeplan providers</li>
+                <li>Flexible, negotiable pricing unlike the fixed prices of other pre-need providers</li>
                 <li>Customizable options to meet your specific preferences</li>
                 <li>No hidden charges for special requests</li>
             </ul>
-            <p class="mt-4">Many clients choose our lifeplan plans over other providers because we provide more comprehensive packages without charging extra for additional requests. Our personalized approach ensures that all your wishes are honored exactly as you specify.</p>
-            <p class="mt-2">To discuss lifeplan planning options, we recommend scheduling an in-person consultation with our owner, Virgillo Jay G. Relova, who personally meets with each client to understand their specific needs and build a connection that ensures the highest quality of service.</p>
+            <p class="mt-4">Many clients choose our pre-need plans over other providers because we provide more comprehensive packages without charging extra for additional requests. Our personalized approach ensures that all your wishes are honored exactly as you specify.</p>
+            <p class="mt-2">To discuss pre-need planning options, we recommend scheduling an in-person consultation with our owner, Virgillo Jay G. Relova, who personally meets with each client to understand their specific needs and build a connection that ensures the highest quality of service.</p>
         </div>
     </div>
 </div>
