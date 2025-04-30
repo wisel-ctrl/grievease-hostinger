@@ -69,6 +69,10 @@ $result = $conn->query($sql);
 // Initialize empty table content
 $tableContent = '';
 
+// Calculate start and end for current page
+$start = ($page - 1) * $usersPerPage + 1;
+$end = min($start + $usersPerPage - 1, $totalRows);
+
 // Check if there are results
 if ($result->num_rows > 0) {
     // Create table rows with actual data
@@ -103,28 +107,24 @@ if ($result->num_rows > 0) {
             </td>
           </tr>';
     }
-    
-    // Calculate start and end for current page
-    $start = ($page - 1) * $usersPerPage + 1;
-    $end = min($start + $usersPerPage - 1, $totalRows);
-    
-    // Update pagination info
-    $paginationInfo = "Showing $start - $end of $totalRows customer accounts";
 } else {
     // If no customers found, display a message
     $tableContent = '<tr class="border-b border-sidebar-border">
         <td colspan="6" class="p-4 text-sm text-center text-gray-500">No customer accounts found</td>
     </tr>';
     
-    // Set pagination info for empty results
-    $paginationInfo = "Showing 0 of 0 customer accounts";
+    // Reset start and end when no results
+    $start = 0;
+    $end = 0;
 }
 
 // Return JSON response
 header('Content-Type: application/json');
 echo json_encode([
     'tableContent' => $tableContent,
-    'paginationInfo' => $paginationInfo,
+    'showingFrom' => $start,
+    'showingTo' => $end,
+    'totalCount' => $totalRows,
     'totalPages' => $totalPages,
     'currentPage' => $page
 ]);
