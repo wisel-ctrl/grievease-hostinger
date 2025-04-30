@@ -1087,7 +1087,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     $status_text = '';
                     switch ($booking['status']) {
                         case 'Pending':
-                            $status_class = 'bg-yellow-800/10 text-yellow-900';
+                            $status_class = 'bg-yellow-600/10 text-yellow-600';
                             $status_text = 'Pending';
                             break;
                         case 'Accepted':
@@ -1130,7 +1130,7 @@ document.addEventListener('DOMContentLoaded', function() {
     <?php 
         switch($booking['status']) {
             case 'Pending':
-                echo 'bg-yellow-600'; // Light yellow background
+                echo 'bg-yellow-500'; // Light yellow background
                 break;
             case 'Accepted':
                 echo 'bg-green-600'; // Light green background
@@ -1147,7 +1147,7 @@ document.addEventListener('DOMContentLoaded', function() {
     ?>">
     <div class="flex items-center justify-between mb-3">
         <span class="<?php echo $status_class; ?> text-xs px-2 py-1 rounded-full"><?php echo $status_text; ?></span>
-        <p class="text-sm text-white">Booking ID: <?php echo $booking['booking_id']; ?></p>
+        <p class="text-sm text-gray-500">Booking ID: <?php echo $booking['booking_id']; ?></p>
     </div>
     <h4 class="font-hedvig text-lg text-white mb-2"><?php echo $booking['service_name']; ?></h4>
 </div>
