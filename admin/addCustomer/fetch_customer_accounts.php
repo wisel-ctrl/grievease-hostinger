@@ -120,6 +120,8 @@ if ($result->num_rows > 0) {
     $paginationInfo = "Showing 0 of 0 customer accounts";
 }
 
+// Return JSON response
+header('Content-Type: application/json');
 $response = [
     'tableContent' => $tableContent,
     'showingFrom' => $offset + 1,
