@@ -118,18 +118,21 @@ $notifications_count = [
 
 while ($booking = $bookings_result->fetch_assoc()) {
     $bookings[] = $booking;
-    $notifications_count['total']++;
     
     switch ($booking['status']) {
         case 'Pending':
+            $notifications_count['total']++;
             $notifications_count['pending']++;
             break;
         case 'Accepted':
+            $notifications_count['total']++;
             $notifications_count['accepted']++;
             break;
         case 'Declined':
+            $notifications_count['total']++;
             $notifications_count['declined']++;
             break;
+        // Cancelled bookings fall through and aren't counted
     }
 }
 
