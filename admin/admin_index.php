@@ -232,11 +232,11 @@ function getBranchMetrics($conn, $branchId) {
   $capitalResult = $stmt->get_result();
   $capitalData = $capitalResult->fetch_assoc();
   $totalCapital = $capitalData['total_capital'] ?? 0;
-  $visible = 'visible';
+  $visible = "visible";
 
   // Get sum of expenses for current month
   $expensesQuery = "SELECT SUM(price) as total_expenses FROM expense_tb 
-                   WHERE branch_id = ? AND MONTH(date) = ? AND YEAR(date) = ? appearance = ?";
+                   WHERE branch_id = ? AND MONTH(date) = ? AND YEAR(date) = ? AND appearance = ?";
   $stmt = $conn->prepare($expensesQuery);
   $stmt->bind_param("iiis", $branchId, $currentMonth, $currentYear, $visible);
   $stmt->execute();
