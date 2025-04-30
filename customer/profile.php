@@ -1087,7 +1087,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     $status_text = '';
                     switch ($booking['status']) {
                         case 'Pending':
-                            $status_class = 'bg-yellow-700 text-yellow-800';
+                            $status_class = 'bg-yellow-800/10 text-yellow-900';
                             $status_text = 'Pending';
                             break;
                         case 'Accepted':
