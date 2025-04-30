@@ -1973,7 +1973,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 const response = JSON.parse(xhr.responseText);
                 
                 // Update table body
-                document.getElementById('totalEmployees').textContent = response.totalCount;
+                employeeTableBody.innerHTML = response.tableContent;
+
+                textContent = response.totalCount;
 
                 
                 
