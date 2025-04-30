@@ -1092,7 +1092,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             break;
                         case 'Accepted':
                             $status_class = 'bg-green-500/10 text-green-500';
-                            $status_text = 'Active';
+                            $status_text = 'Accepted';
                             break;
                         case 'Declined':
                             $status_class = 'bg-red-500/10 text-red-500';
