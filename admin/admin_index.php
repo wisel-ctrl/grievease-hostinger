@@ -731,6 +731,7 @@ foreach ($serviceData as $service => $branches) {
                 <h4 class="text-lg font-bold text-sidebar-text whitespace-nowrap">Branch Performance</h4>
             </div>
 </div>
+</div>
 
     
     <!-- Responsive Table Container with improved spacing -->
