@@ -614,16 +614,13 @@
         <div class="relative w-full h-48 mb-6">
             <!-- Candle -->
             <div class="absolute left-1/2 transform -translate-x-1/2 bottom-0 w-16">
-                <!-- Wick -->
-                <div class="w-1 h-5 bg-gray-700 mx-auto mb-0 rounded-t-lg"></div>
-                
-                <!-- Animated Flame -->
-                <div>
-                    <!-- Outer Flame -->
-                    <div class="absolute left-1/2 transform -translate-x-1/2 bottom-[75px] w-6 h-12 bg-yellow-600/80 rounded-full blur-sm animate-pulse"></div>
+                <!-- Wick with Flame (updated positioning) -->
+                <div class="relative w-1 h-5 bg-gray-700 mx-auto rounded-t-lg">
+                    <!-- Outer Flame (updated positioning) -->
+                    <div class="absolute left-1/2 top-[-24px] transform -translate-x-1/2 w-6 h-12 bg-yellow-600/80 rounded-full blur-sm animate-flame"></div>
                     
-                    <!-- Inner Flame -->
-                    <div class="absolute left-1/2 transform -translate-x-1/2 bottom-[80px] w-3 h-10 bg-white/90 rounded-full blur-[2px] animate-flame"></div>
+                    <!-- Inner Flame (updated positioning) -->
+                    <div class="absolute left-1/2 top-[-20px] transform -translate-x-1/2 w-3 h-10 bg-white/90 rounded-full blur-[2px] animate-flame"></div>
                 </div>
                 
                 <!-- Candle Body -->
