@@ -188,7 +188,7 @@ for ($i = 11; $i >= 0; $i--) {
 $monthlyProjectedIncomeData = [];
 
 for ($i = 11; $i >= 0; $i--) {
-    $date = new DateTime();
+    $date = clone $currentDate;
     $date->modify("-$i months");
     $month = $date->format('m');
     $year = $date->format('Y');
