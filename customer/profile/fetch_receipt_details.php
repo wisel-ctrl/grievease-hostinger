@@ -5,10 +5,14 @@ header('Content-Type: application/json');
 
 $bookingId = $_GET['booking_id'] ?? 0;
 
-$query = "SELECT b.*, s.service_name, s.selling_price, br.branch_name
+$query = "SELECT b.*, s.service_name, s.selling_price, br.branch_name,
+                 u.first_name as accepter_first, u.last_name as accepter_last, 
+                 u.middle_name as accepter_middle, u.suffix as accepter_suffix,
+                 u.email as accepter_email, u.phone_number as accepter_phone
           FROM booking_tb b
           JOIN services_tb s ON b.service_id = s.service_id
           JOIN branch_tb br ON b.branch_id = br.branch_id
+          LEFT JOIN users u ON b.accepter_decliner = u.id
           WHERE b.booking_id = ? AND b.status = 'Accepted'";
 
 $stmt = $conn->prepare($query);
