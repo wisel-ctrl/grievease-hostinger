@@ -116,7 +116,8 @@ echo json_encode([
     'tableContent' => $tableContent,
     'paginationInfo' => $paginationInfo,
     'totalPages' => $totalPages,
-    'currentPage' => $page
+    'currentPage' => $page,
+    'totalCount' => $totalRows // Add this line
 ]);
 
 // Close the database connection
