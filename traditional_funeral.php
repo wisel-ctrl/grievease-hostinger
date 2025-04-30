@@ -189,44 +189,44 @@
         <div class="overflow-hidden relative">
             <div id="carousel-container" class="flex transition-transform duration-500 ease-in-out">
                 <!-- Package 1: Legacy Tribute -->
-                <div class="package-card min-w-full md:min-w-[33.333%] px-4">
+                <div class="package-card min-w-full md:min-w-[33.333%] px-2 sm:px-4">
                     <div class="bg-white rounded-[20px] shadow-lg overflow-hidden relative group hover:shadow-xl transition-all duration-300 flex flex-col h-full" data-price="700000" data-service="traditional" data-name="Legacy Tribute" data-image="image/700.jpg">
-                        <div class="h-12 bg-navy flex items-center justify-center">
-                            <h4 class="text-white font-hedvig text-xl">Legacy Tribute</h4>
-                            <div class="absolute top-0 right-0 w-16 h-16 flex items-center justify-center">
-                                <div class="w-16 h-16 bg-yellow-600/90 rotate-45 transform origin-bottom-left"></div>
+                        <div class="h-10 sm:h-12 bg-navy flex items-center justify-center">
+                            <h4 class="text-white font-hedvig text-lg sm:text-xl">Legacy Tribute</h4>
+                            <div class="absolute top-0 right-0 w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center">
+                                <div class="w-12 h-12 sm:w-16 sm:h-16 bg-yellow-600/90 rotate-45 transform origin-bottom-left"></div>
                             </div>
                         </div>
-                        <div class="p-6 flex flex-col flex-grow">
-                            <div class="mb-4 flex justify-center">
-                                <img src="image/700.jpg" alt="Legacy Tribute" class="w-full h-48 object-cover rounded-lg">
+                        <div class="p-4 sm:p-6 flex flex-col flex-grow">
+                            <div class="mb-3 sm:mb-4 flex justify-center">
+                                <img src="image/700.jpg" alt="Legacy Tribute" class="w-full h-40 sm:h-48 object-cover rounded-lg">
                             </div>
-                            <div class="text-center mb-6">
-                                <span class="text-3xl font-hedvig text-navy">₱700,000</span>
+                            <div class="text-center mb-4 sm:mb-6">
+                                <span class="text-2xl sm:text-3xl font-hedvig text-navy">₱700,000</span>
                             </div>
-                            <ul class="space-y-3 mb-6 flex-grow">
+                            <ul class="space-y-2 sm:space-y-3 mb-4 sm:mb-6 flex-grow text-sm sm:text-base">
                                 <li class="flex items-start">
-                                    <i class="fas fa-check-circle mr-2 text-yellow-600 mt-1"></i>
+                                    <i class="fas fa-check-circle mr-2 text-yellow-600 mt-1 flex-shrink-0"></i>
                                     <span class="text-dark">3 sets of flower arrangements</span>
                                 </li>
                                 <li class="flex items-start">
-                                    <i class="fas fa-check-circle mr-2 text-yellow-600 mt-1"></i>
+                                    <i class="fas fa-check-circle mr-2 text-yellow-600 mt-1 flex-shrink-0"></i>
                                     <span class="text-dark">Catering on last day</span>
                                 </li>
                                 <li class="flex items-start">
-                                    <i class="fas fa-check-circle mr-2 text-yellow-600 mt-1"></i>
+                                    <i class="fas fa-check-circle mr-2 text-yellow-600 mt-1 flex-shrink-0"></i>
                                     <span class="text-dark">Premium casket selection</span>
                                 </li>
                                 <li class="flex items-start">
-                                    <i class="fas fa-check-circle mr-2 text-yellow-600 mt-1"></i>
+                                    <i class="fas fa-check-circle mr-2 text-yellow-600 mt-1 flex-shrink-0"></i>
                                     <span class="text-dark">Extended viewing period</span>
                                 </li>
                                 <li class="flex items-start">
-                                    <i class="fas fa-check-circle mr-2 text-yellow-600 mt-1"></i>
+                                    <i class="fas fa-check-circle mr-2 text-yellow-600 mt-1 flex-shrink-0"></i>
                                     <span class="text-dark">Complete funeral service</span>
                                 </li>
                             </ul>
-                            <a href="Landing_Page/register.php" class="block w-full mt-6 bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg shadow-md transition-all duration-300 text-center">
+                            <a href="Landing_Page/register.php" class="block w-full mt-4 sm:mt-6 bg-yellow-600 hover:bg-yellow-700 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg shadow-md transition-all duration-300 text-center text-sm sm:text-base">
                                 Select Package
                             </a>
                         </div>
@@ -234,121 +234,118 @@
                 </div>
                 
                 <!-- Package 2: Eternal Remembrance -->
-                <div class="package-card min-w-full md:min-w-[33.333%] px-4">
+                <div class="package-card min-w-full md:min-w-[33.333%] px-2 sm:px-4">
                     <div class="bg-white rounded-[20px] shadow-lg overflow-hidden relative group hover:shadow-xl transition-all duration-300 flex flex-col h-full" data-price="300000" data-service="traditional" data-name="Eternal Remembrance" data-image="image/300.jpg">
-                        <div class="h-12 bg-navy flex items-center justify-center">
-                            <h4 class="text-white font-hedvig text-xl">Eternal Remembrance</h4>
-                            <div class="absolute top-0 right-0 w-16 h-16 flex items-center justify-center">
-                                <div class="w-16 h-16 bg-yellow-600/90 rotate-45 transform origin-bottom-left"></div>
+                        <div class="h-10 sm:h-12 bg-navy flex items-center justify-center">
+                            <h4 class="text-white font-hedvig text-lg sm:text-xl">Eternal Remembrance</h4>
+                            <div class="absolute top-0 right-0 w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center">
+                                <div class="w-12 h-12 sm:w-16 sm:h-16 bg-yellow-600/90 rotate-45 transform origin-bottom-left"></div>
                             </div>
                         </div>
-                        <div class="p-6 flex flex-col flex-grow">
-                            <div class="mb-4 flex justify-center">
-                                <img src="image/300.jpg" alt="Legacy Tribute" class="w-full h-48 object-cover rounded-lg">
+                        <div class="p-4 sm:p-6 flex flex-col flex-grow">
+                            <div class="mb-3 sm:mb-4 flex justify-center">
+                                <img src="image/300.jpg" alt="Eternal Remembrance" class="w-full h-40 sm:h-48 object-cover rounded-lg">
                             </div>
-                            <div class="text-center mb-6">
-                                <span class="text-3xl font-hedvig text-navy">₱300,000</span>
+                            <div class="text-center mb-4 sm:mb-6">
+                                <span class="text-2xl sm:text-3xl font-hedvig text-navy">₱300,000</span>
                             </div>
-                            <ul class="space-y-3 mb-6 flex-grow">
+                            <ul class="space-y-2 sm:space-y-3 mb-4 sm:mb-6 flex-grow text-sm sm:text-base">
                                 <li class="flex items-start">
-                                    <i class="fas fa-check-circle mr-2 text-yellow-600 mt-1"></i>
+                                    <i class="fas fa-check-circle mr-2 text-yellow-600 mt-1 flex-shrink-0"></i>
                                     <span class="text-dark">2 sets of flower arrangements</span>
                                 </li>
                                 <li class="flex items-start">
-                                    <i class="fas fa-check-circle mr-2 text-yellow-600 mt-1"></i>
+                                    <i class="fas fa-check-circle mr-2 text-yellow-600 mt-1 flex-shrink-0"></i>
                                     <span class="text-dark">Premium casket selection</span>
                                 </li>
                                 <li class="flex items-start">
-                                    <i class="fas fa-check-circle mr-2 text-yellow-600 mt-1"></i>
+                                    <i class="fas fa-check-circle mr-2 text-yellow-600 mt-1 flex-shrink-0"></i>
                                     <span class="text-dark">Extended viewing period</span>
                                 </li>
                                 <li class="flex items-start">
-                                    <i class="fas fa-check-circle mr-2 text-yellow-600 mt-1"></i>
+                                    <i class="fas fa-check-circle mr-2 text-yellow-600 mt-1 flex-shrink-0"></i>
                                     <span class="text-dark">Complete funeral service</span>
                                 </li>
                                 <li class="flex items-start">
-                                    <i class="fas fa-check-circle mr-2 text-yellow-600 mt-1"></i>
+                                    <i class="fas fa-check-circle mr-2 text-yellow-600 mt-1 flex-shrink-0"></i>
                                     <span class="text-dark">Curtains and lighting</span>
                                 </li>
                                 <li class="flex items-start">
-                                    <i class="fas fa-check-circle mr-2 text-yellow-600 mt-1"></i>
+                                    <i class="fas fa-check-circle mr-2 text-yellow-600 mt-1 flex-shrink-0"></i>
                                     <span class="text-dark">Water dispenser</span>
                                 </li>
                             </ul>
-                            <a href="Landing_Page/register.php" class="block w-full mt-6 bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg shadow-md transition-all duration-300 text-center">
+                            <a href="Landing_Page/register.php" class="block w-full mt-4 sm:mt-6 bg-yellow-600 hover:bg-yellow-700 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg shadow-md transition-all duration-300 text-center text-sm sm:text-base">
                                 Select Package
                             </a>
                         </div>
                     </div>
                 </div>
                 
-                <!-- Package 3: Heritage Memorial -->
-                <div class="package-card min-w-full md:min-w-[33.333%] px-4">
-                    <div class="bg-white rounded-[20px] shadow-lg overflow-hidden relative group hover:shadow-xl transition-all duration-300 flex flex-col h-full" data-price="250000" data-service="traditional" data-name="Heritage Memorial" data-image="image/250.jpg">
-                        <div class="h-12 bg-navy flex items-center justify-center">
-                            <h4 class="text-white font-hedvig text-xl">Heritage Memorial</h4>
-                            <div class="absolute top-0 right-0 w-16 h-16 flex items-center justify-center">
-                                <div class="w-16 h-16 bg-yellow-600/90 rotate-45 transform origin-bottom-left"></div>
+                <!-- Package 3: Custom Memorial -->
+                <div class="package-card min-w-full md:min-w-[33.333%] px-2 sm:px-4">
+                    <div class="bg-white rounded-[20px] shadow-lg overflow-hidden relative group hover:shadow-xl transition-all duration-300 flex flex-col h-full" data-price="custom" data-service="traditional" data-name="Custom Memorial" data-image="image/custom.jpg">
+                        <div class="h-10 sm:h-12 bg-navy flex items-center justify-center">
+                            <h4 class="text-white font-hedvig text-lg sm:text-xl">Custom Memorial</h4>
+                            <div class="absolute top-0 right-0 w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center">
+                                <div class="w-12 h-12 sm:w-16 sm:h-16 bg-yellow-600/90 rotate-45 transform origin-bottom-left"></div>
                             </div>
                         </div>
-                        <div class="p-6 flex flex-col flex-grow">
-                            <div class="mb-4 flex justify-center">
-                                <img src="image/250.jpg" alt="Legacy Tribute" class="w-full h-48 object-cover rounded-lg">
+                        <div class="p-4 sm:p-6 flex flex-col flex-grow">
+                            <div class="mb-3 sm:mb-4 flex justify-center">
+                                <img src="Landing_Page/Landing_images/logo.png" alt="Custom Memorial" class="w-full h-40 sm:h-48 object-cover rounded-lg">
                             </div>
-                            <div class="text-center mb-6">
-                                <span class="text-3xl font-hedvig text-navy">₱250,000</span>
+                            <div class="text-center mb-4 sm:mb-6">
+                                <span class="text-2xl sm:text-3xl font-hedvig text-navy">Starting at ₱150,000</span>
+                                <p class="text-xs sm:text-sm text-gray-600 mt-1">Final price depends on selections</p>
                             </div>
-                            <ul class="space-y-3 mb-6 flex-grow">
+                            <ul class="space-y-2 sm:space-y-3 mb-4 sm:mb-6 flex-grow text-sm sm:text-base">
                                 <li class="flex items-start">
-                                    <i class="fas fa-check-circle mr-2 text-yellow-600 mt-1"></i>
-                                    <span class="text-dark">2 sets of flower arrangements</span>
+                                    <i class="fas fa-sliders-h mr-2 text-yellow-600 mt-1 flex-shrink-0"></i>
+                                    <span class="text-dark"><strong>Choose your casket</strong> from our selection</span>
                                 </li>
                                 <li class="flex items-start">
-                                    <i class="fas fa-check-circle mr-2 text-yellow-600 mt-1"></i>
-                                    <span class="text-dark">Standard casket selection</span>
+                                    <i class="fas fa-sliders-h mr-2 text-yellow-600 mt-1 flex-shrink-0"></i>
+                                    <span class="text-dark"><strong>Select flower arrangements</strong> (1-3 sets)</span>
                                 </li>
                                 <li class="flex items-start">
-                                    <i class="fas fa-check-circle mr-2 text-yellow-600 mt-1"></i>
-                                    <span class="text-dark">Standard viewing period</span>
+                                    <i class="fas fa-sliders-h mr-2 text-yellow-600 mt-1 flex-shrink-0"></i>
+                                    <span class="text-dark"><strong>Customize viewing period</strong> to your needs</span>
                                 </li>
                                 <li class="flex items-start">
-                                    <i class="fas fa-check-circle mr-2 text-yellow-600 mt-1"></i>
-                                    <span class="text-dark">Complete funeral service</span>
+                                    <i class="fas fa-sliders-h mr-2 text-yellow-600 mt-1 flex-shrink-0"></i>
+                                    <span class="text-dark"><strong>Add catering options</strong> if desired</span>
                                 </li>
                                 <li class="flex items-start">
-                                    <i class="fas fa-check-circle mr-2 text-yellow-600 mt-1"></i>
-                                    <span class="text-dark">Curtains and lighting</span>
+                                    <i class="fas fa-check-circle mr-2 text-yellow-600 mt-1 flex-shrink-0"></i>
+                                    <span class="text-dark">Core funeral services included</span>
                                 </li>
                                 <li class="flex items-start">
-                                    <i class="fas fa-check-circle mr-2 text-yellow-600 mt-1"></i>
-                                    <span class="text-dark">Water dispenser</span>
-                                </li>
-                                <li class="flex items-start">
-                                    <i class="fas fa-check-circle mr-2 text-yellow-600 mt-1"></i>
-                                    <span class="text-dark">Tent, chairs, and table</span>
+                                    <i class="fas fa-check-circle mr-2 text-yellow-600 mt-1 flex-shrink-0"></i>
+                                    <span class="text-dark">Personalized assistance throughout</span>
                                 </li>
                             </ul>
-                            <a href="Landing_Page/register.php" class="block w-full mt-6 bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg shadow-md transition-all duration-300 text-center">
-                                Select Package
+                            <a href="Landing_Page/register.php" class="block w-full mt-4 sm:mt-6 bg-yellow-600 hover:bg-yellow-700 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg shadow-md transition-all duration-300 text-center text-sm sm:text-base">
+                                Customize Package
                             </a>
                         </div>
                     </div>
                 </div>
                 
                 <!-- View All Packages Blur Card -->
-                <div class="package-card min-w-full md:min-w-[33.333%] px-4">
+                <div class="package-card min-w-full md:min-w-[33.333%] px-2 sm:px-4">
                     <a href="Landing_Page/register.php" class="block h-full">
                         <div class="bg-white/30 backdrop-blur-md rounded-[20px] shadow-lg overflow-hidden relative group hover:shadow-xl transition-all duration-300 flex flex-col h-full border-2 border-dashed border-navy/40">
-                            <div class="flex items-center justify-center h-full p-6">
+                            <div class="flex items-center justify-center h-full p-4 sm:p-6">
                                 <div class="text-center">
-                                    <div class="mb-6 flex justify-center">
-                                        <div class="w-20 h-20 rounded-full bg-navy/10 flex items-center justify-center">
-                                            <i class="fas fa-ellipsis-h text-3xl text-navy/60"></i>
+                                    <div class="mb-4 sm:mb-6 flex justify-center">
+                                        <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-navy/10 flex items-center justify-center">
+                                            <i class="fas fa-ellipsis-h text-2xl sm:text-3xl text-navy/60"></i>
                                         </div>
                                     </div>
-                                    <h3 class="text-2xl font-hedvig text-navy mb-4">View All Packages</h3>
-                                    <p class="text-dark/70 mb-6">Explore our complete range of funeral service options</p>
-                                    <div class="inline-block bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg shadow-md transition-all duration-300">
+                                    <h3 class="text-xl sm:text-2xl font-hedvig text-navy mb-3 sm:mb-4">View All Packages</h3>
+                                    <p class="text-dark/70 mb-4 sm:mb-6 text-sm sm:text-base">Explore our complete range of funeral service options</p>
+                                    <div class="inline-block bg-yellow-600 hover:bg-yellow-700 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg shadow-md transition-all duration-300 text-sm sm:text-base">
                                         View All
                                     </div>
                                 </div>
@@ -359,21 +356,21 @@
             </div>
         </div>
         
-        <!-- Navigation Arrows -->
-        <button id="prev-btn" class="absolute left-0 top-1/2 transform -translate-y-1/2 -ml-4 bg-white w-10 h-10 rounded-full shadow-lg flex items-center justify-center border border-gray-200 z-20 hover:bg-gray-50 focus:outline-none">
-            <i class="fas fa-chevron-left text-navy"></i>
+        <!-- Navigation Arrows - Modified for smaller screens -->
+        <button id="prev-btn" class="absolute left-0 top-1/2 transform -translate-y-1/2 -ml-2 sm:-ml-4 bg-yellow-600 w-8 h-8 sm:w-10 sm:h-10 rounded-full shadow-lg flex items-center justify-center border border-gray-200 z-20 hover:bg-yellow-700 focus:outline-none">
+            <i class="fas fa-chevron-left text-white text-xs sm:text-base"></i>
         </button>
-        <button id="next-btn" class="absolute right-0 top-1/2 transform -translate-y-1/2 -mr-4 bg-white w-10 h-10 rounded-full shadow-lg flex items-center justify-center border border-gray-200 z-20 hover:bg-gray-50 focus:outline-none">
-            <i class="fas fa-chevron-right text-navy"></i>
+        <button id="next-btn" class="absolute right-0 top-1/2 transform -translate-y-1/2 -mr-2 sm:-mr-4 bg-yellow-600 w-8 h-8 sm:w-10 sm:h-10 rounded-full shadow-lg flex items-center justify-center border border-gray-200 z-20 hover:bg-yellow-700 focus:outline-none">
+            <i class="fas fa-chevron-right text-white text-xs sm:text-base"></i>
         </button>
 
         <!-- Dots Indicator -->
-        <div class="flex justify-center mt-6">
+        <div class="flex justify-center mt-4 sm:mt-6">
             <div id="carousel-dots" class="flex space-x-2">
-                <button class="w-3 h-3 rounded-full bg-navy opacity-100" data-index="0"></button>
-                <button class="w-3 h-3 rounded-full bg-navy opacity-50" data-index="1"></button>
-                <button class="w-3 h-3 rounded-full bg-navy opacity-50" data-index="2"></button>
-                <button class="w-3 h-3 rounded-full bg-navy opacity-50" data-index="3"></button>
+                <button class="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-navy opacity-100" data-index="0"></button>
+                <button class="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-navy opacity-50" data-index="1"></button>
+                <button class="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-navy opacity-50" data-index="2"></button>
+                <button class="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-navy opacity-50" data-index="3"></button>
             </div>
         </div>
     </div>
