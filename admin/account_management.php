@@ -1973,9 +1973,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 const response = JSON.parse(xhr.responseText);
                 
                 // Update table body
-                employeeTableBody.innerHTML = response.tableContent;
-
                 document.getElementById('totalEmployees').textContent = response.totalCount;
+
+                
                 
                 // Update pagination info
                 paginationInfoElement.textContent = response.paginationInfo;
