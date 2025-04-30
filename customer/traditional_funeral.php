@@ -1794,7 +1794,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Function to fetch caskets based on branch_id
     function fetchCasketsByBranch() {
         // Get the branch_id from session (you may need to pass this from PHP to JS)
-        const branchId = <?php echo isset($_SESSION['branch_loc']) ? $_SESSION['branch_loc'] : 0; ?>;
+        const branchId = <?php echo  $_SESSION['branch_loc'] ?>;
         
         // Make an AJAX request to fetch caskets
         fetch(`booking/fetch_caskets.php?branch_id=${branchId}`)
