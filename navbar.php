@@ -42,7 +42,7 @@
 </style>
 <body>
 <!-- Navigation Bar - Improved & Smaller -->
-<nav class="bg-black text-white shadow-md w-full fixed top-0 left-0 z-50 px-4 sm:px-6 lg:px-8" style="height: var(--navbar-height);">
+<nav class="bg-black text-cinzel text-white shadow-md w-full fixed top-0 left-0 z-50 px-4 sm:px-6 lg:px-8" style="height: var(--navbar-height);">
     <div class="flex justify-between items-center h-16">
         <!-- Left side: Logo and Text with Link -->
         <a href="index.php" class="flex items-center space-x-2">
