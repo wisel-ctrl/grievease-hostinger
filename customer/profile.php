@@ -1468,53 +1468,54 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
     </footer>                               
                     
-<!-- Edit Profile Modal (Improved UI) -->
+<!-- Edit Profile Modal (Updated UI) -->
 <div id="edit-profile-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4 hidden">
     <div class="w-full max-w-5xl bg-white rounded-2xl shadow-xl overflow-hidden max-h-[90vh]">
         <div class="modal-scroll-container overflow-y-auto max-h-[90vh]">
             <!-- Header with close button -->
-            <div class="bg-navy p-6 flex justify-between items-center shadow-md rounded-t-2xl">
-                <h2 class="text-2xl font-bold text-white">Edit Profile</h2>
-                <button id="close-edit-profile-modal" class="text-white hover:text-yellow-300 transition duration-200">
+            <div class="bg-navy p-6 flex justify-between items-center">
+                <h2 class="text-2xl font-hedvig text-white">Edit Profile</h2>
+                <button id="close-edit-profile-modal" class="text-white hover:text-yellow-300">
                     <i class="fas fa-times text-2xl"></i>
                 </button>
             </div>
             
             <!-- Modal Body -->
-            <div class="p-6 bg-gradient-to-b from-cream to-white rounded-b-2xl">
+            <div class="p-6 bg-cream">
                 <p class="text-gray-600 text-base sm:text-lg mb-4 sm:mb-6">Update your personal information below. Fields marked with * are required.</p>
                 
                 <form class="space-y-4 sm:space-y-6" id="profile-form" method="POST" action="profile/update_profile.php" enctype="multipart/form-data">
                     <div class="grid sm:grid-cols-2 gap-4 sm:gap-6">
                         <div>
                             <label for="firstName" class="block text-sm font-medium text-gray-700 mb-1 sm:mb-2">First Name*</label>
-                            <input type="text" id="firstName" name="firstName" value="<?php echo htmlspecialchars($first_name); ?>" required class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base transition duration-150">
+                            <input type="text" id="firstName" name="firstName" value="<?php echo htmlspecialchars($first_name); ?>" required class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base">
                         </div>
                         
                         <div>
                             <label for="lastName" class="block text-sm font-medium text-gray-700 mb-1 sm:mb-2">Last Name*</label>
-                            <input type="text" id="lastName" name="lastName" value="<?php echo htmlspecialchars($last_name); ?>" required class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base transition duration-150">
+                            <input type="text" id="lastName" name="lastName" value="<?php echo htmlspecialchars($last_name); ?>" required class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base">
                         </div>
                     </div>
                     
                     <div class="grid sm:grid-cols-2 gap-4 sm:gap-6">
                         <div>
                             <label for="middleName" class="block text-sm font-medium text-gray-700 mb-1 sm:mb-2">Middle Name</label>
-                            <input type="text" id="middleName" name="middleName" value="<?php echo htmlspecialchars($middle_name); ?>" class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base transition duration-150">
+                            <input type="text" id="middleName" name="middleName" value="<?php echo htmlspecialchars($middle_name); ?>" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base">
                         </div>
+                        
                     </div>
 
                     <div>
                         <label for="dob" class="block text-sm font-medium text-gray-700 mb-1 sm:mb-2">Date of Birth</label>
-                        <input type="date" id="dob" name="dob" value="<?php echo htmlspecialchars($birthdate); ?>" class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base transition duration-150">
+                        <input type="date" id="dob" name="dob" value="<?php echo htmlspecialchars($birthdate); ?>" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base">
                     </div>
                     
                     <div class="grid sm:grid-cols-2 gap-4 sm:gap-6">
                         <div>
                             <label for="email" class="block text-sm font-medium text-gray-700 mb-1 sm:mb-2">Email Address*</label>
                             <div class="relative">
-                                <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($email); ?>" required readonly class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-100 cursor-not-allowed text-sm sm:text-base shadow-sm">
-                                <span class="absolute right-3 top-1/2 transform -translate-y-1/2 text-yellow-600">
+                                <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($email); ?>" required readonly class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg bg-gray-100 cursor-not-allowed text-sm sm:text-base">
+                                <span class="absolute right-3 sm:right-4 top-1/2 transform -translate-y-1/2 text-yellow-600">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                         <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
                                         <polyline points="22,6 12,13 2,6"></polyline>
@@ -1527,8 +1528,8 @@ document.addEventListener('DOMContentLoaded', function() {
                             <label for="phone" class="block text-sm font-medium text-gray-700 mb-1 sm:mb-2">Phone Number*</label>
                             <div class="relative">
                                 <input type="tel" id="phone" name="phone" pattern="^(\+63\d{10}|0\d{10}|\d{10})$"
-                                title="Phone number (09XXXXXXXXX or +639XXXXXXXXX)" value="<?php echo htmlspecialchars($phone_number); ?>" required class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent pr-10 text-sm sm:text-base transition duration-150">
-                                <span class="absolute right-3 top-1/2 transform -translate-y-1/2 text-yellow-600">
+                                title="Phone number (09XXXXXXXXX or +639XXXXXXXXX)" value="<?php echo htmlspecialchars($phone_number); ?>" required class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent pr-10 text-sm sm:text-base">
+                                <span class="absolute right-3 sm:right-4 top-1/2 transform -translate-y-1/2 text-yellow-600">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                         <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
                                     </svg>
@@ -1550,7 +1551,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                             <!-- Region Dropdown -->
                             <div class="relative">
-                                <select id="region" name="region" class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent appearance-none text-sm sm:text-base" onchange="updateProvinces()">
+                                <select id="region" name="region" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent appearance-none text-sm sm:text-base" onchange="updateProvinces()">
                                     <option value="" selected disabled>Select Region</option>
                                     <?php foreach ($regions as $region_option): ?>
                                         <option value="<?php echo $region_option['region_id']; ?>" <?php echo ($region_option['region_name'] == $region) ? 'selected' : ''; ?>>
@@ -1558,8 +1559,8 @@ document.addEventListener('DOMContentLoaded', function() {
                                         </option>
                                     <?php endforeach; ?>
                                 </select>
-                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 sm:px-3 text-gray-700">
+                                    <svg class="h-4 w-4 sm:h-5 sm:w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                                     </svg>
                                 </div>
@@ -1567,11 +1568,11 @@ document.addEventListener('DOMContentLoaded', function() {
                             
                             <!-- Province Dropdown -->
                             <div class="relative">
-                                <select id="province" name="province" class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent appearance-none text-sm sm:text-base" onchange="updateCities()" disabled>
+                                <select id="province" name="province" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent appearance-none text-sm sm:text-base" onchange="updateCities()" disabled>
                                     <option value="" selected disabled>Select Province</option>
                                 </select>
-                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 sm:px-3 text-gray-700">
+                                    <svg class="h-4 w-4 sm:h-5 sm:w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                                     </svg>
                                 </div>
@@ -1579,11 +1580,11 @@ document.addEventListener('DOMContentLoaded', function() {
                             
                             <!-- City/Municipality Dropdown -->
                             <div class="relative">
-                                <select id="city" name="city" class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent appearance-none text-sm sm:text-base" onchange="updateBarangays()" disabled>
+                                <select id="city" name="city" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent appearance-none text-sm sm:text-base" onchange="updateBarangays()" disabled>
                                     <option value="" selected disabled>Select City/Municipality</option>
                                 </select>
-                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 sm:px-3 text-gray-700">
+                                    <svg class="h-4 w-4 sm:h-5 sm:w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                                     </svg>
                                 </div>
@@ -1591,34 +1592,34 @@ document.addEventListener('DOMContentLoaded', function() {
                             
                             <!-- Barangay Dropdown -->
                             <div class="relative">
-                                <select id="barangay" name="barangay" class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent appearance-none text-sm sm:text-base" disabled>
+                                <select id="barangay" name="barangay" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent appearance-none text-sm sm:text-base" disabled>
                                     <option value="" selected disabled>Select Barangay</option>
                                 </select>
-                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 sm:px-3 text-gray-700">
+                                    <svg class="h-4 w-4 sm:h-5 sm:w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                                     </svg>
                                 </div>
                             </div>
                             
                             <!-- Street Address and Zip Code on same row -->
-                            <div class="sm:col-span-2 grid grid-cols-1 sm:grid-cols-4 gap-4">
-                                <!-- Street Address (taking 3/4 of the width) -->
-                                <div class="sm:col-span-3">
-                                    <input type="text" id="street_address" name="street_address" placeholder="Street Address (House/Lot/Unit No., Building, Street Name)" 
-                                           value="<?php echo htmlspecialchars($street_address); ?>" 
-                                           class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base transition duration-150">
-                                </div>
-                                
-                                <!-- Zip/Postal Code (taking 1/4 of the width) -->
-                                <div class="sm:col-span-1">
-                                    <input type="text" id="zip" name="zip" placeholder="Zip Code" 
-                                           value="<?php echo htmlspecialchars($zip_code); ?>" 
-                                           class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base transition duration-150">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+<div class="sm:col-span-2 grid grid-cols-1 sm:grid-cols-4 gap-4">
+    <!-- Street Address (taking 3/4 of the width) -->
+    <div class="sm:col-span-3">
+        <input type="text" id="street_address" name="street_address" placeholder="Street Address (House/Lot/Unit No., Building, Street Name)" 
+               value="<?php echo htmlspecialchars($street_address); ?>" 
+               class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base">
+    </div>
+    
+    <!-- Zip/Postal Code (taking 1/4 of the width) -->
+    <div class="sm:col-span-1">
+        <input type="text" id="zip" name="zip" placeholder="Zip Code" 
+               value="<?php echo htmlspecialchars($zip_code); ?>" 
+               class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base">
+    </div>
+</div>
+                                    </div>
+                                    </div>
                     
                     <?php if ($id_status !== 'valid'): ?>
                     <!-- Document Uploads Section -->
@@ -1638,7 +1639,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <div class="flex flex-col sm:flex-row gap-4">
                                     <div class="flex-1">
                                         <div class="flex items-center justify-center w-full">
-                                            <label for="id-upload" class="flex flex-col border-4 border-dashed border-gray-300 hover:bg-gray-100 hover:border-sidebar-accent rounded-lg p-4 sm:p-6 group text-center cursor-pointer transition duration-200">
+                                            <label for="id-upload" class="flex flex-col border-4 border-dashed border-gray-300 hover:bg-gray-100 hover:border-sidebar-accent rounded-lg p-4 sm:p-6 group text-center cursor-pointer">
                                                 <div class="flex flex-col items-center justify-center">
                                                     <svg class="w-8 h-8 sm:w-12 sm:h-12 text-gray-400 group-hover:text-sidebar-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
@@ -1664,8 +1665,8 @@ document.addEventListener('DOMContentLoaded', function() {
                             </div>
                             
                             <!-- Example of a Correct ID Upload - Stack on mobile -->
-                            <div class="sm:block>
-                                                        <h5 class="block text-sm font-medium text-gray-700 mb-2 sm:mb-3">Example of a Correct ID Upload</h5>
+                            <div class="sm:block">
+                                <h5 class="block text-sm font-medium text-gray-700 mb-2 sm:mb-3">Example of a Correct ID Upload</h5>
                                 <div class="bg-blue-50 border-l-4 border-blue-500 p-3 sm:p-4">
                                     <h5 class="font-bold text-gray-800 mb-1 sm:mb-2 text-sm sm:text-base">Example of a Correct ID Upload</h5>
                                     <ul class="list-disc list-inside text-xs sm:text-sm text-blue-700 space-y-1 sm:space-y-2">
@@ -1678,8 +1679,8 @@ document.addEventListener('DOMContentLoaded', function() {
                                     </ul>
                                     <div class="mt-2 sm:mt-3 flex justify-center">
                                         <div class="flex flex-col sm:flex-row sm:space-x-4 space-y-2 sm:space-y-0">
-                                            <img src="../image/wrongID.jpg" alt="Incorrect ID Upload" class="w-full sm:w-1/2 max-w-md rounded-lg shadow-sm">
-                                            <img src="../image/rightID.jpg" alt="Correct ID Upload" class="w-full sm:w-1/2 max-w-md rounded-lg shadow-sm">
+                                            <img src="../image/wrongID.jpg" alt="Incorrect ID Upload" class="w-full sm:w-1/2 max-w-md">
+                                            <img src="../image/rightID.jpg" alt="Correct ID Upload" class="w-full sm:w-1/2 max-w-md">
                                         </div>
                                     </div>
                                     <p class="text-xs text-blue-600 mt-1 sm:mt-2 text-center">Top/Left: Poor Upload, Bottom/Right: Correct Upload</p>
@@ -1708,7 +1709,6 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
     </div>
 </div>
-
 
 <!-- Change Password Modal -->
 <div id="change-password-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4 hidden">
