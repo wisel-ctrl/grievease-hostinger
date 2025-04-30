@@ -1174,38 +1174,36 @@ $conn->close();
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Traditional QR Code Button and Modal functionality
-const showQrCodeBtn = document.getElementById('showQrCodeBtn');
-const qrCodeModal = document.getElementById('qrCodeModal');
-const closeQrModal = document.getElementById('closeQrModal');
-const qrCodeAmount = document.getElementById('qrCodeAmount');
-
-// Show QR code modal with current amount due
-if (showQrCodeBtn) {
+    // QR Code Button and Modal functionality
+    const showQrCodeBtn = document.getElementById('showQrCodeBtn');
+    const qrCodeModal = document.getElementById('qrCodeModal');
+    const closeQrModal = document.getElementById('closeQrModal');
+    const qrCodeAmount = document.getElementById('qrCodeAmount');
+    
+    // Show QR code modal with current amount due
     showQrCodeBtn.addEventListener('click', function() {
         // Get current amount due and update in QR modal
         const amountDue = document.getElementById('traditionalAmountDue').textContent;
         qrCodeAmount.textContent = 'Amount: ' + amountDue;
         
+        // TODO: In production, replace with dynamic QR code generation based on amount
+        // For now, we're using a placeholder image
+        
         qrCodeModal.classList.remove('hidden');
     });
-}
-
-// Close QR code modal
-if (closeQrModal) {
+    
+    // Close QR code modal
     closeQrModal.addEventListener('click', function() {
         qrCodeModal.classList.add('hidden');
     });
-}
-
-// Close modal if clicking outside the modal content
-if (qrCodeModal) {
+    
+    // Close modal if clicking outside the modal content
     qrCodeModal.addEventListener('click', function(e) {
         if (e.target === qrCodeModal) {
             qrCodeModal.classList.add('hidden');
         }
     });
-}
+});
 </script>
 
 <script>
@@ -1725,14 +1723,14 @@ function removeGcash() {
 
                         <!-- QR Code Button and Modal -->
                         <div class="mb-4">
-                            <button type="button" id="lifeplanShowQrCodeBtn" class="w-full bg-navy hover:bg-navy-600 text-white px-4 py-2 rounded-lg flex items-center justify-center transition-all duration-200">
+                            <button type="button" id="showQrCodeBtn" class="w-full bg-navy hover:bg-navy-600 text-white px-4 py-2 rounded-lg flex items-center justify-center transition-all duration-200">
                                 <i class="fas fa-qrcode mr-2"></i>
                                 <span>View GCash QR Code</span>
                             </button>
                         </div>
                         
                         <!-- QR Code Modal -->
-                        <div id="lifeplanQrCodeModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
+                        <div id="qrCodeModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
                             <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
                                 <div class="flex justify-between items-center mb-4">
                                     <h3 class="text-lg font-hedvig text-navy">Scan to Pay</h3>
@@ -1873,39 +1871,6 @@ document.getElementById('lifeplanGcashReceipt')?.addEventListener('change', func
         reader.readAsDataURL(file);
     }
 });
-
-// Lifeplan QR Code Button and Modal functionality
-const lifeplanShowQrCodeBtn = document.getElementById('lifeplanShowQrCodeBtn');
-const lifeplanQrCodeModal = document.getElementById('lifeplanQrCodeModal');
-const lifeplanCloseQrModal = document.getElementById('lifeplanCloseQrModal');
-const lifeplanQrCodeAmount = document.getElementById('lifeplanQrCodeAmount');
-
-// Show QR code modal with current amount due for Lifeplan
-if (lifeplanShowQrCodeBtn) {
-    lifeplanShowQrCodeBtn.addEventListener('click', function() {
-        // Get current monthly payment amount
-        const monthlyPayment = document.getElementById('lifeplanMonthlyPayment').textContent;
-        lifeplanQrCodeAmount.textContent = 'Amount: ' + monthlyPayment;
-        
-        lifeplanQrCodeModal.classList.remove('hidden');
-    });
-}
-
-// Close QR code modal for Lifeplan
-if (lifeplanCloseQrModal) {
-    lifeplanCloseQrModal.addEventListener('click', function() {
-        lifeplanQrCodeModal.classList.add('hidden');
-    });
-}
-
-// Close modal if clicking outside the modal content for Lifeplan
-if (lifeplanQrCodeModal) {
-    lifeplanQrCodeModal.addEventListener('click', function(e) {
-        if (e.target === lifeplanQrCodeModal) {
-            lifeplanQrCodeModal.classList.add('hidden');
-        }
-    });
-}
 
 function hideLifeplanGcashPreview() {
     document.getElementById('lifeplanGcashPreviewContainer')?.classList.add('hidden');
