@@ -99,7 +99,7 @@ function handleAcceptBooking($conn) {
                     accepted_date = CONVERT_TZ(NOW(), 'SYSTEM', '+08:00'),
                     amount_paid = ? 
                 WHERE booking_id=?");
-        $stmt->bind_param("id", $bookingId, $amountPaid);
+        $stmt->bind_param("di", $amountPaid, $bookingId);
         $stmt->execute();
         
         if ($stmt->affected_rows === 0) {
