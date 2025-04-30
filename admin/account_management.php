@@ -123,14 +123,14 @@ $customersResult = mysqli_query($conn, $customersQuery);
         <!-- Desktop layout for big screens - Title on left, controls on right -->
         <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
             <!-- Title and Counter -->
-            <div class="flex items-center gap-3 mb-4 lg:mb-0">
-                <h3 class="text-lg font-bold text-sidebar-text whitespace-nowrap">Customer Accounts</h3>
-                
-                <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
-                    <i class="fas fa-user-circle"></i>
-                    <span id="totalCustomers"></span>
-                </span>
-            </div>
+            <!-- In account_management.php, find the Customer Accounts section header -->
+<div class="flex items-center gap-3 mb-4 lg:mb-0">
+    <h3 class="text-lg font-bold text-sidebar-text whitespace-nowrap">Customer Accounts</h3>
+    <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
+        <i class="fas fa-user-circle"></i>
+        <span id="totalCustomers"><?php echo $totalCustomers; ?></span>
+    </span>
+</div>
             
             <!-- Controls for big screens - aligned right -->
             <div class="hidden lg:flex items-center gap-3">
@@ -478,6 +478,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     showingFrom.textContent = response.showingFrom || '0';
                     showingTo.textContent = response.showingTo || '0';
                     totalCount.textContent = response.totalCount || '0';
+
+                    document.getElementById('totalCustomers').textContent = response.totalCount;
                     
                     // Update total pages and current page
                     totalPages = response.totalPages || 1;
@@ -1486,15 +1488,14 @@ if ($result->num_rows > 0) {
         <!-- Desktop layout for big screens - Title on left, controls on right -->
         <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
             <!-- Title and Counter -->
-            <div class="flex items-center gap-3 mb-4 lg:mb-0">
-                <h3 class="text-lg font-bold text-sidebar-text whitespace-nowrap">Employee Accounts</h3>
-                
-                <!-- Employee counter from PHP can be placed here -->
-                <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
-                    <i class="fas fa-user-circle"></i>
-                    <?php echo $totalEmployees; ?>
-                </span>
-            </div>
+            <!-- In account_management.php, find the Employee Accounts section header -->
+<div class="flex items-center gap-3 mb-4 lg:mb-0">
+    <h3 class="text-lg font-bold text-sidebar-text whitespace-nowrap">Employee Accounts</h3>
+    <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
+        <i class="fas fa-user-circle"></i>
+        <span id="totalEmployees"><?php echo $totalEmployees; ?></span>
+    </span>
+</div>
             
             <!-- Controls for big screens - aligned right -->
             <div class="hidden lg:flex items-center gap-3">
