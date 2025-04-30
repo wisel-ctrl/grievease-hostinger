@@ -1975,7 +1975,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Update table body
                 employeeTableBody.innerHTML = response.tableContent;
 
-                document.getElementById('totalEmployees').textContent = response.totalCount;
+                
                 
                 // Update pagination info
                 paginationInfoElement.textContent = response.paginationInfo;
