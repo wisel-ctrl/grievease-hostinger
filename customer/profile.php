@@ -1126,34 +1126,30 @@ document.addEventListener('DOMContentLoaded', function() {
                     $balance = number_format($booking['selling_price'] - ($booking['amount_paid'] ?? 0), 2);
             ?>
             <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden mb-4">
-            <div class="bg-navy bg-opacity-10 px-4 py-3 sm:px-6 sm:py-4 border-b border-gray-200">
+            <div class="px-4 py-3 sm:px-6 sm:py-4 border-b border-gray-200 
+    <?php 
+        switch($booking['status']) {
+            case 'Pending':
+                echo 'bg-yellow-50'; // Light yellow background
+                break;
+            case 'Accepted':
+                echo 'bg-green-50'; // Light green background
+                break;
+            case 'Declined':
+                echo 'bg-red-50'; // Light red background
+                break;
+            case 'Cancelled':
+                echo 'bg-gray-100'; // Light gray background
+                break;
+            default:
+                echo 'bg-blue-50'; // Light blue background (default)
+        }
+    ?>">
     <div class="flex items-center justify-between mb-3">
         <span class="<?php echo $status_class; ?> text-xs px-2 py-1 rounded-full"><?php echo $status_text; ?></span>
         <p class="text-sm text-gray-500">Booking ID: <?php echo $booking['booking_id']; ?></p>
     </div>
-    <h4 class="font-hedvig text-lg text-navy mb-2">
-        <span class="inline-block px-3 py-1 rounded-lg 
-            <?php 
-                switch($booking['status']) {
-                    case 'Pending':
-                        echo 'bg-yellow-100 text-yellow-800';
-                        break;
-                    case 'Accepted':
-                        echo 'bg-green-100 text-green-800';
-                        break;
-                    case 'Declined':
-                        echo 'bg-red-100 text-red-800';
-                        break;
-                    case 'Cancelled':
-                        echo 'bg-gray-100 text-gray-800';
-                        break;
-                    default:
-                        echo 'bg-blue-100 text-blue-800';
-                }
-            ?>">
-            <?php echo $booking['service_name']; ?>
-        </span>
-    </h4>
+    <h4 class="font-hedvig text-lg text-navy mb-2"><?php echo $booking['service_name']; ?></h4>
 </div>
                 <div class="p-4 sm:p-6 space-y-3 sm:space-y-4">
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
