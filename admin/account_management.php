@@ -127,9 +127,8 @@ $customersResult = mysqli_query($conn, $customersQuery);
                 <h3 class="text-lg font-bold text-sidebar-text whitespace-nowrap">Customer Accounts</h3>
                 
                 <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
-                  
-                <span id="totalCustomers"></span>
                     <i class="fas fa-user-circle"></i>
+                    <span id="totalCustomers"></span>
                 </span>
             </div>
             
@@ -461,21 +460,19 @@ document.addEventListener('DOMContentLoaded', function() {
         xhr.open('GET', url, true);
         
         xhr.onload = function() {
-        if (xhr.status === 200) {
-            try {
-                const response = JSON.parse(xhr.responseText);
-                
-                // Update table body
-                customerTableBody.innerHTML = response.tableContent || `
-                    <tr>
-                        <td colspan="6" class="text-center p-4 text-gray-500">
-                            No customer accounts found.
-                        </td>
-                    </tr>
-                `;
-                
-                // Update total customers count
-                document.getElementById('totalCustomers').textContent = response.totalCount || '0';
+            if (xhr.status === 200) {
+                try {
+                    // Parse the JSON response
+                    const response = JSON.parse(xhr.responseText);
+                    
+                    // Update table body
+                    customerTableBody.innerHTML = response.tableContent || `
+                        <tr>
+                            <td colspan="6" class="text-center p-4 text-gray-500">
+                                No customer accounts found.
+                            </td>
+                        </tr>
+                    `;
                     
                     // Update pagination info
                     showingFrom.textContent = response.showingFrom || '0';
@@ -497,15 +494,15 @@ document.addEventListener('DOMContentLoaded', function() {
                         filterIndicator.classList.add('hidden');
                         filterIndicatorMobile.classList.add('hidden');
                     }
-                  } catch (e) {
-                console.error('Error parsing response:', e);
-                customerTableBody.innerHTML = `
-                    <tr>
-                        <td colspan="6" class="text-center p-4 text-red-500">
-                            Error loading data. Please try again.
-                        </td>
-                    </tr>
-                `;
+                } catch (e) {
+                    console.error('Error parsing response:', e);
+                    customerTableBody.innerHTML = `
+                        <tr>
+                            <td colspan="6" class="text-center p-4 text-red-500">
+                                Error loading data. Please try again.
+                            </td>
+                        </tr>
+                    `;
                 }
             } else {
                 console.error('Error fetching customer accounts:', xhr.statusText);
@@ -1494,9 +1491,9 @@ if ($result->num_rows > 0) {
                 
                 <!-- Employee counter from PHP can be placed here -->
                 <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
-                <span id="totalEmployees"><?php echo $totalRows; ?></span>
-    <i class="fas fa-user-circle"></i>
-</span>
+                    <i class="fas fa-user-circle"></i>
+                    <?php echo $totalEmployees; ?>
+                </span>
             </div>
             
             <!-- Controls for big screens - aligned right -->
@@ -1578,10 +1575,11 @@ if ($result->num_rows > 0) {
                 </button>
 
                 <!-- Add Employee Account Button -->
-                <button class="px-4 py-2 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm whitespace-nowrap">
-    <i class="fas fa-plus"></i>
-    <span>Add Employee Account</span>
-</button>
+                <button class="px-4 py-2 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm whitespace-nowrap" 
+                        onclick="openAddEmployeeAccountModal()">
+                    <i class="fas fa-plus"></i>
+                    <span>Add Employee Account</span>
+                </button>
             </div>
         </div>
         
@@ -1969,15 +1967,12 @@ document.addEventListener('DOMContentLoaded', function() {
         xhr.open('GET', url, true);
         
         xhr.onload = function() {
-        if (xhr.status === 200) {
-            try {
+            if (xhr.status === 200) {
+                // Parse the JSON response
                 const response = JSON.parse(xhr.responseText);
                 
                 // Update table body
                 employeeTableBody.innerHTML = response.tableContent;
-                
-                // Update total employees count
-                document.getElementById('totalEmployees').textContent = response.totalCount || '0';
                 
                 // Update pagination info
                 paginationInfoElement.textContent = response.paginationInfo;
@@ -1989,12 +1984,12 @@ document.addEventListener('DOMContentLoaded', function() {
                         btn.classList.add('bg-sidebar-accent', 'text-white');
                     }
                 });
-              } catch (e) {
-                console.error('Error parsing response:', e);
+            } else {
+                console.error('Error fetching employee accounts:', xhr.statusText);
                 employeeTableBody.innerHTML = `
                     <tr>
                         <td colspan="6" class="text-center p-4 text-red-500">
-                            Error loading data. Please try again.
+                            Failed to load employees. Please try again.
                         </td>
                     </tr>
                 `;
@@ -2064,21 +2059,17 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+// Function to open the add employee account modal
 function openAddEmployeeAccountModal() {
   const modal = document.getElementById('addEmployeeAccountModal');
-        if (modal) {
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-            
-            // Generate password when modal opens
-            updateEmpPassword();
-            
-            // Load branch locations if not already loaded
-            loadEmpBranchLocations();
-        } else {
-            console.error("Add Employee Account Modal not found");
-        }
-      }
+  if (modal) {
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    
+    // Generate password when modal opens
+    updateEmpPassword();
+  }
+}
 
 // Function to close the add employee account modal
 function closeAddEmployeeAccountModal() {
