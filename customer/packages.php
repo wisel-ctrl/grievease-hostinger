@@ -1750,20 +1750,20 @@ function removeGcash() {
                         
                         <!-- QR Code Modal -->
                         <div id="lifeplanQrCodeModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
-                            <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-                                <div class="flex justify-between items-center mb-4">
-                                    <h3 class="text-lg font-hedvig text-navy">Scan to Pay</h3>
-                                    <button id="closeQrModal" class="text-gray-500 hover:text-navy">
-                                        <i class="fas fa-times text-xl"></i>
-                                    </button>
-                                </div>
-                                <div class="flex flex-col items-center justify-center">
-                                    <img id="qrCodeImage" src="../image\gcashqrvjay.jpg" alt="Payment QR Code" class="w-64 h-64 object-contain mb-4">
-                                    <p class="text-center text-sm text-gray-600 mb-2">Scan this QR code with your GCash app to make payment</p>
-                                    <p class="text-center font-bold text-yellow-600" id="qrCodeAmount">Amount: ₱0</p>
-                                </div>
-                            </div>
-                        </div>
+    <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-hedvig text-navy">Scan to Pay</h3>
+            <button id="lifeplanCloseQrModal" class="text-gray-500 hover:text-navy">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+        <div class="flex flex-col items-center justify-center">
+            <img id="lifeplanQrCodeImage" src="../image\gcashqrvjay.jpg" alt="Payment QR Code" class="w-64 h-64 object-contain mb-4">
+            <p class="text-center text-sm text-gray-600 mb-2">Scan this QR code with your GCash app to make payment</p>
+            <p class="text-center font-bold text-yellow-600" id="lifeplanQrCodeAmount">Amount: ₱0</p>
+        </div>
+    </div>
+</div>
                         
                         <!-- GCash Upload with Preview (Improved UI) -->
                         <div class="mb-4">
