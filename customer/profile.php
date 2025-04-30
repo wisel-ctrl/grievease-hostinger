@@ -2210,53 +2210,72 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Populate receipt content
-    function populateReceipt(data) {
-        const formattedDate = new Date(data.booking_date).toLocaleDateString('en-US', {
-            year: 'numeric', month: 'long', day: 'numeric'
-        });
+// Inside your populateReceipt function, update the accepterInfo section:
+function populateReceipt(data) {
+    const formattedDate = new Date(data.booking_date).toLocaleDateString('en-US', {
+        year: 'numeric', month: 'long', day: 'numeric'
+    });
 
-        const deceasedName = `${data.deceased_lname}, ${data.deceased_fname}` + 
-                           (data.deceased_midname ? ` ${data.deceased_midname}` : '') + 
-                           (data.deceased_suffix ? ` ${data.deceased_suffix}` : '');
+    const deceasedName = `${data.deceased_lname}, ${data.deceased_fname}` + 
+                       (data.deceased_midname ? ` ${data.deceased_midname}` : '') + 
+                       (data.deceased_suffix ? ` ${data.deceased_suffix}` : '');
 
-        receiptContent.innerHTML = `
-            <div class="text-center mb-6">
-                <h2 class="text-2xl font-bold">${data.branch_name}</h2>
-                <p class="text-gray-600">Official Receipt</p>
-            </div>
-            
-            <div class="flex justify-between mb-6">
-                <div>
-                    <p><strong>Receipt #:</strong> ${data.reference_code || 'N/A'}</p>
-                    <p><strong>Date:</strong> ${formattedDate}</p>
-                </div>
-                <div class="text-right">
-                    <p> <span class="text-green-600">${data.status}</span></p>
-                </div>
-            </div>
-            
+    // Format accepter's information if available
+    let accepterInfo = '';
+    if (data.accepter_first) {
+        const accepterName = `${data.accepter_last}, ${data.accepter_first}` + 
+                           (data.accepter_middle ? ` ${data.accepter_middle}` : '') + 
+                           (data.accepter_suffix ? ` ${data.accepter_suffix}` : '');
+        accepterInfo = `
             <div class="border-t border-b border-gray-200 py-4 mb-4">
-                <h3 class="font-bold mb-2">Service Details</h3>
-                <p><strong>Service:</strong> ${data.service_name}</p>
-                <p><strong>Total Amount:</strong> ₱${parseFloat(data.selling_price).toFixed(2)}</p>
-                <p><strong>Amount Paid:</strong> ₱${parseFloat(data.amount_paid || 0).toFixed(2)}</p>
-                <p><strong>Balance:</strong> ₱${(parseFloat(data.selling_price) - parseFloat(data.amount_paid || 0)).toFixed(2)}</p>
-            </div>
-            
-            <div class="border-t border-b border-gray-200 py-4 mb-4">
-                <h3 class="font-bold mb-2">Deceased Information</h3>
-                <p><strong>Name:</strong> ${deceasedName}</p>
-                ${data.deceased_birth ? `<p><strong>Date of Birth:</strong> ${new Date(data.deceased_birth).toLocaleDateString()}</p>` : ''}
-                ${data.deceased_dodeath ? `<p><strong>Date of Death:</strong> ${new Date(data.deceased_dodeath).toLocaleDateString()}</p>` : ''}
-                ${data.deceased_dateOfBurial ? `<p><strong>Date of Burial:</strong> ${new Date(data.deceased_dateOfBurial).toLocaleDateString()}</p>` : ''}
-            </div>
-            
-            <div class="text-center mt-8 text-sm text-gray-500">
-                <p>Thank you for your business!</p>
-                <p>For inquiries, please contact our branch.</p>
+                <h3 class="font-bold mb-2">Processed By</h3>
+                <p><strong>Staff Name:</strong> ${accepterName}</p>
+                ${data.accepter_email ? `<p><strong>Email:</strong> ${data.accepter_email}</p>` : ''}
+                ${data.accepter_phone ? `<p><strong>Phone:</strong> ${data.accepter_phone}</p>` : ''}
             </div>
         `;
     }
+
+    receiptContent.innerHTML = `
+        <div class="text-center mb-6">
+            <h2 class="text-2xl font-bold">${data.branch_name}</h2>
+            <p class="text-gray-600">Official Receipt</p>
+        </div>
+        
+        <div class="flex justify-between mb-6">
+            <div>
+                <p><strong>Receipt #:</strong> ${data.reference_code || 'N/A'}</p>
+                <p><strong>Date:</strong> ${formattedDate}</p>
+            </div>
+            <div class="text-right">
+                <p> <span class="text-green-600">${data.status}</span></p>
+            </div>
+        </div>
+        
+        <div class="border-t border-b border-gray-200 py-4 mb-4">
+            <h3 class="font-bold mb-2">Service Details</h3>
+            <p><strong>Service:</strong> ${data.service_name}</p>
+            <p><strong>Total Amount:</strong> ₱${parseFloat(data.selling_price).toFixed(2)}</p>
+            <p><strong>Amount Paid:</strong> ₱${parseFloat(data.amount_paid || 0).toFixed(2)}</p>
+            <p><strong>Balance:</strong> ₱${(parseFloat(data.selling_price) - parseFloat(data.amount_paid || 0)).toFixed(2)}</p>
+        </div>
+        
+        <div class="border-t border-b border-gray-200 py-4 mb-4">
+            <h3 class="font-bold mb-2">Deceased Information</h3>
+            <p><strong>Name:</strong> ${deceasedName}</p>
+            ${data.deceased_birth ? `<p><strong>Date of Birth:</strong> ${new Date(data.deceased_birth).toLocaleDateString()}</p>` : ''}
+            ${data.deceased_dodeath ? `<p><strong>Date of Death:</strong> ${new Date(data.deceased_dodeath).toLocaleDateString()}</p>` : ''}
+            ${data.deceased_dateOfBurial ? `<p><strong>Date of Burial:</strong> ${new Date(data.deceased_dateOfBurial).toLocaleDateString()}</p>` : ''}
+        </div>
+        
+        ${accepterInfo}
+        
+        <div class="text-center mt-8 text-sm text-gray-500">
+            <p>Thank you for your business!</p>
+            <p>For inquiries, please contact our branch.</p>
+        </div>
+    `;
+}
 
     // Print receipt
     printReceiptBtn.addEventListener('click', () => {
