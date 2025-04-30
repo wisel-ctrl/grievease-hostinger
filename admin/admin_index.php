@@ -176,7 +176,7 @@ $formattedRevenue = number_format($totalRevenue, 2);
 <?php
 // Get monthly projected income data (sum of discounted_price) for the last 12 months
 $monthlyProjectedIncomeData = [];
-$monthLabels = [];
+$monthLabels1 = [];
 
 for ($i = 11; $i >= 0; $i--) {
     $date = new DateTime();
@@ -185,7 +185,7 @@ for ($i = 11; $i >= 0; $i--) {
     $year = $date->format('Y');
     
     // Save the month name for our labels
-    $monthLabels[] = $date->format('M Y');
+    $monthLabels1[] = $date->format('M Y');
     
     $query = "SELECT SUM(discounted_price) as projected_income FROM sales_tb 
               WHERE MONTH(get_timestamp) = ? AND YEAR(get_timestamp) = ?";
@@ -271,7 +271,7 @@ $paeteMetrics = getBranchMetrics($conn, 1); // Paete branch_id = 1
 
 // Get monthly revenue data for the last 6 months
 $monthlyRevenueData = [];
-$monthLabels = [];
+$monthLabels2 = [];
 
 for ($i = 11; $i >= 0; $i--) {
     $date = new DateTime();
@@ -280,7 +280,7 @@ for ($i = 11; $i >= 0; $i--) {
     $year = $date->format('Y');
     
     // Save the month name for our labels
-    $monthLabels[] = $date->format('M Y');
+    $monthLabels2[] = $date->format('M Y');
     
     $query = "SELECT SUM(amount_paid) as revenue FROM sales_tb 
               WHERE MONTH(get_timestamp) = ? AND YEAR(get_timestamp) = ?";
@@ -333,11 +333,11 @@ for ($i = 11; $i >= 0; $i--) {
 }
 
 // Generate month labels
-$monthLabels = [];
+$monthLabels3 = [];
 for ($i = 11; $i >= 0; $i--) {
     $date = new DateTime();
     $date->modify("-$i months");
-    $monthLabels[] = $date->format('M Y');
+    $monthLabels3[] = $date->format('M Y');
 }
 ?>
 <?php
@@ -1275,7 +1275,7 @@ var options = {
     }
   },
   xaxis: {
-    categories: <?php echo json_encode($monthLabels); ?>,
+    categories: <?php echo json_encode($monthLabels1); ?>,
   },
   yaxis: {
     labels: {
@@ -1356,7 +1356,7 @@ var projectedIncomeOptions = {
     }
   },
   xaxis: {
-    categories: <?php echo json_encode($monthLabels); ?>,
+    categories: <?php echo json_encode($monthLabels2); ?>,
   },
   yaxis: {
     title: {
@@ -1455,7 +1455,7 @@ var branchRevenueOptions = {
     colors: ['transparent']
   },
   xaxis: {
-    categories: <?php echo json_encode($monthLabels); ?>,
+    categories: <?php echo json_encode($monthLabels3); ?>,
     labels: {
       style: {
         fontSize: '12px',
