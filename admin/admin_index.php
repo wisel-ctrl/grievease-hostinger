@@ -174,9 +174,18 @@ if ($prevCompletedCount > 0) {
 $formattedRevenue = number_format($totalRevenue, 2);
 ?>
 <?php
+$monthLabels = [];
+$currentDate = new DateTime(); // Get current date
+$currentDate->modify('first day of this month'); // Start from beginning of current month
+
+for ($i = 11; $i >= 0; $i--) {
+    $date = clone $currentDate;
+    $date->modify("-$i months");
+    $monthLabels[] = $date->format('M Y');
+}
+
 // Get monthly projected income data (sum of discounted_price) for the last 12 months
 $monthlyProjectedIncomeData = [];
-$monthLabels1 = [];
 
 for ($i = 11; $i >= 0; $i--) {
     $date = new DateTime();
@@ -184,8 +193,6 @@ for ($i = 11; $i >= 0; $i--) {
     $month = $date->format('m');
     $year = $date->format('Y');
     
-    // Save the month name for our labels
-    $monthLabels1[] = $date->format('M Y');
     
     $query = "SELECT SUM(discounted_price) as projected_income FROM sales_tb 
               WHERE MONTH(get_timestamp) = ? AND YEAR(get_timestamp) = ?";
@@ -271,7 +278,7 @@ $paeteMetrics = getBranchMetrics($conn, 1); // Paete branch_id = 1
 
 // Get monthly revenue data for the last 6 months
 $monthlyRevenueData = [];
-$monthLabels2 = [];
+
 
 for ($i = 11; $i >= 0; $i--) {
     $date = new DateTime();
@@ -279,8 +286,8 @@ for ($i = 11; $i >= 0; $i--) {
     $month = $date->format('m');
     $year = $date->format('Y');
     
-    // Save the month name for our labels
-    $monthLabels2[] = $date->format('M Y');
+    
+    
     
     $query = "SELECT SUM(amount_paid) as revenue FROM sales_tb 
               WHERE MONTH(get_timestamp) = ? AND YEAR(get_timestamp) = ?";
@@ -332,13 +339,6 @@ for ($i = 11; $i >= 0; $i--) {
     $paeteMonthlyRevenue[] = $data['revenue'] ?? 0;
 }
 
-// Generate month labels
-$monthLabels3 = [];
-for ($i = 11; $i >= 0; $i--) {
-    $date = new DateTime();
-    $date->modify("-$i months");
-    $monthLabels3[] = $date->format('M Y');
-}
 ?>
 <?php
 $serviceSalesQuery = "SELECT 
@@ -1275,7 +1275,7 @@ var options = {
     }
   },
   xaxis: {
-    categories: <?php echo json_encode($monthLabels2); ?>,
+    categories: <?php echo json_encode($monthLabels); ?>,
   },
   yaxis: {
     labels: {
@@ -1356,7 +1356,7 @@ var projectedIncomeOptions = {
     }
   },
   xaxis: {
-    categories: <?php echo json_encode($monthLabels1); ?>,
+    categories: <?php echo json_encode($monthLabels); ?>,
   },
   yaxis: {
     title: {
@@ -1455,7 +1455,7 @@ var branchRevenueOptions = {
     colors: ['transparent']
   },
   xaxis: {
-    categories: <?php echo json_encode($monthLabels3); ?>,
+    categories: <?php echo json_encode($monthLabels); ?>,
     labels: {
       style: {
         fontSize: '12px',
