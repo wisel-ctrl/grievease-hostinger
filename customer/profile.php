@@ -1134,11 +1134,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
                         <div>
                             <p class="text-sm text-gray-500">Deceased Name</p>
-                            <p class="text-navy"><?php echo $deceased_name; ?></p>
+                            <p class="text-navy"><?php echo ucwords(strtolower($deceased_name)); ?></p>
                         </div>
                         <div>
                             <p class="text-sm text-gray-500">Branch</p>
-                            <p class="text-navy"><?php echo $booking['branch_name']; ?></p>
+                            <p class="text-navy"><?php echo ucwords(strtolower($booking['branch_name'])); ?></p>
                         </div>
                         <div>
                             <p class="text-sm text-gray-500">Burial Date</p>
@@ -2228,7 +2228,7 @@ function populateReceipt(data) {
         accepterInfo = `
             <div class="border-t border-b border-gray-200 py-4 mb-4">
                 <h3 class="font-bold mb-2">Processed By</h3>
-                <p><strong>Staff Name:</strong> ${accepterName}</p>
+                <p><strong>Staff Name:</strong> ${accepterName ? accepterName.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ') : ''}</p>
                 ${data.accepter_email ? `<p><strong>Email:</strong> ${data.accepter_email}</p>` : ''}
                 ${data.accepter_phone ? `<p><strong>Phone:</strong> ${data.accepter_phone}</p>` : ''}
             </div>
@@ -2264,10 +2264,10 @@ function populateReceipt(data) {
         
         <div class="border-t border-b border-gray-200 py-4 mb-4">
             <h3 class="font-bold mb-2">Deceased Information</h3>
-            <p><strong>Name:</strong> ${deceasedName}</p>
-            ${data.deceased_birth ? `<p><strong>Date of Birth:</strong> ${new Date(data.deceased_birth).toLocaleDateString()}</p>` : ''}
-            ${data.deceased_dodeath ? `<p><strong>Date of Death:</strong> ${new Date(data.deceased_dodeath).toLocaleDateString()}</p>` : ''}
-            ${data.deceased_dateOfBurial ? `<p><strong>Date of Burial:</strong> ${new Date(data.deceased_dateOfBurial).toLocaleDateString()}</p>` : ''}
+            <p><strong>Name:</strong> ${deceasedName ? deceasedName.toLowerCase().replace(/\b\w/g, c => c.toUpperCase()) : ''}</p>
+            ${data.deceased_birth ? `<p><strong>Date of Birth:</strong> ${new Date(data.deceased_birth).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>` : ''}
+            ${data.deceased_dodeath ? `<p><strong>Date of Death:</strong> ${new Date(data.deceased_dodeath).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>` : ''}
+            ${data.deceased_dateOfBurial ? `<p><strong>Date of Burial:</strong> ${new Date(data.deceased_dateOfBurial).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>` : ''}        
         </div>
         
         ${accepterInfo}
@@ -2410,7 +2410,9 @@ function fetchBookingDetails(bookingId) {
             if (data.success) {
                 // Populate the view details modal
                 document.getElementById('detail-service').textContent = data.service_name;
-                document.getElementById('detail-branch').textContent = data.branch_name;
+                document.getElementById('detail-branch').textContent = data.branch_name 
+                ? data.branch_name.toLowerCase().replace(/\b\w/g, c => c.toUpperCase())
+                : '';
                 document.getElementById('detail-status').textContent = data.status;
                 document.getElementById('detail-booking-date').textContent = formatDate(data.booking_date);
                 document.getElementById('detail-total').textContent = `₱${parseFloat(data.selling_price).toFixed(2)}`;
@@ -2440,7 +2442,9 @@ function fetchBookingDetails(bookingId) {
                 if (data.deceased_midname) deceasedName += ` ${data.deceased_midname}`;
                 if (data.deceased_suffix) deceasedName += ` ${data.deceased_suffix}`;
                 
-                document.getElementById('detail-deceased-name').textContent = deceasedName;
+                document.getElementById('detail-deceased-name').textContent = deceasedName 
+                ? deceasedName.toLowerCase().replace(/\b\w/g, c => c.toUpperCase())
+                : '';
                 document.getElementById('detail-birth').textContent = data.deceased_birth ? formatDate(data.deceased_birth) : 'Not provided';
                 document.getElementById('detail-dod').textContent = data.deceased_dodeath ? formatDate(data.deceased_dodeath) : 'Not provided';
                 document.getElementById('detail-burial').textContent = data.deceased_dateOfBurial ? formatDate(data.deceased_dateOfBurial) : 'Not set';
