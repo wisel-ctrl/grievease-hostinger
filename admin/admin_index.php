@@ -823,7 +823,7 @@ foreach ($serviceData as $service => $branches) {
                                     FROM 
                                         expense_tb
                                     WHERE 
-                                        MONTH(date) = ? AND YEAR(date) = ?
+                                        MONTH(date) = ? AND YEAR(date) = ? AND appearance = ?
                                     GROUP BY 
                                         branch_id
                                 ) e ON b.branch_id = e.branch_id
@@ -834,7 +834,7 @@ foreach ($serviceData as $service => $branches) {
                                 ";
                 
                 $stmt = $conn->prepare($branchQuery);
-                $stmt->bind_param("iiii", $currentMonth, $currentYear, $currentMonth, $currentYear);
+                $stmt->bind_param("iiiis", $currentMonth, $currentYear, $currentMonth, $currentYear, $visible);
                 $stmt->execute();
                 $branchResult = $stmt->get_result();
                 
