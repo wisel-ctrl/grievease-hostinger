@@ -79,7 +79,7 @@
             <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-yellow-600/90 flex items-center justify-center text-white mr-3 sm:mr-4">
                 <i class="fas fa-dove text-lg sm:text-xl"></i>
             </div>
-            <h2 class="font-hedvig text-3xl sm:text-4xl text-navy">Traditional</h2>
+            <h2 class="font-hedvig text-3xl sm:text-4xl text-navy">Traditional Funeral</h2>
         </div>
     </div>
     
