@@ -95,11 +95,12 @@ function handleAcceptBooking($conn) {
     try {
         // Update booking status with PH time
         $stmt = $conn->prepare("UPDATE booking_tb 
-                SET status='Accepted', 
-                    accepted_date = CONVERT_TZ(NOW(), 'SYSTEM', '+08:00'),
-                    amount_paid = ? 
-                WHERE booking_id=?");
-        $stmt->bind_param("di", $amountPaid, $bookingId);
+        SET status='Accepted', 
+                accepted_date = CONVERT_TZ(NOW(), 'SYSTEM', '+08:00'),
+                amount_paid = ?,
+                accepter_decliner = ?
+            WHERE booking_id=?");
+        $stmt->bind_param("dii", $amountPaid, $_SESSION['user_id'], $bookingId);
         $stmt->execute();
         
         if ($stmt->affected_rows === 0) {
@@ -188,11 +189,12 @@ function handleDeclineBooking($conn) {
     try {
         // Update booking status to Declined and add reason with PH time
         $stmt = $conn->prepare("UPDATE booking_tb 
-                               SET status = 'Declined', 
-                                   reason_for_decline = ?, 
-                                   decline_date = CONVERT_TZ(NOW(), 'SYSTEM', '+08:00') 
-                               WHERE booking_id = ? AND status = 'Pending'");
-        $stmt->bind_param("si", $reason, $bookingId);
+                       SET status = 'Declined', 
+                           reason_for_decline = ?, 
+                           decline_date = CONVERT_TZ(NOW(), 'SYSTEM', '+08:00'),
+                           accepter_decliner = ?
+                       WHERE booking_id = ? AND status = 'Pending'");
+        $stmt->bind_param("sii", $reason, $_SESSION['user_id'], $bookingId);
         $stmt->execute();
         
         if ($stmt->affected_rows === 0) {
