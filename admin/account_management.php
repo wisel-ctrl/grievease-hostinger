@@ -337,10 +337,10 @@ $customersResult = mysqli_query($conn, $customersQuery);
     
     <!-- Sticky Pagination Footer with improved spacing -->
     <div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
-        <div id="paginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
-            Showing <span id="showingFrom">0</span> - <span id="showingTo">0</span> 
-            of <span id="totalCount">0</span> customers
-        </div>
+    <div id="paginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
+    Showing <?php echo min($offset + 1, $totalCustomers); ?>-<?php echo min($offset + $itemsPerPage, $totalCustomers); ?> 
+    of <?php echo $totalCustomers; ?> customers
+</div>
         <div id="paginationContainer" class="flex space-x-1">
             <!-- Pagination buttons will be inserted here by JavaScript -->
         </div>
@@ -475,9 +475,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     `;
                     
                     // Update pagination info
-                    showingFrom.textContent = response.showingFrom || '0';
-                    showingTo.textContent = response.showingTo || '0';
-                    totalCount.textContent = response.totalCount || '0';
+                    // Update pagination info from PHP
+document.getElementById('paginationInfo').textContent = "<?php echo $paginationInfo; ?>";
                     
                     // Update total pages and current page
                     totalPages = response.totalPages || 1;
@@ -1467,7 +1466,11 @@ if ($result->num_rows > 0) {
     // Update pagination info
     $startCount = min($offset + 1, $totalRows);
     $endCount = min($offset + $perPage, $totalRows);
-    $paginationInfo = "Showing {$startCount}-{$endCount} of {$totalRows} employee accounts";
+    // Update pagination info for customers
+$paginationInfo = "Showing " . min($offset + 1, $totalCustomers) . "-" . 
+min($offset + $itemsPerPage, $totalCustomers) . 
+" of $totalCustomers customers";
+
 } else {
     // If no employees found, display a message
     $tableContent = '<tr class="border-b border-sidebar-border">

@@ -124,7 +124,9 @@ if ($result->num_rows > 0) {
 header('Content-Type: application/json');
 echo json_encode([
     'tableContent' => $tableContent,
-    'paginationInfo' => $paginationInfo,
+    'showingFrom' => $offset + 1,
+    'showingTo' => min($offset + $itemsPerPage, $totalCustomers),
+    'totalCount' => $totalCustomers,
     'totalPages' => $totalPages,
     'currentPage' => $page
 ]);
