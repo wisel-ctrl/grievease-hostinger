@@ -1305,32 +1305,6 @@ document.addEventListener('DOMContentLoaded', function() {
                         <!-- Features will be inserted here by JavaScript -->
                     </ul>
                 </div>
-
-                <div class="border-t border-gray-200 pt-4 mt-4 md:mt-6">
-                    <h3 class="text-lg md:text-xl font-hedvig text-navy mb-3 md:mb-4">Additional Services:</h3>
-                    <div id="traditionalAdditionalServices" class="space-y-2 md:space-y-3">
-                        <div class="flex items-center">
-                            <input type="checkbox" id="traditionalFlowers" name="additionalServices" value="3500" class="traditional-addon h-4 md:h-5 w-4 md:w-5 text-yellow-600 rounded focus:ring-yellow-500" data-name="Floral Arrangements">
-                            <label for="traditionalFlowers" class="ml-2 md:ml-3 text-xs md:text-sm text-gray-700">Floral Arrangements (₱3,500)</label>
-                        </div>
-                        <div class="flex items-center">
-                            <input type="checkbox" id="traditionalCatering" name="additionalServices" value="15000" class="traditional-addon h-4 md:h-5 w-4 md:w-5 text-yellow-600 rounded focus:ring-yellow-500" data-name="Catering Service (50 pax)">
-                            <label for="traditionalCatering" class="ml-2 md:ml-3 text-xs md:text-sm text-gray-700">Catering Service - 50 pax (₱15,000)</label>
-                        </div>
-                        <div class="flex items-center">
-                            <input type="checkbox" id="traditionalVideography" name="additionalServices" value="7500" class="traditional-addon h-4 md:h-5 w-4 md:w-5 text-yellow-600 rounded focus:ring-yellow-500" data-name="Video Memorial Service">
-                            <label for="traditionalVideography" class="ml-2 md:ml-3 text-xs md:text-sm text-gray-700">Video Memorial Service (₱7,500)</label>
-                        </div>
-                        <div class="flex items-center">
-                            <input type="checkbox" id="traditionalTransport" name="additionalServices" value="4500" class="traditional-addon h-4 md:h-5 w-4 md:w-5 text-yellow-600 rounded focus:ring-yellow-500" data-name="Additional Transportation">
-                            <label for="traditionalTransport" class="ml-2 md:ml-3 text-xs md:text-sm text-gray-700">Additional Transportation (₱4,500)</label>
-                        </div>
-                        <div class="flex items-center">
-                            <input type="checkbox" id="traditionalUrn" name="additionalServices" value="6000" class="traditional-addon h-4 md:h-5 w-4 md:w-5 text-yellow-600 rounded focus:ring-yellow-500" data-name="Premium Urn Upgrade">
-                            <label for="traditionalUrn" class="ml-2 md:ml-3 text-xs md:text-sm text-gray-700">Premium Urn Upgrade (₱6,000)</label>
-                        </div>
-                    </div>
-                </div>
                 
                 <!-- Mobile-only summary and navigation button -->
                 <div class="mt-6 border-t border-gray-200 pt-4 md:hidden">
