@@ -1053,25 +1053,25 @@ document.addEventListener('DOMContentLoaded', function() {
 <!-- Bookings Tab -->
 <div id="bookings" class="tab-content">
     <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
-        <div class="p-6 border-b border-gray-200">
-            <h3 class="font-hedvig text-2xl text-navy mb-4">My Bookings</h3>
+        <div class="p-6 border-b border-gray-100">
+            <h3 class="font-hedvig text-xl text-navy">My Bookings</h3>
         </div>
         <div class="p-6">
             <?php
             // Fetch all bookings for the current customer
             $query = "SELECT b.*, s.service_name, s.selling_price, br.branch_name 
-                      FROM booking_tb b
-                      JOIN services_tb s ON b.service_id = s.service_id
-                      JOIN branch_tb br ON b.branch_id = br.branch_id
-                      WHERE b.customerID = ?
-                      ORDER BY CASE 
-                          WHEN b.status = 'Pending' THEN 1
-                          WHEN b.status = 'Accepted' THEN 2
-                          WHEN b.status = 'Declined' THEN 3
-                          WHEN b.status = 'Cancelled' THEN 4
-                          ELSE 5
-                      END, b.booking_date DESC";
-                      
+                  FROM booking_tb b
+                  JOIN services_tb s ON b.service_id = s.service_id
+                  JOIN branch_tb br ON b.branch_id = br.branch_id
+                  WHERE b.customerID = ?
+                  ORDER BY CASE 
+                      WHEN b.status = 'Pending' THEN 1
+                      WHEN b.status = 'Accepted' THEN 2
+                      WHEN b.status = 'Declined' THEN 3
+                      WHEN b.status = 'Cancelled' THEN 4
+                      ELSE 5
+                  END, b.booking_date DESC";
+                    
             $stmt = $conn->prepare($query);
             $stmt->bind_param("i", $user_id);
             $stmt->execute();
@@ -1082,6 +1082,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Determine status color and text
                     $status_class = '';
                     $status_text = '';
+                    // Inside your booking display loop, update the status handling:
                     switch ($booking['status']) {
                         case 'Pending':
                             $status_class = 'bg-yellow-600/10 text-yellow-600';
@@ -1109,7 +1110,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     $burial_date = $booking['deceased_dateOfBurial'] ? date('F j, Y', strtotime($booking['deceased_dateOfBurial'])) : 'Not set';
                     
                     // Format deceased name
-                    $deceased_name = trim($booking['deceased_lname'] . ', ' . $booking['deceased_fname'] . ' ' . $booking['deceased_midname'] . ' ' . $booking['deceased_suffix']);
+                    $deceased_name = $booking['deceased_lname'] . ', ' . $booking['deceased_fname'];
+                    if (!empty($booking['deceased_midname'])) {
+                        $deceased_name .= ' ' . $booking['deceased_midname'];
+                    }
+                    if (!empty($booking['deceased_suffix'])) {
+                        $deceased_name .= ' ' . $booking['deceased_suffix'];
+                    }
                     
                     // Format price
                     $price = number_format($booking['selling_price'], 2);
@@ -1117,17 +1124,17 @@ document.addEventListener('DOMContentLoaded', function() {
                     $balance = number_format($booking['selling_price'] - ($booking['amount_paid'] ?? 0), 2);
             ?>
             <div class="<?php 
-                    echo $booking['status'] === 'Pending' ? 'bg-yellow-100 border-yellow-400' : 
-                    ($booking['status'] === 'Cancelled' ? 'bg-gray-200 border-gray-300' : 'border-gray-300'); 
-                ?> border rounded-lg p-4 mb-6 transition-shadow hover:shadow-md">
+                    echo $booking['status'] === 'Pending' ? 'bg-yellow-600/5 border-yellow-600/20' : 
+                    ($booking['status'] === 'Cancelled' ? 'bg-gray-100 border-gray-300' : 'border-gray-200'); 
+                ?> border rounded-lg p-4 mb-6">
                 <div class="flex items-center justify-between mb-3">
                     <div>
-                        <span class="<?php echo $status_class; ?> text-xs font-semibold px-3 py-1 rounded-full"><?php echo $status_text; ?></span>
+                        <span class="<?php echo $status_class; ?> text-xs px-2 py-1 rounded-full"><?php echo $status_text; ?></span>
                     </div>
                     <p class="text-sm text-gray-500">Booking ID: <?php echo $booking['booking_id']; ?></p>
                 </div>
                 <h4 class="font-hedvig text-lg text-navy mb-2"><?php echo $booking['service_name']; ?></h4>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-4">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
                     <div>
                         <p class="text-sm text-gray-500">Deceased Name</p>
                         <p class="text-navy"><?php echo $deceased_name; ?></p>
@@ -1141,7 +1148,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <p class="text-navy"><?php echo $burial_date; ?></p>
                     </div>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-4">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
                     <div>
                         <p class="text-sm text-gray-500">Total Amount</p>
                         <p class="text-navy font-bold">₱<?php echo $price; ?></p>
@@ -1155,19 +1162,21 @@ document.addEventListener('DOMContentLoaded', function() {
                         <p class="text-navy">₱<?php echo $balance; ?></p>
                     </div>
                 </div>
-                <div class="flex justify-end mt-4">
-                    <button class="view-details bg-navy/5 text-navy px-4 py-2 rounded hover:bg-navy/10 transition text-sm mr-2" data-booking="<?php echo $booking['booking_id']; ?>">
+                <div class="flex justify-end">
+                    <button class="view-details bg-navy/5 text-navy px-3 py-1 rounded hover:bg-navy/10 transition text-sm mr-2" data-booking="<?php echo $booking['booking_id']; ?>">
                         <i class="fas fa-file-alt mr-1"></i> View Details
                     </button>
                     
                     <?php if ($booking['status'] === 'Pending' || $booking['status'] === 'Declined'): ?>
-                        <button class="modify-booking bg-yellow-600 text-white px-4 py-2 rounded hover:bg-yellow-700 transition text-sm mr-2" data-booking="<?php echo $booking['booking_id']; ?>">
+                        <!-- Show Modify button for Pending OR Declined status -->
+                        <button class="modify-booking bg-yellow-600 text-white px-3 py-1 rounded hover:bg-yellow-700 transition text-sm mr-2" data-booking="<?php echo $booking['booking_id']; ?>">
                             <i class="fas fa-edit mr-1"></i> Modify
                         </button>
                     <?php endif; ?>
                     
                     <?php if ($booking['status'] === 'Pending'): ?>
-                        <button class="cancel-booking bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition text-sm" data-booking="<?php echo $booking['booking_id']; ?>">
+                        <!-- Only show Cancel button for Pending (not for Declined) -->
+                        <button class="cancel-booking bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition text-sm" data-booking="<?php echo $booking['booking_id']; ?>">
                             <i class="fas fa-times mr-1"></i> Cancel
                         </button>
                     <?php elseif ($booking['status'] === 'Cancelled'): ?>
@@ -1180,14 +1189,13 @@ document.addEventListener('DOMContentLoaded', function() {
             <?php
                 }
             } else {
-                echo '<p class="text-gray-500 text-center">You have no bookings yet.</p>';
+                echo '<p class="text-gray-500">You have no bookings yet.</p>';
             }
             $stmt->close();
             ?>
         </div>
     </div>
 </div>
-
 
                     <!-- Transaction Logs Tab -->
 <div id="transaction-logs" class="tab-content">
