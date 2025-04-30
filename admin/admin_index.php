@@ -281,7 +281,7 @@ $monthlyRevenueData = [];
 
 
 for ($i = 11; $i >= 0; $i--) {
-    $date = new DateTime();
+    $date = clone $currentDate;
     $date->modify("-$i months");
     $month = $date->format('m');
     $year = $date->format('Y');
@@ -304,7 +304,7 @@ for ($i = 11; $i >= 0; $i--) {
 // Get monthly revenue data for Pila branch (branch_id = 2)
 $pilaMonthlyRevenue = [];
 for ($i = 11; $i >= 0; $i--) {
-    $date = new DateTime();
+    $date = clone $currentDate;
     $date->modify("-$i months");
     $month = $date->format('m');
     $year = $date->format('Y');
@@ -323,7 +323,7 @@ for ($i = 11; $i >= 0; $i--) {
 // Get monthly revenue data for Paete branch (branch_id = 1)
 $paeteMonthlyRevenue = [];
 for ($i = 11; $i >= 0; $i--) {
-    $date = new DateTime();
+    $date = clone $currentDate;
     $date->modify("-$i months");
     $month = $date->format('m');
     $year = $date->format('Y');
