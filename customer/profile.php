@@ -967,11 +967,7 @@ header("Pragma: no-cache");
     modal.classList.add('opacity-100', 'scale-100');
     
     // Load address data (if needed)
-    setTimeout(() => {
-        loadAddressData();
-        setupDatePicker(); // Add this line
-    }, 100);
-});
+    setTimeout(loadAddressData, 100);
     
     // Scroll to the ID upload section with a slight delay to ensure the modal is fully open
     setTimeout(() => {
@@ -2730,29 +2726,18 @@ function validateDateOfBirth(dob) {
     return age >= 18;
 }
 
+// Set up date picker restrictions
 function setupDatePicker() {
     const dobInput = document.getElementById('dob');
-    if (!dobInput) return;
-    
     const today = new Date();
     const minDate = new Date();
-    minDate.setFullYear(today.getFullYear() - 120); // Max age 120 years
+    minDate.setFullYear(today.getFullYear() - 18);
     
     // Set max date to today
     dobInput.max = today.toISOString().split('T')[0];
     
-    // Set min date to 120 years ago
-    dobInput.min = minDate.toISOString().split('T')[0];
-    
-    // Ensure the current value is within bounds
-    if (dobInput.value) {
-        const currentDate = new Date(dobInput.value);
-        if (currentDate > today) {
-            dobInput.value = today.toISOString().split('T')[0];
-        } else if (currentDate < minDate) {
-            dobInput.value = minDate.toISOString().split('T')[0];
-        }
-    }
+    // Set min date to 18 years ago
+    dobInput.min = new Date(today.getFullYear() - 120, today.getMonth(), today.getDate()).toISOString().split('T')[0];
 }
 
 // Form validation function
