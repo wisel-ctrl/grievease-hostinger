@@ -1275,7 +1275,7 @@ var options = {
     }
   },
   xaxis: {
-    categories: <?php echo json_encode($monthLabels1); ?>,
+    categories: <?php echo json_encode($monthLabels2); ?>,
   },
   yaxis: {
     labels: {
@@ -1356,7 +1356,7 @@ var projectedIncomeOptions = {
     }
   },
   xaxis: {
-    categories: <?php echo json_encode($monthLabels2); ?>,
+    categories: <?php echo json_encode($monthLabels1); ?>,
   },
   yaxis: {
     title: {
