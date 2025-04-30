@@ -844,7 +844,7 @@ require_once '../db_connect.php'; // Database connection
                 <button id="lifeplanServiceBtn" class="bg-cream hover:bg-yellow-100 border-2 border-yellow-600 text-navy px-6 py-8 rounded-lg shadow-md transition-all duration-300 flex flex-col items-center">
                     <i class="fas fa-seedling text-3xl text-yellow-600 mb-2"></i>
                     <span class="font-hedvig text-lg">Lifeplan</span>
-                    <span class="text-sm text-gray-600 mt-2 text-center">Pre-need funeral planning</span>
+                    <span class="text-sm text-gray-600 mt-2 text-center">lifeplan funeral planning</span>
                 </button>
             </div>
         </div>
@@ -1207,11 +1207,11 @@ require_once '../db_connect.php'; // Database connection
                             <div class="flex flex-col items-center text-center">
                                 <i class="fas fa-seedling text-4xl text-yellow-600 mb-4"></i>
                                 <h4 class="text-xl font-hedvig text-navy mb-2">Lifeplan Service</h4>
-                                <p class="text-gray-600 mb-4">Pre-need funeral planning with flexible payment terms.</p>
+                                <p class="text-gray-600 mb-4">lifeplan funeral planning with flexible payment terms.</p>
                                 <ul class="text-left w-full space-y-2 mb-4">
                                     <li class="flex items-start">
                                         <i class="fas fa-check text-yellow-600 mr-2 mt-1"></i>
-                                        <span>Pre-need planning</span>
+                                        <span>lifeplan planning</span>
                                     </li>
                                     <li class="flex items-start">
                                         <i class="fas fa-check text-yellow-600 mr-2 mt-1"></i>
@@ -1527,11 +1527,11 @@ require_once '../db_connect.php'; // Database connection
                             <div class="flex flex-col items-center text-center">
                                 <i class="fas fa-seedling text-4xl text-yellow-600 mb-4"></i>
                                 <h4 class="text-xl font-hedvig text-navy mb-2">Lifeplan Service</h4>
-                                <p class="text-gray-600 mb-4">Pre-need cremation planning with flexible payment terms.</p>
+                                <p class="text-gray-600 mb-4">lifeplan cremation planning with flexible payment terms.</p>
                                 <ul class="text-left w-full space-y-2 mb-4">
                                     <li class="flex items-start">
                                         <i class="fas fa-check text-yellow-600 mr-2 mt-1"></i>
-                                        <span>Pre-need planning</span>
+                                        <span>lifeplan planning</span>
                                     </li>
                                     <li class="flex items-start">
                                         <i class="fas fa-check text-yellow-600 mr-2 mt-1"></i>

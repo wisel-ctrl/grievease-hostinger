@@ -512,7 +512,7 @@ $servicesJson = json_encode($allServices);
         <button id="lifeplanServiceBtn" class="bg-[#F9F6F0] hover:bg-yellow-100 border-2 border-[#CA8A04] text-[#2D2B30] px-4 py-6 rounded-lg shadow-md transition-all duration-300 flex flex-col items-center">
           <i class="fas fa-seedling text-3xl text-[#CA8A04] mb-2"></i>
           <span class="font-medium text-lg">Lifeplan</span>
-          <span class="text-sm text-gray-600 mt-2 text-center">Pre-need funeral planning</span>
+          <span class="text-sm text-gray-600 mt-2 text-center">lifeplan funeral planning</span>
         </button>
       </div>
     </div>

@@ -502,7 +502,7 @@
                             <li><strong>Complete Funeral Packages:</strong> Including casket, curtains, lighting, water dispenser, tent, chairs, table, hearse, transportation, and embalming services</li>
                             <li><strong>Separate Services:</strong> Depending on your needs, we can provide individual services such as viewing chapel rental, casket only, or other specific requirements</li>
                             <li><strong>Chapel Rental:</strong> For families who wish to hold the wake at our facilities (₱6,000/day)</li>
-                            <li><strong>Pre-need Planning:</strong> For those who wish to arrange their funeral services in advance</li>
+                            <li><strong>lifeplan Planning:</strong> For those who wish to arrange their funeral services in advance</li>
                         </ul>
                         <p class="mt-4">Our owner, Virgillo Jay G. Relova, personally meets with each family to understand your specific needs and build a connection that ensures the highest quality of service during this difficult time.</p>
                     </div>
@@ -548,7 +548,7 @@
                             <li><strong>For packages ₱100,000 and above:</strong> 30% down payment required</li>
                             <li><strong>For packages below ₱100,000:</strong> Payment typically made before or on the day of burial</li>
                             <li><strong>Installment options:</strong> Available without interest for those who need additional time to pay</li>
-                            <li><strong>Pre-need plans:</strong> Available for those planning ahead</li>
+                            <li><strong>lifeplan plans:</strong> Available for those planning ahead</li>
                         </ul>
                         <p class="mt-4">We understand that some families may be waiting for SSS claims or other benefits. We offer short-term installment arrangements (typically 1-3 months) and may provide additional discounts for prompt payment.</p>
                         <p class="mt-2">For families experiencing financial difficulties, we're willing to work with you to find a solution that honors your loved one while respecting your budget.</p>

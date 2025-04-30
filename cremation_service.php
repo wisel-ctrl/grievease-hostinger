@@ -381,7 +381,7 @@
                                 <li>Allows you to handle financial arrangements in advance, potentially saving money</li>
                                 <li>Creates peace of mind for you and your family</li>
                             </ul>
-                            <p class="mt-4">We offer pre-need installment plans for those who wish to plan ahead. Some clients prefer our services over other pre-need companies because our packages are complete and customizable, with negotiable prices. We work with you to ensure everything you desire for your funeral service is included in your plan.</p>
+                            <p class="mt-4">We offer lifeplan installment plans for those who wish to plan ahead. Some clients prefer our services over other lifeplan companies because our packages are complete and customizable, with negotiable prices. We work with you to ensure everything you desire for your funeral service is included in your plan.</p>
                         </div>
                     </div>
                 </div>

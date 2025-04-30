@@ -364,7 +364,7 @@ require_once '../db_connect.php'; // Database connection
                     <li>Allows you to handle financial arrangements in advance, potentially saving money</li>
                     <li>Creates peace of mind for you and your family</li>
                 </ul>
-                <p class="mt-4">We offer pre-need installment plans for those who wish to plan ahead. Some clients prefer our services over other pre-need companies because our packages are complete and customizable, with negotiable prices. We work with you to ensure everything you desire for your funeral service is included in your plan.</p>
+                <p class="mt-4">We offer lifeplan installment plans for those who wish to plan ahead. Some clients prefer our services over other lifeplan companies because our packages are complete and customizable, with negotiable prices. We work with you to ensure everything you desire for your funeral service is included in your plan.</p>
             </div>
         </div>
     </div>
@@ -798,13 +798,13 @@ require_once '../db_connect.php'; // Database connection
 <div class="bg-white rounded-lg shadow-md overflow-hidden" data-category="life-plan">
     <button class="faq-question w-full text-left p-6 focus:outline-none">
         <div class="flex justify-between items-center">
-            <h3 class="text-lg font-hedvig text-navy">Do you offer pre-need installment plans for those who are not yet deceased?</h3>
+            <h3 class="text-lg font-hedvig text-navy">Do you offer lifeplan installment plans for those who are not yet deceased?</h3>
             <i class="fas fa-chevron-down text-yellow-600 transition-transform duration-300"></i>
         </div>
     </button>
     <div class="faq-answer px-6 pb-6 hidden">
         <div class="border-t border-gray-200 pt-4 mt-2 text-dark">
-            <p>Yes, we offer pre-need installment plans. Many clients prefer our services over other providers because:</p>
+            <p>Yes, we offer lifeplan installment plans. Many clients prefer our services over other providers because:</p>
             <ul class="list-disc ml-6 mt-2 space-y-1">
                 <li>Our packages are complete and customizable</li>
                 <li>Prices are negotiable (unlike fixed-price plans from larger companies)</li>
