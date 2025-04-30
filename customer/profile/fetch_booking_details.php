@@ -1,10 +1,13 @@
 <?php
+//profile/fetch_booking_details.php
 require_once '../../db_connect.php';
 
 $bookingId = $_GET['booking_id'] ?? 0;
 
 $query = "SELECT b.*, s.service_name, s.selling_price, br.branch_name, 
-                 b.deathcert_url, b.payment_url, b.amount_paid, b.reference_code
+                 b.deathcert_url, b.payment_url, b.amount_paid, 
+                 b.reference_code, b.receipt_number,
+                 b.accepted_date, b.decline_date
           FROM booking_tb b
           JOIN services_tb s ON b.service_id = s.service_id
           JOIN branch_tb br ON b.branch_id = br.branch_id
@@ -32,6 +35,13 @@ if ($result->num_rows > 0) {
     ]);
 } else {
     echo json_encode(['success' => false, 'message' => 'Booking not found']);
+}
+
+function generateReceiptNumber($branchId) {
+    $prefix = 'RCPT-' . str_pad($branchId, 3, '0', STR_PAD_LEFT) . '-';
+    $random = strtoupper(bin2hex(random_bytes(3))); // 6 random alphanumeric chars
+    $datePart = date('Ymd');
+    return $prefix . $datePart . '-' . $random;
 }
 
 $stmt->close();

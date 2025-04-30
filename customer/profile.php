@@ -2209,9 +2209,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // Populate receipt content
 // Inside your populateReceipt function, update the accepterInfo section:
 function populateReceipt(data) {
-    const formattedDate = new Date(data.booking_date).toLocaleDateString('en-US', {
-        year: 'numeric', month: 'long', day: 'numeric'
-    });
+    const formatDate = (dateString) => {
+        if (!dateString) return 'N/A';
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        return new Date(dateString).toLocaleDateString('en-US', options);
+    };
 
     const deceasedName = `${data.deceased_lname}, ${data.deceased_fname}` + 
                        (data.deceased_midname ? ` ${data.deceased_midname}` : '') + 
@@ -2235,14 +2237,17 @@ function populateReceipt(data) {
 
     receiptContent.innerHTML = `
         <div class="text-center mb-6">
-            <h2 class="text-2xl font-bold">${data.branch_name}</h2>
+            <h2 class="text-2xl font-bold capitalize">${data.branch_name} Branch</h2>
             <p class="text-gray-600">Official Receipt</p>
         </div>
         
         <div class="flex justify-between mb-6">
             <div>
-                <p><strong>Receipt #:</strong> ${data.reference_code || 'N/A'}</p>
-                <p><strong>Date:</strong> ${formattedDate}</p>
+                    <p class="font-semibold mb-2">Transaction Details</p>
+                    <p><strong>Receipt #:</strong> ${data.receipt_number || 'N/A'}</p>
+                    <p><strong>Reference Code:</strong> ${data.reference_code || 'N/A'}</p>
+                <p><strong>Booking Date:</strong> ${formatDate(data.booking_date)}</p>
+                <p><strong>Accepted Date:</strong> ${formatDate(data.accepted_date)}</p>
             </div>
             <div class="text-right">
                 <p> <span class="text-green-600">${data.status}</span></p>
@@ -2409,6 +2414,26 @@ function fetchBookingDetails(bookingId) {
                 document.getElementById('detail-status').textContent = data.status;
                 document.getElementById('detail-booking-date').textContent = formatDate(data.booking_date);
                 document.getElementById('detail-total').textContent = `₱${parseFloat(data.selling_price).toFixed(2)}`;
+                
+                const container = document.querySelector('.space-y-2');
+
+                // Check if status is Accepted or Declined
+                if (data.status === 'Accepted' && data.accepted_date) {
+                    // Create new paragraph for Accepted Date
+                    const acceptedDateP = document.createElement('p');
+                    acceptedDateP.innerHTML = `<span class="text-gray-500">Accepted Date:</span> <span class="text-navy">${formatDate(data.accepted_date)}</span>`;
+                    
+                    // Insert after the status paragraph
+                    document.getElementById('detail-status').parentNode.insertAdjacentElement('afterend', acceptedDateP);
+                } 
+                else if (data.status === 'Declined' && data.decline_date) {
+                    // Create new paragraph for Declined Date
+                    const declinedDateP = document.createElement('p');
+                    declinedDateP.innerHTML = `<span class="text-gray-500">Declined Date:</span> <span class="text-navy">${formatDate(data.decline_date)}</span>`;
+                    
+                    // Insert after the status paragraph
+                    document.getElementById('detail-status').parentNode.insertAdjacentElement('afterend', declinedDateP);
+                }
                 
                 // Deceased info
                 let deceasedName = `${data.deceased_lname}, ${data.deceased_fname}`;
