@@ -1130,7 +1130,7 @@ document.addEventListener('DOMContentLoaded', function() {
     <?php 
         switch($booking['status']) {
             case 'Pending':
-                echo 'bg-yellow-500'; // Light yellow background
+                echo 'bg-yellow-300'; // Light yellow background
                 break;
             case 'Accepted':
                 echo 'bg-green-600'; // Light green background
