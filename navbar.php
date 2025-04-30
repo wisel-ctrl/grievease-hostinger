@@ -9,8 +9,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Hedvig+Letters+Serif:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
 
-    <style>
+<style>
     /* Add this CSS to your stylesheet */
         @media (max-width: 639px) {
          
@@ -39,8 +40,6 @@
         }
         }
 </style>
-<script src="tailwind.js"></script>
-</head>
 <body>
 <!-- Navigation Bar - Improved & Smaller -->
 <nav class="bg-black text-white shadow-md w-full fixed top-0 left-0 z-50 px-4 sm:px-6 lg:px-8" style="height: var(--navbar-height);">

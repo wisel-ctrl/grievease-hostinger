@@ -156,10 +156,6 @@
     
     // Hide loader when the page is fully loaded
     window.addEventListener('load', hideLoader);
-    function toggleMenu() {
-    const mobileMenu = document.getElementById('mobile-menu');
-    mobileMenu.classList.toggle('hidden');
-}
 </script>
 
 
