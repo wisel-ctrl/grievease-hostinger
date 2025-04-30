@@ -1167,6 +1167,12 @@ document.addEventListener('DOMContentLoaded', function() {
                             <i class="fas fa-file-alt mr-1"></i> View Details
                         </button>
                         
+                        <?php if ($booking['status'] === 'Accepted'): ?>
+                            <button class="view-receipt bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 transition text-sm mr-2" data-booking="<?php echo $booking['booking_id']; ?>">
+                                <i class="fas fa-receipt mr-1"></i> View Receipt
+                            </button>
+                        <?php endif; ?>
+                        
                         <?php if ($booking['status'] === 'Pending' || $booking['status'] === 'Declined'): ?>
                             <button class="modify-booking bg-yellow-600 text-white px-3 py-1 rounded hover:bg-yellow-700 transition text-sm mr-2" data-booking="<?php echo $booking['booking_id']; ?>">
                                 <i class="fas fa-edit mr-1"></i> Modify
@@ -2114,6 +2120,39 @@ document.addEventListener('DOMContentLoaded', function() {
     </div>
 </div>
 
+<!-- Receipt Modal -->
+<div id="receiptModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full">
+    <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-2/3 lg:w-1/2 shadow-lg rounded-md bg-white">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-xl font-bold text-gray-800">Payment Receipt</h3>
+            <button id="closeReceiptModal" class="text-gray-500 hover:text-gray-700">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <!-- Receipt Content (will be populated by JS) -->
+        <div id="receiptContent" class="bg-white p-6 border border-gray-200 rounded">
+            <!-- This will be filled dynamically -->
+        </div>
+        
+        <div class="mt-4 flex justify-end space-x-2">
+            <button id="printReceipt" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                <i class="fas fa-print mr-2"></i>Print
+            </button>
+            <button id="downloadPdf" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
+                <i class="fas fa-file-pdf mr-2"></i>PDF
+            </button>
+            <button id="downloadImage" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+                <i class="fas fa-image mr-2"></i>Image
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Include html2canvas and jsPDF for export functionality -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
 <!-- Success Notification -->
 <div id="successNotification" class="fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded shadow-lg z-50 hidden">
     <div class="flex items-center">
@@ -2129,6 +2168,134 @@ document.addEventListener('DOMContentLoaded', function() {
         <span id="errorMessage">An error occurred. Please try again.</span>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const receiptModal = document.getElementById('receiptModal');
+    const closeReceiptModal = document.getElementById('closeReceiptModal');
+    const receiptContent = document.getElementById('receiptContent');
+    const printReceiptBtn = document.getElementById('printReceipt');
+    const downloadPdfBtn = document.getElementById('downloadPdf');
+    const downloadImageBtn = document.getElementById('downloadImage');
+
+    // View Receipt button click handler
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('.view-receipt')) {
+            const bookingId = e.target.closest('.view-receipt').getAttribute('data-booking');
+            fetchReceiptDetails(bookingId);
+        }
+    });
+
+    // Close modal
+    closeReceiptModal.addEventListener('click', () => {
+        receiptModal.classList.add('hidden');
+    });
+
+    // Fetch receipt details
+    function fetchReceiptDetails(bookingId) {
+        fetch(`profile/fetch_receipt_details.php?booking_id=${bookingId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    populateReceipt(data);
+                    receiptModal.classList.remove('hidden');
+                } else {
+                    alert('Failed to fetch receipt details: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while fetching receipt details');
+            });
+    }
+
+    // Populate receipt content
+    function populateReceipt(data) {
+        const formattedDate = new Date(data.booking_date).toLocaleDateString('en-US', {
+            year: 'numeric', month: 'long', day: 'numeric'
+        });
+
+        const deceasedName = `${data.deceased_lname}, ${data.deceased_fname}` + 
+                           (data.deceased_midname ? ` ${data.deceased_midname}` : '') + 
+                           (data.deceased_suffix ? ` ${data.deceased_suffix}` : '');
+
+        receiptContent.innerHTML = `
+            <div class="text-center mb-6">
+                <h2 class="text-2xl font-bold">${data.branch_name}</h2>
+                <p class="text-gray-600">Official Receipt</p>
+            </div>
+            
+            <div class="flex justify-between mb-6">
+                <div>
+                    <p><strong>Receipt #:</strong> ${data.reference_code || 'N/A'}</p>
+                    <p><strong>Date:</strong> ${formattedDate}</p>
+                </div>
+                <div class="text-right">
+                    <p> <span class="text-green-600">${data.status}</span></p>
+                </div>
+            </div>
+            
+            <div class="border-t border-b border-gray-200 py-4 mb-4">
+                <h3 class="font-bold mb-2">Service Details</h3>
+                <p><strong>Service:</strong> ${data.service_name}</p>
+                <p><strong>Total Amount:</strong> ₱${parseFloat(data.selling_price).toFixed(2)}</p>
+                <p><strong>Amount Paid:</strong> ₱${parseFloat(data.amount_paid || 0).toFixed(2)}</p>
+                <p><strong>Balance:</strong> ₱${(parseFloat(data.selling_price) - parseFloat(data.amount_paid || 0)).toFixed(2)}</p>
+            </div>
+            
+            <div class="border-t border-b border-gray-200 py-4 mb-4">
+                <h3 class="font-bold mb-2">Deceased Information</h3>
+                <p><strong>Name:</strong> ${deceasedName}</p>
+                ${data.deceased_birth ? `<p><strong>Date of Birth:</strong> ${new Date(data.deceased_birth).toLocaleDateString()}</p>` : ''}
+                ${data.deceased_dodeath ? `<p><strong>Date of Death:</strong> ${new Date(data.deceased_dodeath).toLocaleDateString()}</p>` : ''}
+                ${data.deceased_dateOfBurial ? `<p><strong>Date of Burial:</strong> ${new Date(data.deceased_dateOfBurial).toLocaleDateString()}</p>` : ''}
+            </div>
+            
+            <div class="text-center mt-8 text-sm text-gray-500">
+                <p>Thank you for your business!</p>
+                <p>For inquiries, please contact our branch.</p>
+            </div>
+        `;
+    }
+
+    // Print receipt
+    printReceiptBtn.addEventListener('click', () => {
+        const printContents = receiptContent.innerHTML;
+        const originalContents = document.body.innerHTML;
+        
+        document.body.innerHTML = printContents;
+        window.print();
+        document.body.innerHTML = originalContents;
+        window.location.reload();
+    });
+
+    // Download as PDF
+    downloadPdfBtn.addEventListener('click', () => {
+        const { jsPDF } = window.jspdf;
+        
+        html2canvas(receiptContent).then(canvas => {
+            const imgData = canvas.toDataURL('image/png');
+            const pdf = new jsPDF();
+            const imgProps = pdf.getImageProperties(imgData);
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+            
+            pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+            pdf.save(`receipt_${new Date().getTime()}.pdf`);
+        });
+    });
+
+    // Download as Image
+    downloadImageBtn.addEventListener('click', () => {
+        html2canvas(receiptContent).then(canvas => {
+            const link = document.createElement('a');
+            link.download = `receipt_${new Date().getTime()}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        });
+    });
+});
+</script>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -2239,7 +2406,7 @@ function fetchBookingDetails(bookingId) {
                 document.getElementById('detail-address').textContent = data.deceased_address || 'Not provided';
                 
                 // Payment info
-                document.getElementById('detail-paid').textContent = `₱${(data.amount_paid || 0).toFixed(2)}`;
+                document.getElementById('detail-paid').textContent = `₱${parseFloat(data.amount_paid || 0).toFixed(2)}`;
                 const balance = parseFloat(data.selling_price) - parseFloat(data.amount_paid || 0);
                 document.getElementById('detail-balance').textContent = `₱${balance.toFixed(2)}`;
                 document.getElementById('detail-reference').textContent = data.reference_code || 'N/A';

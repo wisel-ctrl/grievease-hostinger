@@ -4,7 +4,7 @@ require_once '../../db_connect.php';
 $bookingId = $_GET['booking_id'] ?? 0;
 
 $query = "SELECT b.*, s.service_name, s.selling_price, br.branch_name, 
-                 b.deathcert_url, b.payment_url
+                 b.deathcert_url, b.payment_url, b.amount_paid, b.reference_code
           FROM booking_tb b
           JOIN services_tb s ON b.service_id = s.service_id
           JOIN branch_tb br ON b.branch_id = br.branch_id
