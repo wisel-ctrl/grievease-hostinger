@@ -177,6 +177,10 @@ require_once '../db_connect.php'; // Database connection
                     Traditional Funeral
                     <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-yellow-600 group-hover:w-full transition-all duration-300"></span>
                 </a>
+                <a href="packages.php" class="text-white hover:text-gray-300 transition relative group">
+                    Packages
+                    <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-yellow-600 group-hover:w-full transition-all duration-300"></span>
+                </a>
                 
                 <a href="faqs.php" class="text-white hover:text-gray-300 transition relative group">
                     FAQs
@@ -270,6 +274,13 @@ require_once '../db_connect.php'; // Database connection
             <div class="flex justify-between items-center">
                 <span>Traditional Funeral</span>
                 <i class="fas fa-briefcase text-yellow-600 opacity-0 group-hover:opacity-100 transition-opacity"></i>
+            </div>
+            <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-yellow-600 group-hover:w-full transition-all duration-300"></span>
+        </a>
+        <a href="packages.php" class="block text-white py-3 px-4 hover:bg-gray-800 rounded-lg transition-colors duration-300 relative group">
+            <div class="flex justify-between items-center">
+                <span>Packages</span>
+                <i class="fa-solid fa-cube text-yellow-600 opacity-0 group-hover:opacity-100 transition-opacity"></i>
             </div>
             <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-yellow-600 group-hover:w-full transition-all duration-300"></span>
         </a>
