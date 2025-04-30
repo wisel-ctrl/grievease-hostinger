@@ -122,12 +122,14 @@ if ($result->num_rows > 0) {
 
 // Return JSON response
 header('Content-Type: application/json');
-$response = [
-    'tableContent' => $tableContent,
-    'showingFrom' => $offset + 1,
-    'showingTo' => min($offset + $itemsPerPage, $totalCustomers),
-    'totalCount' => $totalCustomers,
-    'totalPages' => $totalPages,
-    'currentPage' => $page
-];
+echo json_encode([
+    $response = [
+        'tableContent' => $tableContent,
+        'showingFrom' => $offset + 1,
+        'showingTo' => min($offset + $itemsPerPage, $totalCustomers),
+        'totalCount' => $totalCustomers,
+        'totalPages' => $totalPages,
+        'currentPage' => $page
+    ];
+]);
 ?>
