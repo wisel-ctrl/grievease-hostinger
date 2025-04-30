@@ -786,6 +786,7 @@ foreach ($serviceData as $service => $branches) {
                 <tbody id="branchTableBody">
                 <?php
                 // Fetch branch performance data
+                $visible = "visible";
                 $branchQuery = "SELECT 
                                     b.branch_id,
                                     b.branch_name,
