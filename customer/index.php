@@ -1602,101 +1602,126 @@ document.addEventListener('DOMContentLoaded', function() {
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-    // Add initial mobile class setup
-    if (window.innerWidth < 768) {
-        document.querySelector('.form-section').classList.add('hidden');
+document.addEventListener('DOMContentLoaded', function() {
+    // Modal elements
+    const traditionalModal = document.getElementById('traditionalModal');
+    const closeModalBtns = document.querySelectorAll('.closeModalBtn');
+    const continueToFormBtn = document.getElementById('continueToFormBtn');
+    const backToDetailsBtn = document.getElementById('backToDetailsBtn');
+    const detailsSection = document.querySelector('.details-section');
+    const formSection = document.querySelector('.form-section');
+    
+    // Package data storage
+    let currentPackage = {};
+    
+    // Initialize modal functionality
+    function initModal() {
+        // Set up package selection buttons
+        document.querySelectorAll('.selectPackageBtn').forEach(button => {
+            button.addEventListener('click', function() {
+                const packageCard = this.closest('[data-name]');
+                if (!packageCard) return;
+                
+                // Store package data
+                currentPackage = {
+                    name: packageCard.dataset.name,
+                    price: parseInt(packageCard.dataset.price),
+                    image: packageCard.dataset.image || '',
+                    service: packageCard.dataset.service || 'traditional',
+                    features: []
+                };
+                
+                // Get features from the card
+                const featureItems = packageCard.querySelectorAll('ul li');
+                featureItems.forEach(item => {
+                    currentPackage.features.push(item.textContent.trim());
+                });
+                
+                // Update modal with package details
+                updateModalContent();
+                
+                // Show the modal
+                traditionalModal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden'; // Prevent scrolling
+                
+                // Set mobile view
+                if (window.innerWidth < 768) {
+                    detailsSection.classList.remove('hidden');
+                    formSection.classList.add('hidden');
+                }
+            });
+        });
+        
+        // Close modal
+        closeModalBtns.forEach(btn => {
+            btn.addEventListener('click', closeModal);
+        });
+        
+        // Mobile navigation
+        continueToFormBtn.addEventListener('click', () => {
+            detailsSection.classList.add('hidden');
+            formSection.classList.remove('hidden');
+        });
+        
+        backToDetailsBtn.addEventListener('click', () => {
+            formSection.classList.add('hidden');
+            detailsSection.classList.remove('hidden');
+        });
+        
+        // Close modal when clicking outside
+        traditionalModal.addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+        
+        // Handle addon changes
+        document.querySelectorAll('.traditional-addon').forEach(checkbox => {
+            checkbox.addEventListener('change', updateTotalPrice);
+        });
+        
+        // Initialize form handling
+        initForm();
     }
     
-    // Show traditional modal directly when package is selected
-    document.querySelectorAll('.selectPackageBtn').forEach(button => {
-        button.addEventListener('click', function() {
-            // Get package details from the parent card
-            const packageCard = this.closest('[data-name]');
-            if (!packageCard) return;
-            
-            const packageName = packageCard.dataset.name;
-            const packagePrice = packageCard.dataset.price;
-            const packageImage = packageCard.dataset.image || '';
-            const packageDesc = packageCard.dataset.description || '';
-            
-            // Get features from the card
-            const features = [];
-            const featureItems = packageCard.querySelectorAll('ul li');
-            featureItems.forEach(item => {
-                features.push(item.innerHTML);
-            });
-            
-            // Update modal with package details
-            document.getElementById('traditionalPackageName').textContent = packageName;
-            document.getElementById('traditionalPackagePrice').textContent = `₱${parseInt(packagePrice).toLocaleString()}`;
-            document.getElementById('traditionalPackageDesc').textContent = packageDesc;
-            
-            if (packageImage) {
-                document.getElementById('traditionalPackageImage').src = packageImage;
-                document.getElementById('traditionalPackageImage').alt = packageName;
-            }
-            
-            // Update features list
-            const featuresList = document.getElementById('traditionalPackageFeatures');
-            featuresList.innerHTML = '';
-            features.forEach(feature => {
-                featuresList.innerHTML += `<li class="flex items-center text-xs md:text-sm text-gray-700">${feature}</li>`;
-            });
-            
-            // Calculate and display prices
-            const totalPrice = parseInt(packagePrice);
-            const downpayment = Math.ceil(totalPrice * 0.3);
-            
-            document.getElementById('traditionalTotalPrice').textContent = `₱${totalPrice.toLocaleString()}`;
-            document.getElementById('traditionalDownpayment').textContent = `₱${downpayment.toLocaleString()}`;
-            document.getElementById('traditionalAmountDue').textContent = `₱${downpayment.toLocaleString()}`;
-            
-            // Update mobile price displays
-            document.getElementById('traditionalTotalPriceMobile').textContent = `₱${totalPrice.toLocaleString()}`;
-            document.getElementById('traditionalAmountDueMobile').textContent = `₱${downpayment.toLocaleString()}`;
-            
-            // Update hidden form fields
-            document.getElementById('traditionalSelectedPackageName').value = packageName;
-            document.getElementById('traditionalSelectedPackagePrice').value = totalPrice;
-            
-            // Reset addons
-            document.querySelectorAll('.traditional-addon').forEach(checkbox => {
-                checkbox.checked = false;
-            });
-            
-            // Setup mobile view
-            if (window.innerWidth < 768) {
-                document.querySelector('.details-section').classList.remove('hidden');
-                document.querySelector('.form-section').classList.add('hidden');
-            }
-            
-            // Show the modal
-            document.getElementById('traditionalModal').classList.remove('hidden');
+    // Update modal content with current package data
+    function updateModalContent() {
+        document.getElementById('traditionalPackageName').textContent = currentPackage.name;
+        document.getElementById('traditionalPackagePrice').textContent = `₱${currentPackage.price.toLocaleString()}`;
+        
+        if (currentPackage.image) {
+            document.getElementById('traditionalPackageImage').src = currentPackage.image;
+            document.getElementById('traditionalPackageImage').alt = currentPackage.name;
+        }
+        
+        // Update features list
+        const featuresList = document.getElementById('traditionalPackageFeatures');
+        featuresList.innerHTML = '';
+        currentPackage.features.forEach(feature => {
+            const li = document.createElement('li');
+            li.className = 'flex items-start text-xs md:text-sm text-gray-700';
+            li.innerHTML = `
+                <i class="fas fa-check-circle mr-2 text-yellow-600 mt-1 flex-shrink-0"></i>
+                <span>${feature}</span>
+            `;
+            featuresList.appendChild(li);
         });
-    });
-
-    // Setup mobile navigation buttons
-    document.getElementById('continueToFormBtn').addEventListener('click', function() {
-        document.querySelector('.details-section').classList.add('hidden');
-        document.querySelector('.form-section').classList.remove('hidden');
-    });
+        
+        // Update hidden form fields
+        document.getElementById('traditionalSelectedPackagePrice').value = currentPackage.price;
+        document.getElementById('traditionalServiceId').value = currentPackage.service === 'traditional' ? '1' : '2';
+        
+        // Reset addons
+        document.querySelectorAll('.traditional-addon').forEach(checkbox => {
+            checkbox.checked = false;
+        });
+        
+        // Update prices
+        updateTotalPrice();
+    }
     
-    document.getElementById('backToDetailsBtn').addEventListener('click', function() {
-        document.querySelector('.form-section').classList.add('hidden');
-        document.querySelector('.details-section').classList.remove('hidden');
-    });
-
-    // Handle addon changes
-    document.querySelectorAll('.traditional-addon').forEach(checkbox => {
-        checkbox.addEventListener('change', function() {
-            updateTraditionalTotal();
-        });
-    });
-
-    // Function to update traditional total price when addons are selected
-    function updateTraditionalTotal() {
-        const basePrice = parseInt(document.getElementById('traditionalSelectedPackagePrice').value || '0');
+    // Calculate and display total price
+    function updateTotalPrice() {
         let addonTotal = 0;
         
         // Calculate addons total
@@ -1705,56 +1730,245 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         
         // Update totals
-        const totalPrice = basePrice + addonTotal;
+        const totalPrice = currentPackage.price + addonTotal;
         const downpayment = Math.ceil(totalPrice * 0.3);
         
+        // Update desktop displays
         document.getElementById('traditionalTotalPrice').textContent = `₱${totalPrice.toLocaleString()}`;
         document.getElementById('traditionalDownpayment').textContent = `₱${downpayment.toLocaleString()}`;
         document.getElementById('traditionalAmountDue').textContent = `₱${downpayment.toLocaleString()}`;
         
-        // Update mobile price displays
+        // Update mobile displays
         document.getElementById('traditionalTotalPriceMobile').textContent = `₱${totalPrice.toLocaleString()}`;
         document.getElementById('traditionalAmountDueMobile').textContent = `₱${downpayment.toLocaleString()}`;
+        
+        // Update QR code amount
+        document.getElementById('qrCodeAmount').textContent = `Amount: ₱${downpayment.toLocaleString()}`;
     }
-
-    // Close modal when close button is clicked
-    document.querySelectorAll('.closeModalBtn').forEach(button => {
-        button.addEventListener('click', function() {
-            document.getElementById('traditionalModal').classList.add('hidden');
-        });
-    });
-
-    // Close modal when clicking outside
-    document.getElementById('traditionalModal').addEventListener('click', function(e) {
-        if (e.target === this) {
-            this.classList.add('hidden');
-        }
-    });
-
-    // Form submission for Traditional
-    document.getElementById('traditionalBookingForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        // Add booking submission logic here
-        alert('Traditional service booking submitted successfully!');
-        document.getElementById('traditionalModal').classList.add('hidden');
-    });
     
-    // Handle resize events
-    window.addEventListener('resize', function() {
-        if (window.innerWidth >= 768) {
-            // Desktop view - show both sections
-            document.querySelector('.details-section').classList.remove('hidden');
-            document.querySelector('.form-section').classList.remove('hidden');
-        } else {
-            // Mobile view - show details by default, hide form
-            if (!document.getElementById('traditionalModal').classList.contains('hidden')) {
-                document.querySelector('.details-section').classList.remove('hidden');
-                document.querySelector('.form-section').classList.add('hidden');
+    // Initialize form handling
+    function initForm() {
+        const form = document.getElementById('traditionalBookingForm');
+        const deathCertInput = document.getElementById('traditionalDeathCertificate');
+        const gcashInput = document.getElementById('traditionalGcashReceipt');
+        
+        // Death certificate file handling
+        deathCertInput.addEventListener('change', function(e) {
+            handleFileUpload(e, 'deathCert');
+        });
+        
+        // GCash receipt file handling
+        gcashInput.addEventListener('change', function(e) {
+            handleFileUpload(e, 'gcash');
+        });
+        
+        // Remove file buttons
+        document.getElementById('removeDeathCert').addEventListener('click', () => {
+            resetFileInput('deathCert');
+        });
+        
+        document.getElementById('removeGcash').addEventListener('click', () => {
+            resetFileInput('gcash');
+        });
+        
+        // QR code modal
+        const qrModal = document.getElementById('qrCodeModal');
+        document.getElementById('showQrCodeBtn').addEventListener('click', () => {
+            qrModal.classList.remove('hidden');
+        });
+        
+        document.getElementById('closeQrModal').addEventListener('click', () => {
+            qrModal.classList.add('hidden');
+        });
+        
+        // Form submission
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            if (validateForm()) {
+                // Create FormData object
+                const formData = new FormData(form);
+                
+                // Add package info
+                formData.append('packageName', currentPackage.name);
+                formData.append('packagePrice', currentPackage.price);
+                
+                // Add addons
+                const addons = [];
+                document.querySelectorAll('.traditional-addon:checked').forEach(checkbox => {
+                    addons.push(checkbox.dataset.name);
+                });
+                formData.append('addons', JSON.stringify(addons));
+                
+                // Submit form via AJAX
+                submitBooking(formData);
             }
+        });
+    }
+    
+    // Handle file uploads
+    function handleFileUpload(event, type) {
+        const file = event.target.files[0];
+        if (!file) return;
+        
+        const previewId = `${type}Image`;
+        const previewContainerId = `${type}PreviewContainer`;
+        const fileNameId = `${type}FileName`;
+        const removeBtnId = `remove${type.charAt(0).toUpperCase() + type.slice(1)}`;
+        
+        // Update file name display
+        document.getElementById(fileNameId).textContent = file.name;
+        
+        // Show preview if image
+        if (file.type.match('image.*')) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const preview = document.getElementById(previewId);
+                preview.src = e.target.result;
+                document.getElementById(`${type}ImagePreview`).classList.remove('hidden');
+                document.getElementById(previewContainerId).classList.remove('hidden');
+            };
+            reader.readAsDataURL(file);
+        } else {
+            document.getElementById(previewContainerId).classList.remove('hidden');
         }
-    });
+        
+        // Show remove button
+        document.getElementById(removeBtnId).classList.remove('hidden');
+    }
+    
+    // Reset file input
+    function resetFileInput(type) {
+        const inputId = `traditional${type.charAt(0).toUpperCase() + type.slice(1)}`;
+        const previewId = `${type}Image`;
+        const previewContainerId = `${type}PreviewContainer`;
+        const fileNameId = `${type}FileName`;
+        const removeBtnId = `remove${type.charAt(0).toUpperCase() + type.slice(1)}`;
+        
+        // Reset input
+        document.getElementById(inputId).value = '';
+        
+        // Hide preview
+        if (document.getElementById(previewId)) {
+            document.getElementById(previewId).src = '';
+            document.getElementById(`${type}ImagePreview`).classList.add('hidden');
+        }
+        document.getElementById(previewContainerId).classList.add('hidden');
+        
+        // Reset file name
+        document.getElementById(fileNameId).textContent = 'No file chosen';
+        
+        // Hide remove button
+        document.getElementById(removeBtnId).classList.add('hidden');
+    }
+    
+    // Validate form
+    function validateForm() {
+        let isValid = true;
+        const requiredFields = [
+            'deceasedFirstName',
+            'deceasedLastName',
+            'dateOfDeath',
+            'traditionalReferenceNumber'
+        ];
+        
+        // Check required fields
+        requiredFields.forEach(fieldId => {
+            const field = document.getElementById(`traditional${fieldId.charAt(0).toUpperCase() + fieldId.slice(1)}`) || 
+                          document.getElementById(fieldId);
+            if (!field.value.trim()) {
+                isValid = false;
+                field.classList.add('border-red-500');
+                field.addEventListener('input', function() {
+                    this.classList.remove('border-red-500');
+                }, { once: true });
+            }
+        });
+        
+        // Check file uploads
+        if (!document.getElementById('traditionalDeathCertificate').files.length) {
+            isValid = false;
+            alert('Please upload a death certificate');
+        }
+        
+        if (!document.getElementById('traditionalGcashReceipt').files.length) {
+            isValid = false;
+            alert('Please upload your GCash receipt');
+        }
+        
+        return isValid;
+    }
+    
+    // Submit booking via AJAX
+    function submitBooking(formData) {
+        // Show loading state
+        const submitBtn = document.querySelector('#traditionalBookingForm [type="submit"]');
+        const originalBtnText = submitBtn.textContent;
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Processing...';
+        
+        // Simulate AJAX request (replace with actual fetch/XHR)
+        setTimeout(() => {
+            // This is where you would normally make the AJAX call
+            // fetch('process_booking.php', {
+            //     method: 'POST',
+            //     body: formData
+            // })
+            // .then(response => response.json())
+            // .then(data => {
+            //     if (data.success) {
+            //         showSuccessMessage();
+            //     } else {
+            //         showErrorMessage(data.message);
+            //     }
+            // })
+            // .catch(error => {
+            //     showErrorMessage('An error occurred. Please try again.');
+            // });
+            
+            // For demo purposes, we'll simulate a successful submission
+            showSuccessMessage();
+            
+            // Reset button
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalBtnText;
+        }, 1500);
+    }
+    
+    // Show success message
+    function showSuccessMessage() {
+        alert('Your booking has been submitted successfully! Our team will review your request and contact you shortly.');
+        closeModal();
+        
+        // You might want to redirect or refresh the page
+        // window.location.href = 'profile.php';
+    }
+    
+    // Close modal
+    function closeModal() {
+        traditionalModal.classList.add('hidden');
+        document.body.style.overflow = '';
+    }
+    
+    // Handle responsive behavior
+    function handleResponsive() {
+        if (window.innerWidth >= 768) {
+            // Desktop - show both sections
+            detailsSection.classList.remove('hidden');
+            formSection.classList.remove('hidden');
+        } else if (!traditionalModal.classList.contains('hidden')) {
+            // Mobile - show details by default
+            detailsSection.classList.remove('hidden');
+            formSection.classList.add('hidden');
+        }
+    }
+    
+    // Initialize everything
+    initModal();
+    window.addEventListener('resize', handleResponsive);
 });
 
+// Mobile menu toggle
 function toggleMenu() {
     const mobileMenu = document.getElementById('mobile-menu');
     mobileMenu.classList.toggle('hidden');
