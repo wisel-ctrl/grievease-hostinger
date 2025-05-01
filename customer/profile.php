@@ -2523,21 +2523,79 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Functions
-function fetchBookingDetails(bookingId) {
+    function fetchBookingDetails(bookingId) {
     fetch(`profile/fetch_booking_details.php?booking_id=${bookingId}`)
         .then(response => response.json())
         .then(data => {
             if (data.success) {
+                // Status banner styling based on status
+                const statusBanner = document.getElementById('status-banner');
+                const statusText = document.getElementById('detail-status');
+                
+                // Remove all existing color classes
+                statusBanner.className = 'px-6 py-3 border-b flex items-center';
+                statusText.className = '';
+                
+                // Set colors based on status
+                switch(data.status.toLowerCase()) {
+                    case 'pending':
+                        statusBanner.classList.add('bg-yellow-50', 'border-yellow-100');
+                        statusText.classList.add('text-yellow-600', 'font-bold');
+                        break;
+                    case 'accepted':
+                        statusBanner.classList.add('bg-green-50', 'border-green-100');
+                        statusText.classList.add('text-green-600', 'font-bold');
+                        break;
+                    case 'declined':
+                        statusBanner.classList.add('bg-red-50', 'border-red-100');
+                        statusText.classList.add('text-red-600', 'font-bold');
+                        break;
+                    case 'cancelled':
+                        statusBanner.classList.add('bg-gray-50', 'border-gray-100');
+                        statusText.classList.add('text-gray-600', 'font-bold');
+                        break;
+                    default:
+                        statusBanner.classList.add('bg-blue-50', 'border-blue-100');
+                        statusText.classList.add('text-blue-600', 'font-bold');
+                }
+
+                // Update status indicator dot
+                const statusDot = statusBanner.querySelector('.rounded-full');
+                if (statusDot) {
+                    statusDot.className = 'h-3 w-3 rounded-full mr-2';
+                    switch(data.status.toLowerCase()) {
+                        case 'pending':
+                            statusDot.classList.add('bg-yellow-500');
+                            break;
+                        case 'accepted':
+                            statusDot.classList.add('bg-green-500');
+                            break;
+                        case 'declined':
+                            statusDot.classList.add('bg-red-500');
+                            break;
+                        case 'cancelled':
+                            statusDot.classList.add('bg-gray-500');
+                            break;
+                        default:
+                            statusDot.classList.add('bg-blue-500');
+                    }
+                }
+
+                // Update status text
+                statusText.textContent = data.status;
+                
                 // Populate the view details modal
                 document.getElementById('detail-service').textContent = data.service_name;
                 document.getElementById('detail-branch').textContent = data.branch_name 
-                ? data.branch_name.toLowerCase().replace(/\b\w/g, c => c.toUpperCase())
-                : '';
-                document.getElementById('detail-status').textContent = data.status;
+                    ? data.branch_name.toLowerCase().replace(/\b\w/g, c => c.toUpperCase())
+                    : '';
                 document.getElementById('detail-booking-date').textContent = formatDate(data.booking_date);
                 document.getElementById('detail-total').textContent = `₱${parseFloat(data.selling_price).toFixed(2)}`;
                 
+                // Clear any existing date paragraphs
                 const container = document.querySelector('.space-y-2');
+                const existingDateP = container.querySelector('p:not(:first-child)');
+                if (existingDateP) existingDateP.remove();
 
                 // Check if status is Accepted or Declined
                 if (data.status === 'Accepted' && data.accepted_date) {
@@ -2563,8 +2621,8 @@ function fetchBookingDetails(bookingId) {
                 if (data.deceased_suffix) deceasedName += ` ${data.deceased_suffix}`;
                 
                 document.getElementById('detail-deceased-name').textContent = deceasedName 
-                ? deceasedName.toLowerCase().replace(/\b\w/g, c => c.toUpperCase())
-                : '';
+                    ? deceasedName.toLowerCase().replace(/\b\w/g, c => c.toUpperCase())
+                    : '';
                 document.getElementById('detail-birth').textContent = data.deceased_birth ? formatDate(data.deceased_birth) : 'Not provided';
                 document.getElementById('detail-dod').textContent = data.deceased_dodeath ? formatDate(data.deceased_dodeath) : 'Not provided';
                 document.getElementById('detail-burial').textContent = data.deceased_dateOfBurial ? formatDate(data.deceased_dateOfBurial) : 'Not set';
@@ -2595,6 +2653,8 @@ function fetchBookingDetails(bookingId) {
             showError('An error occurred while fetching booking details');
         });
 }
+
+
 
 // Update your document viewing functions
 viewDeathCertBtn.addEventListener('click', function() {
