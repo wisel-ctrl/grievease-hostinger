@@ -742,9 +742,7 @@ $offset = ($current_page - 1) * $bookings_per_page;
             <option value="">Select payment method</option>
             <option value="Bank">Bank Transfer</option>
             <option value="GCash">GCash</option>
-            <option value="PayMaya">PayMaya</option>
             <option value="Cash">Cash</option>
-            <option value="Others">Others</option>
           </select>
         </div>
         
