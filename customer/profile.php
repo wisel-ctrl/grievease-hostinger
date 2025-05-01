@@ -2149,49 +2149,59 @@ document.addEventListener('DOMContentLoaded', function() {
 </div>
 
 <!-- Cancel Booking Modal -->
-<div id="cancelBookingModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-    <div class="bg-white rounded-lg w-full max-w-md mx-4">
-        <div class="p-6 border-b border-gray-200 flex justify-between items-center">
-            <h3 class="font-hedvig text-xl text-navy">Cancel Booking</h3>
-            <button class="close-modal text-gray-500 hover:text-gray-700">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-        <div class="p-6">
-            <form id="cancelBookingForm">
-                <input type="hidden" id="cancel-booking-id" name="booking_id">
-                <p class="mb-4">Are you sure you want to cancel this booking?</p>
-                <p class="mb-4 text-red-600 font-semibold">Please note that your downpayment will NOT be refunded if you proceed with cancellation.</p>
-                
-                <div class="mb-4">
-                    <label class="block text-gray-500 text-sm mb-1">Reason for Cancellation</label>
-                    <textarea name="cancel_reason" rows="3" class="w-full border border-gray-300 rounded px-3 py-2" required></textarea>
-                </div>
-                
-                <div class="mb-4">
-                    <label class="block text-gray-500 text-sm mb-1">OTP Verification</label>
-                    <div class="flex items-center space-x-2">
-                        <input type="text" name="otp" id="otpInput" class="border border-gray-300 rounded px-3 py-2 flex-1" placeholder="Enter OTP" required>
-                        <button type="button" id="sendOtpBtn" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
-                            Send OTP
-                        </button>
-                    </div>
-                    <p class="text-xs text-gray-500 mt-1">We'll send a verification code to your email</p>
-                </div>
-                
-                <div class="flex justify-end space-x-3">
-                    <button type="button" class="close-modal bg-gray-100 text-gray-700 px-4 py-2 rounded hover:bg-gray-200 transition">
-                        No, Keep Booking
-                    </button>
-                    <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition">
-                        <i class="fas fa-times mr-2"></i> Confirm Cancellation
-                    </button>
-                </div>
-            </form>
-        </div>
+<div id="cancelBookingModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4 hidden">
+  <!-- Modal Content -->
+  <div class="w-full max-w-md bg-white rounded-2xl shadow-xl overflow-hidden max-h-[90vh]">
+    <div class="modal-scroll-container overflow-y-auto max-h-[90vh]">
+      <!-- Header with close button -->
+      <div class="bg-navy p-6 flex justify-between items-center">
+        <h2 class="text-2xl font-hedvig text-white">Cancel Booking</h2>
+        <button class="close-modal text-white hover:text-yellow-300">
+          <i class="fas fa-times text-2xl"></i>
+        </button>
+      </div>
+      
+      <!-- Modal Body -->
+      <div class="p-6 bg-cream">
+        <form id="cancelBookingForm">
+          <input type="hidden" id="cancel-booking-id" name="booking_id">
+          <p class="text-gray-600 text-base mb-4">Are you sure you want to cancel this booking?</p>
+          <p class="mb-4 text-red-600 font-semibold">Please note that your downpayment will NOT be refunded if you proceed with cancellation.</p>
+          
+          <div class="space-y-4 sm:space-y-6">
+            <!-- Reason for Cancellation -->
+            <div>
+              <label class="block text-sm font-medium text-navy mb-1 sm:mb-2">Reason for Cancellation*</label>
+              <textarea name="cancel_reason" rows="3" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base" required></textarea>
+            </div>
+            
+            <!-- OTP Verification -->
+            <div>
+              <label class="block text-sm font-medium text-navy mb-1 sm:mb-2">OTP Verification*</label>
+              <div class="flex items-center space-x-2">
+                <input type="text" name="otp" id="otpInput" class="flex-1 px-3 sm:px-4 py-2 sm:py-3 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base" placeholder="Enter OTP" required>
+                <button type="button" id="sendOtpBtn" class="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 sm:py-3 rounded-lg shadow-md transition-all duration-300">
+                  Send OTP
+                </button>
+              </div>
+              <p class="text-xs text-gray-500 mt-1">We'll send a verification code to your email</p>
+            </div>
+          </div>
+        </form>
+      </div>
+      
+      <!-- Modal Footer -->
+      <div class="modal-sticky-footer px-6 py-4 flex flex-col sm:flex-row sm:justify-end gap-3 border-t border-gray-200 bg-white">
+        <button class="close-modal w-full sm:w-auto px-6 py-3 bg-white border border-yellow-600 text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center">
+          No, Keep Booking
+        </button>
+        <button type="submit" form="cancelBookingForm" class="w-full sm:w-auto px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg shadow-md transition-all duration-300 flex items-center justify-center">
+          <i class="fas fa-times mr-2"></i>
+          Confirm Cancellation
+        </button>
+      </div>
     </div>
-</div>
-    </div>
+  </div>
 </div>
 
 <!-- View Document Modal (for death cert and payment proof) -->
