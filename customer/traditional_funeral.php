@@ -1888,9 +1888,11 @@ document.addEventListener('DOMContentLoaded', function() {
             // Gather all form data
             const customBookingData = {
                 packageType: 'custom',
-                casket: customBookingData.casket,
+                casket: document.getElemenByID('casketID').value,
                 flowerArrangement: selectedFlowers,
                 additionalServices: selectedAddons,
+                branchId: document.getElementByID('branchID').value,
+                customerId: document.getElementByID('customerID').value,
                 notes: document.getElementById('customNotes').value,
                 deceasedInfo: {
                     firstName: document.getElementById('traditionalDeceasedFirstName').value,

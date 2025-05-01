@@ -1,3 +1,53 @@
+<?php
+session_start();
+date_default_timezone_set('Asia/Manila'); // Or your appropriate timezone
+// Check if user is logged in
+if (!isset($_SESSION['user_id'])) {
+    // Redirect to login page
+    header("Location: ../Landing_Page/login.php");
+    exit();
+}
+
+// Check for admin user type (user_type = 1)
+if ($_SESSION['user_type'] != 2) {
+    // Redirect to appropriate page based on user type
+    switch ($_SESSION['user_type']) {
+        case 1:
+            header("Location: ../admin/admin_index.php");
+            break;
+        case 3:
+            header("Location: ../customer/index.php");
+            break;
+        default:
+            // Invalid user_type
+            session_destroy();
+            header("Location: ../Landing_Page/login.php");
+    }
+    exit();
+}
+
+// Optional: Check for session timeout (30 minutes)
+$session_timeout = 1800; // 30 minutes in seconds
+if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > $session_timeout)) {
+    // Session has expired
+    session_unset();
+    session_destroy();
+    header("Location: ../Landing_Page/login.php?timeout=1");
+    exit();
+}
+
+// Update last activity time
+$_SESSION['last_activity'] = time();
+
+// Prevent caching for authenticated pages
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Cache-Control: post-check=0, pre-check=0", false);
+header("Pragma: no-cache");
+
+require_once '../db_connect.php';
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,6 +56,7 @@
   <title>GrievEase - Customer Account Management</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <style>
     /* Custom scrollbar styles */
     .scrollbar-thin::-webkit-scrollbar {
@@ -98,6 +149,69 @@
 
 .w-\[calc\(100\%-4rem\)\] {
   width: calc(100% - 4rem);
+}
+
+/* Add to your existing styles */
+#archivedAccountsModal table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#archivedAccountsModal th, 
+#archivedAccountsModal td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+#archivedAccountsModal tr:hover {
+    background-color: #f7fafc;
+}
+
+#archivedAccountsModal .max-h-\[60vh\] {
+    max-height: 60vh;
+}
+
+#searchContainer {
+  position: relative;
+  width: 300px;
+}
+
+#searchCustomer {
+  padding-right: 30px;
+  width: 100%;
+}
+
+#clearSearchBtn {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+  z-index: 10;
+}
+
+/* Loading indicator for search */
+.search-loading::after {
+  content: "";
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(202, 138, 4, 0.2);
+  border-top: 2px solid #CA8A04;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: translateY(-50%) rotate(0deg); }
+  100% { transform: translateY(-50%) rotate(360deg); }
 }
   </style>
 </head>
@@ -233,141 +347,217 @@
 
   <!-- Mode Selector -->
   <div class="flex justify-start mb-6">
-    <div class="bg-gray-100 rounded-lg overflow-hidden inline-flex">
-      <button id="createBtn" onclick="switchMode('create')" class="py-2 px-5 border-none bg-sidebar-accent text-white font-semibold cursor-pointer hover:bg-darkgold transition-all duration-300">Create Account</button>
-      <button id="manageBtn" onclick="switchMode('manage')" class="py-2 px-5 border-none bg-transparent text-sidebar-text cursor-pointer hover:bg-sidebar-hover transition-all duration-300">Manage Accounts</button>
-    </div>
-    <div class="ml-auto flex items-center">
-      <div id="searchContainer" class="hidden">
-        <input type="text" id="searchCustomer" placeholder="Search customers..." class="p-2 border border-sidebar-border rounded-md text-sm text-sidebar-text focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
-        <button onclick="searchCustomers()" class="ml-2 bg-sidebar-accent text-white border-none py-2 px-3 rounded-md cursor-pointer hover:bg-darkgold transition-all duration-300">
-          <i class="fas fa-search"></i>
-        </button>
+      <div class="bg-gray-100 rounded-lg overflow-hidden inline-flex">
+        <!-- Manage Accounts button first -->
+        <button id="manageBtn" onclick="switchMode('manage')" class="py-2 px-5 border-none bg-sidebar-accent text-white font-semibold cursor-pointer hover:bg-darkgold transition-all duration-300">Manage Accounts</button>
+        <!-- Create Account button second -->
+        <button id="createBtn" onclick="switchMode('create')" class="py-2 px-5 border-none bg-transparent text-sidebar-text cursor-pointer hover:bg-sidebar-hover transition-all duration-300">Create Account</button>
       </div>
+      <div class="ml-auto flex items-center space-x-3">
+          <button id="viewArchivedBtn" onclick="viewArchivedAccounts()" class="bg-gray-200 text-gray-700 border-none py-2 px-4 rounded-md cursor-pointer hover:bg-gray-300 transition-all duration-300">
+            <i class="fas fa-archive mr-2"></i>View Archived Accounts
+          </button>
+            <div id="searchContainer" class="relative">
+              <input type="text" id="searchCustomer" placeholder="Search customers..." 
+                     class="p-2 border border-sidebar-border rounded-md text-sm text-sidebar-text focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent w-full"
+                     oninput="searchCustomers()">
+              <button id="clearSearchBtn" onclick="clearSearch()" class="absolute right-2 top-2 text-gray-400 hover:text-gray-600 hidden">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+        </div>
     </div>
-  </div>
 
-  <!-- Create Customer Account Form Section -->
-  <div id="createAccountSection">
-    <div class="bg-white rounded-lg shadow-sidebar p-5 mb-6 border border-sidebar-border hover:shadow-card transition-all duration-300">
-      <div class="mb-5">
-        <h3 class="text-lg font-semibold text-sidebar-text">Enter Customer Details</h3>
+<!-- Add Customer Account Form (Non-Modal Version) -->
+<div id="createAccountSection" class="hidden">
+<div class="bg-white rounded-xl shadow-card w-full mx-auto">
+  <!-- Form Header -->
+  <div class="px-4 sm:px-6 py-4 sm:py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200 rounded-t-xl">
+    <h3 class="text-lg sm:text-xl font-bold text-white flex items-center">
+      Add Customer Account
+    </h3>
+  </div>
+  
+  <!-- Form Body -->
+  <div class="px-4 sm:px-6 py-4 sm:py-5">
+    <form id="addCustomerAccountForm" method="post" action="../admin/addCustomer/add_customer.php" class="space-y-3 sm:space-y-4">
+      <!-- Personal Information Section -->
+      <div>
+        <label for="firstName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+          First Name <span class="text-red-500">*</span>
+        </label>
+        <div class="relative">
+          <input type="text" id="firstName" name="firstName" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="First Name" required>
+        </div>
+        <p id="firstNameError" class="text-red-500 text-xs mt-1 hidden"></p>
       </div>
-      <form id="customerAccountForm" class="flex flex-col gap-4">
-        <div class="flex flex-wrap gap-4">
-          <div class="flex-1 min-w-[250px]">
-            <div class="mb-4">
-              <label for="firstName" class="block text-sm text-sidebar-text mb-1 font-medium">First Name</label>
-              <input type="text" id="firstName" name="firstName" required class="w-full p-3 border border-sidebar-border rounded-md text-sm transition duration-300 bg-gray-50 focus:border-sidebar-accent focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
-            </div>
-            <div class="mb-4">
-              <label for="lastName" class="block text-sm text-sidebar-text mb-1 font-medium">Last Name</label>
-              <input type="text" id="lastName" name="lastName" required class="w-full p-3 border border-sidebar-border rounded-md text-sm transition duration-300 bg-gray-50 focus:border-sidebar-accent focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
-            </div>
-            <div class="mb-4">
-              <label for="email" class="block text-sm text-sidebar-text mb-1 font-medium">Email Address</label>
-              <input type="email" id="email" name="email" required class="w-full p-3 border border-sidebar-border rounded-md text-sm transition duration-300 bg-gray-50 focus:border-sidebar-accent focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
-            </div>
-            <div class="mb-4">
-              <label for="phone" class="block text-sm text-sidebar-text mb-1 font-medium">Phone Number</label>
-              <input type="tel" id="phone" name="phone" required class="w-full p-3 border border-sidebar-border rounded-md text-sm transition duration-300 bg-gray-50 focus:border-sidebar-accent focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
-            </div>
+      
+      <div>
+        <label for="lastName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+          Last Name <span class="text-red-500">*</span>
+        </label>
+        <div class="relative">
+          <input type="text" id="lastName" name="lastName" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="Last Name" required>
+        </div>
+        <p id="lastNameError" class="text-red-500 text-xs mt-1 hidden"></p>
+      </div>
+      
+      <div class="flex flex-col sm:flex-row gap-2 sm:gap-4">
+        <div class="w-full sm:flex-1">
+          <label for="middleName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            Middle Name
+          </label>
+          <div class="relative">
+            <input type="text" id="middleName" name="middleName" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="Middle Name">
           </div>
-          <div class="flex-1 min-w-[250px]">
-            <div class="mb-4">
-              <label for="address" class="block text-sm text-sidebar-text mb-1 font-medium">Address</label>
-              <input type="text" id="address" name="address" required class="w-full p-3 border border-sidebar-border rounded-md text-sm transition duration-300 bg-gray-50 focus:border-sidebar-accent focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
-            </div>
-            <div class="mb-4">
-              <label for="city" class="block text-sm text-sidebar-text mb-1 font-medium">City</label>
-              <input type="text" id="city" name="city" required class="w-full p-3 border border-sidebar-border rounded-md text-sm transition duration-300 bg-gray-50 focus:border-sidebar-accent focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
-            </div>
-            <div class="mb-4">
-              <label for="state" class="block text-sm text-sidebar-text mb-1 font-medium">State</label>
-              <input type="text" id="state" name="state" required class="w-full p-3 border border-sidebar-border rounded-md text-sm transition duration-300 bg-gray-50 focus:border-sidebar-accent focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
-            </div>
-            <div class="mb-4">
-              <label for="zip" class="block text-sm text-sidebar-text mb-1 font-medium">Zip Code</label>
-              <input type="text" id="zip" name="zip" required class="w-full p-3 border border-sidebar-border rounded-md text-sm transition duration-300 bg-gray-50 focus:border-sidebar-accent focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
-            </div>
+          <p id="middleNameError" class="text-red-500 text-xs mt-1 hidden"></p>
+        </div>
+        
+        <div class="w-full sm:flex-1">
+          <label for="suffix" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            Suffix
+          </label>
+          <div class="relative">
+            <select id="suffix" name="suffix" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+              <option value="">Select Suffix</option>
+              <option value="Jr">Jr</option>
+              <option value="Sr">Sr</option>
+              <option value="I">I</option>
+              <option value="II">II</option>
+              <option value="III">III</option>
+              <option value="IV">IV</option>
+              <option value="V">V</option>
+            </select>
           </div>
         </div>
-        <div class="mb-4">
-          <label for="relationshipType" class="block text-sm text-sidebar-text mb-1 font-medium">Relationship Type</label>
-          <select id="relationshipType" name="relationshipType" class="w-full p-2 border border-sidebar-border rounded-md text-sm text-sidebar-text focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
-            <option value="">Select Relationship</option>
-            <option value="primary">Primary Contact</option>
-            <option value="family">Family Member</option>
-            <option value="friend">Friend</option>
-            <option value="legal">Legal Representative</option>
+      </div>
+      
+      <div>
+        <label for="birthdate" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+          Birthdate <span class="text-red-500">*</span>
+        </label>
+        <div class="relative">
+          <input type="date" id="birthdate" name="birthdate" 
+            class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
+            max="<?php echo date('Y-m-d'); ?>" required>
+        </div>
+        <p id="birthdateError" class="text-red-500 text-xs mt-1 hidden"></p>
+      </div>
+      
+      <div>
+        <label for="branchLocation" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+          Branch Location <span class="text-red-500">*</span>
+        </label>
+        <div class="relative">
+          <select id="branchLocation" name="branchLocation" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
+            <option value="">Select Branch</option>
+            <!-- Branch options will be populated by AJAX -->
           </select>
         </div>
-        <div class="mb-4">
-          <label for="notes" class="block text-sm text-sidebar-text mb-1 font-medium">Additional Notes</label>
-          <textarea id="notes" name="notes" rows="4" class="w-full p-3 border border-sidebar-border rounded-md text-sm transition duration-300 bg-gray-50 focus:border-sidebar-accent focus:outline-none focus:ring-2 focus:ring-sidebar-accent"></textarea>
+        <p id="branchError" class="text-red-500 text-xs mt-1 hidden">Please select a branch</p>
+      </div>
+      
+      <!-- Contact Information Section -->
+      <div>
+        <label for="customerEmail" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+          Email Address <span class="text-red-500">*</span>
+        </label>
+        <div class="relative">
+          <input type="email" id="customerEmail" name="customerEmail" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="example@email.com" required>
         </div>
-        <div class="flex justify-end mt-5">
-          <button type="submit" class="bg-sidebar-accent text-white px-4 py-2 rounded-md font-medium text-sm hover:bg-darkgold transition duration-300">Create Account</button>
-          <button type="reset" class="bg-gray-100 text-gray-700 border border-sidebar-border px-4 py-2 rounded-md font-medium text-sm ml-3 hover:bg-gray-200 transition duration-300">Clear Form</button>
+        <p id="emailError" class="text-red-500 text-xs mt-1 hidden"></p>
+      </div>
+      
+      <div>
+        <label for="customerPhone" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+          Phone Number <span class="text-red-500">*</span>
+        </label>
+        <div class="relative">
+          <input type="tel" id="customerPhone" name="customerPhone" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="Phone Number" required>
         </div>
-      </form>
-    </div>
+        <p id="phoneError" class="text-red-500 text-xs mt-1 hidden"></p>
+      </div>
+      
+      <div>
+        <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+          Generated Password
+        </label>
+        <div class="relative">
+          <input type="password" id="generatedPassword" name="password" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200 bg-gray-100" readonly>
+          <button type="button" class="absolute right-2 top-2 text-gray-500 hover:text-gray-700" onclick="togglePassword()">
+            <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 sm:w-6 sm:h-6">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 12s2.947-5.455 8.02-5.455S20.02 12 20.02 12s-2.947 5.455-8.02 5.455S3.98 12 3.98 12z" />
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 15a3 3 0 100-6 3 3 0 000 6z" />
+            </svg>
+          </button>
+        </div>
+      </div>
+      
+      <!-- Additional Information Card -->
+      <div class="bg-gray-50 p-3 sm:p-4 rounded-lg border-l-4 border-sidebar-accent mt-3 sm:mt-4">
+        <h4 class="text-xs sm:text-sm font-medium text-gray-700 mb-2 flex items-center">
+          <i class="fas fa-info-circle mr-2 text-sidebar-accent"></i>
+          Account Information
+        </h4>
+        <p class="text-xs sm:text-sm text-gray-600">
+          An account will be created with the provided information. A temporary password will be generated automatically.
+        </p>
+        <p class="text-xs sm:text-sm text-gray-600 mt-2">
+          The customer will be able to change their password after logging in for the first time.
+        </p>
+      </div>
+      
+      <input type="hidden" name="user_type" value="3">
+      <input type="hidden" name="is_verified" value="1">
+    </form>
   </div>
+  
+  <!-- Form Footer -->
+  <div class="px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row sm:justify-end gap-2 sm:gap-4 border-t border-gray-200 bg-white rounded-b-xl">
+    <button class="w-full sm:w-auto px-5 sm:px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="confirmSubmitCustomerForm()">
+      Create Account
+    </button>
+  </div>
+</div>
+</div>
+
+
 
   <!-- Manage Customer Accounts Section -->
-  <div id="manageAccountSection" class="hidden">
-    <div class="bg-white rounded-lg shadow-sidebar p-5 mb-6 border border-sidebar-border hover:shadow-card transition-all duration-300">
-      <div class="mb-5">
-        <h3 class="text-lg font-semibold text-sidebar-text">Customer Accounts</h3>
-      </div>
-      <div class="p-5">
-        <div class="overflow-x-auto scrollbar-thin">
-          <table id="customerTable" class="w-full border-collapse min-w-[600px]">
-            <thead>
-              <tr class="bg-sidebar-hover text-left">
-                <th class="p-3 border-b border-sidebar-border text-sm font-medium text-sidebar-text">Name</th>
-                <th class="p-3 border-b border-sidebar-border text-sm font-medium text-sidebar-text">Email</th>
-                <th class="p-3 border-b border-sidebar-border text-sm font-medium text-sidebar-text">Phone</th>
-                <th class="p-3 border-b border-sidebar-border text-sm font-medium text-sidebar-text">Location</th>
-                <th class="p-3 border-b border-sidebar-border text-sm font-medium text-sidebar-text">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <!-- Sample customers for demonstration -->
-              <tr class="border-b border-sidebar-border hover:bg-sidebar-hover">
-                <td class="p-3 text-sm text-sidebar-text">Jane Smith</td>
-                <td class="p-3 text-sm text-sidebar-text">jane.smith@example.com</td>
-                <td class="p-3 text-sm text-sidebar-text">(555) 123-4567</td>
-                <td class="p-3 text-sm text-sidebar-text">Austin, TX</td>
-                <td class="p-3">
-                  <button onclick="editCustomer(1)" class="p-1.5 bg-green-100 text-green-600 rounded hover:bg-green-200 transition-all">
-                    <i class="fas fa-edit"></i>
-                  </button>
-                  <button onclick="viewCustomerDetails(1)" class="p-1.5 bg-blue-100 text-blue-600 rounded hover:bg-blue-200 transition-all">
-                    <i class="fas fa-eye"></i>
-                    </button>
-                  <button onclick="confirmDeleteCustomer(1)" class="p-1.5 bg-red-100 text-red-600 rounded hover:bg-red-200 transition-all">
-                   <i class="fas fa-archive text-sidebar-accent"></i>
-                  </button>
-                </td>
-              </tr>
-              <!-- Add more rows as needed -->
-            </tbody>
-          </table>
+    <div id="manageAccountSection">
+        <div class="bg-white rounded-lg shadow-sidebar p-5 mb-6 border border-sidebar-border hover:shadow-card transition-all duration-300">
+            <div class="mb-5">
+                <h3 class="text-lg font-semibold text-sidebar-text">Customer Accounts</h3>
+            </div>
+            <div class="p-5">
+                <div class="overflow-x-auto scrollbar-thin">
+                    <table id="customerTable" class="w-full border-collapse min-w-[600px]">
+                        <thead>
+                            <tr class="bg-sidebar-hover text-left">
+                                <th class="p-3 border-b border-sidebar-border text-sm font-medium text-sidebar-text">Customer ID</th>
+                                <th class="p-3 border-b border-sidebar-border text-sm font-medium text-sidebar-text">Name</th>
+                                <th class="p-3 border-b border-sidebar-border text-sm font-medium text-sidebar-text">Email</th>
+                                <th class="p-3 border-b border-sidebar-border text-sm font-medium text-sidebar-text">Type</th>
+                                <th class="p-3 border-b border-sidebar-border text-sm font-medium text-sidebar-text">Status</th>
+                                <th class="p-3 border-b border-sidebar-border text-sm font-medium text-sidebar-text">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Table content will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="mt-5 flex justify-between items-center">
+                    <div>
+                        <span class="text-sm text-gray-600">Showing 0-0 of 0 entries</span>
+                    </div>
+                    <div>
+                        <!-- Pagination buttons will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="mt-5 flex justify-between items-center">
-          <div>
-            <span class="text-sm text-gray-600">Showing 1-3 of 3 entries</span>
-          </div>
-          <div>
-            <button disabled class="p-2 border border-sidebar-border bg-gray-100 rounded-md mr-1 cursor-not-allowed">Previous</button>
-            <button class="p-2 border border-sidebar-border bg-sidebar-accent text-white rounded-md cursor-pointer hover:bg-darkgold transition-all duration-300">1</button>
-            <button disabled class="p-2 border border-sidebar-border bg-gray-100 rounded-md ml-1 cursor-not-allowed">Next</button>
-          </div>
-        </div>
-      </div>
     </div>
-  </div>
 </div>
 
     <!-- Customer Details Modal -->
@@ -402,233 +592,1355 @@
       </div>
     </div>
   </div>
+  
+    <!-- OTP Verification Modal -->
+<div id="otpVerificationModal" class="fixed inset-0 bg-black bg-opacity-60 z-50 hidden overflow-y-auto flex items-center justify-center p-4 w-full h-full">
+  <div class="bg-white rounded-xl shadow-xl w-full max-w-md mx-2">
+    <!-- Modal Header -->
+    <div class="bg-gradient-to-r from-sidebar-accent to-white flex justify-between items-center p-6 flex-shrink-0 rounded-t-xl">
+      <h3 class="text-xl font-bold text-white"><i class="fas fa-shield-alt"></i> Email Verification</h3>
+      <button onclick="closeOtpModal()" class="bg-black bg-opacity-20 hover:bg-opacity-30 rounded-full p-2 text-white hover:text-white transition-all duration-200">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    
+    <div class="p-6">
+      <p class="text-gray-700 mb-4">A verification code has been sent to <span id="otpEmail" class="font-medium"></span>. Please enter the code below.</p>
+      <div class="flex justify-center gap-2 mb-4">
+        <input type="text" class="otp-input w-12 h-12 border border-gray-300 rounded-md text-center text-xl font-bold" maxlength="1" autocomplete="off">
+        <input type="text" class="otp-input w-12 h-12 border border-gray-300 rounded-md text-center text-xl font-bold" maxlength="1" autocomplete="off">
+        <input type="text" class="otp-input w-12 h-12 border border-gray-300 rounded-md text-center text-xl font-bold" maxlength="1" autocomplete="off">
+        <input type="text" class="otp-input w-12 h-12 border border-gray-300 rounded-md text-center text-xl font-bold" maxlength="1" autocomplete="off">
+        <input type="text" class="otp-input w-12 h-12 border border-gray-300 rounded-md text-center text-xl font-bold" maxlength="1" autocomplete="off">
+        <input type="text" class="otp-input w-12 h-12 border border-gray-300 rounded-md text-center text-xl font-bold" maxlength="1" autocomplete="off">
+      </div>
+      <div id="otpError" class="text-red-500 text-center text-sm mb-4 hidden"></div>
+      <p class="text-sm text-gray-500 text-center">Didn't receive the code? <button type="button" onclick="resendOTP()" class="text-sidebar-accent hover:underline">Resend</button></p>
+    </div>
+    
+    <!-- Modal Footer -->
+    <div class="p-6 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white rounded-b-xl">
+      <button onclick="closeOtpModal()" class="px-5 py-3 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-semibold hover:bg-navy transition-colors">
+        Cancel
+      </button>
+      <button onclick="verifyOTP()" class="px-6 py-3 bg-sidebar-accent text-white rounded-lg font-semibold hover:bg-darkgold transition-colors flex items-center">
+        <i class="fas fa-check-circle mr-2"></i> Verify
+      </button>
+    </div>
+  </div>
+</div>
 
+  
+  
+  <!-- CUSTOMER ACCOUNT CREATION VALIDATION -->
+  
   <script>
-    // Mode switching functionality
-    function switchMode(mode) {
-      if (mode === 'create') {
-        document.getElementById('createAccountSection').style.display = 'block';
-        document.getElementById('manageAccountSection').style.display = 'none';
-        document.getElementById('createBtn').style.backgroundColor = '#CA8A04';
-        document.getElementById('createBtn').style.color = 'white';
-        document.getElementById('manageBtn').style.backgroundColor = 'transparent';
-        document.getElementById('manageBtn').style.color = '#333';
-        document.getElementById('searchContainer').style.display = 'none';
+
+document.getElementById("customerPhone").addEventListener("input", function (e) {
+    this.value = this.value.replace(/[^0-9]/g, ""); // Remove non-numeric characters
+  });
+
+// Real-time validation functions
+// Updated name validation functions
+function validateFirstName() {
+  const firstNameInput = document.getElementById('firstName');
+  const firstNameError = document.getElementById('firstNameError');
+  const firstName = firstNameInput.value.trim();
+  const nameRegex = /^[A-Za-z]+$/;
+
+  if (firstName === '') {
+    firstNameError.textContent = 'First name is required';
+    firstNameError.classList.remove('hidden');
+    return false;
+  } else if (!nameRegex.test(firstName)) {
+    firstNameError.textContent = 'First name must contain only letters (A-Z, a-z)';
+    firstNameError.classList.remove('hidden');
+    return false;
+  } else if (firstName.length === 1) {
+    firstNameError.textContent = 'First name must not contain single characters only';
+    firstNameError.classList.remove('hidden');
+    return false;
+  } else {
+    firstNameError.classList.add('hidden');
+    return true;
+  }
+}
+
+function validateLastName() {
+  const lastNameInput = document.getElementById('lastName');
+  const lastNameError = document.getElementById('lastNameError');
+  const lastName = lastNameInput.value.trim();
+  const nameRegex = /^[A-Za-z]+$/;
+
+  if (lastName === '') {
+    lastNameError.textContent = 'Last name is required';
+    lastNameError.classList.remove('hidden');
+    return false;
+  } else if (!nameRegex.test(lastName)) {
+    lastNameError.textContent = 'Last name must not contain single characters only';
+    lastNameError.classList.remove('hidden');
+    return false;
+  } else if (lastName.length === 1) {
+    lastNameError.textContent = 'Last name must be at least 2 letters';
+    lastNameError.classList.remove('hidden');
+    return false;
+  } else {
+    lastNameError.classList.add('hidden');
+    return true;
+  }
+}
+
+function validateMiddleName() {
+  const middleNameInput = document.getElementById('middleName');
+  const middleNameError = document.getElementById('middleNameError');
+  const middleName = middleNameInput.value.trim();
+  const nameRegex = /^[A-Za-z]*$/;
+
+  if (middleName !== '') {
+    if (!nameRegex.test(middleName)) {
+      middleNameError.textContent = 'Middle name must not contain single characters only';
+      middleNameError.classList.remove('hidden');
+      return false;
+    } else if (middleName.length === 1) {
+      middleNameError.textContent = 'Middle name must be at least 2 letters or empty';
+      middleNameError.classList.remove('hidden');
+      return false;
+    }
+  }
+  
+  middleNameError.classList.add('hidden');
+  return true;
+}
+
+function validateBirthdate() {
+  const birthdateInput = document.getElementById('birthdate');
+  const birthdateError = document.getElementById('birthdateError');
+  const birthdate = birthdateInput.value;
+
+  if (birthdate === '') {
+    birthdateError.textContent = 'Birthdate is required';
+    birthdateError.classList.remove('hidden');
+    return false;
+  } 
+
+  const today = new Date();
+  const birthdateObj = new Date(birthdate);
+  let age = today.getFullYear() - birthdateObj.getFullYear();
+  const monthDiff = today.getMonth() - birthdateObj.getMonth();
+  
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthdateObj.getDate())) {
+    age--;
+  }
+  
+  if (age < 18) {
+    birthdateError.textContent = 'You must be at least 18 years old';
+    birthdateError.classList.remove('hidden');
+    return false;
+  } else {
+    birthdateError.classList.add('hidden');
+    return true;
+  }
+}
+
+function validateEmail() {
+  const emailInput = document.getElementById('customerEmail');
+  const emailError = document.getElementById('emailError');
+  const email = emailInput.value.trim();
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  if (email === '') {
+    emailError.textContent = 'Email is required';
+    emailError.classList.remove('hidden');
+    return false;
+  } else if (!emailPattern.test(email)) {
+    emailError.textContent = 'Please enter a valid email address';
+    emailError.classList.remove('hidden');
+    return false;
+  } else {
+    emailError.classList.add('hidden');
+    return true;
+  }
+}
+
+function validatePhoneNumber() {
+  const phoneInput = document.getElementById('customerPhone');
+  const phoneError = document.getElementById('phoneError');
+  const phone = phoneInput.value.trim();
+  const phonePattern = /^09\d{9}$/;
+
+  // Remove any non-digit characters
+  const cleanedPhone = phone.replace(/[^0-9]/g, '');
+
+  if (phone === '') {
+    phoneError.textContent = 'Phone number is required';
+    phoneError.classList.remove('hidden');
+    return false;
+  } else if (!phonePattern.test(cleanedPhone)) {
+    phoneError.textContent = 'Please enter a valid 11-digit mobile number (e.g., 09123456789)';
+    phoneError.classList.remove('hidden');
+    return false;
+  } else {
+    phoneError.classList.add('hidden');
+    return true;
+  }
+}
+
+function validateBranchLocation() {
+  const branchSelect = document.getElementById('branchLocation');
+  const branchError = document.getElementById('branchError');
+
+  if (branchSelect.value === '') {
+    branchError.classList.remove('hidden');
+    return false;
+  } else {
+    branchError.classList.add('hidden');
+    return true;
+  }
+}
+
+// Modal functions
+function openAddCustomerAccountModal() {
+  const modal = document.getElementById('addCustomerAccountModal');
+  modal.classList.remove('hidden');
+  modal.classList.add('flex');
+  document.body.classList.add('overflow-hidden');
+}
+
+function closeAddCustomerAccountModal() {
+  const modal = document.getElementById('addCustomerAccountModal');
+  modal.classList.add('hidden');
+  modal.classList.remove('flex');
+  document.body.classList.remove('overflow-hidden');
+  
+  // Reset form and error messages
+  document.getElementById('addCustomerAccountForm').reset();
+  document.querySelectorAll('.text-red-500.text-xs').forEach(element => {
+    element.classList.add('hidden');
+  });
+}
+
+// Toggle password visibility
+function togglePassword() {
+  const passwordInput = document.getElementById('generatedPassword');
+  const eyeIcon = document.getElementById('eyeIcon');
+  
+  if (passwordInput.type === 'password') {
+    passwordInput.type = 'text';
+    eyeIcon.innerHTML = `
+      <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.5s2.947 5.455 8.02 5.455S20.02 8.5 20.02 8.5s-2.947-5.455-8.02-5.455S3.98 8.5 3.98 8.5z" />
+      <path stroke-linecap="round" stroke-linejoin="round" d="M12 15a3 3 0 100-6 3 3 0 000 6z" />
+      <line x1="3" y1="3" x2="21" y2="21" stroke="currentColor" stroke-width="1.5" />
+    `;
+  } else {
+    passwordInput.type = 'password';
+    eyeIcon.innerHTML = `
+      <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 12s2.947-5.455 8.02-5.455S20.02 12 20.02 12s-2.947 5.455-8.02 5.455S3.98 12 3.98 12z" />
+      <path stroke-linecap="round" stroke-linejoin="round" d="M12 15a3 3 0 100-6 3 3 0 000 6z" />
+    `;
+  }
+}
+
+
+// Show OTP modal and send OTP
+function showOTPModal() {
+  // Set the email in the OTP modal
+  const email = document.getElementById('customerEmail').value;
+  document.getElementById('otpEmail').textContent = email;
+  
+  // Send OTP to email
+  const formData = new FormData();
+  formData.append('email', email);
+  
+  const xhr = new XMLHttpRequest();
+  xhr.open('POST', '../admin/addCustomer/send_otp.php', true);
+  
+  xhr.onload = function() {
+    if (this.status === 200) {
+      const response = JSON.parse(this.responseText);
+      if (response.success) {
+        // Show OTP modal
+        const modal = document.getElementById('otpVerificationModal');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        
+        // Focus on first OTP input
+        const otpInputs = document.querySelectorAll('.otp-input');
+        if (otpInputs.length > 0) {
+          otpInputs[0].focus();
+        }
       } else {
-        document.getElementById('createAccountSection').style.display = 'none';
-        document.getElementById('manageAccountSection').style.display = 'block';
-        document.getElementById('manageBtn').style.backgroundColor = '#CA8A04';
-        document.getElementById('manageBtn').style.color = 'white';
-        document.getElementById('createBtn').style.backgroundColor = 'transparent';
-        document.getElementById('createBtn').style.color = '#333';
-        document.getElementById('searchContainer').style.display = 'flex';
+        Swal.fire({
+          title: 'Error Occurred',
+          text: response.message || 'Something went wrong', // Fallback if message is empty
+          icon: 'error',
+          confirmButtonText: 'OK',
+          confirmButtonColor: '#d33',
+          backdrop: `
+            rgba(210,0,0,0.4)
+            url("/images/nyan-cat.gif")
+            center top
+            no-repeat
+          `
+        });
       }
     }
+  };
+  
+  xhr.send(formData);
+}
 
-    // Placeholder functions for customer management
-    function editCustomer(id) {
-      document.getElementById('customerModal').style.display = 'block';
-      document.getElementById('modalTitle').innerText = 'Edit Customer';
-      
-      // For demonstration, showing a form with customer data
-      let customer = getCustomerById(id);
-      document.getElementById('modalContent').innerHTML = `
-        <form id="editCustomerForm">
-          <div style="display: flex; flex-wrap: wrap; gap: 15px;">
-            <div style="flex: 1; min-width: 250px;">
-              <div class="form-group">
-                <label for="editFirstName">First Name</label>
-                <input type="text" id="editFirstName" name="editFirstName" value="${customer.firstName}" required>
-              </div>
-              <div class="form-group">
-                <label for="editLastName">Last Name</label>
-                <input type="text" id="editLastName" name="editLastName" value="${customer.lastName}" required>
-              </div>
-              <div class="form-group">
-                <label for="editEmail">Email Address</label>
-                <input type="email" id="editEmail" name="editEmail" value="${customer.email}" required>
-              </div>
-              <div class="form-group">
-                <label for="editPhone">Phone Number</label>
-                <input type="tel" id="editPhone" name="editPhone" value="${customer.phone}" required>
-              </div>
-            </div>
-            <div style="flex: 1; min-width: 250px;">
-              <div class="form-group">
-                <label for="editAddress">Address</label>
-                <input type="text" id="editAddress" name="editAddress" value="${customer.address}" required>
-              </div>
-              <div class="form-group">
-                <label for="editCity">City</label>
-                <input type="text" id="editCity" name="editCity" value="${customer.city}" required>
-              </div>
-              <div class="form-group">
-                <label for="editState">State</label>
-                <input type="text" id="editState" name="editState" value="${customer.state}" required>
-              </div>
-              <div class="form-group">
-                <label for="editZip">Zip Code</label>
-                <input type="text" id="editZip" name="editZip" value="${customer.zip}" required>
-              </div>
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="editNotes">Additional Notes</label>
-            <textarea id="editNotes" name="editNotes" rows="4">${customer.notes}</textarea>
-          </div>
-        </form>
-      `;
-      
-      document.getElementById('modalActionButton').innerText = 'Save Changes';
-      document.getElementById('modalActionButton').onclick = function() {
-        saveCustomerChanges(id);
-      };
-    }
+// Close OTP modal
+function closeOtpModal() {
+  const modal = document.getElementById('otpVerificationModal');
+  modal.classList.add('hidden');
+  modal.classList.remove('flex');
+  
+  // Clear OTP inputs
+  const otpInputs = document.querySelectorAll('.otp-input');
+  otpInputs.forEach(input => {
+    input.value = '';
+  });
+  
+  // Hide error message
+  document.getElementById('otpError').classList.add('hidden');
+}
 
-    function viewCustomerDetails(id) {
-      document.getElementById('customerModal').style.display = 'block';
-      document.getElementById('modalTitle').innerText = 'Customer Details';
-      
-      // For demonstration, showing customer details
-      let customer = getCustomerById(id);
-      document.getElementById('modalContent').innerHTML = `
-        <div style="display: flex; flex-wrap: wrap; gap: 20px;">
-          <div style="flex: 1; min-width: 250px;">
-            <h4 style="margin-top: 0; color: #555; font-size: 16px;">Personal Information</h4>
-            <p><strong>Name:</strong> ${customer.firstName} ${customer.lastName}</p>
-            <p><strong>Email:</strong> ${customer.email}</p>
-            <p><strong>Phone:</strong> ${customer.phone}</p>
-          </div>
-          <div style="flex: 1; min-width: 250px;">
-            <h4 style="margin-top: 0; color: #555; font-size: 16px;">Address</h4>
-            <p>${customer.address}</p>
-            <p>${customer.city}, ${customer.state} ${customer.zip}</p>
-          </div>
-        </div>
-        <div style="margin-top: 20px;">
-          <h4 style="color: #555; font-size: 16px;">Notes</h4>
-          <p>${customer.notes}</p>
-        </div>
-        <div style="margin-top: 20px;">
-          <h4 style="color: #555; font-size: 16px;">Service History</h4>
-          <table style="width: 100%; border-collapse: collapse;">
-            <thead>
-              <tr style="background-color: #f3f4f6; text-align: left;">
-                <th style="padding: 8px 10px; border-bottom: 1px solid #ddd;">Date</th>
-                <th style="padding: 8px 10px; border-bottom: 1px solid #ddd;">Service Type</th>
-                <th style="padding: 8px 10px; border-bottom: 1px solid #ddd;">Amount</th>
-                <th style="padding: 8px 10px; border-bottom: 1px solid #ddd;">Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr style="border-bottom: 1px solid #ddd;">
-                <td style="padding: 8px 10px;">02/15/2025</td>
-                <td style="padding: 8px 10px;">Memorial Service</td>
-                <td style="padding: 8px 10px;">$2,500</td>
-                <td style="padding: 8px 10px;"><span style="background-color: #28a745; color: white; padding: 3px 8px; border-radius: 12px; font-size: 12px;">Completed</span></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      `;
-      
-      document.getElementById('modalActionButton').innerText = 'Edit Customer';
-      document.getElementById('modalActionButton').onclick = function() {
-        closeModal();
-        editCustomer(id);
-      };
-    }
+// Resend OTP
+function resendOTP() {
 
-    function confirmDeleteCustomer(id) {
-      document.getElementById('deleteModal').style.display = 'block';
-      // Store the ID for the delete operation
-      document.getElementById('deleteModal').dataset.customerId = id;
-    }
-
-    function deleteCustomer() {
-      const id = document.getElementById('deleteModal').dataset.customerId;
-      // In a real application, this would send a request to delete the customer
-      console.log(`Deleting customer with ID: ${id}`);
-      
-      // Close the modal and update UI
-      closeDeleteModal();
-      // This would typically refresh the customer list or remove the row
-    }
-
-    function closeModal() {
-      document.getElementById('customerModal').style.display = 'none';
-    }
-
-    function closeDeleteModal() {
-      document.getElementById('deleteModal').style.display = 'none';
-    }
-
-    function saveCustomerChanges(id) {
-      // In a real application, this would save the customer data
-      console.log(`Saving changes for customer with ID: ${id}`);
-      closeModal();
-      // Show a success message or refresh the table
-    }
-
-    function searchCustomers() {
-      const searchTerm = document.getElementById('searchCustomer').value.toLowerCase();
-      // In a real application, this would filter the customers table
-      console.log(`Searching for: ${searchTerm}`);
-    }
-
-    // Helper function to get customer by ID (mock data for demonstration)
-    function getCustomerById(id) {
-      const customers = {
-        1: {
-          firstName: 'Jane',
-          lastName: 'Smith',
-          email: 'jane.smith@example.com',
-          phone: '(555) 123-4567',
-          address: '123 Main St',
-          city: 'Austin',
-          state: 'TX',
-          zip: '78701',
-          notes: 'Prefers email communication. Has existing arrangements for spouse.'
-        },
-        2: {
-          firstName: 'Robert',
-          lastName: 'Johnson',
-          email: 'robert.j@example.com',
-          phone: '(555) 987-6543',
-          address: '456 Oak Ave',
-          city: 'Dallas',
-          state: 'TX',
-          zip: '75201',
-          notes: 'Requested information about pre-planning services.'
-        },
-        3: {
-          firstName: 'Mary',
-          lastName: 'Williams',
-          email: 'mary.w@example.com',
-          phone: '(555) 456-7890',
-          address: '789 Pine Blvd',
-          city: 'Houston',
-          state: 'TX',
-          zip: '77002',
-          notes: 'Recent client. Family has multiple accounts.'
+  const email = document.getElementById('customerEmail').value;
+  const formData = new FormData();
+  formData.append('email', email);
+  
+  const xhr = new XMLHttpRequest();
+  xhr.open('POST', '../admin/addCustomer/send_otp.php', true);
+  
+  xhr.onload = function() {
+    if (this.status === 200) {
+      try {
+        const response = JSON.parse(this.responseText);
+        if (response.success) {
+          Swal.fire({
+            title: 'OTP Sent!',
+            text: 'A new OTP has been sent to your email address.',
+            icon: 'success',
+            toast: true,
+            position: 'top-end', 
+            showConfirmButton: false,
+            timer: 5000,
+            timerProgressBar: true,
+            background: '#f8f9fa',
+            iconColor: '#28a745',
+            width: '400px',
+            padding: '1em',
+            customClass: {
+              container: 'custom-swal-container',
+              popup: 'custom-swal-popup'
+            }
+          });
+        } else {
+          Swal.fire({
+            title: 'Failed',
+            text: response.message || 'Failed to send OTP',
+            icon: 'error',
+            toast: true,
+            position: 'top-end', // top-right corner
+            showConfirmButton: false,
+            timer: 4000, // Longer display for errors
+            timerProgressBar: true,
+            background: '#f8f9fa',
+            iconColor: '#dc3545',
+            width: '400px',
+            padding: '1em',
+            customClass: {
+              container: 'custom-swal-container',
+              popup: 'custom-swal-popup-error' // Special class for errors
+            }
+          });
         }
-      };
-      return customers[id] || {};
+      } catch (e) {
+        Swal.fire({
+          title: 'Error',
+          text: 'Invalid server response',
+          icon: 'error'
+        });
+      }
     }
-
-    // Toggle sidebar function (assuming it's defined in the original file)
-    function toggleSidebar() {
-      document.querySelector('.sidebar').classList.toggle('collapsed');
-      document.querySelector('.main-content').classList.toggle('expanded');
-    }
-
-    // Form submission handler
-    document.getElementById('customerAccountForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      // In a real application, this would save the new customer
-      alert('Customer account created successfully!');
-      this.reset();
+  };
+  
+  xhr.onerror = function() {
+    Swal.fire({
+      title: 'Connection Error',
+      text: 'Failed to connect to server',
+      icon: 'error'
     });
+  };
+  
+  xhr.send(formData);
+}
+
+// Verify OTP and submit form
+function verifyOTP() {
+  // Collect OTP from inputs
+  const otpInputs = document.querySelectorAll('.otp-input');
+  let otpValue = '';
+  
+  otpInputs.forEach(input => {
+    otpValue += input.value;
+  });
+  
+  // Check if OTP is complete
+  if (otpValue.length !== 6) {
+    document.getElementById('otpError').textContent = 'Please enter all 6 digits';
+    document.getElementById('otpError').classList.remove('hidden');
+    return;
+  }
+  
+  // Verify OTP
+  const formData = new FormData();
+  formData.append('otp', otpValue);
+  
+  const xhr = new XMLHttpRequest();
+  xhr.open('POST', '../admin/addCustomer/verify_otp.php', true);
+  
+  xhr.onload = function() {
+    if (this.status === 200) {
+      const response = JSON.parse(this.responseText);
+      if (response.success) {
+        // OTP verified, proceed with form submission
+        actuallySubmitForm();
+      } else {
+        document.getElementById('otpError').textContent = response.message;
+        document.getElementById('otpError').classList.remove('hidden');
+      }
+    }
+  };
+  
+  xhr.send(formData);
+}
+
+// Handle OTP input functionality
+document.addEventListener('DOMContentLoaded', function() {
+    
+    generatePassword();
+  
+  // Regenerate password when these fields change
+  document.getElementById('firstName').addEventListener('input', generatePassword);
+  document.getElementById('lastName').addEventListener('input', generatePassword);
+  document.getElementById('birthdate').addEventListener('change', generatePassword);
+    
+  const otpInputs = document.querySelectorAll('.otp-input');
+  
+  otpInputs.forEach((input, index) => {
+    // Auto-focus next input
+    input.addEventListener('input', function() {
+      if (input.value.length === 1) {
+        if (index < otpInputs.length - 1) {
+          otpInputs[index + 1].focus();
+        }
+      }
+    });
+    
+    // Handle backspace
+    input.addEventListener('keydown', function(e) {
+      if (e.key === 'Backspace' && input.value === '' && index > 0) {
+        otpInputs[index - 1].focus();
+      }
+    });
+    
+    // Allow only numbers
+    input.addEventListener('input', function() {
+      input.value = input.value.replace(/[^0-9]/g, '');
+    });
+  });
+});
+
+// Add this function to check phone number availability before submission
+function checkCustomerPhoneAvailability() {
+  const phoneInput = document.getElementById('customerPhone');
+  const phoneError = document.getElementById('phoneError');
+  const phone = phoneInput.value.trim();
+  
+  // Only proceed if the phone number passed basic validation
+  if (!validatePhoneNumber()) {
+    return Promise.reject('Phone number is invalid');
+  }
+  
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', '../admin/addCustomer/check_phone.php', true);
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    
+    xhr.onload = function() {
+      if (this.status === 200) {
+        try {
+          const response = JSON.parse(this.responseText);
+          if (response.available) {
+            phoneError.classList.add('hidden');
+            resolve(true);
+          } else {
+            phoneError.textContent = 'Phone number already in use';
+            phoneError.classList.remove('hidden');
+            reject('Phone number already in use');
+          }
+        } catch (e) {
+          console.error("Error parsing response:", e);
+          phoneError.textContent = 'Error checking phone number';
+          phoneError.classList.remove('hidden');
+          reject('Error checking phone number');
+        }
+      } else {
+        phoneError.textContent = 'Error checking phone number';
+        phoneError.classList.remove('hidden');
+        reject('Error checking phone number');
+      }
+    };
+    
+    xhr.onerror = function() {
+      phoneError.textContent = 'Network error occurred';
+      phoneError.classList.remove('hidden');
+      reject('Network error occurred');
+    };
+    
+    xhr.send('phoneNumber=' + encodeURIComponent(phone));
+  });
+}
+
+function generatePassword() {
+  const firstName = document.getElementById('firstName').value.trim();
+  const lastName = document.getElementById('lastName').value.trim();
+  const birthdate = document.getElementById('birthdate').value;
+  
+  if (firstName !== '' && lastName !== '' && birthdate !== '') {
+    // Format: First letter of first name (uppercase) + First letter of last name (lowercase) + birthdate (YYYYMMDD)
+    const password = firstName.charAt(0).toUpperCase() + 
+                     lastName.charAt(0).toLowerCase() + 
+                     birthdate.replace(/-/g, '');
+    document.getElementById('generatedPassword').value = password;
+  } else {
+    // If fields are empty, generate a random password as fallback
+    const length = 12;
+    const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    let password = "";
+    
+    for (let i = 0; i < length; i++) {
+      const randomIndex = Math.floor(Math.random() * charset.length);
+      password += charset[randomIndex];
+    }
+    
+    document.getElementById('generatedPassword').value = password;
+  }
+}
+
+// Confirmation before submitting form
+function confirmSubmitCustomerForm() {
+  // Validate all fields
+  const isValid = validateFirstName() && 
+                  validateMiddleName() && 
+                  validateLastName() && 
+                  validateBirthdate() && 
+                  validateEmail() && 
+                  validatePhoneNumber() && 
+                  validateBranchLocation();
+
+  if (isValid) {
+    // Show confirmation dialog
+    Swal.fire({
+      title: 'Confirm Account Creation',
+      html: `
+        <div style="text-align: left;">
+          <p>Are you sure you want to create this customer account?</p>
+          <div style="margin-top: 15px; background: #f8f9fa; padding: 10px; border-radius: 5px; border-left: 4px solid #CA8A04;">
+            <p><strong>Name:</strong> ${document.getElementById('firstName').value} ${document.getElementById('lastName').value}</p>
+            <p><strong>Email:</strong> ${document.getElementById('customerEmail').value}</p>
+            <p><strong>Phone:</strong> ${document.getElementById('customerPhone').value}</p>
+          </div>
+        </div>
+      `,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#CA8A04',
+      confirmButtonText: 'Yes, create account',
+      cancelButtonText: 'Cancel',
+      reverseButtons: true
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Generate password if not already generated
+        if (document.getElementById('generatedPassword').value === '') {
+          generatePassword();
+        }
+        
+        // First check if phone number is available
+        checkCustomerPhoneAvailability()
+          .then(() => {
+            // If phone is available, show OTP verification modal
+            showOTPModal();
+          })
+          .catch((error) => {
+            console.error("Phone validation error:", error);
+            // Error handling already done in checkPhoneAvailability function
+          });
+      }
+    });
+  }
+}
+
+// Add this new function for actual submission after OTP verification
+function actuallySubmitForm() {
+  const form = document.getElementById('addCustomerAccountForm');
+  const formData = new FormData(form);
+  
+  const xhr = new XMLHttpRequest();
+  xhr.open('POST', '../admin/addCustomer/add_customer.php', true);
+  
+  xhr.onload = function() {
+    if (this.status === 200) {
+      const response = JSON.parse(this.responseText);
+      if (response.success) {
+          closeOtpModal(); // Close OTP modal
+          
+          Swal.fire({
+              title: 'Success!',
+              text: 'Customer account created successfully!',
+              icon: 'success',
+              confirmButtonColor: '#28a745',
+              showCancelButton: false,
+              confirmButtonText: 'OK',
+              allowOutsideClick: false,
+              willClose: () => {
+                  // Reload the page after account creation
+                  window.location.reload();
+              }
+          });
+      } else {
+          Swal.fire({
+              title: 'Error!',
+              html: `<div style="color: #721c24; background-color: #f8d7da; padding: 10px; border-radius: 5px; border-left: 4px solid #f5c6cb;">
+                        ${response.message || 'Failed to create account'}
+                    </div>`,
+              icon: 'error',
+              confirmButtonColor: '#dc3545',
+              confirmButtonText: 'Try Again',
+              allowOutsideClick: false
+          });
+      }
+    }
+  };
+  
+  xhr.send(formData);
+}
+
+// Function to load branches
+function loadBranches() {
+  const branchSelect = document.getElementById('branchLocation');
+  
+  fetch('../admin/addCustomer/get_branches.php')
+    .then(response => response.json())
+    .then(data => {
+      // Clear existing options except the first one
+      branchSelect.innerHTML = '<option value="">Select Branch</option>';
+      
+      // Add new options
+      data.forEach(branch => {
+        const option = document.createElement('option');
+        option.value = branch.branch_id;
+        option.textContent = branch.branch_name;
+        branchSelect.appendChild(option);
+      });
+    })
+    .catch(error => {
+      console.error('Error loading branches:', error);
+    });
+}
+
+// Add event listeners for real-time validation
+document.addEventListener('DOMContentLoaded', function() {
+  // First Name validation
+  document.getElementById('firstName').addEventListener('input', validateFirstName);
+  
+  // Middle Name validation
+  document.getElementById('middleName').addEventListener('input', validateMiddleName);
+  
+  // Last Name validation
+  document.getElementById('lastName').addEventListener('input', validateLastName);
+  
+  // Birthdate validation
+  document.getElementById('birthdate').addEventListener('change', validateBirthdate);
+  
+  // Email validation
+  document.getElementById('customerEmail').addEventListener('input', validateEmail);
+  
+  // Phone Number validation
+  document.getElementById('customerPhone').addEventListener('input', validatePhoneNumber);
+  
+  // Branch Location validation
+  document.getElementById('branchLocation').addEventListener('change', validateBranchLocation);
+  
+  loadBranches();
+
+  // Close modal on 'Escape' key press
+  window.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+      closeAddCustomerAccountModal();
+    }
+  });
+});
+
+
+
+
+
+</script>
+  
+  <script>
+      // Function to fetch and display customer accounts
+    function fetchCustomerAccounts(page = 1, search = '', sort = 'id_asc') {
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', `accountManagement/fetch_customer_accounts.php?page=${page}&search=${encodeURIComponent(search)}&sort=${sort}`, true);
+        
+        xhr.onload = function() {
+            searchContainer.classList.remove('search-loading');
+            if (this.status === 200) {
+                try {
+                    const response = JSON.parse(this.responseText);
+                    
+                    // Update the table content
+                    document.querySelector('#customerTable tbody').innerHTML = response.tableContent;
+                    
+                    searchCustomers();
+                    
+                    // Update pagination info
+                    const paginationInfo = `Showing ${response.showingFrom}-${response.showingTo} of ${response.totalCount} entries`;
+                    document.querySelector('#manageAccountSection .text-sm.text-gray-600').textContent = paginationInfo;
+                    
+                    // Update pagination buttons
+                    const paginationContainer = document.querySelector('#manageAccountSection .flex.justify-between.items-center > div:last-child');
+                    
+                    // Clear existing buttons
+                    paginationContainer.innerHTML = '';
+                    
+                    // Previous button
+                    const prevButton = document.createElement('button');
+                    prevButton.className = 'p-2 border border-sidebar-border rounded-md mr-1';
+                    prevButton.textContent = 'Previous';
+                    prevButton.disabled = page === 1;
+                    prevButton.onclick = () => {
+                        if (page > 1) fetchCustomerAccounts(page - 1, search, sort);
+                    };
+                    paginationContainer.appendChild(prevButton);
+                    
+                    // Page buttons
+                    const maxPagesToShow = 5;
+                    let startPage = Math.max(1, page - Math.floor(maxPagesToShow / 2));
+                    let endPage = Math.min(response.totalPages, startPage + maxPagesToShow - 1);
+                    
+                    if (endPage - startPage + 1 < maxPagesToShow) {
+                        startPage = Math.max(1, endPage - maxPagesToShow + 1);
+                    }
+                    
+                    if (startPage > 1) {
+                        const firstPageButton = document.createElement('button');
+                        firstPageButton.className = 'p-2 border border-sidebar-border rounded-md mr-1';
+                        firstPageButton.textContent = '1';
+                        firstPageButton.onclick = () => fetchCustomerAccounts(1, search, sort);
+                        paginationContainer.appendChild(firstPageButton);
+                        
+                        if (startPage > 2) {
+                            const ellipsis = document.createElement('span');
+                            ellipsis.className = 'px-2';
+                            ellipsis.textContent = '...';
+                            paginationContainer.appendChild(ellipsis);
+                        }
+                    }
+                    
+                    for (let i = startPage; i <= endPage; i++) {
+                        const pageButton = document.createElement('button');
+                        pageButton.className = `p-2 border border-sidebar-border rounded-md mx-0.5 ${i === page ? 'bg-sidebar-accent text-white' : ''}`;
+                        pageButton.textContent = i;
+                        pageButton.onclick = () => fetchCustomerAccounts(i, search, sort);
+                        paginationContainer.appendChild(pageButton);
+                    }
+                    
+                    if (endPage < response.totalPages) {
+                        if (endPage < response.totalPages - 1) {
+                            const ellipsis = document.createElement('span');
+                            ellipsis.className = 'px-2';
+                            ellipsis.textContent = '...';
+                            paginationContainer.appendChild(ellipsis);
+                        }
+                        
+                        const lastPageButton = document.createElement('button');
+                        lastPageButton.className = 'p-2 border border-sidebar-border rounded-md ml-1';
+                        lastPageButton.textContent = response.totalPages;
+                        lastPageButton.onclick = () => fetchCustomerAccounts(response.totalPages, search, sort);
+                        paginationContainer.appendChild(lastPageButton);
+                    }
+                    
+                    // Next button
+                    const nextButton = document.createElement('button');
+                    nextButton.className = 'p-2 border border-sidebar-border rounded-md ml-1';
+                    nextButton.textContent = 'Next';
+                    nextButton.disabled = page === response.totalPages;
+                    nextButton.onclick = () => {
+                        if (page < response.totalPages) fetchCustomerAccounts(page + 1, search, sort);
+                    };
+                    paginationContainer.appendChild(nextButton);
+                    
+                } catch (e) {
+                    console.error('Error parsing response:', e);
+                }
+            }
+        };
+        
+        xhr.onerror = function() {
+        console.error('Request failed');
+        };
+        
+        xhr.send();
+    }
+    
+// Add a debounce function to prevent too many rapid searches
+let searchTimeout;
+const searchDebounceTime = 300; // milliseconds
+
+// Client-side search function
+function searchCustomers() {
+  const searchTerm = document.getElementById('searchCustomer').value.trim().toLowerCase();
+  const clearBtn = document.getElementById('clearSearchBtn');
+  const table = document.getElementById('customerTable');
+  const rows = table.querySelectorAll('tbody tr');
+  
+  // Show/hide clear button
+  clearBtn.classList.toggle('hidden', searchTerm.length === 0);
+  
+  // If empty search, show all rows
+  if (searchTerm === '') {
+    rows.forEach(row => row.style.display = '');
+    updatePaginationInfo(rows.length, rows.length);
+    return;
+  }
+  
+  let visibleCount = 0;
+  
+  // Search through each row
+  rows.forEach(row => {
+    const cells = row.querySelectorAll('td');
+    let rowMatches = false;
+    
+    // Check each cell (except the last one with actions)
+    for (let i = 0; i < cells.length - 1; i++) {
+      const cellText = cells[i].textContent.toLowerCase();
+      if (cellText.includes(searchTerm)) {
+        rowMatches = true;
+        break;
+      }
+    }
+    
+    // Show/hide row based on match
+    row.style.display = rowMatches ? '' : 'none';
+    if (rowMatches) visibleCount++;
+  });
+  
+  // Update the "Showing X-Y of Z" info
+  updatePaginationInfo(visibleCount, rows.length);
+}
+
+// Helper function to update pagination info
+function updatePaginationInfo(visibleCount, totalCount) {
+  const infoElement = document.querySelector('#manageAccountSection .text-sm.text-gray-600');
+  infoElement.textContent = `Showing ${visibleCount} of ${totalCount} entries`;
+}
+
+// Clear search function
+function clearSearch() {
+  document.getElementById('searchCustomer').value = '';
+  document.getElementById('clearSearchBtn').classList.add('hidden');
+  searchCustomers(); // This will show all rows again
+}
+
+// Initialize with all rows visible
+document.addEventListener('DOMContentLoaded', function() {
+  const table = document.getElementById('customerTable');
+  const rows = table.querySelectorAll('tbody tr');
+  updatePaginationInfo(rows.length, rows.length);
+});    
+    
+    // Function to archive a customer account
+function archiveCustomerAccount(userId) {
+    Swal.fire({
+        title: 'Archive Customer Account',
+        html: `Are you sure you want to archive this customer account?<br><br>
+               <span class="text-sm text-gray-500">Archived accounts can be restored later if needed.</span>`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#CA8A04',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, archive it',
+        cancelButtonText: 'Cancel',
+        reverseButtons: true,
+        backdrop: `
+            rgba(0,0,0,0.6)
+            url("/images/nyan-cat.gif")
+            left top
+            no-repeat
+        `
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Show loading indicator
+            Swal.fire({
+                title: 'Archiving...',
+                html: 'Please wait while we archive the customer account',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            // Send AJAX request to archive the user
+            const formData = new FormData();
+            formData.append('user_id', userId);
+            formData.append('status', 0); // 0 means archived
+            formData.append('user_type', 3); // 3 is customer type
+
+            fetch('../admin/accountManagement/archive_user.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                Swal.close();
+                if (data.success) {
+                    Swal.fire({
+                        title: 'Archived!',
+                        text: 'Customer account has been archived.',
+                        icon: 'success',
+                        confirmButtonColor: '#28a745',
+                        timer: 2000,
+                        timerProgressBar: true,
+                        willClose: () => {
+                            // Refresh the customer list
+                            fetchCustomerAccounts();
+                        }
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Error!',
+                        text: data.message || 'Failed to archive customer account',
+                        icon: 'error',
+                        confirmButtonColor: '#d33'
+                    });
+                }
+            })
+            .catch(error => {
+                Swal.close();
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'An error occurred while archiving the account: ' + error,
+                    icon: 'error',
+                    confirmButtonColor: '#d33'
+                });
+            });
+        }
+    });
+}
+
+// Update the deleteCustomerAccount function in your table to call archiveCustomerAccount instead
+function deleteCustomerAccount(userId) {
+    archiveCustomerAccount(userId);
+}
+
+// Global variables to track current table state
+let currentPage = 1;
+let currentSearch = '';
+let currentSort = 'id_asc';
+
+function openEditCustomerAccountModal(userId) {
+    // Show loading state
+    Swal.fire({
+        title: 'Loading...',
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
+    // Fetch user details
+    fetch(`accountManagement/fetch_customer_details.php?user_id=${userId}`)
+        .then(response => response.json())
+        .then(data => {
+            Swal.close();
+            if (data.success) {
+                // Create modal HTML
+                const modalHTML = `
+                <div id="editCustomerModal" class="fixed inset-0 z-50 overflow-auto bg-black bg-opacity-40 flex items-center justify-center">
+                    <div class="bg-white rounded-lg shadow-xl w-full max-w-md mx-4">
+                        <!-- Modal Header -->
+                        <div class="flex justify-between items-center p-4 border-b border-sidebar-border">
+                            <h3 class="text-lg font-semibold text-sidebar-text">Edit Customer Account</h3>
+                            <button onclick="closeEditCustomerModal()" class="text-gray-500 hover:text-gray-700">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        
+                        <!-- Modal Body -->
+                        <div class="p-6">
+                            <form id="editCustomerForm" class="space-y-4">
+                                <input type="hidden" name="user_id" value="${data.user.id}">
+                                
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">Customer ID</label>
+                                    <input type="text" value="#CUST-${String(data.user.id).padStart(3, '0')}" 
+                                           class="w-full p-2 border border-gray-300 rounded bg-gray-100 text-sm" readonly>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">First Name <span class="text-red-500">*</span></label>
+                                    <input type="text" name="first_name" value="${data.user.first_name || ''}" 
+                                           class="w-full p-2 border border-gray-300 rounded text-sm focus:ring-sidebar-accent focus:border-sidebar-accent" required>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">Last Name <span class="text-red-500">*</span></label>
+                                    <input type="text" name="last_name" value="${data.user.last_name || ''}" 
+                                           class="w-full p-2 border border-gray-300 rounded text-sm focus:ring-sidebar-accent focus:border-sidebar-accent" required>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">Middle Name</label>
+                                    <input type="text" name="middle_name" value="${data.user.middle_name || ''}" 
+                                           class="w-full p-2 border border-gray-300 rounded text-sm focus:ring-sidebar-accent focus:border-sidebar-accent">
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">Email <span class="text-red-500">*</span></label>
+                                    <input type="email" name="email" value="${data.user.email || ''}" 
+                                           class="w-full p-2 border border-gray-300 rounded text-sm focus:ring-sidebar-accent focus:border-sidebar-accent" required>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">Phone Number <span class="text-red-500">*</span></label>
+                                    <input type="tel" name="phone_number" value="${data.user.phone_number || ''}" 
+                                           class="w-full p-2 border border-gray-300 rounded text-sm focus:ring-sidebar-accent focus:border-sidebar-accent" required>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">Branch Location <span class="text-red-500">*</span></label>
+                                    <select name="branch_loc" class="w-full p-2 border border-gray-300 rounded text-sm focus:ring-sidebar-accent focus:border-sidebar-accent" required>
+                                        <option value="">-- Select Branch --</option>
+                                        ${data.branches.map(branch => `
+                                            <option value="${branch.branch_id}" ${data.user.branch_loc == branch.branch_id ? 'selected' : ''}>
+                                                ${branch.branch_name}
+                                            </option>
+                                        `).join('')}
+                                    </select>
+                                </div>
+                            </form>
+                        </div>
+                        
+                        <!-- Modal Footer -->
+                        <div class="flex justify-end p-4 border-t border-gray-200 space-x-3">
+                            <button onclick="closeEditCustomerModal()" 
+                                    class="px-4 py-2 border border-gray-300 rounded text-gray-700 hover:bg-gray-100 text-sm">
+                                Cancel
+                            </button>
+                            <button onclick="saveCustomerChanges()" 
+                                    class="px-4 py-2 bg-sidebar-accent text-white rounded hover:bg-darkgold text-sm">
+                                Save Changes
+                            </button>
+                        </div>
+                    </div>
+                </div>`;
+
+                // Add modal to DOM
+                document.body.insertAdjacentHTML('beforeend', modalHTML);
+
+                // Add event listener for Escape key
+                document.addEventListener('keydown', function handleEscape(e) {
+                    if (e.key === 'Escape') {
+                        closeEditCustomerModal();
+                        document.removeEventListener('keydown', handleEscape);
+                    }
+                });
+            } else {
+                Swal.fire({
+                    title: 'Error!',
+                    text: data.message || 'Failed to fetch customer details',
+                    icon: 'error',
+                    confirmButtonColor: '#d33'
+                });
+            }
+        })
+        .catch(error => {
+            Swal.close();
+            Swal.fire({
+                title: 'Error!',
+                text: 'An error occurred while fetching customer details',
+                icon: 'error',
+                confirmButtonColor: '#d33'
+            });
+            console.error('Error:', error);
+        });
+}
+
+function closeEditCustomerModal() {
+    const modal = document.getElementById('editCustomerModal');
+    if (modal) {
+        modal.remove();
+    }
+}
+
+function saveCustomerChanges() {
+    const form = document.getElementById('editCustomerForm');
+    if (!form) return;
+
+    // Validate required fields
+    const requiredFields = form.querySelectorAll('[required]');
+    let isValid = true;
+    
+    requiredFields.forEach(field => {
+        if (!field.value.trim()) {
+            field.classList.add('border-red-500');
+            isValid = false;
+        } else {
+            field.classList.remove('border-red-500');
+        }
+    });
+
+    if (!isValid) {
+        Swal.fire({
+            title: 'Validation Error',
+            text: 'Please fill in all required fields',
+            icon: 'error',
+            confirmButtonColor: '#d33'
+        });
+        return;
+    }
+
+    // Show loading state
+    Swal.fire({
+        title: 'Saving...',
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
+    const formData = new FormData(form);
+    
+    fetch('accountManagement/update_customer_account.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        Swal.close();
+        if (data.success) {
+            Swal.fire({
+                title: 'Success!',
+                text: 'Customer account updated successfully',
+                icon: 'success',
+                confirmButtonColor: '#28a745',
+                willClose: () => {
+                    closeEditCustomerModal();
+                    // Refresh the customer list with current filters
+                    fetchCustomerAccounts(currentPage, currentSearch, currentSort);
+                }
+            });
+        } else {
+            Swal.fire({
+                title: 'Error!',
+                text: data.message || 'Failed to update customer account',
+                icon: 'error',
+                confirmButtonColor: '#d33'
+            });
+        }
+    })
+    .catch(error => {
+        Swal.close();
+        Swal.fire({
+            title: 'Error!',
+            text: 'An error occurred while updating customer account',
+            icon: 'error',
+            confirmButtonColor: '#d33'
+        });
+        console.error('Error:', error);
+    });
+}
+
+// Function to view archived accounts
+function viewArchivedAccounts() {
+    // Show loading state
+    const viewArchivedBtn = document.getElementById('viewArchivedBtn');
+    const originalBtnText = viewArchivedBtn.innerHTML;
+    viewArchivedBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Loading...';
+    viewArchivedBtn.disabled = true;
+
+    // Create modal container if it doesn't exist
+    if (!document.getElementById('archivedAccountsModal')) {
+        const modalHTML = `
+        <div id="archivedAccountsModal" class="hidden fixed z-50 inset-0 overflow-auto bg-black bg-opacity-40">
+            <div class="bg-white mx-auto my-[5%] p-5 border border-gray-300 w-4/5 max-w-4xl rounded-lg shadow-lg">
+                <div class="flex justify-between items-center mb-5 border-b border-gray-300 pb-3">
+                    <h3 class="m-0 text-lg font-semibold">Archived Customer Accounts</h3>
+                    <span onclick="closeArchivedAccountsModal()" class="cursor-pointer text-2xl">&times;</span>
+                </div>
+                <div class="max-h-[60vh] overflow-y-auto">
+                    <table class="w-full border-collapse">
+                        <thead>
+                            <tr class="bg-sidebar-hover text-left">
+                                <th class="p-3 border-b border-sidebar-border text-sm font-medium text-sidebar-text">Customer ID</th>
+                                <th class="p-3 border-b border-sidebar-border text-sm font-medium text-sidebar-text">Name</th>
+                                <th class="p-3 border-b border-sidebar-border text-sm font-medium text-sidebar-text">Email</th>
+                                <th class="p-3 border-b border-sidebar-border text-sm font-medium text-sidebar-text">Type</th>
+                                <th class="p-3 border-b border-sidebar-border text-sm font-medium text-sidebar-text">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="archivedAccountsTableBody">
+                            <!-- Content will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="mt-5 text-right border-t border-gray-300 pt-4">
+                    <button onclick="closeArchivedAccountsModal()" class="bg-gray-600 text-white border-none py-2 px-4 rounded-md cursor-pointer">Close</button>
+                </div>
+            </div>
+        </div>`;
+        document.body.insertAdjacentHTML('beforeend', modalHTML);
+    }
+
+    // Fetch archived accounts
+    fetch('../admin/accountManagement/fetch_archived_accounts.php?user_type=3')
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('archivedAccountsTableBody').innerHTML = data.tableContent;
+            document.getElementById('archivedAccountsModal').classList.remove('hidden');
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            Swal.fire({
+                title: 'Error!',
+                text: 'Failed to load archived accounts',
+                icon: 'error',
+                confirmButtonColor: '#d33'
+            });
+        })
+        .finally(() => {
+            viewArchivedBtn.innerHTML = originalBtnText;
+            viewArchivedBtn.disabled = false;
+        });
+}
+
+// Function to close the archived accounts modal
+function closeArchivedAccountsModal() {
+    document.getElementById('archivedAccountsModal').classList.add('hidden');
+}
+
+
+// Function to unarchive an account
+function unarchiveAccount(userId) {
+    Swal.fire({
+        title: 'Unarchive Account',
+        html: `Are you sure you want to restore this account?<br><br>
+               <span class="text-sm text-gray-500">The account will be active again.</span>`,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#28a745',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, restore it',
+        cancelButtonText: 'Cancel',
+        reverseButtons: true
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Show loading indicator
+            Swal.fire({
+                title: 'Restoring...',
+                html: 'Please wait while we restore the account',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            // Send AJAX request to unarchive the account
+            const formData = new FormData();
+            formData.append('id', userId);
+
+            fetch('../admin/accountManagement/unarchive_account.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        title: 'Restored!',
+                        text: 'Account has been successfully restored.',
+                        icon: 'success',
+                        confirmButtonColor: '#28a745',
+                        timer: 2000,
+                        timerProgressBar: true,
+                        willClose: () => {
+                            // Close the archived accounts modal
+                            closeArchivedAccountsModal();
+                            // Reload the page to reflect changes
+                            window.location.reload();
+                        }
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Error!',
+                        text: data.message || 'Failed to restore account',
+                        icon: 'error',
+                        confirmButtonColor: '#d33'
+                    });
+                }
+            })
+            .catch(error => {
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'An error occurred while restoring the account',
+                    icon: 'error',
+                    confirmButtonColor: '#d33'
+                });
+            });
+        }
+    });
+}
+    
+      
+    // Mode switching functionality
+    function switchMode(mode) {
+        if (mode === 'create') {
+            document.getElementById('createAccountSection').classList.remove('hidden');
+            document.getElementById('manageAccountSection').classList.add('hidden');
+            document.getElementById('createBtn').classList.add('bg-sidebar-accent', 'text-white');
+            document.getElementById('createBtn').classList.remove('bg-transparent', 'text-sidebar-text');
+            document.getElementById('manageBtn').classList.add('bg-transparent', 'text-sidebar-text');
+            document.getElementById('manageBtn').classList.remove('bg-sidebar-accent', 'text-white');
+            document.getElementById('searchContainer').classList.add('hidden');
+            document.getElementById('viewArchivedBtn').classList.add('hidden');
+        } else { // manage mode
+            document.getElementById('createAccountSection').classList.add('hidden');
+            document.getElementById('manageAccountSection').classList.remove('hidden');
+            document.getElementById('manageBtn').classList.add('bg-sidebar-accent', 'text-white');
+            document.getElementById('manageBtn').classList.remove('bg-transparent', 'text-sidebar-text');
+            document.getElementById('createBtn').classList.add('bg-transparent', 'text-sidebar-text');
+            document.getElementById('createBtn').classList.remove('bg-sidebar-accent', 'text-white');
+            document.getElementById('searchContainer').classList.remove('hidden');
+            document.getElementById('viewArchivedBtn').classList.remove('hidden');
+            fetchCustomerAccounts(); // Load data when manage section is shown
+        }
+    }
+    
+    
+    
+    // On page load, default to manage mode
+    document.addEventListener('DOMContentLoaded', function() {
+        switchMode('manage'); // Set manage as default view
+        fetchCustomerAccounts(); // Load initial data
+    });
+
+
   </script>
   <script src="sidebar.js"></script>
   <script src="tailwind.js"></script>
