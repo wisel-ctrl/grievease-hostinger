@@ -210,7 +210,7 @@ $servicesJson = json_encode($allServices);
            class="pl-10 pr-4 py-2 border border-sidebar-border rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent"
            oninput="validateSearchInput(this)">
     <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-    <div id="search-error" class="text-red-500 text-xs mt-1 hidden absolute">Cannot start with space or have consecutive spaces</div>
+    <div id="search-error" class="text-red-500 text-xs mt-1 hidden absolute"></div>
   </div>
 </div>
   </div>
