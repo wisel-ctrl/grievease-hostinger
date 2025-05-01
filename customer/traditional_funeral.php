@@ -1864,6 +1864,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const serviceId = packageCard.dataset.serviceId; // Get service_id
             console.log('service1: ', serviceId);
             
+            document.getElementById('serviceID').value = serviceId;    
+
             // Store package details in sessionStorage for later use
             sessionStorage.setItem('selectedPackageName', packageName);
             sessionStorage.setItem('selectedPackagePrice', packagePrice);
@@ -2032,6 +2034,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 alert('An error occurred while submitting the form: ' + error.message);
             });
         } else {
+            const serviceId = document.getElementById('serviceID').value;
+            console.log('Submitting with serviceId:', serviceId);
             // Gather all form data
             const packageData = {
             packageType: 'traditional',
@@ -2087,7 +2091,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             // Add individual fields for compatibility with existing PHP code
-            formData.append('serviceId', packageData.serviceId);
+            formData.append('serviceId', serviceId);
             formData.append('packageName', packageData.packageName);
             formData.append('packagePrice', packageData.packagePrice);
             formData.append('cremationSelected', packageData.cremationSelected);
