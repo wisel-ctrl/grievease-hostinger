@@ -727,6 +727,7 @@ if ($branchResult->num_rows > 0) {
   </div>
 </div>
 
+
 <!-- Add Inventory Modal -->
 <div id="addInventoryModal" class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto">
   <!-- Modal Backdrop -->
@@ -763,13 +764,68 @@ if ($branchResult->num_rows > 0) {
           </div>
         </div>
         
+        <!-- Category -->
+        <div>
+          <label for="category" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            Category <span class="text-red-500">*</span>
+          </label>
+          <div class="relative">
+            <select id="category" name="category" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+              <option value="" disabled selected>Select a Category</option>
+              <?php
+              // Include database connection
+              include '../db_connect.php';
+
+              // Fetch categories from the database
+              $sql = "SELECT category_id, category_name FROM inventory_category";
+              $result = $conn->query($sql);
+              
+              if ($result->num_rows > 0) {
+                  while ($row = $result->fetch_assoc()) {
+                      echo '<option value="' . $row['category_id'] . '">' . htmlspecialchars($row['category_name']) . '</option>';
+                  }
+              } else {
+                  echo '<option value="" disabled>No Categories Available</option>';
+              }
+              ?>
+            </select>
+          </div>
+        </div>
+
+        <!-- Branch -->
+        <div class="bg-gray-50 p-3 sm:p-4 rounded-lg border-l-4 border-gold">
+          <label class="block text-xs font-medium text-gray-700 mb-2">Branch <span class="text-red-500">*</span></label>
+          <div class="flex flex-wrap gap-3 sm:gap-4">
+            <?php
+            // Include database connection
+            include '../db_connect.php';
+
+            // Fetch branches from the database
+            $sql = "SELECT branch_id, branch_name FROM branch_tb";
+            $result = $conn->query($sql);
+            
+            if ($result->num_rows > 0) {
+                while ($row = $result->fetch_assoc()) {
+                    echo '<label class="flex items-center space-x-2 cursor-pointer">';
+                    echo '<input type="radio" name="branch" value="' . $row['branch_id'] . '" required class="hidden peer">';
+                    echo '<div class="w-5 h-5 rounded-full border-2 border-gold flex items-center justify-center peer-checked:bg-gold peer-checked:border-darkgold transition-colors"></div>';
+                    echo '<span class="text-gray-700 font-medium">' . htmlspecialchars($row['branch_name']) . '</span>';
+                    echo '</label>';
+                }
+            } else {
+                echo '<p class="text-gray-500">No branches available.</p>';
+            }
+            ?>
+          </div>
+        </div>
+        
         <!-- Quantity -->
         <div>
           <label for="quantity" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
             Quantity <span class="text-red-500">*</span>
           </label>
           <div class="relative">
-            <input type="number" id="quantity" name="quantity" min="1" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="Quantity" oninput="validateQuantity(this)">
+            <input type="number" id="quantity" name="quantity" min="1" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="Quantity">
           </div>
         </div>
         
@@ -782,11 +838,10 @@ if ($branchResult->num_rows > 0) {
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <span class="text-gray-500">₱</span>
             </div>
-            <input type="text" id="unitPrice" name="unitPrice" required 
+            <input type="number" id="unitPrice" name="unitPrice" step="0.01" min="0" required 
                    class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
                    placeholder="0.00"
                    oninput="validateUnitPrice(this)">
-            <div id="unitPriceError" class="text-red-500 text-xs mt-1 hidden">Invalid unit price</div>
           </div>
         </div>
         
@@ -797,7 +852,7 @@ if ($branchResult->num_rows > 0) {
           </label>
           <div class="relative">
             <div id="imagePreviewContainer" class="hidden mb-3">
-              <img id="imagePreview" src="#" alt="Preview" class="max-h-80 rounded-lg border border-gray-300"> <!-- Expanded Image Preview -->
+              <img id="imagePreview" src="#" alt="Preview" class="max-h-40 rounded-lg border border-gray-300">
             </div>
             <div class="flex items-center border border-gray-300 rounded-lg px-3 py-2 focus-within:ring-1 focus-within:ring-sidebar-accent focus-within:border-sidebar-accent transition-all duration-200">
               <input type="file" id="itemImage" name="itemImage" accept="image/*" 
@@ -849,23 +904,10 @@ function validateItemName(input) {
   }
 }
 
-// Quantity Validation
-function validateQuantity(input) {
-  if (input.value < 1) {
-    input.value = '';
-  }
-}
-
 // Unit Price Validation
 function validateUnitPrice(input) {
-  const errorElement = document.getElementById('unitPriceError');
-  const validPrice = /^[0-9]*\.?[0-9]*$/; // Only digits and dot
-  
-  if (!validPrice.test(input.value)) {
-    errorElement.classList.remove('hidden');
-    input.value = input.value.replace(/[^0-9.]/g, ''); // Remove invalid characters
-  } else {
-    errorElement.classList.add('hidden');
+  if (input.value < 0) {
+    input.value = '';
   }
 }
 
@@ -901,7 +943,6 @@ document.getElementById('addInventoryForm').addEventListener('submit', function(
   }
 });
 </script>
-
 
 <!-- Edit Inventory Modal -->
 
