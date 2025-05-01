@@ -99,7 +99,28 @@ if ($lastMonth > 0) {
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
- 
+ <style>
+    .filter-dropdown {
+    position: relative;
+}
+
+.filter-window {
+    position: absolute;
+    right: 0;
+    margin-top: 0.5rem;
+    width: 16rem;
+    z-index: 10;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.filter-option {
+    transition: all 0.2s ease;
+}
+
+.filter-option:hover {
+    background-color: #f3f4f6;
+}
+ </style>
 </head>
 <body class="flex bg-gray-50">
 
@@ -522,6 +543,22 @@ $categoryFilter = isset($_GET['category']) ? $_GET['category'] : '';
 $statusFilter = isset($_GET['status']) ? $_GET['status'] : '';
 $searchQuery = isset($_GET['search']) ? $_GET['search'] : '';
 
+// Calculate where clause based on filters
+$whereClause = "WHERE branch_id = ".$branchId." AND appearance = 'visible'";
+
+if (!empty($categoryFilter)) {
+    $whereClause .= " AND category = '".$conn->real_escape_string($categoryFilter)."'";
+}
+
+if (!empty($statusFilter)) {
+    $whereClause .= " AND status = '".$conn->real_escape_string($statusFilter)."'";
+}
+
+if (!empty($searchQuery)) {
+    $whereClause .= " AND (expense_name LIKE '%".$conn->real_escape_string($searchQuery)."%' 
+                    OR category LIKE '%".$conn->real_escape_string($searchQuery)."%')";
+}
+
 // Pagination setup
 $recordsPerPage = 10;
 $page = isset($_GET['page']) ? intval($_GET['page']) : 1;
@@ -606,7 +643,7 @@ if ($branchResult->num_rows > 0) {
                     </button>
                     
                     <!-- Filter Window -->
-                    <div id="filterWindow<?php echo $branchId; ?>" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-4">
+                    <div id="filterWindow<?php echo $branchId; ?>" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-4 filter-window">
                         <div class="space-y-4">
                             <!-- Category Filter -->
                             <div>
@@ -1522,6 +1559,114 @@ document.addEventListener('DOMContentLoaded', function() {
         alert('Export functionality would download:\n' + 
               JSON.stringify(data, null, 2));
     };
+});
+
+// Debounce function to limit how often search is performed
+function debounce(func, wait) {
+    let timeout;
+    return function(...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(this, args), wait);
+    };
+}
+
+// Search function
+function performSearch(branchId) {
+    const searchInput = document.getElementById(`searchInput${branchId}`) || 
+                       document.getElementById(`searchInput${branchId}_mobile`);
+    const searchTerm = searchInput.value.trim();
+    
+    // Get current filters
+    const categoryFilter = getCurrentFilter(branchId, 'category');
+    const statusFilter = getCurrentFilter(branchId, 'status');
+    
+    // Build URL with all parameters
+    let url = `expense_management.php?branch=${branchId}`;
+    if (searchTerm) url += `&search=${encodeURIComponent(searchTerm)}`;
+    if (categoryFilter) url += `&category=${encodeURIComponent(categoryFilter)}`;
+    if (statusFilter) url += `&status=${encodeURIComponent(statusFilter)}`;
+    
+    // Redirect to the new URL with all filters
+    window.location.href = url;
+}
+
+// Initialize debounced search
+const debouncedSearch = debounce(performSearch, 500);
+
+// Helper function to get current filter value
+function getCurrentFilter(branchId, filterType) {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get(filterType) || '';
+}
+
+// Toggle filter window visibility
+function toggleFilterWindow(branchId) {
+    const filterWindow = document.getElementById(`filterWindow${branchId}`);
+    filterWindow.classList.toggle('hidden');
+    
+    // Close other open filter windows
+    document.querySelectorAll('.filter-dropdown .filter-window').forEach(window => {
+        if (window.id !== `filterWindow${branchId}`) {
+            window.classList.add('hidden');
+        }
+    });
+}
+
+// Set filter and reload page
+function setFilter(branchId, filterType, filterValue) {
+    // Get current search term
+    const searchInput = document.getElementById(`searchInput${branchId}`) || 
+                       document.getElementById(`searchInput${branchId}_mobile`);
+    const searchTerm = searchInput ? searchInput.value.trim() : '';
+    
+    // Get other filter values
+    const currentCategory = filterType === 'category' ? filterValue : getCurrentFilter(branchId, 'category');
+    const currentStatus = filterType === 'status' ? filterValue : getCurrentFilter(branchId, 'status');
+    
+    // Build URL with all parameters
+    let url = `expense_management.php?branch=${branchId}`;
+    if (searchTerm) url += `&search=${encodeURIComponent(searchTerm)}`;
+    if (currentCategory) url += `&category=${encodeURIComponent(currentCategory)}`;
+    if (currentStatus) url += `&status=${encodeURIComponent(currentStatus)}`;
+    
+    // Redirect to the new URL with all filters
+    window.location.href = url;
+}
+
+// Change branch page
+function changeBranchPage(branchId, page) {
+    // Get current filters and search term
+    const searchTerm = getCurrentFilter(branchId, 'search');
+    const categoryFilter = getCurrentFilter(branchId, 'category');
+    const statusFilter = getCurrentFilter(branchId, 'status');
+    
+    // Build URL with all parameters
+    let url = `expense_management.php?branch=${branchId}&page_${branchId}=${page}`;
+    if (searchTerm) url += `&search=${encodeURIComponent(searchTerm)}`;
+    if (categoryFilter) url += `&category=${encodeURIComponent(categoryFilter)}`;
+    if (statusFilter) url += `&status=${encodeURIComponent(statusFilter)}`;
+    
+    // Redirect to the new URL with all filters
+    window.location.href = url;
+}
+
+// Update filter indicators on page load
+document.addEventListener('DOMContentLoaded', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    
+    // Check if we have any branch-specific filters
+    document.querySelectorAll('.branch-expense-container').forEach(container => {
+        const branchId = container.dataset.branchId;
+        
+        // Check if this branch has any active filters
+        const hasCategoryFilter = urlParams.get('category') && urlParams.get('branch') == branchId;
+        const hasStatusFilter = urlParams.get('status') && urlParams.get('branch') == branchId;
+        
+        if (hasCategoryFilter || hasStatusFilter) {
+            const indicator = document.getElementById(`filterIndicator${branchId}`);
+            if (indicator) indicator.classList.remove('hidden');
+        }
+    });
 });
 </script>
   <script src="script.js"></script>
