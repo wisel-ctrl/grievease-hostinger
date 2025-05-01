@@ -1899,66 +1899,62 @@ document.addEventListener('DOMContentLoaded', function() {
         if (document.getElementById('traditionalSelectedPackageName').value === 'Custom Memorial Package') {
             e.preventDefault();
             const totalPackagePrice = parseFloat(document.getElementById('traditionalSelectedPackagePrice').value);
-            // Gather all form data
-            const customBookingData = {
-                packageType: 'custom',
-                casket: document.getElementById('casketID').value,
-                flowerArrangement: document.getElementById('flowerDesign').value,
-                additionalServices: document.getElementById('inclusions').value,
-                branchId: document.getElementById('branchID').value,
-                customerId: document.getElementById('customerID').value,
-                notes: document.getElementById('customNotes').value,
-                deceasedInfo: {
-                    firstName: document.getElementById('traditionalDeceasedFirstName').value,
-                    middleName: document.getElementById('traditionalDeceasedMiddleName').value,
-                    lastName: document.getElementById('traditionalDeceasedLastName').value,
-                    suffix: document.getElementById('traditionalDeceasedSuffix').value,
-                    dateOfBirth: document.getElementById('traditionalDateOfBirth').value,
-                    dateOfDeath: document.getElementById('traditionalDateOfDeath').value,
-                    dateOfBurial: document.getElementById('traditionalDateOfBurial').value,
-                    address: document.getElementById('traditionalDeceasedAddress').value
-                },
-                documents: {
-                    deathCertificate: document.getElementById('traditionalDeathCertificate').files[0]?.name || null,
-                    paymentReceipt: document.getElementById('traditionalGcashReceipt').files[0]?.name || null,
-                    referenceNumber: document.getElementById('traditionalReferenceNumber').value
-                },
-                cremationSelected: document.getElementById('cremationCheckbox').checked,
-                packageTotal: totalPackagePrice,
-                downpayment: Math.ceil(totalPackagePrice * 0.3)
-            };
-
             
-
-            // Log all the data to console
-            console.log('Custom Package Booking Data:', customBookingData);
-            console.log('--- Detailed Breakdown ---');
-            console.log('Casket:', customBookingData.casket);
-            console.log('Flower Arrangement:', customBookingData.flowerArrangement || 'None selected');
-            console.log('Additional Services:', customBookingData.additionalServices.length > 0 ? 
-                customBookingData.additionalServices : 'None selected');
-            console.log('Notes:', customBookingData.notes || 'No notes');
-            console.log('Deceased Information:', customBookingData.deceasedInfo);
-            console.log('Documents:', customBookingData.documents);
-            console.log('Cremation Selected:', customBookingData.cremationSelected);
-            console.log('Package Total:', customBookingData.packageTotal);
-            console.log('Downpayment (30%):', customBookingData.downpayment);
-            console.log('Flower Design:', document.getElementById('flowerDesign').value);
-            console.log('Inclusions:', document.getElementById('inclusions').value);
-            console.log('Notes:', document.getElementById('notes').value);
+            // Create FormData object for handling files
+            const formData = new FormData();
             
-            // Here you would normally submit to PHP handler
-            // For now we'll just show an alert
+            // Add all the basic form fields
+            formData.append('packageType', 'custom');
+            formData.append('casket', document.getElementById('casketID').value);
+            formData.append('flowerArrangement', document.getElementById('flowerDesign').value);
+            formData.append('additionalServices', document.getElementById('inclusions').value);
+            formData.append('branchId', document.getElementById('branchID').value);
+            formData.append('customerId', document.getElementById('customerID').value);
+            formData.append('notes', document.getElementById('customNotes').value); // Make sure this ID exists
+            
+            // Deceased info
+            formData.append('deceasedFirstName', document.getElementById('traditionalDeceasedFirstName').value);
+            formData.append('deceasedMiddleName', document.getElementById('traditionalDeceasedMiddleName').value);
+            formData.append('deceasedLastName', document.getElementById('traditionalDeceasedLastName').value);
+            formData.append('deceasedSuffix', document.getElementById('traditionalDeceasedSuffix').value);
+            formData.append('dateOfBirth', document.getElementById('traditionalDateOfBirth').value);
+            formData.append('dateOfDeath', document.getElementById('traditionalDateOfDeath').value);
+            formData.append('dateOfBurial', document.getElementById('traditionalDateOfBurial').value);
+            formData.append('deceasedAddress', document.getElementById('traditionalDeceasedAddress').value);
+            
+            // Document files - add the actual files
+            if (document.getElementById('traditionalDeathCertificate').files[0]) {
+                formData.append('deathCertificate', document.getElementById('traditionalDeathCertificate').files[0]);
+            }
+            
+            if (document.getElementById('traditionalGcashReceipt').files[0]) {
+                formData.append('paymentReceipt', document.getElementById('traditionalGcashReceipt').files[0]);
+            }
+            
+            formData.append('referenceNumber', document.getElementById('traditionalReferenceNumber').value);
+            formData.append('cremationSelected', document.getElementById('cremationCheckbox').checked ? 'yes' : 'no');
+            formData.append('packageTotal', totalPackagePrice);
+            formData.append('downpayment', Math.ceil(totalPackagePrice * 0.3));
+
+            // For debugging - log all form data
+            console.log('Submitting form data:');
+            for (let [key, value] of formData.entries()) {
+                console.log(key + ': ' + value);
+            }
+            
             // Send data to PHP handler
             fetch('booking/insert_custom_booking.php', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(customBookingData)
+                body: formData // No need to set Content-Type, fetch sets it automatically with boundary for FormData
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok: ' + response.statusText);
+                }
+                return response.json();
+            })
             .then(data => {
+                console.log('Response:', data);
                 if (data.status === 'success') {
                     alert('Custom package booking created successfully! Booking ID: ' + data.bookingId);
                     closeAllModals();
@@ -1969,8 +1965,9 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .catch((error) => {
                 console.error('Error:', error);
-                alert('An error occurred while submitting the form.');
+                alert('An error occurred while submitting the form: ' + error.message);
             });
+        }
         } else {
             // Gather all form data
         const packageData = {
