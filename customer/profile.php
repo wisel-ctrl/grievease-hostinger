@@ -2070,10 +2070,6 @@ document.addEventListener('DOMContentLoaded', function() {
           <i class="fas fa-print mr-2"></i>
           Print Details
         </button>
-        <button id="contact-support-btn" class="w-full sm:w-auto px-6 py-3 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg shadow-md transition-all duration-300 flex items-center justify-center">
-          <i class="fas fa-headset mr-2"></i>
-          Contact Support
-        </button>
       </div>
     </div>
   </div>
