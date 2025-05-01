@@ -686,26 +686,34 @@ require_once '../db_connect.php'; // Database connection
 
 <!-- Carousel JavaScript - Updated for better responsiveness -->
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const carouselContainer = document.getElementById('carousel-container');
-        const prevBtn = document.getElementById('prev-btn');
-        const nextBtn = document.getElementById('next-btn');
-        const dotsContainer = document.getElementById('carousel-dots');
-        
-        let currentIndex = 0;
-        const itemCount = 4; // Total number of items (3 packages + view all)
-        const itemsPerView = window.innerWidth >= 768 ? 3 : 1; // Show 3 items on desktop, 1 on mobile
-        
-        // Calculate number of dots needed (total items minus items per view plus 1)
-        const dotCount = itemCount - itemsPerView + 1;
-        
-        // Clear existing dots
+  document.addEventListener('DOMContentLoaded', function() {
+    const carouselContainer = document.getElementById('carousel-container');
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const dotsContainer = document.getElementById('carousel-dots');
+    
+    let currentIndex = 0;
+    const itemCount = 4; // Total items (3 packages + view all)
+    let itemsPerView = window.innerWidth >= 768 ? 3 : 1; // 3 on desktop, 1 on mobile
+    
+    // Function to calculate dots needed
+    function calculateDots() {
+        // On mobile (1 item view), we need 4 dots (one per item)
+        if (window.innerWidth < 768) {
+            return itemCount;
+        }
+        // On desktop (3 items view), we need 2 dots (4 items - 3 per view + 1)
+        return itemCount - itemsPerView + 1;
+    }
+    
+    // Function to create/update dots
+    function updateDots() {
+        const dotCount = calculateDots();
         dotsContainer.innerHTML = '';
         
-        // Create correct number of dots
         for (let i = 0; i < dotCount; i++) {
             const dot = document.createElement('button');
-            dot.className = `w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-navy ${i === 0 ? 'opacity-100' : 'opacity-50'}`;
+            dot.className = `w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-navy ${i === currentIndex ? 'opacity-100' : 'opacity-50'}`;
             dot.dataset.index = i;
             dotsContainer.appendChild(dot);
             
@@ -714,104 +722,96 @@ require_once '../db_connect.php'; // Database connection
                 updateCarousel();
             });
         }
-        
-        const dots = document.querySelectorAll('#carousel-dots button');
-        
-        // Function to update carousel position
-        function updateCarousel() {
-            const translateValue = currentIndex * -(100 / itemsPerView);
-            carouselContainer.style.transform = `translateX(${translateValue}%)`;
-            
-            // Update dots
-            dots.forEach((dot, index) => {
-                dot.classList.toggle('opacity-100', index === currentIndex);
-                dot.classList.toggle('opacity-50', index !== currentIndex);
-            });
-            
-            // Show/hide navigation buttons
-            prevBtn.style.display = currentIndex === 0 ? 'none' : 'flex';
-            nextBtn.style.display = currentIndex >= dotCount - 1 ? 'none' : 'flex';
+    }
+    
+    // Function to get max index based on view
+    function getMaxIndex() {
+        // On mobile, can scroll through all items
+        if (window.innerWidth < 768) {
+            return itemCount - 1;
         }
+        // On desktop, limited by items per view
+        return itemCount - itemsPerView;
+    }
+    
+    // Main update function
+    function updateCarousel() {
+        const translateValue = currentIndex * -(100 / itemsPerView);
+        carouselContainer.style.transform = `translateX(${translateValue}%)`;
         
-        // Rest of your existing carousel code...
-        nextBtn.addEventListener('click', function() {
-            if (currentIndex < dotCount - 1) {
-                currentIndex++;
-                updateCarousel();
-            }
+        // Update dots
+        const dots = document.querySelectorAll('#carousel-dots button');
+        dots.forEach((dot, index) => {
+            dot.classList.toggle('opacity-100', index === currentIndex);
+            dot.classList.toggle('opacity-50', index !== currentIndex);
         });
         
-        prevBtn.addEventListener('click', function() {
-            if (currentIndex > 0) {
-                currentIndex--;
-                updateCarousel();
-            }
-        });
-        
-        // Handle window resize
-        window.addEventListener('resize', function() {
-            const newItemsPerView = window.innerWidth >= 768 ? 3 : 1;
-            const newDotCount = itemCount - newItemsPerView + 1;
-            
-            if (newItemsPerView !== itemsPerView) {
-                // Recreate dots if needed
-                if (newDotCount !== dotCount) {
-                    dotsContainer.innerHTML = '';
-                    for (let i = 0; i < newDotCount; i++) {
-                        const dot = document.createElement('button');
-                        dot.className = `w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-navy ${i === currentIndex ? 'opacity-100' : 'opacity-50'}`;
-                        dot.dataset.index = i;
-                        dotsContainer.appendChild(dot);
-                        
-                        dot.addEventListener('click', () => {
-                            currentIndex = i;
-                            updateCarousel();
-                        });
-                    }
-                }
-                
-                // Adjust currentIndex if it would be out of bounds
-                if (currentIndex > newDotCount - 1) {
-                    currentIndex = newDotCount - 1;
-                }
-                
-                updateCarousel();
-            }
-        });
-        
-        // Initial setup
-        updateCarousel();
-        
-        // Add touch swipe support for mobile
-        let touchStartX = 0;
-        let touchEndX = 0;
-        
-        carouselContainer.addEventListener('touchstart', function(e) {
-            touchStartX = e.changedTouches[0].screenX;
-        }, false);
-        
-        carouselContainer.addEventListener('touchend', function(e) {
-            touchEndX = e.changedTouches[0].screenX;
-            handleSwipe();
-        }, false);
-        
-        function handleSwipe() {
-            const swipeThreshold = 50;
-            if (touchEndX < touchStartX - swipeThreshold) {
-                // Swipe left - go next
-                if (currentIndex < maxIndex) {
-                    currentIndex++;
-                    updateCarousel();
-                }
-            } else if (touchEndX > touchStartX + swipeThreshold) {
-                // Swipe right - go back
-                if (currentIndex > 0) {
-                    currentIndex--;
-                    updateCarousel();
-                }
-            }
+        // Update navigation buttons
+        prevBtn.style.display = currentIndex === 0 ? 'none' : 'flex';
+        nextBtn.style.display = currentIndex >= getMaxIndex() ? 'none' : 'flex';
+    }
+    
+    // Navigation handlers
+    nextBtn.addEventListener('click', function() {
+        if (currentIndex < getMaxIndex()) {
+            currentIndex++;
+            updateCarousel();
         }
     });
+    
+    prevBtn.addEventListener('click', function() {
+        if (currentIndex > 0) {
+            currentIndex--;
+            updateCarousel();
+        }
+    });
+    
+    // Handle window resize
+    window.addEventListener('resize', function() {
+        const newItemsPerView = window.innerWidth >= 768 ? 3 : 1;
+        
+        if (newItemsPerView !== itemsPerView) {
+            itemsPerView = newItemsPerView;
+            updateDots();
+            
+            // Adjust currentIndex if needed
+            const newMaxIndex = getMaxIndex();
+            if (currentIndex > newMaxIndex) {
+                currentIndex = newMaxIndex;
+            }
+            
+            updateCarousel();
+        }
+    });
+    
+    // Initialize
+    updateDots();
+    updateCarousel();
+    
+    // Touch/swipe handling (existing code)
+    let touchStartX = 0;
+    let touchEndX = 0;
+    
+    carouselContainer.addEventListener('touchstart', function(e) {
+        touchStartX = e.changedTouches[0].screenX;
+    }, false);
+    
+    carouselContainer.addEventListener('touchend', function(e) {
+        touchEndX = e.changedTouches[0].screenX;
+        handleSwipe();
+    }, false);
+    
+    function handleSwipe() {
+        const swipeThreshold = 50;
+        if (touchEndX < touchStartX - swipeThreshold && currentIndex < getMaxIndex()) {
+            currentIndex++;
+            updateCarousel();
+        } else if (touchEndX > touchStartX + swipeThreshold && currentIndex > 0) {
+            currentIndex--;
+            updateCarousel();
+        }
+    }
+});
 </script>
 
     <!-- FAQ Section -->
