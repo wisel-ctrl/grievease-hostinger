@@ -1863,7 +1863,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const packageImage = packageCard.dataset.image || '';
             const serviceId = packageCard.dataset.serviceId; // Get service_id
             console.log('service1: ', packageCard.dataset.serviceId);
-            console.log('service1: ', packageCard.dataset.service);
+            console.log('service1: ', <?php echo htmlspecialchars($package2['service_id']); ?>);
             
             
             document.getElementById('serviceID').value = serviceId;    
