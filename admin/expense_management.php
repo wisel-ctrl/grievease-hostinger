@@ -583,39 +583,91 @@ if ($branchResult->num_rows > 0) {
             </div>
             
             <!-- Controls for big screens - aligned right -->
-<div class="hidden lg:flex items-center gap-3">
-    <!-- Search Input -->
-    <div class="relative">
-        <input type="text" id="searchInput" 
-               placeholder="Search expenses..." 
-               class="pl-8 pr-3 py-2 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent"
-               oninput="debouncedSearch()">
-        <i class="fas fa-search absolute left-2.5 top-3 text-gray-400"></i>
-    </div>
+            <div class="hidden lg:flex items-center gap-3">
+                <!-- Search Input -->
+                <div class="relative">
+                    <input type="text" id="searchInput<?php echo $branchId; ?>" 
+                           placeholder="Search expenses..." 
+                           value="<?php echo htmlspecialchars($searchQuery); ?>"
+                           class="pl-8 pr-3 py-2 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent"
+                           oninput="debouncedSearch(<?php echo $branchId; ?>)">
+                    <i class="fas fa-search absolute left-2.5 top-3 text-gray-400"></i>
+                </div>
 
-    <!-- Status Dropdown Acting as Filter -->
-    <select id="statusFilter" class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
-        <option value="">All Status</option>
-        <option value="paid">Paid</option>
-        <option value="to be paid">To Be Paid</option>
-    </select>
+                <!-- Filter Dropdown -->
+                <div class="relative filter-dropdown">
+                    <button id="filterToggle<?php echo $branchId; ?>" class="px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover"
+                            onclick="toggleFilterWindow(<?php echo $branchId; ?>)">
+                        <i class="fas fa-filter text-sidebar-accent"></i>
+                        <span>Filters</span>
+                        <?php if($categoryFilter || $statusFilter): ?>
+                            <span class="h-2 w-2 bg-sidebar-accent rounded-full"></span>
+                        <?php endif; ?>
+                    </button>
+                    
+                    <!-- Filter Window -->
+                    <div id="filterWindow<?php echo $branchId; ?>" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-4">
+                        <div class="space-y-4">
+                            <!-- Category Filter -->
+                            <div>
+                                <h5 class="text-sm font-medium text-sidebar-text mb-2">Category</h5>
+                                <div class="space-y-1">
+                                    <div class="flex items-center cursor-pointer" onclick="setFilter(<?php echo $branchId; ?>, 'category', '')">
+                                        <span class="filter-option <?php echo !$categoryFilter ? 'bg-sidebar-accent text-white' : 'hover:bg-sidebar-hover'; ?> px-2 py-1 rounded text-sm w-full">
+                                            All Categories
+                                        </span>
+                                    </div>
+                                    <?php 
+                                    // Fetch unique expense categories for this branch
+                                    $categoriesQuery = "SELECT DISTINCT category FROM expense_tb WHERE branch_id = $branchId AND appearance = 'visible'";
+                                    $categoriesResult = $conn->query($categoriesQuery);
+                                    
+                                    while($category = $categoriesResult->fetch_assoc()): 
+                                        $isActive = $categoryFilter === $category['category'];
+                                    ?>
+                                        <div class="flex items-center cursor-pointer" onclick="setFilter(<?php echo $branchId; ?>, 'category', '<?php echo urlencode($category['category']); ?>')">
+                                            <span class="filter-option <?php echo $isActive ? 'bg-sidebar-accent text-white' : 'hover:bg-sidebar-hover'; ?> px-2 py-1 rounded text-sm w-full">
+                                                <?php echo htmlspecialchars($category['category']); ?>
+                                            </span>
+                                        </div>
+                                    <?php endwhile; ?>
+                                </div>
+                            </div>
+                            
+                            <!-- Status Filter -->
+                            <div>
+                                <h5 class="text-sm font-medium text-sidebar-text mb-2">Status</h5>
+                                <div class="space-y-1">
+                                    <div class="flex items-center cursor-pointer" onclick="setFilter(<?php echo $branchId; ?>, 'status', '')">
+                                        <span class="filter-option <?php echo !$statusFilter ? 'bg-sidebar-accent text-white' : 'hover:bg-sidebar-hover'; ?> px-2 py-1 rounded text-sm w-full">
+                                            All Statuses
+                                        </span>
+                                    </div>
+                                    
+                                    <?php 
+                                    // Expense statuses
+                                    $statuses = ['paid', 'to be paid'];
+                                    
+                                    foreach($statuses as $status): 
+                                        $isActive = $statusFilter === $status;
+                                    ?>
+                                        <div class="flex items-center cursor-pointer" onclick="setFilter(<?php echo $branchId; ?>, 'status', '<?php echo urlencode($status); ?>')">
+                                            <span class="filter-option <?php echo $isActive ? 'bg-sidebar-accent text-white' : 'hover:bg-sidebar-hover'; ?> px-2 py-1 rounded text-sm w-full">
+                                                <?php echo ucfirst($status); ?>
+                                            </span>
+                                        </div>
+                                    <?php endforeach; ?>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-    <!-- Category Filter -->
-    <select id="categoryFilter" class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
-        <option value="">All Categories</option>
-        <option value="Supplies">Supplies</option>
-        <option value="Utilities">Utilities</option>
-        <option value="Salaries">Salaries</option>
-        <option value="Maintenance">Maintenance</option>
-        <option value="Other">Other</option>
-    </select>
-
-    <!-- Archive Button -->
-    <button class="px-4 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover whitespace-nowrap">
-        <i class="fas fa-archive text-sidebar-accent"></i>
-        <span>Archive</span>
-    </button>
-</div>
+                <!-- Archive Button -->
+                <button class="px-4 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover whitespace-nowrap">
+                    <i class="fas fa-archive text-sidebar-accent"></i>
+                    <span>Archive</span>
+                </button>
 
                 <!-- Add Expense Button -->
                 <button class="px-4 py-2 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm whitespace-nowrap" 
@@ -673,45 +725,45 @@ if ($branchResult->num_rows > 0) {
         <!-- Responsive Table with improved spacing and horizontal scroll for small screens -->
         <div class="min-w-full">
             <table class="w-full">
-            <thead>
-    <tr class="bg-gray-50 border-b border-sidebar-border">
-        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(0)">
-            <div class="flex items-center gap-1.5">
-                <i class="fas fa-hashtag text-sidebar-accent"></i> ID 
-            </div>
-        </th>
-        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(1)">
-            <div class="flex items-center gap-1.5">
-                <i class="fa-solid fa-file-invoice text-sidebar-accent"></i> Expense Name 
-            </div>
-        </th>
-        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(2)">
-            <div class="flex items-center gap-1.5">
-                <i class="fas fa-th-list text-sidebar-accent"></i> Category 
-            </div>
-        </th>
-        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(3)">
-            <div class="flex items-center gap-1.5">
-                <i class="fas fa-peso-sign text-sidebar-accent"></i> Amount 
-            </div>
-        </th>
-        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(4)">
-            <div class="flex items-center gap-1.5">
-                <i class="fas fa-calendar-alt text-sidebar-accent"></i> Date 
-            </div>
-        </th>
-        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(5)">
-            <div class="flex items-center gap-1.5">
-                <i class="fas fa-check-circle text-sidebar-accent"></i> Status 
-            </div>
-        </th>
-        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text whitespace-nowrap">
-            <div class="flex items-center gap-1.5">
-                <i class="fas fa-cogs text-sidebar-accent"></i> Actions
-            </div>
-        </th>
-    </tr>
-</thead>
+                <thead>
+                    <tr class="bg-gray-50 border-b border-sidebar-border">
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(<?php echo $branchId; ?>, 0)">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fas fa-hashtag text-sidebar-accent"></i> ID 
+                            </div>
+                        </th>
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(<?php echo $branchId; ?>, 1)">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fa-solid fa-file-invoice text-sidebar-accent"></i> Expense Name 
+                            </div>
+                        </th>
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(<?php echo $branchId; ?>, 2)">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fas fa-th-list text-sidebar-accent"></i> Category 
+                            </div>
+                        </th>
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(<?php echo $branchId; ?>, 3)">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fas fa-peso-sign text-sidebar-accent"></i> Amount 
+                            </div>
+                        </th>
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(<?php echo $branchId; ?>, 4)">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fas fa-calendar-alt text-sidebar-accent"></i> Date 
+                            </div>
+                        </th>
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(<?php echo $branchId; ?>, 5)">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fas fa-check-circle text-sidebar-accent"></i> Status 
+                            </div>
+                        </th>
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text whitespace-nowrap">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fas fa-cogs text-sidebar-accent"></i> Actions
+                            </div>
+                        </th>
+                    </tr>
+                </thead>
                 <tbody>
                     <?php if ($expenseResult->num_rows > 0): ?>
                         <?php while($expense = $expenseResult->fetch_assoc()): ?>
@@ -774,21 +826,25 @@ if ($branchResult->num_rows > 0) {
     </div>
     
     <!-- Sticky Pagination Footer with improved spacing -->
-<div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
-    <div id="paginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
-        Showing <?php echo ($branchOffset + 1) . ' - ' . min($branchOffset + $recordsPerPage, $totalBranchExpenses); ?> 
-        of <?php echo $totalBranchExpenses; ?> expenses
-    </div>
-    <div class="flex space-x-2">
-        <a href="<?php echo '?page=' . max(1, $branchPage - 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo $branchPage <= 1 ? 'opacity-50 pointer-events-none' : ''; ?>">&laquo;</a>
-        
-        <?php for ($i = 1; $i <= $totalBranchPages; $i++): ?>
-            <a href="<?php echo '?page=' . $i; ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm <?php echo $i == $branchPage ? 'bg-sidebar-accent text-white' : 'hover:bg-sidebar-hover'; ?>">
-                <?php echo $i; ?>
-            </a>
-        <?php endfor; ?>
-        
-        <a href="<?php echo '?page=' . min($totalBranchPages, $branchPage + 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo $branchPage >= $totalBranchPages ? 'opacity-50 pointer-events-none' : ''; ?>">&raquo;</a>
+    <div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div class="text-sm text-gray-500 text-center sm:text-left">
+            Showing <?php echo ($branchOffset + 1) . ' - ' . min($branchOffset + $recordsPerPage, $totalBranchExpenses); ?> 
+            of <?php echo $totalBranchExpenses; ?> expenses
+        </div>
+        <div class="flex space-x-2">
+            <a href="#" onclick="changeBranchPage(<?php echo $branchId; ?>, <?php echo $branchPage - 1; ?>); return false;" 
+               class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo $branchPage <= 1 ? 'opacity-50 pointer-events-none' : ''; ?>">&laquo;</a>
+            
+            <?php for ($i = 1; $i <= $totalBranchPages; $i++): ?>
+                <a href="#" onclick="changeBranchPage(<?php echo $branchId; ?>, <?php echo $i; ?>); return false;" 
+                   class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm <?php echo $i == $branchPage ? 'bg-sidebar-accent text-white' : 'hover:bg-sidebar-hover'; ?>">
+                    <?php echo $i; ?>
+                </a>
+            <?php endfor; ?>
+            
+            <a href="#" onclick="changeBranchPage(<?php echo $branchId; ?>, <?php echo $branchPage + 1; ?>); return false;" 
+               class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo $branchPage >= $totalBranchPages ? 'opacity-50 pointer-events-none' : ''; ?>">&raquo;</a>
+        </div>
     </div>
 </div>
 
@@ -1467,131 +1523,6 @@ document.addEventListener('DOMContentLoaded', function() {
               JSON.stringify(data, null, 2));
     };
 });
-</script>
-
-<script>
-// Add this to your existing JavaScript
-document.addEventListener('DOMContentLoaded', function() {
-    // Search functionality
-    function debouncedSearch(branchId) {
-        clearTimeout(window.searchTimer);
-        window.searchTimer = setTimeout(() => {
-            applyFilters(branchId);
-        }, 300);
-    }
-
-    // Filter functionality
-    function toggleFilterWindow(branchId) {
-        const filterWindow = document.getElementById(`filterWindow${branchId}`);
-        filterWindow.classList.toggle('hidden');
-        
-        // Close when clicking outside
-        document.addEventListener('click', function closeOnClickOutside(e) {
-            if (!e.target.closest(`#filterWindow${branchId}`) {
-                filterWindow.classList.add('hidden');
-                document.removeEventListener('click', closeOnClickOutside);
-            }
-        });
-    }
-
-    function setFilter(branchId, type, value) {
-        // Update the UI to show active filters
-        if (value) {
-            document.getElementById(`filterIndicator${branchId}`).classList.remove('hidden');
-        } else if (type === 'category' && !document.querySelector(`input[name="status"]:checked`) ||
-                   type === 'status' && !document.querySelector(`input[name="category"]:checked`)) {
-            document.getElementById(`filterIndicator${branchId}`).classList.add('hidden');
-        }
-        
-        applyFilters(branchId);
-    }
-
-    function applyFilters(branchId) {
-        const searchValue = document.getElementById(`searchInput${branchId}`).value.toLowerCase();
-        const categoryFilter = document.querySelector(`input[name="category"]:checked`)?.value || '';
-        const statusFilter = document.querySelector(`input[name="status"]:checked`)?.value || '';
-        
-        const rows = document.querySelectorAll(`#tableContainer${branchId} tbody tr`);
-        
-        rows.forEach(row => {
-            const nameCell = row.cells[1]?.textContent?.toLowerCase() || '';
-            const categoryCell = row.cells[2]?.textContent?.toLowerCase() || '';
-            const statusCell = row.cells[5]?.textContent?.toLowerCase() || '';
-            
-            const matchesSearch = nameCell.includes(searchValue);
-            const matchesCategory = !categoryFilter || categoryCell.includes(categoryFilter.toLowerCase());
-            const matchesStatus = !statusFilter || statusCell.includes(statusFilter.toLowerCase());
-            
-            row.style.display = (matchesSearch && matchesCategory && matchesStatus) ? '' : 'none';
-        });
-    }
-
-    // Pagination functionality
-    function changeBranchPage(branchId, page) {
-        const url = new URL(window.location.href);
-        url.searchParams.set(`page_${branchId}`, page);
-        window.location.href = url.toString();
-    }
-
-    // Initialize filters from URL parameters
-    function initFiltersFromUrl() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const categoryFilter = urlParams.get('category');
-        const statusFilter = urlParams.get('status');
-        const searchQuery = urlParams.get('search');
-        
-        if (categoryFilter) {
-            document.querySelector(`input[name="category"][value="${categoryFilter}"]`).checked = true;
-        }
-        if (statusFilter) {
-            document.querySelector(`input[name="status"][value="${statusFilter}"]`).checked = true;
-        }
-        if (searchQuery) {
-            document.getElementById('searchInput').value = searchQuery;
-        }
-    }
-
-    initFiltersFromUrl();
-});
-
-function sortTable(columnIndex) {
-    const table = document.querySelector('table');
-    const tbody = table.querySelector('tbody');
-    const rows = Array.from(tbody.querySelectorAll('tr'));
-    const isAscending = table.getAttribute('data-sort-direction') === 'asc';
-    
-    rows.sort((a, b) => {
-        const aValue = a.cells[columnIndex].textContent.trim();
-        const bValue = b.cells[columnIndex].textContent.trim();
-        
-        // Special handling for numeric and date columns
-        if (columnIndex === 0 || columnIndex === 3) { // ID or Amount columns
-            const aNum = parseFloat(aValue.replace(/[^0-9.-]/g, ''));
-            const bNum = parseFloat(bValue.replace(/[^0-9.-]/g, ''));
-            return isAscending ? aNum - bNum : bNum - aNum;
-        } else if (columnIndex === 4) { // Date column
-            return isAscending 
-                ? new Date(aValue) - new Date(bValue)
-                : new Date(bValue) - new Date(aValue);
-        } else {
-            // Default text comparison
-            return isAscending 
-                ? aValue.localeCompare(bValue)
-                : bValue.localeCompare(aValue);
-        }
-    });
-    
-    // Remove all existing rows
-    while (tbody.firstChild) {
-        tbody.removeChild(tbody.firstChild);
-    }
-    
-    // Add sorted rows
-    rows.forEach(row => tbody.appendChild(row));
-    
-    // Update sort direction for next click
-    table.setAttribute('data-sort-direction', isAscending ? 'desc' : 'asc');
-}
 </script>
   <script src="script.js"></script>
   <script src="tailwind.js"></script>
