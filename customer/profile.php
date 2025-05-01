@@ -4135,10 +4135,7 @@ document.addEventListener('DOMContentLoaded', function() {
     preventSpacesInPasswordFields();
 });
 
-field.addEventListener('paste', function(e) {
-    e.preventDefault();
-    showPasswordError('Pasting is not allowed in password fields');
-});
+
 </script>
 
 
