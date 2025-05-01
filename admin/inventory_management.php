@@ -951,6 +951,7 @@ document.getElementById('addInventoryForm').addEventListener('submit', function(
 </script>
 
 <!-- Edit Inventory Modal -->
+
 <div id="editInventoryModal" class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto">
   <!-- Modal Backdrop -->
   <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
@@ -1038,7 +1039,7 @@ document.getElementById('addInventoryForm').addEventListener('submit', function(
         <!-- Current Image Preview -->
         <div class="bg-navy p-3 sm:p-4 rounded-lg">
           <div class="flex flex-col items-center space-y-2 sm:space-y-3">
-            <div class="w-full h-48 bg-center bg-cover rounded-lg shadow-md" style="background-image: url('<?php echo $inventory_img; ?>');"></div>
+            <div class="w-full h-32 bg-center bg-cover rounded-lg shadow-md" style="background-image: url('<?php echo $inventory_img; ?>');"></div>
             <span class="text-xs sm:text-sm text-gray-600">Current Image</span>
           </div>
         </div>
@@ -1077,25 +1078,6 @@ document.getElementById('addInventoryForm').addEventListener('submit', function(
     </div>
   </div>
 </div>
-
-<script>
-document.getElementById('editItemName').addEventListener('input', function() {
-    this.value = this.value.replace(/^\s+/, '');
-    this.value = this.value.charAt(0).toUpperCase() + this.value.slice(1);
-    this.value = this.value.replace(/\s+/g, ' ');
-});
-
-document.getElementById('editQuantity').addEventListener('input', function() {
-    if (this.value < 0) {
-        this.value = 0;
-    }
-});
-
-document.getElementById('editUnitPrice').addEventListener('input', function() {
-    this.value = this.value.replace(/[^0-9.]/g, '');
-});
-</script>
-
 
 <!-- Archived Items Modal -->
 <div class="fixed inset-0 z-50 flex items-center justify-center hidden" id="archivedItemsModal">
