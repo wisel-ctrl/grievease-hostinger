@@ -4074,7 +4074,6 @@ document.addEventListener('DOMContentLoaded', function() {
     setupPasswordFormValidation();
 });
 
-// Add this to your existing JavaScript code
 function preventSpacesInPasswordFields() {
     const passwordFields = [
         'current-password',
@@ -4089,15 +4088,18 @@ function preventSpacesInPasswordFields() {
             field.addEventListener('keydown', function(e) {
                 if (e.key === ' ') {
                     e.preventDefault();
+                    showPasswordError('Password cannot contain spaces');
                 }
             });
 
-            // Clean up if spaces are pasted
+            // Clean up if spaces are pasted or somehow entered
             field.addEventListener('input', function() {
-                if (this.value.includes(' ')) {
-                    this.value = this.value.replace(/\s/g, '');
-                    // Show a warning if you want
-                    showPasswordError(`${fieldId.replace('-', ' ')} cannot contain spaces`);
+                const hadSpaces = this.value.includes(' ');
+                this.value = this.value.replace(/\s/g, '');
+                
+                // Only show error if we actually removed spaces (not on backspace)
+                if (hadSpaces && this.value.length > 0) {
+                    showPasswordError('Password cannot contain spaces');
                 }
             });
 
@@ -4105,14 +4107,12 @@ function preventSpacesInPasswordFields() {
             field.addEventListener('blur', function() {
                 if (this.value.includes(' ')) {
                     this.value = this.value.replace(/\s/g, '');
-                    showPasswordError(`${fieldId.replace('-', ' ')} cannot contain spaces`);
+                    showPasswordError('Password cannot contain spaces');
                 }
             });
         }
     });
 }
-
-
 
 // Call this when the change password modal opens
 document.getElementById('open-change-password-modal').addEventListener('click', function() {
