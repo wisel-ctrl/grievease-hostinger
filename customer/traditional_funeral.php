@@ -1187,6 +1187,11 @@ require_once '../db_connect.php'; // Database connection
                     <!-- Package Summary -->
                     <div class="mt-8 bg-white p-6 rounded-lg shadow">
                         <h4 class="text-lg font-hedvig text-navy mb-4">Package Summary</h4>
+
+                        <div class="flex justify-between text-sm">
+                            <span>Base Package</span>
+                            <span>₱35,000</span>
+                        </div>
                         
                         <div id="customSelectionsSummary" class="space-y-2 mb-4">
                             <p class="text-gray-500 italic">No items selected yet</p>
@@ -1195,13 +1200,13 @@ require_once '../db_connect.php'; // Database connection
                         <div class="border-t border-gray-200 pt-4">
                             <div class="flex justify-between font-bold mb-2">
                                 <span>Total Package Price:</span>
-                                <span id="customTotalPrice" class="text-yellow-600">₱0</span>
+                                <span id="customTotalPrice" class="text-yellow-600">₱35,000</span>
                             </div>
                             
                             <div id="customTraditionalPayment">
                                 <div class="flex justify-between text-sm mb-2">
                                     <span>Required Downpayment (30%):</span>
-                                    <span id="customDownpayment" class="text-yellow-600">₱0</span>
+                                    <span id="customDownpayment" class="text-yellow-600">₱10,500</span>
                                 </div>
                             </div>
                         </div>
@@ -1240,7 +1245,8 @@ document.addEventListener('DOMContentLoaded', function() {
     let selectedCasket = null;
     let selectedFlowers = null;
     let selectedAddons = [];
-    let totalPackagePrice = 0;
+    let totalPackagePrice = 35000; // Starting price of 35,000 pesos
+    let basePackagePrice = 35000; // Store base price separately
     
     // Get the modal elements
     const customPackageModal = document.getElementById('customPackageModal');
@@ -1297,7 +1303,7 @@ document.addEventListener('DOMContentLoaded', function() {
         selectedCasket = null;
         selectedFlowers = null;
         selectedAddons = [];
-        totalPackagePrice = 0;
+        totalPackagePrice = basePackagePrice;
         
         // Reset UI selections
         document.querySelectorAll('.casket-option, .flower-option').forEach(el => {
@@ -1308,7 +1314,7 @@ document.addEventListener('DOMContentLoaded', function() {
             el.checked = false;
         });
         
-        // Reset summary
+        // Reset summary but keep base price
         updateCustomSummary();
         
         // Disable continue button
@@ -1334,11 +1340,16 @@ document.addEventListener('DOMContentLoaded', function() {
             // Mark this option as selected
             this.classList.add('border-yellow-600', 'border-2');
             
-            // Store selected casket
-            selectedCasket = {
-                name: this.dataset.name,
-                price: parseInt(this.dataset.price)
-            };
+            // Store selected casket only if it has an ID
+            if (this.dataset.id) {
+                selectedCasket = {
+                    id: this.dataset.id,
+                    name: this.dataset.name,
+                    price: parseInt(this.dataset.price)
+                };
+            } else {
+                selectedCasket = null;
+            }
             
             updateCustomSummary();
             checkRequiredSelections();
@@ -1394,7 +1405,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Function to check if required selections are made
     function checkRequiredSelections() {
         // Enable proceed button only if all required selections are made
-        const requiredSelectionsComplete = selectedCasket && selectedFlowers;
+        const requiredSelectionsComplete = selectedFlowers;
         document.getElementById('proceedToBooking').disabled = !requiredSelectionsComplete;
     }
     
@@ -1402,10 +1413,12 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateCustomSummary() {
         const summaryElement = document.getElementById('customSelectionsSummary');
         let summaryHTML = '';
-        totalPackagePrice = 0;
         
-        // Add casket info if selected
-        if (selectedCasket) {
+        // Reset total to base price
+        totalPackagePrice = basePackagePrice;
+        
+        // Add casket info if selected and has a valid ID
+        if (selectedCasket && selectedCasket.id) {
             summaryHTML += `<div class="flex justify-between text-sm">
                 <span>${selectedCasket.name}</span>
                 <span>₱${selectedCasket.price.toLocaleString()}</span>
@@ -1437,7 +1450,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (summaryHTML) {
             summaryElement.innerHTML = summaryHTML;
         } else {
-            summaryElement.innerHTML = '<p class="text-gray-500 italic">No items selected yet</p>';
+            summaryElement.innerHTML = '<p class="text-gray-500 italic">No additional items selected</p>';
         }
         
         // Update total price display
@@ -1447,6 +1460,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const downpayment = Math.ceil(totalPackagePrice * 0.3);
         document.getElementById('customDownpayment').textContent = `₱${downpayment.toLocaleString()}`;
     }
+    updateCustomSummary();
     
     // Proceed to booking button click event
     document.getElementById('proceedToBooking').addEventListener('click', function() {
@@ -1535,6 +1549,8 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('backToOptions').addEventListener('click', function() {
         showCustomStep('customStepOptions');
     });
+
+
 });
 </script>
 
