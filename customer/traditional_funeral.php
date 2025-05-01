@@ -1182,6 +1182,13 @@ require_once '../db_connect.php'; // Database connection
                                 </div>
                             </div>
                         </div>
+
+                        <div class="mt-6">
+                            <label for="customNotes" class="block text-lg font-hedvig text-navy mb-2">Additional Notes</label>
+                            <textarea id="customNotes" name="notes" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500" placeholder="Any special requests or additional information you'd like us to know..."></textarea>
+                            <p class="text-sm text-gray-500 mt-1">Please include any special requests or requirements for your package.</p>
+                        </div>
+
                     </div>
                     
                     <!-- Package Summary -->
@@ -1212,6 +1219,9 @@ require_once '../db_connect.php'; // Database connection
                         </div>
                     </div>
                     
+                    
+                    
+
                     <div class="flex justify-center mt-8">
                         <button id="proceedToBooking" class="bg-yellow-600 hover:bg-yellow-700 text-white px-8 py-3 rounded-lg shadow-md transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
                             Continue to Booking Form
