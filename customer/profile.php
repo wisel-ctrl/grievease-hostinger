@@ -308,6 +308,22 @@ header("Pragma: no-cache");
         display: flex !important;
         align-items: center !important;
     }
+    /* Add this to your existing styles */
+    .modal-sticky-footer {
+        position: sticky;
+        bottom: 0;
+        background: white;
+        padding: 1rem;
+        border-top: 1px solid #e5e7eb;
+        margin-top: auto; /* Pushes footer to bottom */
+    }
+    
+    /* Ensure modal content container has proper flex layout */
+    .modal-content-container {
+        display: flex;
+        flex-direction: column;
+        min-height: 100%;
+    }
     
     </style>
 </head>
@@ -1770,19 +1786,20 @@ document.addEventListener('DOMContentLoaded', function() {
                     <?php endif; ?>
                 
                     <!-- Modal Footer -->
-                    <div class="flex flex-col sm:flex-row sm:justify-end gap-3 sm:gap-4 mt-8">
-                        <button type="button" class="w-full sm:w-auto px-5 sm:px-6 py-3 bg-white border-2 border-yellow-600 text-gray-800 rounded-lg font-medium hover:bg-gray-50 transition-all duration-200 flex items-center justify-center" onclick="closeEditProfileModal()">
-                            Cancel
-                        </button>
-                        <button type="submit" class="w-full sm:w-auto px-6 sm:px-8 py-3 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
-                                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
-                                <polyline points="17 21 17 13 7 13 7 21"></polyline>
-                                <polyline points="7 3 7 8 15 8"></polyline>
-                            </svg>
-                            Save Changes
-                        </button>
-                    </div>
+                    <div class="modal-sticky-footer flex flex-col sm:flex-row sm:justify-end gap-3 sm:gap-4">
+        <button type="button" class="w-full sm:w-auto px-5 sm:px-6 py-3 bg-white border-2 border-yellow-600 text-gray-800 rounded-lg font-medium hover:bg-gray-50 transition-all duration-200 flex items-center justify-center" onclick="closeEditProfileModal()">
+            Cancel
+        </button>
+        <button type="submit" class="w-full sm:w-auto px-6 sm:px-8 py-3 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
+                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                <polyline points="7 3 7 8 15 8"></polyline>
+            </svg>
+            Save Changes
+        </button>
+    </div>
+</div>
                 </form>
             </div>
         </div>
