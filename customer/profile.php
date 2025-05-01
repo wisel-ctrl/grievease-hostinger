@@ -333,6 +333,24 @@ header("Pragma: no-cache");
         flex-direction: column;
         min-height: 100%;
     }
+    /* Ensure the parent container has proper z-index and overflow */
+.bg-navy {
+    position: relative;
+    z-index: 1;
+}
+
+/* Mobile-specific button styles */
+@media (max-width: 640px) {
+    #open-change-password-modal,
+    #edit-profile-btn {
+        padding: 0.75rem 1rem;
+        font-size: 0.875rem;
+    }
+    
+    .bg-navy {
+        padding: 1rem;
+    }
+}
     
     </style>
 </head>
@@ -584,27 +602,31 @@ header("Pragma: no-cache");
 <div id="personal-info" class="tab-content">
     <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
         <!-- Header with enhanced styling - now stacked on mobile -->
-        <div class="bg-navy p-6 border-b border-gray-100 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 tab-header">
-            <h3 class="font-hedvig text-xl sm:text-2xl text-white font-semibold">Personal Information</h3>
-            
-            <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-    <button id="open-change-password-modal" class="w-full sm:w-auto px-3 sm:px-4 py-2 bg-white border border-yellow-700 text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center text-sm sm:text-base">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 inline">
-            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-        </svg>
-        Change Password
-    </button>
+        <!-- Header with enhanced styling - now stacked on mobile -->
+<div class="bg-navy p-4 sm:p-6 border-b border-gray-100 flex flex-col gap-3">
+    <div class="flex justify-between items-center">
+        <h3 class="font-hedvig text-xl sm:text-2xl text-white font-semibold">Personal Information</h3>
+    </div>
     
-    <button id="edit-profile-btn" class="w-full sm:w-auto px-3 sm:px-4 py-2 bg-yellow-600 hover:bg-darkgold text-white rounded-md transition-colors flex items-center justify-center text-sm sm:text-base">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
-            <path d="M11 4H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-        </svg>
-        Edit Profile
-    </button>
+    <!-- Buttons Container - updated with proper constraints -->
+    <div class="grid grid-cols-1 sm:flex sm:flex-row gap-2 w-full">
+        <button id="open-change-password-modal" class="w-full sm:w-auto px-4 py-2 bg-white border border-yellow-700 text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center text-sm sm:text-base">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 inline">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+            Change Password
+        </button>
+        
+        <button id="edit-profile-btn" class="w-full sm:w-auto px-4 py-2 bg-yellow-600 hover:bg-darkgold text-white rounded-md transition-colors flex items-center justify-center text-sm sm:text-base">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
+                <path d="M11 4H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+            </svg>
+            Edit Profile
+        </button>
+    </div>
 </div>
-        </div>
         
         <!-- Content area with improved spacing and grouping -->
         <div class="p-4 sm:p-6 md:p-8">
