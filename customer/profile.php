@@ -3164,29 +3164,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     }
-    const streetAddressInput = document.querySelector('#modifyBookingModal input[name="deceased_address"]');
-    if (streetAddressInput) {
-        streetAddressInput.addEventListener('input', function() {
-            // Remove leading spaces
-            let value = this.value.replace(/^\s+/, '');
-            
-            // Capitalize first letter if not empty
-            if (value.length > 0) {
-                value = value.charAt(0).toUpperCase() + value.slice(1);
-            }
-            
-            this.value = value;
-        });
-        
-        // Also validate on blur (when field loses focus)
-        streetAddressInput.addEventListener('blur', function() {
-            let value = this.value.replace(/^\s+/, '');
-            if (value.length > 0) {
-                value = value.charAt(0).toUpperCase() + value.slice(1);
-            }
-            this.value = value;
-        });
-    }
 });
     // Function to load address data when modal opens
 function loadAddressData() {
