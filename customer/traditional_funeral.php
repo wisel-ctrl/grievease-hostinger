@@ -1776,6 +1776,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const downpayment = Math.ceil(totalPrice * 0.3);
         
         document.getElementById('traditionalTotalPrice').textContent = `₱${totalPrice.toLocaleString()}`;
+        document.getElementById('traditionalSelectedPackagePrice').value = totalPrice;
         document.getElementById('traditionalDownpayment').textContent = `₱${downpayment.toLocaleString()}`;
         document.getElementById('traditionalAmountDue').textContent = `₱${downpayment.toLocaleString()}`;
     }
@@ -1926,8 +1927,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 packageTotal: totalPackagePrice,
                 downpayment: Math.ceil(totalPackagePrice * 0.3)
             };
-
-            
 
             
 
