@@ -302,8 +302,7 @@ header("Pragma: no-cache");
     
     /* Adjust the specific tab headers */
     #personal-info .bg-navy,
-    #bookings .bg-navy,
-    #transaction-logs .p-6 {
+    #bookings .bg-navy {
         padding: 1.5rem !important;
         height: 72px !important;
         display: flex !important;
