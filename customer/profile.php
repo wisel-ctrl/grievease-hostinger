@@ -2024,7 +2024,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <i class="fas fa-receipt text-green-600 text-xl"></i>
               </div>
               <div class="flex-grow">
-                <h5 class="font-medium text-navy">Payment Receipt</h5>
+                <h5 class="font-medium text-navy">Payment Proof</h5>
               </div>
               <button id="viewPaymentBtn" class="bg-green-600 text-white p-2 rounded-lg hover:bg-green-700 transition-colors duration-200">
                 <i class="fas fa-eye"></i>
