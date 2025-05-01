@@ -713,6 +713,31 @@ if ($branchResult->num_rows > 0) {
       <div class="flex justify-center">
         <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-sidebar-accent"></div>
       </div>
+
+      <!-- Image Preview -->
+      <div class="mt-4">
+        <img id="itemImagePreview" src="" alt="Item Image" class="w-full h-auto rounded-lg" />
+      </div>
+
+      <div class="mt-4">
+        <label for="itemName" class="block text-sm font-medium text-gray-700">Item Name</label>
+        <input type="text" id="itemName" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-opacity-50" oninput="validateItemName()" />
+      </div>
+      
+      <div class="mt-4">
+        <label for="itemQuantity" class="block text-sm font-medium text-gray-700">Quantity</label>
+        <input type="number" id="itemQuantity" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-opacity-50" oninput="validateQuantity()" />
+      </div>
+
+      <div class="mt-4">
+        <label for="unitPrice" class="block text-sm font-medium text-gray-700">Unit Price</label>
+        <input type="text" id="unitPrice" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-opacity-50" oninput="validatePrice()" />
+      </div>
+
+      <div class="mt-4">
+        <label for="totalValue" class="block text-sm font-medium text-gray-700">Total Value</label>
+        <input type="text" id="totalValue" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-opacity-50" oninput="validatePrice()" />
+      </div>
     </div>
     
     <!-- Modal Footer -->
@@ -726,6 +751,43 @@ if ($branchResult->num_rows > 0) {
     </div>
   </div>
 </div>
+
+<script>
+  function validateItemName() {
+    const itemNameInput = document.getElementById('itemName');
+    let value = itemNameInput.value;
+
+    // Trim leading spaces and prevent consecutive spaces
+    value = value.replace(/^\s+|\s+$/g, '').replace(/\s{2,}/g, ' ');
+
+    // Check for leading space
+    if (value.startsWith(' ')) {
+      value = value.trimStart();
+    }
+
+    // Auto capitalize first letter
+    if (value.length > 0) {
+      value = value.charAt(0).toUpperCase() + value.slice(1);
+    }
+
+    itemNameInput.value = value;
+  }
+
+  function validateQuantity() {
+    const quantityInput = document.getElementById('itemQuantity');
+    if (quantityInput.value < 0) {
+      quantityInput.value = 0;
+    }
+  }
+
+  function validatePrice() {
+    const priceInputs = [document.getElementById('unitPrice'), document.getElementById('totalValue')];
+    priceInputs.forEach(input => {
+      input.value = input.value.replace(/[^0-9.]/g, '').replace(/^\s+|\s+$/g, '').replace(/\s{2,}/g, ' ');
+    });
+  }
+</script>
+
 
 
 <!-- Add Inventory Modal -->
