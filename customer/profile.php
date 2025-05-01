@@ -2657,9 +2657,9 @@ function fetchBookingForModification(bookingId) {
                 document.getElementById('display-branch-location').textContent = data.branch_name;
                 
                 // Set dates
-                form.querySelector('input[name="deceased_dateOfBurial"]').value = data.deceased_dateOfBurial || '';
-                form.querySelector('input[name="deceased_birth"]').value = data.deceased_birth || '';
-                form.querySelector('input[name="deceased_dodeath"]').value = data.deceased_dodeath || '';
+                form.querySelector('input[name="deceased_dateOfBurial"]').value = formatDateForInput(data.deceased_dateOfBurial) || '';
+                form.querySelector('input[name="deceased_birth"]').value = formatDateForInput(data.deceased_birth) || '';
+                form.querySelector('input[name="deceased_dodeath"]').value = formatDateForInput(data.deceased_dodeath) || '';
                 
                 // Set deceased info
                 form.querySelector('input[name="deceased_fname"]').value = data.deceased_fname || '';
@@ -2668,6 +2668,18 @@ function fetchBookingForModification(bookingId) {
                 form.querySelector('input[name="deceased_suffix"]').value = data.deceased_suffix || '';
                 form.querySelector('textarea[name="deceased_address"]').value = data.deceased_address || '';
                 form.querySelector('input[name="with_cremate"]').checked = data.with_cremate == 'yes' || data.with_cremate == 1;
+                
+                // Set payment information if available
+                if (data.amount_paid) {
+                    const paymentInfoDiv = document.createElement('div');
+                    paymentInfoDiv.className = 'mt-4 bg-gray-50 p-3 rounded border border-gray-200';
+                    paymentInfoDiv.innerHTML = `
+                        <h4 class="font-semibold text-sm mb-2">Payment Information</h4>
+                        <p><strong>Amount Paid:</strong> ₱${parseFloat(data.amount_paid).toFixed(2)}</p>
+                        <p><strong>Balance:</strong> ₱${(parseFloat(data.selling_price) - parseFloat(data.amount_paid)).toFixed(2)}</p>
+                    `;
+                    form.querySelector('div[class*="bg-white"]:last-child').appendChild(paymentInfoDiv);
+                }
                 
                 // Show the modal
                 document.getElementById('modifyBookingModal').classList.remove('hidden');
@@ -2690,9 +2702,9 @@ function submitBookingModification() {
     submitBtn.disabled = true;
     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Saving...';
     
-    fetch('booking/update_booking.php', {
+    fetch('profile/update_booking.php', {
         method: 'POST',
-        body: formData // FormData will automatically handle file uploads
+        body: formData
     })
     .then(response => response.json())
     .then(data => {
@@ -2714,7 +2726,7 @@ function submitBookingModification() {
     })
     .finally(() => {
         submitBtn.disabled = false;
-        submitBtn.innerHTML = '<i class="fas fa-save mr-2"></i> Save Changes';
+        submitBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>Save Changes';
     });
 }
 
@@ -2816,12 +2828,13 @@ document.getElementById('cancelBookingForm').addEventListener('submit', function
     }
 
     function formatDateForInput(dateString) {
-        const date = new Date(dateString);
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
-    }
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
 
     function showSuccess(message) {
         const notification = document.getElementById('successNotification');
