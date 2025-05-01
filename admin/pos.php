@@ -749,6 +749,226 @@ $servicesJson = json_encode($allServices);
   </div>
 </div>
 
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Name fields in the add customer account modal
+    const customerNameFields = [
+        'firstName', 
+        'middleName', 
+        'lastName'
+    ];
+
+    // Name fields in the lifeplan checkout modal
+    const modalNameFields = [
+        'lp-clientFirstName',
+        'lp-clientMiddleName',
+        'lp-clientLastName',
+        'lp-clientSuffix',
+        'beneficiaryFirstName',
+        'beneficiaryMiddleName',
+        'beneficiaryLastName',
+        'beneficiarySuffix'
+    ];
+
+    // Function to validate name input
+    function validateNameInput(field) {
+        // First, remove any invalid characters
+        let newValue = field.value.replace(/[^a-zA-Z\s'-]/g, '');
+        
+        // Don't allow space as first character
+        if (newValue.startsWith(' ')) {
+            newValue = newValue.substring(1);
+        }
+        
+        // Don't allow consecutive spaces
+        newValue = newValue.replace(/\s{2,}/g, ' ');
+        
+        // Only allow space after at least 2 characters
+        if (newValue.length < 2 && newValue.includes(' ')) {
+            newValue = newValue.replace(/\s/g, '');
+        }
+        
+        // Update the field value
+        field.value = newValue;
+        
+        // Capitalize first letter of each word
+        if (field.value.length > 0) {
+            field.value = field.value.toLowerCase().replace(/(^|\s)\S/g, function(firstLetter) {
+                return firstLetter.toUpperCase();
+            });
+        }
+    }
+
+    // Function to apply validation to a field
+    function applyNameValidation(field) {
+        if (field) {
+            // Validate on input
+            field.addEventListener('input', function() {
+                validateNameInput(this);
+            });
+
+            // Validate on blur (when field loses focus)
+            field.addEventListener('blur', function() {
+                validateNameInput(this);
+            });
+
+            // Prevent paste of invalid content
+            field.addEventListener('paste', function(e) {
+                e.preventDefault();
+                const pastedText = (e.clipboardData || window.clipboardData).getData('text');
+                const cleanedText = pastedText.replace(/[^a-zA-Z\s'-]/g, '');
+                document.execCommand('insertText', false, cleanedText);
+            });
+        }
+    }
+
+    // Apply validation to customer fields
+    customerNameFields.forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        applyNameValidation(field);
+    });
+
+    // Apply validation to modal fields
+    modalNameFields.forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        applyNameValidation(field);
+    });
+
+    // Additional validation for required fields
+    const requiredCustomerFields = ['firstName', 'lastName'];
+    const requiredModalFields = [
+        'lp-clientFirstName', 
+        'lp-clientLastName',
+        'beneficiaryFirstName',
+        'beneficiaryLastName'
+    ];
+
+    // Function to apply required validation
+    function applyRequiredValidation(field) {
+        if (field) {
+            field.addEventListener('blur', function() {
+                if (this.value.trim().length < 2) {
+                    this.setCustomValidity('Please enter at least 2 characters');
+                } else {
+                    this.setCustomValidity('');
+                }
+            });
+        }
+    }
+
+    // Apply to customer fields
+    requiredCustomerFields.forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        applyRequiredValidation(field);
+    });
+
+    // Apply to modal fields
+    requiredModalFields.forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        applyRequiredValidation(field);
+    });
+
+    // Validate birthdate to ensure user is at least 18 years old
+    function validateBirthdate() {
+        const birthdateField = document.getElementById('birthdate');
+        if (birthdateField) {
+            const selectedDate = new Date(birthdateField.value);
+            const today = new Date();
+            const minBirthdate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
+            
+            if (selectedDate > minBirthdate) {
+                birthdateField.setCustomValidity('Customer must be at least 18 years old');
+            } else {
+                birthdateField.setCustomValidity('');
+            }
+        }
+    }
+
+    // Validate beneficiary birthdate (no age restriction)
+    function validateBeneficiaryBirthdate() {
+        const birthdateField = document.getElementById('beneficiaryDateOfBirth');
+        if (birthdateField) {
+            const selectedDate = new Date(birthdateField.value);
+            const today = new Date();
+            
+            if (selectedDate > today) {
+                birthdateField.setCustomValidity('Beneficiary birthdate cannot be in the future');
+            } else {
+                birthdateField.setCustomValidity('');
+            }
+        }
+    }
+
+    // Set max date for birthdate field to 18 years ago
+    function setMaxBirthdate() {
+        const birthdateField = document.getElementById('birthdate');
+        if (birthdateField) {
+            const today = new Date();
+            const maxDate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
+            birthdateField.max = maxDate.toISOString().split('T')[0];
+        }
+    }
+
+    // Set max date for beneficiary birthdate to today
+    function setMaxBeneficiaryBirthdate() {
+        const birthdateField = document.getElementById('beneficiaryDateOfBirth');
+        if (birthdateField) {
+            const today = new Date();
+            birthdateField.max = today.toISOString().split('T')[0];
+        }
+    }
+
+    // Validate email input
+    function validateEmail() {
+        const emailField = document.getElementById('customerEmail');
+        if (emailField) {
+            // Remove any spaces from the email
+            emailField.value = emailField.value.replace(/\s/g, '');
+            
+            // Check if email contains @ symbol
+            if (!emailField.value.includes('@')) {
+                emailField.setCustomValidity('Email must contain @ symbol');
+            } else {
+                emailField.setCustomValidity('');
+            }
+        }
+    }
+
+    // Validate modal email input
+    function validateModalEmail() {
+        const emailField = document.getElementById('lp-clientEmail');
+        if (emailField && emailField.value) {  // Only validate if there's a value (field is optional)
+            // Remove any spaces from the email
+            emailField.value = emailField.value.replace(/\s/g, '');
+            
+            // Check if email contains @ symbol
+            if (!emailField.value.includes('@')) {
+                emailField.setCustomValidity('Email must contain @ symbol');
+            } else {
+                emailField.setCustomValidity('');
+            }
+        }
+    }
+
+    // Initialize max birthdates when page loads
+    setMaxBirthdate();
+    setMaxBeneficiaryBirthdate();
+
+    // Existing event listeners for the customer form
+    document.getElementById('firstName').addEventListener('input', validateFirstName);
+    document.getElementById('middleName').addEventListener('input', validateMiddleName);
+    document.getElementById('lastName').addEventListener('input', validateLastName);
+    document.getElementById('birthdate').addEventListener('change', validateBirthdate);
+    document.getElementById('customerEmail').addEventListener('input', validateEmail);
+    document.getElementById('customerPhone').addEventListener('input', validatePhoneNumber);
+    document.getElementById('branchLocation').addEventListener('change', validateBranchLocation);
+
+    // Event listeners for modal fields
+    document.getElementById('beneficiaryDateOfBirth')?.addEventListener('change', validateBeneficiaryBirthdate);
+    document.getElementById('lp-clientEmail')?.addEventListener('input', validateModalEmail);
+});
+</script>
+
     <!-- Order Confirmation Modal -->
 <div id="confirmation-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
   <!-- Modal Backdrop -->
