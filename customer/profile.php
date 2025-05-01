@@ -2035,153 +2035,101 @@ document.addEventListener('DOMContentLoaded', function() {
   </div>
 </div>
 
-
 <!-- Modify Booking Modal -->
-<div id="modifyBookingModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4 hidden">
-  <!-- Modal Content -->
-  <div class="w-full max-w-4xl bg-white rounded-2xl shadow-xl overflow-hidden max-h-[90vh]">
-    <div class="modal-scroll-container overflow-y-auto max-h-[90vh]">
-      <!-- Header with close button -->
-      <div class="bg-navy p-6 flex justify-between items-center sticky top-0 z-10">
-        <h2 class="text-2xl font-hedvig text-white">Modify Booking</h2>
-        <button class="close-modal text-white hover:text-yellow-300 transition-colors duration-200">
-          <i class="fas fa-times text-2xl"></i>
-        </button>
-      </div>
-      
-      <!-- Modal Body -->
-      <div class="p-6 sm:p-8 bg-cream">
-        <form id="modifyBookingForm">
-            <input type="hidden" id="modify-booking-id" name="booking_id">
-            <input type="hidden" id="modify-service-id" name="service_id">
-            <input type="hidden" id="modify-branch-id" name="branch_id">
-            
-            <!-- Service and Deceased Information - Side by Side on larger screens -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-                <!-- Left Column -->
-                <div class="bg-white p-6 rounded-xl shadow-sm">
-                    <h4 class="font-semibold text-navy text-lg mb-4 border-b border-gray-200 pb-2">Service Information</h4>
-                    <div class="space-y-5">
-                        <div>
-                            <label class="block text-sm font-medium text-navy mb-2">Service Package</label>
-                            <div id="display-service-package" class="w-full border border-input-border rounded-lg px-4 py-3 bg-gray-50 text-gray-700">
-                                <!-- Service package details will be displayed here -->
-                            </div>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-navy mb-2">Branch Location</label>
-                            <div id="display-branch-location" class="w-full border border-input-border rounded-lg px-4 py-3 bg-gray-50 text-gray-700">
-                                <!-- Branch location will be displayed here -->
-                            </div>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-navy mb-2">Burial Date</label>
-                            <div class="relative">
-                                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                    <i class="fas fa-calendar text-gray-400"></i>
+<div id="modifyBookingModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+        <div class="p-6 border-b border-gray-200 flex justify-between items-center">
+            <h3 class="font-hedvig text-xl text-navy">Modify Booking</h3>
+            <button class="close-modal text-gray-500 hover:text-gray-700">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="p-6">
+            <form id="modifyBookingForm">
+                <input type="hidden" id="modify-booking-id" name="booking_id">
+                <input type="hidden" id="modify-service-id" name="service_id">
+                <input type="hidden" id="modify-branch-id" name="branch_id">
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div>
+                        <h4 class="font-semibold text-navy mb-3">Service Information</h4>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-gray-500 text-sm mb-1">Service Package</label>
+                                <div id="display-service-package" class="w-full border border-gray-300 rounded px-3 py-2 bg-gray-50">
+                                    <!-- Service package details will be displayed here -->
                                 </div>
-                                <input type="date" name="deceased_dateOfBurial" class="w-full pl-10 pr-4 py-3 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-base" required>
                             </div>
-                            <p class="text-xs text-gray-500 mt-1">Required field</p>
+                            <div>
+                                <label class="block text-gray-500 text-sm mb-1">Branch Location</label>
+                                <div id="display-branch-location" class="w-full border border-gray-300 rounded px-3 py-2 bg-gray-50">
+                                    <!-- Branch location will be displayed here -->
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-gray-500 text-sm mb-1">Burial Date</label>
+                                <input type="date" name="deceased_dateOfBurial" class="w-full border border-gray-300 rounded px-3 py-2" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-navy mb-3">Deceased Information</h4>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-gray-500 text-sm mb-1">First Name</label>
+                                <input type="text" name="deceased_fname" class="w-full border border-gray-300 rounded px-3 py-2" required>
+                            </div>
+                            <div>
+                                <label class="block text-gray-500 text-sm mb-1">Middle Name</label>
+                                <input type="text" name="deceased_midname" class="w-full border border-gray-300 rounded px-3 py-2">
+                            </div>
+                            <div>
+                                <label class="block text-gray-500 text-sm mb-1">Last Name</label>
+                                <input type="text" name="deceased_lname" class="w-full border border-gray-300 rounded px-3 py-2" required>
+                            </div>
+                            <div>
+                                <label class="block text-gray-500 text-sm mb-1">Suffix</label>
+                                <input type="text" name="deceased_suffix" class="w-full border border-gray-300 rounded px-3 py-2">
+                            </div>
                         </div>
                     </div>
                 </div>
                 
-                <!-- Right Column -->
-                <div class="bg-white p-6 rounded-xl shadow-sm">
-                    <h4 class="font-semibold text-navy text-lg mb-4 border-b border-gray-200 pb-2">Deceased Information</h4>
-                    <div class="space-y-5">
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-sm font-medium text-navy mb-2">First Name</label>
-                                <input type="text" name="deceased_fname" placeholder="Enter first name" class="w-full px-4 py-3 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-base" required>
-                                <p class="text-xs text-gray-500 mt-1">Required field</p>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-navy mb-2">Middle Name</label>
-                                <input type="text" name="deceased_midname" placeholder="Enter middle name" class="w-full px-4 py-3 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-base">
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-sm font-medium text-navy mb-2">Last Name</label>
-                                <input type="text" name="deceased_lname" placeholder="Enter last name" class="w-full px-4 py-3 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-base" required>
-                                <p class="text-xs text-gray-500 mt-1">Required field</p>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-navy mb-2">Suffix</label>
-                                <input type="text" name="deceased_suffix" placeholder="Jr., Sr., III, etc." class="w-full px-4 py-3 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-base">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Additional Information Section -->
-            <div class="bg-white p-6 rounded-xl shadow-sm mb-8">
-                <h4 class="font-semibold text-navy text-lg mb-4 border-b border-gray-200 pb-2">Additional Information</h4>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Left Column -->
-                    <div class="space-y-5">
+                <div class="mb-6">
+                    <h4 class="font-semibold text-navy mb-3">Additional Information</h4>
+                    <div class="space-y-4">
                         <div>
-                            <label class="block text-sm font-medium text-navy mb-2">Birth Date</label>
-                            <div class="relative">
-                                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                    <i class="fas fa-birthday-cake text-gray-400"></i>
-                                </div>
-                                <input type="date" name="deceased_birth" class="w-full pl-10 pr-4 py-3 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-base">
-                            </div>
+                            <label class="block text-gray-500 text-sm mb-1">Birth Date</label>
+                            <input type="date" name="deceased_birth" class="w-full border border-gray-300 rounded px-3 py-2">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-navy mb-2">Date of Death</label>
-                            <div class="relative">
-                                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                    <i class="fas fa-calendar-day text-gray-400"></i>
-                                </div>
-                                <input type="date" name="deceased_dodeath" class="w-full pl-10 pr-4 py-3 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-base">
-                            </div>
+                            <label class="block text-gray-500 text-sm mb-1">Date of Death</label>
+                            <input type="date" name="deceased_dodeath" class="w-full border border-gray-300 rounded px-3 py-2">
                         </div>
-                        <div class="flex items-center p-4 bg-gray-50 rounded-lg">
-                            <input type="checkbox" name="with_cremate" id="with_cremate" class="w-5 h-5 text-yellow-600 border-gray-300 rounded focus:ring-yellow-500">
-                            <label for="with_cremate" class="ml-3 text-sm font-medium text-navy">Include Cremation Service</label>
+                        <div>
+                            <label class="block text-gray-500 text-sm mb-1">Address</label>
+                            <textarea name="deceased_address" rows="2" class="w-full border border-gray-300 rounded px-3 py-2"></textarea>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" name="with_cremate" id="with_cremate" class="mr-2">
+                            <label for="with_cremate" class="text-gray-500 text-sm">Include Cremation Service</label>
                         </div>
                     </div>
                     
-                    <!-- Right Column -->
-                    <div>
-                        <label class="block text-sm font-medium text-navy mb-2">Address</label>
-                        <textarea name="deceased_address" rows="5" placeholder="Enter full address" class="w-full px-4 py-3 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-base resize-none"></textarea>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Document Uploads Section -->
-            <div class="bg-white p-6 rounded-xl shadow-sm mb-8">
-                <h4 class="font-semibold text-navy text-lg mb-4 border-b border-gray-200 pb-2">Document Uploads</h4>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label class="block text-sm font-medium text-navy mb-2">Death Certificate</label>
-                        <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-yellow-500 transition-colors duration-200">
-                            <div class="flex items-center justify-center mb-2">
-                                <i class="fas fa-file-pdf text-2xl text-gray-400"></i>
-                            </div>
-                            <p class="text-sm text-gray-500 mb-2">Click to upload or drag and drop</p>
-                            <input type="file" name="death_certificate" class="w-full opacity-0 absolute inset-0 cursor-pointer">
+                    <h4 class="font-semibold text-navy mb-3">Document Uploads</h4>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-gray-500 text-sm mb-1">Death Certificate</label>
+                            <input type="file" name="death_certificate" class="w-full border border-gray-300 rounded px-3 py-2">
                             <?php if (!empty($booking['deathcert_url'])): ?>
-                                <p class="text-sm text-gray-700 mt-2 bg-yellow-50 p-2 rounded">Current file: <?php echo basename($booking['deathcert_url']); ?></p>
+                                <p class="text-sm text-gray-500 mt-1">Current file: <?php echo basename($booking['deathcert_url']); ?></p>
                             <?php endif; ?>
                         </div>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-navy mb-2">Payment Proof</label>
-                        <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-yellow-500 transition-colors duration-200">
-                            <div class="flex items-center justify-center mb-2">
-                                <i class="fas fa-file-invoice text-2xl text-gray-400"></i>
-                            </div>
-                            <p class="text-sm text-gray-500 mb-2">Click to upload or drag and drop</p>
-                            <input type="file" name="payment_proof" class="w-full opacity-0 absolute inset-0 cursor-pointer">
+                        <div>
+                            <label class="block text-gray-500 text-sm mb-1">Payment Proof</label>
+                            <input type="file" name="payment_proof" class="w-full border border-gray-300 rounded px-3 py-2">
                             <?php if (!empty($booking['payment_url'])): ?>
-                                <p class="text-sm text-gray-700 mt-2 bg-yellow-50 p-2 rounded">Current file: <?php echo basename($booking['payment_url']); ?></p>
+                                <p class="text-sm text-gray-500 mt-1">Current file: <?php echo basename($booking['payment_url']); ?></p>
                             <?php endif; ?>
                         </div>
                     </div>
