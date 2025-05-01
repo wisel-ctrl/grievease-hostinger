@@ -1919,6 +1919,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             price: parseInt(this.dataset.price)
                         };
                         
+                        console.log("clicked casket: ", selectedCasket);
                         updateCustomSummary();
                         checkRequiredSelections();
                     });
