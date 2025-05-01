@@ -250,24 +250,6 @@ input[name*="LastName"] {
     text-transform: capitalize;
 }
 
-input:invalid {
-    border-color: #ef4444 !important;
-}
-
-input:invalid:focus {
-    box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2) !important;
-}
-
-.error-message {
-    color: #ef4444;
-    font-size: 0.75rem;
-    margin-top: 0.25rem;
-    display: none;
-}
-
-input:invalid + .error-message {
-    display: block;
-}
         :root {
             --navbar-height: 64px;
             --section-spacing: 4rem;
