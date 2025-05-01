@@ -1906,67 +1906,149 @@ document.addEventListener('DOMContentLoaded', function() {
 </div>
 
 
-<!-- View Details Modal -->
-<div id="viewDetailsModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-    <div class="bg-white rounded-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-        <div class="p-6 border-b border-gray-200 flex justify-between items-center">
-            <h3 class="font-hedvig text-xl text-navy">Booking Details</h3>
-            <button class="close-modal text-gray-500 hover:text-gray-700">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-        <div class="p-6">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                <div>
-                    <h4 class="font-semibold text-navy mb-3">Service Information</h4>
-                    <div class="space-y-2">
-                        <p><span class="text-gray-500">Service:</span> <span id="detail-service" class="text-navy"></span></p>
-                        <p><span class="text-gray-500">Branch:</span> <span id="detail-branch" class="text-navy"></span></p>
-                        <p><span class="text-gray-500">Status:</span> <span id="detail-status" class="text-navy"></span></p>
-                        <p><span class="text-gray-500">Booking Date:</span> <span id="detail-booking-date" class="text-navy"></span></p>
-                        <p><span class="text-gray-500">Total Amount:</span> <span id="detail-total" class="text-navy font-bold"></span></p>
-                    </div>
-                </div>
-                <div>
-                    <h4 class="font-semibold text-navy mb-3">Deceased Information</h4>
-                    <div class="space-y-2">
-                        <p><span class="text-gray-500">Name:</span> <span id="detail-deceased-name" class="text-navy"></span></p>
-                        <p><span class="text-gray-500">Birth Date:</span> <span id="detail-birth" class="text-navy"></span></p>
-                        <p><span class="text-gray-500">Date of Death:</span> <span id="detail-dod" class="text-navy"></span></p>
-                        <p><span class="text-gray-500">Burial Date:</span> <span id="detail-burial" class="text-navy"></span></p>
-                        <p><span class="text-gray-500">Address:</span> <span id="detail-address" class="text-navy"></span></p>
-                    </div>
-                </div>
+<!-- View Details Modal (Enhanced UI) -->
+<div id="viewDetailsModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 p-4 hidden backdrop-blur-sm">
+    <div class="w-full max-w-2xl bg-white rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] transform transition-all duration-300">
+        <div class="modal-scroll-container overflow-y-auto max-h-[90vh]">
+            <!-- Header with close button -->
+            <div class="bg-navy p-6 flex justify-between items-center border-b-4 border-yellow-500">
+                <h2 class="text-2xl font-hedvig text-white flex items-center">
+                    Booking Details
+                </h2>
+                <button class="close-modal text-white hover:text-yellow-300 transition-colors duration-200 transform hover:scale-110">
+                    <i class="fas fa-times text-2xl"></i>
+                </button>
             </div>
             
-            <div class="mb-6">
-                <h4 class="font-semibold text-navy mb-3">Payment Information</h4>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div class="bg-gray-50 p-3 rounded">
-                        <p class="text-gray-500 text-sm">Amount Paid</p>
-                        <p id="detail-paid" class="text-navy font-bold"></p>
+            <!-- Modal Body -->
+            <div class="p-8 bg-cream">
+                <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6 rounded-r">
+                    <p class="text-gray-700 text-base sm:text-lg">Details of your booking are displayed below.</p>
+                </div>
+                
+                <div class="space-y-6 sm:space-y-8">
+                    <!-- Service and Deceased Information Section -->
+                    <div class="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                            <div>
+                                <h4 class="font-semibold text-gray-800 mb-4 flex items-center text-lg border-b pb-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-3 text-yellow-600">
+                                        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                                        <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                                        <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                                    </svg>
+                                    Service Information
+                                </h4>
+                                <div class="space-y-3">
+                                    <div class="flex">
+                                        <span class="text-gray-500 w-32">Service:</span> 
+                                        <span id="detail-service" class="text-navy font-medium"></span>
+                                    </div>
+                                    <div class="flex">
+                                        <span class="text-gray-500 w-32">Branch:</span> 
+                                        <span id="detail-branch" class="text-navy font-medium"></span>
+                                    </div>
+                                    <div class="flex">
+                                        <span class="text-gray-500 w-32">Status:</span> 
+                                        <span id="detail-status" class="text-navy font-medium"></span>
+                                    </div>
+                                    <div class="flex">
+                                        <span class="text-gray-500 w-32">Booking Date:</span> 
+                                        <span id="detail-booking-date" class="text-navy font-medium"></span>
+                                    </div>
+                                    <div class="flex">
+                                        <span class="text-gray-500 w-32">Total Amount:</span> 
+                                        <span id="detail-total" class="text-navy font-bold"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-800 mb-4 flex items-center text-lg border-b pb-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-3 text-yellow-600">
+                                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                        <circle cx="12" cy="7" r="4"></circle>
+                                    </svg>
+                                    Deceased Information
+                                </h4>
+                                <div class="space-y-3">
+                                    <div class="flex">
+                                        <span class="text-gray-500 w-32">Name:</span> 
+                                        <span id="detail-deceased-name" class="text-navy font-medium"></span>
+                                    </div>
+                                    <div class="flex">
+                                        <span class="text-gray-500 w-32">Birth Date:</span> 
+                                        <span id="detail-birth" class="text-navy font-medium"></span>
+                                    </div>
+                                    <div class="flex">
+                                        <span class="text-gray-500 w-32">Date of Death:</span> 
+                                        <span id="detail-dod" class="text-navy font-medium"></span>
+                                    </div>
+                                    <div class="flex">
+                                        <span class="text-gray-500 w-32">Burial Date:</span> 
+                                        <span id="detail-burial" class="text-navy font-medium"></span>
+                                    </div>
+                                    <div class="flex">
+                                        <span class="text-gray-500 w-32">Address:</span> 
+                                        <span id="detail-address" class="text-navy font-medium"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="bg-gray-50 p-3 rounded">
-                        <p class="text-gray-500 text-sm">Balance</p>
-                        <p id="detail-balance" class="text-navy font-bold"></p>
-                    </div>
-                    <div class="bg-gray-50 p-3 rounded">
-                        <p class="text-gray-500 text-sm">Reference Code</p>
-                        <p id="detail-reference" class="text-navy"></p>
+                    
+                    <!-- Payment Information Section -->
+                    <div class="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+                        <h4 class="font-semibold text-gray-800 mb-4 flex items-center text-lg border-b pb-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-3 text-yellow-600">
+                                <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+                                <line x1="1" y1="10" x2="23" y2="10"></line>
+                            </svg>
+                            Payment Information
+                        </h4>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                                <p class="text-gray-500 text-sm">Amount Paid</p>
+                                <p id="detail-paid" class="text-navy font-bold text-lg"></p>
+                            </div>
+                            <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                                <p class="text-gray-500 text-sm">Balance</p>
+                                <p id="detail-balance" class="text-navy font-bold text-lg"></p>
+                            </div>
+                            <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                                <p class="text-gray-500 text-sm">Reference Code</p>
+                                <p id="detail-reference" class="text-navy font-medium text-lg"></p>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-            
-            <div class="flex justify-end space-x-3">
-                <button class="close-modal bg-gray-100 text-gray-700 px-4 py-2 rounded hover:bg-gray-200 transition">
-                    Close
-                </button>
-                <button id="viewDeathCertBtn" class="bg-navy text-white px-4 py-2 rounded hover:bg-navy/90 transition">
-                    <i class="fas fa-file-medical mr-2"></i> View Death Certificate
-                </button>
-                <button id="viewPaymentBtn" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition">
-                    <i class="fas fa-receipt mr-2"></i> View Payment Proof
-                </button>
+                
+                <!-- Modal Footer -->
+                <div class="modal-sticky-footer flex flex-col sm:flex-row sm:justify-end gap-3 sm:gap-4 mt-8">
+                    <button class="close-modal w-full sm:w-auto px-5 sm:px-6 py-3 bg-white border-2 border-yellow-600 text-gray-800 rounded-lg font-medium hover:bg-gray-50 transition-all duration-200 flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                        Close
+                    </button>
+                    <button id="viewDeathCertBtn" class="w-full sm:w-auto px-6 sm:px-8 py-3 bg-navy text-white rounded-lg font-medium shadow-lg hover:shadow-xl hover:bg-navy/90 transition-all duration-300 flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                            <polyline points="10 9 9 9 8 9"></polyline>
+                        </svg>
+                        View Death Certificate
+                    </button>
+                    <button id="viewPaymentBtn" class="w-full sm:w-auto px-6 sm:px-8 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
+                            <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+                            <line x1="1" y1="10" x2="23" y2="10"></line>
+                        </svg>
+                        View Payment Proof
+                    </button>
+                </div>
             </div>
         </div>
     </div>
