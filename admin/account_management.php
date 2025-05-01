@@ -129,7 +129,6 @@ $customersResult = mysqli_query($conn, $customersQuery);
     <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
         
         <span id="totalCustomers"><?php echo $totalCustomers; ?></span>
-        <i class="fas fa-user-circle"></i>
     </span>
 </div>
             
@@ -1495,7 +1494,6 @@ if ($result->num_rows > 0) {
     <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
         
         <span id="totalEmployees"><?php echo $totalRows; ?></span>
-        <i class="fas fa-user-circle"></i>
     </span>
 </div>
             
