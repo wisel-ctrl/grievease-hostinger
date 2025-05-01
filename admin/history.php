@@ -424,7 +424,7 @@ $totalOngoing = $countResult->fetch_assoc()['total'];
   </div>
   
   <!-- Sticky Pagination Footer with improved spacing -->
-  <div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
+<div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
     <div id="paginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
         Showing <?php echo ($offsetOngoing + 1) . ' - ' . min($offsetOngoing + $recordsPerPage, $totalOngoing); ?> of <?php echo $totalOngoing; ?> services
     </div>
@@ -433,7 +433,11 @@ $totalOngoing = $countResult->fetch_assoc()['total'];
         
         <?php 
         $totalPagesOngoing = ceil($totalOngoing / $recordsPerPage);
-        for ($i = 1; $i <= $totalPagesOngoing; $i++): ?>
+        $maxVisiblePages = 3; // Show only 3 page buttons at a time
+        $startPage = max(1, min($page - 1, $totalPagesOngoing - $maxVisiblePages + 1));
+        $endPage = min($startPage + $maxVisiblePages - 1, $totalPagesOngoing);
+        
+        for ($i = $startPage; $i <= $endPage; $i++): ?>
             <a href="?page=<?php echo $i; ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm <?php echo $i == $page ? 'bg-sidebar-accent text-white' : 'hover:bg-sidebar-hover'; ?>">
                 <?php echo $i; ?>
             </a>
@@ -733,7 +737,11 @@ $totalServices = $countResult->fetch_assoc()['total'];
         
         <?php 
         $totalPagesFullyPaid = ceil($totalServices / $recordsPerPage);
-        for ($i = 1; $i <= $totalPagesFullyPaid; $i++): ?>
+        $maxVisiblePages = 3;
+        $startPage = max(1, min($fullyPaidPage - 1, $totalPagesFullyPaid - $maxVisiblePages + 1));
+        $endPage = min($startPage + $maxVisiblePages - 1, $totalPagesFullyPaid);
+        
+        for ($i = $startPage; $i <= $endPage; $i++): ?>
             <a href="?fullyPaidPage=<?php echo $i; ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm <?php echo $i == $fullyPaidPage ? 'bg-sidebar-accent text-white' : 'hover:bg-sidebar-hover'; ?>">
                 <?php echo $i; ?>
             </a>
@@ -951,7 +959,11 @@ $totalOutstanding = $countResult->fetch_assoc()['total'];
         
         <?php 
         $totalPagesOutstanding = ceil($totalOutstanding / $recordsPerPage);
-        for ($i = 1; $i <= $totalPagesOutstanding; $i++): ?>
+        $maxVisiblePages = 3;
+        $startPage = max(1, min($outstandingPage - 1, $totalPagesOutstanding - $maxVisiblePages + 1));
+        $endPage = min($startPage + $maxVisiblePages - 1, $totalPagesOutstanding);
+        
+        for ($i = $startPage; $i <= $endPage; $i++): ?>
             <a href="?outstandingPage=<?php echo $i; ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm <?php echo $i == $outstandingPage ? 'bg-sidebar-accent text-white' : 'hover:bg-sidebar-hover'; ?>">
                 <?php echo $i; ?>
             </a>
