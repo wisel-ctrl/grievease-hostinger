@@ -826,8 +826,24 @@ document.getElementById("customerPhone").addEventListener("input", function (e) 
 
     // Function to validate name input
     function validateNameInput(field) {
-        // Allow only letters, spaces, apostrophes, and hyphens
-        field.value = field.value.replace(/[^a-zA-Z\s'-]/g, '');
+        // First, remove any invalid characters
+        let newValue = field.value.replace(/[^a-zA-Z\s'-]/g, '');
+        
+        // Don't allow space as first character
+        if (newValue.startsWith(' ')) {
+            newValue = newValue.substring(1);
+        }
+        
+        // Don't allow consecutive spaces
+        newValue = newValue.replace(/\s{2,}/g, ' ');
+        
+        // Only allow space after at least 2 characters
+        if (newValue.length < 2 && newValue.includes(' ')) {
+            newValue = newValue.replace(/\s/g, '');
+        }
+        
+        // Update the field value
+        field.value = newValue;
         
         // Capitalize first letter of each word
         if (field.value.length > 0) {
