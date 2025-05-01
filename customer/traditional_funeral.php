@@ -1417,8 +1417,8 @@ document.addEventListener('DOMContentLoaded', function() {
         // Reset total to base price
         totalPackagePrice = basePackagePrice;
         
-        // Add casket info if selected and has a valid ID
-        if (selectedCasket && selectedCasket.id) {
+        // Add casket info if selected (simplified check)
+        if (selectedCasket) {
             summaryHTML += `<div class="flex justify-between text-sm">
                 <span>${selectedCasket.name}</span>
                 <span>₱${selectedCasket.price.toLocaleString()}</span>
@@ -1426,6 +1426,7 @@ document.addEventListener('DOMContentLoaded', function() {
             totalPackagePrice += selectedCasket.price;
         }
         
+        // Rest of the function remains the same...
         // Add flower arrangements info if selected
         if (selectedFlowers) {
             summaryHTML += `<div class="flex justify-between text-sm">
@@ -1459,6 +1460,10 @@ document.addEventListener('DOMContentLoaded', function() {
         // Update downpayment (30%)
         const downpayment = Math.ceil(totalPackagePrice * 0.3);
         document.getElementById('customDownpayment').textContent = `₱${downpayment.toLocaleString()}`;
+        console.log('Selected casket:', selectedCasket);
+        console.log('Selected flowers:', selectedFlowers);
+        console.log('Selected addons:', selectedAddons);
+        console.log('Current total:', totalPackagePrice);
     }
     updateCustomSummary();
     
