@@ -653,13 +653,10 @@ if ($branchResult->num_rows > 0) {
   
   <!-- Sticky Pagination Footer with improved spacing -->
   <div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
-  <div id="paginationInfo_<?php echo $branchId; ?>" class="text-sm text-gray-500 text-center sm:text-left">
-  Showing <?php 
-    $startItem = ($currentPage - 1) * $itemsPerPage + 1;
-    $endItem = min($currentPage * $itemsPerPage, $totalItems);
-    echo "$startItem - $endItem of $totalItems items"; 
-  ?>
-</div>
+    <div id="paginationInfo_<?php echo $branchId; ?>" class="text-sm text-gray-500 text-center sm:text-left">
+      Showing <?php echo min(($currentPage - 1) * $itemsPerPage + 1, $totalItems) . ' - ' . min($currentPage * $itemsPerPage, $totalItems); ?> 
+      of <?php echo $totalItems; ?> items
+    </div>
           <div class="flex space-x-2">
             <?php if ($currentPage > 1): ?>
                 <button onclick="loadPage(<?php echo $branchId; ?>, <?php echo $currentPage - 1 ?>)" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">&laquo;</button>
