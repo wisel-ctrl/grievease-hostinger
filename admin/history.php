@@ -69,6 +69,21 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
     $customers[] = $row;
 }
 
+// Pagination variables
+$recordsPerPage = 5; // Number of records per page
+
+// Ongoing Services Pagination
+$page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
+$offsetOngoing = ($page - 1) * $recordsPerPage;
+
+// Fully Paid Services Pagination
+$fullyPaidPage = isset($_GET['fullyPaidPage']) ? max(1, intval($_GET['fullyPaidPage'])) : 1;
+$offsetFullyPaid = ($fullyPaidPage - 1) * $recordsPerPage;
+
+// Outstanding Balance Services Pagination
+$outstandingPage = isset($_GET['outstandingPage']) ? max(1, intval($_GET['outstandingPage'])) : 1;
+$offsetOutstanding = ($outstandingPage - 1) * $recordsPerPage;
+
 ?>
 
 <!DOCTYPE html>
@@ -117,12 +132,11 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
         <?php
         // Count total ongoing services (status = 'Pending')
         $countQuery = "SELECT COUNT(*) as total FROM sales_tb WHERE status = 'Pending'";
-        $countResult = $conn->query($countQuery);
-        $totalOngoing = $countResult->fetch_assoc()['total'];
+$countResult = $conn->query($countQuery);
+$totalOngoing = $countResult->fetch_assoc()['total'];
         ?>
         
         <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
-          <i class="fas fa-clipboard-list"></i>
           <?php echo $totalOngoing . ($totalOngoing != 1 ? "" : ""); ?>
         </span>
       </div>
@@ -329,12 +343,13 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
           // Query for Ongoing Services (status = 'Pending')
           // Modify your ongoingQuery to include a check for assigned staff
           $ongoingQuery = "SELECT s.sales_id, s.fname, s.mname, s.lname, s.suffix, 
-          s.fname_deceased, s.mname_deceased, s.lname_deceased, s.suffix_deceased,
-          sv.service_name, s.date_of_burial, s.balance, s.status, s.customerID, s.payment_status,
-          (SELECT COUNT(*) FROM employee_service_payments esp WHERE esp.sales_id = s.sales_id) AS staff_assigned
-          FROM sales_tb s
-          JOIN services_tb sv ON s.service_id = sv.service_id
-          WHERE s.status = 'Pending'";
+                s.fname_deceased, s.mname_deceased, s.lname_deceased, s.suffix_deceased,
+                sv.service_name, s.date_of_burial, s.balance, s.status, s.customerID, s.payment_status,
+                (SELECT COUNT(*) FROM employee_service_payments esp WHERE esp.sales_id = s.sales_id) AS staff_assigned
+                FROM sales_tb s
+                JOIN services_tb sv ON s.service_id = sv.service_id
+                WHERE s.status = 'Pending'
+                LIMIT $offsetOngoing, $recordsPerPage";
           $ongoingResult = $conn->query($ongoingQuery);
           
           if ($ongoingResult->num_rows > 0) {
@@ -408,22 +423,28 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
   </div>
   
   <!-- Sticky Pagination Footer with improved spacing -->
-  <div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
+<div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
     <div id="paginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
-      Showing 1 - <?php echo $ongoingResult->num_rows; ?> of <?php echo $ongoingResult->num_rows; ?> services
+        Showing <?php echo ($offsetOngoing + 1) . ' - ' . min($offsetOngoing + $recordsPerPage, $totalOngoing); ?> of <?php echo $totalOngoing; ?> services
     </div>
     <div class="flex space-x-2">
-      <a href="<?php echo '?page=' . max(1, $page - 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo $page <= 1 ? 'opacity-50 pointer-events-none' : ''; ?>">&laquo;</a>
-      
-      <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-        <a href="<?php echo '?page=' . $i; ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm <?php echo $i == $page ? 'bg-sidebar-accent text-white' : 'hover:bg-sidebar-hover'; ?>">
-          <?php echo $i; ?>
-        </a>
-      <?php endfor; ?>
-      
-      <a href="<?php echo '?page=' . min($totalPages, $page + 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo $page >= $totalPages ? 'opacity-50 pointer-events-none' : ''; ?>">&raquo;</a>
+        <a href="?page=<?php echo max(1, $page - 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo $page <= 1 ? 'opacity-50 pointer-events-none' : ''; ?>">&laquo;</a>
+        
+        <?php 
+        $totalPagesOngoing = ceil($totalOngoing / $recordsPerPage);
+        $maxVisiblePages = 3; // Show only 3 page buttons at a time
+        $startPage = max(1, min($page - 1, $totalPagesOngoing - $maxVisiblePages + 1));
+        $endPage = min($startPage + $maxVisiblePages - 1, $totalPagesOngoing);
+        
+        for ($i = $startPage; $i <= $endPage; $i++): ?>
+            <a href="?page=<?php echo $i; ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm <?php echo $i == $page ? 'bg-sidebar-accent text-white' : 'hover:bg-sidebar-hover'; ?>">
+                <?php echo $i; ?>
+            </a>
+        <?php endfor; ?>
+        
+        <a href="?page=<?php echo min($totalPagesOngoing, $page + 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo $page >= $totalPagesOngoing ? 'opacity-50 pointer-events-none' : ''; ?>">&raquo;</a>
     </div>
-  </div>
+</div>
 </div>
 
   <!-- Past Services - Fully Paid Section -->
@@ -439,12 +460,11 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
         <?php
         // Count total fully paid services
         $countQuery = "SELECT COUNT(*) as total FROM sales_tb WHERE status = 'Completed' AND payment_status = 'Fully Paid' AND balance = 0";
-        $countResult = $conn->query($countQuery);
-        $totalServices = $countResult->fetch_assoc()['total'];
+$countResult = $conn->query($countQuery);
+$totalServices = $countResult->fetch_assoc()['total'];
         ?>
         
         <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
-          <i class="fas fa-clipboard-list"></i>
           <?php echo $totalServices . ($totalServices != 1 ? "" : ""); ?>
         </span>
       </div>
@@ -646,11 +666,12 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
           <?php
           // Query for Past Services - Fully Paid (status = 'Completed' AND payment_status = 'Fully Paid' AND balance = 0)
           $fullyPaidQuery = "SELECT s.sales_id, s.fname, s.mname, s.lname, s.suffix, 
-                            s.fname_deceased, s.mname_deceased, s.lname_deceased, s.suffix_deceased,
-                            sv.service_name, s.date_of_burial, s.balance, s.status, s.payment_status
-                            FROM sales_tb s
-                            JOIN services_tb sv ON s.service_id = sv.service_id
-                            WHERE s.status = 'Completed' AND s.payment_status = 'Fully Paid' AND s.balance = 0";
+                  s.fname_deceased, s.mname_deceased, s.lname_deceased, s.suffix_deceased,
+                  sv.service_name, s.date_of_burial, s.balance, s.status, s.payment_status
+                  FROM sales_tb s
+                  JOIN services_tb sv ON s.service_id = sv.service_id
+                  WHERE s.status = 'Completed' AND s.payment_status = 'Fully Paid' AND s.balance = 0
+                  LIMIT $offsetFullyPaid, $recordsPerPage";
           $fullyPaidResult = $conn->query($fullyPaidQuery);
           
           if ($fullyPaidResult->num_rows > 0) {
@@ -707,21 +728,26 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
   <!-- Sticky Pagination Footer with improved spacing -->
   <div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
     <div id="paginationInfoFullyPaid" class="text-sm text-gray-500 text-center sm:text-left">
-      Showing <?php echo min($fullyPaidResult->num_rows, 1); ?> - <?php echo $fullyPaidResult->num_rows; ?> 
-      of <?php echo $totalServices; ?> services
+        Showing <?php echo ($offsetFullyPaid + 1) . ' - ' . min($offsetFullyPaid + $recordsPerPage, $totalServices); ?> of <?php echo $totalServices; ?> services
     </div>
     <div class="flex space-x-2">
-      <a href="<?php echo '?page=' . max(1, $page - 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo $page <= 1 ? 'opacity-50 pointer-events-none' : ''; ?>">&laquo;</a>
-      
-      <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-        <a href="<?php echo '?page=' . $i; ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm <?php echo $i == $page ? 'bg-sidebar-accent text-white' : 'hover:bg-sidebar-hover'; ?>">
-          <?php echo $i; ?>
-        </a>
-      <?php endfor; ?>
-      
-      <a href="<?php echo '?page=' . min($totalPages, $page + 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo $page >= $totalPages ? 'opacity-50 pointer-events-none' : ''; ?>">&raquo;</a>
+        <a href="?fullyPaidPage=<?php echo max(1, $fullyPaidPage - 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo $fullyPaidPage <= 1 ? 'opacity-50 pointer-events-none' : ''; ?>">&laquo;</a>
+        
+        <?php 
+        $totalPagesFullyPaid = ceil($totalServices / $recordsPerPage);
+        $maxVisiblePages = 3;
+        $startPage = max(1, min($fullyPaidPage - 1, $totalPagesFullyPaid - $maxVisiblePages + 1));
+        $endPage = min($startPage + $maxVisiblePages - 1, $totalPagesFullyPaid);
+        
+        for ($i = $startPage; $i <= $endPage; $i++): ?>
+            <a href="?fullyPaidPage=<?php echo $i; ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm <?php echo $i == $fullyPaidPage ? 'bg-sidebar-accent text-white' : 'hover:bg-sidebar-hover'; ?>">
+                <?php echo $i; ?>
+            </a>
+        <?php endfor; ?>
+        
+        <a href="?fullyPaidPage=<?php echo min($totalPagesFullyPaid, $fullyPaidPage + 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo $fullyPaidPage >= $totalPagesFullyPaid ? 'opacity-50 pointer-events-none' : ''; ?>">&raquo;</a>
     </div>
-  </div>
+</div>
 </div>
 
   <!-- Past Services - With Outstanding Balance Section -->
@@ -733,9 +759,15 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
             <!-- Title and Counter -->
             <div class="flex items-center gap-3 mb-4 lg:mb-0">
                 <h3 class="text-lg font-bold text-sidebar-text whitespace-nowrap">Past Services - With Outstanding Balance</h3>
+
+                <?php
+                // Count total with outstanding balance
+$countQuery = "SELECT COUNT(*) as total FROM sales_tb WHERE status = 'Completed' AND payment_status = 'With Balance'";
+$countResult = $conn->query($countQuery);
+$totalOutstanding = $countResult->fetch_assoc()['total'];
+?>
                 
                 <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
-                  <i class="fas fa-clipboard-list"></i>
                   <?php echo $totalWithBalance . ($totalWithBalance != 1 ? "" : ""); ?>
                 </span>
             </div>
@@ -851,11 +883,12 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
                     <?php
                     // Query for Past Services - With Balance (status = 'Completed' AND payment_status = 'With Balance')
                     $withBalanceQuery = "SELECT s.sales_id, s.fname, s.mname, s.lname, s.suffix, 
-                                        s.fname_deceased, s.mname_deceased, s.lname_deceased, s.suffix_deceased,
-                                        sv.service_name, s.date_of_burial, s.balance, s.status, s.payment_status
-                                        FROM sales_tb s
-                                        JOIN services_tb sv ON s.service_id = sv.service_id
-                                        WHERE s.status = 'Completed' AND s.payment_status = 'With Balance'";
+                    s.fname_deceased, s.mname_deceased, s.lname_deceased, s.suffix_deceased,
+                    sv.service_name, s.date_of_burial, s.balance, s.status, s.payment_status
+                    FROM sales_tb s
+                    JOIN services_tb sv ON s.service_id = sv.service_id
+                    WHERE s.status = 'Completed' AND s.payment_status = 'With Balance'
+                    LIMIT $offsetOutstanding, $recordsPerPage";
                     $withBalanceResult = $conn->query($withBalanceQuery);
                     
                     if ($withBalanceResult->num_rows > 0) {
@@ -915,22 +948,27 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
   
     <!-- Sticky Pagination Footer with improved spacing -->
     <div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
-        <div id="paginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
-            Showing <?php echo ($offset + 1) . ' - ' . min($offset + $recordsPerPage, $totalOutstanding); ?> 
-            of <?php echo $totalOutstanding; ?> records
-        </div>
-        <div class="flex space-x-2">
-            <a href="<?php echo '?outstandingPage=' . max(1, $currentPage - 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo $currentPage <= 1 ? 'opacity-50 pointer-events-none' : ''; ?>">&laquo;</a>
-            
-            <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-                <a href="<?php echo '?outstandingPage=' . $i; ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm <?php echo $i == $currentPage ? 'bg-sidebar-accent text-white' : 'hover:bg-sidebar-hover'; ?>">
-                    <?php echo $i; ?>
-                </a>
-            <?php endfor; ?>
-            
-            <a href="<?php echo '?outstandingPage=' . min($totalPages, $currentPage + 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo $currentPage >= $totalPages ? 'opacity-50 pointer-events-none' : ''; ?>">&raquo;</a>
-        </div>
+    <div id="paginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
+        Showing <?php echo ($offsetOutstanding + 1) . ' - ' . min($offsetOutstanding + $recordsPerPage, $totalOutstanding); ?> of <?php echo $totalOutstanding; ?> records
     </div>
+    <div class="flex space-x-2">
+        <a href="?outstandingPage=<?php echo max(1, $outstandingPage - 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo $outstandingPage <= 1 ? 'opacity-50 pointer-events-none' : ''; ?>">&laquo;</a>
+        
+        <?php 
+        $totalPagesOutstanding = ceil($totalOutstanding / $recordsPerPage);
+        $maxVisiblePages = 3;
+        $startPage = max(1, min($outstandingPage - 1, $totalPagesOutstanding - $maxVisiblePages + 1));
+        $endPage = min($startPage + $maxVisiblePages - 1, $totalPagesOutstanding);
+        
+        for ($i = $startPage; $i <= $endPage; $i++): ?>
+            <a href="?outstandingPage=<?php echo $i; ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm <?php echo $i == $outstandingPage ? 'bg-sidebar-accent text-white' : 'hover:bg-sidebar-hover'; ?>">
+                <?php echo $i; ?>
+            </a>
+        <?php endfor; ?>
+        
+        <a href="?outstandingPage=<?php echo min($totalPagesOutstanding, $outstandingPage + 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo $outstandingPage >= $totalPagesOutstanding ? 'opacity-50 pointer-events-none' : ''; ?>">&raquo;</a>
+    </div>
+</div>
 </div>
 
   <!-- Modal for Editing Service -->
