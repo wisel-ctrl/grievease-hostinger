@@ -1489,11 +1489,11 @@ if ($result->num_rows > 0) {
         <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
             <!-- Title and Counter -->
             <!-- In account_management.php, find the Employee Accounts section header -->
-<div class="flex items-center gap-3 mb-4 lg:mb-0">
+            <div class="flex items-center gap-3 mb-4 lg:mb-0">
     <h3 class="text-lg font-bold text-sidebar-text whitespace-nowrap">Employee Accounts</h3>
     <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
         <i class="fas fa-user-circle"></i>
-        <span id="totalEmployees"><?php echo $totalEmployees; ?></span>
+        <span id="totalEmployees"><?php echo $totalRows; ?></span>
     </span>
 </div>
             
@@ -2267,12 +2267,15 @@ document.addEventListener('DOMContentLoaded', function() {
         xhr.open('GET', url, true);
         
         xhr.onload = function() {
-            if (xhr.status === 200) {
-                // Parse the JSON response
-                const response = JSON.parse(xhr.responseText);
-                
-                // Update table body
-                employeeTableBody.innerHTML = response.tableContent;
+        if (xhr.status === 200) {
+            // Parse the JSON response
+            const response = JSON.parse(xhr.responseText);
+            
+            // Update table body
+            employeeTableBody.innerHTML = response.tableContent;
+
+            // Update total employees count
+            document.getElementById('totalEmployees').textContent = response.totalCount;
 
                 
                 
