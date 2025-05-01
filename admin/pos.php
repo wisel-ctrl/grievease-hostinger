@@ -219,6 +219,37 @@ $servicesJson = json_encode($allServices);
 
 
   </div>
+  <script>
+function validateSearchInput(input) {
+  const errorElement = document.getElementById('search-error');
+  let value = input.value;
+  
+  // Check if first character is space
+  if (value.length > 0 && value.charAt(0) === ' ') {
+    errorElement.classList.remove('hidden');
+    input.value = value.trim();
+    return;
+  }
+  
+  // Check for consecutive spaces
+  if (value.includes('  ')) {
+    errorElement.classList.remove('hidden');
+    input.value = value.replace(/\s+/g, ' ');
+    return;
+  }
+  
+  errorElement.classList.add('hidden');
+  
+  // Auto-capitalize first letter
+  if (value.length === 1) {
+    input.value = value.charAt(0).toUpperCase() + value.slice(1);
+  }
+  
+  // Optional: Trigger search as user types
+  // You can add debounce functionality here if needed
+  // performSearch(input.value);
+}
+</script>
 
     <!-- Package Modal -->
 <div id="package-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto">
