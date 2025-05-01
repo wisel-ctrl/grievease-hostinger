@@ -1949,8 +1949,28 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Here you would normally submit to PHP handler
             // For now we'll just show an alert
-            alert('Custom package booking data logged to console. Check developer tools.');
-            closeAllModals();
+            // Send data to PHP handler
+            fetch('booking/insert_custom_booking.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(customBookingData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alert('Custom package booking created successfully! Booking ID: ' + data.bookingId);
+                    closeAllModals();
+                    // Optionally redirect or refresh the page
+                } else {
+                    alert('Error creating booking: ' + data.message);
+                }
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                alert('An error occurred while submitting the form.');
+            });
         } else {
             // Gather all form data
         const packageData = {
