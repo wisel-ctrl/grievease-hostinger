@@ -2652,14 +2652,23 @@ function fetchBookingForModification(bookingId) {
                 document.getElementById('modify-branch-id').value = data.branch_id;
                 
                 // Display service package and branch name in read-only divs
-                document.getElementById('display-service-package').textContent = data.service_name + 
-                    ' (₱' + parseFloat(data.selling_price).toFixed(2) + ')';
+                document.getElementById('display-service-package').textContent = 
+                    `${data.service_name} (₱${parseFloat(data.selling_price).toFixed(2)})`;
                 document.getElementById('display-branch-location').textContent = data.branch_name;
                 
                 // Set dates
-                form.querySelector('input[name="deceased_dateOfBurial"]').value = data.deceased_dateOfBurial || '';
-                form.querySelector('input[name="deceased_birth"]').value = data.deceased_birth || '';
-                form.querySelector('input[name="deceased_dodeath"]').value = data.deceased_dodeath || '';
+                if (data.deceased_dateOfBurial) {
+                    form.querySelector('input[name="deceased_dateOfBurial"]').value = 
+                        formatDateForInput(data.deceased_dateOfBurial);
+                }
+                if (data.deceased_birth) {
+                    form.querySelector('input[name="deceased_birth"]').value = 
+                        formatDateForInput(data.deceased_birth);
+                }
+                if (data.deceased_dodeath) {
+                    form.querySelector('input[name="deceased_dodeath"]').value = 
+                        formatDateForInput(data.deceased_dodeath);
+                }
                 
                 // Set deceased info
                 form.querySelector('input[name="deceased_fname"]').value = data.deceased_fname || '';
@@ -2667,7 +2676,28 @@ function fetchBookingForModification(bookingId) {
                 form.querySelector('input[name="deceased_lname"]').value = data.deceased_lname || '';
                 form.querySelector('input[name="deceased_suffix"]').value = data.deceased_suffix || '';
                 form.querySelector('textarea[name="deceased_address"]').value = data.deceased_address || '';
-                form.querySelector('input[name="with_cremate"]').checked = data.with_cremate == 'yes' || data.with_cremate == 1;
+                form.querySelector('input[name="with_cremate"]').checked = data.with_cremate == 1 || data.with_cremate === 'yes';
+                
+                // Set document information
+                const deathCertInput = form.querySelector('input[name="death_certificate"]');
+                const paymentProofInput = form.querySelector('input[name="payment_proof"]');
+                
+                // Add current file information if available
+                if (data.death_certificate) {
+                    const deathCertContainer = deathCertInput.parentNode;
+                    const currentFile = document.createElement('p');
+                    currentFile.className = 'text-sm text-gray-500 mt-1';
+                    currentFile.textContent = `Current file: ${data.death_certificate.split('/').pop()}`;
+                    deathCertContainer.appendChild(currentFile);
+                }
+                
+                if (data.payment_proof) {
+                    const paymentProofContainer = paymentProofInput.parentNode;
+                    const currentFile = document.createElement('p');
+                    currentFile.className = 'text-sm text-gray-500 mt-1';
+                    currentFile.textContent = `Current file: ${data.payment_proof.split('/').pop()}`;
+                    paymentProofContainer.appendChild(currentFile);
+                }
                 
                 // Show the modal
                 document.getElementById('modifyBookingModal').classList.remove('hidden');
@@ -2692,7 +2722,7 @@ function submitBookingModification() {
     
     fetch('booking/update_booking.php', {
         method: 'POST',
-        body: formData // FormData will automatically handle file uploads
+        body: formData
     })
     .then(response => response.json())
     .then(data => {
@@ -2714,97 +2744,11 @@ function submitBookingModification() {
     })
     .finally(() => {
         submitBtn.disabled = false;
-        submitBtn.innerHTML = '<i class="fas fa-save mr-2"></i> Save Changes';
+        submitBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>Save Changes';
     });
 }
 
-// Function to send OTP
-document.getElementById('sendOtpBtn').addEventListener('click', function() {
-    const bookingId = document.getElementById('cancel-booking-id').value;
-    if (!bookingId) {
-        showError('No booking selected');
-        return;
-    }
-    
-    // Disable button to prevent multiple clicks
-    const otpBtn = this;
-    otpBtn.disabled = true;
-    otpBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Sending...';
-    
-    fetch('profile/send_cancel_otp.php', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ booking_id: bookingId })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            showSuccess('OTP sent to your email!');
-            document.getElementById('otpInput').focus();
-        } else {
-            showError(data.message || 'Failed to send OTP');
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        showError('Failed to send OTP');
-    })
-    .finally(() => {
-        otpBtn.disabled = false;
-        otpBtn.textContent = 'Send OTP';
-    });
-});
 
-// Form submission handler
-document.getElementById('cancelBookingForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    const form = this;
-    const formData = new FormData(form);
-    const submitBtn = form.querySelector('button[type="submit"]');
-    
-    // Disable submit button during processing
-    submitBtn.disabled = true;
-    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Processing...';
-    
-    fetch('profile/cancel_booking.php', {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            showSuccess('Booking cancelled successfully!');
-            // Close modal and update UI without full page reload
-            document.getElementById('cancelBookingModal').classList.add('hidden');
-            
-            // Option 1: If you're using a bookings list, refresh just that section
-            // loadBookings(); // Your function to reload bookings
-            
-            // Option 2: If you must reload, delay slightly for user to see success message
-            setTimeout(() => {
-                // Only reload if necessary
-                if (window.location.pathname.includes('profile')) {
-                    window.location.reload();
-                } else {
-                    // Update UI as needed
-                }
-            }, 1500);
-        } else {
-            showError(data.message || 'Failed to cancel booking');
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        showError('An error occurred while cancelling booking');
-    })
-    .finally(() => {
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = '<i class="fas fa-times mr-2"></i> Confirm Cancellation';
-    });
-});
 
 // Remove the redundant submitBookingCancellation() function
 
