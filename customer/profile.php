@@ -3471,6 +3471,46 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+// Deceased Address Validation (same as street address validation)
+function validateDeceasedAddress(input) {
+    // Remove any leading spaces
+    let value = input.value.replace(/^\s+/, '');
+    
+    // Remove multiple consecutive spaces
+    value = value.replace(/\s{2,}/g, ' ');
+    
+    // Capitalize first letter of the string if it exists
+    if (value.length > 0) {
+        value = value.charAt(0).toUpperCase() + value.slice(1);
+    }
+    
+    // Update the input value
+    input.value = value;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Deceased Address field in modify modal
+    const deceasedAddressInput = document.querySelector('#modifyBookingForm textarea[name="deceased_address"]');
+    if (deceasedAddressInput) {
+        deceasedAddressInput.addEventListener('input', function() {
+            validateDeceasedAddress(this);
+        });
+        
+        deceasedAddressInput.addEventListener('blur', function() {
+            validateDeceasedAddress(this);
+        });
+        
+        // Prevent pasting text that starts with space
+        deceasedAddressInput.addEventListener('paste', function(e) {
+            e.preventDefault();
+            const pastedText = (e.clipboardData || window.clipboardData).getData('text');
+            let cleanedText = pastedText.replace(/^\s+/, ''); // Remove leading spaces
+            cleanedText = cleanedText.replace(/\s{2,}/g, ' '); // Remove multiple spaces
+            document.execCommand('insertText', false, cleanedText);
+        });
+    }
+});
+
 // Form validation function
 function validateForm() {
     let isValid = true;
