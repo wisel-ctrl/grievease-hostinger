@@ -791,6 +791,8 @@ if ($branchResult->num_rows > 0) {
         <a href="<?php echo '?page=' . min($totalBranchPages, $branchPage + 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo $branchPage >= $totalBranchPages ? 'opacity-50 pointer-events-none' : ''; ?>">&raquo;</a>
     </div>
 </div>
+        </div>
+        </div>
 
 <?php
     } // End branch while loop
