@@ -1892,7 +1892,7 @@ document.addEventListener('DOMContentLoaded', function() {
       </div>
       
       <!-- Modal Footer -->
-      <div class="px-6 py-4 flex flex-col sm:flex-row sm:justify-end gap-3 border-t border-gray-200 bg-white">
+      <div class="modal-sticky-footer px-6 py-4 flex flex-col sm:flex-row sm:justify-end gap-3 border-t border-gray-200 bg-white">
         <button class="w-full sm:w-auto px-6 py-3 bg-white border border-yellow-600 text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center" id="cancel-change-password">
           Cancel
         </button>
@@ -3768,7 +3768,7 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
         
         <!-- Modal Footer -->
-        <div class="p-6 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
+        <div class="modal-sticky-footer p-6 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
             <button class="px-5 py-3 bg-white border border-yellow-600 text-gray-800 rounded-lg font-semibold hover:bg-navy transition-colors" onclick="closeAddPaymentModal()">Cancel</button>
             <button class="px-6 py-3 bg-yellow-600 text-white rounded-lg font-semibold hover:bg-darkgold transition-colors flex items-center">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
