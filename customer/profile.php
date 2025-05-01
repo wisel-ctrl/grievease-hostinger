@@ -1991,27 +1991,30 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
         
         <!-- Payment Information Card -->
-        <div class="bg-white rounded-xl shadow-sm p-5 mb-6">
-          <div class="flex items-center mb-4">
-            <h4 class="font-semibold text-navy text-lg">Payment Information</h4>
-          </div>
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div class="bg-gray-50 p-4 rounded-lg border border-gray-100">
-              <div class="flex items-center mb-1">
-                <i class="fas fa-check-circle text-green-500 mr-2"></i>
-                <p class="text-gray-600 font-medium">Amount Paid</p>
-              </div>
-              <p id="detail-paid" class="text-navy font-bold text-lg"></p>
-            </div>
-            <div class="bg-gray-50 p-4 rounded-lg border border-gray-100">
-              <div class="flex items-center mb-1">
-                <i class="fas fa-balance-scale text-blue-500 mr-2"></i>
-                <p class="text-gray-600 font-medium">Balance</p>
-              </div>
-              <p id="detail-balance" class="text-navy font-bold text-lg"></p>
-            </div>
-          </div>
-        </div>
+<div class="bg-white rounded-xl shadow-sm p-5 mb-6">
+  <div class="flex items-center mb-4">
+    <h4 class="font-semibold text-navy text-lg">Payment Information</h4>
+  </div>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div class="bg-gray-50 p-4 rounded-lg border border-gray-100 flex items-center">
+      <div class="bg-green-100 p-3 rounded-full mr-4">
+        <i class="fas fa-check-circle text-green-600 text-xl"></i>
+      </div>
+      <div class="flex-grow">
+        <p class="text-gray-600 font-medium">Amount Paid</p>
+        <p id="detail-paid" class="text-navy font-bold text-xl"></p>
+      </div>
+    </div>
+    <div class="bg-gray-50 p-4 rounded-lg border border-gray-100 flex items-center">
+      <div class="bg-blue-100 p-3 rounded-full mr-4">
+        <i class="fas fa-balance-scale text-blue-600 text-xl"></i>
+      </div>
+      <div class="flex-grow">
+        <p class="text-gray-600 font-medium">Balance</p>
+        <p id="detail-balance" class="text-navy font-bold text-xl"></p>
+      </div>
+    </div>
+  </div>
 
         <!-- Documents Section -->
         <div class="bg-white rounded-xl shadow-sm p-5">
