@@ -283,15 +283,6 @@ header("Pragma: no-cache");
     background-color: #d4a933;
     border-radius: 6px;
 }
-
- /* Add this to your existing styles */
- .sticky-sidebar {
-    /* Default styles for mobile/small screens */
-    position: static;
-    height: auto;
-    overflow-y: visible;
-}
-
     
     /* Add this to your existing styles */
     .modal-sticky-footer {
