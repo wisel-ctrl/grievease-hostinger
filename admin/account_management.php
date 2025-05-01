@@ -934,16 +934,47 @@ document.getElementById("customerPhone").addEventListener("input", function (e) 
     function validateEmail() {
         const emailField = document.getElementById('customerEmail');
         if (emailField) {
-            // Remove any spaces from the email
-            emailField.value = emailField.value.replace(/\s/g, '');
+            // Remove any spaces from the email in real-time
+            if (emailField.value.includes(' ')) {
+                emailField.value = emailField.value.replace(/\s/g, '');
+            }
             
-            // Check if email contains @ symbol
-            if (!emailField.value.includes('@')) {
-                emailField.setCustomValidity('Email must contain @ symbol');
+            // Check basic email format requirements
+            if (emailField.value.length > 0) {
+                if (!emailField.value.includes('@')) {
+                    emailField.setCustomValidity('Email must contain @ symbol');
+                } else if (emailField.value.indexOf('@') === 0) {
+                    emailField.setCustomValidity('Email cannot start with @');
+                } else if (emailField.value.indexOf('@') === emailField.value.length - 1) {
+                    emailField.setCustomValidity('Email cannot end with @');
+                } else {
+                    emailField.setCustomValidity('');
+                }
             } else {
                 emailField.setCustomValidity('');
             }
         }
+    }
+
+    const emailField = document.getElementById('customerEmail');
+    if (emailField) {
+        // Validate on every input
+        emailField.addEventListener('input', validateEmail);
+        
+        // Prevent pasting spaces
+        emailField.addEventListener('paste', function(e) {
+            e.preventDefault();
+            const pastedText = (e.clipboardData || window.clipboardData).getData('text');
+            const cleanedText = pastedText.replace(/\s/g, '');
+            document.execCommand('insertText', false, cleanedText);
+        });
+        
+        // Prevent spacebar key
+        emailField.addEventListener('keydown', function(e) {
+            if (e.key === ' ' || e.code === 'Space') {
+                e.preventDefault();
+            }
+        });
     }
 
     // Validate Philippine phone number
