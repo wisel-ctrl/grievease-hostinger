@@ -904,6 +904,35 @@ document.getElementById("customerPhone").addEventListener("input", function (e) 
         applyRequiredValidation(field);
     });
 
+    // Validate birthdate to ensure user is at least 18 years old
+    function validateBirthdate() {
+        const birthdateField = document.getElementById('birthdate');
+        if (birthdateField) {
+            const selectedDate = new Date(birthdateField.value);
+            const today = new Date();
+            const minBirthdate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
+            
+            if (selectedDate > minBirthdate) {
+                birthdateField.setCustomValidity('Customer must be at least 18 years old');
+            } else {
+                birthdateField.setCustomValidity('');
+            }
+        }
+    }
+
+    // Set max date for birthdate field to 18 years ago
+    function setMaxBirthdate() {
+        const birthdateField = document.getElementById('birthdate');
+        if (birthdateField) {
+            const today = new Date();
+            const maxDate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
+            birthdateField.max = maxDate.toISOString().split('T')[0];
+        }
+    }
+
+    // Initialize max birthdate when page loads
+    setMaxBirthdate();
+
     // Existing event listeners for the customer form
     document.getElementById('firstName').addEventListener('input', validateFirstName);
     document.getElementById('middleName').addEventListener('input', validateMiddleName);
