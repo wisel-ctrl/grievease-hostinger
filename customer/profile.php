@@ -4088,6 +4088,48 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 <script>
 
+    // Add this inside your DOMContentLoaded event listener
+document.addEventListener('DOMContentLoaded', function() {
+    // Apply to main profile fields
+    const firstName = document.getElementById('firstName');
+    const lastName = document.getElementById('lastName');
+    const middleName = document.getElementById('middleName');
+    
+    if (firstName) handleNameInput(firstName);
+    if (lastName) handleNameInput(lastName);
+    if (middleName) handleNameInput(middleName);
+
+    // Apply to edit profile modal fields when modal opens
+    document.getElementById('edit-profile-btn').addEventListener('click', function() {
+        // Wait for modal to be fully opened
+        setTimeout(() => {
+            const modalFirstName = document.getElementById('firstName');
+            const modalLastName = document.getElementById('lastName');
+            const modalMiddleName = document.getElementById('middleName');
+            
+            if (modalFirstName) handleNameInput(modalFirstName);
+            if (modalLastName) handleNameInput(modalLastName);
+            if (modalMiddleName) handleNameInput(modalMiddleName);
+        }, 100);
+    });
+
+    // Apply to modify booking modal fields when modal opens
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('.modify-booking')) {
+            // Wait for modal to be fully opened
+            setTimeout(() => {
+                const deceasedFname = document.querySelector('#modifyBookingForm input[name="deceased_fname"]');
+                const deceasedMidname = document.querySelector('#modifyBookingForm input[name="deceased_midname"]');
+                const deceasedLname = document.querySelector('#modifyBookingForm input[name="deceased_lname"]');
+                
+                if (deceasedFname) handleNameInput(deceasedFname);
+                if (deceasedMidname) handleNameInput(deceasedMidname);
+                if (deceasedLname) handleNameInput(deceasedLname);
+            }, 100);
+        }
+    });
+});
+
 // Enhanced name validation function
 function validateName(input) {
     const value = input.value.trim();
