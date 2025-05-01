@@ -1467,12 +1467,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Additional services checkboxes (traditional modal)
-    document.querySelectorAll('.traditional-addon').forEach(checkbox => {
-        checkbox.addEventListener('change', function() {
-            updateTraditionalPaymentSummary();
-        });
-    });
     
     // Function to check if required selections are made
     function checkRequiredSelections() {
@@ -1733,35 +1727,9 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Traditional addon checkbox event handling
-    document.querySelectorAll('.traditional-addon').forEach(checkbox => {
-        checkbox.addEventListener('change', function() {
-            updateTraditionalTotal();
-        });
-    });
+    
 
-    // Function to update traditional total price when addons are selected
-    function updateTraditionalTotal() {
-        const basePrice = parseInt(sessionStorage.getItem('selectedPackagePrice') || '0');
-        let addonTotal = 0;
-        
-        // Calculate addons total
-        document.querySelectorAll('.traditional-addon:checked').forEach(checkbox => {
-            addonTotal += parseInt(checkbox.value);
-        });
-        
-        // Update totals
-        const totalPrice = basePrice + addonTotal;
-        const downpayment = Math.ceil(totalPrice * 0.3);
-        
-        document.getElementById('traditionalTotalPrice').textContent = `₱${totalPrice.toLocaleString()}`;
-        document.getElementById('traditionalDownpayment').textContent = `₱${downpayment.toLocaleString()}`;
-        document.getElementById('traditionalAmountDue').textContent = `₱${downpayment.toLocaleString()}`;
-        
-        // Update hidden fields
-        document.getElementById('traditionalSelectedPackagePrice').value = totalPrice;
-    }
-
+    
     // Function to open traditional modal with package details
     function openTraditionalModal() {
         // Get stored package details
