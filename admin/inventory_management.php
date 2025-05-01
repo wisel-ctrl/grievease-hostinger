@@ -708,12 +708,13 @@ if ($branchResult->num_rows > 0) {
     </div>
     
     <!-- Modal Body -->
-    <div class="px-4 sm:px-6 py-4 sm:py-5" id="itemDetailsContent">
-      <!-- Item details will be loaded here via AJAX -->
-      <div class="flex justify-center">
-        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-sidebar-accent"></div>
-      </div>
-    </div>
+    <!-- Update the modal body section in inventory_management.php -->
+<div class="px-4 sm:px-6 py-4 sm:py-5" id="itemDetailsContent">
+  <!-- Item details will be loaded here via AJAX -->
+  <div class="flex justify-center">
+    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-sidebar-accent"></div>
+  </div>
+</div>
     
     <!-- Modal Footer -->
     <div class="px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row sm:justify-end gap-2 sm:gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
