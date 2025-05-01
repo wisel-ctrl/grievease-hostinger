@@ -762,7 +762,11 @@ if ($branchResult->num_rows > 0) {
             Item Name <span class="text-red-500">*</span>
           </label>
           <div class="relative">
-            <input type="text" id="itemName" name="itemName" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="Item Name">
+            <input type="text" id="itemName" name="itemName" required 
+                   class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
+                   placeholder="Item Name"
+                   oninput="validateItemName(this)">
+            <div id="itemNameError" class="text-red-500 text-xs mt-1 hidden">Item name cannot start with space or have consecutive spaces</div>
           </div>
         </div>
         
@@ -840,7 +844,10 @@ if ($branchResult->num_rows > 0) {
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <span class="text-gray-500">₱</span>
             </div>
-            <input type="number" id="unitPrice" name="unitPrice" step="0.01" required class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="0.00">
+            <input type="number" id="unitPrice" name="unitPrice" step="0.01" min="0" required 
+                   class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
+                   placeholder="0.00"
+                   oninput="validateUnitPrice(this)">
           </div>
         </div>
         
@@ -850,8 +857,13 @@ if ($branchResult->num_rows > 0) {
             Upload Item Image
           </label>
           <div class="relative">
+            <div id="imagePreviewContainer" class="hidden mb-3">
+              <img id="imagePreview" src="#" alt="Preview" class="max-h-40 rounded-lg border border-gray-300">
+            </div>
             <div class="flex items-center border border-gray-300 rounded-lg px-3 py-2 focus-within:ring-1 focus-within:ring-sidebar-accent focus-within:border-sidebar-accent transition-all duration-200">
-              <input type="file" id="itemImage" name="itemImage" accept="image/*" class="w-full focus:outline-none">
+              <input type="file" id="itemImage" name="itemImage" accept="image/*" 
+                     class="w-full focus:outline-none"
+                     onchange="previewImage(this)">
             </div>
           </div>
         </div>
@@ -869,6 +881,74 @@ if ($branchResult->num_rows > 0) {
     </div>
   </div>
 </div>
+
+<script>
+// Item Name Validation
+function validateItemName(input) {
+  const errorElement = document.getElementById('itemNameError');
+  let value = input.value;
+  
+  // Check if first character is space
+  if (value.length > 0 && value.charAt(0) === ' ') {
+    errorElement.classList.remove('hidden');
+    input.value = value.trim();
+    return;
+  }
+  
+  // Check for consecutive spaces
+  if (value.includes('  ')) {
+    errorElement.classList.remove('hidden');
+    input.value = value.replace(/\s+/g, ' ');
+    return;
+  }
+  
+  errorElement.classList.add('hidden');
+  
+  // Auto-capitalize first letter
+  if (value.length === 1) {
+    input.value = value.charAt(0).toUpperCase() + value.slice(1);
+  }
+}
+
+// Unit Price Validation
+function validateUnitPrice(input) {
+  if (input.value < 0) {
+    input.value = '';
+  }
+}
+
+// Image Preview Functionality
+function previewImage(input) {
+  const previewContainer = document.getElementById('imagePreviewContainer');
+  const preview = document.getElementById('imagePreview');
+  
+  if (input.files && input.files[0]) {
+    const reader = new FileReader();
+    
+    reader.onload = function(e) {
+      preview.src = e.target.result;
+      previewContainer.classList.remove('hidden');
+    }
+    
+    reader.readAsDataURL(input.files[0]);
+  } else {
+    previewContainer.classList.add('hidden');
+    preview.src = '#';
+  }
+}
+
+// Form submission validation
+document.getElementById('addInventoryForm').addEventListener('submit', function(e) {
+  const itemName = document.getElementById('itemName').value;
+  
+  // Final validation for item name
+  if (itemName.trim() === '' || itemName.charAt(0) === ' ' || itemName.includes('  ')) {
+    e.preventDefault();
+    document.getElementById('itemNameError').classList.remove('hidden');
+    document.getElementById('itemName').focus();
+  }
+});
+</script>
 
 <!-- Edit Inventory Modal -->
 
