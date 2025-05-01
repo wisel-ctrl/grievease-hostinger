@@ -3074,6 +3074,69 @@ document.addEventListener('DOMContentLoaded', function() {
         applyRequiredValidation(field);
     });
 });
+
+// Date validation for modify booking modal
+document.addEventListener('DOMContentLoaded', function() {
+    // Get the date input fields
+    const dobInput = document.querySelector('input[name="deceased_birth"]');
+    const dodInput = document.querySelector('input[name="deceased_dodeath"]');
+    
+    if (dobInput && dodInput) {
+        // Set max date for Date of Birth (today)
+        const today = new Date().toISOString().split('T')[0];
+        dobInput.setAttribute('max', today);
+        
+        // Date of Birth validation
+        dobInput.addEventListener('change', function() {
+            const dob = new Date(this.value);
+            const today = new Date();
+            
+            // Validate Date of Birth is in the past
+            if (dob >= today) {
+                alert('Date of Birth must be in the past');
+                this.value = '';
+                return;
+            }
+            
+            // If Date of Death is already set, validate it
+            if (dodInput.value) {
+                validateDeathDate(dob, new Date(dodInput.value));
+            }
+        });
+        
+        // Date of Death validation
+        dodInput.addEventListener('change', function() {
+            if (!dobInput.value) {
+                alert('Please enter Date of Birth first');
+                this.value = '';
+                return;
+            }
+            
+            const dob = new Date(dobInput.value);
+            const dod = new Date(this.value);
+            
+            validateDeathDate(dob, dod);
+        });
+        
+        function validateDeathDate(dob, dod) {
+            const today = new Date();
+            
+            // Date of Death must be after Date of Birth
+            if (dod <= dob) {
+                alert('Date of Death must be after Date of Birth');
+                dodInput.value = '';
+                return;
+            }
+            
+            // Date of Death must be today or in the past
+            if (dod > today) {
+                alert('Date of Death cannot be in the future');
+                dodInput.value = '';
+                return;
+            }
+        }
+    }
+});
     // Function to load address data when modal opens
 function loadAddressData() {
     const regionId = document.getElementById('region').value;
