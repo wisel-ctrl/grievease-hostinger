@@ -1792,73 +1792,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Function to fetch caskets based on branch_id
-    function fetchCasketsByBranch() {
-        // Get the branch_id from session (you may need to pass this from PHP to JS)
-        const branchId = <?php echo  $_SESSION['branch_loc'] ?>;
-        
-        // Make an AJAX request to fetch caskets
-        fetch(`booking/fetch_caskets.php?branch_id=${branchId}`)
-            .then(response => response.json())
-            .then(data => {
-                const container = document.getElementById('casketOptionsContainer');
-                container.innerHTML = '';
-                
-                if (data.length === 0) {
-                    container.innerHTML = '<p class="text-gray-500 col-span-3 text-center py-8">No caskets available for this branch.</p>';
-                    return;
-                }
-                
-                data.forEach(casket => {
-                    const casketOption = document.createElement('div');
-                    casketOption.className = 'border rounded-lg p-4 cursor-pointer casket-option';
-                    casketOption.dataset.price = casket.price;
-                    casketOption.dataset.name = casket.item_name;
-                    casketOption.dataset.id = casket.inventory_id;
-                    
-                    casketOption.innerHTML = `
-                        <img src="${casket.inventory_img || '/api/placeholder/300/200'}" alt="${casket.item_name}" class="w-full h-32 object-cover rounded-lg mb-2">
-                        <h5 class="font-medium mb-1">${casket.item_name}</h5>
-                        <p class="text-yellow-600">₱${casket.price.toLocaleString()}</p>
-                    `;
-                    
-                    casketOption.addEventListener('click', function() {
-                        // Clear previous selection
-                        document.querySelectorAll('.casket-option').forEach(el => {
-                            el.classList.remove('border-yellow-600', 'border-2');
-                        });
-                        
-                        // Mark this option as selected
-                        this.classList.add('border-yellow-600', 'border-2');
-                        
-                        // Store selected casket
-                        selectedCasket = {
-                            id: this.dataset.id,
-                            name: this.dataset.name,
-                            price: parseInt(this.dataset.price)
-                        };
-                        
-                        updateCustomSummary();
-                        checkRequiredSelections();
-                    });
-                    
-                    container.appendChild(casketOption);
-                });
-            })
-            .catch(error => {
-                console.error('Error fetching caskets:', error);
-                document.getElementById('casketOptionsContainer').innerHTML = 
-                    '<p class="text-red-500 col-span-3 text-center py-8">Error loading caskets. Please try again.</p>';
-            });
-    }
-
-    // Call this function when the custom package modal opens
-    document.querySelectorAll('button.customtraditionalpckg').forEach(button => {
-        button.addEventListener('click', function(e) {
-            e.preventDefault();
-            fetchCasketsByBranch();
-            openCustomPackageModal();
-        });
-    });
+    
 });
 
 </script>
@@ -1954,7 +1888,75 @@ document.addEventListener('DOMContentLoaded', function() {
     function toggleMenu() {
     const mobileMenu = document.getElementById('mobile-menu');
     mobileMenu.classList.toggle('hidden');
-}
+    }
+
+    function fetchCasketsByBranch() {
+        // Get the branch_id from session (you may need to pass this from PHP to JS)
+        const branchId = <?php echo  $_SESSION['branch_loc'] ?>;
+        console.log("branch ID:",branchId);
+        // Make an AJAX request to fetch caskets
+        fetch(`booking/fetch_caskets.php?branch_id=${branchId}`)
+            .then(response => response.json())
+            .then(data => {
+                const container = document.getElementById('casketOptionsContainer');
+                container.innerHTML = '';
+                
+                if (data.length === 0) {
+                    container.innerHTML = '<p class="text-gray-500 col-span-3 text-center py-8">No caskets available for this branch.</p>';
+                    return;
+                }
+                
+                data.forEach(casket => {
+                    const casketOption = document.createElement('div');
+                    casketOption.className = 'border rounded-lg p-4 cursor-pointer casket-option';
+                    casketOption.dataset.price = casket.price;
+                    casketOption.dataset.name = casket.item_name;
+                    casketOption.dataset.id = casket.inventory_id;
+                    
+                    casketOption.innerHTML = `
+                        <img src="${casket.inventory_img || '/api/placeholder/300/200'}" alt="${casket.item_name}" class="w-full h-32 object-cover rounded-lg mb-2">
+                        <h5 class="font-medium mb-1">${casket.item_name}</h5>
+                        <p class="text-yellow-600">₱${casket.price.toLocaleString()}</p>
+                    `;
+                    
+                    casketOption.addEventListener('click', function() {
+                        // Clear previous selection
+                        document.querySelectorAll('.casket-option').forEach(el => {
+                            el.classList.remove('border-yellow-600', 'border-2');
+                        });
+                        
+                        // Mark this option as selected
+                        this.classList.add('border-yellow-600', 'border-2');
+                        
+                        // Store selected casket
+                        selectedCasket = {
+                            id: this.dataset.id,
+                            name: this.dataset.name,
+                            price: parseInt(this.dataset.price)
+                        };
+                        
+                        updateCustomSummary();
+                        checkRequiredSelections();
+                    });
+                    
+                    container.appendChild(casketOption);
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching caskets:', error);
+                document.getElementById('casketOptionsContainer').innerHTML = 
+                    '<p class="text-red-500 col-span-3 text-center py-8">Error loading caskets. Please try again.</p>';
+            });
+    }
+
+    // Call this function when the custom package modal opens
+    document.querySelectorAll('button.customtraditionalpckg').forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            fetchCasketsByBranch();
+            openCustomPackageModal();
+        });
+    });
 </script>
 
 
