@@ -345,12 +345,14 @@ header("Pragma: no-cache");
                         <div class="w-10 h-10 rounded-full bg-yellow-600 flex items-center justify-center text-white mr-3">
                             ${conversation.sender_profile_picture ? 
                                 `<img src="${conversation.sender_profile_picture}" alt="${conversation.sender_name}" class="w-10 h-10 rounded-full object-cover">` : 
-                                `<span>${conversation.sender_name.charAt(0).toUpperCase()}</span>`}
+                                `<span>${conversation.sender_name?.charAt(0).toUpperCase() ?? ''}</span>`}
                         </div>
                         <div class="flex-1 min-w-0">
                             <div class="flex justify-between items-start">
-                            <h4 class="text-sm font-medium text-gray-900 truncate">${conversation.sender_name.charAt(0).toUpperCase() + conversation.sender_name.slice(1).toLowerCase()}</h4>                                <span class="text-xs text-gray-500">${formattedDate}</span>
-                            </div>
+                            <h4 class="text-sm font-medium text-gray-900 truncate">
+                              ${conversation.sender_name?.charAt(0)?.toUpperCase() + conversation.sender_name?.slice(1)?.toLowerCase() ?? 'Unknown'}
+                            </h4>
+                            <span class="text-xs text-gray-500">${formattedDate}</span>                            </div>
                             <p class="text-sm text-gray-600 truncate">${conversation.message}</p>
                             <div class="flex items-center mt-1">
                                 <span class="text-xs text-gray-500">${conversation.sender_email}</span>
