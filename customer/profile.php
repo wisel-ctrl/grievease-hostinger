@@ -300,7 +300,13 @@ header("Pragma: no-cache");
         flex-direction: column;
         min-height: 100%;
     }
-    
+    #death-cert-preview img,
+#payment-proof-preview img {
+    max-height: 150px;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.375rem;
+    margin-top: 0.5rem;
+}
     </style>
 </head>
 <body class="bg-cream overflow-x-hidden w-full max-w-full m-0 p-0 font-hedvig">
