@@ -950,6 +950,78 @@ $servicesJson = json_encode($allServices);
         }
     }
 
+    function validatePhoneNumber() {
+  const phoneField = document.getElementById('lp-clientPhone');
+  phoneField.addEventListener('input', function() {
+    // Remove all non-digit characters
+    this.value = this.value.replace(/\D/g, '');
+    
+    // Ensure it starts with '09' and is 11 digits long
+    if (this.value.length > 11) {
+      this.value = this.value.substring(0, 11);
+    }
+    if (this.value && !this.value.startsWith('09')) {
+      this.value = '';
+      alert('Phone number must start with 09 and be 11 digits long.');
+    }
+  });
+}
+
+function validateEmail() {
+  const emailField = document.getElementById('lp-clientEmail');
+  emailField.addEventListener('input', function() {
+    // Remove spaces
+    this.value = this.value.replace(/\s/g, '');
+  });
+}
+function validateAddress() {
+  const addressField = document.getElementById('beneficiaryAddress');
+  addressField.addEventListener('input', function() {
+    // Remove spaces at the start
+    if (this.value.startsWith(' ')) {
+      this.value = this.value.trimStart();
+    }
+    // Capitalize the first character
+    if (this.value.length > 0) {
+      this.value = this.value.charAt(0).toUpperCase() + this.value.slice(1);
+    }
+  });
+}
+function validateRelationship() {
+  const relationshipField = document.getElementById('beneficiaryRelationship');
+  relationshipField.addEventListener('input', function() {
+    // Remove spaces at the start
+    if (this.value.startsWith(' ')) {
+      this.value = this.value.trimStart();
+    }
+    // Remove invalid characters (numbers and symbols)
+    this.value = this.value.replace(/[^a-zA-Z\s]/g, '');
+    // Capitalize the first character
+    if (this.value.length > 0) {
+      this.value = this.value.charAt(0).toUpperCase() + this.value.slice(1);
+    }
+  });
+}
+function validatePrices() {
+  const totalPriceInput = document.getElementById('lp-totalPrice');
+  const amountPaidInput = document.getElementById('lp-amountPaid');
+
+  totalPriceInput.addEventListener('input', function() {
+    if (parseFloat(this.value) < 0) {
+      this.value = 0;
+      alert('Total Price cannot be negative.');
+    }
+  });
+
+  amountPaidInput.addEventListener('input', function() {
+    if (parseFloat(this.value) < 0) {
+      this.value = 0;
+      alert('Amount Paid cannot be negative.');
+    }
+  });
+}
+
+
     // Initialize max birthdates when page loads
     setMaxBirthdate();
     setMaxBeneficiaryBirthdate();
@@ -967,23 +1039,6 @@ $servicesJson = json_encode($allServices);
     document.getElementById('beneficiaryDateOfBirth')?.addEventListener('change', validateBeneficiaryBirthdate);
     document.getElementById('lp-clientEmail')?.addEventListener('input', validateModalEmail);
 });
-
-function validatePhoneNumber() {
-  const phoneField = document.getElementById('lp-clientPhone');
-  phoneField.addEventListener('input', function() {
-    // Remove all non-digit characters
-    this.value = this.value.replace(/\D/g, '');
-    
-    // Ensure it starts with '09' and is 11 digits long
-    if (this.value.length > 11) {
-      this.value = this.value.substring(0, 11);
-    }
-    if (this.value && !this.value.startsWith('09')) {
-      this.value = '';
-      alert('Phone number must start with 09 and be 11 digits long.');
-    }
-  });
-}
 
 </script>
 
