@@ -503,8 +503,8 @@ header("Pragma: no-cache");
             <!-- Left Sidebar with Navigation -->
             <div class="lg:col-span-1 sticky-sidebar">
                 <div class="bg-white rounded-xl shadow-lg overflow-hidden">
-                    <div class="p-6 border-b bg-yellow-600 border-gray-100">
-                        <h3 class="font-hedvig text-xl text-white">Account Management</h3>
+                    <div class="p-6 border-b bg-navy border-gray-100">
+                        <h3 class="font-hedvig text-xl text-navy">Account Management</h3>
                     </div>
                     <nav class="p-4">
                         <ul class="space-y-1">
