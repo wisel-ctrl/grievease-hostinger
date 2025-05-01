@@ -1927,14 +1927,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 downpayment: Math.ceil(totalPackagePrice * 0.3)
             };
 
-            // If cremation is selected, add to additional services
-            if (customBookingData.cremationSelected) {
-                customBookingData.additionalServices.push({
-                    name: 'Cremation Service',
-                    price: 40000
-                });
-                customBookingData.packageTotal += 40000;
-            }
+            
 
             if (customPackageData.casket) {
                 document.getElementById('casketID').value = customPackageData.casket.id;
@@ -1945,11 +1938,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Log all the data to console
             console.log('Custom Package Booking Data:', customBookingData);
             console.log('--- Detailed Breakdown ---');
-            console.log('Casket:', customBookingData.casket ? {
-                id: customBookingData.casket.id,
-                name: customBookingData.casket.name,
-                price: customBookingData.casket.price
-            } : 'None selected');
+            console.log('Casket:', customBookingData.casket);
             console.log('Flower Arrangement:', customBookingData.flowerArrangement || 'None selected');
             console.log('Additional Services:', customBookingData.additionalServices.length > 0 ? 
                 customBookingData.additionalServices : 'None selected');
@@ -1995,13 +1984,7 @@ document.addEventListener('DOMContentLoaded', function() {
         };
 
         // Check if cremation is selected and add to additional services
-        if (packageData.cremationSelected) {
-            packageData.additionalServices.push({
-                name: 'Cremation Service',
-                price: 40000
-            });
-            packageData.packageTotal += 40000;
-        }
+    
 
         // Log all the data to console
         console.log('Traditional Package Booking Data:', packageData);
