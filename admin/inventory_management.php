@@ -127,10 +127,9 @@ function generateInventoryRow($row) {
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
     <?php
     // Get total items count
-    // Inside the branch loop, replace the totalItems calculation with:
-$countQuery = "SELECT COUNT(*) as total_items FROM inventory_tb WHERE branch_id = $branchId AND status = 1";
-$countResult = $conn->query($countQuery);
-$totalItems = $countResult->fetch_assoc()['total_items'];
+    $totalItemsQuery = "SELECT COUNT(*) as total_items FROM inventory_tb WHERE status = 1";
+    $totalItemsResult = $conn->query($totalItemsQuery);
+    $totalItems = $totalItemsResult->fetch_assoc()['total_items'];
     
     // Get total inventory value
     $totalValueQuery = "SELECT SUM(quantity * price) as total_value FROM inventory_tb WHERE status = 1";
@@ -1095,14 +1094,13 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // Update the loadPage function
-// Update the loadPage function to accept totalItems as a parameter
-function loadPage(branchId, page, totalItems) {
-    const itemsPerPage = 5;
-    const startItem = (page - 1) * itemsPerPage + 1;
-    const endItem = Math.min(page * itemsPerPage, totalItems);
+function loadPage(branchId, page) {
+    // Show loading indicator
+    const loadingIndicator = document.getElementById(`loadingIndicator${branchId}`);
+    const tableContainer = document.getElementById(`tableContainer${branchId}`);
     
-    document.getElementById(`paginationInfo_${branchId}`).textContent = 
-        `Showing ${startItem} - ${endItem} of ${totalItems} items`;
+    loadingIndicator.classList.remove('hidden');
+    tableContainer.style.opacity = '0.5';
     
     // Make AJAX request
     fetch(`inventory/load_inventory_table.php?branch_id=${branchId}&page=${page}`)
@@ -1159,14 +1157,13 @@ function updatePaginationInfo(branchId, currentPage) {
 }
 
 // Update the updatePaginationActiveState function
-function updatePaginationActiveState(branchId, currentPage, totalItems) {
-    const itemsPerPage = 5;
-    const totalPages = Math.ceil(totalItems / itemsPerPage);
-    
+function updatePaginationActiveState(branchId, currentPage) {
     const paginationContainer = document.querySelector(`#paginationInfo_${branchId}`).nextElementSibling;
     if (!paginationContainer) return;
     
     const pageButtons = paginationContainer.querySelectorAll('button');
+    const totalItems = parseInt(document.querySelector(`.branch-container[data-branch-id="${branchId}"]`).dataset.totalItems);
+    const totalPages = Math.ceil(totalItems / 5);
     
     pageButtons.forEach(button => {
         // Remove active class from all buttons
@@ -1181,7 +1178,7 @@ function updatePaginationActiveState(branchId, currentPage, totalItems) {
                 button.classList.add('bg-sidebar-accent', 'text-white');
             }
             
-            // Hide buttons that are out of range
+            // Disable page buttons that are out of range
             if (pageNumber < 1 || pageNumber > totalPages) {
                 button.style.display = 'none';
             } else {
@@ -1189,11 +1186,21 @@ function updatePaginationActiveState(branchId, currentPage, totalItems) {
             }
         }
         
-        // Handle arrow buttons
+        // Enable/disable arrow buttons based on current page
         if (button.innerHTML === '&raquo;' || button.textContent === '»') {
             button.disabled = currentPage >= totalPages;
+            if (button.disabled) {
+                button.classList.add('opacity-50', 'cursor-not-allowed');
+            } else {
+                button.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
         } else if (button.innerHTML === '&laquo;' || button.textContent === '«') {
             button.disabled = currentPage <= 1;
+            if (button.disabled) {
+                button.classList.add('opacity-50', 'cursor-not-allowed');
+            } else {
+                button.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
         }
     });
 }
@@ -1219,12 +1226,16 @@ window.addEventListener('popstate', function(event) {
 document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('.branch-container').forEach(container => {
         const branchId = container.dataset.branchId;
-        const totalItems = parseInt(container.dataset.totalItems);
         const urlParams = new URLSearchParams(window.location.search);
         const currentPage = urlParams.get(`page_${branchId}`) || 1;
         
-        loadPage(branchId, currentPage, totalItems);
-        updatePaginationActiveState(branchId, currentPage, totalItems);
+        // Store total items in the container's dataset
+        const totalItems = <?php echo $totalItems; ?>;
+        container.dataset.totalItems = totalItems;
+        
+        // Initialize pagination
+        updatePaginationInfo(branchId, currentPage);
+        updatePaginationActiveState(branchId, currentPage);
     });
 });
 
