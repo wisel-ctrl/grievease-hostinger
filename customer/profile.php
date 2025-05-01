@@ -1674,9 +1674,12 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <!-- Zip/Postal Code (taking 1/4 of the width) -->
                                 <div class="sm:col-span-1">
                                     <label for="zip" class="block text-sm font-medium text-gray-700 mb-2">Zip Code</label>
-                                    <input type="text" id="zip" name="zip" placeholder="Zip Code" 
-                                        value="<?php echo htmlspecialchars($zip_code); ?>" 
-                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-base shadow-sm transition-all duration-200">
+                                    <!-- Change this line in the zip code input field -->
+<input type="text" id="zip" name="zip" placeholder="Zip Code" 
+    value="<?php echo htmlspecialchars($zip_code); ?>" 
+    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-base shadow-sm transition-all duration-200"
+    pattern="\d{4,10}" 
+    title="Zip code must be 4-10 digits">
                                 </div>
                             </div>
                         </div>
@@ -3304,6 +3307,64 @@ function setupDatePicker() {
     // Set min date to 18 years ago
     dobInput.min = new Date(today.getFullYear() - 120, today.getMonth(), today.getDate()).toISOString().split('T')[0];
 }
+
+// Street Address Validation
+function validateStreetAddress(input) {
+    // Remove multiple consecutive spaces
+    let value = input.value.replace(/\s{2,}/g, ' ');
+    
+    // Capitalize first letter of the string
+    if (value.length > 0) {
+        value = value.charAt(0).toUpperCase() + value.slice(1);
+    }
+    
+    // Update the input value
+    input.value = value;
+}
+
+// Zip Code Validation
+function validateZipCode(input) {
+    // Remove any non-digit characters
+    let value = input.value.replace(/\D/g, '');
+    
+    // Limit to 10 digits
+    if (value.length > 10) {
+        value = value.substring(0, 10);
+    }
+    
+    // Update the input value
+    input.value = value;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Street Address field
+    const streetAddressInput = document.getElementById('street_address');
+    if (streetAddressInput) {
+        streetAddressInput.addEventListener('input', function() {
+            validateStreetAddress(this);
+        });
+        
+        streetAddressInput.addEventListener('blur', function() {
+            validateStreetAddress(this);
+        });
+    }
+
+    // Zip Code field
+    const zipCodeInput = document.getElementById('zip');
+    if (zipCodeInput) {
+        zipCodeInput.addEventListener('input', function() {
+            validateZipCode(this);
+        });
+        
+        zipCodeInput.addEventListener('blur', function() {
+            // Ensure at least 4 digits
+            if (this.value.length > 0 && this.value.length < 4) {
+                alert('Zip code must be between 4-10 digits');
+                this.focus();
+            }
+        });
+    }
+});
 
 // Form validation function
 function validateForm() {
