@@ -76,6 +76,10 @@ try {
     // Get branch ID (assuming it's passed or retrieved from elsewhere)
     $branchId = isset($_POST['branchId']) ? $_POST['branchId'] : 1; // Default or from configuration
     
+    $manilaTimeZone = new DateTimeZone('Asia/Manila');
+    $bookingDate = new DateTime('now', $manilaTimeZone);
+    $bookingDateFormatted = $bookingDate->format('Y-m-d H:i:s');
+
     // Prepare the SQL statement
     $stmt = $conn->prepare("
         INSERT INTO booking_tb (
@@ -94,8 +98,9 @@ try {
             deathcert_url, 
             payment_url, 
             reference_code,
-            service_id
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            service_id,
+            booking_date
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ");
 
     if (!$stmt) {
@@ -104,7 +109,7 @@ try {
 
     // Bind parameters
     $stmt->bind_param(
-        'issssssssidssssi',
+        'issssssssidssssis',
         $customerId,
         $deceasedFirstName,
         $deceasedMiddleName,
@@ -120,7 +125,8 @@ try {
         $deathCertPath,
         $paymentPath,
         $referenceNumber,
-        $serviceId
+        $serviceId,
+        $bookingDateFormatted
     );
 
     // Execute the statement
