@@ -542,16 +542,32 @@ require_once '../db_connect.php'; // Database connection
                             <span class="text-2xl sm:text-3xl font-hedvig text-navy">₱<?php echo number_format($package1['selling_price'], 0, '.', ','); ?></span>
                         </div>
                         <ul class="space-y-2 sm:space-y-3 mb-4 sm:mb-6 flex-grow text-sm sm:text-base">
+                            <!-- Display Casket Name -->
+                            <li class="flex items-start">
+                                <i class="fas fa-check-circle mr-2 text-yellow-600 mt-1 flex-shrink-0"></i>
+                                <span class="text-dark"><strong>Casket:</strong> <?php echo htmlspecialchars($package1['item_name']); ?></span>
+                            </li>
+                            
+                            <!-- Display Flower Design -->
+                            <li class="flex items-start">
+                                <i class="fas fa-check-circle mr-2 text-yellow-600 mt-1 flex-shrink-0"></i>
+                                <span class="text-dark"><strong>Flower Design:</strong> <?php echo htmlspecialchars($package1['flower_design']); ?></span>
+                            </li>
+                            
+                            <!-- Display Inclusions -->
                             <?php 
-                            // Assuming inclusions are stored as a JSON array or comma-separated list
                             $inclusions = json_decode($package1['inclusions'], true) ?: explode(',', $package1['inclusions']);
                             foreach ($inclusions as $inclusion): 
+                                if (!empty(trim($inclusion))):
                             ?>
                             <li class="flex items-start">
                                 <i class="fas fa-check-circle mr-2 text-yellow-600 mt-1 flex-shrink-0"></i>
                                 <span class="text-dark"><?php echo htmlspecialchars(trim($inclusion)); ?></span>
                             </li>
-                            <?php endforeach; ?>
+                            <?php 
+                                endif;
+                            endforeach; 
+                            ?>
                         </ul>
                         <button class="selectPackageBtn block w-full mt-4 sm:mt-6 bg-yellow-600 hover:bg-yellow-700 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg shadow-md transition-all duration-300 text-center text-sm sm:text-base">
                             Select Package
@@ -581,15 +597,32 @@ require_once '../db_connect.php'; // Database connection
                             <span class="text-2xl sm:text-3xl font-hedvig text-navy">₱<?php echo number_format($package2['selling_price'], 0, '.', ','); ?></span>
                         </div>
                         <ul class="space-y-2 sm:space-y-3 mb-4 sm:mb-6 flex-grow text-sm sm:text-base">
+                            <!-- Display Casket Name -->
+                            <li class="flex items-start">
+                                <i class="fas fa-check-circle mr-2 text-yellow-600 mt-1 flex-shrink-0"></i>
+                                <span class="text-dark"><strong>Casket:</strong> <?php echo htmlspecialchars($package2['item_name']); ?></span>
+                            </li>
+                            
+                            <!-- Display Flower Design -->
+                            <li class="flex items-start">
+                                <i class="fas fa-check-circle mr-2 text-yellow-600 mt-1 flex-shrink-0"></i>
+                                <span class="text-dark"><strong>Flower Design:</strong> <?php echo htmlspecialchars($package2['flower_design']); ?></span>
+                            </li>
+                            
+                            <!-- Display Inclusions -->
                             <?php 
                             $inclusions = json_decode($package2['inclusions'], true) ?: explode(',', $package2['inclusions']);
                             foreach ($inclusions as $inclusion): 
+                                if (!empty(trim($inclusion))):
                             ?>
                             <li class="flex items-start">
                                 <i class="fas fa-check-circle mr-2 text-yellow-600 mt-1 flex-shrink-0"></i>
                                 <span class="text-dark"><?php echo htmlspecialchars(trim($inclusion)); ?></span>
                             </li>
-                            <?php endforeach; ?>
+                            <?php 
+                                endif;
+                            endforeach; 
+                            ?>
                         </ul>
                         <button class="selectPackageBtn block w-full mt-4 sm:mt-6 bg-yellow-600 hover:bg-yellow-700 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg shadow-md transition-all duration-300 text-center text-sm sm:text-base">
                             Select Package
