@@ -313,7 +313,7 @@ $denied = $result->fetch_assoc()['count'];
                             </th>
                             <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text whitespace-nowrap">
                                 <div class="flex items-center gap-1.5">
-                                    <i class="fas fa-id-card text-sidebar-accent"></i> ID Preview
+                                    <i class="fas fa-id-card text-sidebar-accent"></i> ID Document
                                 </div>
                             </th>
                             <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text whitespace-nowrap">
@@ -336,10 +336,21 @@ $denied = $result->fetch_assoc()['count'];
                                     <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo htmlspecialchars($id_request['phone_number']); ?></td>
                                     <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo htmlspecialchars($id_request['branch_name'] ? $id_request['branch_name'] : 'No branch assigned'); ?></td>
                                     <td class="px-4 py-3.5 text-sm">
-                                        <button class="text-sidebar-accent hover:text-darkgold transition-colors" 
-                                                onclick="openModal('uploads/valid_ids/<?php echo htmlspecialchars(basename($id_request['image_path'])); ?>')">
-                                            <i class="fas fa-eye mr-1"></i> View ID
-                                        </button>
+                                        <!-- Direct ID image display in the table -->
+                                        <div class="relative group">
+                                            <div class="w-24 h-16 overflow-hidden rounded border border-gray-200">
+                                                <img src="uploads/valid_ids/<?php echo htmlspecialchars(basename($id_request['image_path'])); ?>" 
+                                                     alt="ID Document" 
+                                                     class="w-full h-full object-cover cursor-pointer hover:opacity-90 transition-all" 
+                                                     onclick="openModal('uploads/valid_ids/<?php echo htmlspecialchars(basename($id_request['image_path'])); ?>')">
+                                            </div>
+                                            <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all">
+                                                <button class="p-1 bg-black bg-opacity-60 rounded-full text-white" 
+                                                        onclick="openModal('uploads/valid_ids/<?php echo htmlspecialchars(basename($id_request['image_path'])); ?>')">
+                                                    <i class="fas fa-search-plus"></i>
+                                                </button>
+                                            </div>
+                                        </div>
                                     </td>
                                     <td class="px-4 py-3.5 text-sm">
                                         <div class="flex space-x-2">
@@ -395,7 +406,7 @@ $denied = $result->fetch_assoc()['count'];
     </div>
 </div>
 
-<!-- Image Modal -->
+<!-- Image Modal (Kept for full-size view) -->
 <div id="imageModal" class="fixed inset-0 z-50 hidden overflow-y-auto">
     <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
         <!-- Background overlay -->
