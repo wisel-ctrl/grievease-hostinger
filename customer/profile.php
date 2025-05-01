@@ -1914,7 +1914,6 @@ document.addEventListener('DOMContentLoaded', function() {
       <!-- Header with close button -->
       <div class="bg-navy p-6 flex justify-between items-center">
         <div class="flex items-center">
-          <i class="fas fa-calendar-check text-yellow-300 mr-3 text-2xl"></i>
           <h2 class="text-2xl font-hedvig text-white">Booking Details</h2>
         </div>
         <button class="close-modal text-white hover:text-yellow-300 transition-colors duration-200">
