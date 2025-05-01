@@ -283,6 +283,27 @@ header("Pragma: no-cache");
     background-color: #d4a933;
     border-radius: 6px;
 }
+
+ /* Add this to your existing styles */
+ .sticky-sidebar {
+        position: sticky;
+        top: calc(var(--navbar-height) + 1rem); /* Position below navbar with some spacing */
+        align-self: flex-start; /* Prevent stretching */
+        height: calc(100vh - var(--navbar-height) - 1rem); /* Full height minus navbar */
+        overflow-y: auto; /* Enable scrolling if content is too long */
+    }
+    /* Ensure main content area accounts for the sticky sidebar */
+.main-content-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+@media (min-width: 1024px) {
+    .main-content-container {
+        flex-direction: row;
+    }
+}
     </style>
 </head>
 <body class="bg-cream overflow-x-hidden w-full max-w-full m-0 p-0 font-hedvig">
@@ -488,10 +509,10 @@ header("Pragma: no-cache");
             <div class="absolute bottom-6 left-6 w-16 h-16 border-b-2 border-l-2 border-white/20 pointer-events-none"></div>
         </div>
         
-        <div class="container mx-auto px-6 py-12">
+        <div class="container mx-auto px-6 py-12 main-content-container">
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <!-- Left Sidebar with Navigation -->
-            <div class="lg:col-span-1">
+            <div class="lg:col-span-1 sticky-sidebar">
                 <div class="bg-white rounded-xl shadow-lg overflow-hidden">
                     <div class="p-6 border-b border-gray-100">
                         <h3 class="font-hedvig text-xl text-navy">Account Management</h3>
