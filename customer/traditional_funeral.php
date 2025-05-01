@@ -690,19 +690,36 @@ require_once '../db_connect.php'; // Database connection
         const carouselContainer = document.getElementById('carousel-container');
         const prevBtn = document.getElementById('prev-btn');
         const nextBtn = document.getElementById('next-btn');
-        const dots = document.querySelectorAll('#carousel-dots button');
+        const dotsContainer = document.getElementById('carousel-dots');
         
         let currentIndex = 0;
         const itemCount = 4; // Total number of items (3 packages + view all)
-        let itemsPerView = window.innerWidth >= 768 ? 3 : 1; // Show 3 items on medium screens, 1 on small
-        let maxIndex = itemCount - itemsPerView;
+        const itemsPerView = window.innerWidth >= 768 ? 3 : 1; // Show 3 items on desktop, 1 on mobile
         
-        // Initially hide prev button if at start
-        prevBtn.style.display = currentIndex === 0 ? 'none' : 'flex';
+        // Calculate number of dots needed (total items minus items per view plus 1)
+        const dotCount = itemCount - itemsPerView + 1;
+        
+        // Clear existing dots
+        dotsContainer.innerHTML = '';
+        
+        // Create correct number of dots
+        for (let i = 0; i < dotCount; i++) {
+            const dot = document.createElement('button');
+            dot.className = `w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-navy ${i === 0 ? 'opacity-100' : 'opacity-50'}`;
+            dot.dataset.index = i;
+            dotsContainer.appendChild(dot);
+            
+            dot.addEventListener('click', () => {
+                currentIndex = i;
+                updateCarousel();
+            });
+        }
+        
+        const dots = document.querySelectorAll('#carousel-dots button');
         
         // Function to update carousel position
         function updateCarousel() {
-            const translateValue = currentIndex * -100 / itemsPerView;
+            const translateValue = currentIndex * -(100 / itemsPerView);
             carouselContainer.style.transform = `translateX(${translateValue}%)`;
             
             // Update dots
@@ -711,16 +728,14 @@ require_once '../db_connect.php'; // Database connection
                 dot.classList.toggle('opacity-50', index !== currentIndex);
             });
             
-            // Show/hide prev button based on position
+            // Show/hide navigation buttons
             prevBtn.style.display = currentIndex === 0 ? 'none' : 'flex';
-            
-            // Show/hide next button based on position
-            nextBtn.style.display = currentIndex >= maxIndex ? 'none' : 'flex';
+            nextBtn.style.display = currentIndex >= dotCount - 1 ? 'none' : 'flex';
         }
         
-        // Click handlers for navigation buttons
+        // Rest of your existing carousel code...
         nextBtn.addEventListener('click', function() {
-            if (currentIndex < maxIndex) {
+            if (currentIndex < dotCount - 1) {
                 currentIndex++;
                 updateCarousel();
             }
@@ -733,26 +748,31 @@ require_once '../db_connect.php'; // Database connection
             }
         });
         
-        // Click handlers for dots
-        dots.forEach((dot, index) => {
-            dot.addEventListener('click', () => {
-                currentIndex = Math.min(index, maxIndex);
-                updateCarousel();
-            });
-        });
-        
         // Handle window resize
         window.addEventListener('resize', function() {
             const newItemsPerView = window.innerWidth >= 768 ? 3 : 1;
+            const newDotCount = itemCount - newItemsPerView + 1;
             
-            // Update variables without reload
             if (newItemsPerView !== itemsPerView) {
-                itemsPerView = newItemsPerView;
-                maxIndex = itemCount - itemsPerView;
+                // Recreate dots if needed
+                if (newDotCount !== dotCount) {
+                    dotsContainer.innerHTML = '';
+                    for (let i = 0; i < newDotCount; i++) {
+                        const dot = document.createElement('button');
+                        dot.className = `w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-navy ${i === currentIndex ? 'opacity-100' : 'opacity-50'}`;
+                        dot.dataset.index = i;
+                        dotsContainer.appendChild(dot);
+                        
+                        dot.addEventListener('click', () => {
+                            currentIndex = i;
+                            updateCarousel();
+                        });
+                    }
+                }
                 
-                // Reset to first slide if current position would be invalid
-                if (currentIndex > maxIndex) {
-                    currentIndex = maxIndex;
+                // Adjust currentIndex if it would be out of bounds
+                if (currentIndex > newDotCount - 1) {
+                    currentIndex = newDotCount - 1;
                 }
                 
                 updateCarousel();
@@ -1219,9 +1239,6 @@ require_once '../db_connect.php'; // Database connection
                         </div>
                     </div>
                     
-                    
-                    
-
                     <div class="flex justify-center mt-8">
                         <button id="proceedToBooking" class="bg-yellow-600 hover:bg-yellow-700 text-white px-8 py-3 rounded-lg shadow-md transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
                             Continue to Booking Form
