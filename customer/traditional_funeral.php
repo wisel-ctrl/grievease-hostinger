@@ -141,6 +141,8 @@ require_once '../db_connect.php'; // Database connection
                     }
 
                 }
+
+                
                 
 ?>
 
@@ -489,104 +491,112 @@ require_once '../db_connect.php'; // Database connection
         <p class="text-dark max-w-4xl text-center text-sm sm:text-lg">Our traditional funeral services honor your loved one with dignity and respect while providing support for family and friends. Each service can be customized to reflect the unique life being celebrated.</p>
     </div>
     
+    <?php 
+    $query = "SELECT 
+        s.service_id, 
+        s.service_name, 
+        s.description, 
+        s.casket_id, 
+        i.item_name, 
+        s.flower_design, 
+        s.inclusions, 
+        s.selling_price, 
+        s.image_url
+    FROM services_tb s
+    JOIN inventory_tb i ON s.casket_id = i.inventory_id
+    WHERE s.branch_id = 2 AND s.status = 'active'
+    ORDER BY s.selling_price DESC
+    LIMIT 2";
+
+    $result = $conn->query($query);
+
+    if ($result->num_rows >= 2) {
+    $package1 = $result->fetch_assoc();
+    $package2 = $result->fetch_assoc();
+
+    ?>
     <!-- Packages Carousel -->
     <div class="max-w-6xl mx-auto relative">
         <!-- Carousel Container -->
         <div class="overflow-hidden relative">
             <div id="carousel-container" class="flex transition-transform duration-500 ease-in-out">
                 <!-- Package 1: Legacy Tribute -->
+
                 <div class="package-card min-w-full md:min-w-[33.333%] px-2 sm:px-4">
-                    <div class="package-card bg-white rounded-[20px] shadow-lg overflow-hidden relative group hover:shadow-xl transition-all duration-300 flex flex-col h-full" data-price="700000" data-service="traditional" data-name="Legacy Tribute" data-image="../image/700.jpg">
-                        <div class="h-10 sm:h-12 bg-navy flex items-center justify-center">
-                            <h4 class="text-white font-hedvig text-lg sm:text-xl">Legacy Tribute</h4>
-                            <div class="absolute top-0 right-0 w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center">
-                                <div class="w-12 h-12 sm:w-16 sm:h-16 bg-yellow-600/90 rotate-45 transform origin-bottom-left"></div>
-                            </div>
-                        </div>
-                        <div class="p-4 sm:p-6 flex flex-col flex-grow">
-                            <div class="mb-3 sm:mb-4 flex justify-center">
-                                <img src="../image/700.jpg" alt="Legacy Tribute" class="w-full h-40 sm:h-48 object-cover rounded-lg">
-                            </div>
-                            <div class="text-center mb-4 sm:mb-6">
-                                <span class="text-2xl sm:text-3xl font-hedvig text-navy">₱700,000</span>
-                            </div>
-                            <ul class="space-y-2 sm:space-y-3 mb-4 sm:mb-6 flex-grow text-sm sm:text-base">
-                                <li class="flex items-start">
-                                    <i class="fas fa-check-circle mr-2 text-yellow-600 mt-1 flex-shrink-0"></i>
-                                    <span class="text-dark">3 sets of flower arrangements</span>
-                                </li>
-                                <li class="flex items-start">
-                                    <i class="fas fa-check-circle mr-2 text-yellow-600 mt-1 flex-shrink-0"></i>
-                                    <span class="text-dark">Catering on last day</span>
-                                </li>
-                                <li class="flex items-start">
-                                    <i class="fas fa-check-circle mr-2 text-yellow-600 mt-1 flex-shrink-0"></i>
-                                    <span class="text-dark">Premium casket selection</span>
-                                </li>
-                                <li class="flex items-start">
-                                    <i class="fas fa-check-circle mr-2 text-yellow-600 mt-1 flex-shrink-0"></i>
-                                    <span class="text-dark">Extended viewing period</span>
-                                </li>
-                                <li class="flex items-start">
-                                    <i class="fas fa-check-circle mr-2 text-yellow-600 mt-1 flex-shrink-0"></i>
-                                    <span class="text-dark">Complete funeral service</span>
-                                </li>
-                            </ul>
-                            <button class="selectPackageBtn block w-full mt-4 sm:mt-6 bg-yellow-600 hover:bg-yellow-700 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg shadow-md transition-all duration-300 text-center text-sm sm:text-base">
-                                Select Package
-                            </button>
+                <div class="package-card bg-white rounded-[20px] shadow-lg overflow-hidden relative group hover:shadow-xl transition-all duration-300 flex flex-col h-full" 
+                    data-price="<?php echo htmlspecialchars($package1['selling_price']); ?>" 
+                    data-service="traditional" 
+                    data-name="<?php echo htmlspecialchars($package1['service_name']); ?>" 
+                    data-image="<?php echo htmlspecialchars($package1['image_url']); ?>">
+                    <div class="h-10 sm:h-12 bg-navy flex items-center justify-center">
+                        <h4 class="text-white font-hedvig text-lg sm:text-xl"><?php echo htmlspecialchars($package1['service_name']); ?></h4>
+                        <div class="absolute top-0 right-0 w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center">
+                            <div class="w-12 h-12 sm:w-16 sm:h-16 bg-yellow-600/90 rotate-45 transform origin-bottom-left"></div>
                         </div>
                     </div>
+                    <div class="p-4 sm:p-6 flex flex-col flex-grow">
+                        <div class="mb-3 sm:mb-4 flex justify-center">
+                            <img src="<?php echo htmlspecialchars($package1['image_url']); ?>" alt="<?php echo htmlspecialchars($package1['service_name']); ?>" class="w-full h-40 sm:h-48 object-cover rounded-lg">
+                        </div>
+                        <div class="text-center mb-4 sm:mb-6">
+                            <span class="text-2xl sm:text-3xl font-hedvig text-navy">₱<?php echo number_format($package1['selling_price'], 0, '.', ','); ?></span>
+                        </div>
+                        <ul class="space-y-2 sm:space-y-3 mb-4 sm:mb-6 flex-grow text-sm sm:text-base">
+                            <?php 
+                            // Assuming inclusions are stored as a JSON array or comma-separated list
+                            $inclusions = json_decode($package1['inclusions'], true) ?: explode(',', $package1['inclusions']);
+                            foreach ($inclusions as $inclusion): 
+                            ?>
+                            <li class="flex items-start">
+                                <i class="fas fa-check-circle mr-2 text-yellow-600 mt-1 flex-shrink-0"></i>
+                                <span class="text-dark"><?php echo htmlspecialchars(trim($inclusion)); ?></span>
+                            </li>
+                            <?php endforeach; ?>
+                        </ul>
+                        <button class="selectPackageBtn block w-full mt-4 sm:mt-6 bg-yellow-600 hover:bg-yellow-700 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg shadow-md transition-all duration-300 text-center text-sm sm:text-base">
+                            Select Package
+                        </button>
+                    </div>
                 </div>
+            </div>
                 
                 <!-- Package 2: Eternal Remembrance -->
                 <div class="package-card min-w-full md:min-w-[33.333%] px-2 sm:px-4">
-                    <div class="package-card bg-white rounded-[20px] shadow-lg overflow-hidden relative group hover:shadow-xl transition-all duration-300 flex flex-col h-full" data-price="300000" data-service="traditional" data-name="Eternal Remembrance" data-image="../image/300.jpg">
-                        <div class="h-10 sm:h-12 bg-navy flex items-center justify-center">
-                            <h4 class="text-white font-hedvig text-lg sm:text-xl">Eternal Remembrance</h4>
-                            <div class="absolute top-0 right-0 w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center">
-                                <div class="w-12 h-12 sm:w-16 sm:h-16 bg-yellow-600/90 rotate-45 transform origin-bottom-left"></div>
-                            </div>
-                        </div>
-                        <div class="p-4 sm:p-6 flex flex-col flex-grow">
-                            <div class="mb-3 sm:mb-4 flex justify-center">
-                                <img src="../image/300.jpg" alt="Eternal Remembrance" class="w-full h-40 sm:h-48 object-cover rounded-lg">
-                            </div>
-                            <div class="text-center mb-4 sm:mb-6">
-                                <span class="text-2xl sm:text-3xl font-hedvig text-navy">₱300,000</span>
-                            </div>
-                            <ul class="space-y-2 sm:space-y-3 mb-4 sm:mb-6 flex-grow text-sm sm:text-base">
-                                <li class="flex items-start">
-                                    <i class="fas fa-check-circle mr-2 text-yellow-600 mt-1 flex-shrink-0"></i>
-                                    <span class="text-dark">2 sets of flower arrangements</span>
-                                </li>
-                                <li class="flex items-start">
-                                    <i class="fas fa-check-circle mr-2 text-yellow-600 mt-1 flex-shrink-0"></i>
-                                    <span class="text-dark">Premium casket selection</span>
-                                </li>
-                                <li class="flex items-start">
-                                    <i class="fas fa-check-circle mr-2 text-yellow-600 mt-1 flex-shrink-0"></i>
-                                    <span class="text-dark">Extended viewing period</span>
-                                </li>
-                                <li class="flex items-start">
-                                    <i class="fas fa-check-circle mr-2 text-yellow-600 mt-1 flex-shrink-0"></i>
-                                    <span class="text-dark">Complete funeral service</span>
-                                </li>
-                                <li class="flex items-start">
-                                    <i class="fas fa-check-circle mr-2 text-yellow-600 mt-1 flex-shrink-0"></i>
-                                    <span class="text-dark">Curtains and lighting</span>
-                                </li>
-                                <li class="flex items-start">
-                                    <i class="fas fa-check-circle mr-2 text-yellow-600 mt-1 flex-shrink-0"></i>
-                                    <span class="text-dark">Water dispenser</span>
-                                </li>
-                            </ul>
-                            <button class="selectPackageBtn block w-full mt-4 sm:mt-6 bg-yellow-600 hover:bg-yellow-700 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg shadow-md transition-all duration-300 text-center text-sm sm:text-base">
-                                Select Package
-                            </button>
+                <div class="package-card bg-white rounded-[20px] shadow-lg overflow-hidden relative group hover:shadow-xl transition-all duration-300 flex flex-col h-full" 
+                    data-price="<?php echo htmlspecialchars($package2['selling_price']); ?>" 
+                    data-service="traditional" 
+                    data-name="<?php echo htmlspecialchars($package2['service_name']); ?>" 
+                    data-image="<?php echo htmlspecialchars($package2['image_url']); ?>">
+                    <div class="h-10 sm:h-12 bg-navy flex items-center justify-center">
+                        <h4 class="text-white font-hedvig text-lg sm:text-xl"><?php echo htmlspecialchars($package2['service_name']); ?></h4>
+                        <div class="absolute top-0 right-0 w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center">
+                            <div class="w-12 h-12 sm:w-16 sm:h-16 bg-yellow-600/90 rotate-45 transform origin-bottom-left"></div>
                         </div>
                     </div>
+                    <div class="p-4 sm:p-6 flex flex-col flex-grow">
+                        <div class="mb-3 sm:mb-4 flex justify-center">
+                            <img src="<?php echo htmlspecialchars($package2['image_url']); ?>" alt="<?php echo htmlspecialchars($package2['service_name']); ?>" class="w-full h-40 sm:h-48 object-cover rounded-lg">
+                        </div>
+                        <div class="text-center mb-4 sm:mb-6">
+                            <span class="text-2xl sm:text-3xl font-hedvig text-navy">₱<?php echo number_format($package2['selling_price'], 0, '.', ','); ?></span>
+                        </div>
+                        <ul class="space-y-2 sm:space-y-3 mb-4 sm:mb-6 flex-grow text-sm sm:text-base">
+                            <?php 
+                            $inclusions = json_decode($package2['inclusions'], true) ?: explode(',', $package2['inclusions']);
+                            foreach ($inclusions as $inclusion): 
+                            ?>
+                            <li class="flex items-start">
+                                <i class="fas fa-check-circle mr-2 text-yellow-600 mt-1 flex-shrink-0"></i>
+                                <span class="text-dark"><?php echo htmlspecialchars(trim($inclusion)); ?></span>
+                            </li>
+                            <?php endforeach; ?>
+                        </ul>
+                        <button class="selectPackageBtn block w-full mt-4 sm:mt-6 bg-yellow-600 hover:bg-yellow-700 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg shadow-md transition-all duration-300 text-center text-sm sm:text-base">
+                            Select Package
+                        </button>
+                    </div>
                 </div>
+            </div>
                 
                 <!-- Package 3: Custom Memorial -->
                 <div class="package-card min-w-full md:min-w-[33.333%] px-2 sm:px-4">
