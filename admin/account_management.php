@@ -1066,79 +1066,6 @@ document.getElementById("customerPhone").addEventListener("input", function (e) 
     document.getElementById('branchLocation').addEventListener('change', validateBranchLocation);
 });
 
-function validateBirthdate() {
-  const birthdateInput = document.getElementById('birthdate');
-  const birthdateError = document.getElementById('birthdateError');
-  const birthdate = birthdateInput.value;
-
-  if (birthdate === '') {
-    birthdateError.textContent = 'Birthdate is required';
-    birthdateError.classList.remove('hidden');
-    return false;
-  } 
-
-  const today = new Date();
-  const birthdateObj = new Date(birthdate);
-  let age = today.getFullYear() - birthdateObj.getFullYear();
-  const monthDiff = today.getMonth() - birthdateObj.getMonth();
-  
-  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthdateObj.getDate())) {
-    age--;
-  }
-  
-  if (age < 18) {
-    birthdateError.textContent = 'You must be at least 18 years old';
-    birthdateError.classList.remove('hidden');
-    return false;
-  } else {
-    birthdateError.classList.add('hidden');
-    return true;
-  }
-}
-
-function validateEmail() {
-  const emailInput = document.getElementById('customerEmail');
-  const emailError = document.getElementById('emailError');
-  const email = emailInput.value.trim();
-  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-  if (email === '') {
-    emailError.textContent = 'Email is required';
-    emailError.classList.remove('hidden');
-    return false;
-  } else if (!emailPattern.test(email)) {
-    emailError.textContent = 'Please enter a valid email address';
-    emailError.classList.remove('hidden');
-    return false;
-  } else {
-    emailError.classList.add('hidden');
-    return true;
-  }
-}
-
-function validatePhoneNumber() {
-  const phoneInput = document.getElementById('customerPhone');
-  const phoneError = document.getElementById('phoneError');
-  const phone = phoneInput.value.trim();
-  const phonePattern = /^09\d{9}$/;
-
-  // Remove any non-digit characters
-  const cleanedPhone = phone.replace(/[^0-9]/g, '');
-
-  if (phone === '') {
-    phoneError.textContent = 'Phone number is required';
-    phoneError.classList.remove('hidden');
-    return false;
-  } else if (!phonePattern.test(cleanedPhone)) {
-    phoneError.textContent = 'Please enter a valid 11-digit mobile number (e.g., 09123456789)';
-    phoneError.classList.remove('hidden');
-    return false;
-  } else {
-    phoneError.classList.add('hidden');
-    return true;
-  }
-}
-
 function validateBranchLocation() {
   const branchSelect = document.getElementById('branchLocation');
   const branchError = document.getElementById('branchError');
@@ -2294,6 +2221,8 @@ function saveCustomerChanges() {
     });
 }
 
+
+
 //edit employee Accounts
 function openEditEmployeeAccountModal(userId) {
     // Fetch employee details
@@ -3165,146 +3094,258 @@ document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('empBranchLocation').addEventListener('change', validateEmpBranchLocation);
 });
 
-// Real-time validation functions for Employee Form
-function validateEmpFirstName() {
-  const firstNameInput = document.getElementById('empFirstName');
-  const firstNameError = document.getElementById('empFirstNameError');
-  const firstName = firstNameInput.value.trim();
-  const nameRegex = /^[A-Za-z\s]+$/;
-  if (firstName === '') {
-    firstNameError.textContent = 'First name is required';
-    firstNameError.classList.remove('hidden');
-    return false;
-  } else if (!nameRegex.test(firstName)) {
-    firstNameError.textContent = 'First name must contain only letters';
-    firstNameError.classList.remove('hidden');
-    return false;
-  } else {
-    firstNameError.classList.add('hidden');
-    return true;
-  }
-}
+document.addEventListener('DOMContentLoaded', function() {
+    // Employee Name fields
+    const employeeNameFields = [
+        'empFirstName', 
+        'empMiddleName', 
+        'empLastName'
+    ];
 
-function validateEmpMiddleName() {
-  const middleNameInput = document.getElementById('empMiddleName');
-  const middleNameError = document.getElementById('empMiddleNameError');
-  
-  // If you want to add a middleNameError element, uncomment and add to HTML
-  if (!middleNameError) return true;
-  const middleName = middleNameInput.value.trim();
-  const nameRegex = /^[A-Za-z\s]*$/;
-  if (middleName !== '' && !nameRegex.test(middleName)) {
-    middleNameError.textContent = 'Middle name must contain only letters';
-    middleNameError.classList.remove('hidden');
-    return false;
-  } else {
-    middleNameError.classList.add('hidden');
-    return true;
-  }
-}
+    // Function to validate name input
+    function validateNameInput(field) {
+        // First, remove any invalid characters
+        let newValue = field.value.replace(/[^a-zA-Z\s'-]/g, '');
+        
+        // Don't allow space as first character
+        if (newValue.startsWith(' ')) {
+            newValue = newValue.substring(1);
+        }
+        
+        // Don't allow consecutive spaces
+        newValue = newValue.replace(/\s{2,}/g, ' ');
+        
+        // Only allow space after at least 2 characters
+        if (newValue.length < 2 && newValue.includes(' ')) {
+            newValue = newValue.replace(/\s/g, '');
+        }
+        
+        // Update the field value
+        field.value = newValue;
+        
+        // Capitalize first letter of each word
+        if (field.value.length > 0) {
+            field.value = field.value.toLowerCase().replace(/(^|\s)\S/g, function(firstLetter) {
+                return firstLetter.toUpperCase();
+            });
+        }
+    }
 
-function validateEmpLastName() {
-  const lastNameInput = document.getElementById('empLastName');
-  const lastNameError = document.getElementById('empLastNameError');
-  const lastName = lastNameInput.value.trim();
-  const nameRegex = /^[A-Za-z\s]+$/;
-  if (lastName === '') {
-    lastNameError.textContent = 'Last name is required';
-    lastNameError.classList.remove('hidden');
-    return false;
-  } else if (!nameRegex.test(lastName)) {
-    lastNameError.textContent = 'Last name must contain only letters';
-    lastNameError.classList.remove('hidden');
-    return false;
-  } else {
-    lastNameError.classList.add('hidden');
-    return true;
-  }
-}
+    // Function to apply validation to a field
+    function applyNameValidation(field) {
+        if (field) {
+            // Validate on input
+            field.addEventListener('input', function() {
+                validateNameInput(this);
+            });
 
-function validateEmpBirthdate() {
-  const birthdateInput = document.getElementById('empBirthdate');
-  const birthdateError = document.getElementById('empBirthdateError');
-  const birthdate = birthdateInput.value;
-  if (birthdate === '') {
-    birthdateError.textContent = 'Birthdate is required';
-    birthdateError.classList.remove('hidden');
-    return false;
-  } 
-  const today = new Date();
-  const birthdateObj = new Date(birthdate);
-  let age = today.getFullYear() - birthdateObj.getFullYear();
-  const monthDiff = today.getMonth() - birthdateObj.getMonth();
-  
-  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthdateObj.getDate())) {
-    age--;
-  }
-  
-  if (age < 18) {
-    birthdateError.textContent = 'You must be at least 18 years old';
-    birthdateError.classList.remove('hidden');
-    return false;
-  } else {
-    birthdateError.classList.add('hidden');
-    return true;
-  }
-}
+            // Validate on blur (when field loses focus)
+            field.addEventListener('blur', function() {
+                validateNameInput(this);
+            });
 
-function validateEmpEmail() {
-  const emailInput = document.getElementById('employeeEmail');
-  const emailError = document.getElementById('empEmailError');
-  
-  // Add this error element to your HTML if not present
-  if (!emailError) {
-    const errorEl = document.createElement('p');
-    errorEl.id = 'empEmailError';
-    errorEl.className = 'text-red-500 text-xs mt-1 hidden';
-    emailInput.parentNode.appendChild(errorEl);
-  }
-  const email = emailInput.value.trim();
-  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (email === '') {
-    emailError.textContent = 'Email is required';
-    emailError.classList.remove('hidden');
-    return false;
-  } else if (!emailPattern.test(email)) {
-    emailError.textContent = 'Please enter a valid email address';
-    emailError.classList.remove('hidden');
-    return false;
-  } else {
-    emailError.classList.add('hidden');
-    return true;
-  }
-}
+            // Prevent paste of invalid content
+            field.addEventListener('paste', function(e) {
+                e.preventDefault();
+                const pastedText = (e.clipboardData || window.clipboardData).getData('text');
+                const cleanedText = pastedText.replace(/[^a-zA-Z\s'-]/g, '');
+                document.execCommand('insertText', false, cleanedText);
+            });
+        }
+    }
 
-function validateEmpPhoneNumber() {
-  const phoneInput = document.getElementById('employeePhone');
-  const phoneError = document.getElementById('empPhoneError');
-  
-  // Add this error element to your HTML if not present
-  if (!phoneError) {
-    const errorEl = document.createElement('p');
-    errorEl.id = 'empPhoneError';
-    errorEl.className = 'text-red-500 text-xs mt-1 hidden';
-    phoneInput.parentNode.appendChild(errorEl);
-  }
-  const phone = phoneInput.value.trim();
-  const phonePattern = /^09\d{9}$/;
-  // Remove any non-digit characters
-  const cleanedPhone = phone.replace(/[^0-9]/g, '');
-  if (phone === '') {
-    phoneError.textContent = 'Phone number is required';
-    phoneError.classList.remove('hidden');
-    return false;
-  } else if (!phonePattern.test(cleanedPhone)) {
-    phoneError.textContent = 'Please enter a valid 11-digit mobile number (e.g., 09123456789)';
-    phoneError.classList.remove('hidden');
-    return false;
-  } else {
-    phoneError.classList.add('hidden');
-    return true;
-  }
-}
+    // Apply validation to employee name fields
+    employeeNameFields.forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        applyNameValidation(field);
+    });
+
+    // Additional validation for required fields
+    const requiredEmployeeFields = ['empFirstName', 'empLastName'];
+
+    // Function to apply required validation
+    function applyRequiredValidation(field) {
+        if (field) {
+            field.addEventListener('blur', function() {
+                if (this.value.trim().length < 2) {
+                    this.setCustomValidity('Please enter at least 2 characters');
+                } else {
+                    this.setCustomValidity('');
+                }
+            });
+        }
+    }
+
+    // Apply to employee fields
+    requiredEmployeeFields.forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        applyRequiredValidation(field);
+    });
+
+    // Validate birthdate to ensure employee is at least 18 years old
+    function validateEmpBirthdate() {
+        const birthdateField = document.getElementById('empBirthdate');
+        if (birthdateField) {
+            const selectedDate = new Date(birthdateField.value);
+            const today = new Date();
+            const minBirthdate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
+            
+            if (selectedDate > minBirthdate) {
+                birthdateField.setCustomValidity('Employee must be at least 18 years old');
+            } else {
+                birthdateField.setCustomValidity('');
+            }
+        }
+    }
+
+    // Set max date for birthdate field to 18 years ago
+    function setEmpMaxBirthdate() {
+        const birthdateField = document.getElementById('empBirthdate');
+        if (birthdateField) {
+            const today = new Date();
+            const maxDate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
+            birthdateField.max = maxDate.toISOString().split('T')[0];
+        }
+    }
+
+    // Validate email input
+    function validateEmpEmail() {
+        const emailField = document.getElementById('employeeEmail');
+        if (emailField) {
+            // Remove any spaces from the email in real-time
+            if (emailField.value.includes(' ')) {
+                emailField.value = emailField.value.replace(/\s/g, '');
+            }
+            
+            // Check basic email format requirements
+            if (emailField.value.length > 0) {
+                if (!emailField.value.includes('@')) {
+                    emailField.setCustomValidity('Email must contain @ symbol');
+                } else if (emailField.value.indexOf('@') === 0) {
+                    emailField.setCustomValidity('Email cannot start with @');
+                } else if (emailField.value.indexOf('@') === emailField.value.length - 1) {
+                    emailField.setCustomValidity('Email cannot end with @');
+                } else {
+                    emailField.setCustomValidity('');
+                }
+            } else {
+                emailField.setCustomValidity('');
+            }
+        }
+    }
+
+    // Setup email field validation
+    const empEmailField = document.getElementById('employeeEmail');
+    if (empEmailField) {
+        // Validate on every input
+        empEmailField.addEventListener('input', validateEmpEmail);
+        
+        // Prevent pasting spaces
+        empEmailField.addEventListener('paste', function(e) {
+            e.preventDefault();
+            const pastedText = (e.clipboardData || window.clipboardData).getData('text');
+            const cleanedText = pastedText.replace(/\s/g, '');
+            document.execCommand('insertText', false, cleanedText);
+        });
+        
+        // Prevent spacebar key
+        empEmailField.addEventListener('keydown', function(e) {
+            if (e.key === ' ' || e.code === 'Space') {
+                e.preventDefault();
+            }
+        });
+    }
+
+    // Validate Philippine phone number
+    function validateEmpPhoneNumber() {
+        const phoneField = document.getElementById('employeePhone');
+        if (phoneField) {
+            // Remove any non-digit characters
+            let phoneNumber = phoneField.value.replace(/\D/g, '');
+            
+            // Limit to 11 characters
+            if (phoneNumber.length > 11) {
+                phoneNumber = phoneNumber.substring(0, 11);
+            }
+            
+            // Update the field value
+            phoneField.value = phoneNumber;
+            
+            // Validate the format
+            if (phoneNumber.length > 0) {
+                if (!phoneNumber.startsWith('09')) {
+                    phoneField.setCustomValidity('Philippine numbers must start with 09');
+                } else if (phoneNumber.length < 11) {
+                    phoneField.setCustomValidity('Phone number must be 11 digits');
+                } else {
+                    phoneField.setCustomValidity('');
+                }
+            } else {
+                phoneField.setCustomValidity('');
+            }
+        }
+    }
+
+    // Format phone number as user types
+    function formatEmpPhoneNumber() {
+        const phoneField = document.getElementById('employeePhone');
+        if (phoneField) {
+            let phoneNumber = phoneField.value.replace(/\D/g, '');
+            
+            // Auto-add 09 if user starts with 9
+            if (phoneNumber.length === 1 && phoneNumber === '9') {
+                phoneNumber = '09';
+            }
+            
+            // Format with spaces for better readability (optional)
+            if (phoneNumber.length > 4) {
+                phoneNumber = phoneNumber.replace(/(\d{4})(\d{3})(\d{4})/, '$1 $2 $3');
+            } else if (phoneNumber.length > 2) {
+                phoneNumber = phoneNumber.replace(/(\d{2})(\d+)/, '$1 $2');
+            }
+            
+            phoneField.value = phoneNumber;
+        }
+    }
+
+    // Initialize phone field event listeners
+    const empPhoneField = document.getElementById('employeePhone');
+    if (empPhoneField) {
+        empPhoneField.addEventListener('input', function() {
+            formatEmpPhoneNumber();
+            validateEmpPhoneNumber();
+        });
+        
+        empPhoneField.addEventListener('keydown', function(e) {
+            // Allow: backspace, delete, tab, escape, enter
+            if ([46, 8, 9, 27, 13].includes(e.keyCode) || 
+                // Allow: Ctrl+A
+                (e.keyCode == 65 && e.ctrlKey === true) || 
+                // Allow: home, end, left, right
+                (e.keyCode >= 35 && e.keyCode <= 39)) {
+                return;
+            }
+            // Ensure it's a number and stop the keypress if not
+            if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+                e.preventDefault();
+            }
+        });
+    }
+
+    // Initialize max birthdate when page loads
+    setEmpMaxBirthdate();
+
+    // Event listeners for the employee form
+    document.getElementById('empFirstName').addEventListener('input', validateNameInput);
+    document.getElementById('empMiddleName').addEventListener('input', validateNameInput);
+    document.getElementById('empLastName').addEventListener('input', validateNameInput);
+    document.getElementById('empBirthdate').addEventListener('change', validateEmpBirthdate);
+    document.getElementById('employeeEmail').addEventListener('input', validateEmpEmail);
+    document.getElementById('employeePhone').addEventListener('input', validateEmpPhoneNumber);
+    document.getElementById('branchLocation').addEventListener('change', validateBranchLocation);
+  });
+
+
 
 function validateEmpBranchLocation() {
   const branchSelect = document.getElementById('empBranchLocation');
