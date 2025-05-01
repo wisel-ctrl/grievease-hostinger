@@ -1230,7 +1230,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <!-- Transaction Logs Tab -->
 <div id="transaction-logs" class="tab-content">
     <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
-    <div class="p-6 border-b border-gray-100 flex justify-between items-center tab-header">
+        <div class="p-6 border-b border-gray-100 flex justify-between items-center">
             <h3 class="font-hedvig text-xl text-navy">Payment History</h3>
             <div class="flex space-x-2">
                 <button id="export-transactions" class="bg-navy text-white px-3 py-1 rounded hover:bg-navy/80 transition text-sm">
