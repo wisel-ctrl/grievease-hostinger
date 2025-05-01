@@ -177,6 +177,12 @@ header("Pragma: no-cache");
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.32/dist/sweetalert2.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.32/dist/sweetalert2.all.min.js"></script>
     <style>
+        /* Add this to your existing CSS */
+input[name*="FirstName"],
+input[name*="MiddleName"],
+input[name*="LastName"] {
+    text-transform: capitalize;
+}
         .modal {
             transition: opacity 0.3s ease-in-out;
             pointer-events: none;
@@ -2966,6 +2972,79 @@ document.getElementById('cancelBookingForm').addEventListener('submit', function
 </script>
 
 <script>
+
+    // Function to capitalize first letter of each word
+function capitalizeName(name) {
+    return name.toLowerCase().replace(/\b\w/g, function(char) {
+        return char.toUpperCase();
+    });
+}
+
+function validateNameInput(input) {
+    // Remove any numbers or symbols
+    let value = input.value.replace(/[^a-zA-Z\s'-]/g, '');
+    
+    // Remove leading spaces
+    value = value.replace(/^\s+/, '');
+    
+    // Capitalize first letter of each word
+    value = capitalizeName(value);
+    
+    // Prevent multiple spaces
+    value = value.replace(/\s{2,}/g, ' ');
+    
+    // Update the input value
+    input.value = value;
+}
+
+// Add name validation to profile fields
+document.addEventListener('DOMContentLoaded', function() {
+    // Name fields in the edit profile modal
+    const nameFields = [
+        'firstName', 
+        'middleName', 
+        'lastName'
+    ];
+
+    nameFields.forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        if (field) {
+            // Validate on input
+            field.addEventListener('input', function() {
+                validateNameInput(this);
+            });
+
+            // Validate on blur (when field loses focus)
+            field.addEventListener('blur', function() {
+                validateNameInput(this);
+            });
+
+            // Prevent paste of invalid content
+            field.addEventListener('paste', function(e) {
+                e.preventDefault();
+                const pastedText = (e.clipboardData || window.clipboardData).getData('text');
+                const cleanedText = pastedText.replace(/[^a-zA-Z\s'-]/g, '');
+                document.execCommand('insertText', false, cleanedText);
+            });
+        }
+    });
+
+    // Additional validation for first name and last name (required fields)
+    const requiredNameFields = ['firstName', 'lastName'];
+
+    requiredNameFields.forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        if (field) {
+            field.addEventListener('blur', function() {
+                if (this.value.trim().length < 2) {
+                    this.setCustomValidity('Please enter at least 2 characters');
+                } else {
+                    this.setCustomValidity('');
+                }
+            });
+        }
+    });
+});
     
     // Function to load address data when modal opens
 function loadAddressData() {
