@@ -1305,7 +1305,7 @@ document.addEventListener('DOMContentLoaded', function() {
         lifeplanReferenceNumberInput.addEventListener('paste', function(e) {
             e.preventDefault();
             const pastedText = (e.clipboardData || window.clipboardData).getData('text');
-            const cleanedText = pastedText.replace(/[a-zA-Z\s]/g, ''); // Remove letters and spaces
+            const cleanedText = pastedText.replace(/[^0-9]/g, ''); // Remove non-digit characters
             document.execCommand('insertText', false, cleanedText);
         });
     }
@@ -1501,15 +1501,17 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // Traditional Reference Number Validation (numbers only, no letters or spaces)
+// Traditional Reference Number Validation (numbers only, no letters, symbols or spaces)
 function validateTraditionalReferenceNumber(input) {
-    // Remove any letters, spaces, or unwanted characters
-    let value = input.value.replace(/[a-zA-Z\s]/g, '');
+    // Remove any non-digit characters
+    let value = input.value.replace(/[^0-9]/g, '');
     
     // Update the input value
     input.value = value;
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+    // Traditional Reference Number field
     const referenceNumberInput = document.getElementById('traditionalReferenceNumber');
     if (referenceNumberInput) {
         referenceNumberInput.addEventListener('input', function() {
@@ -1523,7 +1525,7 @@ document.addEventListener('DOMContentLoaded', function() {
         referenceNumberInput.addEventListener('paste', function(e) {
             e.preventDefault();
             const pastedText = (e.clipboardData || window.clipboardData).getData('text');
-            const cleanedText = pastedText.replace(/[a-zA-Z\s]/g, ''); // Remove letters and spaces
+            const cleanedText = pastedText.replace(/[^0-9]/g, ''); // Remove non-digit characters
             document.execCommand('insertText', false, cleanedText);
         });
     }
