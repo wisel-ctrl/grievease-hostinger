@@ -1117,27 +1117,7 @@ require_once '../db_connect.php'; // Database connection
                             </div>
                         </div>                                                              
                         
-                        <!-- Viewing Period Selection -->
-                        <div class="border-b border-gray-200 pb-6">
-                            <h4 class="text-lg font-hedvig text-navy mb-4">Viewing Period</h4>
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <div class="border rounded-lg p-4 cursor-pointer viewing-option" data-price="30000" data-name="3-Day Viewing">
-                                    <h5 class="font-medium mb-1">3-Day Viewing</h5>
-                                    <p class="text-sm text-gray-600 mb-2">Standard viewing period</p>
-                                    <p class="text-yellow-600">₱30,000</p>
-                                </div>
-                                <div class="border rounded-lg p-4 cursor-pointer viewing-option" data-price="50000" data-name="5-Day Viewing">
-                                    <h5 class="font-medium mb-1">5-Day Viewing</h5>
-                                    <p class="text-sm text-gray-600 mb-2">Extended viewing period</p>
-                                    <p class="text-yellow-600">₱50,000</p>
-                                </div>
-                                <div class="border rounded-lg p-4 cursor-pointer viewing-option" data-price="70000" data-name="7-Day Viewing">
-                                    <h5 class="font-medium mb-1">7-Day Viewing</h5>
-                                    <p class="text-sm text-gray-600 mb-2">Full week viewing period</p>
-                                    <p class="text-yellow-600">₱70,000</p>
-                                </div>
-                            </div>
-                        </div>
+                        
                         
                         <!-- Flower Arrangements -->
                         <div class="border-b border-gray-200 pb-6">
@@ -1258,7 +1238,6 @@ require_once '../db_connect.php'; // Database connection
 document.addEventListener('DOMContentLoaded', function() {
     // Variables to store custom package selections
     let selectedCasket = null;
-    let selectedViewing = null;
     let selectedFlowers = null;
     let selectedAddons = [];
     let totalPackagePrice = 0;
@@ -1316,13 +1295,12 @@ document.addEventListener('DOMContentLoaded', function() {
     // Function to reset all custom selections
     function resetCustomSelections() {
         selectedCasket = null;
-        selectedViewing = null;
         selectedFlowers = null;
         selectedAddons = [];
         totalPackagePrice = 0;
         
         // Reset UI selections
-        document.querySelectorAll('.casket-option, .viewing-option, .flower-option').forEach(el => {
+        document.querySelectorAll('.casket-option, .flower-option').forEach(el => {
             el.classList.remove('border-yellow-600', 'border-2');
         });
         
@@ -1367,27 +1345,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Viewing period selection
-    document.querySelectorAll('.viewing-option').forEach(option => {
-        option.addEventListener('click', function() {
-            // Clear previous selection
-            document.querySelectorAll('.viewing-option').forEach(el => {
-                el.classList.remove('border-yellow-600', 'border-2');
-            });
-            
-            // Mark this option as selected
-            this.classList.add('border-yellow-600', 'border-2');
-            
-            // Store selected viewing
-            selectedViewing = {
-                name: this.dataset.name,
-                price: parseInt(this.dataset.price)
-            };
-            
-            updateCustomSummary();
-            checkRequiredSelections();
-        });
-    });
     
     // Flower arrangements selection
     document.querySelectorAll('.flower-option').forEach(option => {
@@ -1437,7 +1394,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Function to check if required selections are made
     function checkRequiredSelections() {
         // Enable proceed button only if all required selections are made
-        const requiredSelectionsComplete = selectedCasket && selectedViewing && selectedFlowers;
+        const requiredSelectionsComplete = selectedCasket && selectedFlowers;
         document.getElementById('proceedToBooking').disabled = !requiredSelectionsComplete;
     }
     
@@ -1454,15 +1411,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 <span>₱${selectedCasket.price.toLocaleString()}</span>
             </div>`;
             totalPackagePrice += selectedCasket.price;
-        }
-        
-        // Add viewing period info if selected
-        if (selectedViewing) {
-            summaryHTML += `<div class="flex justify-between text-sm">
-                <span>${selectedViewing.name}</span>
-                <span>₱${selectedViewing.price.toLocaleString()}</span>
-            </div>`;
-            totalPackagePrice += selectedViewing.price;
         }
         
         // Add flower arrangements info if selected
@@ -1509,7 +1457,6 @@ document.addEventListener('DOMContentLoaded', function() {
         // Create feature list from selections
         const features = [];
         if (selectedCasket) features.push(selectedCasket.name);
-        if (selectedViewing) features.push(selectedViewing.name);
         if (selectedFlowers) features.push(selectedFlowers.name);
         selectedAddons.forEach(addon => {
             features.push(addon.name);
