@@ -686,112 +686,132 @@ require_once '../db_connect.php'; // Database connection
 
 <!-- Carousel JavaScript - Updated for better responsiveness -->
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const carouselContainer = document.getElementById('carousel-container');
-        const prevBtn = document.getElementById('prev-btn');
-        const nextBtn = document.getElementById('next-btn');
-        const dots = document.querySelectorAll('#carousel-dots button');
-        
-        let currentIndex = 0;
-        const itemCount = 4; // Total number of items (3 packages + view all)
-        let itemsPerView = window.innerWidth >= 768 ? 3 : 1; // Show 3 items on medium screens, 1 on small
-        let maxIndex = itemCount - itemsPerView;
-        
-        // Initially hide prev button if at start
-        prevBtn.style.display = currentIndex === 0 ? 'none' : 'flex';
-        
-        // Function to update carousel position
-        function updateCarousel() {
-            const translateValue = currentIndex * -100 / itemsPerView;
-            carouselContainer.style.transform = `translateX(${translateValue}%)`;
-            
-            // Update dots
-            dots.forEach((dot, index) => {
-                dot.classList.toggle('opacity-100', index === currentIndex);
-                dot.classList.toggle('opacity-50', index !== currentIndex);
-            });
-            
-            // Show/hide prev button based on position
-            prevBtn.style.display = currentIndex === 0 ? 'none' : 'flex';
-            
-            // Show/hide next button based on position
-            nextBtn.style.display = currentIndex >= maxIndex ? 'none' : 'flex';
+  document.addEventListener('DOMContentLoaded', function() {
+    const carouselContainer = document.getElementById('carousel-container');
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const dotsContainer = document.getElementById('carousel-dots');
+    
+    let currentIndex = 0;
+    const itemCount = 4; // Total items (3 packages + view all)
+    let itemsPerView = window.innerWidth >= 768 ? 3 : 1; // 3 on desktop, 1 on mobile
+    
+    // Function to calculate dots needed
+    function calculateDots() {
+        // On mobile (1 item view), we need 4 dots (one per item)
+        if (window.innerWidth < 768) {
+            return itemCount;
         }
+        // On desktop (3 items view), we need 2 dots (4 items - 3 per view + 1)
+        return itemCount - itemsPerView + 1;
+    }
+    
+    // Function to create/update dots
+    function updateDots() {
+        const dotCount = calculateDots();
+        dotsContainer.innerHTML = '';
         
-        // Click handlers for navigation buttons
-        nextBtn.addEventListener('click', function() {
-            if (currentIndex < maxIndex) {
-                currentIndex++;
-                updateCarousel();
-            }
-        });
-        
-        prevBtn.addEventListener('click', function() {
-            if (currentIndex > 0) {
-                currentIndex--;
-                updateCarousel();
-            }
-        });
-        
-        // Click handlers for dots
-        dots.forEach((dot, index) => {
+        for (let i = 0; i < dotCount; i++) {
+            const dot = document.createElement('button');
+            dot.className = `w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-navy ${i === currentIndex ? 'opacity-100' : 'opacity-50'}`;
+            dot.dataset.index = i;
+            dotsContainer.appendChild(dot);
+            
             dot.addEventListener('click', () => {
-                currentIndex = Math.min(index, maxIndex);
+                currentIndex = i;
                 updateCarousel();
             });
+        }
+    }
+    
+    // Function to get max index based on view
+    function getMaxIndex() {
+        // On mobile, can scroll through all items
+        if (window.innerWidth < 768) {
+            return itemCount - 1;
+        }
+        // On desktop, limited by items per view
+        return itemCount - itemsPerView;
+    }
+    
+    // Main update function
+    function updateCarousel() {
+        const translateValue = currentIndex * -(100 / itemsPerView);
+        carouselContainer.style.transform = `translateX(${translateValue}%)`;
+        
+        // Update dots
+        const dots = document.querySelectorAll('#carousel-dots button');
+        dots.forEach((dot, index) => {
+            dot.classList.toggle('opacity-100', index === currentIndex);
+            dot.classList.toggle('opacity-50', index !== currentIndex);
         });
         
-        // Handle window resize
-        window.addEventListener('resize', function() {
-            const newItemsPerView = window.innerWidth >= 768 ? 3 : 1;
-            
-            // Update variables without reload
-            if (newItemsPerView !== itemsPerView) {
-                itemsPerView = newItemsPerView;
-                maxIndex = itemCount - itemsPerView;
-                
-                // Reset to first slide if current position would be invalid
-                if (currentIndex > maxIndex) {
-                    currentIndex = maxIndex;
-                }
-                
-                updateCarousel();
-            }
-        });
-        
-        // Initial setup
-        updateCarousel();
-        
-        // Add touch swipe support for mobile
-        let touchStartX = 0;
-        let touchEndX = 0;
-        
-        carouselContainer.addEventListener('touchstart', function(e) {
-            touchStartX = e.changedTouches[0].screenX;
-        }, false);
-        
-        carouselContainer.addEventListener('touchend', function(e) {
-            touchEndX = e.changedTouches[0].screenX;
-            handleSwipe();
-        }, false);
-        
-        function handleSwipe() {
-            const swipeThreshold = 50;
-            if (touchEndX < touchStartX - swipeThreshold) {
-                // Swipe left - go next
-                if (currentIndex < maxIndex) {
-                    currentIndex++;
-                    updateCarousel();
-                }
-            } else if (touchEndX > touchStartX + swipeThreshold) {
-                // Swipe right - go back
-                if (currentIndex > 0) {
-                    currentIndex--;
-                    updateCarousel();
-                }
-            }
+        // Update navigation buttons
+        prevBtn.style.display = currentIndex === 0 ? 'none' : 'flex';
+        nextBtn.style.display = currentIndex >= getMaxIndex() ? 'none' : 'flex';
+    }
+    
+    // Navigation handlers
+    nextBtn.addEventListener('click', function() {
+        if (currentIndex < getMaxIndex()) {
+            currentIndex++;
+            updateCarousel();
         }
     });
+    
+    prevBtn.addEventListener('click', function() {
+        if (currentIndex > 0) {
+            currentIndex--;
+            updateCarousel();
+        }
+    });
+    
+    // Handle window resize
+    window.addEventListener('resize', function() {
+        const newItemsPerView = window.innerWidth >= 768 ? 3 : 1;
+        
+        if (newItemsPerView !== itemsPerView) {
+            itemsPerView = newItemsPerView;
+            updateDots();
+            
+            // Adjust currentIndex if needed
+            const newMaxIndex = getMaxIndex();
+            if (currentIndex > newMaxIndex) {
+                currentIndex = newMaxIndex;
+            }
+            
+            updateCarousel();
+        }
+    });
+    
+    // Initialize
+    updateDots();
+    updateCarousel();
+    
+    // Touch/swipe handling (existing code)
+    let touchStartX = 0;
+    let touchEndX = 0;
+    
+    carouselContainer.addEventListener('touchstart', function(e) {
+        touchStartX = e.changedTouches[0].screenX;
+    }, false);
+    
+    carouselContainer.addEventListener('touchend', function(e) {
+        touchEndX = e.changedTouches[0].screenX;
+        handleSwipe();
+    }, false);
+    
+    function handleSwipe() {
+        const swipeThreshold = 50;
+        if (touchEndX < touchStartX - swipeThreshold && currentIndex < getMaxIndex()) {
+            currentIndex++;
+            updateCarousel();
+        } else if (touchEndX > touchStartX + swipeThreshold && currentIndex > 0) {
+            currentIndex--;
+            updateCarousel();
+        }
+    }
+});
 </script>
 
     <!-- FAQ Section -->
@@ -961,31 +981,7 @@ require_once '../db_connect.php'; // Database connection
                     </ul>
                 </div>
 
-                <div class="border-t border-gray-200 pt-4 mt-6">
-    <h3 class="text-xl font-hedvig text-navy mb-4">Additional Services:</h3>
-    <div id="traditionalAdditionalServices" class="space-y-3">
-        <div class="flex items-center">
-            <input type="checkbox" id="traditionalFlowers" name="additionalServices" value="3500" class="traditional-addon h-5 w-5 text-yellow-600 rounded focus:ring-yellow-500" data-name="Floral Arrangements">
-            <label for="traditionalFlowers" class="ml-3 text-sm text-gray-700">Floral Arrangements (₱3,500)</label>
-        </div>
-        <div class="flex items-center">
-            <input type="checkbox" id="traditionalCatering" name="additionalServices" value="15000" class="traditional-addon h-5 w-5 text-yellow-600 rounded focus:ring-yellow-500" data-name="Catering Service (50 pax)">
-            <label for="traditionalCatering" class="ml-3 text-sm text-gray-700">Catering Service - 50 pax (₱15,000)</label>
-        </div>
-        <div class="flex items-center">
-            <input type="checkbox" id="traditionalVideography" name="additionalServices" value="7500" class="traditional-addon h-5 w-5 text-yellow-600 rounded focus:ring-yellow-500" data-name="Video Memorial Service">
-            <label for="traditionalVideography" class="ml-3 text-sm text-gray-700">Video Memorial Service (₱7,500)</label>
-        </div>
-        <div class="flex items-center">
-            <input type="checkbox" id="traditionalTransport" name="additionalServices" value="4500" class="traditional-addon h-5 w-5 text-yellow-600 rounded focus:ring-yellow-500" data-name="Additional Transportation">
-            <label for="traditionalTransport" class="ml-3 text-sm text-gray-700">Additional Transportation (₱4,500)</label>
-        </div>
-        <div class="flex items-center">
-            <input type="checkbox" id="traditionalUrn" name="additionalServices" value="6000" class="traditional-addon h-5 w-5 text-yellow-600 rounded focus:ring-yellow-500" data-name="Premium Urn Upgrade">
-            <label for="traditionalUrn" class="ml-3 text-sm text-gray-700">Premium Urn Upgrade (₱6,000)</label>
-        </div>
-    </div>
-</div>
+                
             </div>
 
             <!-- Right Side: Traditional Booking Form -->
@@ -1219,9 +1215,6 @@ require_once '../db_connect.php'; // Database connection
                         </div>
                     </div>
                     
-                    
-                    
-
                     <div class="flex justify-center mt-8">
                         <button id="proceedToBooking" class="bg-yellow-600 hover:bg-yellow-700 text-white px-8 py-3 rounded-lg shadow-md transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
                             Continue to Booking Form
@@ -1474,12 +1467,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Additional services checkboxes (traditional modal)
-    document.querySelectorAll('.traditional-addon').forEach(checkbox => {
-        checkbox.addEventListener('change', function() {
-            updateTraditionalPaymentSummary();
-        });
-    });
     
     // Function to check if required selections are made
     function checkRequiredSelections() {
@@ -1740,35 +1727,9 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Traditional addon checkbox event handling
-    document.querySelectorAll('.traditional-addon').forEach(checkbox => {
-        checkbox.addEventListener('change', function() {
-            updateTraditionalTotal();
-        });
-    });
+    
 
-    // Function to update traditional total price when addons are selected
-    function updateTraditionalTotal() {
-        const basePrice = parseInt(sessionStorage.getItem('selectedPackagePrice') || '0');
-        let addonTotal = 0;
-        
-        // Calculate addons total
-        document.querySelectorAll('.traditional-addon:checked').forEach(checkbox => {
-            addonTotal += parseInt(checkbox.value);
-        });
-        
-        // Update totals
-        const totalPrice = basePrice + addonTotal;
-        const downpayment = Math.ceil(totalPrice * 0.3);
-        
-        document.getElementById('traditionalTotalPrice').textContent = `₱${totalPrice.toLocaleString()}`;
-        document.getElementById('traditionalDownpayment').textContent = `₱${downpayment.toLocaleString()}`;
-        document.getElementById('traditionalAmountDue').textContent = `₱${downpayment.toLocaleString()}`;
-        
-        // Update hidden fields
-        document.getElementById('traditionalSelectedPackagePrice').value = totalPrice;
-    }
-
+    
     // Function to open traditional modal with package details
     function openTraditionalModal() {
         // Get stored package details
