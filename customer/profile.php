@@ -300,13 +300,7 @@ header("Pragma: no-cache");
         flex-direction: column;
         min-height: 100%;
     }
-    #death-cert-preview img,
-#payment-proof-preview img {
-    max-height: 150px;
-    border: 1px solid #e2e8f0;
-    border-radius: 0.375rem;
-    margin-top: 0.5rem;
-}
+    
     </style>
 </head>
 <body class="bg-cream overflow-x-hidden w-full max-w-full m-0 p-0 font-hedvig">
@@ -2042,179 +2036,116 @@ document.addEventListener('DOMContentLoaded', function() {
 </div>
 
 <!-- Modify Booking Modal -->
-<div id="modifyBookingModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4 hidden">
-  <!-- Modal Content -->
-  <div class="w-full max-w-2xl bg-white rounded-2xl shadow-xl overflow-hidden max-h-[90vh]">
-    <div class="modal-scroll-container overflow-y-auto max-h-[90vh]">
-      <!-- Header with close button -->
-      <div class="bg-navy p-6 flex justify-between items-center">
-        <h2 class="text-2xl font-hedvig text-white">Modify Booking</h2>
-        <button class="close-modal text-white hover:text-yellow-300">
-          <i class="fas fa-times text-2xl"></i>
-        </button>
-      </div>
-      
-      <!-- Modal Body -->
-      <div class="p-6 bg-cream">
-        <p class="text-gray-600 text-base mb-4">Update your booking details below.</p>
-        
-        <form id="modifyBookingForm" class="space-y-6" method="POST">
-          <input type="hidden" id="modify-booking-id" name="booking_id">
-          <input type="hidden" id="modify-service-id" name="service_id">
-          <input type="hidden" id="modify-branch-id" name="branch_id">
-          
-          <!-- Service Information Section -->
-          <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
-            <h4 class="font-semibold text-navy text-lg mb-4">Service Information</h4>
-            <div class="space-y-4">
-              <div>
-                <label class="block text-sm font-medium text-navy mb-1 sm:mb-2">Service Package</label>
-                <div id="display-service-package" class="w-full border border-input-border rounded-lg px-4 py-3 bg-gray-50 text-gray-700">
-                  <!-- Service package details will be displayed here -->
-                </div>
-              </div>
-              
-              <div>
-                <label class="block text-sm font-medium text-navy mb-1 sm:mb-2">Branch Location</label>
-                <div id="display-branch-location" class="w-full border border-input-border rounded-lg px-4 py-3 bg-gray-50 text-gray-700">
-                  <!-- Branch location will be displayed here -->
-                </div>
-              </div>
-              
-              <div>
-                <label class="block text-sm font-medium text-navy mb-1 sm:mb-2">Burial Date*</label>
-                <input type="date" name="deceased_dateOfBurial" class="w-full px-4 py-3 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent" required>
-              </div>
-            </div>
-          </div>
-          
-          <!-- Deceased Information Section -->
-          <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
-            <h4 class="font-semibold text-navy text-lg mb-4">Deceased Information</h4>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label class="block text-sm font-medium text-navy mb-1 sm:mb-2">First Name*</label>
-                <input type="text" name="deceased_fname" class="w-full px-4 py-3 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent" required>
-              </div>
-              
-              <div>
-                <label class="block text-sm font-medium text-navy mb-1 sm:mb-2">Middle Name</label>
-                <input type="text" name="deceased_midname" class="w-full px-4 py-3 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent">
-              </div>
-              
-              <div>
-                <label class="block text-sm font-medium text-navy mb-1 sm:mb-2">Last Name*</label>
-                <input type="text" name="deceased_lname" class="w-full px-4 py-3 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent" required>
-              </div>
-              
-              <div>
-                <label class="block text-sm font-medium text-navy mb-1 sm:mb-2">Suffix</label>
-                <input type="text" name="deceased_suffix" class="w-full px-4 py-3 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent">
-              </div>
-            </div>
-          </div>
-          
-          <!-- Additional Information Section -->
-          <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
-            <h4 class="font-semibold text-navy text-lg mb-4">Additional Information</h4>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label class="block text-sm font-medium text-navy mb-1 sm:mb-2">Birth Date</label>
-                <input type="date" name="deceased_birth" class="w-full px-4 py-3 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent">
-              </div>
-              
-              <div>
-                <label class="block text-sm font-medium text-navy mb-1 sm:mb-2">Date of Death</label>
-                <input type="date" name="deceased_dodeath" class="w-full px-4 py-3 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent">
-              </div>
-            </div>
-            
-            <div class="mt-4">
-              <label class="block text-sm font-medium text-navy mb-1 sm:mb-2">Address</label>
-              <textarea name="deceased_address" rows="2" class="w-full px-4 py-3 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent"></textarea>
-            </div>
-            
-            <div class="mt-4 flex items-center">
-              <input type="checkbox" name="with_cremate" id="with_cremate" class="mr-2 h-5 w-5 text-yellow-600 focus:ring-yellow-500">
-              <label for="with_cremate" class="text-sm font-medium text-navy">Include Cremation Service</label>
-            </div>
-          </div>
-          
-          <!-- Document Uploads Section -->
-          <!-- In the Modify Booking Modal section, update the Document Uploads Section -->
-<div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
-    <h4 class="font-semibold text-navy text-lg mb-4">Document Uploads</h4>
-    <div class="space-y-4">
-        <!-- Death Certificate Section -->
-        <div>
-            <label class="block text-sm font-medium text-navy mb-1 sm:mb-2">Death Certificate</label>
-            <div class="flex items-center gap-4">
-                <div class="flex-1">
-                    <input type="file" name="death_certificate" id="death-certificate-upload" class="w-full px-4 py-3 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent" onchange="previewFile(this, 'death-cert-preview')">
-                </div>
-                <?php if (!empty($booking['deathcert_url'])): ?>
-                    <div class="relative">
-                        <button type="button" class="view-current-file bg-blue-500 text-white p-2 rounded hover:bg-blue-600 transition" data-url="<?php echo htmlspecialchars($booking['deathcert_url']); ?>">
-                            <i class="fas fa-eye"></i>
-                        </button>
-                        <p class="text-xs text-gray-500 mt-1 text-center">Current</p>
-                    </div>
-                <?php endif; ?>
-            </div>
-            <div id="death-cert-preview" class="mt-2 hidden">
-                <p class="text-xs text-gray-500 mb-1">New Upload Preview:</p>
-                <img src="" class="max-w-full h-32 object-contain border rounded">
-            </div>
-            <?php if (!empty($booking['deathcert_url'])): ?>
-                <p class="text-sm text-gray-500 mt-1">Current file: <?php echo basename($booking['deathcert_url']); ?></p>
-            <?php endif; ?>
+<div id="modifyBookingModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+        <div class="p-6 border-b border-gray-200 flex justify-between items-center">
+            <h3 class="font-hedvig text-xl text-navy">Modify Booking</h3>
+            <button class="close-modal text-gray-500 hover:text-gray-700">
+                <i class="fas fa-times"></i>
+            </button>
         </div>
-        
-        <!-- Payment Proof Section -->
-        <div>
-            <label class="block text-sm font-medium text-navy mb-1 sm:mb-2">Payment Proof</label>
-            <div class="flex items-center gap-4">
-                <div class="flex-1">
-                    <input type="file" name="payment_proof" id="payment-proof-upload" class="w-full px-4 py-3 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent" onchange="previewFile(this, 'payment-proof-preview')">
-                </div>
-                <?php if (!empty($booking['payment_url'])): ?>
-                    <div class="relative">
-                        <button type="button" class="view-current-file bg-blue-500 text-white p-2 rounded hover:bg-blue-600 transition" data-url="<?php echo htmlspecialchars($booking['payment_url']); ?>">
-                            <i class="fas fa-eye"></i>
-                        </button>
-                        <p class="text-xs text-gray-500 mt-1 text-center">Current</p>
+        <div class="p-6">
+            <form id="modifyBookingForm">
+                <input type="hidden" id="modify-booking-id" name="booking_id">
+                <input type="hidden" id="modify-service-id" name="service_id">
+                <input type="hidden" id="modify-branch-id" name="branch_id">
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div>
+                        <h4 class="font-semibold text-navy mb-3">Service Information</h4>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-gray-500 text-sm mb-1">Service Package</label>
+                                <div id="display-service-package" class="w-full border border-gray-300 rounded px-3 py-2 bg-gray-50">
+                                    <!-- Service package details will be displayed here -->
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-gray-500 text-sm mb-1">Branch Location</label>
+                                <div id="display-branch-location" class="w-full border border-gray-300 rounded px-3 py-2 bg-gray-50">
+                                    <!-- Branch location will be displayed here -->
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-gray-500 text-sm mb-1">Burial Date</label>
+                                <input type="date" name="deceased_dateOfBurial" class="w-full border border-gray-300 rounded px-3 py-2" required>
+                            </div>
+                        </div>
                     </div>
-                <?php endif; ?>
-            </div>
-            <div id="payment-proof-preview" class="mt-2 hidden">
-                <p class="text-xs text-gray-500 mb-1">New Upload Preview:</p>
-                <img src="" class="max-w-full h-32 object-contain border rounded">
-            </div>
-            <?php if (!empty($booking['payment_url'])): ?>
-                <p class="text-sm text-gray-500 mt-1">Current file: <?php echo basename($booking['payment_url']); ?></p>
-            <?php endif; ?>
+                    <div>
+                        <h4 class="font-semibold text-navy mb-3">Deceased Information</h4>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-gray-500 text-sm mb-1">First Name</label>
+                                <input type="text" name="deceased_fname" class="w-full border border-gray-300 rounded px-3 py-2" required>
+                            </div>
+                            <div>
+                                <label class="block text-gray-500 text-sm mb-1">Middle Name</label>
+                                <input type="text" name="deceased_midname" class="w-full border border-gray-300 rounded px-3 py-2">
+                            </div>
+                            <div>
+                                <label class="block text-gray-500 text-sm mb-1">Last Name</label>
+                                <input type="text" name="deceased_lname" class="w-full border border-gray-300 rounded px-3 py-2" required>
+                            </div>
+                            <div>
+                                <label class="block text-gray-500 text-sm mb-1">Suffix</label>
+                                <input type="text" name="deceased_suffix" class="w-full border border-gray-300 rounded px-3 py-2">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-6">
+                    <h4 class="font-semibold text-navy mb-3">Additional Information</h4>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-gray-500 text-sm mb-1">Birth Date</label>
+                            <input type="date" name="deceased_birth" class="w-full border border-gray-300 rounded px-3 py-2">
+                        </div>
+                        <div>
+                            <label class="block text-gray-500 text-sm mb-1">Date of Death</label>
+                            <input type="date" name="deceased_dodeath" class="w-full border border-gray-300 rounded px-3 py-2">
+                        </div>
+                        <div>
+                            <label class="block text-gray-500 text-sm mb-1">Address</label>
+                            <textarea name="deceased_address" rows="2" class="w-full border border-gray-300 rounded px-3 py-2"></textarea>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" name="with_cremate" id="with_cremate" class="mr-2">
+                            <label for="with_cremate" class="text-gray-500 text-sm">Include Cremation Service</label>
+                        </div>
+                    </div>
+                    
+                    <h4 class="font-semibold text-navy mb-3">Document Uploads</h4>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-gray-500 text-sm mb-1">Death Certificate</label>
+                            <input type="file" name="death_certificate" class="w-full border border-gray-300 rounded px-3 py-2">
+                            <?php if (!empty($booking['deathcert_url'])): ?>
+                                <p class="text-sm text-gray-500 mt-1">Current file: <?php echo basename($booking['deathcert_url']); ?></p>
+                            <?php endif; ?>
+                        </div>
+                        <div>
+                            <label class="block text-gray-500 text-sm mb-1">Payment Proof</label>
+                            <input type="file" name="payment_proof" class="w-full border border-gray-300 rounded px-3 py-2">
+                            <?php if (!empty($booking['payment_url'])): ?>
+                                <p class="text-sm text-gray-500 mt-1">Current file: <?php echo basename($booking['payment_url']); ?></p>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex justify-end space-x-3">
+                    <button type="button" class="close-modal bg-gray-100 text-gray-700 px-4 py-2 rounded hover:bg-gray-200 transition">
+                        Cancel
+                    </button>
+                    <button type="submit" class="bg-navy text-white px-4 py-2 rounded hover:bg-navy/90 transition">
+                        <i class="fas fa-save mr-2"></i> Save Changes
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
-</div>
-        </form>
-      </div>
-      
-      <!-- Modal Footer -->
-      <div class="modal-sticky-footer px-6 py-4 flex flex-col sm:flex-row sm:justify-end gap-3 border-t border-gray-200 bg-white">
-        <button class="w-full sm:w-auto px-6 py-3 bg-white border border-yellow-600 text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center close-modal">
-          Cancel
-        </button>
-        <button type="submit" form="modifyBookingForm" class="w-full sm:w-auto px-6 py-3 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg shadow-md transition-all duration-300 flex items-center justify-center">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
-            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
-            <polyline points="17 21 17 13 7 13 7 21"></polyline>
-            <polyline points="7 3 7 8 15 8"></polyline>
-          </svg>
-          Save Changes
-        </button>
-      </div>
-    </div>
-  </div>
 </div>
 
 <!-- Cancel Booking Modal -->
@@ -2843,33 +2774,6 @@ document.getElementById('cancelBookingForm').addEventListener('submit', function
     });
 });
 
-// File preview function
-function previewFile(input, previewId) {
-    const previewContainer = document.getElementById(previewId);
-    const file = input.files[0];
-    
-    if (file) {
-        const reader = new FileReader();
-        
-        reader.onload = function(e) {
-            const previewImg = previewContainer.querySelector('img');
-            previewImg.src = e.target.result;
-            previewContainer.classList.remove('hidden');
-        }
-        
-        reader.readAsDataURL(file);
-    } else {
-        previewContainer.classList.add('hidden');
-    }
-}
-
-// View current file button handler
-document.addEventListener('click', function(e) {
-    if (e.target.closest('.view-current-file')) {
-        const fileUrl = e.target.closest('.view-current-file').getAttribute('data-url');
-        showDocument('Document Preview', fileUrl);
-    }
-});
 // Remove the redundant submitBookingCancellation() function
 
 
