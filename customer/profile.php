@@ -1914,7 +1914,6 @@ document.addEventListener('DOMContentLoaded', function() {
       <!-- Header with close button -->
       <div class="bg-navy p-6 flex justify-between items-center">
         <div class="flex items-center">
-          <i class="fas fa-calendar-check text-yellow-300 mr-3 text-2xl"></i>
           <h2 class="text-2xl font-hedvig text-white">Booking Details</h2>
         </div>
         <button class="close-modal text-white hover:text-yellow-300 transition-colors duration-200">
@@ -1940,7 +1939,6 @@ document.addEventListener('DOMContentLoaded', function() {
         <!-- Service Information Card -->
         <div class="bg-white rounded-xl shadow-sm p-5 mb-6">
           <div class="flex items-center mb-4">
-            <i class="fas fa-concierge-bell text-yellow-600 mr-2"></i>
             <h4 class="font-semibold text-navy text-lg">Service Information</h4>
           </div>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3">
@@ -1966,7 +1964,6 @@ document.addEventListener('DOMContentLoaded', function() {
         <!-- Deceased Information Card -->
         <div class="bg-white rounded-xl shadow-sm p-5 mb-6">
           <div class="flex items-center mb-4">
-            <i class="fas fa-user text-yellow-600 mr-2"></i>
             <h4 class="font-semibold text-navy text-lg">Deceased Information</h4>
           </div>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3">
@@ -1996,7 +1993,6 @@ document.addEventListener('DOMContentLoaded', function() {
         <!-- Payment Information Card -->
         <div class="bg-white rounded-xl shadow-sm p-5 mb-6">
           <div class="flex items-center mb-4">
-            <i class="fas fa-credit-card text-yellow-600 mr-2"></i>
             <h4 class="font-semibold text-navy text-lg">Payment Information</h4>
           </div>
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -2014,21 +2010,12 @@ document.addEventListener('DOMContentLoaded', function() {
               </div>
               <p id="detail-balance" class="text-navy font-bold text-lg"></p>
             </div>
-            <div class="bg-gray-50 p-4 rounded-lg border border-gray-100">
-              <div class="flex justify-center items-center h-full">
-                <button id="make-payment-btn" class="bg-yellow-600 hover:bg-yellow-700 text-white py-2 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center">
-                  <i class="fas fa-plus-circle mr-2"></i>
-                  Make Payment
-                </button>
-              </div>
-            </div>
           </div>
         </div>
 
         <!-- Documents Section -->
         <div class="bg-white rounded-xl shadow-sm p-5">
           <div class="flex items-center mb-4">
-            <i class="fas fa-file-alt text-yellow-600 mr-2"></i>
             <h4 class="font-semibold text-navy text-lg">Documents</h4>
           </div>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -2063,12 +2050,7 @@ document.addEventListener('DOMContentLoaded', function() {
       <!-- Modal Footer -->
       <div class="modal-sticky-footer px-6 py-4 flex flex-col sm:flex-row sm:justify-end gap-3 border-t border-gray-200 bg-white">
         <button class="close-modal w-full sm:w-auto px-6 py-3 bg-white border border-yellow-600 text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center">
-          <i class="fas fa-times mr-2"></i>
           Close
-        </button>
-        <button id="print-details-btn" class="w-full sm:w-auto px-6 py-3 bg-navy hover:bg-navy/90 text-white rounded-lg shadow-md transition-all duration-300 flex items-center justify-center">
-          <i class="fas fa-print mr-2"></i>
-          Print Details
         </button>
       </div>
     </div>
