@@ -2316,76 +2316,111 @@ function openEditEmployeeAccountModal(userId) {
                 // Create and show the modal
                 const modal = document.createElement('div');
                 modal.id = 'editEmployeeModal';
-                modal.className = 'fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden';
+                modal.className = 'fixed inset-0 z-50 flex items-center justify-center overflow-y-auto';
                 modal.innerHTML = `
-                    <div class="bg-white rounded-lg shadow-xl w-full max-w-md">
+                    <!-- Modal Backdrop -->
+                    <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+                    
+                    <!-- Modal Content -->
+                    <div class="relative bg-white rounded-xl shadow-card w-full max-w-xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+                        <!-- Close Button -->
+                        <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeEditEmployeeModal()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                        
                         <!-- Modal Header -->
-                        <div class="flex justify-between items-center p-4 border-b border-sidebar-border">
-                            <h3 class="text-lg font-semibold text-sidebar-text">Edit Employee Account</h3>
-                            <button onclick="closeEditEmployeeModal()" class="text-gray-500 hover:text-gray-700">
-                                <i class="fas fa-times"></i>
-                            </button>
+                        <div class="px-4 sm:px-6 py-4 sm:py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
+                            <h3 class="text-lg sm:text-xl font-bold text-white flex items-center">
+                                Edit Employee Account
+                            </h3>
                         </div>
                         
                         <!-- Modal Body -->
-                        <div class="p-6">
-                            <form id="editEmployeeForm" class="space-y-4">
+                        <div class="px-4 sm:px-6 py-4 sm:py-5">
+                            <form id="editEmployeeForm" class="space-y-3 sm:space-y-4">
                                 <input type="hidden" name="user_id" value="${data.user.id}">
                                 
                                 <div>
-                                    <label class="block text-sm font-medium text-sidebar-text mb-1">Employee ID</label>
-                                    <input type="text" value="#EMP-${String(data.user.id).padStart(3, '0')}" 
-                                           class="w-full p-2 border border-input-border rounded bg-gray-100" readonly>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">Employee ID</label>
+                                    <div class="relative">
+                                        <input type="text" value="#EMP-${String(data.user.id).padStart(3, '0')}" 
+                                               class="w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" readonly>
+                                    </div>
                                 </div>
                                 
                                 <div>
-                                    <label class="block text-sm font-medium text-sidebar-text mb-1">First Name</label>
-                                    <input type="text" name="first_name" value="${data.user.first_name ? data.user.first_name[0].toUpperCase() + data.user.first_name.slice(1) : ''}" 
-                                           class="w-full p-2 border border-input-border rounded focus:ring-gold focus:border-gold">
+                                    <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                                        First Name <span class="text-red-500">*</span>
+                                    </label>
+                                    <div class="relative">
+                                        <input type="text" name="first_name" value="${data.user.first_name ? data.user.first_name[0].toUpperCase() + data.user.first_name.slice(1) : ''}" 
+                                               class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
+                                    </div>
+                                    <p id="firstNameError" class="text-red-500 text-xs mt-1 hidden"></p>
                                 </div>
                                 
                                 <div>
-                                    <label class="block text-sm font-medium text-sidebar-text mb-1">Last Name</label>
-                                    <input type="text" name="last_name" value="${data.user.last_name ? data.user.last_name[0].toUpperCase() + data.user.last_name.slice(1) :  ''}" 
-                                           class="w-full p-2 border border-input-border rounded focus:ring-gold focus:border-gold">
+                                    <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                                        Last Name <span class="text-red-500">*</span>
+                                    </label>
+                                    <div class="relative">
+                                        <input type="text" name="last_name" value="${data.user.last_name ? data.user.last_name[0].toUpperCase() + data.user.last_name.slice(1) : ''}" 
+                                               class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
+                                    </div>
+                                    <p id="lastNameError" class="text-red-500 text-xs mt-1 hidden"></p>
                                 </div>
                                 
                                 <div>
-                                    <label class="block text-sm font-medium text-sidebar-text mb-1">Middle Name</label>
-                                    <input type="text" name="middle_name" value="${data.user.middle_name ? data.user.middle_name[0].toUpperCase() + data.user.middle_name.slice(1) : ''}" 
-                                           class="w-full p-2 border border-input-border rounded focus:ring-gold focus:border-gold">
+                                    <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">Middle Name</label>
+                                    <div class="relative">
+                                        <input type="text" name="middle_name" value="${data.user.middle_name ? data.user.middle_name[0].toUpperCase() + data.user.middle_name.slice(1) : ''}" 
+                                               class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+                                    </div>
                                 </div>
                                 
                                 <div>
-                                    <label class="block text-sm font-medium text-sidebar-text mb-1">Email</label>
-                                    <input type="email" name="email" value="${data.user.email || ''}" 
-                                           class="w-full p-2 border border-input-border rounded focus:ring-gold focus:border-gold">
+                                    <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                                        Email Address <span class="text-red-500">*</span>
+                                    </label>
+                                    <div class="relative">
+                                        <input type="email" name="email" value="${data.user.email || ''}" 
+                                               class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
+                                    </div>
+                                    <p id="emailError" class="text-red-500 text-xs mt-1 hidden"></p>
                                 </div>
                                 
                                 <div>
-                                    <label class="block text-sm font-medium text-sidebar-text mb-1">Phone Number</label>
-                                    <input type="tel" name="phone_number" value="${data.user.phone_number || ''}" 
-                                           class="w-full p-2 border border-input-border rounded focus:ring-gold focus:border-gold">
+                                    <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                                        Phone Number <span class="text-red-500">*</span>
+                                    </label>
+                                    <div class="relative">
+                                        <input type="tel" name="phone_number" value="${data.user.phone_number || ''}" 
+                                               class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
+                                    </div>
+                                    <p id="phoneError" class="text-red-500 text-xs mt-1 hidden"></p>
                                 </div>
                                 
                                 <div>
-                                    <label class="block text-sm font-medium text-sidebar-text mb-1">Branch Location</label>
-                                    <select name="branch_loc" class="w-full p-2 border border-input-border rounded focus:ring-gold focus:border-gold">
-                                        <option value="">-- Select Branch --</option>
-                                        ${branchOptions}
-                                    </select>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                                        Branch Location <span class="text-red-500">*</span>
+                                    </label>
+                                    <div class="relative">
+                                        <select name="branch_loc" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
+                                            <option value="">Select Branch</option>
+                                            ${branchOptions}
+                                        </select>
+                                    </div>
+                                    <p id="branchError" class="text-red-500 text-xs mt-1 hidden">Please select a branch</p>
                                 </div>
                             </form>
                         </div>
                         
                         <!-- Modal Footer -->
-                        <div class="flex justify-end p-4 border-t border-sidebar-border space-x-3">
-                            <button onclick="closeEditEmployeeModal()" 
-                                    class="px-4 py-2 border border-input-border rounded text-sidebar-text hover:bg-sidebar-hover">
+                        <div class="px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row sm:justify-end gap-2 sm:gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
+                            <button class="w-full sm:w-auto px-4 sm:px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center" onclick="closeEditEmployeeModal()">
                                 Cancel
                             </button>
-                            <button onclick="saveEmployeeChanges()" 
-                                    class="px-4 py-2 bg-gold text-white rounded hover:bg-darkgold">
+                            <button class="w-full sm:w-auto px-5 sm:px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="saveEmployeeChanges()">
                                 Save Changes
                             </button>
                         </div>
@@ -2393,7 +2428,6 @@ function openEditEmployeeAccountModal(userId) {
                 `;
                 
                 document.body.appendChild(modal);
-                modal.classList.remove('hidden');
                 
                 // Add event listener for Escape key
                 document.addEventListener('keydown', function(e) {
