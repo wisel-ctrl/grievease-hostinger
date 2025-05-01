@@ -1549,23 +1549,31 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Proceed to booking button click event
     document.getElementById('proceedToBooking').addEventListener('click', function() {
-        // Create package details
-        const packageName = 'Custom Memorial Package';
-        const packagePrice = totalPackagePrice;
-        
-        // Create feature list from selections
-        const features = [];
-        if (selectedCasket) features.push(selectedCasket.name);
-        if (selectedFlowers) features.push(selectedFlowers.name);
-        selectedAddons.forEach(addon => {
-            features.push(addon.name);
-        });
-        
-        // Close the custom package modal
-        closeCustomPackageModal();
-        
-        // Open the traditional booking modal with our custom package data
-        openTraditionalModalWithCustomPackage(packageName, packagePrice, features);
+        // Gather all custom package selections
+        const customPackageData = {
+            packageType: 'custom',
+            casket: selectedCasket,
+            flowerArrangement: selectedFlowers,
+            additionalServices: selectedAddons,
+            notes: document.getElementById('customNotes').value,
+            packageTotal: totalPackagePrice,
+            downpayment: Math.ceil(totalPackagePrice * 0.3)
+        };
+
+        // Log all the data to console
+        console.log('Custom Package Selections:', customPackageData);
+        console.log('--- Detailed Breakdown ---');
+        console.log('Casket:', customPackageData.casket ? {
+            id: customPackageData.casket.id,
+            name: customPackageData.casket.name,
+            price: customPackageData.casket.price
+        } : 'None selected');
+        console.log('Flower Arrangement:', customPackageData.flowerArrangement || 'None selected');
+        console.log('Additional Services:', customPackageData.additionalServices.length > 0 ? 
+            customPackageData.additionalServices : 'None selected');
+        console.log('Notes:', customPackageData.notes || 'No notes');
+        console.log('Package Total:', customPackageData.packageTotal);
+        console.log('Downpayment (30%):', customPackageData.downpayment);
     });
     
     // Function to open traditional booking modal with custom package data
@@ -1830,9 +1838,124 @@ document.addEventListener('DOMContentLoaded', function() {
     // Form submission for Traditional
     document.getElementById('traditionalBookingForm').addEventListener('submit', function(e) {
         e.preventDefault();
-        // Add booking submission logic here
-        alert('Service booking submitted successfully!');
+        
+        // Gather all form data
+        const packageData = {
+            packageType: 'traditional',
+            packageName: document.getElementById('traditionalSelectedPackageName').value,
+            packagePrice: parseInt(document.getElementById('traditionalSelectedPackagePrice').value),
+            deceasedInfo: {
+                firstName: document.getElementById('traditionalDeceasedFirstName').value,
+                middleName: document.getElementById('traditionalDeceasedMiddleName').value,
+                lastName: document.getElementById('traditionalDeceasedLastName').value,
+                suffix: document.getElementById('traditionalDeceasedSuffix').value,
+                dateOfBirth: document.getElementById('traditionalDateOfBirth').value,
+                dateOfDeath: document.getElementById('traditionalDateOfDeath').value,
+                dateOfBurial: document.getElementById('traditionalDateOfBurial').value,
+                address: document.getElementById('traditionalDeceasedAddress').value
+            },
+            documents: {
+                deathCertificate: document.getElementById('traditionalDeathCertificate').files[0]?.name || null,
+                paymentReceipt: document.getElementById('traditionalGcashReceipt').files[0]?.name || null,
+                referenceNumber: document.getElementById('traditionalReferenceNumber').value
+            },
+            additionalServices: [],
+            cremationSelected: document.getElementById('cremationCheckbox').checked,
+            packageTotal: parseInt(document.getElementById('traditionalSelectedPackagePrice').value),
+            downpayment: Math.ceil(parseInt(document.getElementById('traditionalSelectedPackagePrice').value) * 0.3)
+        };
+
+        // Check if cremation is selected and add to additional services
+        if (packageData.cremationSelected) {
+            packageData.additionalServices.push({
+                name: 'Cremation Service',
+                price: 40000
+            });
+            packageData.packageTotal += 40000;
+        }
+
+        // Log all the data to console
+        console.log('Traditional Package Booking Data:', packageData);
+        console.log('--- Detailed Breakdown ---');
+        console.log('Package Name:', packageData.packageName);
+        console.log('Package Price:', packageData.packagePrice);
+        console.log('Deceased Information:', packageData.deceasedInfo);
+        console.log('Documents:', packageData.documents);
+        console.log('Additional Services:', packageData.additionalServices);
+        console.log('Cremation Selected:', packageData.cremationSelected);
+        console.log('Package Total:', packageData.packageTotal);
+        console.log('Downpayment (30%):', packageData.downpayment);
+        
+        // Here you would normally submit to PHP handler
+        // For now we'll just show an alert
+        alert('Traditional package booking data logged to console. Check developer tools.');
         closeAllModals();
+    });
+
+    document.getElementById('traditionalBookingForm').addEventListener('submit', function(e) {
+        // Check if this is a custom package submission
+        if (document.getElementById('traditionalSelectedPackageName').value === 'Custom Memorial Package') {
+            e.preventDefault();
+            
+            // Gather all form data
+            const customBookingData = {
+                packageType: 'custom',
+                casket: selectedCasket,
+                flowerArrangement: selectedFlowers,
+                additionalServices: selectedAddons,
+                notes: document.getElementById('customNotes').value,
+                deceasedInfo: {
+                    firstName: document.getElementById('traditionalDeceasedFirstName').value,
+                    middleName: document.getElementById('traditionalDeceasedMiddleName').value,
+                    lastName: document.getElementById('traditionalDeceasedLastName').value,
+                    suffix: document.getElementById('traditionalDeceasedSuffix').value,
+                    dateOfBirth: document.getElementById('traditionalDateOfBirth').value,
+                    dateOfDeath: document.getElementById('traditionalDateOfDeath').value,
+                    dateOfBurial: document.getElementById('traditionalDateOfBurial').value,
+                    address: document.getElementById('traditionalDeceasedAddress').value
+                },
+                documents: {
+                    deathCertificate: document.getElementById('traditionalDeathCertificate').files[0]?.name || null,
+                    paymentReceipt: document.getElementById('traditionalGcashReceipt').files[0]?.name || null,
+                    referenceNumber: document.getElementById('traditionalReferenceNumber').value
+                },
+                cremationSelected: document.getElementById('cremationCheckbox').checked,
+                packageTotal: totalPackagePrice,
+                downpayment: Math.ceil(totalPackagePrice * 0.3)
+            };
+
+            // If cremation is selected, add to additional services
+            if (customBookingData.cremationSelected) {
+                customBookingData.additionalServices.push({
+                    name: 'Cremation Service',
+                    price: 40000
+                });
+                customBookingData.packageTotal += 40000;
+            }
+
+            // Log all the data to console
+            console.log('Custom Package Booking Data:', customBookingData);
+            console.log('--- Detailed Breakdown ---');
+            console.log('Casket:', customBookingData.casket ? {
+                id: customBookingData.casket.id,
+                name: customBookingData.casket.name,
+                price: customBookingData.casket.price
+            } : 'None selected');
+            console.log('Flower Arrangement:', customBookingData.flowerArrangement || 'None selected');
+            console.log('Additional Services:', customBookingData.additionalServices.length > 0 ? 
+                customBookingData.additionalServices : 'None selected');
+            console.log('Notes:', customBookingData.notes || 'No notes');
+            console.log('Deceased Information:', customBookingData.deceasedInfo);
+            console.log('Documents:', customBookingData.documents);
+            console.log('Cremation Selected:', customBookingData.cremationSelected);
+            console.log('Package Total:', customBookingData.packageTotal);
+            console.log('Downpayment (30%):', customBookingData.downpayment);
+            
+            // Here you would normally submit to PHP handler
+            // For now we'll just show an alert
+            alert('Custom package booking data logged to console. Check developer tools.');
+            closeAllModals();
+        }
     });
 
     // Function to fetch caskets based on branch_id
