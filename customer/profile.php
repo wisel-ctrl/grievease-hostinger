@@ -3003,11 +3003,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const nameFields = [
         'firstName', 
         'middleName', 
-        'lastName',
-        'deceased_fname',
-        'deceased_midname',
-        'deceased_lname',
-        'deceased_suffix'
+        'lastName'
     ];
 
     nameFields.forEach(fieldId => {
@@ -3034,7 +3030,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Additional validation for first name and last name (required fields)
-    const requiredNameFields = ['firstName', 'lastName', 'deceased_fname', 'deceased_midname', 'deceased_lname', 'deceased_suffix'];
+    const requiredNameFields = ['firstName', 'lastName'];
 
     requiredNameFields.forEach(fieldId => {
         const field = document.getElementById(fieldId);
