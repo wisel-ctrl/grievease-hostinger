@@ -969,7 +969,7 @@ input[name*="LastName"] {
                             </div>
                             <div class="w-full sm:w-1/2 px-2">
                                 <label for="traditionalDeceasedMiddleName" class="block text-sm font-medium text-navy mb-1">Middle Name</label>
-                                <input type="text" id="traditionalDeceasedMiddleName" name="deceasedMiddleName" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                                <input type="text" id="traditionalDeceasedMiddleName" name="deceasedMiddleName" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" pattern="[A-Za-z'-][A-Za-z'-]*( [A-Za-z'-]+)*" title="Please enter a valid name (letters only, no leading spaces, numbers or symbols)">
                             </div>
                         </div>
                         
@@ -977,7 +977,7 @@ input[name*="LastName"] {
                         <div class="flex flex-wrap -mx-2 mb-3">
                             <div class="w-full sm:w-3/4 px-2 mb-3 sm:mb-0">
                                 <label for="traditionalDeceasedLastName" class="block text-sm font-medium text-navy mb-1">Last Name *</label>
-                                <input type="text" id="traditionalDeceasedLastName" name="deceasedLastName" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                                <input type="text" id="traditionalDeceasedLastName" name="deceasedLastName" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" pattern="[A-Za-z'-][A-Za-z'-]*( [A-Za-z'-]+)*" title="Please enter a valid name (letters only, no leading spaces, numbers or symbols)">
                             </div>
                             <div class="w-full sm:w-1/4 px-2">
                                 <label for="traditionalDeceasedSuffix" class="block text-sm font-medium text-navy mb-1">Suffix</label>
@@ -1128,7 +1128,7 @@ input[name*="LastName"] {
                         
                         <!-- GCash Upload with Preview -->
                         <div class="mb-4">
-                            <label for="traditionalGcashReceipt" class="block text-sm font-medium text-navy mb-1">GCash Receipt</label>
+                            <label for="traditionalGcashReceipt" class="block text-sm font-medium text-navy mb-1">Payment Proof</label>
                             <div class="border border-input-border bg-white rounded-lg p-3 focus-within:ring-2 focus-within:ring-yellow-600">
                                 <!-- Upload Button and File Name -->
                                 <div class="flex items-center mb-2">
@@ -1162,7 +1162,7 @@ input[name*="LastName"] {
                         </div>
                         
                         <div class="mb-3">
-                            <label for="traditionalReferenceNumber" class="block text-sm font-medium text-navy mb-1">GCash Reference Number *</label>
+                            <label for="traditionalReferenceNumber" class="block text-sm font-medium text-navy mb-1">Reference Number *</label>
                             <input type="text" id="traditionalReferenceNumber" name="referenceNumber" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" placeholder="e.g. 1234567890">
                         </div>
                     </div>
