@@ -4112,17 +4112,7 @@ function preventSpacesInPasswordFields() {
     });
 }
 
-// Helper function to show error (you can modify this to fit your existing error display)
-function showPasswordError(message) {
-    // Using SweetAlert for nice error messages
-    Swal.fire({
-        icon: 'error',
-        title: 'Invalid Input',
-        text: message,
-        timer: 3000,
-        showConfirmButton: false
-    });
-}
+
 
 // Call this when the change password modal opens
 document.getElementById('open-change-password-modal').addEventListener('click', function() {
