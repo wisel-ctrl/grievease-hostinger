@@ -930,6 +930,98 @@ document.getElementById("customerPhone").addEventListener("input", function (e) 
         }
     }
 
+    // Validate email input
+    function validateEmail() {
+        const emailField = document.getElementById('customerEmail');
+        if (emailField) {
+            // Remove any spaces from the email
+            emailField.value = emailField.value.replace(/\s/g, '');
+            
+            // Check if email contains @ symbol
+            if (!emailField.value.includes('@')) {
+                emailField.setCustomValidity('Email must contain @ symbol');
+            } else {
+                emailField.setCustomValidity('');
+            }
+        }
+    }
+
+    // Validate Philippine phone number
+    function validatePhoneNumber() {
+        const phoneField = document.getElementById('customerPhone');
+        if (phoneField) {
+            // Remove any non-digit characters
+            let phoneNumber = phoneField.value.replace(/\D/g, '');
+            
+            // Limit to 11 characters
+            if (phoneNumber.length > 11) {
+                phoneNumber = phoneNumber.substring(0, 11);
+            }
+            
+            // Update the field value
+            phoneField.value = phoneNumber;
+            
+            // Validate the format
+            if (phoneNumber.length > 0) {
+                if (!phoneNumber.startsWith('09')) {
+                    phoneField.setCustomValidity('Philippine numbers must start with 09');
+                } else if (phoneNumber.length < 11) {
+                    phoneField.setCustomValidity('Phone number must be 11 digits');
+                } else {
+                    phoneField.setCustomValidity('');
+                }
+            } else {
+                phoneField.setCustomValidity('');
+            }
+        }
+    }
+
+    // Format phone number as user types
+    function formatPhoneNumber() {
+        const phoneField = document.getElementById('customerPhone');
+        if (phoneField) {
+            let phoneNumber = phoneField.value.replace(/\D/g, '');
+            
+            // Auto-add 09 if user starts with 9
+            if (phoneNumber.length === 1 && phoneNumber === '9') {
+                phoneNumber = '09';
+            }
+            
+            // Format with spaces for better readability (optional)
+            if (phoneNumber.length > 4) {
+                phoneNumber = phoneNumber.replace(/(\d{4})(\d{3})(\d{4})/, '$1 $2 $3');
+            } else if (phoneNumber.length > 2) {
+                phoneNumber = phoneNumber.replace(/(\d{2})(\d+)/, '$1 $2');
+            }
+            
+            phoneField.value = phoneNumber;
+        }
+    }
+
+    // Initialize phone field event listeners
+    const phoneField = document.getElementById('customerPhone');
+    if (phoneField) {
+        phoneField.addEventListener('input', function() {
+            formatPhoneNumber();
+            validatePhoneNumber();
+        });
+        
+        phoneField.addEventListener('keydown', function(e) {
+            // Allow: backspace, delete, tab, escape, enter
+            if ([46, 8, 9, 27, 13].includes(e.keyCode) || 
+                // Allow: Ctrl+A
+                (e.keyCode == 65 && e.ctrlKey === true) || 
+                // Allow: home, end, left, right
+                (e.keyCode >= 35 && e.keyCode <= 39)) {
+                return;
+            }
+            // Ensure it's a number and stop the keypress if not
+            if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+                e.preventDefault();
+            }
+        });
+    }
+
     // Initialize max birthdate when page loads
     setMaxBirthdate();
 
