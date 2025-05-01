@@ -3309,11 +3309,15 @@ function setupDatePicker() {
 }
 
 // Street Address Validation
+// Street Address Validation
 function validateStreetAddress(input) {
-    // Remove multiple consecutive spaces
-    let value = input.value.replace(/\s{2,}/g, ' ');
+    // Remove any leading spaces
+    let value = input.value.replace(/^\s+/, '');
     
-    // Capitalize first letter of the string
+    // Remove multiple consecutive spaces
+    value = value.replace(/\s{2,}/g, ' ');
+    
+    // Capitalize first letter of the string if it exists
     if (value.length > 0) {
         value = value.charAt(0).toUpperCase() + value.slice(1);
     }
@@ -3322,7 +3326,7 @@ function validateStreetAddress(input) {
     input.value = value;
 }
 
-// Zip Code Validation
+// Zip Code Validation (unchanged)
 function validateZipCode(input) {
     // Remove any non-digit characters
     let value = input.value.replace(/\D/g, '');
@@ -3347,9 +3351,18 @@ document.addEventListener('DOMContentLoaded', function() {
         streetAddressInput.addEventListener('blur', function() {
             validateStreetAddress(this);
         });
+        
+        // Prevent pasting text that starts with space
+        streetAddressInput.addEventListener('paste', function(e) {
+            e.preventDefault();
+            const pastedText = (e.clipboardData || window.clipboardData).getData('text');
+            let cleanedText = pastedText.replace(/^\s+/, ''); // Remove leading spaces
+            cleanedText = cleanedText.replace(/\s{2,}/g, ' '); // Remove multiple spaces
+            document.execCommand('insertText', false, cleanedText);
+        });
     }
 
-    // Zip Code field
+    // Zip Code field (unchanged)
     const zipCodeInput = document.getElementById('zip');
     if (zipCodeInput) {
         zipCodeInput.addEventListener('input', function() {
