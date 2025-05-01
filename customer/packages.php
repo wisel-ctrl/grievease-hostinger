@@ -874,7 +874,7 @@ input[name*="LastName"] {
                 <button id="lifeplanServiceBtn" class="bg-cream hover:bg-yellow-100 border-2 border-yellow-600 text-navy px-6 py-8 rounded-lg shadow-md transition-all duration-300 flex flex-col items-center">
                     <i class="fas fa-seedling text-3xl text-yellow-600 mb-2"></i>
                     <span class="font-hedvig text-lg">Lifeplan</span>
-                    <span class="text-sm text-gray-600 mt-2 text-center">lifeplan funeral planning</span>
+                    <span class="text-sm text-gray-600 mt-2 text-center">Lifeplan funeral planning</span>
                 </button>
             </div>
         </div>
@@ -1242,6 +1242,74 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+// Lifeplan Holder Street Address Validation
+function validateLifeplanHolderStreet(input) {
+    // Remove any leading spaces
+    let value = input.value.replace(/^\s+/, '');
+    
+    // Remove multiple consecutive spaces
+    value = value.replace(/\s{2,}/g, ' ');
+    
+    // Capitalize first letter of the string if it exists
+    if (value.length > 0) {
+        value = value.charAt(0).toUpperCase() + value.slice(1);
+    }
+    
+    // Update the input value
+    input.value = value;
+}
+
+// Lifeplan Reference Number Validation (numbers only, no letters or spaces)
+function validateLifeplanReferenceNumber(input) {
+    // Remove any non-digit characters
+    let value = input.value.replace(/[^0-9]/g, '');
+    
+    // Update the input value
+    input.value = value;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Lifeplan Holder Street field
+    const lifeplanHolderStreetInput = document.getElementById('lifeplanHolderStreet');
+    if (lifeplanHolderStreetInput) {
+        lifeplanHolderStreetInput.addEventListener('input', function() {
+            validateLifeplanHolderStreet(this);
+        });
+        
+        lifeplanHolderStreetInput.addEventListener('blur', function() {
+            validateLifeplanHolderStreet(this);
+        });
+        
+        // Prevent pasting text that starts with space
+        lifeplanHolderStreetInput.addEventListener('paste', function(e) {
+            e.preventDefault();
+            const pastedText = (e.clipboardData || window.clipboardData).getData('text');
+            let cleanedText = pastedText.replace(/^\s+/, ''); // Remove leading spaces
+            cleanedText = cleanedText.replace(/\s{2,}/g, ' '); // Remove multiple spaces
+            document.execCommand('insertText', false, cleanedText);
+        });
+    }
+
+    // Lifeplan Reference Number field
+    const lifeplanReferenceNumberInput = document.getElementById('lifeplanReferenceNumber');
+    if (lifeplanReferenceNumberInput) {
+        lifeplanReferenceNumberInput.addEventListener('input', function() {
+            validateLifeplanReferenceNumber(this);
+        });
+        
+        lifeplanReferenceNumberInput.addEventListener('blur', function() {
+            validateLifeplanReferenceNumber(this);
+        });
+        
+        lifeplanReferenceNumberInput.addEventListener('paste', function(e) {
+            e.preventDefault();
+            const pastedText = (e.clipboardData || window.clipboardData).getData('text');
+            const cleanedText = pastedText.replace(/[^0-9]/g, ''); // Remove non-digit characters
+            document.execCommand('insertText', false, cleanedText);
+        });
+    }
+});
 </script>
 
 <script>
@@ -1432,6 +1500,36 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+// Traditional Reference Number Validation (numbers only, no letters or spaces)
+// Traditional Reference Number Validation (numbers only, no letters, symbols or spaces)
+function validateTraditionalReferenceNumber(input) {
+    // Remove any non-digit characters
+    let value = input.value.replace(/[^0-9]/g, '');
+    
+    // Update the input value
+    input.value = value;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Traditional Reference Number field
+    const referenceNumberInput = document.getElementById('traditionalReferenceNumber');
+    if (referenceNumberInput) {
+        referenceNumberInput.addEventListener('input', function() {
+            validateTraditionalReferenceNumber(this);
+        });
+        
+        referenceNumberInput.addEventListener('blur', function() {
+            validateTraditionalReferenceNumber(this);
+        });
+        
+        referenceNumberInput.addEventListener('paste', function(e) {
+            e.preventDefault();
+            const pastedText = (e.clipboardData || window.clipboardData).getData('text');
+            const cleanedText = pastedText.replace(/[^0-9]/g, ''); // Remove non-digit characters
+            document.execCommand('insertText', false, cleanedText);
+        });
+    }
+});
 // Add this function to combine address components
 function combineAddress() {
     const region = document.getElementById('traditionalDeceasedRegion');
@@ -1865,7 +1963,7 @@ function removeGcash() {
                         </div>
                         
                         <div class="mb-3">
-                            <label for="lifeplanReferenceNumber" class="block text-sm font-medium text-navy mb-1">GCash Reference Number *</label>
+                            <label for="lifeplanReferenceNumber" class="block text-sm font-medium text-navy mb-1">Reference Number *</label>
                             <input type="text" id="lifeplanReferenceNumber" name="referenceNumber" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" placeholder="e.g. 1234567890">
                         </div>
                     </div>
