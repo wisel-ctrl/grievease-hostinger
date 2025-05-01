@@ -130,66 +130,62 @@ $offset = ($current_page - 1) * $bookings_per_page;
             </div>
             
             <!-- Controls for big screens - aligned right -->
-            <div class="hidden lg:flex items-center gap-3">
-                <!-- Search Input -->
-                <div class="relative">
-                    <input type="text" id="bookingSearchInput" 
-                           placeholder="Search bookings..." 
-                           class="pl-8 pr-3 py-2 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
-                    <i class="fas fa-search absolute left-2.5 top-3 text-gray-400"></i>
-                </div>
+            <!-- Controls for big screens - aligned right -->
+<div class="hidden lg:flex items-center gap-3">
+    <!-- Search Input -->
+    <div class="relative">
+        <input type="text" id="bookingSearchInput" 
+               placeholder="Search bookings..." 
+               class="pl-8 pr-3 py-2 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
+        <i class="fas fa-search absolute left-2.5 top-3 text-gray-400"></i>
+    </div>
 
-                <!-- Filter Dropdown -->
-                <div class="relative filter-dropdown">
-                    <button id="bookingFilterToggle" class="px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover">
-                        <i class="fas fa-filter text-sidebar-accent"></i>
-                        <span>Filters</span>
-                        <?php if(isset($sortFilter) && $sortFilter): ?>
-                            <span id="filterIndicator" class="h-2 w-2 bg-sidebar-accent rounded-full"></span>
-                        <?php else: ?>
-                            <span id="filterIndicator" class="hidden h-2 w-2 bg-sidebar-accent rounded-full"></span>
-                        <?php endif; ?>
-                    </button>
-                    
-                    <!-- Filter Window -->
-                    <div id="bookingFilterDropdown" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-4">
-                        <div class="space-y-4">
-                            <!-- Sort Options -->
-                            <div>
-                                <h5 class="text-sm font-medium text-sidebar-text mb-2">Sort By</h5>
-                                <div class="space-y-1">
-                                    <div class="flex items-center cursor-pointer filter-option" data-sort="id_asc">
-                                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                                            ID: Ascending
-                                        </span>
-                                    </div>
-                                    <div class="flex items-center cursor-pointer filter-option" data-sort="id_desc">
-                                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                                            ID: Descending
-                                        </span>
-                                    </div>
-                                    <div class="flex items-center cursor-pointer filter-option" data-sort="customer_asc">
-                                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                                            Customer: A-Z
-                                        </span>
-                                    </div>
-                                    <div class="flex items-center cursor-pointer filter-option" data-sort="customer_desc">
-                                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                                            Customer: Z-A
-                                        </span>
-                                    </div>
-                                    <div class="flex items-center cursor-pointer filter-option" data-sort="newest">
-                                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                                            Newest First
-                                        </span>
-                                    </div>
-                                    <div class="flex items-center cursor-pointer filter-option" data-sort="oldest">
-                                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                                            Oldest First
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
+    <!-- Status Dropdown Acting as Filter -->
+    <div class="relative filter-dropdown">
+        <button id="bookingFilterToggle" class="px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover">
+            <i class="fas fa-filter text-sidebar-accent"></i>
+            <span>Filters</span>
+            <span id="filterIndicator" class="hidden h-2 w-2 bg-sidebar-accent rounded-full"></span>
+        </button>
+        
+        <!-- Filter Options Dropdown -->
+        <div id="bookingFilterDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-2">
+            <h5 class="text-sm font-medium text-sidebar-text mb-2">Sort By</h5>
+            <div class="space-y-1">
+                <div class="flex items-center cursor-pointer filter-option" data-sort="id_asc">
+                    <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                        ID: Ascending
+                    </span>
+                </div>
+                <div class="flex items-center cursor-pointer filter-option" data-sort="id_desc">
+                    <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                        ID: Descending
+                    </span>
+                </div>
+                <div class="flex items-center cursor-pointer filter-option" data-sort="customer_asc">
+                    <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                        Customer: A-Z
+                    </span>
+                </div>
+                <div class="flex items-center cursor-pointer filter-option" data-sort="customer_desc">
+                    <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                        Customer: Z-A
+                    </span>
+                </div>
+                <div class="flex items-center cursor-pointer filter-option" data-sort="newest">
+                    <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                        Newest First
+                    </span>
+                </div>
+                <div class="flex items-center cursor-pointer filter-option" data-sort="oldest">
+                    <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                        Oldest First
+                    </span>
+                </div>
+            </div>
+        </div>      
+    </div>
+</div>
                         </div>
                     </div>
                 </div>
@@ -197,67 +193,66 @@ $offset = ($current_page - 1) * $bookings_per_page;
         </div>
         
         <!-- Mobile/Tablet Controls - Only visible on smaller screens -->
-        <div class="lg:hidden w-full mt-4">
-            <!-- First row: Search bar with filter icon on the right -->
-            <div class="flex items-center w-full gap-3 mb-4">
-                <!-- Search Input - Takes most of the space -->
-                <div class="relative flex-grow">
-                    <input type="text" id="bookingSearchInputMobile" 
-                           placeholder="Search bookings..." 
-                           class="pl-8 pr-3 py-2.5 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
-                    <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
-                </div>
+<div class="lg:hidden w-full mt-4">
+    <!-- First row: Search bar with filter and archive icons on the right -->
+    <div class="flex items-center w-full gap-3 mb-4">
+        <!-- Search Input - Takes most of the space -->
+        <div class="relative flex-grow">
+            <input type="text" id="bookingSearchInputMobile" 
+                   placeholder="Search bookings..." 
+                   class="pl-8 pr-3 py-2.5 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
+            <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+        </div>
 
-                <!-- Icon-only button for filter -->
-                <div class="flex items-center">
-                    <!-- Filter Icon Button -->
-                    <div class="relative filter-dropdown">
-                        <button id="bookingFilterToggleMobile" class="w-10 h-10 flex items-center justify-center text-sidebar-accent">
-                            <i class="fas fa-filter text-xl"></i>
-                            <span id="filterIndicatorMobile" class="hidden absolute top-1 right-1 h-2 w-2 bg-sidebar-accent rounded-full"></span>
-                        </button>
-                        
-                        <!-- Mobile Filter Dropdown -->
-                        <div id="bookingFilterDropdownMobile" class="hidden absolute right-0 mt-2 w-56 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-4">
-                            <div class="space-y-2">
-                                <h5 class="text-sm font-medium text-sidebar-text mb-2">Sort By</h5>
-                                <div class="space-y-1">
-                                    <div class="flex items-center cursor-pointer filter-option-mobile" data-sort="id_asc">
-                                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                                            ID: Ascending
-                                        </span>
-                                    </div>
-                                    <div class="flex items-center cursor-pointer filter-option-mobile" data-sort="id_desc">
-                                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                                            ID: Descending
-                                        </span>
-                                    </div>
-                                    <div class="flex items-center cursor-pointer filter-option-mobile" data-sort="customer_asc">
-                                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                                            Customer: A-Z
-                                        </span>
-                                    </div>
-                                    <div class="flex items-center cursor-pointer filter-option-mobile" data-sort="customer_desc">
-                                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                                            Customer: Z-A
-                                        </span>
-                                    </div>
-                                    <div class="flex items-center cursor-pointer filter-option-mobile" data-sort="newest">
-                                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                                            Newest First
-                                        </span>
-                                    </div>
-                                    <div class="flex items-center cursor-pointer filter-option-mobile" data-sort="oldest">
-                                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                                            Oldest First
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
+        <!-- Icon-only buttons for filter -->
+        <div class="flex items-center gap-3">
+            <!-- Filter Status Dropdown for Mobile -->
+            <div class="relative filter-dropdown">
+                <button id="bookingFilterToggleMobile" class="w-10 h-10 flex items-center justify-center text-sidebar-accent">
+                    <i class="fas fa-filter text-xl"></i>
+                    <span id="filterIndicatorMobile" class="hidden absolute top-1 right-1 h-2 w-2 bg-sidebar-accent rounded-full"></span>
+                </button>
+                
+                <!-- Filter Options Dropdown -->
+                <div id="bookingFilterDropdownMobile" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-2">
+                    <h5 class="text-sm font-medium text-sidebar-text mb-2">Sort By</h5>
+                    <div class="space-y-1">
+                        <div class="flex items-center cursor-pointer filter-option-mobile" data-sort="id_asc">
+                            <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                                ID: Ascending
+                            </span>
+                        </div>
+                        <div class="flex items-center cursor-pointer filter-option-mobile" data-sort="id_desc">
+                            <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                                ID: Descending
+                            </span>
+                        </div>
+                        <div class="flex items-center cursor-pointer filter-option-mobile" data-sort="customer_asc">
+                            <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                                Customer: A-Z
+                            </span>
+                        </div>
+                        <div class="flex items-center cursor-pointer filter-option-mobile" data-sort="customer_desc">
+                            <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                                Customer: Z-A
+                            </span>
+                        </div>
+                        <div class="flex items-center cursor-pointer filter-option-mobile" data-sort="newest">
+                            <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                                Newest First
+                            </span>
+                        </div>
+                        <div class="flex items-center cursor-pointer filter-option-mobile" data-sort="oldest">
+                            <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                                Oldest First
+                            </span>
                         </div>
                     </div>
-                </div>
+                </div>      
             </div>
+        </div>
+    </div>
+</div>
         </div>
     </div>
     
@@ -1243,5 +1238,165 @@ document.getElementById('paymentForm').addEventListener('submit', function(e) {
     });
 });
     </script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Mobile filter toggle
+  const mobileFilterToggle = document.getElementById('bookingFilterToggleMobile');
+  const mobileFilterDropdown = document.getElementById('bookingFilterDropdownMobile');
+  
+  if (mobileFilterToggle && mobileFilterDropdown) {
+    mobileFilterToggle.addEventListener('click', function() {
+      mobileFilterDropdown.classList.toggle('hidden');
+    });
+    
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(event) {
+      if (!mobileFilterToggle.contains(event.target) && !mobileFilterDropdown.contains(event.target)) {
+        mobileFilterDropdown.classList.add('hidden');
+      }
+    });
+  }
+  
+  // Desktop filter toggle
+  const desktopFilterToggle = document.getElementById('bookingFilterToggle');
+  const desktopFilterDropdown = document.getElementById('bookingFilterDropdown');
+  
+  if (desktopFilterToggle && desktopFilterDropdown) {
+    desktopFilterToggle.addEventListener('click', function() {
+      desktopFilterDropdown.classList.toggle('hidden');
+    });
+    
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(event) {
+      if (!desktopFilterToggle.contains(event.target) && !desktopFilterDropdown.contains(event.target)) {
+        desktopFilterDropdown.classList.add('hidden');
+      }
+    });
+  }
+  
+  // Handle search functionality
+  const desktopSearchInput = document.getElementById('bookingSearchInput');
+  const mobileSearchInput = document.getElementById('bookingSearchInputMobile');
+  
+  if (desktopSearchInput && mobileSearchInput) {
+    desktopSearchInput.addEventListener('input', function() {
+      mobileSearchInput.value = this.value;
+      filterBookings();
+    });
+    
+    mobileSearchInput.addEventListener('input', function() {
+      desktopSearchInput.value = this.value;
+      filterBookings();
+    });
+  }
+  
+  // Handle filter options (both mobile and desktop)
+  document.querySelectorAll('.filter-option, .filter-option-mobile').forEach(option => {
+    option.addEventListener('click', function() {
+      const sortValue = this.getAttribute('data-sort');
+      // Update UI to show active filter
+      document.querySelectorAll('.filter-option, .filter-option-mobile').forEach(opt => {
+        opt.classList.remove('bg-sidebar-hover');
+      });
+      this.classList.add('bg-sidebar-hover');
+      
+      // Show filter indicator
+      document.getElementById('filterIndicator').classList.remove('hidden');
+      document.getElementById('filterIndicatorMobile').classList.remove('hidden');
+      
+      // Apply sorting
+      sortBookings(sortValue);
+      
+      // Close dropdowns
+      mobileFilterDropdown.classList.add('hidden');
+      desktopFilterDropdown.classList.add('hidden');
+    });
+  });
+  
+  // Function to filter bookings based on search input
+  function filterBookings() {
+    const searchValue = (desktopSearchInput.value || '').toLowerCase();
+    const rows = document.querySelectorAll('#bookingTableBody tr');
+    
+    rows.forEach(row => {
+      const customerCell = row.cells[1]?.textContent?.toLowerCase() || '';
+      const serviceCell = row.cells[2]?.textContent?.toLowerCase() || '';
+      const statusCell = row.cells[4]?.textContent?.toLowerCase() || '';
+      
+      const matchesSearch = customerCell.includes(searchValue) || 
+                          serviceCell.includes(searchValue) || 
+                          statusCell.includes(searchValue);
+      
+      row.style.display = matchesSearch ? '' : 'none';
+    });
+    
+    // Update pagination info
+    updatePaginationInfo();
+  }
+  
+  // Function to sort bookings
+  function sortBookings(sortValue) {
+    const rows = Array.from(document.querySelectorAll('#bookingTableBody tr:not([style*="display: none"])'));
+    const tbody = document.getElementById('bookingTableBody');
+    
+    // Clear the table
+    tbody.innerHTML = '';
+    
+    // Sort the rows based on the selected option
+    rows.sort((a, b) => {
+      const aId = parseInt(a.cells[0].textContent.split('-')[2]);
+      const bId = parseInt(b.cells[0].textContent.split('-')[2]);
+      
+      const aCustomer = a.cells[1].textContent.toLowerCase();
+      const bCustomer = b.cells[1].textContent.toLowerCase();
+      
+      const aDate = new Date(a.cells[3].textContent);
+      const bDate = new Date(b.cells[3].textContent);
+      
+      switch(sortValue) {
+        case 'id_asc':
+          return aId - bId;
+        case 'id_desc':
+          return bId - aId;
+        case 'customer_asc':
+          return aCustomer.localeCompare(bCustomer);
+        case 'customer_desc':
+          return bCustomer.localeCompare(aCustomer);
+        case 'newest':
+          return bDate - aDate;
+        case 'oldest':
+          return aDate - bDate;
+        default:
+          return 0;
+      }
+    });
+    
+    // Re-append the sorted rows
+    rows.forEach(row => tbody.appendChild(row));
+  }
+  
+  // Function to update pagination info after filtering
+  function updatePaginationInfo() {
+    const visibleRows = document.querySelectorAll('#bookingTableBody tr:not([style*="display: none"])').length;
+    const totalRows = document.querySelectorAll('#bookingTableBody tr').length;
+    
+    document.getElementById('paginationInfo').textContent = 
+      `Showing ${visibleRows} of ${totalRows} bookings`;
+  }
+  
+  // Initialize the filter indicators based on URL params
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.has('sort')) {
+    const sortValue = urlParams.get('sort');
+    const activeOption = document.querySelector(`.filter-option[data-sort="${sortValue}"], .filter-option-mobile[data-sort="${sortValue}"]`);
+    if (activeOption) {
+      activeOption.classList.add('bg-sidebar-hover');
+      document.getElementById('filterIndicator').classList.remove('hidden');
+      document.getElementById('filterIndicatorMobile').classList.remove('hidden');
+    }
+  }
+});
+</script>
 </body>
 </html>
