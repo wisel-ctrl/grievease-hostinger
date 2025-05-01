@@ -1907,57 +1907,154 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 <!-- View Details Modal -->
-<div id="viewDetailsModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4 hidden">
+<div id="viewDetailsModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70 p-4 hidden">
   <!-- Modal Content -->
-  <div class="w-full max-w-2xl bg-white rounded-2xl shadow-xl overflow-hidden max-h-[90vh]">
+  <div class="w-full max-w-4xl bg-white rounded-2xl shadow-2xl overflow-hidden max-h-[90vh]">
     <div class="modal-scroll-container overflow-y-auto max-h-[90vh]">
       <!-- Header with close button -->
       <div class="bg-navy p-6 flex justify-between items-center">
-        <h2 class="text-2xl font-hedvig text-white">Booking Details</h2>
-        <button class="close-modal text-white hover:text-yellow-300">
+        <div class="flex items-center">
+          <i class="fas fa-calendar-check text-yellow-300 mr-3 text-2xl"></i>
+          <h2 class="text-2xl font-hedvig text-white">Booking Details</h2>
+        </div>
+        <button class="close-modal text-white hover:text-yellow-300 transition-colors duration-200">
           <i class="fas fa-times text-2xl"></i>
         </button>
       </div>
       
+      <!-- Booking Status Banner -->
+      <div id="status-banner" class="px-6 py-3 bg-blue-50 border-b border-blue-100 flex items-center">
+        <div class="flex items-center">
+          <div class="h-3 w-3 rounded-full bg-blue-500 mr-2"></div>
+          <span class="font-medium text-navy">Status:</span>
+          <span id="detail-status" class="ml-2 text-navy font-bold"></span>
+        </div>
+        <div class="ml-auto text-sm">
+          <span class="text-gray-500">Reference Code:</span>
+          <span id="detail-reference" class="text-navy font-mono ml-1"></span>
+        </div>
+      </div>
+      
       <!-- Modal Body -->
       <div class="p-6 bg-cream">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          <div>
-            <h4 class="font-semibold text-navy mb-3">Service Information</h4>
-            <div class="space-y-2">
-              <p><span class="text-gray-500">Service:</span> <span id="detail-service" class="text-navy"></span></p>
-              <p><span class="text-gray-500">Branch:</span> <span id="detail-branch" class="text-navy"></span></p>
-              <p><span class="text-gray-500">Status:</span> <span id="detail-status" class="text-navy"></span></p>
-              <p><span class="text-gray-500">Booking Date:</span> <span id="detail-booking-date" class="text-navy"></span></p>
-              <p><span class="text-gray-500">Total Amount:</span> <span id="detail-total" class="text-navy font-bold"></span></p>
-            </div>
+        <!-- Service Information Card -->
+        <div class="bg-white rounded-xl shadow-sm p-5 mb-6">
+          <div class="flex items-center mb-4">
+            <i class="fas fa-concierge-bell text-yellow-600 mr-2"></i>
+            <h4 class="font-semibold text-navy text-lg">Service Information</h4>
           </div>
-          <div>
-            <h4 class="font-semibold text-navy mb-3">Deceased Information</h4>
-            <div class="space-y-2">
-              <p><span class="text-gray-500">Name:</span> <span id="detail-deceased-name" class="text-navy"></span></p>
-              <p><span class="text-gray-500">Birth Date:</span> <span id="detail-birth" class="text-navy"></span></p>
-              <p><span class="text-gray-500">Date of Death:</span> <span id="detail-dod" class="text-navy"></span></p>
-              <p><span class="text-gray-500">Burial Date:</span> <span id="detail-burial" class="text-navy"></span></p>
-              <p><span class="text-gray-500">Address:</span> <span id="detail-address" class="text-navy"></span></p>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3">
+            <div class="flex">
+              <span class="text-gray-500 w-32">Service Type:</span> 
+              <span id="detail-service" class="text-navy font-medium"></span>
+            </div>
+            <div class="flex">
+              <span class="text-gray-500 w-32">Branch:</span> 
+              <span id="detail-branch" class="text-navy font-medium"></span>
+            </div>
+            <div class="flex">
+              <span class="text-gray-500 w-32">Booking Date:</span> 
+              <span id="detail-booking-date" class="text-navy font-medium"></span>
+            </div>
+            <div class="flex">
+              <span class="text-gray-500 w-32">Total Amount:</span> 
+              <span id="detail-total" class="text-navy font-bold"></span>
             </div>
           </div>
         </div>
         
-        <div class="mb-6">
-          <h4 class="font-semibold text-navy mb-3">Payment Information</h4>
+        <!-- Deceased Information Card -->
+        <div class="bg-white rounded-xl shadow-sm p-5 mb-6">
+          <div class="flex items-center mb-4">
+            <i class="fas fa-user text-yellow-600 mr-2"></i>
+            <h4 class="font-semibold text-navy text-lg">Deceased Information</h4>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3">
+            <div class="flex">
+              <span class="text-gray-500 w-32">Full Name:</span> 
+              <span id="detail-deceased-name" class="text-navy font-medium"></span>
+            </div>
+            <div class="flex">
+              <span class="text-gray-500 w-32">Birth Date:</span> 
+              <span id="detail-birth" class="text-navy font-medium"></span>
+            </div>
+            <div class="flex">
+              <span class="text-gray-500 w-32">Date of Death:</span> 
+              <span id="detail-dod" class="text-navy font-medium"></span>
+            </div>
+            <div class="flex">
+              <span class="text-gray-500 w-32">Burial Date:</span> 
+              <span id="detail-burial" class="text-navy font-medium"></span>
+            </div>
+            <div class="flex md:col-span-2">
+              <span class="text-gray-500 w-32">Address:</span> 
+              <span id="detail-address" class="text-navy font-medium"></span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Payment Information Card -->
+        <div class="bg-white rounded-xl shadow-sm p-5 mb-6">
+          <div class="flex items-center mb-4">
+            <i class="fas fa-credit-card text-yellow-600 mr-2"></i>
+            <h4 class="font-semibold text-navy text-lg">Payment Information</h4>
+          </div>
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div class="bg-gray-50 p-3 rounded">
-              <p class="text-gray-500 text-sm">Amount Paid</p>
-              <p id="detail-paid" class="text-navy font-bold"></p>
+            <div class="bg-gray-50 p-4 rounded-lg border border-gray-100">
+              <div class="flex items-center mb-1">
+                <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                <p class="text-gray-600 font-medium">Amount Paid</p>
+              </div>
+              <p id="detail-paid" class="text-navy font-bold text-lg"></p>
             </div>
-            <div class="bg-gray-50 p-3 rounded">
-              <p class="text-gray-500 text-sm">Balance</p>
-              <p id="detail-balance" class="text-navy font-bold"></p>
+            <div class="bg-gray-50 p-4 rounded-lg border border-gray-100">
+              <div class="flex items-center mb-1">
+                <i class="fas fa-balance-scale text-blue-500 mr-2"></i>
+                <p class="text-gray-600 font-medium">Balance</p>
+              </div>
+              <p id="detail-balance" class="text-navy font-bold text-lg"></p>
             </div>
-            <div class="bg-gray-50 p-3 rounded">
-              <p class="text-gray-500 text-sm">Reference Code</p>
-              <p id="detail-reference" class="text-navy"></p>
+            <div class="bg-gray-50 p-4 rounded-lg border border-gray-100">
+              <div class="flex justify-center items-center h-full">
+                <button id="make-payment-btn" class="bg-yellow-600 hover:bg-yellow-700 text-white py-2 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center">
+                  <i class="fas fa-plus-circle mr-2"></i>
+                  Make Payment
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Documents Section -->
+        <div class="bg-white rounded-xl shadow-sm p-5">
+          <div class="flex items-center mb-4">
+            <i class="fas fa-file-alt text-yellow-600 mr-2"></i>
+            <h4 class="font-semibold text-navy text-lg">Documents</h4>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="border border-gray-200 rounded-lg p-4 flex items-center">
+              <div class="bg-blue-50 p-3 rounded-lg mr-3">
+                <i class="fas fa-file-medical text-blue-600 text-xl"></i>
+              </div>
+              <div class="flex-grow">
+                <h5 class="font-medium text-navy">Death Certificate</h5>
+                <p class="text-xs text-gray-500">Uploaded on: <span id="cert-upload-date">May 1, 2025</span></p>
+              </div>
+              <button id="viewDeathCertBtn" class="bg-blue-600 text-white p-2 rounded-lg hover:bg-blue-700 transition-colors duration-200">
+                <i class="fas fa-eye"></i>
+              </button>
+            </div>
+            <div class="border border-gray-200 rounded-lg p-4 flex items-center">
+              <div class="bg-green-50 p-3 rounded-lg mr-3">
+                <i class="fas fa-receipt text-green-600 text-xl"></i>
+              </div>
+              <div class="flex-grow">
+                <h5 class="font-medium text-navy">Payment Receipt</h5>
+                <p class="text-xs text-gray-500">Last payment: <span id="payment-date">May 1, 2025</span></p>
+              </div>
+              <button id="viewPaymentBtn" class="bg-green-600 text-white p-2 rounded-lg hover:bg-green-700 transition-colors duration-200">
+                <i class="fas fa-eye"></i>
+              </button>
             </div>
           </div>
         </div>
@@ -1966,13 +2063,16 @@ document.addEventListener('DOMContentLoaded', function() {
       <!-- Modal Footer -->
       <div class="modal-sticky-footer px-6 py-4 flex flex-col sm:flex-row sm:justify-end gap-3 border-t border-gray-200 bg-white">
         <button class="close-modal w-full sm:w-auto px-6 py-3 bg-white border border-yellow-600 text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center">
-          Cancel
+          <i class="fas fa-times mr-2"></i>
+          Close
         </button>
-        <button id="viewDeathCertBtn" class="w-full sm:w-auto px-6 py-3 bg-navy hover:bg-navy/90 text-white rounded-lg shadow-md transition-all duration-300 flex items-center justify-center">
-          <i class="fas fa-file-medical mr-2"></i> View Death Certificate
+        <button id="print-details-btn" class="w-full sm:w-auto px-6 py-3 bg-navy hover:bg-navy/90 text-white rounded-lg shadow-md transition-all duration-300 flex items-center justify-center">
+          <i class="fas fa-print mr-2"></i>
+          Print Details
         </button>
-        <button id="viewPaymentBtn" class="w-full sm:w-auto px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg shadow-md transition-all duration-300 flex items-center justify-center">
-          <i class="fas fa-receipt mr-2"></i> View Payment Proof
+        <button id="contact-support-btn" class="w-full sm:w-auto px-6 py-3 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg shadow-md transition-all duration-300 flex items-center justify-center">
+          <i class="fas fa-headset mr-2"></i>
+          Contact Support
         </button>
       </div>
     </div>
