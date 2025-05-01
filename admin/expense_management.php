@@ -99,28 +99,36 @@ if ($lastMonth > 0) {
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
- <style>
-    .filter-dropdown {
+
+  <style>
+    /* Add to your stylesheet */
+.table-container {
     position: relative;
+    min-height: 200px;
 }
 
-.filter-window {
+.loading-indicator {
     position: absolute;
+    top: 0;
+    left: 0;
     right: 0;
-    margin-top: 0.5rem;
-    width: 16rem;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
     z-index: 10;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
-.filter-option {
-    transition: all 0.2s ease;
+.table-content {
+    transition: opacity 0.3s ease;
 }
 
-.filter-option:hover {
-    background-color: #f3f4f6;
+.loading .table-content {
+    opacity: 0.5;
 }
- </style>
+  </style>
+ 
 </head>
 <body class="flex bg-gray-50">
 
@@ -543,22 +551,6 @@ $categoryFilter = isset($_GET['category']) ? $_GET['category'] : '';
 $statusFilter = isset($_GET['status']) ? $_GET['status'] : '';
 $searchQuery = isset($_GET['search']) ? $_GET['search'] : '';
 
-// Calculate where clause based on filters
-$whereClause = "WHERE branch_id = ".$branchId." AND appearance = 'visible'";
-
-if (!empty($categoryFilter)) {
-    $whereClause .= " AND category = '".$conn->real_escape_string($categoryFilter)."'";
-}
-
-if (!empty($statusFilter)) {
-    $whereClause .= " AND status = '".$conn->real_escape_string($statusFilter)."'";
-}
-
-if (!empty($searchQuery)) {
-    $whereClause .= " AND (expense_name LIKE '%".$conn->real_escape_string($searchQuery)."%' 
-                    OR category LIKE '%".$conn->real_escape_string($searchQuery)."%')";
-}
-
 // Pagination setup
 $recordsPerPage = 10;
 $page = isset($_GET['page']) ? intval($_GET['page']) : 1;
@@ -643,7 +635,7 @@ if ($branchResult->num_rows > 0) {
                     </button>
                     
                     <!-- Filter Window -->
-                    <div id="filterWindow<?php echo $branchId; ?>" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-4 filter-window">
+                    <div id="filterWindow<?php echo $branchId; ?>" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-4">
                         <div class="space-y-4">
                             <!-- Category Filter -->
                             <div>
@@ -755,9 +747,9 @@ if ($branchResult->num_rows > 0) {
     
     <!-- Responsive Table Container with improved spacing -->
     <div class="overflow-x-auto scrollbar-thin" id="tableContainer<?php echo $branchId; ?>">
-        <div id="loadingIndicator<?php echo $branchId; ?>" class="hidden absolute inset-0 bg-white bg-opacity-50 flex items-center justify-center">
-            <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-sidebar-accent"></div>
-        </div>
+    <div id="loadingIndicator<?php echo $branchId; ?>" class="hidden absolute inset-0 bg-white bg-opacity-50 flex items-center justify-center z-10">
+    <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-sidebar-accent"></div>
+</div>
         
         <!-- Responsive Table with improved spacing and horizontal scroll for small screens -->
         <div class="min-w-full">
@@ -1570,102 +1562,159 @@ function debounce(func, wait) {
     };
 }
 
-// Search function
-function performSearch(branchId) {
+// AJAX function to load expenses
+function loadExpenses(branchId, page = 1) {
     const searchInput = document.getElementById(`searchInput${branchId}`) || 
                        document.getElementById(`searchInput${branchId}_mobile`);
-    const searchTerm = searchInput.value.trim();
+    const searchTerm = searchInput ? searchInput.value.trim() : '';
     
     // Get current filters
     const categoryFilter = getCurrentFilter(branchId, 'category');
     const statusFilter = getCurrentFilter(branchId, 'status');
     
-    // Build URL with all parameters
-    let url = `expense_management.php?branch=${branchId}`;
-    if (searchTerm) url += `&search=${encodeURIComponent(searchTerm)}`;
-    if (categoryFilter) url += `&category=${encodeURIComponent(categoryFilter)}`;
-    if (statusFilter) url += `&status=${encodeURIComponent(statusFilter)}`;
+    // Show loading indicator
+    const loadingIndicator = document.getElementById(`loadingIndicator${branchId}`);
+    const tableContainer = document.getElementById(`tableContainer${branchId}`);
+    if (loadingIndicator) loadingIndicator.classList.remove('hidden');
     
-    // Redirect to the new URL with all filters
-    window.location.href = url;
-}
-
-// Initialize debounced search
-const debouncedSearch = debounce(performSearch, 500);
-
-// Helper function to get current filter value
-function getCurrentFilter(branchId, filterType) {
-    const urlParams = new URLSearchParams(window.location.search);
-    return urlParams.get(filterType) || '';
-}
-
-// Toggle filter window visibility
-function toggleFilterWindow(branchId) {
-    const filterWindow = document.getElementById(`filterWindow${branchId}`);
-    filterWindow.classList.toggle('hidden');
+    // Create FormData object
+    const formData = new FormData();
+    formData.append('branch_id', branchId);
+    formData.append('page', page);
+    if (searchTerm) formData.append('search', searchTerm);
+    if (categoryFilter) formData.append('category', categoryFilter);
+    if (statusFilter) formData.append('status', statusFilter);
     
-    // Close other open filter windows
-    document.querySelectorAll('.filter-dropdown .filter-window').forEach(window => {
-        if (window.id !== `filterWindow${branchId}`) {
-            window.classList.add('hidden');
+    // Send AJAX request
+    fetch('expenses/load_expenses.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.text())
+    .then(html => {
+        // Replace table content
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        const newTable = doc.querySelector('table');
+        const newPagination = doc.querySelector('.pagination-container');
+        
+        if (newTable) {
+            tableContainer.querySelector('table').replaceWith(newTable);
         }
+        
+        if (newPagination) {
+            const oldPagination = tableContainer.querySelector('.pagination-container');
+            if (oldPagination) {
+                oldPagination.replaceWith(newPagination);
+            } else {
+                tableContainer.appendChild(newPagination);
+            }
+        }
+        
+        // Update URL without reloading
+        updateUrlParams(branchId, page, searchTerm, categoryFilter, statusFilter);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while loading expenses.');
+    })
+    .finally(() => {
+        if (loadingIndicator) loadingIndicator.classList.add('hidden');
     });
 }
 
-// Set filter and reload page
+// Update URL parameters without reloading
+function updateUrlParams(branchId, page, searchTerm, categoryFilter, statusFilter) {
+    const url = new URL(window.location);
+    url.searchParams.set('branch', branchId);
+    url.searchParams.set(`page_${branchId}`, page);
+    
+    if (searchTerm) {
+        url.searchParams.set('search', searchTerm);
+    } else {
+        url.searchParams.delete('search');
+    }
+    
+    if (categoryFilter) {
+        url.searchParams.set('category', categoryFilter);
+    } else {
+        url.searchParams.delete('category');
+    }
+    
+    if (statusFilter) {
+        url.searchParams.set('status', statusFilter);
+    } else {
+        url.searchParams.delete('status');
+    }
+    
+    window.history.pushState({}, '', url);
+}
+
+// Search function
+const performSearch = debounce(function(branchId) {
+    loadExpenses(branchId, 1); // Always reset to page 1 when searching
+}, 500);
+
+// Filter function
 function setFilter(branchId, filterType, filterValue) {
-    // Get current search term
-    const searchInput = document.getElementById(`searchInput${branchId}`) || 
-                       document.getElementById(`searchInput${branchId}_mobile`);
-    const searchTerm = searchInput ? searchInput.value.trim() : '';
+    // Update URL immediately for the filter
+    const url = new URL(window.location);
+    if (filterValue) {
+        url.searchParams.set(filterType, filterValue);
+    } else {
+        url.searchParams.delete(filterType);
+    }
+    url.searchParams.set('branch', branchId);
+    window.history.pushState({}, '', url);
     
-    // Get other filter values
-    const currentCategory = filterType === 'category' ? filterValue : getCurrentFilter(branchId, 'category');
-    const currentStatus = filterType === 'status' ? filterValue : getCurrentFilter(branchId, 'status');
+    // Update filter indicator
+    const filterIndicator = document.getElementById(`filterIndicator${branchId}`);
+    if (filterIndicator) {
+        if (filterValue) {
+            filterIndicator.classList.remove('hidden');
+        } else {
+            filterIndicator.classList.add('hidden');
+        }
+    }
     
-    // Build URL with all parameters
-    let url = `expense_management.php?branch=${branchId}`;
-    if (searchTerm) url += `&search=${encodeURIComponent(searchTerm)}`;
-    if (currentCategory) url += `&category=${encodeURIComponent(currentCategory)}`;
-    if (currentStatus) url += `&status=${encodeURIComponent(currentStatus)}`;
-    
-    // Redirect to the new URL with all filters
-    window.location.href = url;
+    // Reload expenses
+    loadExpenses(branchId, 1); // Always reset to page 1 when filtering
 }
 
 // Change branch page
 function changeBranchPage(branchId, page) {
-    // Get current filters and search term
-    const searchTerm = getCurrentFilter(branchId, 'search');
-    const categoryFilter = getCurrentFilter(branchId, 'category');
-    const statusFilter = getCurrentFilter(branchId, 'status');
-    
-    // Build URL with all parameters
-    let url = `expense_management.php?branch=${branchId}&page_${branchId}=${page}`;
-    if (searchTerm) url += `&search=${encodeURIComponent(searchTerm)}`;
-    if (categoryFilter) url += `&category=${encodeURIComponent(categoryFilter)}`;
-    if (statusFilter) url += `&status=${encodeURIComponent(statusFilter)}`;
-    
-    // Redirect to the new URL with all filters
-    window.location.href = url;
+    loadExpenses(branchId, page);
 }
 
-// Update filter indicators on page load
+// Initialize on page load
 document.addEventListener('DOMContentLoaded', function() {
-    const urlParams = new URLSearchParams(window.location.search);
-    
-    // Check if we have any branch-specific filters
+    // Load expenses for each branch with current filters
     document.querySelectorAll('.branch-expense-container').forEach(container => {
         const branchId = container.dataset.branchId;
+        const urlParams = new URLSearchParams(window.location.search);
+        const page = urlParams.get(`page_${branchId}`) || 1;
         
-        // Check if this branch has any active filters
+        // Update filter indicators
         const hasCategoryFilter = urlParams.get('category') && urlParams.get('branch') == branchId;
         const hasStatusFilter = urlParams.get('status') && urlParams.get('branch') == branchId;
+        const filterIndicator = document.getElementById(`filterIndicator${branchId}`);
         
-        if (hasCategoryFilter || hasStatusFilter) {
-            const indicator = document.getElementById(`filterIndicator${branchId}`);
-            if (indicator) indicator.classList.remove('hidden');
+        if (filterIndicator && (hasCategoryFilter || hasStatusFilter)) {
+            filterIndicator.classList.remove('hidden');
         }
+        
+        // Load initial data
+        loadExpenses(branchId, page);
+    });
+    
+    // Handle back/forward navigation
+    window.addEventListener('popstate', function() {
+        document.querySelectorAll('.branch-expense-container').forEach(container => {
+            const branchId = container.dataset.branchId;
+            const urlParams = new URLSearchParams(window.location.search);
+            const page = urlParams.get(`page_${branchId}`) || 1;
+            loadExpenses(branchId, page);
+        });
     });
 });
 </script>
