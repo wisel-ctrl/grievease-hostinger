@@ -597,14 +597,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Remove all non-digit characters
                 this.value = this.value.replace(/\D/g, '');
                 
-                // Ensure it starts with '09' and is 11 digits long
+                // Ensure it starts with '09' and is exactly 11 digits long
                 if (this.value.length > 11) {
                     this.value = this.value.substring(0, 11);
                 }
-                if (this.value && !this.value.startsWith('09')) {
-                    this.setCustomValidity('Phone number must start with 09 and be 11 digits long.');
+                if (this.value.length === 11 && !this.value.startsWith('09')) {
+                    this.setCustomValidity('Phone number must start with 09 and be exactly 11 digits long.');
+                } else if (this.value.length === 11) {
+                    this.setCustomValidity(''); // Valid phone number
                 } else {
-                    this.setCustomValidity('');
+                    this.setCustomValidity(''); // Clear validation for incomplete numbers
                 }
             });
         }
