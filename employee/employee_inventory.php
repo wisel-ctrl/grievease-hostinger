@@ -59,7 +59,7 @@ function generateInventoryRow($row) {
     $html .= '<td class="px-4 py-3.5 text-sm text-sidebar-text whitespace-nowrap">₱'.number_format($row['total_value'], 2).'</td>';
     $html .= '<td class="px-4 py-3.5 text-sm whitespace-nowrap">';
     $html .= '<div class="flex items-center gap-2">';
-    $html .= '<button class="p-1.5 bg-blue-100 text-blue-600 rounded hover:bg-blue-200 transition-all">';
+    $html .= '<button class="p-1.5 bg-blue-100 text-blue-600 rounded hover:bg-blue-200 transition-all edit-btn" data-id="'.$row['inventory_id'].'">';
     $html .= '<i class="fas fa-edit"></i>';
     $html .= '</button>';
     $html .= '<button class="p-1.5 bg-red-100 text-red-600 rounded hover:bg-red-200 transition-all">';
@@ -577,6 +577,132 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == 1) {
   </div>
 </div>
 
+<!-- Edit Inventory Modal -->
+<div id="editInventoryModal" class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto">
+  <!-- Modal Backdrop -->
+  <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm" onclick="closeEditInventoryModal()"></div>
+  
+  <!-- Modal Content -->
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-md mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+    <!-- Close Button -->
+    <button type="button" class="absolute top-4 right-4 text-gray-500 hover:text-sidebar-accent transition-colors" onclick="closeEditInventoryModal()">
+      <i class="fas fa-times"></i>
+    </button>
+    
+    <!-- Modal Header -->
+    <div class="px-4 sm:px-6 py-4 sm:py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
+      <h3 class="text-lg sm:text-xl font-bold text-white flex items-center">
+        <i class="fas fa-edit mr-2"></i> Edit Inventory Item
+      </h3>
+    </div>
+    
+    <!-- Modal Body -->
+    <div class="px-4 sm:px-6 py-4 sm:py-5">
+      <form id="editInventoryForm" class="space-y-3 sm:space-y-4" enctype="multipart/form-data">
+        <input type="hidden" id="editInventoryId" name="editInventoryId">
+        
+        <div>
+          <label for="editItemName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            Item Name <span class="text-red-500">*</span>
+          </label>
+          <div class="relative">
+            <input type="text" id="editItemName" name="editItemName" required 
+                   class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
+                   placeholder="Item Name">
+          </div>
+        </div>
+        
+        <!-- Category -->
+        <div>
+          <label for="editCategoryId" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            Category <span class="text-red-500">*</span>
+          </label>
+          <div class="relative">
+            <select id="editCategoryId" name="editCategoryId" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+              <option value="" disabled selected>Select a Category</option>
+              <?php
+              // Fetch categories from the database
+              $sql = "SELECT category_id, category_name FROM inventory_category";
+              $result = $conn->query($sql);
+              
+              if ($result->num_rows > 0) {
+                  while ($row = $result->fetch_assoc()) {
+                      echo '<option value="' . $row['category_id'] . '">' . htmlspecialchars($row['category_name']) . '</option>';
+                  }
+              } else {
+                  echo '<option value="" disabled>No Categories Available</option>';
+              }
+              ?>
+            </select>
+          </div>
+        </div>
+        
+        <!-- Quantity -->
+        <div>
+          <label for="editQuantity" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            Quantity <span class="text-red-500">*</span>
+          </label>
+          <div class="relative">
+            <input type="number" id="editQuantity" name="editQuantity" min="1" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="Quantity">
+          </div>
+        </div>
+        
+        <!-- Unit Price -->
+        <div>
+          <label for="editUnitPrice" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            Unit Price <span class="text-red-500">*</span>
+          </label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <span class="text-gray-500">₱</span>
+            </div>
+            <input type="number" id="editUnitPrice" name="editUnitPrice" step="0.01" min="0" required 
+                   class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
+                   placeholder="0.00">
+          </div>
+        </div>
+        
+        <!-- Current Image Preview -->
+        <div class="bg-gray-50 p-3 sm:p-4 rounded-lg border border-gray-200">
+          <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            Current Image
+          </label>
+          <div id="currentImageContainer" class="flex justify-center">
+            <img id="currentImagePreview" src="#" alt="Current Image" class="max-h-40 rounded-lg border border-gray-300">
+          </div>
+        </div>
+        
+        <!-- File Upload -->
+        <div class="bg-gray-50 p-3 sm:p-4 rounded-lg border border-gray-200">
+          <label for="editItemImage" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            Upload New Image
+          </label>
+          <div class="relative">
+            <div id="editImagePreviewContainer" class="hidden mb-3">
+              <img id="editImagePreview" src="#" alt="Preview" class="max-h-40 rounded-lg border border-gray-300">
+            </div>
+            <div class="flex items-center border border-gray-300 rounded-lg px-3 py-2 focus-within:ring-1 focus-within:ring-sidebar-accent focus-within:border-sidebar-accent transition-all duration-200">
+              <input type="file" id="editItemImage" name="editItemImage" accept="image/*" 
+                     class="w-full focus:outline-none"
+                     onchange="previewEditImage(this)">
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+    
+    <!-- Modal Footer --> 
+    <div class="px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row sm:justify-end gap-2 sm:gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
+      <button type="button" class="w-full sm:w-auto px-4 sm:px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center" onclick="closeEditInventoryModal()">
+        Cancel
+      </button>
+      <button type="submit" id="submitEditInventoryBtn" form="editInventoryForm" class="w-full sm:w-auto px-5 sm:px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center">
+        Save Changes
+      </button>
+    </div>
+  </div>
+</div>
+
 
 <script>
     // Load initial page content
@@ -714,6 +840,146 @@ document.addEventListener('DOMContentLoaded', function() {
                     icon: 'error',
                     title: 'Error',
                     text: error.message || 'An error occurred while adding the item',
+                });
+            } finally {
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalBtnText;
+                }
+            }
+        });
+    }
+});
+
+//edit inventory functions
+// Function to open the edit inventory modal
+function openEditInventoryModal(inventoryId) {
+    // Show loading state
+    const modal = document.getElementById('editInventoryModal');
+    modal.classList.remove('hidden');
+    document.body.classList.add('overflow-hidden');
+    
+    // Fetch inventory item details
+    fetch(`inventory/get_inventory_item.php?id=${inventoryId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Populate form fields
+                document.getElementById('editInventoryId').value = data.item.inventory_id;
+                document.getElementById('editItemName').value = data.item.item_name;
+                document.getElementById('editCategoryId').value = data.item.category_id;
+                document.getElementById('editQuantity').value = data.item.quantity;
+                document.getElementById('editUnitPrice').value = data.item.price;
+                
+                // Set current image preview
+                const currentImagePreview = document.getElementById('currentImagePreview');
+                if (data.item.inventory_img) {
+                    currentImagePreview.src = data.item.inventory_img;
+                    document.getElementById('currentImageContainer').classList.remove('hidden');
+                } else {
+                    document.getElementById('currentImageContainer').classList.add('hidden');
+                }
+            } else {
+                throw new Error(data.message || 'Failed to load item details');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: error.message || 'An error occurred while loading item details',
+            });
+            closeEditInventoryModal();
+        });
+}
+
+// Function to close the edit inventory modal
+function closeEditInventoryModal() {
+    document.getElementById('editInventoryModal').classList.add('hidden');
+    document.body.classList.remove('overflow-hidden');
+    // Reset form and clear preview
+    document.getElementById('editInventoryForm').reset();
+    document.getElementById('editImagePreviewContainer').classList.add('hidden');
+}
+
+// Image preview function for edit modal
+function previewEditImage(input) {
+    const previewContainer = document.getElementById('editImagePreviewContainer');
+    const preview = document.getElementById('editImagePreview');
+    
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+            preview.src = e.target.result;
+            previewContainer.classList.remove('hidden');
+        }
+        
+        reader.readAsDataURL(input.files[0]);
+    } else {
+        preview.src = '#';
+        previewContainer.classList.add('hidden');
+    }
+}
+
+// Add event listener for edit buttons (delegated to handle dynamic content)
+document.addEventListener('click', function(e) {
+    if (e.target.closest('.edit-btn')) {
+        const inventoryId = e.target.closest('.edit-btn').getAttribute('data-id');
+        openEditInventoryModal(inventoryId);
+    }
+});
+
+// Form submission handler for edit
+document.addEventListener('DOMContentLoaded', function() {
+    const editForm = document.getElementById('editInventoryForm');
+    if (editForm) {
+        editForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const submitBtn = document.getElementById('submitEditInventoryBtn');
+            
+            if (!submitBtn) {
+                console.error('Submit button not found');
+                return;
+            }
+            
+            const originalBtnText = submitBtn.innerHTML;
+            
+            // Show loading state
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Saving...';
+            
+            try {
+                const response = await fetch('inventory/update_inventory.php', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success!',
+                        text: data.message,
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                    
+                    closeEditInventoryModal();
+                    loadPage(<?php echo $branch_id; ?>, 1);
+                } else {
+                    throw new Error(data.message || 'Failed to update item');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: error.message || 'An error occurred while updating the item',
                 });
             } finally {
                 if (submitBtn) {
