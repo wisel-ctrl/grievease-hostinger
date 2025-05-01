@@ -1581,7 +1581,6 @@ document.addEventListener('DOMContentLoaded', function() {
                                         </svg>
                                     </span>
                                 </div>
-                                <p class="text-xs text-gray-500 mt-1">Format: 09XXXXXXXXX or +639XXXXXXXXX</p>
                             </div>
                         </div>
                     </div>
@@ -3269,7 +3268,7 @@ function restrictPhoneInput() {
         if (!value) {
             showError('phone', 'Phone number is required');
         } else if (!validatePhoneNumber(value)) {
-            showError('phone', 'Invalid format. Use: 09XXXXXXXXX or +639XXXXXXXXX');
+            showError('phone', 'Invalid format. Use: 09*********');
         } else {
             clearError('phone');
         }
