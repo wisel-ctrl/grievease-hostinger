@@ -1526,7 +1526,9 @@ document.addEventListener('DOMContentLoaded', function() {
                         <div class="grid sm:grid-cols-2 gap-5 sm:gap-6">
                             <div>
                                 <label for="firstName" class="block text-sm font-medium text-gray-700 mb-2">First Name <span class="text-red-500">*</span></label>
-                                <input type="text" id="firstName" name="firstName" value="<?php echo htmlspecialchars($first_name); ?>" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-base shadow-sm transition-all duration-200">
+                                <input type="text" id="firstName" name="firstName" value="<?php echo htmlspecialchars($first_name); ?>" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-base shadow-sm transition-all duration-200" oninput="validateNameField(this)">
+                                <p id="firstNameError" class="text-red-500 text-xs mt-1 hidden">Please enter a valid first name (only letters, spaces, apostrophes, and hyphens allowed)</p>
+                                </div>
                             </div>
                             
                             <div>
