@@ -310,7 +310,7 @@ header("Pragma: no-cache");
     }
     
     /* Adjust the specific tab headers */
-    #personal-info .bg-navy,
+    #personal-info .pi,
     #bookings .bookings {
         padding: 1.5rem !important;
         height: 72px !important;
@@ -584,7 +584,7 @@ header("Pragma: no-cache");
 <div id="personal-info" class="tab-content">
     <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
         <!-- Header with enhanced styling - now stacked on mobile -->
-        <div class="bg-navy p-6 border-b border-gray-100 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 tab-header">
+        <div class="pi bg-navy p-6 border-b border-gray-100 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 tab-header">
             <h3 class="font-hedvig text-xl sm:text-2xl text-white font-semibold">Personal Information</h3>
             
             <div class="flex flex-col sm:flex-row gap-2 sm:gap-3 sm:space-x-0 w-full sm:w-auto">
