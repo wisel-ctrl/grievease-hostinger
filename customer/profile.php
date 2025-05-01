@@ -2545,7 +2545,7 @@ function fetchBookingDetails(bookingId) {
                 if (data.status === 'Accepted' && data.accepted_date) {
                     // Create new paragraph for Accepted Date
                     const acceptedDateP = document.createElement('p');
-                    acceptedDateP.innerHTML = `<span class="text-gray-500"> Accepted Date:</span> <span class="text-navy">${formatDate(data.accepted_date)}</span>`;
+                    acceptedDateP.innerHTML = `<span> </span><span class="text-gray-500">Accepted Date:</span> <span class="text-navy">${formatDate(data.accepted_date)}</span>`;
                     
                     // Insert after the status paragraph
                     document.getElementById('detail-status').parentNode.insertAdjacentElement('afterend', acceptedDateP);
