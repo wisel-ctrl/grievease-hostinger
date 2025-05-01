@@ -1262,7 +1262,24 @@ function reattachEventListeners(branchId) {
     });
 }
 
-
+// Helper function to update pagination active state
+function updatePaginationActiveState(branchId, currentPage) {
+    const paginationContainer = document.querySelector(`#paginationInfo_${branchId}`).nextElementSibling;
+    const pageButtons = paginationContainer.querySelectorAll('button');
+    
+    pageButtons.forEach(button => {
+        // Remove active class from all buttons
+        button.classList.remove('bg-sidebar-accent', 'text-white');
+        button.classList.add('border', 'border-sidebar-border', 'hover:bg-sidebar-hover');
+        
+        // Check if this button is the current page
+        const pageNumber = parseInt(button.textContent);
+        if (!isNaN(pageNumber) && pageNumber === currentPage) {
+            button.classList.remove('border', 'border-sidebar-border', 'hover:bg-sidebar-hover');
+            button.classList.add('bg-sidebar-accent', 'text-white');
+        }
+    });
+}
 </script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
