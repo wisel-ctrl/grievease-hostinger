@@ -518,7 +518,7 @@ header("Pragma: no-cache");
         <div class="container mx-auto px-6 py-12">
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <!-- Left Sidebar with Navigation -->
-            <div class="lg:col-span-1 sticky-sidebar">
+            <div class="lg:col-span-1 lg:sticky lg:top-[calc(var(--navbar-height)+1rem)] lg:self-start">
                 <div class="bg-white rounded-xl shadow-lg overflow-hidden">
                     <div class="p-6 border-b bg-navy border-gray-100">
                         <h3 class="font-hedvig text-xl text-white">Account Management</h3>
