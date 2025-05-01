@@ -45,7 +45,7 @@ try {
         INSERT INTO booking_tb (
             customerID, 
             deceased_fname, 
-            deceased_mname, 
+            deceased_midname, 
             deceased_lname, 
             deceased_suffix, 
             deceased_birth, 
