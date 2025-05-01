@@ -2135,30 +2135,61 @@ document.addEventListener('DOMContentLoaded', function() {
           </div>
           
           <!-- Document Uploads Section -->
-          <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
-            <h4 class="font-semibold text-navy text-lg mb-4">Document Uploads</h4>
-            <div class="space-y-4">
-              <div>
-                <label class="block text-sm font-medium text-navy mb-1 sm:mb-2">Death Certificate</label>
-                <div class="flex items-center">
-                  <input type="file" name="death_certificate" class="w-full px-4 py-3 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent">
+          <!-- In the Modify Booking Modal section, update the Document Uploads Section -->
+<div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+    <h4 class="font-semibold text-navy text-lg mb-4">Document Uploads</h4>
+    <div class="space-y-4">
+        <!-- Death Certificate Section -->
+        <div>
+            <label class="block text-sm font-medium text-navy mb-1 sm:mb-2">Death Certificate</label>
+            <div class="flex items-center gap-4">
+                <div class="flex-1">
+                    <input type="file" name="death_certificate" id="death-certificate-upload" class="w-full px-4 py-3 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent" onchange="previewFile(this, 'death-cert-preview')">
                 </div>
                 <?php if (!empty($booking['deathcert_url'])): ?>
-                  <p class="text-sm text-gray-500 mt-1">Current file: <?php echo basename($booking['deathcert_url']); ?></p>
+                    <div class="relative">
+                        <button type="button" class="view-current-file bg-blue-500 text-white p-2 rounded hover:bg-blue-600 transition" data-url="<?php echo htmlspecialchars($booking['deathcert_url']); ?>">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <p class="text-xs text-gray-500 mt-1 text-center">Current</p>
+                    </div>
                 <?php endif; ?>
-              </div>
-              
-              <div>
-                <label class="block text-sm font-medium text-navy mb-1 sm:mb-2">Payment Proof</label>
-                <div class="flex items-center">
-                  <input type="file" name="payment_proof" class="w-full px-4 py-3 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent">
+            </div>
+            <div id="death-cert-preview" class="mt-2 hidden">
+                <p class="text-xs text-gray-500 mb-1">New Upload Preview:</p>
+                <img src="" class="max-w-full h-32 object-contain border rounded">
+            </div>
+            <?php if (!empty($booking['deathcert_url'])): ?>
+                <p class="text-sm text-gray-500 mt-1">Current file: <?php echo basename($booking['deathcert_url']); ?></p>
+            <?php endif; ?>
+        </div>
+        
+        <!-- Payment Proof Section -->
+        <div>
+            <label class="block text-sm font-medium text-navy mb-1 sm:mb-2">Payment Proof</label>
+            <div class="flex items-center gap-4">
+                <div class="flex-1">
+                    <input type="file" name="payment_proof" id="payment-proof-upload" class="w-full px-4 py-3 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent" onchange="previewFile(this, 'payment-proof-preview')">
                 </div>
                 <?php if (!empty($booking['payment_url'])): ?>
-                  <p class="text-sm text-gray-500 mt-1">Current file: <?php echo basename($booking['payment_url']); ?></p>
+                    <div class="relative">
+                        <button type="button" class="view-current-file bg-blue-500 text-white p-2 rounded hover:bg-blue-600 transition" data-url="<?php echo htmlspecialchars($booking['payment_url']); ?>">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <p class="text-xs text-gray-500 mt-1 text-center">Current</p>
+                    </div>
                 <?php endif; ?>
-              </div>
             </div>
-          </div>
+            <div id="payment-proof-preview" class="mt-2 hidden">
+                <p class="text-xs text-gray-500 mb-1">New Upload Preview:</p>
+                <img src="" class="max-w-full h-32 object-contain border rounded">
+            </div>
+            <?php if (!empty($booking['payment_url'])): ?>
+                <p class="text-sm text-gray-500 mt-1">Current file: <?php echo basename($booking['payment_url']); ?></p>
+            <?php endif; ?>
+        </div>
+    </div>
+</div>
         </form>
       </div>
       
@@ -2806,6 +2837,33 @@ document.getElementById('cancelBookingForm').addEventListener('submit', function
     });
 });
 
+// File preview function
+function previewFile(input, previewId) {
+    const previewContainer = document.getElementById(previewId);
+    const file = input.files[0];
+    
+    if (file) {
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+            const previewImg = previewContainer.querySelector('img');
+            previewImg.src = e.target.result;
+            previewContainer.classList.remove('hidden');
+        }
+        
+        reader.readAsDataURL(file);
+    } else {
+        previewContainer.classList.add('hidden');
+    }
+}
+
+// View current file button handler
+document.addEventListener('click', function(e) {
+    if (e.target.closest('.view-current-file')) {
+        const fileUrl = e.target.closest('.view-current-file').getAttribute('data-url');
+        showDocument('Document Preview', fileUrl);
+    }
+});
 // Remove the redundant submitBookingCancellation() function
 
 
