@@ -1863,9 +1863,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const packageImage = packageCard.dataset.image || '';
             const serviceId = packageCard.dataset.serviceId; // Get service_id
             console.log('service1: ', packageCard.dataset.serviceId);
-            console.log('service1: ', packageCard.dataset.name);
-            console.log('service1: ', packageCard.dataset.price);
-            console.log('service1: ', packageCard.dataset.image);
+            console.log('service1: ', packageCard.dataset.service);
+            
             
             document.getElementById('serviceID').value = serviceId;    
 
