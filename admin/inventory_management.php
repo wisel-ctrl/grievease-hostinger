@@ -381,9 +381,10 @@ if ($branchResult->num_rows > 0) {
 
     // Calculate pagination for this branch
     $itemsPerPage = 5;
-$totalPages = ceil($totalItems / $itemsPerPage);
-$currentPage = isset($_GET['page_'.$branchId]) ? (int)$_GET['page_'.$branchId] : 1;
-$startItem = ($currentPage - 1) * $itemsPerPage;
+    $totalItems = $result->num_rows;
+    $totalPages = ceil($totalItems / $itemsPerPage);
+    $currentPage = isset($_GET['page_'.$branchId]) ? (int)$_GET['page_'.$branchId] : 1;
+    $startItem = ($currentPage - 1) * $itemsPerPage;
 
     // Modify query to include pagination
     $paginatedSql = $sql . " LIMIT $startItem, $itemsPerPage";
