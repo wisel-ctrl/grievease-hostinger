@@ -4086,14 +4086,14 @@ document.addEventListener('DOMContentLoaded', function() {
     mobileMenu.classList.toggle('hidden');
 }
 </script>
-
 <script>
+
 // Enhanced name validation function
 function validateName(input) {
     const value = input.value.trim();
     // Allow letters, apostrophes, hyphens, and spaces between words
     // Must have at least 2 letters before allowing a space
-    const nameRegex = /^[A-Za-zÀ-ÿ'-]{2,}(?:\s+[A-Za-zÀ-ÿ'-]+)*$/;
+    const nameRegex = /^(?=[A-Za-zÀ-ÿ'-]{2,})[A-Za-zÀ-ÿ'-]+(?: [A-Za-zÀ-ÿ'-]+)*$/;
     return nameRegex.test(value);
 }
 
@@ -4120,10 +4120,28 @@ function handleNameInput(input) {
         if (currentValue.includes(' ')) {
             const parts = currentValue.split(' ');
             // Only allow space if previous part has at least 2 characters
-            if (parts.length > 1 && parts[0].length < 2) {
-                // Remove the space if first part is less than 2 chars
-                currentValue = parts[0] + parts.slice(1).join('');
+            const filteredParts = [];
+            let canAddSpace = false;
+            
+            for (let i = 0; i <script parts.length; i++) {
+                if (i === 0) {
+                    // First part must have at least 2 characters
+                    if (parts[i].length >= 2) {
+                        filteredParts.push(parts[i]);
+                        canAddSpace = true;
+                    } else if (parts[i].length > 0) {
+                        // If first part is less than 2 chars, keep it but don't allow space after
+                        filteredParts.push(parts[i]);
+                        canAddSpace = false;
+                    }
+                } else {
+                    if (canAddSpace && parts[i].length > 0) {
+                        filteredParts.push(parts[i]);
+                    }
+                }
             }
+            
+            currentValue = filteredParts.join(' ');
         }
         
         // Capitalize the first letter of each word
@@ -4135,7 +4153,8 @@ function handleNameInput(input) {
         this.value = currentValue;
         
         // Restore cursor position (approximately)
-        this.setSelectionRange(cursorPos, cursorPos);
+        const newCursorPos = Math.min(cursorPos, currentValue.length);
+        this.setSelectionRange(newCursorPos, newCursorPos);
         
         // Validate and update styling
         if (this.value && !validateName({ value: this.value })) {
@@ -4161,13 +4180,28 @@ function handleNameInput(input) {
         // Process pasted text to ensure it meets our space requirements
         if (pastedText.includes(' ')) {
             const parts = pastedText.split(' ');
-            // Only keep spaces that follow at least 2 characters
-            pastedText = parts.reduce((acc, part, index) => {
-                if (index === 0 || (index > 0 && acc.replace(/\s/g, '').length >= 2)) {
-                    return acc + (index > 0 ? ' ' : '') + part;
+            const filteredParts = [];
+            let canAddSpace = false;
+            
+            for (let i = 0; i < parts.length; i++) {
+                if (i === 0) {
+                    // First part must have at least 2 characters
+                    if (parts[i].length >= 2) {
+                        filteredParts.push(parts[i]);
+                        canAddSpace = true;
+                    } else if (parts[i].length > 0) {
+                        // If first part is less than 2 chars, keep it but don't allow space after
+                        filteredParts.push(parts[i]);
+                        canAddSpace = false;
+                    }
+                } else {
+                    if (canAddSpace && parts[i].length > 0) {
+                        filteredParts.push(parts[i]);
+                    }
                 }
-                return acc + part;
-            }, '');
+            }
+            
+            pastedText = filteredParts.join(' ');
         }
         
         // Capitalize first letter of each word
@@ -4199,42 +4233,6 @@ function handleNameInput(input) {
         e.preventDefault();
     });
 }
-
-// Apply the validation when DOM is loaded
-document.addEventListener('DOMContentLoaded', function() {
-    // Profile name fields
-    const firstName = document.getElementById('firstName');
-    const lastName = document.getElementById('lastName');
-    const middleName = document.getElementById('middleName');
-    
-    if (firstName) handleNameInput(firstName);
-    if (lastName) handleNameInput(lastName);
-    if (middleName) handleNameInput(middleName);
-    
-    // Deceased name fields in modify booking modal
-    document.addEventListener('click', function(e) {
-        if (e.target.closest('.modify-booking')) {
-            // Wait for modal to open and fields to be available
-            setTimeout(() => {
-                const deceasedFname = document.querySelector('#modifyBookingForm input[name="deceased_fname"]');
-                const deceasedMidname = document.querySelector('#modifyBookingForm input[name="deceased_midname"]');
-                const deceasedLname = document.querySelector('#modifyBookingForm input[name="deceased_lname"]');
-                
-                if (deceasedFname) handleNameInput(deceasedFname);
-                if (deceasedMidname) handleNameInput(deceasedMidname);
-                if (deceasedLname) handleNameInput(deceasedLname);
-            }, 500);
-        }
-    });
-    
-    // Add CSS classes for validation states
-    const style = document.createElement('style');
-    style.textContent = `
-        .border-error { border-color: #ef4444 !important; }
-        .border-success { border-color: #10b981 !important; }
-    `;
-    document.head.appendChild(style);
-});
 </script>
 </body> 
 </html>
