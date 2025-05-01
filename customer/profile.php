@@ -291,22 +291,8 @@ header("Pragma: no-cache");
     height: auto;
     overflow-y: visible;
 }
-    /* Add this to your existing styles */
-    .tab-header {
-        padding: 1.5rem; /* p-6 equivalent to match left nav */
-        height: 72px; /* Match the height of left nav header */
-        display: flex;
-        align-items: center;
-    }
+
     
-    /* Adjust the specific tab headers */
-    #personal-info .bg-navy,
-    #bookings .bookings {
-        padding: 1.5rem !important;
-        height: 72px !important;
-        display: flex !important;
-        align-items: center !important;
-    }
     /* Add this to your existing styles */
     .modal-sticky-footer {
         position: sticky;
