@@ -104,7 +104,7 @@ try {
 
     // Bind parameters
     $stmt->bind_param(
-        'issssssssiidsssi',
+        'issssssssidssssi',
         $customerId,
         $deceasedFirstName,
         $deceasedMiddleName,
