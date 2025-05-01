@@ -127,7 +127,7 @@ $customersResult = mysqli_query($conn, $customersQuery);
 <div class="flex items-center gap-3 mb-4 lg:mb-0">
     <h3 class="text-lg font-bold text-sidebar-text whitespace-nowrap">Customer Accounts</h3>
     <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
-        <i class="fas fa-user-circle"></i>
+        
         <span id="totalCustomers"><?php echo $totalCustomers; ?></span>
     </span>
 </div>
@@ -1459,7 +1459,7 @@ if ($result->num_rows > 0) {
                   <i class="fas fa-edit"></i>
                 </button>
                 <button class="p-1.5 bg-red-100 text-red-600 rounded hover:bg-red-200 transition-all" onclick="deleteEmployeeAccount(' . $row['id'] . ')">
-                  <i class="fas fa-trash"></i>
+                  <i class="fas fa-archive text-red"></i>
                 </button>
               </div>
             </td>
@@ -1489,11 +1489,11 @@ if ($result->num_rows > 0) {
         <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
             <!-- Title and Counter -->
             <!-- In account_management.php, find the Employee Accounts section header -->
-<div class="flex items-center gap-3 mb-4 lg:mb-0">
+            <div class="flex items-center gap-3 mb-4 lg:mb-0">
     <h3 class="text-lg font-bold text-sidebar-text whitespace-nowrap">Employee Accounts</h3>
     <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
-        <i class="fas fa-user-circle"></i>
-        <span id="totalEmployees"><?php echo $totalEmployees; ?></span>
+        
+        <span id="totalEmployees"><?php echo $totalRows; ?></span>
     </span>
 </div>
             
@@ -2267,12 +2267,15 @@ document.addEventListener('DOMContentLoaded', function() {
         xhr.open('GET', url, true);
         
         xhr.onload = function() {
-            if (xhr.status === 200) {
-                // Parse the JSON response
-                const response = JSON.parse(xhr.responseText);
-                
-                // Update table body
-                employeeTableBody.innerHTML = response.tableContent;
+        if (xhr.status === 200) {
+            // Parse the JSON response
+            const response = JSON.parse(xhr.responseText);
+            
+            // Update table body
+            employeeTableBody.innerHTML = response.tableContent;
+
+            // Update total employees count
+            document.getElementById('totalEmployees').textContent = response.totalCount;
 
                 
                 
