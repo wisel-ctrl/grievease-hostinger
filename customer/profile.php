@@ -302,7 +302,7 @@ header("Pragma: no-cache");
     
     /* Adjust the specific tab headers */
     #personal-info .bg-navy,
-    #bookings .bg-navy {
+    #bookings .bookings {
         padding: 1.5rem !important;
         height: 72px !important;
         display: flex !important;
@@ -1093,7 +1093,7 @@ document.addEventListener('DOMContentLoaded', function() {
 <div id="bookings" class="tab-content">
     <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
         <!-- Header with enhanced styling -->
-        <div class=".bookings bg-navy p-6 border-b border-gray-100 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 tab-header">
+        <div class="bookings bg-navy p-6 border-b border-gray-100 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 tab-header">
             <h3 class="font-hedvig text-xl sm:text-2xl text-white font-semibold">My Bookings</h3>
         </div>
         
