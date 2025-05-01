@@ -1242,6 +1242,74 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+// Lifeplan Holder Street Address Validation
+function validateLifeplanHolderStreet(input) {
+    // Remove any leading spaces
+    let value = input.value.replace(/^\s+/, '');
+    
+    // Remove multiple consecutive spaces
+    value = value.replace(/\s{2,}/g, ' ');
+    
+    // Capitalize first letter of the string if it exists
+    if (value.length > 0) {
+        value = value.charAt(0).toUpperCase() + value.slice(1);
+    }
+    
+    // Update the input value
+    input.value = value;
+}
+
+// Lifeplan Reference Number Validation (numbers only, no letters or spaces)
+function validateLifeplanReferenceNumber(input) {
+    // Remove any letters, spaces, or unwanted characters
+    let value = input.value.replace(/[a-zA-Z\s]/g, '');
+    
+    // Update the input value
+    input.value = value;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Lifeplan Holder Street field
+    const lifeplanHolderStreetInput = document.getElementById('lifeplanHolderStreet');
+    if (lifeplanHolderStreetInput) {
+        lifeplanHolderStreetInput.addEventListener('input', function() {
+            validateLifeplanHolderStreet(this);
+        });
+        
+        lifeplanHolderStreetInput.addEventListener('blur', function() {
+            validateLifeplanHolderStreet(this);
+        });
+        
+        // Prevent pasting text that starts with space
+        lifeplanHolderStreetInput.addEventListener('paste', function(e) {
+            e.preventDefault();
+            const pastedText = (e.clipboardData || window.clipboardData).getData('text');
+            let cleanedText = pastedText.replace(/^\s+/, ''); // Remove leading spaces
+            cleanedText = cleanedText.replace(/\s{2,}/g, ' '); // Remove multiple spaces
+            document.execCommand('insertText', false, cleanedText);
+        });
+    }
+
+    // Lifeplan Reference Number field
+    const lifeplanReferenceNumberInput = document.getElementById('lifeplanReferenceNumber');
+    if (lifeplanReferenceNumberInput) {
+        lifeplanReferenceNumberInput.addEventListener('input', function() {
+            validateLifeplanReferenceNumber(this);
+        });
+        
+        lifeplanReferenceNumberInput.addEventListener('blur', function() {
+            validateLifeplanReferenceNumber(this);
+        });
+        
+        lifeplanReferenceNumberInput.addEventListener('paste', function(e) {
+            e.preventDefault();
+            const pastedText = (e.clipboardData || window.clipboardData).getData('text');
+            const cleanedText = pastedText.replace(/[a-zA-Z\s]/g, ''); // Remove letters and spaces
+            document.execCommand('insertText', false, cleanedText);
+        });
+    }
+});
 </script>
 
 <script>
@@ -1893,7 +1961,7 @@ function removeGcash() {
                         </div>
                         
                         <div class="mb-3">
-                            <label for="lifeplanReferenceNumber" class="block text-sm font-medium text-navy mb-1">GCash Reference Number *</label>
+                            <label for="lifeplanReferenceNumber" class="block text-sm font-medium text-navy mb-1">Reference Number *</label>
                             <input type="text" id="lifeplanReferenceNumber" name="referenceNumber" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" placeholder="e.g. 1234567890">
                         </div>
                     </div>
