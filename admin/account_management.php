@@ -1921,14 +1921,24 @@ if ($result->num_rows > 0) {
 </div>
 
 <!--OPEN EDIT CUSTOMER/EMPLOYEE ACCOUNT-->
+<!--OPEN EDIT CUSTOMER/EMPLOYEE ACCOUNT-->
 <script>
-    
-    function openEditCustomerAccountModal(userId) {
+// Global variables for OTP verification
+let otpVerificationModal = null;
+let isVerificationInProgress = false;
+let originalEmail = '';
+let originalPhone = '';
+
+function openEditCustomerAccountModal(userId) {
     // Fetch user details
     fetch(`editAccount/fetch_customer_details.php?user_id=${userId}`)
         .then(response => response.json())
         .then(data => {
             if (data.success) {
+                // Store original email and phone for comparison
+                originalEmail = data.user.email || '';
+                originalPhone = data.user.phone_number || '';
+                
                 // Create and show the modal
                 let branchOptions = data.branches.map(branch => {
                     const branchName = branch.branch_name
@@ -2025,6 +2035,7 @@ if ($result->num_rows > 0) {
                                                required>
                                     </div>
                                     <p id="emailError" class="text-red-500 text-xs mt-1 hidden"></p>
+                                    <p id="emailExistsError" class="text-red-500 text-xs mt-1 hidden"></p>
                                 </div>
                                 
                                 <div>
@@ -2040,6 +2051,7 @@ if ($result->num_rows > 0) {
                                                required>
                                     </div>
                                     <p id="phoneError" class="text-red-500 text-xs mt-1 hidden"></p>
+                                    <p id="phoneExistsError" class="text-red-500 text-xs mt-1 hidden"></p>
                                 </div>
                                 
                                 <div>
@@ -2074,6 +2086,9 @@ if ($result->num_rows > 0) {
                 // Add validation event listeners
                 setupEditFormValidations();
                 
+                // Add real-time validation for email and phone
+                setupRealTimeValidation();
+                
                 // Add event listener for Escape key
                 document.addEventListener('keydown', function(e) {
                     if (e.key === 'Escape') {
@@ -2087,6 +2102,219 @@ if ($result->num_rows > 0) {
         .catch(error => {
             console.error('Error:', error);
             alert('An error occurred while fetching customer details');
+        });
+}
+
+function setupRealTimeValidation() {
+    const emailField = document.getElementById('editEmail');
+    const phoneField = document.getElementById('editPhone');
+    
+    // Email validation
+    if (emailField) {
+        let emailTimeout;
+        emailField.addEventListener('input', function() {
+            clearTimeout(emailTimeout);
+            const email = this.value.trim();
+            
+            // Basic format validation
+            if (!email.includes('@')) {
+                document.getElementById('emailError').textContent = 'Please enter a valid email address';
+                document.getElementById('emailError').classList.remove('hidden');
+                return;
+            } else {
+                document.getElementById('emailError').classList.add('hidden');
+            }
+            
+            // Check if email changed from original
+            if (email && email !== originalEmail) {
+                emailTimeout = setTimeout(() => {
+                    checkEmailExists(email, 'emailExistsError');
+                }, 500); // Debounce 500ms
+            } else {
+                document.getElementById('emailExistsError').classList.add('hidden');
+            }
+        });
+    }
+    
+    // Phone validation
+    if (phoneField) {
+        let phoneTimeout;
+        phoneField.addEventListener('input', function() {
+            clearTimeout(phoneTimeout);
+            const phone = this.value.trim();
+            
+            // Basic format validation
+            if (!phone.startsWith('09') || phone.length !== 11) {
+                document.getElementById('phoneError').textContent = 'Philippine number must start with 09 and be 11 digits';
+                document.getElementById('phoneError').classList.remove('hidden');
+                return;
+            } else {
+                document.getElementById('phoneError').classList.add('hidden');
+            }
+            
+            // Check if phone changed from original
+            if (phone && phone !== originalPhone) {
+                phoneTimeout = setTimeout(() => {
+                    checkPhoneExists(phone, 'phoneExistsError');
+                }, 500); // Debounce 500ms
+            } else {
+                document.getElementById('phoneExistsError').classList.add('hidden');
+            }
+        });
+    }
+}
+
+function setupEmployeeRealTimeValidation() {
+    const emailField = document.getElementById('editEmpEmail');
+    const phoneField = document.getElementById('editEmpPhone');
+    
+    // Email validation
+    if (emailField) {
+        let emailTimeout;
+        emailField.addEventListener('input', function() {
+            clearTimeout(emailTimeout);
+            const email = this.value.trim();
+            
+            // Basic format validation
+            if (!email.includes('@')) {
+                document.getElementById('empEmailError').textContent = 'Please enter a valid email address';
+                document.getElementById('empEmailError').classList.remove('hidden');
+                return;
+            } else {
+                document.getElementById('empEmailError').classList.add('hidden');
+            }
+            
+            // Check if email changed from original
+            if (email && email !== originalEmail) {
+                emailTimeout = setTimeout(() => {
+                    checkEmailExists(email, 'empEmailExistsError');
+                }, 500); // Debounce 500ms
+            } else {
+                document.getElementById('empEmailExistsError').classList.add('hidden');
+            }
+        });
+    }
+    
+    // Phone validation
+    if (phoneField) {
+        let phoneTimeout;
+        phoneField.addEventListener('input', function() {
+            clearTimeout(phoneTimeout);
+            const phone = this.value.trim();
+            
+            // Basic format validation
+            if (!phone.startsWith('09') || phone.length !== 11) {
+                document.getElementById('empPhoneError').textContent = 'Philippine number must start with 09 and be 11 digits';
+                document.getElementById('empPhoneError').classList.remove('hidden');
+                return;
+            } else {
+                document.getElementById('empPhoneError').classList.add('hidden');
+            }
+            
+            // Check if phone changed from original
+            if (phone && phone !== originalPhone) {
+                phoneTimeout = setTimeout(() => {
+                    checkPhoneExists(phone, 'empPhoneExistsError');
+                }, 500); // Debounce 500ms
+            } else {
+                document.getElementById('empPhoneExistsError').classList.add('hidden');
+            }
+        });
+    }
+}
+
+function checkEmailExists(email, errorElementId) {
+    if (!email) return;
+    
+    fetch('../employee/accountManagement/check_email.php?email=' + encodeURIComponent(email))
+        .then(response => response.json())
+        .then(data => {
+            const errorElement = document.getElementById(errorElementId);
+            if (data.exists) {
+                errorElement.textContent = 'Email already exists in our system';
+                errorElement.classList.remove('hidden');
+            } else {
+                errorElement.classList.add('hidden');
+            }
+        })
+        .catch(error => {
+            console.error('Error checking email:', error);
+        });
+}
+
+function checkPhoneExists(phone, errorElementId) {
+    if (!phone) return;
+    
+    fetch('../employee/accountManagement/check_phone.php?phone=' + encodeURIComponent(phone))
+        .then(response => response.json())
+        .then(data => {
+            const errorElement = document.getElementById(errorElementId);
+            if (data.exists) {
+                errorElement.textContent = 'Phone number already exists in our system';
+                errorElement.classList.remove('hidden');
+            } else {
+                errorElement.classList.add('hidden');
+            }
+        })
+        .catch(error => {
+            console.error('Error checking phone:', error);
+        });
+}
+
+function checkPhoneExists(phone, errorElementId) {
+    if (!phone) return;
+    
+    fetch('../employee/accountManagement/check_phone.php?phone=' + encodeURIComponent(phone))
+        .then(response => response.json())
+        .then(data => {
+            const errorElement = document.getElementById(errorElementId);
+            if (data.exists) {
+                errorElement.textContent = 'Phone number already exists in our system';
+                errorElement.classList.remove('hidden');
+            } else {
+                errorElement.classList.add('hidden');
+            }
+        })
+        .catch(error => {
+            console.error('Error checking phone:', error);
+        });
+}
+
+function checkEmailExists(email, errorElementId) {
+    if (!email) return;
+    
+    fetch('../employee/accountManagement/check_email.php?email=' + encodeURIComponent(email))
+        .then(response => response.json())
+        .then(data => {
+            const errorElement = document.getElementById(errorElementId);
+            if (data.exists) {
+                errorElement.textContent = 'Email already exists';
+                errorElement.classList.remove('hidden');
+            } else {
+                errorElement.classList.add('hidden');
+            }
+        })
+        .catch(error => {
+            console.error('Error checking email:', error);
+        });
+}
+
+function checkPhoneExists(phone, errorElementId) {
+    if (!phone) return;
+    
+    fetch('../employee/accountManagement/check_phone.php?phone=' + encodeURIComponent(phone))
+        .then(response => response.json())
+        .then(data => {
+            const errorElement = document.getElementById(errorElementId);
+            if (data.exists) {
+                errorElement.textContent = 'Phone number already exists';
+                errorElement.classList.remove('hidden');
+            } else {
+                errorElement.classList.add('hidden');
+            }
+        })
+        .catch(error => {
+            console.error('Error checking phone:', error);
         });
 }
 
@@ -2192,6 +2420,8 @@ function validateAndSaveCustomerChanges() {
         document.getElementById('emailError').textContent = 'Please enter a valid email address';
         document.getElementById('emailError').classList.remove('hidden');
         isValid = false;
+    } else if (document.getElementById('emailExistsError') && !document.getElementById('emailExistsError').classList.contains('hidden')) {
+        isValid = false;
     } else {
         document.getElementById('emailError').classList.add('hidden');
     }
@@ -2200,14 +2430,23 @@ function validateAndSaveCustomerChanges() {
         document.getElementById('phoneError').textContent = 'Philippine number must start with 09 and be 11 digits';
         document.getElementById('phoneError').classList.remove('hidden');
         isValid = false;
+    } else if (document.getElementById('phoneExistsError') && !document.getElementById('phoneExistsError').classList.contains('hidden')) {
+        isValid = false;
     } else {
         document.getElementById('phoneError').classList.add('hidden');
     }
     
     if (isValid) {
-        saveCustomerChanges();
+        // Check if email has changed and needs verification
+        const currentEmail = email.value.trim();
+        if (currentEmail !== originalEmail) {
+            showOtpVerificationModal('customer');
+        } else {
+            saveCustomerChanges();
+        }
     }
 }
+
 function closeEditCustomerModal() {
     const modal = document.getElementById('editCustomerModal');
     if (modal) {
@@ -2236,11 +2475,8 @@ function saveCustomerChanges() {
     })
     .catch(error => {
         console.error('Error:', error);
-        
     });
 }
-
-
 
 //edit employee Accounts
 function openEditEmployeeAccountModal(userId) {
@@ -2249,6 +2485,10 @@ function openEditEmployeeAccountModal(userId) {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
+                // Store original email and phone for comparison
+                originalEmail = data.user.email || '';
+                originalPhone = data.user.phone_number || '';
+                
                 // Generate branch options
                 let branchOptions = data.branches.map(branch => {
                     const branchName = branch.branch_name
@@ -2346,6 +2586,7 @@ function openEditEmployeeAccountModal(userId) {
                                                required>
                                     </div>
                                     <p id="empEmailError" class="text-red-500 text-xs mt-1 hidden"></p>
+                                    <p id="empEmailExistsError" class="text-red-500 text-xs mt-1 hidden"></p>
                                 </div>
                                 
                                 <div>
@@ -2361,6 +2602,7 @@ function openEditEmployeeAccountModal(userId) {
                                                required>
                                     </div>
                                     <p id="empPhoneError" class="text-red-500 text-xs mt-1 hidden"></p>
+                                    <p id="empPhoneExistsError" class="text-red-500 text-xs mt-1 hidden"></p>
                                 </div>
                                 
                                 <div>
@@ -2395,6 +2637,9 @@ function openEditEmployeeAccountModal(userId) {
                 // Setup validation event listeners
                 setupEditEmployeeValidations();
                 
+                // Add real-time validation for email and phone
+                setupEmployeeRealTimeValidation();
+                
                 // Add event listener for Escape key
                 document.addEventListener('keydown', function(e) {
                     if (e.key === 'Escape') {
@@ -2409,6 +2654,33 @@ function openEditEmployeeAccountModal(userId) {
             console.error('Error:', error);
             alert('An error occurred while fetching employee details');
         });
+}
+
+function setupEmployeeRealTimeValidation() {
+    const emailField = document.getElementById('editEmpEmail');
+    const phoneField = document.getElementById('editEmpPhone');
+    
+    if (emailField) {
+        emailField.addEventListener('blur', function() {
+            const email = this.value.trim();
+            if (email && email !== originalEmail) {
+                checkEmailExists(email, 'empEmailExistsError');
+            } else {
+                document.getElementById('empEmailExistsError').classList.add('hidden');
+            }
+        });
+    }
+    
+    if (phoneField) {
+        phoneField.addEventListener('blur', function() {
+            const phone = this.value.trim();
+            if (phone && phone !== originalPhone) {
+                checkPhoneExists(phone, 'empPhoneExistsError');
+            } else {
+                document.getElementById('empPhoneExistsError').classList.add('hidden');
+            }
+        });
+    }
 }
 
 function setupEditEmployeeValidations() {
@@ -2513,6 +2785,8 @@ function validateAndSaveEmployeeChanges() {
         document.getElementById('empEmailError').textContent = 'Please enter a valid email address';
         document.getElementById('empEmailError').classList.remove('hidden');
         isValid = false;
+    } else if (document.getElementById('empEmailExistsError') && !document.getElementById('empEmailExistsError').classList.contains('hidden')) {
+        isValid = false;
     } else {
         document.getElementById('empEmailError').classList.add('hidden');
     }
@@ -2521,12 +2795,20 @@ function validateAndSaveEmployeeChanges() {
         document.getElementById('empPhoneError').textContent = 'Philippine number must start with 09 and be 11 digits';
         document.getElementById('empPhoneError').classList.remove('hidden');
         isValid = false;
+    } else if (document.getElementById('empPhoneExistsError') && !document.getElementById('empPhoneExistsError').classList.contains('hidden')) {
+        isValid = false;
     } else {
         document.getElementById('empPhoneError').classList.add('hidden');
     }
     
     if (isValid) {
-        saveEmployeeChanges();
+        // Check if email has changed and needs verification
+        const currentEmail = email.value.trim();
+        if (currentEmail !== originalEmail) {
+            showOtpVerificationModal('employee');
+        } else {
+            saveEmployeeChanges();
+        }
     }
 }
 
@@ -2558,9 +2840,179 @@ function saveEmployeeChanges() {
     })
     .catch(error => {
         console.error('Error:', error);
-       
     });
 }
+
+// OTP Verification Modal Functions
+function showOtpVerificationModal(accountType) {
+    if (isVerificationInProgress) return;
+    isVerificationInProgress = true;
+    
+    const emailField = accountType === 'customer' ? document.getElementById('editEmail') : document.getElementById('editEmpEmail');
+    const email = emailField.value.trim();
+    
+    // Create OTP verification modal with higher z-index
+    otpVerificationModal = document.createElement('div');
+    otpVerificationModal.id = 'otpVerificationModal';
+    otpVerificationModal.className = 'fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto';
+    otpVerificationModal.innerHTML = `
+        <!-- Modal Backdrop - darker and higher z-index -->
+        <div class="fixed inset-0 bg-black bg-opacity-70 backdrop-blur-md z-[101]"></div>
+        
+        <!-- Modal Content - highest z-index -->
+        <div class="relative bg-white rounded-xl shadow-card w-full max-w-md mx-4 sm:mx-auto z-[102] transform transition-all duration-300">
+            <!-- Close Button -->
+            <button type="button" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 transition-colors" onclick="closeOtpVerificationModal()">
+                <i class="fas fa-times"></i>
+            </button>
+            
+            <!-- Modal Header -->
+            <div class="px-4 sm:px-6 py-4 sm:py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
+                <h3 class="text-lg sm:text-xl font-bold text-white flex items-center">
+                    Verify Email Address
+                </h3>
+            </div>
+            
+            <!-- Modal Body -->
+            <div class="px-4 sm:px-6 py-4 sm:py-5">
+                <p class="text-sm text-gray-600 mb-4">We've sent a 6-digit verification code to <span class="font-semibold">${email}</span>. Please enter it below:</p>
+                
+                <form id="otpVerificationForm" class="space-y-4">
+                    <div class="flex justify-center gap-2">
+                        <input type="text" maxlength="1" class="w-12 h-12 text-center text-2xl border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200 otp-input" pattern="\d" required>
+                        <input type="text" maxlength="1" class="w-12 h-12 text-center text-2xl border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200 otp-input" pattern="\d" required>
+                        <input type="text" maxlength="1" class="w-12 h-12 text-center text-2xl border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200 otp-input" pattern="\d" required>
+                        <input type="text" maxlength="1" class="w-12 h-12 text-center text-2xl border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200 otp-input" pattern="\d" required>
+                        <input type="text" maxlength="1" class="w-12 h-12 text-center text-2xl border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200 otp-input" pattern="\d" required>
+                        <input type="text" maxlength="1" class="w-12 h-12 text-center text-2xl border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200 otp-input" pattern="\d" required>
+                    </div>
+                    
+                    <p id="otpError" class="text-red-500 text-sm text-center hidden"></p>
+                    
+                    <div class="text-center">
+                        <button type="button" class="text-sm text-sidebar-accent hover:underline" onclick="resendOtp('${accountType}')">
+                            Didn't receive code? Resend
+                        </button>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Modal Footer -->
+            <div class="px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row sm:justify-end gap-2 sm:gap-4 border-t border-gray-200">
+                <button type="button" class="w-full sm:w-auto px-4 sm:px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200" onclick="closeOtpVerificationModal()">
+                    Cancel
+                </button>
+                <button type="button" class="w-full sm:w-auto px-5 sm:px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300" onclick="verifyOtp('${accountType}')">
+                    Verify
+                </button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(otpVerificationModal);
+    
+    // Setup OTP input fields behavior
+    const otpInputs = document.querySelectorAll('.otp-input');
+    otpInputs.forEach((input, index) => {
+        // Allow only numbers
+        input.addEventListener('input', function() {
+            this.value = this.value.replace(/\D/g, '');
+            
+            // Auto-focus next input
+            if (this.value.length === 1 && index < otpInputs.length - 1) {
+                otpInputs[index + 1].focus();
+            }
+        });
+        
+        // Handle backspace
+        input.addEventListener('keydown', function(e) {
+            if (e.key === 'Backspace' && this.value.length === 0 && index > 0) {
+                otpInputs[index - 1].focus();
+            }
+        });
+    });
+    
+    // Focus first input
+    if (otpInputs.length > 0) {
+        otpInputs[0].focus();
+    }
+    
+    // Send OTP immediately when modal opens
+    sendOtp(email, accountType);
+}
+
+function closeOtpVerificationModal() {
+    if (otpVerificationModal) {
+        otpVerificationModal.remove();
+        otpVerificationModal = null;
+    }
+    isVerificationInProgress = false;
+}
+
+function sendOtp(email, accountType) {
+    fetch('editAccount/send_otp.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `email=${encodeURIComponent(email)}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (!data.success) {
+            document.getElementById('otpError').textContent = data.message || 'Failed to send OTP';
+            document.getElementById('otpError').classList.remove('hidden');
+        } else {
+            document.getElementById('otpError').classList.add('hidden');
+        }
+    })
+    .catch(error => {
+        console.error('Error sending OTP:', error);
+        document.getElementById('otpError').textContent = 'Failed to send OTP. Please try again.';
+        document.getElementById('otpError').classList.remove('hidden');
+    });
+}
+
+function verifyOtp(accountType) {
+    const otpInputs = document.querySelectorAll('.otp-input');
+    const otp = Array.from(otpInputs).map(input => input.value).join('');
+    
+    if (otp.length !== 6) {
+        document.getElementById('otpError').textContent = 'Please enter the complete 6-digit code';
+        document.getElementById('otpError').classList.remove('hidden');
+        return;
+    }
+    
+    fetch('editAccount/verify_otp.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `otp=${encodeURIComponent(otp)}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            closeOtpVerificationModal();
+            
+            // Proceed with saving changes
+            if (accountType === 'customer') {
+                saveCustomerChanges();
+            } else {
+                saveEmployeeChanges();
+            }
+        } else {
+            document.getElementById('otpError').textContent = data.message || 'Invalid verification code';
+            document.getElementById('otpError').classList.remove('hidden');
+        }
+    })
+    .catch(error => {
+        console.error('Error verifying OTP:', error);
+        document.getElementById('otpError').textContent = 'Error verifying code. Please try again.';
+        document.getElementById('otpError').classList.remove('hidden');
+    });
+}
+// The rest of your existing functions remain unchanged...
 </script>
 
 <script>
