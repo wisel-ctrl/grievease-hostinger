@@ -976,7 +976,7 @@ document.getElementById('addInventoryForm').addEventListener('submit', function(
           <label for="editItemId" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
             Item ID
           </label>
-          <input type="text" id="editItemId" name="editItemId" value="<?php echo $item_id; ?>" class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100 cursor-not-allowed" readonly>
+          <input type="text" id="editItemId" name="editItemId" class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100 cursor-not-allowed" readonly>
         </div>
 
         <div>
@@ -984,22 +984,21 @@ document.getElementById('addInventoryForm').addEventListener('submit', function(
             Item Name <span class="text-red-500">*</span>
           </label>
           <div class="relative">
-            <input type="text" id="editItemName" name="editItemName" value="<?php echo $item_name; ?>" required 
+            <input type="text" id="editItemName" name="editItemName" required 
                    class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
                    placeholder="Item Name"
-                   oninput="validateItemName(this)"
-                   onkeydown="preventConsecutiveSpaces(event)">
+                   oninput="validateEditItemName(this)">
+            <div id="editItemNameError" class="text-red-500 text-xs mt-1 hidden">Item name cannot start with space or have consecutive spaces</div>
           </div>
-          <p class="text-xs text-red-500 mt-1 hidden" id="editItemNameError">Invalid item name format</p>
         </div>
 
         <!-- Category Dropdown -->
         <div>
-          <label for="category" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+          <label for="editCategory" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
             Category <span class="text-red-500">*</span>
           </label>
           <div class="relative">
-            <select id="category" name="category" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+            <select id="editCategory" name="editCategory" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
               <option value="" disabled>Select a Category</option>
               <?php
               // Fetch categories again
@@ -1008,8 +1007,7 @@ document.getElementById('addInventoryForm').addEventListener('submit', function(
               $result = $conn->query($sql);
               if ($result->num_rows > 0) {
                   while ($row = $result->fetch_assoc()) {
-                      $selected = ($row['category_id'] == $category_id) ? 'selected' : '';
-                      echo '<option value="' . $row['category_id'] . '" ' . $selected . '>' . htmlspecialchars($row['category_name']) . '</option>';
+                      echo '<option value="' . $row['category_id'] . '">' . htmlspecialchars($row['category_name']) . '</option>';
                   }
               } else {
                   echo '<option value="" disabled>No Categories Available</option>';
@@ -1024,12 +1022,12 @@ document.getElementById('addInventoryForm').addEventListener('submit', function(
             Quantity <span class="text-red-500">*</span>
           </label>
           <div class="relative">
-            <input type="number" id="editQuantity" name="editQuantity" value="<?php echo $quantity; ?>" min="1" required 
+            <input type="number" id="editQuantity" name="editQuantity" min="1" required 
                    class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
                    placeholder="Quantity"
-                   oninput="validateQuantity(this)">
+                   oninput="validateEditQuantity(this)">
+            <div id="editQuantityError" class="text-red-500 text-xs mt-1 hidden">Quantity cannot be negative</div>
           </div>
-          <p class="text-xs text-red-500 mt-1 hidden" id="editQuantityError">Quantity must be at least 1</p>
         </div>
 
         <div>
@@ -1040,35 +1038,43 @@ document.getElementById('addInventoryForm').addEventListener('submit', function(
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <span class="text-gray-500">₱</span>
             </div>
-            <input type="text" id="editUnitPrice" name="editUnitPrice" value="<?php echo number_format($unit_price, 2); ?>" required 
+            <input type="text" id="editUnitPrice" name="editUnitPrice" required 
                    class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
                    placeholder="0.00"
-                   oninput="validateUnitPrice(this)"
-                   onkeydown="preventInvalidPriceInput(event)">
+                   oninput="validateEditUnitPrice(this)">
+            <div id="editUnitPriceError" class="text-red-500 text-xs mt-1 hidden">Only numbers and a single decimal point are allowed</div>
           </div>
-          <p class="text-xs text-red-500 mt-1 hidden" id="editUnitPriceError">Invalid price format (only numbers and one decimal point allowed)</p>
         </div>
 
         <!-- Current Image Preview -->
-        <div class="bg-navy p-3 sm:p-4 rounded-lg">
-          <div class="flex flex-col items-center space-y-2 sm:space-y-3">
-            <div class="w-full h-32 bg-center bg-cover rounded-lg shadow-md" style="background-image: url('<?php echo $inventory_img; ?>');"></div>
-            <span class="text-xs sm:text-sm text-gray-600">Current Image</span>
+        <div class="bg-gray-50 p-3 sm:p-4 rounded-lg border border-gray-200">
+          <label class="block text-xs font-medium text-gray-700 mb-2">Current Image</label>
+          <div id="currentImagePreview" class="w-full h-48 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden mb-2">
+            <img src="" alt="Current Item Image" class="max-w-full max-h-full object-contain">
           </div>
         </div>
 
-        <!-- File Upload -->
-        <div class="bg-gray-50 p-3 sm:p-4 rounded-lg">
-          <label for="editItemImage" class="block text-xs font-medium text-gray-700 mb-2 sm:mb-3 flex items-center">Upload New Image</label>
+        <!-- New Image Preview -->
+        <div class="bg-gray-50 p-3 sm:p-4 rounded-lg border border-gray-200">
+          <label for="editItemImage" class="block text-xs font-medium text-gray-700 mb-2">Upload New Image</label>
+          <div id="newImagePreviewContainer" class="hidden mb-3">
+            <div class="w-full h-48 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden mb-2">
+              <img id="newImagePreview" src="#" alt="New Image Preview" class="max-w-full max-h-full object-contain">
+            </div>
+            <span class="text-xs text-gray-500">New Image Preview</span>
+          </div>
           <div class="relative">
-            <input type="file" id="editItemImage" name="editItemImage" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20">
-            <div class="w-full px-3 py-2 border border-dashed border-gray-300 rounded-lg bg-gray-50 text-gray-500 text-xs sm:text-sm flex items-center justify-center">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 text-sidebar-accent">
+            <input type="file" id="editItemImage" name="editItemImage" accept="image/*" 
+                   class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20"
+                   onchange="previewEditImage(this)">
+            <div class="w-full px-3 py-8 border border-dashed border-gray-300 rounded-lg bg-gray-50 text-gray-500 text-center text-xs sm:text-sm flex flex-col items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-8 h-8 mb-2 text-sidebar-accent">
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                 <polyline points="17 8 12 3 7 8"></polyline>
                 <line x1="12" y1="3" x2="12" y2="15"></line>
               </svg>
-              Choose file or drag here
+              <span>Click to upload or drag and drop</span>
+              <span class="text-xs text-gray-400 mt-1">PNG, JPG, JPEG (Max 5MB)</span>
             </div>
           </div>
         </div>
@@ -1093,120 +1099,158 @@ document.getElementById('addInventoryForm').addEventListener('submit', function(
 </div>
 
 <script>
-// Item Name Validation
-function validateItemName(input) {
+// Edit Item Name Validation
+function validateEditItemName(input) {
   const errorElement = document.getElementById('editItemNameError');
+  let value = input.value;
+  
+  // Check if first character is space
+  if (value.length > 0 && value.charAt(0) === ' ') {
+    errorElement.classList.remove('hidden');
+    input.value = value.trim();
+    return;
+  }
+  
+  // Check for consecutive spaces
+  if (value.includes('  ')) {
+    errorElement.classList.remove('hidden');
+    input.value = value.replace(/\s+/g, ' ');
+    return;
+  }
+  
+  errorElement.classList.add('hidden');
   
   // Auto-capitalize first letter
-  if (input.value.length === 1) {
-    input.value = input.value.charAt(0).toUpperCase() + input.value.slice(1);
-  }
-  
-  // Check for valid format (allows spaces but not as first character)
-  if (input.value.trim() === '') {
-    errorElement.textContent = 'Item name cannot be empty';
-    errorElement.classList.remove('hidden');
-    return false;
-  }
-  
-  errorElement.classList.add('hidden');
-  return true;
-}
-
-// Prevent consecutive spaces in item name
-function preventConsecutiveSpaces(event) {
-  if (event.target.id === 'editItemName') {
-    if (event.key === ' ' && event.target.value.slice(-1) === ' ') {
-      event.preventDefault();
-    }
+  if (value.length === 1) {
+    input.value = value.charAt(0).toUpperCase() + value.slice(1);
   }
 }
 
-// Quantity Validation
-function validateQuantity(input) {
+// Edit Quantity Validation
+function validateEditQuantity(input) {
   const errorElement = document.getElementById('editQuantityError');
   
-  if (input.value < 1) {
+  if (input.value < 0) {
     errorElement.classList.remove('hidden');
-    input.value = 1;
-    return false;
+    input.value = '';
+  } else {
+    errorElement.classList.add('hidden');
   }
-  
-  errorElement.classList.add('hidden');
-  return true;
 }
 
-// Unit Price Validation
-function validateUnitPrice(input) {
+// Edit Unit Price Validation
+function validateEditUnitPrice(input) {
   const errorElement = document.getElementById('editUnitPriceError');
-  // Remove any non-digit characters except decimal point
-  let value = input.value.replace(/[^\d.]/g, '');
+  let value = input.value;
   
-  // Ensure only one decimal point
-  const decimalParts = value.split('.');
-  if (decimalParts.length > 2) {
-    value = decimalParts[0] + '.' + decimalParts.slice(1).join('');
+  // Remove any non-digit or non-dot characters
+  let newValue = value.replace(/[^0-9.]/g, '');
+  
+  // Remove multiple dots, keeping only the first one
+  const dotCount = newValue.split('.').length - 1;
+  if (dotCount > 1) {
+    const parts = newValue.split('.');
+    newValue = parts[0] + '.' + parts.slice(1).join('');
   }
   
-  // Format to 2 decimal places
-  if (value.includes('.')) {
-    const parts = value.split('.');
-    if (parts[1].length > 2) {
-      value = parts[0] + '.' + parts[1].substring(0, 2);
-    }
+  // Check if first character is dot
+  if (newValue.charAt(0) === '.') {
+    newValue = '0' + newValue;
   }
   
-  input.value = value;
+  // Update the input value
+  input.value = newValue;
   
-  if (isNaN(parseFloat(value))) {  // Fixed: Added missing closing parenthesis
+  // Show error if original value had invalid characters
+  if (value !== newValue) {
     errorElement.classList.remove('hidden');
-    return false;
+  } else {
+    errorElement.classList.add('hidden');
   }
-  
-  errorElement.classList.add('hidden');
-  return true;
 }
 
-// Prevent invalid characters in price input
-function preventInvalidPriceInput(event) {
-  if (event.target.id === 'editUnitPrice') {
-    // Allow: backspace, delete, tab, escape, enter, numbers, decimal point
-    if ([46, 8, 9, 27, 13, 110, 190].includes(event.keyCode) ||
-        // Allow: Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
-        (event.keyCode === 65 && event.ctrlKey === true) ||
-        (event.keyCode === 67 && event.ctrlKey === true) ||
-        (event.keyCode === 86 && event.ctrlKey === true) ||
-        (event.keyCode === 88 && event.ctrlKey === true) ||
-        // Allow: home, end, left, right
-        (event.keyCode >= 35 && event.keyCode <= 39)) {
-          return;
+// Edit Image Preview Functionality
+function previewEditImage(input) {
+  const previewContainer = document.getElementById('newImagePreviewContainer');
+  const preview = document.getElementById('newImagePreview');
+  
+  if (input.files && input.files[0]) {
+    // Check file size (max 5MB)
+    if (input.files[0].size > 5 * 1024 * 1024) {
+      alert('File size exceeds 5MB limit');
+      input.value = '';
+      return;
     }
     
-    // Prevent if not a number or decimal point
-    if ((event.keyCode < 48 || event.keyCode > 57) && (event.keyCode < 96 || event.keyCode > 105) && event.keyCode !== 190) {
-      event.preventDefault();
+    const reader = new FileReader();
+    
+    reader.onload = function(e) {
+      preview.src = e.target.result;
+      previewContainer.classList.remove('hidden');
     }
+    
+    reader.readAsDataURL(input.files[0]);
+  } else {
+    previewContainer.classList.add('hidden');
+    preview.src = '#';
   }
 }
 
-// Form submission validation
+// Form submission validation for edit modal
 document.getElementById('editInventoryForm').addEventListener('submit', function(e) {
-  const itemNameValid = validateItemName(document.getElementById('editItemName'));
-  const quantityValid = validateQuantity(document.getElementById('editQuantity'));
-  const unitPriceValid = validateUnitPrice(document.getElementById('editUnitPrice'));
-  
-  if (!itemNameValid || !quantityValid || !unitPriceValid) {
+  // Validate item name
+  const editItemName = document.getElementById('editItemName').value;
+  if (editItemName.trim() === '' || editItemName.charAt(0) === ' ' || editItemName.includes('  ')) {
     e.preventDefault();
-    // Scroll to the first error
-    if (!itemNameValid) {
-      document.getElementById('editItemName').scrollIntoView({ behavior: 'smooth', block: 'center' });
-    } else if (!quantityValid) {
-      document.getElementById('editQuantity').scrollIntoView({ behavior: 'smooth', block: 'center' });
-    } else {
-      document.getElementById('editUnitPrice').scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
+    document.getElementById('editItemNameError').classList.remove('hidden');
+    document.getElementById('editItemName').focus();
+    return;
+  }
+  
+  // Validate quantity
+  const editQuantity = document.getElementById('editQuantity').value;
+  if (editQuantity < 1) {
+    e.preventDefault();
+    document.getElementById('editQuantityError').classList.remove('hidden');
+    document.getElementById('editQuantity').focus();
+    return;
+  }
+  
+  // Validate unit price
+  const editUnitPrice = document.getElementById('editUnitPrice').value;
+  if (editUnitPrice === '' || isNaN(parseFloat(editUnitPrice)) || parseFloat(editUnitPrice) < 0) {
+    e.preventDefault();
+    document.getElementById('editUnitPriceError').classList.remove('hidden');
+    document.getElementById('editUnitPrice').focus();
+    return;
   }
 });
+
+// Function to open edit modal with data
+function openEditInventoryModal(item) {
+  // Populate form fields
+  document.getElementById('editItemId').value = item.id;
+  document.getElementById('editItemName').value = item.name;
+  document.getElementById('editCategory').value = item.category_id;
+  document.getElementById('editQuantity').value = item.quantity;
+  document.getElementById('editUnitPrice').value = parseFloat(item.unit_price).toFixed(2);
+  
+  // Set current image preview
+  const currentImagePreview = document.querySelector('#currentImagePreview img');
+  currentImagePreview.src = item.image || 'placeholder-image.jpg';
+  currentImagePreview.alt = item.name;
+  
+  // Reset new image preview
+  document.getElementById('newImagePreviewContainer').classList.add('hidden');
+  document.getElementById('editItemImage').value = '';
+  
+  // Show modal
+  document.getElementById('editInventoryModal').classList.remove('hidden');
+}
+
+function closeEditInventoryModal() {
+  document.getElementById('editInventoryModal').classList.add('hidden');
+}
 </script>
 
 <!-- Archived Items Modal -->
