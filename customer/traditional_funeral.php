@@ -1968,7 +1968,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 alert('An error occurred while submitting the form: ' + error.message);
             });
         }
-        } else {
+         else {
             // Gather all form data
         const packageData = {
             packageType: 'traditional',
