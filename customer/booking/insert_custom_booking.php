@@ -4,6 +4,9 @@ header('Content-Type: application/json');
 // Database connection
 require_once '../../db_connect.php';
 
+// For debugging
+error_log("Request received in insert_custom_booking.php");
+
 // Check if the request is POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
@@ -11,31 +14,78 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-// Get the raw POST data
-$input = file_get_contents('php://input');
-$data = json_decode($input, true);
+// Debug: Log all POST data and files
+error_log("POST data: " . print_r($_POST, true));
+error_log("FILES data: " . print_r($_FILES, true));
 
-if (json_last_error() !== JSON_ERROR_NONE || !$data) {
+// Handle form data - we're now expecting regular POST data, not JSON
+$customerId = isset($_POST['customerId']) ? $_POST['customerId'] : null;
+$branchId = isset($_POST['branchId']) ? $_POST['branchId'] : null;
+$casket = isset($_POST['casket']) ? $_POST['casket'] : null;
+$packageTotal = isset($_POST['packageTotal']) ? floatval($_POST['packageTotal']) : 0;
+$flowerArrangement = isset($_POST['flowerArrangement']) ? $_POST['flowerArrangement'] : null;
+$additionalServices = isset($_POST['additionalServices']) ? $_POST['additionalServices'] : null;
+$notes = isset($_POST['notes']) ? $_POST['notes'] : null;
+
+// Deceased information
+$deceasedFirstName = isset($_POST['deceasedFirstName']) ? $_POST['deceasedFirstName'] : null;
+$deceasedMiddleName = isset($_POST['deceasedMiddleName']) ? $_POST['deceasedMiddleName'] : null;
+$deceasedLastName = isset($_POST['deceasedLastName']) ? $_POST['deceasedLastName'] : null;
+$deceasedSuffix = isset($_POST['deceasedSuffix']) ? $_POST['deceasedSuffix'] : null;
+$dateOfBirth = isset($_POST['dateOfBirth']) ? $_POST['dateOfBirth'] : null;
+$dateOfDeath = isset($_POST['dateOfDeath']) ? $_POST['dateOfDeath'] : null;
+$dateOfBurial = isset($_POST['dateOfBurial']) ? $_POST['dateOfBurial'] : null;
+$deceasedAddress = isset($_POST['deceasedAddress']) ? $_POST['deceasedAddress'] : null;
+
+// File handling
+$deathCertificateFile = isset($_FILES['deathCertificate']) ? $_FILES['deathCertificate'] : null;
+$paymentReceiptFile = isset($_FILES['paymentReceipt']) ? $_FILES['paymentReceipt'] : null;
+$referenceNumber = isset($_POST['referenceNumber']) ? $_POST['referenceNumber'] : null;
+$cremationSelected = isset($_POST['cremationSelected']) && $_POST['cremationSelected'] === 'yes' ? 'yes' : 'no';
+
+// Validate required fields
+if (!$customerId || !$branchId || !$casket || !$deceasedFirstName || !$deceasedLastName) {
     http_response_code(400);
-    echo json_encode(['status' => 'error', 'message' => 'Invalid JSON data']);
+    echo json_encode(['status' => 'error', 'message' => 'Missing required fields']);
     exit;
 }
 
-// Validate required fields
-$requiredFields = [
-    'customerId', 
-    'deceasedInfo', 
-    'branchId', 
-    'casket', 
-    'packageTotal',
-    'documents'
-];
+// File handling logic
+$deathCertPath = null;
+$paymentReceiptPath = null;
 
-foreach ($requiredFields as $field) {
-    if (!isset($data[$field])) {
-        http_response_code(400);
-        echo json_encode(['status' => 'error', 'message' => "Missing required field: $field"]);
-        exit;
+// Handle file uploads (in a real app, you'd add more validation and security)
+if ($deathCertificateFile && $deathCertificateFile['error'] === UPLOAD_ERR_OK) {
+    $uploadDir = '../../uploads/death_certificates/';
+    $deathCertPath = $uploadDir . basename($deathCertificateFile['name']);
+    
+    // Make sure the upload directory exists
+    if (!file_exists($uploadDir)) {
+        mkdir($uploadDir, 0777, true);
+    }
+    
+    if (move_uploaded_file($deathCertificateFile['tmp_name'], $deathCertPath)) {
+        // File uploaded successfully
+        $deathCertPath = basename($deathCertificateFile['name']); // Store just the filename in DB
+    } else {
+        error_log("Failed to move death certificate upload: " . print_r($deathCertificateFile, true));
+    }
+}
+
+if ($paymentReceiptFile && $paymentReceiptFile['error'] === UPLOAD_ERR_OK) {
+    $uploadDir = '../../uploads/payment_receipts/';
+    $paymentReceiptPath = $uploadDir . basename($paymentReceiptFile['name']);
+    
+    // Make sure the upload directory exists
+    if (!file_exists($uploadDir)) {
+        mkdir($uploadDir, 0777, true);
+    }
+    
+    if (move_uploaded_file($paymentReceiptFile['tmp_name'], $paymentReceiptPath)) {
+        // File uploaded successfully
+        $paymentReceiptPath = basename($paymentReceiptFile['name']); // Store just the filename in DB
+    } else {
+        error_log("Failed to move payment receipt upload: " . print_r($paymentReceiptFile, true));
     }
 }
 
@@ -70,30 +120,25 @@ try {
     }
 
     // Bind parameters
-    $cremationSelected = isset($data['cremationSelected']) && $data['cremationSelected'] ? 'yes' : 'no';
-    $flowerArrangement = $data['flowerArrangement'] ?? null;
-    $additionalServices = $data['additionalServices'] ?? null;
-    $notes = $data['notes'] ?? null;
-
     $stmt->bind_param(
         'issssssssisidssssss',
-        $data['customerId'],
-        $data['deceasedInfo']['firstName'],
-        $data['deceasedInfo']['middleName'],
-        $data['deceasedInfo']['lastName'],
-        $data['deceasedInfo']['suffix'] ?? null,
-        $data['deceasedInfo']['dateOfBirth'],
-        $data['deceasedInfo']['dateOfDeath'],
-        $data['deceasedInfo']['dateOfBurial'],
-        $data['deceasedInfo']['address'],
-        $data['branchId'],
+        $customerId,
+        $deceasedFirstName,
+        $deceasedMiddleName,
+        $deceasedLastName,
+        $deceasedSuffix,
+        $dateOfBirth,
+        $dateOfDeath,
+        $dateOfBurial,
+        $deceasedAddress,
+        $branchId,
         $notes,
-        $data['casket'],
-        $data['packageTotal'],
+        $casket,
+        $packageTotal,
         $cremationSelected,
-        $data['documents']['deathCertificate'],
-        $data['documents']['paymentReceipt'],
-        $data['documents']['referenceNumber'],
+        $deathCertPath,
+        $paymentReceiptPath,
+        $referenceNumber,
         $flowerArrangement,
         $additionalServices
     );
@@ -105,16 +150,17 @@ try {
             'status' => 'success', 
             'message' => 'Booking created successfully',
             'bookingId' => $bookingId
-        ], JSON_UNESCAPED_UNICODE);
+        ]);
     } else {
         throw new Exception($stmt->error);
     }
 } catch (Exception $e) {
+    error_log("Database error: " . $e->getMessage());
     http_response_code(500);
     echo json_encode([
         'status' => 'error', 
         'message' => 'Database error: ' . $e->getMessage()
-    ], JSON_UNESCAPED_UNICODE);
+    ]);
 }
 
 // Close connection
