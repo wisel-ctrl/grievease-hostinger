@@ -589,29 +589,43 @@ document.addEventListener('DOMContentLoaded', function() {
         applyRequiredValidation(field);
     });
 
-    // Validate phone number
     function validatePhoneNumber() {
-        const phoneField = document.getElementById('clientPhone');
-        if (phoneField) {
-            phoneField.addEventListener('input', function() {
-                // Remove all non-digit characters
-                this.value = this.value.replace(/\D/g, '');
-                
-                // Ensure it starts with '09' and is exactly 11 digits long
-                if (this.value.length > 11) {
-                    this.value = this.value.substring(0, 11);
+    const phoneField = document.getElementById('clientPhone');
+    if (phoneField) {
+        phoneField.addEventListener('input', function() {
+            // Remove all non-digit characters
+            this.value = this.value.replace(/\D/g, '');
+            
+            // Ensure it starts with '09' and is exactly 11 digits long
+            if (this.value.length > 11) {
+                this.value = this.value.substring(0, 11);
+            }
+        });
+        
+        // Add validation on blur (when field loses focus)
+        phoneField.addEventListener('blur', function() {
+            if (this.value.length !== 11 || !this.value.startsWith('09')) {
+                this.setCustomValidity('Phone number must start with 09 and be exactly 11 digits long.');
+                // Show error to user
+                this.classList.add('border-red-500');
+                const errorMsg = this.nextElementSibling;
+                if (!errorMsg || !errorMsg.classList.contains('error-message')) {
+                    const errorElement = document.createElement('p');
+                    errorElement.className = 'error-message text-red-500 text-xs mt-1';
+                    errorElement.textContent = 'Phone number must start with 09 and be exactly 11 digits long.';
+                    this.parentNode.insertBefore(errorElement, this.nextSibling);
                 }
-                if (this.value.length === 11 && !this.value.startsWith('09')) {
-                    this.setCustomValidity('Phone number must start with 09 and be exactly 11 digits long.');
-                } else if (this.value.length === 11) {
-                    this.setCustomValidity(''); // Valid phone number
-                } else {
-                    this.setCustomValidity(''); // Clear validation for incomplete numbers
+            } else {
+                this.setCustomValidity('');
+                this.classList.remove('border-red-500');
+                const errorMsg = this.nextElementSibling;
+                if (errorMsg && errorMsg.classList.contains('error-message')) {
+                    errorMsg.remove();
                 }
-            });
-        }
+            }
+        });
     }
-
+}
     // Validate email
     function validateEmail() {
         const emailField = document.getElementById('clientEmail');
@@ -778,22 +792,6 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
-<script>
-function confirmCheckout() {
-    const phoneField = document.getElementById('clientPhone');
-    
-    // Check if the phone number is valid
-    if (phoneField && phoneField.validity.valid) {
-        // Proceed with the order confirmation
-        alert("Order confirmed!");
-        // Add your order confirmation logic here
-    } else {
-        // Show an error message if the phone number is invalid
-        alert("Please enter a valid phone number that starts with '09' and is exactly 11 digits long.");
-        phoneField.focus(); // Focus on the phone number field
-    }
-}
-</script>
 
 
 
@@ -905,7 +903,7 @@ function confirmCheckout() {
                 <label for="lp-clientPhone" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
                   Phone Number
                 </label>
-                <input type="tel" id="lp-clientPhone" name="clientPhone" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+                <input type="tel" id="lp-clientPhone" name="clientPhone" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" minlength="11" maxlength="11">
               </div>
               <div>
                 <label for="lp-clientEmail" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
@@ -2044,7 +2042,6 @@ function closeCheckoutModal() {
   document.getElementById('checkoutModal').classList.add('hidden');
 }
 
-// Function to confirm checkout with all validations
 function confirmCheckout() {
   // Get all form inputs
   const form = document.getElementById('checkoutForm');
@@ -2057,13 +2054,21 @@ function confirmCheckout() {
   const email = document.getElementById('clientEmail').value;
   if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     alert("Please enter a valid email address.");
+    document.getElementById('clientEmail').focus();
     return;
   }
 
-  // Validate phone number (digits only)
+  // Validate Philippine phone number (must start with 09 and be 11 digits)
   const phone = document.getElementById('clientPhone').value;
-  if (phone && !/^\d+$/.test(phone)) {
-    alert("Phone number should contain only digits.");
+  if (!phone) {
+    alert("Phone number is required.");
+    document.getElementById('clientPhone').focus();
+    return;
+  }
+  
+  if (!/^09\d{9}$/.test(phone)) {
+    alert("Please enter a valid Philippine phone number starting with 09 and 11 digits long (e.g., 09123456789).");
+    document.getElementById('clientPhone').focus();
     return;
   }
 
@@ -2077,10 +2082,12 @@ function confirmCheckout() {
   if (dateOfBirth) {
     if (dateOfBirth > today) {
       alert("Date of birth cannot be in the future.");
+      document.getElementById('dateOfBirth').focus();
       return;
     }
     if (dateOfDeath && dateOfBirth > dateOfDeath) {
       alert("Date of birth cannot be after date of death.");
+      document.getElementById('dateOfBirth').focus();
       return;
     }
   }
@@ -2088,10 +2095,12 @@ function confirmCheckout() {
   // Validate date of death (required)
   if (!dateOfDeath) {
     alert("Date of death is required.");
+    document.getElementById('dateOfDeath').focus();
     return;
   }
   if (dateOfDeath > today) {
     alert("Date of death cannot be in the future.");
+    document.getElementById('dateOfDeath').focus();
     return;
   }
 
@@ -2099,24 +2108,7 @@ function confirmCheckout() {
   if (dateOfBurial) {
     if (dateOfBurial < dateOfDeath) {
       alert("Date of burial cannot be before date of death.");
-      return;
-    }
-  }
-
-  // Validate date of death (required)
-  if (!dateOfDeath) {
-    alert("Date of death is required.");
-    return;
-  }
-  if (dateOfDeath > today) {
-    alert("Date of death cannot be in the future.");
-    return;
-  }
-
-  // Validate date of burial (if provided)
-  if (dateOfBurial) {
-    if (dateOfBurial < dateOfDeath) {
-      alert("Date of burial cannot be before date of death.");
+      document.getElementById('dateOfBurial').focus();
       return;
     }
   }
@@ -2130,12 +2122,14 @@ function confirmCheckout() {
   const minimumAllowedPrice = servicePrice * 0.5;
   if (totalPrice < minimumAllowedPrice) {
     alert(`Total price cannot be lower than 50% of the service price (₱${minimumAllowedPrice.toFixed(2)}).`);
+    document.getElementById('totalPrice').focus();
     return;
   }
 
   // Validate amount paid doesn't exceed total price
   if (amountPaid > totalPrice) {
     alert("Amount paid cannot exceed the total price.");
+    document.getElementById('amountPaid').focus();
     return;
   }
 
@@ -2150,24 +2144,27 @@ function confirmCheckout() {
   formData.append('balance', balance.toFixed(2));
   formData.append('payment_status', balance > 0 ? 'With Balance' : 'Fully Paid');
 
-  // Send data to server using AJAX
-  fetch('process_checkout.php', {
-    method: 'POST',
-    body: formData
-  })
-  .then(response => response.json())
-  .then(data => {
-    if (data.success) {
-      document.getElementById('checkoutModal').classList.add('hidden');
-      showConfirmation(data.orderId);
-    } else {
-      alert('Error: ' + (data.message || 'Failed to process checkout'));
-    }
-  })
-  .catch(error => {
-    console.error('Error:', error);
-    alert('An error occurred while processing your order. Please try again.');
-  });
+  // Show confirmation dialog before submitting
+  if (confirm("Are you sure you want to proceed with this order?")) {
+    // Send data to server using AJAX
+    fetch('process_checkout.php', {
+      method: 'POST',
+      body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        document.getElementById('checkoutModal').classList.add('hidden');
+        showConfirmation(data.orderId);
+      } else {
+        alert('Error: ' + (data.message || 'Failed to process checkout'));
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('An error occurred while processing your order. Please try again.');
+    });
+  }
 }
 
 // New function to show confirmation with order ID
