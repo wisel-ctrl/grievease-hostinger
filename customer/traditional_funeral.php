@@ -528,7 +528,7 @@ require_once '../db_connect.php'; // Database connection
                     data-service="traditional" 
                     data-name="<?php echo htmlspecialchars($package1['service_name']); ?>" 
                     data-image="<?php echo htmlspecialchars($package1['image_url']); ?>"
-                    data-serviceId="<?php echo htmlspecialchars($package1['service_id']); ?>">
+                    data-service-id="<?php echo htmlspecialchars($package1['service_id']); ?>">
                     <div class="h-10 sm:h-12 bg-navy flex items-center justify-center">
                         <h4 class="text-white font-hedvig text-lg sm:text-xl"><?php echo htmlspecialchars($package1['service_name']); ?></h4>
                         <div class="absolute top-0 right-0 w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center">
@@ -584,7 +584,7 @@ require_once '../db_connect.php'; // Database connection
                     data-service="traditional" 
                     data-name="<?php echo htmlspecialchars($package2['service_name']); ?>" 
                     data-image="<?php echo htmlspecialchars($package2['image_url']); ?>"
-                    data-serviceId="<?php echo htmlspecialchars($package2['service_id']); ?>">
+                    data-service-id="<?php echo htmlspecialchars($package2['service_id']); ?>">
     
                     <div class="h-10 sm:h-12 bg-navy flex items-center justify-center">
                         <h4 class="text-white font-hedvig text-lg sm:text-xl"><?php echo htmlspecialchars($package2['service_name']); ?></h4>
@@ -1863,7 +1863,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const packageImage = packageCard.dataset.image || '';
             const serviceId = packageCard.dataset.serviceId; // Get service_id
             console.log('service1: ', packageCard.dataset.serviceId);
-            console.log('service1: ', <?php echo htmlspecialchars($package2['service_id']); ?>);
+            console.log('service1: ', );
             
             
             document.getElementById('serviceID').value = serviceId;    
