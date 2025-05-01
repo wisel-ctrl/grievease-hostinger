@@ -1897,7 +1897,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Check if this is a custom package submission
         if (document.getElementById('traditionalSelectedPackageName').value === 'Custom Memorial Package') {
             e.preventDefault();
-            
+            const totalPackagePrice = parseFloat(document.getElementById('traditionalSelectedPackagePrice').value);
             // Gather all form data
             const customBookingData = {
                 packageType: 'custom',
