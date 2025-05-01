@@ -205,11 +205,14 @@ $servicesJson = json_encode($allServices);
       </h2>
     </div>
     <div class="hidden md:flex">
-      <div class="relative">
-        <input type="text" id="service-search" placeholder="Search services..." class="pl-10 pr-4 py-2 border border-sidebar-border rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
-        <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-      </div>
-    </div>
+  <div class="relative">
+    <input type="text" id="service-search" placeholder="Search services..." 
+           class="pl-10 pr-4 py-2 border border-sidebar-border rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent"
+           oninput="validateSearchInput(this)">
+    <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+    <div id="search-error" class="text-red-500 text-xs mt-1 hidden absolute">Cannot start with space or have consecutive spaces</div>
+  </div>
+</div>
   </div>
   
   <div id="services-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -219,6 +222,37 @@ $servicesJson = json_encode($allServices);
 
 
   </div>
+  <script>
+function validateSearchInput(input) {
+  const errorElement = document.getElementById('search-error');
+  let value = input.value;
+  
+  // Check if first character is space
+  if (value.length > 0 && value.charAt(0) === ' ') {
+    errorElement.classList.remove('hidden');
+    input.value = value.trim();
+    return;
+  }
+  
+  // Check for consecutive spaces
+  if (value.includes('  ')) {
+    errorElement.classList.remove('hidden');
+    input.value = value.replace(/\s+/g, ' ');
+    return;
+  }
+  
+  errorElement.classList.add('hidden');
+  
+  // Auto-capitalize first letter
+  if (value.length === 1) {
+    input.value = value.charAt(0).toUpperCase() + value.slice(1);
+  }
+  
+  // Optional: Trigger search as user types
+  // You can add debounce functionality here if needed
+  // performSearch(input.value);
+}
+</script>
 
     <!-- Package Modal -->
 <div id="package-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto">
