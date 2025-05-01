@@ -2025,7 +2025,6 @@ document.addEventListener('DOMContentLoaded', function() {
               </div>
               <div class="flex-grow">
                 <h5 class="font-medium text-navy">Death Certificate</h5>
-                <p class="text-xs text-gray-500">Uploaded on: <span id="cert-upload-date">May 1, 2025</span></p>
               </div>
               <button id="viewDeathCertBtn" class="bg-blue-600 text-white p-2 rounded-lg hover:bg-blue-700 transition-colors duration-200">
                 <i class="fas fa-eye"></i>
@@ -2037,7 +2036,6 @@ document.addEventListener('DOMContentLoaded', function() {
               </div>
               <div class="flex-grow">
                 <h5 class="font-medium text-navy">Payment Receipt</h5>
-                <p class="text-xs text-gray-500">Last payment: <span id="payment-date">May 1, 2025</span></p>
               </div>
               <button id="viewPaymentBtn" class="bg-green-600 text-white p-2 rounded-lg hover:bg-green-700 transition-colors duration-200">
                 <i class="fas fa-eye"></i>
