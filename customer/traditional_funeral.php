@@ -527,7 +527,8 @@ require_once '../db_connect.php'; // Database connection
                     data-price="<?php echo htmlspecialchars($package1['selling_price']); ?>" 
                     data-service="traditional" 
                     data-name="<?php echo htmlspecialchars($package1['service_name']); ?>" 
-                    data-image="<?php echo htmlspecialchars($package1['image_url']); ?>">
+                    data-image="<?php echo htmlspecialchars($package1['image_url']); ?>"
+                    data-service-id="<?php echo htmlspecialchars($package1['service_id']); ?>">
                     <div class="h-10 sm:h-12 bg-navy flex items-center justify-center">
                         <h4 class="text-white font-hedvig text-lg sm:text-xl"><?php echo htmlspecialchars($package1['service_name']); ?></h4>
                         <div class="absolute top-0 right-0 w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center">
@@ -582,7 +583,9 @@ require_once '../db_connect.php'; // Database connection
                     data-price="<?php echo htmlspecialchars($package2['selling_price']); ?>" 
                     data-service="traditional" 
                     data-name="<?php echo htmlspecialchars($package2['service_name']); ?>" 
-                    data-image="<?php echo htmlspecialchars($package2['image_url']); ?>">
+                    data-image="<?php echo htmlspecialchars($package2['image_url']); ?>"
+                    data-service-id="<?php echo htmlspecialchars($package2['service_id']); ?>">
+    
                     <div class="h-10 sm:h-12 bg-navy flex items-center justify-center">
                         <h4 class="text-white font-hedvig text-lg sm:text-xl"><?php echo htmlspecialchars($package2['service_name']); ?></h4>
                         <div class="absolute top-0 right-0 w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center">
@@ -1055,6 +1058,8 @@ require_once '../db_connect.php'; // Database connection
                     <input type="hidden" id="flowerDesign" name="flowerArrangement" value="">
                     <input type="hidden" id="inclusions" name="selectedAddons" value="">
                     <input type="hidden" id="notes" name="bookingNotes" value="">
+
+                    <input type="hidden" id="serviceID" name="serviceId" value="">
                      
                     <div class="border-b border-gray-200 pb-4 mb-4">
                         <h3 class="text-lg font-hedvig text-navy mb-4">Deceased Information</h3>
@@ -1852,11 +1857,13 @@ document.addEventListener('DOMContentLoaded', function() {
             const packageName = packageCard.dataset.name;
             const packagePrice = packageCard.dataset.price;
             const packageImage = packageCard.dataset.image || '';
+            const serviceId = packageCard.dataset.serviceId || ''; // Get service_id
             
             // Store package details in sessionStorage for later use
             sessionStorage.setItem('selectedPackageName', packageName);
             sessionStorage.setItem('selectedPackagePrice', packagePrice);
             sessionStorage.setItem('selectedPackageImage', packageImage);
+            sessionStorage.setItem('selectedServiceId', serviceId); // Store service_id
             
             // Get other details from the card content
             const features = Array.from(packageCard.querySelectorAll('ul li')).map(li => li.innerHTML);
@@ -1874,6 +1881,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const packagePrice = sessionStorage.getItem('selectedPackagePrice');
         const packageImage = sessionStorage.getItem('selectedPackageImage');
         const packageFeatures = JSON.parse(sessionStorage.getItem('selectedPackageFeatures') || '[]');
+        const serviceId = sessionStorage.getItem('selectedServiceId');
         
         // Update modal title
         document.querySelector('#traditionalModal .font-hedvig.text-2xl.text-navy').textContent = 'Book Your Package';
@@ -1881,7 +1889,8 @@ document.addEventListener('DOMContentLoaded', function() {
         // Update traditional modal with package details
         document.getElementById('traditionalPackageName').textContent = packageName;
         document.getElementById('traditionalPackagePrice').textContent = `₱${parseInt(packagePrice).toLocaleString()}`;
-        
+        document.getElementById('serviceID').value = serviceId;
+
         // Only set image src if packageImage exists
         if (packageImage) {
             document.getElementById('traditionalPackageImage').src = packageImage;
@@ -2021,7 +2030,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
          else {
             // Gather all form data
-        const packageData = {
+            const packageData = {
             packageType: 'traditional',
             packageName: document.getElementById('traditionalSelectedPackageName').value,
             packagePrice: parseInt(document.getElementById('traditionalSelectedPackagePrice').value),
@@ -2043,13 +2052,11 @@ document.addEventListener('DOMContentLoaded', function() {
             additionalServices: [],
             cremationSelected: document.getElementById('cremationCheckbox').checked,
             packageTotal: parseInt(document.getElementById('traditionalSelectedPackagePrice').value),
-            downpayment: Math.ceil(parseInt(document.getElementById('traditionalSelectedPackagePrice').value) * 0.3)
+            downpayment: Math.ceil(parseInt(document.getElementById('traditionalSelectedPackagePrice').value) * 0.3),
+            serviceId: document.getElementById('serviceID').value
         };
 
-        // Check if cremation is selected and add to additional services
-    
-
-        // Log all the data to console
+        // Log data for debugging (can be removed in production)
         console.log('Traditional Package Booking Data:', packageData);
         console.log('--- Detailed Breakdown ---');
         console.log('Package Name:', packageData.packageName);
@@ -2060,12 +2067,55 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('Cremation Selected:', packageData.cremationSelected);
         console.log('Package Total:', packageData.packageTotal);
         console.log('Downpayment (30%):', packageData.downpayment);
+
+        // Create FormData to handle file uploads
+        const formData = new FormData();
         
-        // Here you would normally submit to PHP handler
-        // For now we'll just show an alert
-        alert('Traditional package booking data logged to console. Check developer tools.');
-        closeAllModals();
+        // Add structured data as JSON string
+        formData.append('packageData', JSON.stringify(packageData));
+        
+        // Add the files directly for upload
+        if (document.getElementById('traditionalDeathCertificate').files[0]) {
+            formData.append('deathCertificate', document.getElementById('traditionalDeathCertificate').files[0]);
         }
+        
+        if (document.getElementById('traditionalGcashReceipt').files[0]) {
+            formData.append('paymentReceipt', document.getElementById('traditionalGcashReceipt').files[0]);
+        }
+        
+        // Add individual fields for compatibility with existing PHP code
+        formData.append('serviceId', packageData.serviceId);
+        formData.append('packageName', packageData.packageName);
+        formData.append('packagePrice', packageData.packagePrice);
+        formData.append('cremationSelected', packageData.cremationSelected);
+        formData.append('packageTotal', packageData.packageTotal);
+
+        
+        // Add deceased info fields
+        Object.entries(packageData.deceasedInfo).forEach(([key, value]) => {
+            formData.append(`deceased_${key}`, value);
+        });
+        
+        formData.append('referenceNumber', packageData.documents.referenceNumber);
+        
+        // Send to server
+        fetch('booking/insert_booking.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Booking successful!');
+                closeAllModals();
+            } else {
+                alert('Error: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while submitting the form.');
+        });
     });
 
     
