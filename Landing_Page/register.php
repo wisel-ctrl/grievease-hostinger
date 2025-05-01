@@ -566,45 +566,59 @@ function validateName(input) {
 
 // Function to handle name input validation and formatting
 function handleNameInput(input) {
+    // PREVENT INVALID KEY PRESSES (NEW)
+    input.addEventListener('keydown', function(e) {
+        const allowedKeys = [
+            'Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 
+            'ArrowUp', 'ArrowDown', 'Tab', 'Home', 'End'
+        ];
+        
+        // Allow control keys
+        if (allowedKeys.includes(e.key)) return;
+        
+        // Allow letters, apostrophe, hyphen, space
+        const allowedChars = /^[A-Za-zÀ-ÿ' -]$/;
+        if (!allowedChars.test(e.key)) {
+            e.preventDefault();
+        }
+    });
+
+    // Existing input event (with minor optimization)
     input.addEventListener('input', function(e) {
-        // Get current cursor position
         const cursorPos = this.selectionStart;
         
-        // Remove any numbers that might have been entered
-        let currentValue = this.value.replace(/[0-9]/g, '');
-        
-        // Prevent starting with space, apostrophe or hyphen
-        if (currentValue.startsWith(' ') || currentValue.startsWith("'") || currentValue.startsWith("-")) {
-            currentValue = currentValue.replace(/^[\s'-]+/, '');
+        // STRIP INVALID CHARS (enhanced)
+        let currentValue = this.value
+            .replace(/[^A-Za-zÀ-ÿ' -]/g, '')  // Remove anything not allowed
+            .replace(/^\s+/, '');             // No leading spaces
+
+        // Prevent starting with ' or -
+        if (currentValue.startsWith("'") || currentValue.startsWith("-")) {
+            currentValue = currentValue.substring(1);
         }
-        
-        // Remove consecutive spaces or special characters
-        currentValue = currentValue.replace(/\s+/g, ' ');
-        currentValue = currentValue.replace(/'+/g, "'");
-        currentValue = currentValue.replace(/-+/g, "-");
-        
-        // Check if we're trying to add a space
+
+        // Cleanup consecutive special chars/spaces
+        currentValue = currentValue
+            .replace(/\s+/g, ' ')
+            .replace(/'+/g, "'")
+            .replace(/-+/g, "-");
+
+        // Space validation (unchanged)
         if (currentValue.includes(' ')) {
             const parts = currentValue.split(' ');
-            // Only allow space if previous part has at least 2 characters
             if (parts.length > 1 && parts[0].length < 2) {
-                // Remove the space if first part is less than 2 chars
                 currentValue = parts[0] + parts.slice(1).join('');
             }
         }
-        
-        // Capitalize the first letter of each word
-        currentValue = currentValue.replace(/\b\w/g, function(char) {
-            return char.toUpperCase();
-        });
-        
-        // Update the value
+
+        // Capitalize (unchanged)
+        currentValue = currentValue.replace(/\b\w/g, char => char.toUpperCase());
+
+        // Update value and cursor
         this.value = currentValue;
-        
-        // Restore cursor position (approximately)
         this.setSelectionRange(cursorPos, cursorPos);
-        
-        // Validate and update styling
+
+        // Validation UI (unchanged)
         if (this.value && !validateName({ value: this.value })) {
             this.classList.add('border-error');
             this.classList.remove('border-success');
@@ -612,15 +626,16 @@ function handleNameInput(input) {
             this.classList.remove('border-error');
             this.classList.add('border-success');
         } else {
-            this.classList.remove('border-error');
-            this.classList.remove('border-success');
+            this.classList.remove('border-error', 'border-success');
         }
     });
-    
-    // Handle paste events
+
+    // Paste handling (unchanged)
     input.addEventListener('paste', function(e) {
         e.preventDefault();
-        let pastedText = e.clipboardData.getData('text/plain').trim();
+        let pastedText = e.clipboardData.getData('text/plain')
+            .replace(/[^A-Za-zÀ-ÿ' -]/g, '')
+            .trim();
         
         // Remove numbers
         pastedText = pastedText.replace(/[0-9]/g, '');
