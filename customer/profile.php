@@ -1883,7 +1883,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 <!-- View Details Modal -->
-<div id="viewDetailsModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70 p-4 hidden">
+<div id="viewDetailsModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70 p-4 hidden backdrop-blur-sm">
   <!-- Modal Content -->
   <div class="w-full max-w-4xl bg-white rounded-2xl shadow-2xl overflow-hidden max-h-[90vh]">
     <div class="modal-scroll-container overflow-y-auto max-h-[90vh]">
