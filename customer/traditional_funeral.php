@@ -124,6 +124,22 @@ require_once '../db_connect.php'; // Database connection
                     }
                 }
                 $stmt->close();
+
+                // After getting user info but before closing connection
+                    if (!isset($_SESSION['branch_loc'])) {
+                        // Fetch user's branch location from database
+                        $query = "SELECT branch_loc FROM users WHERE id = ?";
+                        $stmt = $conn->prepare($query);
+                        $stmt->bind_param("i", $_SESSION['user_id']);
+                        $stmt->execute();
+                        $result = $stmt->get_result();
+                        
+                        if ($row = $result->fetch_assoc()) {
+                            $_SESSION['branch_loc'] = $row['branch_loc'];
+                        }
+                        $stmt->close();
+                    }
+
                 }
                 
 ?>
@@ -1892,7 +1908,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function fetchCasketsByBranch() {
         // Get the branch_id from session (you may need to pass this from PHP to JS)
-        const branchId = <?php echo  json_encode($_SESSION['branch_loc']); ?>;
+        const branchId = <?php echo isset($_SESSION['branch_loc']) ? json_encode($_SESSION['branch_loc']) : 'null'; ?>;
         console.log("branch ID:",branchId);
         // Make an AJAX request to fetch caskets
         fetch(`booking/fetch_caskets.php?branch_id=${branchId}`)
