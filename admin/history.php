@@ -137,7 +137,6 @@ $totalOngoing = $countResult->fetch_assoc()['total'];
         ?>
         
         <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
-          <i class="fas fa-clipboard-list"></i>
           <?php echo $totalOngoing . ($totalOngoing != 1 ? "" : ""); ?>
         </span>
       </div>
@@ -466,7 +465,6 @@ $totalServices = $countResult->fetch_assoc()['total'];
         ?>
         
         <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
-          <i class="fas fa-clipboard-list"></i>
           <?php echo $totalServices . ($totalServices != 1 ? "" : ""); ?>
         </span>
       </div>
@@ -770,7 +768,6 @@ $totalOutstanding = $countResult->fetch_assoc()['total'];
 ?>
                 
                 <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
-                  <i class="fas fa-clipboard-list"></i>
                   <?php echo $totalWithBalance . ($totalWithBalance != 1 ? "" : ""); ?>
                 </span>
             </div>
