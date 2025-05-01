@@ -2997,17 +2997,23 @@ function validateNameInput(input) {
     input.value = value;
 }
 
-// Add name validation to profile fields
 document.addEventListener('DOMContentLoaded', function() {
     // Name fields in the edit profile modal
-    const nameFields = [
+    const profileNameFields = [
         'firstName', 
         'middleName', 
         'lastName'
     ];
 
-    nameFields.forEach(fieldId => {
-        const field = document.getElementById(fieldId);
+    // Name fields in the modify booking modal
+    const modifyBookingNameFields = [
+        'deceased_fname',
+        'deceased_midname',
+        'deceased_lname'
+    ];
+
+    // Function to apply validation to a field
+    function applyNameValidation(field) {
         if (field) {
             // Validate on input
             field.addEventListener('input', function() {
@@ -3027,13 +3033,27 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.execCommand('insertText', false, cleanedText);
             });
         }
+    }
+
+    // Apply validation to profile fields
+    profileNameFields.forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        applyNameValidation(field);
     });
 
-    // Additional validation for first name and last name (required fields)
-    const requiredNameFields = ['firstName', 'lastName'];
+    // Apply validation to modify booking fields
+    modifyBookingNameFields.forEach(fieldName => {
+        // For modify booking modal, fields are accessed by name attribute
+        const field = document.querySelector(`input[name="${fieldName}"]`);
+        applyNameValidation(field);
+    });
 
-    requiredNameFields.forEach(fieldId => {
-        const field = document.getElementById(fieldId);
+    // Additional validation for required fields
+    const requiredProfileFields = ['firstName', 'lastName'];
+    const requiredModifyFields = ['deceased_fname', 'deceased_lname'];
+
+    // Function to apply required validation
+    function applyRequiredValidation(field) {
         if (field) {
             field.addEventListener('blur', function() {
                 if (this.value.trim().length < 2) {
@@ -3043,9 +3063,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
         }
+    }
+
+    // Apply to profile fields
+    requiredProfileFields.forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        applyRequiredValidation(field);
+    });
+
+    // Apply to modify booking fields
+    requiredModifyFields.forEach(fieldName => {
+        const field = document.querySelector(`input[name="${fieldName}"]`);
+        applyRequiredValidation(field);
     });
 });
-    
     // Function to load address data when modal opens
 function loadAddressData() {
     const regionId = document.getElementById('region').value;
