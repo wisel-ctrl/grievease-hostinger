@@ -125,7 +125,7 @@ require_once '../db_connect.php'; // Database connection
                 }
                 $stmt->close();
                 }
-                $conn->close();
+                
 ?>
 
 <script src="customer_support.js"></script>
