@@ -399,15 +399,15 @@ if ($branchResult->num_rows > 0) {
     <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
       <!-- Title and Counter -->
       <div class="flex items-center gap-3 mb-4 lg:mb-0">
-        <h4 class="text-lg font-bold text-sidebar-text whitespace-nowrap" id="branchTitle_<?php echo $branchId; ?>">
-          <?php echo htmlspecialchars(ucwords($branchName)); ?> - Inventory Items
-        </h4>
-        
-        <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
-          <i class="fas fa-box"></i>
-          <?php echo $totalItems . ($totalItems != 1 ? "" : ""); ?>
-        </span>
-      </div>
+  <h4 class="text-lg font-bold text-sidebar-text whitespace-nowrap" id="branchTitle_<?php echo $branchId; ?>">
+    <?php echo htmlspecialchars(ucwords($branchName)); ?> - Inventory Items
+  </h4>
+  
+  <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
+    <i class="fas fa-box"></i>
+    <?php echo $totalItems; ?>
+  </span>
+</div>
       
       <!-- Controls for big screens - aligned right -->
       <div class="hidden lg:flex items-center gap-3">
