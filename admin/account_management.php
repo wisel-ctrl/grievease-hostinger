@@ -1994,7 +1994,6 @@ if ($result->num_rows > 0) {
                                 ${branchName}
                             </option>`;
                 }).join('');
-
                 const modal = document.createElement('div');
                 modal.id = 'editCustomerModal';
                 modal.className = 'fixed inset-0 z-50 flex items-center justify-center overflow-y-auto';
@@ -2034,11 +2033,8 @@ if ($result->num_rows > 0) {
                                         First Name <span class="text-red-500">*</span>
                                     </label>
                                     <div class="relative">
-                                        <input type="text" id="editFirstName" name="first_name" value="${data.user.first_name ? data.user.first_name[0].toUpperCase() + data.user.first_name.slice(1) : ''}" 
-                                               class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
-                                               pattern="[A-Za-z'-]{2,}" 
-                                               title="Only letters, apostrophes and hyphens allowed (minimum 2 characters)"
-                                               required>
+                                        <input type="text" name="first_name" value="${data.user.first_name ? data.user.first_name[0].toUpperCase() + data.user.first_name.slice(1) : ''}" 
+                                               class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
                                     </div>
                                     <p id="firstNameError" class="text-red-500 text-xs mt-1 hidden"></p>
                                 </div>
@@ -2048,11 +2044,8 @@ if ($result->num_rows > 0) {
                                         Last Name <span class="text-red-500">*</span>
                                     </label>
                                     <div class="relative">
-                                        <input type="text" id="editLastName" name="last_name" value="${data.user.last_name ? data.user.last_name[0].toUpperCase() + data.user.last_name.slice(1) : ''}" 
-                                               class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
-                                               pattern="[A-Za-z'-]{2,}" 
-                                               title="Only letters, apostrophes and hyphens allowed (minimum 2 characters)"
-                                               required>
+                                        <input type="text" name="last_name" value="${data.user.last_name ? data.user.last_name[0].toUpperCase() + data.user.last_name.slice(1) : ''}" 
+                                               class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
                                     </div>
                                     <p id="lastNameError" class="text-red-500 text-xs mt-1 hidden"></p>
                                 </div>
@@ -2060,10 +2053,8 @@ if ($result->num_rows > 0) {
                                 <div>
                                     <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">Middle Name</label>
                                     <div class="relative">
-                                        <input type="text" id="editMiddleName" name="middle_name" value="${data.user.middle_name ? data.user.middle_name[0].toUpperCase() + data.user.middle_name.slice(1) : ''}" 
-                                               class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                                               pattern="[A-Za-z'-]*"
-                                               title="Only letters, apostrophes and hyphens allowed">
+                                        <input type="text" name="middle_name" value="${data.user.middle_name ? data.user.middle_name[0].toUpperCase() + data.user.middle_name.slice(1) : ''}" 
+                                               class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
                                     </div>
                                 </div>
                                 
@@ -2072,11 +2063,8 @@ if ($result->num_rows > 0) {
                                         Email Address <span class="text-red-500">*</span>
                                     </label>
                                     <div class="relative">
-                                        <input type="email" id="editEmail" name="email" value="${data.user.email || ''}" 
-                                               class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
-                                               pattern="[^@\s]+@[^@\s]+\.[^@\s]+" 
-                                               title="Please enter a valid email address (no spaces allowed)"
-                                               required>
+                                        <input type="email" name="email" value="${data.user.email || ''}" 
+                                               class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
                                     </div>
                                     <p id="emailError" class="text-red-500 text-xs mt-1 hidden"></p>
                                 </div>
@@ -2086,12 +2074,8 @@ if ($result->num_rows > 0) {
                                         Phone Number <span class="text-red-500">*</span>
                                     </label>
                                     <div class="relative">
-                                        <input type="tel" id="editPhone" name="phone_number" value="${data.user.phone_number || ''}" 
-                                               class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
-                                               pattern="09\d{9}" 
-                                               maxlength="11"
-                                               title="Philippine number must start with 09 and be 11 digits total"
-                                               required>
+                                        <input type="tel" name="phone_number" value="${data.user.phone_number || ''}" 
+                                               class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
                                     </div>
                                     <p id="phoneError" class="text-red-500 text-xs mt-1 hidden"></p>
                                 </div>
@@ -2113,10 +2097,10 @@ if ($result->num_rows > 0) {
                         
                         <!-- Modal Footer -->
                         <div class="px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row sm:justify-end gap-2 sm:gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
-                            <button type="button" class="w-full sm:w-auto px-4 sm:px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center" onclick="closeEditCustomerModal()">
+                            <button class="w-full sm:w-auto px-4 sm:px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center" onclick="closeEditCustomerModal()">
                                 Cancel
                             </button>
-                            <button type="button" class="w-full sm:w-auto px-5 sm:px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="validateAndSaveCustomerChanges()">
+                            <button class="w-full sm:w-auto px-5 sm:px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="saveCustomerChanges()">
                                 Save Changes
                             </button>
                         </div>
@@ -2124,9 +2108,6 @@ if ($result->num_rows > 0) {
                 `;
                 
                 document.body.appendChild(modal);
-                
-                // Add validation event listeners
-                setupEditFormValidations();
                 
                 // Add event listener for Escape key
                 document.addEventListener('keydown', function(e) {
@@ -2142,125 +2123,6 @@ if ($result->num_rows > 0) {
             console.error('Error:', error);
             alert('An error occurred while fetching customer details');
         });
-}
-
-function setupEditFormValidations() {
-    // Name validation
-    const nameFields = ['editFirstName', 'editMiddleName', 'editLastName'];
-    nameFields.forEach(fieldId => {
-        const field = document.getElementById(fieldId);
-        if (field) {
-            field.addEventListener('input', function() {
-                // Remove invalid characters
-                this.value = this.value.replace(/[^a-zA-Z\s'-]/g, '');
-                
-                // No leading spaces
-                if (this.value.startsWith(' ')) {
-                    this.value = this.value.substring(1);
-                }
-                
-                // No consecutive spaces
-                this.value = this.value.replace(/\s{2,}/g, ' ');
-                
-                // Capitalize first letter of each word
-                if (this.value.length > 0) {
-                    this.value = this.value.toLowerCase().replace(/(^|\s)\S/g, function(firstLetter) {
-                        return firstLetter.toUpperCase();
-                    });
-                }
-            });
-        }
-    });
-
-    // Email validation - no spaces
-    const emailField = document.getElementById('editEmail');
-    if (emailField) {
-        emailField.addEventListener('input', function() {
-            // Remove any spaces
-            if (this.value.includes(' ')) {
-                this.value = this.value.replace(/\s/g, '');
-            }
-        });
-        
-        emailField.addEventListener('keydown', function(e) {
-            if (e.key === ' ') {
-                e.preventDefault();
-            }
-        });
-    }
-
-    // Phone validation - Philippine format
-    const phoneField = document.getElementById('editPhone');
-    if (phoneField) {
-        phoneField.addEventListener('input', function() {
-            // Remove non-digits
-            this.value = this.value.replace(/\D/g, '');
-            
-            // Limit to 11 characters
-            if (this.value.length > 11) {
-                this.value = this.value.substring(0, 11);
-            }
-            
-            // Auto-add 09 if starts with 9
-            if (this.value.length === 1 && this.value === '9') {
-                this.value = '09';
-            }
-        });
-        
-        phoneField.addEventListener('keydown', function(e) {
-            // Allow only numbers, backspace, delete, arrows
-            if (!/[0-9]|Backspace|Delete|ArrowLeft|ArrowRight/.test(e.key)) {
-                e.preventDefault();
-            }
-        });
-    }
-}
-
-function validateAndSaveCustomerChanges() {
-    // Validate all fields before submission
-    const firstName = document.getElementById('editFirstName');
-    const lastName = document.getElementById('editLastName');
-    const email = document.getElementById('editEmail');
-    const phone = document.getElementById('editPhone');
-    
-    let isValid = true;
-    
-    // Validate required fields
-    if (!firstName.value || firstName.value.length < 2) {
-        document.getElementById('firstNameError').textContent = 'Please enter at least 2 characters';
-        document.getElementById('firstNameError').classList.remove('hidden');
-        isValid = false;
-    } else {
-        document.getElementById('firstNameError').classList.add('hidden');
-    }
-    
-    if (!lastName.value || lastName.value.length < 2) {
-        document.getElementById('lastNameError').textContent = 'Please enter at least 2 characters';
-        document.getElementById('lastNameError').classList.remove('hidden');
-        isValid = false;
-    } else {
-        document.getElementById('lastNameError').classList.add('hidden');
-    }
-    
-    if (!email.value || !email.value.includes('@')) {
-        document.getElementById('emailError').textContent = 'Please enter a valid email address';
-        document.getElementById('emailError').classList.remove('hidden');
-        isValid = false;
-    } else {
-        document.getElementById('emailError').classList.add('hidden');
-    }
-    
-    if (!phone.value || !phone.value.startsWith('09') || phone.value.length !== 11) {
-        document.getElementById('phoneError').textContent = 'Philippine number must start with 09 and be 11 digits';
-        document.getElementById('phoneError').classList.remove('hidden');
-        isValid = false;
-    } else {
-        document.getElementById('phoneError').classList.add('hidden');
-    }
-    
-    if (isValid) {
-        saveCustomerChanges();
-    }
 }
 function closeEditCustomerModal() {
     const modal = document.getElementById('editCustomerModal');
