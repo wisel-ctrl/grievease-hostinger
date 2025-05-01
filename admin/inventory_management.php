@@ -127,10 +127,9 @@ function generateInventoryRow($row) {
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
     <?php
     // Get total items count
-    // Inside the branch loop, replace the total count query with:
-$totalItemsQuery = "SELECT COUNT(*) as total_items FROM inventory_tb WHERE branch_id = $branchId AND status = 1";
-$totalItemsResult = $conn->query($totalItemsQuery);
-$totalItems = $totalItemsResult->fetch_assoc()['total_items'];
+    $totalItemsQuery = "SELECT COUNT(*) as total_items FROM inventory_tb WHERE status = 1";
+    $totalItemsResult = $conn->query($totalItemsQuery);
+    $totalItems = $totalItemsResult->fetch_assoc()['total_items'];
     
     // Get total inventory value
     $totalValueQuery = "SELECT SUM(quantity * price) as total_value FROM inventory_tb WHERE status = 1";
@@ -400,15 +399,15 @@ if ($branchResult->num_rows > 0) {
     <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
       <!-- Title and Counter -->
       <div class="flex items-center gap-3 mb-4 lg:mb-0">
-  <h4 class="text-lg font-bold text-sidebar-text whitespace-nowrap" id="branchTitle_<?php echo $branchId; ?>">
-    <?php echo htmlspecialchars(ucwords($branchName)); ?> - Inventory Items
-  </h4>
-  
-  <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
-    <i class="fas fa-box"></i>
-    <?php echo $totalItems; ?>
-  </span>
-</div>
+        <h4 class="text-lg font-bold text-sidebar-text whitespace-nowrap" id="branchTitle_<?php echo $branchId; ?>">
+          <?php echo htmlspecialchars(ucwords($branchName)); ?> - Inventory Items
+        </h4>
+        
+        <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
+          <i class="fas fa-box"></i>
+          <?php echo $totalItems . ($totalItems != 1 ? "" : ""); ?>
+        </span>
+      </div>
       
       <!-- Controls for big screens - aligned right -->
       <div class="hidden lg:flex items-center gap-3">
