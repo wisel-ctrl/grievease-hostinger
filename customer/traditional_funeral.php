@@ -1550,6 +1550,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Proceed to booking button click event
     document.getElementById('proceedToBooking').addEventListener('click', function() {
         // Gather all custom package selections
+        const packageName = 'Custom Memorial Package';
         const customPackageData = {
             packageType: 'custom',
             casket: selectedCasket,
@@ -1574,6 +1575,7 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('Notes:', customPackageData.notes || 'No notes');
         console.log('Package Total:', customPackageData.packageTotal);
         console.log('Downpayment (30%):', customPackageData.downpayment);
+        openTraditionalModalWithCustomPackage(packageName, customPackageData.packageTotal, customPackageData);
     });
     
     // Function to open traditional booking modal with custom package data
