@@ -701,7 +701,7 @@ if ($branchResult->num_rows > 0) {
     </button>
     
     <!-- Modal Header -->
-    <div class="px-4 sm:px-6 py-4 sm:py-5 border-b bg-gradient-to-r from-sidebar-accent to-black border-gray-200">
+    <div class="px-4 sm:px-6 py-4 sm:py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
       <h3 class="text-lg sm:text-xl font-bold text-white flex items-center">
         Inventory Item Details
       </h3>
