@@ -187,6 +187,7 @@ $offset = ($current_page - 1) * $bookings_per_page;
     </div>
 </div>
                         </div>
+                        </div>
                     </div>
                 </div>
             </div>
