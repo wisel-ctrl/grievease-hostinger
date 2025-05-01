@@ -1262,8 +1262,8 @@ function validateLifeplanHolderStreet(input) {
 
 // Lifeplan Reference Number Validation (numbers only, no letters or spaces)
 function validateLifeplanReferenceNumber(input) {
-    // Remove any letters, spaces, or unwanted characters
-    let value = input.value.replace(/[a-zA-Z\s]/g, '');
+    // Remove any non-digit characters
+    let value = input.value.replace(/[^0-9]/g, '');
     
     // Update the input value
     input.value = value;
