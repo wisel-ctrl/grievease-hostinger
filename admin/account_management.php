@@ -135,15 +135,12 @@ $customersResult = mysqli_query($conn, $customersQuery);
             <!-- Controls for big screens - aligned right -->
             <div class="hidden lg:flex items-center gap-3">
                 <!-- Search Input -->
-                <!-- Find this search input in your code (there are multiple instances for different branches) -->
-<div class="relative">
-  <input type="text" id="searchBox_<?php echo $branchId; ?>" 
-         placeholder="Search items..." 
-         class="pl-8 pr-3 py-2 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent"
-         oninput="validateSearchInput(this, <?php echo $branchId; ?>)">
-  <i class="fas fa-search absolute left-2.5 top-3 text-gray-400"></i>
-  <div id="searchError_<?php echo $branchId; ?>"></div>
-</div>
+                <div class="relative">
+                    <input type="text" id="customerSearchInput" 
+                           placeholder="Search customers..." 
+                           class="pl-8 pr-3 py-2 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
+                    <i class="fas fa-search absolute left-2.5 top-3 text-gray-400"></i>
+                </div>
 
                 <!-- Filter Dropdown -->
                 <div class="relative filter-dropdown">
@@ -351,8 +348,6 @@ $customersResult = mysqli_query($conn, $customersQuery);
 </div>
 
 
-
-
 <script>
     document.querySelectorAll('.fa-archive').forEach(icon => {
       icon.closest('button').addEventListener('click', function(e) {
@@ -376,36 +371,6 @@ $customersResult = mysqli_query($conn, $customersQuery);
         });
       });
     });
-
-    function validateSearchInput(input, branchId) {
-  const errorElement = document.getElementById(`searchError_${branchId}`);
-  let value = input.value;
-  
-  // Check if first character is space
-  if (value.length > 0 && value.charAt(0) === ' ') {
-    errorElement.classList.remove('hidden');
-    input.value = value.trim();
-    return;
-  }
-  
-  // Check for consecutive spaces
-  if (value.includes('  ')) {
-    errorElement.classList.remove('hidden');
-    input.value = value.replace(/\s+/g, ' ');
-    return;
-  }
-  
-  errorElement.classList.add('hidden');
-  
-  // Auto-capitalize first letter
-  if (value.length === 1) {
-    input.value = value.charAt(0).toUpperCase() + value.slice(1);
-  }
-  
-  // Optional: Trigger search as user types
-  // You might want to add debounce functionality here
-  // performInventorySearch(branchId, input.value);
-}
 </script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -1656,14 +1621,12 @@ if ($result->num_rows > 0) {
             <div class="hidden lg:flex items-center gap-3">
                 <!-- Search Input -->
                 <div class="relative">
-    <input type="text" id="searchInput" 
-           placeholder="Search employees..." 
-           value="<?php echo htmlspecialchars($search); ?>"
-           class="pl-8 pr-3 py-2 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent"
-           oninput="validateEmployeeSearchInput(this)">
-    <i class="fas fa-search absolute left-2.5 top-3 text-gray-400"></i>
-    <div id="searchInputError"></div>
-</div>
+                    <input type="text" id="searchInput" 
+                           placeholder="Search employees..." 
+                           value="<?php echo htmlspecialchars($search); ?>"
+                           class="pl-8 pr-3 py-2 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
+                    <i class="fas fa-search absolute left-2.5 top-3 text-gray-400"></i>
+                </div>
 
                 <!-- Filter Dropdown -->
                 <div class="relative filter-dropdown">
@@ -1897,37 +1860,6 @@ if ($result->num_rows > 0) {
         </div>
     </div>
 </div>
-
-<script>
-function validateEmployeeSearchInput(input) {
-    const errorElement = document.getElementById('searchInputError');
-    let value = input.value;
-    
-    // Check if first character is space
-    if (value.length > 0 && value.charAt(0) === ' ') {
-        errorElement.classList.remove('hidden');
-        input.value = value.trim();
-        return;
-    }
-    
-    // Check for consecutive spaces
-    if (value.includes('  ')) {
-        errorElement.classList.remove('hidden');
-        input.value = value.replace(/\s+/g, ' ');
-        return;
-    }
-    
-    errorElement.classList.add('hidden');
-    
-    // Auto-capitalize first letter
-    if (value.length === 1) {
-        input.value = value.charAt(0).toUpperCase() + value.slice(1);
-    }
-    
-    // Optional: Trigger search as user types (add debounce if needed)
-    // performEmployeeSearch(input.value);
-}
-</script>
 
 <!-- Archived Accounts Modal -->
 <div class="fixed inset-0 z-50 flex items-center justify-center hidden" id="archivedModal">
