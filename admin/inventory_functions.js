@@ -317,128 +317,18 @@ return confirm("Are you sure you want to delete this item?");
 
 
 function openViewItemModal(inventoryId) {
-  // Show the modal
-  document.getElementById('viewItemModal').classList.remove('hidden');
+// Show the modal
+document.getElementById('viewItemModal').classList.remove('hidden');
 
-  // Fetch item details via AJAX
-  fetch(`inventory/get_item_details.php?inventory_id=${inventoryId}`)
-  .then(response => response.text())
-  .then(data => {
-      document.getElementById('itemDetailsContent').innerHTML = data;
-      
-      // Add event listeners after content is loaded
-      setTimeout(() => {
-          const itemNameInput = document.getElementById('item_name');
-          const priceInput = document.getElementById('price');
-          const quantityInput = document.getElementById('quantity');
-          
-          if (itemNameInput) {
-              itemNameInput.addEventListener('input', function() {
-                  validateItemName(this);
-              });
-          }
-          
-          if (priceInput) {
-              priceInput.addEventListener('input', function() {
-                  validatePrice(this);
-              });
-          }
-          
-          if (quantityInput) {
-              quantityInput.addEventListener('input', function() {
-                  validateQuantity(this);
-              });
-          }
-      }, 100);
-  })
-  .catch(error => {
-      document.getElementById('itemDetailsContent').innerHTML = `<div class="p-4 bg-red-100 text-red-700 rounded-lg">Error: ${error.message}</div>`;
-  });
-}
-
-// Item Name Validation
-function validateItemName(input) {
-  const errorElement = document.getElementById('itemNameError');
-  if (!input || !errorElement) return;
-  
-  let value = input.value;
-  
-  // Check if first character is space
-  if (value.length > 0 && value.charAt(0) === ' ') {
-      errorElement.classList.remove('hidden');
-      input.value = value.trim();
-      return;
-  }
-  
-  // Check for consecutive spaces
-  if (value.includes('  ')) {
-      errorElement.classList.remove('hidden');
-      input.value = value.replace(/\s+/g, ' ');
-      return;
-  }
-  
-  // Check if last character is space
-  if (value.length > 0 && value.charAt(value.length - 1) === ' ') {
-      errorElement.classList.remove('hidden');
-      input.value = value.trim();
-      return;
-  }
-  
-  errorElement.classList.add('hidden');
-  
-  // Auto-capitalize first letter
-  if (value.length === 1) {
-      input.value = value.charAt(0).toUpperCase() + value.slice(1);
-  }
-}
-
-// Quantity Validation
-function validateQuantity(input) {
-  if (!input) return;
-  
-  if (input.value < 0) {
-      input.value = 0;
-  }
-  calculateTotalValue();
-}
-
-// Price Validation
-function validatePrice(input) {
-  if (!input) return;
-  
-  // Remove any non-digit and non-dot characters
-  input.value = input.value.replace(/[^\d.]/g, '');
-  
-  // Ensure only one dot is present
-  const dotCount = (input.value.match(/\./g) || []).length;
-  if (dotCount > 1) {
-      input.value = input.value.substring(0, input.value.lastIndexOf('.'));
-  }
-  
-  // Ensure max 2 decimal places
-  if (input.value.includes('.')) {
-      const parts = input.value.split('.');
-      if (parts[1].length > 2) {
-          input.value = parts[0] + '.' + parts[1].substring(0, 2);
-      }
-  }
-  
-  calculateTotalValue();
-}
-
-// Calculate Total Value
-function calculateTotalValue() {
-  const quantityInput = document.getElementById('quantity');
-  const priceInput = document.getElementById('price');
-  const totalValueInput = document.getElementById('total_value');
-  
-  if (!quantityInput || !priceInput || !totalValueInput) return;
-  
-  const quantity = parseFloat(quantityInput.value) || 0;
-  const price = parseFloat(priceInput.value.replace(/[^\d.]/g, '')) || 0;
-  const totalValue = quantity * price;
-  
-  totalValueInput.value = totalValue.toFixed(2);
+// Fetch item details via AJAX
+fetch(`inventory/get_item_details.php?inventory_id=${inventoryId}`)
+.then(response => response.text())
+.then(data => {
+  document.getElementById('itemDetailsContent').innerHTML = data;
+})
+.catch(error => {
+  document.getElementById('itemDetailsContent').innerHTML = `<div class="p-4 bg-red-100 text-red-700 rounded-lg">Error: ${error.message}</div>`;
+});
 }
 
 function closeViewItemModal() {
