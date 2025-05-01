@@ -1850,6 +1850,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Show traditional modal directly when package is selected
     document.querySelectorAll('.selectPackageBtn').forEach(button => {
         button.addEventListener('click', function() {
+            console.log('Select Package button clicked');
             // Get package details from the parent card
             const packageCard = this.closest('.package-card');
             if (!packageCard) return; // Safety check
