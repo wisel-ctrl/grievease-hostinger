@@ -686,14 +686,8 @@ if ($branchResult->num_rows > 0) {
     // Close connection
     $conn->close();
     ?>
-
-
-
-
-
-
-
 </div>
+
 <!-- View Item Modal -->
 <div id="viewItemModal" class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto">
   <!-- Modal Backdrop -->
@@ -707,7 +701,7 @@ if ($branchResult->num_rows > 0) {
     </button>
     
     <!-- Modal Header -->
-    <div class="px-4 sm:px-6 py-4 sm:py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
+    <div class="px-4 sm:px-6 py-4 sm:py-5 border-b bg-gradient-to-r from-sidebar-accent to-black border-gray-200">
       <h3 class="text-lg sm:text-xl font-bold text-white flex items-center">
         Inventory Item Details
       </h3>
@@ -715,124 +709,10 @@ if ($branchResult->num_rows > 0) {
     
     <!-- Modal Body -->
     <div class="px-4 sm:px-6 py-4 sm:py-5" id="itemDetailsContent">
-      <!-- Loading Indicator (shown by default) -->
-      <div class="flex justify-center" id="loadingIndicator">
+      <!-- Item details will be loaded here via AJAX -->
+      <div class="flex justify-center">
         <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-sidebar-accent"></div>
       </div>
-      
-      <!-- Item Details Form (hidden by default) -->
-      <form id="viewItemForm" class="space-y-4 hidden">
-        <!-- Item ID (readonly) -->
-        <div>
-          <label class="block text-xs font-medium text-gray-700 mb-1">Item ID</label>
-          <input type="text" id="viewItemId" class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100 cursor-not-allowed" readonly>
-        </div>
-        
-        <!-- Item Name -->
-        <div>
-          <label for="viewItemName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            Item Name <span class="text-red-500">*</span>
-          </label>
-          <div class="relative">
-            <input type="text" id="viewItemName" name="viewItemName" required 
-                   class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
-                   placeholder="Item Name"
-                   oninput="validateViewItemName(this)">
-            <div id="viewItemNameError" class="text-red-500 text-xs mt-1 hidden">Item name cannot start with space or have consecutive spaces</div>
-          </div>
-        </div>
-        
-        <!-- Category -->
-        <div>
-          <label for="viewCategory" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            Category <span class="text-red-500">*</span>
-          </label>
-          <div class="relative">
-            <select id="viewCategory" name="viewCategory" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
-              <option value="" disabled selected>Select a Category</option>
-              <?php
-              // Include database connection
-              include '../db_connect.php';
-              $sql = "SELECT category_id, category_name FROM inventory_category";
-              $result = $conn->query($sql);
-              if ($result->num_rows > 0) {
-                  while ($row = $result->fetch_assoc()) {
-                      echo '<option value="' . $row['category_id'] . '">' . htmlspecialchars($row['category_name']) . '</option>';
-                  }
-              }
-              ?>
-            </select>
-          </div>
-        </div>
-        
-        <!-- Quantity -->
-        <div>
-          <label for="viewQuantity" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            Quantity <span class="text-red-500">*</span>
-          </label>
-          <div class="relative">
-            <input type="number" id="viewQuantity" name="viewQuantity" min="1" required 
-                   class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
-                   placeholder="Quantity"
-                   oninput="validateViewQuantity(this)">
-            <div id="viewQuantityError" class="text-red-500 text-xs mt-1 hidden">Quantity cannot be negative</div>
-          </div>
-        </div>
-        
-        <!-- Unit Price -->
-        <div>
-          <label for="viewUnitPrice" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            Unit Price <span class="text-red-500">*</span>
-          </label>
-          <div class="relative">
-            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <span class="text-gray-500">₱</span>
-            </div>
-            <input type="text" id="viewUnitPrice" name="viewUnitPrice" required 
-                   class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
-                   placeholder="0.00"
-                   oninput="validateViewUnitPrice(this)">
-            <div id="viewUnitPriceError" class="text-red-500 text-xs mt-1 hidden">Only numbers and a single decimal point are allowed</div>
-          </div>
-        </div>
-        
-        <!-- Current Image Preview -->
-        <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
-          <label class="block text-xs font-medium text-gray-700 mb-2">Current Image</label>
-          <div id="viewCurrentImagePreview" class="w-full h-64 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden mb-2">
-            <img src="" alt="Current Item Image" class="max-w-full max-h-full object-contain">
-          </div>
-        </div>
-        
-        <!-- New Image Upload -->
-        <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
-          <label for="viewItemImage" class="block text-xs font-medium text-gray-700 mb-2">Update Image</label>
-          
-          <!-- New Image Preview -->
-          <div id="viewNewImagePreviewContainer" class="hidden mb-3">
-            <div class="w-full h-64 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden mb-2">
-              <img id="viewNewImagePreview" src="#" alt="New Image Preview" class="max-w-full max-h-full object-contain">
-            </div>
-            <span class="text-xs text-gray-500">New Image Preview</span>
-          </div>
-          
-          <!-- File Upload -->
-          <div class="relative">
-            <input type="file" id="viewItemImage" name="viewItemImage" accept="image/*" 
-                   class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20"
-                   onchange="previewViewItemImage(this)">
-            <div class="w-full px-3 py-8 border border-dashed border-gray-300 rounded-lg bg-gray-50 text-gray-500 text-center text-xs sm:text-sm flex flex-col items-center justify-center">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-8 h-8 mb-2 text-sidebar-accent">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                <polyline points="17 8 12 3 7 8"></polyline>
-                <line x1="12" y1="3" x2="12" y2="15"></line>
-              </svg>
-              <span>Click to upload or drag and drop</span>
-              <span class="text-xs text-gray-400 mt-1">PNG, JPG, JPEG (Max 5MB)</span>
-            </div>
-          </div>
-        </div>
-      </form>
     </div>
     
     <!-- Modal Footer -->
@@ -840,231 +720,13 @@ if ($branchResult->num_rows > 0) {
       <button class="w-full sm:w-auto px-4 sm:px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center" onclick="closeViewItemModal()">
         Cancel
       </button>
-      <button type="button" class="w-full sm:w-auto px-5 sm:px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="saveItemChanges()">
+      <button class="w-full sm:w-auto px-5 sm:px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="saveItemChanges()">
         Save Changes
       </button>
     </div>
   </div>
 </div>
 
-<script>
-// View Item Name Validation
-function validateViewItemName(input) {
-  const errorElement = document.getElementById('viewItemNameError');
-  let value = input.value;
-  
-  // Check if first character is space
-  if (value.length > 0 && value.charAt(0) === ' ') {
-    errorElement.classList.remove('hidden');
-    input.value = value.trim();
-    return;
-  }
-  
-  // Check for consecutive spaces
-  if (value.includes('  ')) {
-    errorElement.classList.remove('hidden');
-    input.value = value.replace(/\s+/g, ' ');
-    return;
-  }
-  
-  errorElement.classList.add('hidden');
-  
-  // Auto-capitalize first letter
-  if (value.length === 1) {
-    input.value = value.charAt(0).toUpperCase() + value.slice(1);
-  }
-}
-
-// View Quantity Validation
-function validateViewQuantity(input) {
-  const errorElement = document.getElementById('viewQuantityError');
-  
-  if (input.value < 0) {
-    errorElement.classList.remove('hidden');
-    input.value = '';
-  } else {
-    errorElement.classList.add('hidden');
-  }
-}
-
-// View Unit Price Validation
-function validateViewUnitPrice(input) {
-  const errorElement = document.getElementById('viewUnitPriceError');
-  let value = input.value;
-  
-  // Remove any non-digit or non-dot characters
-  let newValue = value.replace(/[^0-9.]/g, '');
-  
-  // Remove multiple dots, keeping only the first one
-  const dotCount = newValue.split('.').length - 1;
-  if (dotCount > 1) {
-    const parts = newValue.split('.');
-    newValue = parts[0] + '.' + parts.slice(1).join('');
-  }
-  
-  // Check if first character is dot
-  if (newValue.charAt(0) === '.') {
-    newValue = '0' + newValue;
-  }
-  
-  // Update the input value
-  input.value = newValue;
-  
-  // Show error if original value had invalid characters
-  if (value !== newValue) {
-    errorElement.classList.remove('hidden');
-  } else {
-    errorElement.classList.add('hidden');
-  }
-}
-
-// View Image Preview Functionality
-function previewViewItemImage(input) {
-  const previewContainer = document.getElementById('viewNewImagePreviewContainer');
-  const preview = document.getElementById('viewNewImagePreview');
-  
-  if (input.files && input.files[0]) {
-    // Check file size (max 5MB)
-    if (input.files[0].size > 5 * 1024 * 1024) {
-      alert('File size exceeds 5MB limit');
-      input.value = '';
-      return;
-    }
-    
-    const reader = new FileReader();
-    
-    reader.onload = function(e) {
-      preview.src = e.target.result;
-      previewContainer.classList.remove('hidden');
-    }
-    
-    reader.readAsDataURL(input.files[0]);
-  } else {
-    previewContainer.classList.add('hidden');
-    preview.src = '#';
-  }
-}
-
-// Function to load item data into the modal
-function loadItemDetails(itemId) {
-  // Show loading indicator
-  document.getElementById('loadingIndicator').classList.remove('hidden');
-  document.getElementById('viewItemForm').classList.add('hidden');
-  
-  // Fetch item details via AJAX
-  fetch(`get_item_details.php?id=${itemId}`)
-    .then(response => response.json())
-    .then(data => {
-      // Populate form fields
-      document.getElementById('viewItemId').value = data.id;
-      document.getElementById('viewItemName').value = data.name;
-      document.getElementById('viewCategory').value = data.category_id;
-      document.getElementById('viewQuantity').value = data.quantity;
-      document.getElementById('viewUnitPrice').value = parseFloat(data.unit_price).toFixed(2);
-      
-      // Set current image preview
-      const currentImagePreview = document.querySelector('#viewCurrentImagePreview img');
-      currentImagePreview.src = data.image || 'placeholder-image.jpg';
-      currentImagePreview.alt = data.name;
-      
-      // Hide loading indicator and show form
-      document.getElementById('loadingIndicator').classList.add('hidden');
-      document.getElementById('viewItemForm').classList.remove('hidden');
-    })
-    .catch(error => {
-      console.error('Error loading item details:', error);
-      alert('Failed to load item details');
-      closeViewItemModal();
-    });
-}
-
-// Function to save changes
-function saveItemChanges() {
-  const form = document.getElementById('viewItemForm');
-  
-  // Validate form before submission
-  if (!validateViewItemForm()) {
-    return;
-  }
-  
-  // Prepare form data
-  const formData = new FormData(form);
-  
-  // Send data via AJAX
-  fetch('update_item.php', {
-    method: 'POST',
-    body: formData
-  })
-  .then(response => response.json())
-  .then(data => {
-    if (data.success) {
-      alert('Item updated successfully');
-      closeViewItemModal();
-      // Refresh the inventory list
-      loadInventoryItems();
-    } else {
-      alert('Error updating item: ' + (data.message || 'Unknown error'));
-    }
-  })
-  .catch(error => {
-    console.error('Error updating item:', error);
-    alert('Failed to update item');
-  });
-}
-
-// Form validation
-function validateViewItemForm() {
-  let isValid = true;
-  
-  // Validate item name
-  const itemName = document.getElementById('viewItemName').value;
-  if (itemName.trim() === '' || itemName.charAt(0) === ' ' || itemName.includes('  ')) {
-    document.getElementById('viewItemNameError').classList.remove('hidden');
-    isValid = false;
-  }
-  
-  // Validate quantity
-  const quantity = document.getElementById('viewQuantity').value;
-  if (quantity < 1) {
-    document.getElementById('viewQuantityError').classList.remove('hidden');
-    isValid = false;
-  }
-  
-  // Validate unit price
-  const unitPrice = document.getElementById('viewUnitPrice').value;
-  if (unitPrice === '' || isNaN(parseFloat(unitPrice)) || parseFloat(unitPrice) < 0) {
-    document.getElementById('viewUnitPriceError').classList.remove('hidden');
-    isValid = false;
-  }
-  
-  // Focus on first invalid field
-  if (!isValid) {
-    if (itemName.trim() === '' || itemName.charAt(0) === ' ' || itemName.includes('  ')) {
-      document.getElementById('viewItemName').focus();
-    } else if (quantity < 1) {
-      document.getElementById('viewQuantity').focus();
-    } else {
-      document.getElementById('viewUnitPrice').focus();
-    }
-  }
-  
-  return isValid;
-}
-
-// Open modal function
-function openViewItemModal(itemId) {
-  loadItemDetails(itemId);
-  document.getElementById('viewItemModal').classList.remove('hidden');
-}
-
-// Close modal function
-function closeViewItemModal() {
-  document.getElementById('viewItemModal').classList.add('hidden');
-  // Reset form
-  document.getElementById('viewItemForm').reset();
-  document.getElementById('viewNewImagePreviewContainer').classList.add('hidden');
-}
-</script>
 
 <!-- Add Inventory Modal -->
 <div id="addInventoryModal" class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto">
