@@ -1093,7 +1093,7 @@ document.addEventListener('DOMContentLoaded', function() {
 <div id="bookings" class="tab-content">
     <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
         <!-- Header with enhanced styling -->
-        <div class="bg-navy p-6 border-b border-gray-100 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 tab-header">
+        <div class=".bookings bg-navy p-6 border-b border-gray-100 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 tab-header">
             <h3 class="font-hedvig text-xl sm:text-2xl text-white font-semibold">My Bookings</h3>
         </div>
         
@@ -1164,9 +1164,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     $amount_paid = $booking['amount_paid'] ? number_format($booking['amount_paid'], 2) : '0.00';
                     $balance = number_format($booking['selling_price'] - ($booking['amount_paid'] ?? 0), 2);
             ?>
-            <!-- booking contents -->
+            
             <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden mb-4">
-                <div class="bg-navy-300 px-4 py-3 sm:px-6 sm:py-4 border-b border-gray-200">
+                <div class="bg-navy bg-opacity-10 px-4 py-3 sm:px-6 sm:py-4 border-b border-gray-200">
                     <div class="flex items-center justify-between mb-3">
                         <span class="<?php echo $status_class; ?> text-xs px-2 py-1 rounded-full"><?php echo $status_text; ?></span>
                         <p class="text-sm text-gray-500">Booking ID: <?php echo $booking['booking_id']; ?></p>
