@@ -292,6 +292,23 @@ header("Pragma: no-cache");
         height: calc(100vh - var(--navbar-height) - 1rem); /* Full height minus navbar */
         overflow-y: auto; /* Enable scrolling if content is too long */
     }
+    /* Add this to your existing styles */
+    .tab-header {
+        padding: 1.5rem; /* p-6 equivalent to match left nav */
+        height: 72px; /* Match the height of left nav header */
+        display: flex;
+        align-items: center;
+    }
+    
+    /* Adjust the specific tab headers */
+    #personal-info .bg-navy,
+    #bookings .bg-navy,
+    #transaction-logs .p-6 {
+        padding: 1.5rem !important;
+        height: 72px !important;
+        display: flex !important;
+        align-items: center !important;
+    }
     
     </style>
 </head>
@@ -543,7 +560,7 @@ header("Pragma: no-cache");
 <div id="personal-info" class="tab-content">
     <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
         <!-- Header with enhanced styling - now stacked on mobile -->
-        <div class="bg-navy p-4 sm:p-6 border-b border-gray-100 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+        <div class="bg-navy p-6 border-b border-gray-100 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 tab-header">
             <h3 class="font-hedvig text-xl sm:text-2xl text-white font-semibold">Personal Information</h3>
             
             <div class="flex flex-col sm:flex-row gap-2 sm:gap-3 sm:space-x-0 w-full sm:w-auto">
@@ -1061,7 +1078,7 @@ document.addEventListener('DOMContentLoaded', function() {
 <div id="bookings" class="tab-content">
     <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
         <!-- Header with enhanced styling -->
-        <div class="bg-navy p-4 sm:p-6 border-b border-gray-100 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+        <div class="bg-navy p-6 border-b border-gray-100 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 tab-header">
             <h3 class="font-hedvig text-xl sm:text-2xl text-white font-semibold">My Bookings</h3>
         </div>
         
@@ -1213,7 +1230,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <!-- Transaction Logs Tab -->
 <div id="transaction-logs" class="tab-content">
     <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
-        <div class="p-6 border-b border-gray-100 flex justify-between items-center">
+    <div class="p-6 border-b border-gray-100 flex justify-between items-center tab-header">
             <h3 class="font-hedvig text-xl text-navy">Payment History</h3>
             <div class="flex space-x-2">
                 <button id="export-transactions" class="bg-navy text-white px-3 py-1 rounded hover:bg-navy/80 transition text-sm">
