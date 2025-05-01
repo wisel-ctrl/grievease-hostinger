@@ -1929,11 +1929,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             
 
-            if (customPackageData.casket) {
-                document.getElementById('casketID').value = customPackageData.casket.id;
-            } else {
-                document.getElementById('casketID').value = '';
-            }
+            
 
             // Log all the data to console
             console.log('Custom Package Booking Data:', customBookingData);
