@@ -286,12 +286,21 @@ header("Pragma: no-cache");
 
  /* Add this to your existing styles */
  .sticky-sidebar {
+    /* Default styles for mobile/small screens */
+    position: static;
+    height: auto;
+    overflow-y: visible;
+}
+@media (min-width: 1024px) {
+    .sticky-sidebar {
+        /* Sticky behavior only on larger screens */
         position: sticky;
-        top: calc(var(--navbar-height) + 1rem); /* Position below navbar with some spacing */
-        align-self: flex-start; /* Prevent stretching */
-        height: calc(100vh - var(--navbar-height) - 1rem); /* Full height minus navbar */
-        overflow-y: auto; /* Enable scrolling if content is too long */
+        top: calc(var(--navbar-height) + 1rem);
+        align-self: flex-start;
+        height: calc(100vh - var(--navbar-height) - 1rem);
+        overflow-y: auto;
     }
+}
     /* Add this to your existing styles */
     .tab-header {
         padding: 1.5rem; /* p-6 equivalent to match left nav */
@@ -2545,7 +2554,7 @@ function fetchBookingDetails(bookingId) {
                 if (data.status === 'Accepted' && data.accepted_date) {
                     // Create new paragraph for Accepted Date
                     const acceptedDateP = document.createElement('p');
-                    acceptedDateP.innerHTML = `<span> </span><span class="text-gray-500">Accepted Date:</span> <span class="text-navy">${formatDate(data.accepted_date)}</span>`;
+                    acceptedDateP.innerHTML = `<span class="text-gray-500">Accepted Date:</span> <span class="text-navy">${formatDate(data.accepted_date)}</span>`;
                     
                     // Insert after the status paragraph
                     document.getElementById('detail-status').parentNode.insertAdjacentElement('afterend', acceptedDateP);
