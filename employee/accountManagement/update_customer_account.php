@@ -7,20 +7,21 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     die(json_encode(['success' => false, 'message' => 'Invalid request method']));
 }
 
-$requiredFields = ['user_id', 'first_name', 'last_name', 'email', 'phone_number', 'branch_loc'];
+$requiredFields = ['user_id', 'first_name', 'last_name', 'email', 'phone_number', 'branch_loc', 'current_user'];
 foreach ($requiredFields as $field) {
-    if (empty($_POST[$field])) {
+    if (!isset($_POST[$field])) {
         die(json_encode(['success' => false, 'message' => "$field is required"]));
     }
 }
 
 $userId = (int)$_POST['user_id'];
+$currentUser = (int)$_POST['current_user'];
 $firstName = trim($_POST['first_name']);
 $lastName = trim($_POST['last_name']);
 $middleName = isset($_POST['middle_name']) ? trim($_POST['middle_name']) : null;
 $email = trim($_POST['email']);
 $phoneNumber = trim($_POST['phone_number']);
-$branchLoc = trim($_POST['branch_loc']); // Changed from (int) to trim() since it's varchar
+$branchLoc = trim($_POST['branch_loc']);
 
 // Validate email
 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -29,31 +30,53 @@ if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
 
 // Check if email already exists for another user
 $emailCheck = $conn->prepare("SELECT id FROM users WHERE email = ? AND id != ?");
-$emailCheck->bind_param("si", $email, $userId);
+$emailCheck->bind_param("si", $email, $currentUser);
 $emailCheck->execute();
-$emailCheck->store_result();
+$emailResult = $emailCheck->get_result();
 
-if ($emailCheck->num_rows > 0) {
+if ($emailResult->num_rows > 0) {
     die(json_encode(['success' => false, 'message' => 'Email already in use by another account']));
 }
 
-// Update user
-$updateQuery = "UPDATE users SET 
-    first_name = ?,
-    last_name = ?,
-    middle_name = ?,
-    email = ?,
-    phone_number = ?,
-    branch_loc = ?
-    WHERE id = ?";
+// Check if phone number already exists for another user
+$phoneCheck = $conn->prepare("SELECT id FROM users WHERE phone_number = ? AND id != ?");
+$phoneCheck->bind_param("si", $phoneNumber, $currentUser);
+$phoneCheck->execute();
+$phoneResult = $phoneCheck->get_result();
 
-$stmt = $conn->prepare($updateQuery);
-// Changed the bind_param type for branch_loc from 'i' to 's'
-$stmt->bind_param("ssssssi", $firstName, $lastName, $middleName, $email, $phoneNumber, $branchLoc, $userId);
+if ($phoneResult->num_rows > 0) {
+    die(json_encode(['success' => false, 'message' => 'Phone number already in use by another account']));
+}
 
-if ($stmt->execute()) {
+// Start transaction
+$conn->begin_transaction();
+
+try {
+    // Update user
+    $updateQuery = "UPDATE users SET 
+        first_name = ?,
+        last_name = ?,
+        middle_name = ?,
+        email = ?,
+        phone_number = ?,
+        branch_loc = ?,
+        is_verified = 1
+        WHERE id = ?";
+
+    $stmt = $conn->prepare($updateQuery);
+    $stmt->bind_param("ssssssi", $firstName, $lastName, $middleName, $email, $phoneNumber, $branchLoc, $userId);
+
+    if (!$stmt->execute()) {
+        throw new Exception('Failed to update customer: ' . $conn->error);
+    }
+
+    // Commit transaction
+    $conn->commit();
+    
     echo json_encode(['success' => true, 'message' => 'Customer updated successfully']);
-} else {
-    echo json_encode(['success' => false, 'message' => 'Failed to update customer: ' . $conn->error]);
+} catch (Exception $e) {
+    // Rollback transaction on error
+    $conn->rollback();
+    echo json_encode(['success' => false, 'message' => $e->getMessage()]);
 }
 ?>

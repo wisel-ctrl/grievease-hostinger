@@ -593,9 +593,9 @@ require_once '../db_connect.php';
     </div>
   </div>
   
-    <!-- OTP Verification Modal -->
-<div id="otpVerificationModal" class="fixed inset-0 bg-black bg-opacity-60 z-50 hidden overflow-y-auto flex items-center justify-center p-4 w-full h-full">
-  <div class="bg-white rounded-xl shadow-xl w-full max-w-md mx-2">
+<!-- OTP Verification Modal -->
+<div id="otpVerificationModal" class="fixed inset-0 bg-black bg-opacity-60 z-[9999] hidden overflow-y-auto flex items-center justify-center p-4 overscroll-contain [will-change:transform]">
+  <div class="bg-white relative z-[10000] rounded-xl shadow-xl w-full max-w-md mx-2">
     <!-- Modal Header -->
     <div class="bg-gradient-to-r from-sidebar-accent to-white flex justify-between items-center p-6 flex-shrink-0 rounded-t-xl">
       <h3 class="text-xl font-bold text-white"><i class="fas fa-shield-alt"></i> Email Verification</h3>
@@ -623,13 +623,12 @@ require_once '../db_connect.php';
       <button onclick="closeOtpModal()" class="px-5 py-3 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-semibold hover:bg-navy transition-colors">
         Cancel
       </button>
-      <button onclick="verifyOTP()" class="px-6 py-3 bg-sidebar-accent text-white rounded-lg font-semibold hover:bg-darkgold transition-colors flex items-center">
+      <button id="verifyOtpBtn" onclick="verifyOTP()" class="px-6 py-3 bg-sidebar-accent text-white rounded-lg font-semibold hover:bg-darkgold transition-colors flex items-center">
         <i class="fas fa-check-circle mr-2"></i> Verify
       </button>
     </div>
   </div>
 </div>
-
   
   
   <!-- CUSTOMER ACCOUNT CREATION VALIDATION -->
@@ -1554,7 +1553,16 @@ let currentPage = 1;
 let currentSearch = '';
 let currentSort = 'id_asc';
 
+// Global variables for edit modal
+let originalEmail = '';
+let originalPhone = '';
+let currentUserId = 0;
+let emailChanged = false;
+
 function openEditCustomerAccountModal(userId) {
+    currentUserId = userId;
+    emailChanged = false;
+    
     // Show loading state
     Swal.fire({
         title: 'Loading...',
@@ -1570,7 +1578,10 @@ function openEditCustomerAccountModal(userId) {
         .then(data => {
             Swal.close();
             if (data.success) {
-                // Create modal HTML
+                originalEmail = data.user.email;
+                originalPhone = data.user.phone_number;
+                
+                // Create modal HTML with validation indicators
                 const modalHTML = `
                 <div id="editCustomerModal" class="fixed inset-0 z-50 overflow-auto bg-black bg-opacity-40 flex items-center justify-center">
                     <div class="bg-white rounded-lg shadow-xl w-full max-w-md mx-4">
@@ -1611,16 +1622,35 @@ function openEditCustomerAccountModal(userId) {
                                            class="w-full p-2 border border-gray-300 rounded text-sm focus:ring-sidebar-accent focus:border-sidebar-accent">
                                 </div>
                                 
-                                <div>
+                                <div class="relative">
                                     <label class="block text-xs font-medium text-gray-700 mb-1">Email <span class="text-red-500">*</span></label>
                                     <input type="email" name="email" value="${data.user.email || ''}" 
-                                           class="w-full p-2 border border-gray-300 rounded text-sm focus:ring-sidebar-accent focus:border-sidebar-accent" required>
+                                           class="w-full p-2 border border-gray-300 rounded text-sm focus:ring-sidebar-accent focus:border-sidebar-accent" 
+                                           required oninput="checkEmailAvailability(this.value)">
+                                    <div id="emailAvailability" class="absolute right-2 top-7 text-xs hidden">
+                                        <i class="fas fa-check-circle text-green-500"></i>
+                                        <span class="ml-1">Available</span>
+                                    </div>
+                                    <div id="emailUnavailable" class="absolute right-2 top-7 text-xs hidden">
+                                        <i class="fas fa-times-circle text-red-500"></i>
+                                        <span class="ml-1">In use</span>
+                                    </div>
                                 </div>
                                 
-                                <div>
+                                <div class="relative">
                                     <label class="block text-xs font-medium text-gray-700 mb-1">Phone Number <span class="text-red-500">*</span></label>
-                                    <input type="tel" name="phone_number" value="${data.user.phone_number || ''}" 
-                                           class="w-full p-2 border border-gray-300 rounded text-sm focus:ring-sidebar-accent focus:border-sidebar-accent" required>
+                                    <input type="text" name="phone_number" value="${data.user.phone_number || ''}"
+                                       class="w-full p-2 border border-gray-300 rounded text-sm focus:ring-sidebar-accent focus:border-sidebar-accent"
+                                       inputmode="numeric" pattern="[0-9]*" maxlength="15"
+                                       required oninput="this.value = this.value.replace(/[^0-9]/g, ''); checkPhoneAvailability(this.value)">
+                                    <div id="phoneAvailability" class="absolute right-2 top-7 text-xs hidden">
+                                        <i class="fas fa-check-circle text-green-500"></i>
+                                        <span class="ml-1">Available</span>
+                                    </div>
+                                    <div id="phoneUnavailable" class="absolute right-2 top-7 text-xs hidden">
+                                        <i class="fas fa-times-circle text-red-500"></i>
+                                        <span class="ml-1">In use</span>
+                                    </div>
                                 </div>
                                 
                                 <div>
@@ -1643,7 +1673,7 @@ function openEditCustomerAccountModal(userId) {
                                     class="px-4 py-2 border border-gray-300 rounded text-gray-700 hover:bg-gray-100 text-sm">
                                 Cancel
                             </button>
-                            <button onclick="saveCustomerChanges()" 
+                            <button onclick="validateAndSaveCustomerChanges()" 
                                     class="px-4 py-2 bg-sidebar-accent text-white rounded hover:bg-darkgold text-sm">
                                 Save Changes
                             </button>
@@ -1653,6 +1683,12 @@ function openEditCustomerAccountModal(userId) {
 
                 // Add modal to DOM
                 document.body.insertAdjacentHTML('beforeend', modalHTML);
+
+                // Add event listeners for email and phone changes
+                const emailInput = document.querySelector('#editCustomerModal input[name="email"]');
+                emailInput.addEventListener('change', function() {
+                    emailChanged = this.value !== originalEmail;
+                });
 
                 // Add event listener for Escape key
                 document.addEventListener('keydown', function handleEscape(e) {
@@ -1682,6 +1718,300 @@ function openEditCustomerAccountModal(userId) {
         });
 }
 
+// Check if email is available
+function checkEmailAvailability(email) {
+    const emailAvailability = document.getElementById('emailAvailability');
+    const emailUnavailable = document.getElementById('emailUnavailable');
+    
+    // Hide both indicators initially
+    emailAvailability.classList.add('hidden');
+    emailUnavailable.classList.add('hidden');
+
+    // If email is empty or unchanged, return early
+    if (!email || email === originalEmail) {
+        return;
+    }
+
+    // Validate email format
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(email)) {
+        return;
+    }
+
+    // Show loading state
+    emailAvailability.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Checking...';
+    emailAvailability.classList.remove('hidden');
+
+    fetch(`accountManagement/check_email.php?email=${encodeURIComponent(email)}&current_user=${currentUserId}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Availability response:', data);
+            
+            if (data.available) {
+                emailAvailability.innerHTML = '<i class="fas fa-check-circle text-green-500"></i> Available';
+                emailAvailability.classList.remove('hidden');
+                emailUnavailable.classList.add('hidden');
+            } else {
+                emailAvailability.classList.add('hidden');
+                emailUnavailable.innerHTML = `<i class="fas fa-times-circle text-red-500"></i> ${data.message || 'In use'}`;
+                emailUnavailable.classList.remove('hidden');
+            }
+        })
+        .catch(error => {
+            console.error('Error checking email availability:', error);
+            emailAvailability.classList.add('hidden');
+            emailUnavailable.innerHTML = '<i class="fas fa-exclamation-triangle text-yellow-500"></i> Error checking';
+            emailUnavailable.classList.remove('hidden');
+            setTimeout(() => emailUnavailable.classList.add('hidden'), 3000);
+        });
+}
+
+// Check if phone number is available
+function checkPhoneAvailability(phone) {
+    if (phone === originalPhone) {
+        // If phone hasn't changed, hide both indicators
+        document.getElementById('phoneAvailability').classList.add('hidden');
+        document.getElementById('phoneUnavailable').classList.add('hidden');
+        return;
+    }
+
+    // Simple phone validation first
+    const phonePattern = /^09\d{9}$/;
+    const cleanedPhone = phone.replace(/[^0-9]/g, '');
+    if (!phonePattern.test(cleanedPhone)) {
+        document.getElementById('phoneAvailability').classList.add('hidden');
+        document.getElementById('phoneUnavailable').classList.add('hidden');
+        return;
+    }
+
+    fetch(`accountManagement/check_phone.php?phone=${encodeURIComponent(phone)}&current_user=${currentUserId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.available) {
+                document.getElementById('phoneAvailability').classList.remove('hidden');
+                document.getElementById('phoneUnavailable').classList.add('hidden');
+            } else {
+                document.getElementById('phoneAvailability').classList.add('hidden');
+                document.getElementById('phoneUnavailable').classList.remove('hidden');
+            }
+        })
+        .catch(error => {
+            console.error('Error checking phone availability:', error);
+        });
+}
+
+function validateAndSaveCustomerChanges() {
+    const form = document.getElementById('editCustomerForm');
+    if (!form) return;
+
+    // Get form data
+    const formData = new FormData(form);
+    const newEmail = formData.get('email');
+    const newPhone = formData.get('phone_number');
+
+    // Validate required fields
+    const requiredFields = form.querySelectorAll('[required]');
+    let isValid = true;
+    
+    requiredFields.forEach(field => {
+        if (!field.value.trim()) {
+            field.classList.add('border-red-500');
+            isValid = false;
+        } else {
+            field.classList.remove('border-red-500');
+        }
+    });
+
+    if (!isValid) {
+        Swal.fire({
+            title: 'Validation Error',
+            text: 'Please fill in all required fields',
+            icon: 'error',
+            confirmButtonColor: '#d33'
+        });
+        return;
+    }
+
+    // Check if email is available (if changed)
+    if (newEmail !== originalEmail) {
+        // Check if the unavailable indicator is visible
+        if (!document.getElementById('emailUnavailable').classList.contains('hidden')) {
+            Swal.fire({
+                title: 'Email In Use',
+                text: 'The new email address is already in use by another account.',
+                icon: 'error',
+                confirmButtonColor: '#d33'
+            });
+            return;
+        }
+        
+        // Also check if we haven't finished checking availability
+        if (document.getElementById('emailAvailability').classList.contains('hidden') && 
+            document.getElementById('emailUnavailable').classList.contains('hidden')) {
+            Swal.fire({
+                title: 'Please Wait',
+                text: 'Email availability check is still in progress',
+                icon: 'warning',
+                confirmButtonColor: '#d33'
+            });
+            return;
+        }
+    }
+
+    // Check if phone is available (if changed)
+    if (newPhone !== originalPhone) {
+        // Check if the unavailable indicator is visible
+        if (!document.getElementById('phoneUnavailable').classList.contains('hidden')) {
+            Swal.fire({
+                title: 'Phone In Use',
+                text: 'The new phone number is already in use by another account.',
+                icon: 'error',
+                confirmButtonColor: '#d33'
+            });
+            return;
+        }
+        
+        // Also check if we haven't finished checking availability
+        if (document.getElementById('phoneAvailability').classList.contains('hidden') && 
+            document.getElementById('phoneUnavailable').classList.contains('hidden')) {
+            Swal.fire({
+                title: 'Please Wait',
+                text: 'Phone availability check is still in progress',
+                icon: 'warning',
+                confirmButtonColor: '#d33'
+            });
+            return;
+        }
+    }
+
+    // If email was changed, show OTP verification
+    if (emailChanged) {
+        showEditOTPModal(newEmail);
+    } else {
+        // Otherwise, save changes directly
+        saveCustomerChanges();
+    }
+}
+// Show OTP modal for email verification during edit
+function showEditOTPModal(email) {
+    // Set the email in the OTP modal
+    document.getElementById('otpEmail').textContent = email;
+    
+    // Send OTP to email
+    const formData = new FormData();
+    formData.append('email', email);
+    
+    // Show loading
+    Swal.fire({
+        title: 'Sending OTP...',
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', '../admin/addCustomer/send_otp.php', true);
+    
+    xhr.onload = function() {
+        Swal.close();
+        if (this.status === 200) {
+            const response = JSON.parse(this.responseText);
+            if (response.success) {
+                // Show OTP modal
+                const modal = document.getElementById('otpVerificationModal');
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                
+                // Update the verify button to handle edit flow
+                const verifyBtn = modal.querySelector('button[onclick="verifyOTP()"]');
+                verifyBtn.setAttribute('onclick', 'verifyEditOTP()');
+                
+                // Focus on first OTP input
+                const otpInputs = document.querySelectorAll('.otp-input');
+                if (otpInputs.length > 0) {
+                    otpInputs[0].focus();
+                }
+            } else {
+                Swal.fire({
+                    title: 'Error Occurred',
+                    text: response.message || 'Failed to send OTP',
+                    icon: 'error',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#d33'
+                });
+            }
+        }
+    };
+    
+    xhr.onerror = function() {
+        Swal.close();
+        Swal.fire({
+            title: 'Connection Error',
+            text: 'Failed to connect to server',
+            icon: 'error'
+        });
+    };
+    
+    xhr.send(formData);
+}
+
+// Verify OTP for edit flow
+function verifyEditOTP() {
+    // Collect OTP from inputs
+    const otpInputs = document.querySelectorAll('.otp-input');
+    let otpValue = '';
+    
+    otpInputs.forEach(input => {
+        otpValue += input.value;
+    });
+    
+    // Check if OTP is complete
+    if (otpValue.length !== 6) {
+        document.getElementById('otpError').textContent = 'Please enter all 6 digits';
+        document.getElementById('otpError').classList.remove('hidden');
+        return;
+    }
+    
+    // Verify OTP
+    const formData = new FormData();
+    formData.append('otp', otpValue);
+    
+    // Show loading
+    Swal.fire({
+        title: 'Verifying...',
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', '../admin/addCustomer/verify_otp.php', true);
+    
+    xhr.onload = function() {
+        Swal.close();
+        if (this.status === 200) {
+            const response = JSON.parse(this.responseText);
+            if (response.success) {
+                // OTP verified, proceed with saving changes
+                closeOtpModal();
+                saveCustomerChanges();
+            } else {
+                document.getElementById('otpError').textContent = response.message;
+                document.getElementById('otpError').classList.remove('hidden');
+            }
+        }
+    };
+    
+    xhr.send(formData);
+}
+
 function closeEditCustomerModal() {
     const modal = document.getElementById('editCustomerModal');
     if (modal) {
@@ -1693,6 +2023,10 @@ function saveCustomerChanges() {
     const form = document.getElementById('editCustomerForm');
     if (!form) return;
 
+    // Get all current form values
+    const formData = new FormData(form);
+    const currentEmail = formData.get('email');
+    
     // Validate required fields
     const requiredFields = form.querySelectorAll('[required]');
     let isValid = true;
@@ -1725,13 +2059,19 @@ function saveCustomerChanges() {
         }
     });
 
-    const formData = new FormData(form);
+    // Add the current_user parameter to check against
+    formData.append('current_user', currentUserId);
     
     fetch('accountManagement/update_customer_account.php', {
         method: 'POST',
         body: formData
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
     .then(data => {
         Swal.close();
         if (data.success) {
@@ -1759,7 +2099,7 @@ function saveCustomerChanges() {
         Swal.close();
         Swal.fire({
             title: 'Error!',
-            text: 'An error occurred while updating customer account',
+            text: 'An error occurred while updating customer account: ' + error.message,
             icon: 'error',
             confirmButtonColor: '#d33'
         });
