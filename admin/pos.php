@@ -651,11 +651,13 @@ document.addEventListener('DOMContentLoaded', function() {
         const dodField = document.getElementById('dateOfDeath');
         const burialField = document.getElementById('dateOfBurial');
         const today = new Date();
+        const tomorrow = new Date(today);
+        tomorrow.setDate(today.getDate() + 1);
         
-        // Set max dates to today
+        // Set max dates to today for DOB and DOD
         if (dobField) dobField.max = today.toISOString().split('T')[0];
         if (dodField) dodField.max = today.toISOString().split('T')[0];
-        if (burialField) burialField.max = today.toISOString().split('T')[0];
+        if (burialField) burialField.min = tomorrow.toISOString().split('T')[0]; // Set min date for burial to tomorrow
         
         // Validate date of death
         if (dodField) {
@@ -746,7 +748,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         reader.readAsDataURL(file);
                     } else if (file.type === 'application/pdf') {
                         // For PDF files, show a PDF icon instead
-                        previewImage.src = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzODQgNTEyIj48cGF0aCBmaWxsPSIjMDAwIiBkPSJNMTgxLjkgMjU2LjFjLTUtMTYtNC45LTQ2LjktMi0xNjguOUMxODIuMSA0My4xIDE4Mi4xIDQyLjkgMTgyIDQyLjlzLS4xLjEtLjEgMS4xdjIxMy4yYTEwIDEwIDAgMCAxLTUuNiA5TDEwNiA0MTMuNXYyLjNjMCAyLjQgMS43IDQuMyAzLjkgNC4zLjEgMCAuMiAwIC4zIDBoMTkzLjZjMi4yIDAgNC0xLjkgNC00LjN2LTIuNGMwLTIuNC0xLjctNC4zLTMuOS00LjNoLTc4LjFsMTE1LjktMTc4LjJjMTcuOS0yNy42IDMuOS02MS41LTI2LjYtNjEuNUgxODEuOXptLTI1LjkgMTQ0LjRjLTcgMTctMTkuMiAxNC40LTI4LjcgMTEuMy0zLjYtMS4yLTYuMi0yLjEtNS42LTMuNi44LTEuNSA2LjEtMy43IDkuNy0yLjYgMi45IDEgMy4xIDIuNSA0LjEgNS4zLjkgMi43IDEuMSAzLjMgMy4xIDIuNCAxLjgtLjggMS4xLTIuOSAxLjEtMi45cy0uMS0uMi0uMS0uM2MwLS40LS4xLS43LS4xLS45IDAtMi4xIDIuOS0zLjcgNS44LTQuOCA3LjUtMi44IDE3LjQtMS4xIDE4LjkgMTEuNCAxLjUgMTIuOS0xMS4xIDI0LjItMTkuMSAxOC4yLTIuNS0xLjktNC0zLjctMi4xLTUuNnptLTExLjctMTMxLjljLTE0LjktMi4xLTE5LjYgMTYuMS0xOS42IDE2LjEgMy4zLTEzLjkgMTYuNy0xMy4yIDE5LjYtMTYuMXptLTQ0LjkgOS4xYy0yLjMgOC41LTEyLjEgNS45LTEyLjEgNS45cy0yLjItLjEtMy4zLTEuNGMtMS4xLTEuMy0xLjQtMi42LTEuNC0yLjZzLTEuNyAxMy40LTcuNCAxMy40Yy01LjcgMC04LjYtNy4zLTguNi0xMy40IDAtNi4xIDQuNi0xMy40IDE0LjEtMTMuNCA5LjUgMCAxNC4xIDcuMyAxNC4xIDEzLjQgMCAwLTEuMSA0LjEtMy40IDMuNHptLTQ5LjUgMTYuOWMtMi4zLTEuNC0zLjYtMS4yLTMuNi0xLjJzLTMuMS0uMi02LjEgMS4yYy0zIDEuNC0xLjkgMy4xLTEuOSAzLjFzLTUuNS0yLjctMTEuOS0uOGMtNi40IDEuOS00LjkgNi4xLTQuOSA2LjEgMy4zIDUuMSAxMy43IDMuNiAxNy4yIDIuMiAzLjUtMS40IDUuMS0yLjIgNS4xLTIuMnMxLjQgMS4zIDQuNyAxLjNjMy4zIDAgMTEuOS0xLjQgMTEuOS0xLjQgMCAwIDUuMy0xLjkgMy42LTYuOC0xLjctNC45LTkuNS0zLjEtMTIuMS0xLjl6Ii8+PC9zdmc+';
+                        previewImage.src = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzODQgNTEyIj48cGF0aCBmaWxsPSIjMDAwIiBkPSJNMTgxLjkgMjU2LjFjLTUtMTYtNC45LTQ2LjktMi0xNjguOUMxODIuMSA0My4xIDE4Mi4xIDQyLjkgMTgyIDQyLjlzLS4xLjEtLjEgMS4xdjIxMy4yYTEwIDEwIDAgMCAxLTUuNiA5TDEwNiA0MTMuNXYyLjNjMCAyLjQgMS43IDQuMyAzLjkgNC4zLjEgMCAuMiAwIC4zIDBoMTkzLjZjMi4yIDAgNC0xLjkgNC00LjN2LTIuNGMwLTIuNC0xLjctNC4zLTMuOS00LjNoLTc4LjFsMTE1LjktMTc4LjJjMTcuOS0yNy42IDMuOS02MS41LTI2LjYtNjEuNUgxODEuOXptLTI1LjkgMTQ0LjRjLTcgMTctMTkuMiAxNC40LTI4LjcgMTEuMy0zLjYtMS4yLTYuMi0yLjEtNS42LTMuNi44LTEuNSA2LjEtMy43IDkuNy0yLjYgMi45IDEgMy4xIDIuNSA0LjEgNS4zLjkgMi43IDEuMSAzLjMgMy4xIDIuNCAxLjgtLjggMS4xLTIuOSAxLjEtMi45cy0uMS0uMi0uMS0uM2MwLS40LS4xLS43LS4xLS45IDAtMi4xIDIuOS0zLjcgNS44LTQuOCA3LjUtMi44IDE3LjQtMS4xIDE4LjkgMTEuNCAxLjUgMTIuOS0xMS4xIDI0LjItMTkuMSAxOC4yLTIuNS0xLjktNC0zLjctMi4xLTUuNnptLTExLjctMTMxLjljLTE0LjktMi4xLTE5LjYgMTYuMS0xOS42IDE2LjEgMy4zLTEzLjkgMTYuNy0xMy4yIDE5LjYtMTYuMXptLTQ0LjkgOS4xYy0yLjMgOC41LTEyLjEgNS45LTEyLjEgNS45cy0yLjItLjEtMy4zLTEuNGMtMS4xLTEuMy0xLjQtMi42LTEuNC0yLjZzLTEuNyAxMy40LTcuNCAxMy40Yy01LjcgMC04LjYtNy4zLTguNi0xMy40IDAtNi4xIDQuNi0xMTMuNCAxNC4xLTEzLjQgOS41IDAgMTQuMSA3LjMgMTQuMSAxMy40IDAgMTEuOS0xLjQgMTEuOS0xLjQgMCAwIDUuMy0xLjkgMy42LTYuOC0xLjctNC45LTkuNS0zLjEtMTIuMS0xLjl6Ii8+PC9zdmc+';
                         previewContainer.classList.remove('hidden');
                     } else {
                         // For other file types, show a generic file icon
@@ -773,6 +775,7 @@ document.addEventListener('DOMContentLoaded', function() {
     setupImagePreview();
 });
 </script>
+
 
 <!-- Service Type Selection Modal -->
 <div id="serviceTypeModal" class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto">
