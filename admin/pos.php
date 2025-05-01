@@ -481,6 +481,250 @@ $servicesJson = json_encode($allServices);
   </div>
 </div>
 
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Name fields in the checkout modal
+    const modalNameFields = [
+        'clientFirstName',
+        'clientMiddleName',
+        'clientLastName',
+        'clientSuffix',
+        'deceasedFirstName',
+        'deceasedMiddleName',
+        'deceasedLastName',
+        'deceasedSuffix'
+    ];
+
+    // Function to validate name input
+    function validateNameInput(field) {
+        // First, remove any invalid characters
+        let newValue = field.value.replace(/[^a-zA-Z\s'-]/g, '');
+        
+        // Don't allow space as first character
+        if (newValue.startsWith(' ')) {
+            newValue = newValue.substring(1);
+        }
+        
+        // Don't allow consecutive spaces
+        newValue = newValue.replace(/\s{2,}/g, ' ');
+        
+        // Only allow space after at least 2 characters
+        if (newValue.length < 2 && newValue.includes(' ')) {
+            newValue = newValue.replace(/\s/g, '');
+        }
+        
+        // Update the field value
+        field.value = newValue;
+        
+        // Capitalize first letter of each word
+        if (field.value.length > 0) {
+            field.value = field.value.toLowerCase().replace(/(^|\s)\S/g, function(firstLetter) {
+                return firstLetter.toUpperCase();
+            });
+        }
+    }
+
+    // Function to apply validation to a field
+    function applyNameValidation(field) {
+        if (field) {
+            // Validate on input
+            field.addEventListener('input', function() {
+                validateNameInput(this);
+            });
+
+            // Validate on blur (when field loses focus)
+            field.addEventListener('blur', function() {
+                validateNameInput(this);
+            });
+
+            // Prevent paste of invalid content
+            field.addEventListener('paste', function(e) {
+                e.preventDefault();
+                const pastedText = (e.clipboardData || window.clipboardData).getData('text');
+                const cleanedText = pastedText.replace(/[^a-zA-Z\s'-]/g, '');
+                document.execCommand('insertText', false, cleanedText);
+            });
+        }
+    }
+
+    // Apply validation to modal fields
+    modalNameFields.forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        applyNameValidation(field);
+    });
+
+    // Required fields in the modal
+    const requiredModalFields = [
+        'clientFirstName', 
+        'clientLastName',
+        'deceasedFirstName',
+        'deceasedLastName'
+    ];
+
+    // Function to apply required validation
+    function applyRequiredValidation(field) {
+        if (field) {
+            field.addEventListener('blur', function() {
+                if (this.value.trim().length < 2) {
+                    this.setCustomValidity('Please enter at least 2 characters');
+                } else {
+                    this.setCustomValidity('');
+                }
+            });
+        }
+    }
+
+    // Apply to modal fields
+    requiredModalFields.forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        applyRequiredValidation(field);
+    });
+
+    // Validate phone number
+    function validatePhoneNumber() {
+        const phoneField = document.getElementById('clientPhone');
+        if (phoneField) {
+            phoneField.addEventListener('input', function() {
+                // Remove all non-digit characters
+                this.value = this.value.replace(/\D/g, '');
+                
+                // Ensure it starts with '09' and is 11 digits long
+                if (this.value.length > 11) {
+                    this.value = this.value.substring(0, 11);
+                }
+                if (this.value && !this.value.startsWith('09')) {
+                    this.setCustomValidity('Phone number must start with 09 and be 11 digits long.');
+                } else {
+                    this.setCustomValidity('');
+                }
+            });
+        }
+    }
+
+    // Validate email
+    function validateEmail() {
+        const emailField = document.getElementById('clientEmail');
+        if (emailField) {
+            emailField.addEventListener('input', function() {
+                // Remove spaces
+                this.value = this.value.replace(/\s/g, '');
+                
+                // Check if email contains @ symbol if there's a value
+                if (this.value && !this.value.includes('@')) {
+                    this.setCustomValidity('Email must contain @ symbol');
+                } else {
+                    this.setCustomValidity('');
+                }
+            });
+        }
+    }
+
+    // Validate address
+    function validateAddress() {
+        const addressField = document.getElementById('deceasedAddress');
+        if (addressField) {
+            addressField.addEventListener('input', function() {
+                // Remove spaces at the start
+                if (this.value.startsWith(' ')) {
+                    this.value = this.value.trimStart();
+                }
+                // Capitalize the first character
+                if (this.value.length > 0) {
+                    this.value = this.value.charAt(0).toUpperCase() + this.value.slice(1);
+                }
+            });
+        }
+    }
+
+    // Validate dates
+    function validateDates() {
+        const dobField = document.getElementById('dateOfBirth');
+        const dodField = document.getElementById('dateOfDeath');
+        const burialField = document.getElementById('dateOfBurial');
+        const today = new Date();
+        
+        // Set max dates to today
+        if (dobField) dobField.max = today.toISOString().split('T')[0];
+        if (dodField) dodField.max = today.toISOString().split('T')[0];
+        if (burialField) burialField.max = today.toISOString().split('T')[0];
+        
+        // Validate date of death
+        if (dodField) {
+            dodField.addEventListener('change', function() {
+                if (dobField && dobField.value) {
+                    const dob = new Date(dobField.value);
+                    const dod = new Date(this.value);
+                    if (dod < dob) {
+                        this.setCustomValidity('Date of death cannot be before date of birth');
+                    } else {
+                        this.setCustomValidity('');
+                    }
+                }
+            });
+        }
+        
+        // Validate date of burial
+        if (burialField) {
+            burialField.addEventListener('change', function() {
+                if (dodField && dodField.value) {
+                    const dod = new Date(dodField.value);
+                    const burial = new Date(this.value);
+                    if (burial < dod) {
+                        this.setCustomValidity('Date of burial cannot be before date of death');
+                    } else {
+                        this.setCustomValidity('');
+                    }
+                }
+            });
+        }
+    }
+
+    // Validate prices
+    function validatePrices() {
+        const totalPriceInput = document.getElementById('totalPrice');
+        const amountPaidInput = document.getElementById('amountPaid');
+
+        if (totalPriceInput) {
+            totalPriceInput.addEventListener('input', function() {
+                if (parseFloat(this.value) < 0) {
+                    this.value = 0;
+                    this.setCustomValidity('Total Price cannot be negative');
+                } else {
+                    this.setCustomValidity('');
+                }
+            });
+        }
+
+        if (amountPaidInput) {
+            amountPaidInput.addEventListener('input', function() {
+                if (parseFloat(this.value) < 0) {
+                    this.value = 0;
+                    this.setCustomValidity('Amount Paid cannot be negative');
+                } else {
+                    this.setCustomValidity('');
+                }
+                
+                // Validate if amount paid is less than total price
+                if (totalPriceInput && totalPriceInput.value) {
+                    if (parseFloat(this.value) < parseFloat(totalPriceInput.value)) {
+                        this.setCustomValidity('Amount paid cannot be less than total price');
+                    } else {
+                        this.setCustomValidity('');
+                    }
+                }
+            });
+        }
+    }
+
+    // Initialize all validations
+    validatePhoneNumber();
+    validateEmail();
+    validateAddress();
+    validateDates();
+    validatePrices();
+});
+</script>
+
 <!-- Service Type Selection Modal -->
 <div id="serviceTypeModal" class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto">
   <!-- Modal Backdrop -->
