@@ -3080,16 +3080,23 @@ document.addEventListener('DOMContentLoaded', function() {
     // Get the date input fields
     const dobInput = document.querySelector('input[name="deceased_birth"]');
     const dodInput = document.querySelector('input[name="deceased_dodeath"]');
+    const burialInput = document.querySelector('input[name="deceased_dateOfBurial"]');
     
-    if (dobInput && dodInput) {
+    if (dobInput && dodInput && burialInput) {
         // Set max date for Date of Birth (today)
-        const today = new Date().toISOString().split('T')[0];
-        dobInput.setAttribute('max', today);
+        const today = new Date();
+        const todayStr = today.toISOString().split('T')[0];
+        dobInput.setAttribute('max', todayStr);
+        
+        // Set min date for Burial Date (tomorrow)
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        const tomorrowStr = tomorrow.toISOString().split('T')[0];
+        burialInput.setAttribute('min', tomorrowStr);
         
         // Date of Birth validation
         dobInput.addEventListener('change', function() {
             const dob = new Date(this.value);
-            const today = new Date();
             
             // Validate Date of Birth is in the past
             if (dob >= today) {
@@ -3118,9 +3125,30 @@ document.addEventListener('DOMContentLoaded', function() {
             validateDeathDate(dob, dod);
         });
         
-        function validateDeathDate(dob, dod) {
-            const today = new Date();
+        // Burial Date validation
+        burialInput.addEventListener('change', function() {
+            const burialDate = new Date(this.value);
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
             
+            // Validate Burial Date is tomorrow or in the future
+            if (burialDate < tomorrow) {
+                alert('Burial Date must be tomorrow or a future date');
+                this.value = '';
+                return;
+            }
+            
+            // If Date of Death is set, validate Burial Date is after
+            if (dodInput.value) {
+                const dod = new Date(dodInput.value);
+                if (burialDate <= dod) {
+                    alert('Burial Date must be after Date of Death');
+                    this.value = '';
+                }
+            }
+        });
+        
+        function validateDeathDate(dob, dod) {
             // Date of Death must be after Date of Birth
             if (dod <= dob) {
                 alert('Date of Death must be after Date of Birth');
