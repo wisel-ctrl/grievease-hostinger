@@ -1001,102 +1001,7 @@ header("Pragma: no-cache");
         }
     }, 500);
 }
-// Updated validation function for names
-function validateName(input) {
-    const nameRegex = /^[A-Za-zÀ-ÿ'-]{2,}(?:\s[A-Za-zÀ-ÿ'-]+)*$/;
-    return nameRegex.test(input.value.trim());
-}
 
-// Function to capitalize the first letter of each word in name fields
-function autoCapitalizeNames(input) {
-    input.addEventListener('input', function(e) {
-        // Capitalize the first letter of each word
-        this.value = this.value.replace(/\b\w/g, function(char) {
-            return char.toUpperCase();
-        });
-    });
-}
-
-// Function to prevent invalid input - SPECIFICALLY FOR NAME FIELDS
-// Updated function to prevent invalid input
-function preventNumbersInNames(input) {
-    input.addEventListener('input', function(e) {
-        // Get cursor position before any changes
-        const cursorPos = this.selectionStart;
-        
-        // Remove any numbers that might have been entered
-        this.value = this.value.replace(/[0-9]/g, '');
-        
-        // Remove leading and trailing spaces
-        this.value = this.value.trim();
-        
-        // Prevent starting with a space or special character
-        if (this.value.startsWith(' ') || this.value.startsWith("'") || this.value.startsWith("-")) {
-            this.value = this.value.replace(/^[\s'-]+/, '');
-        }
-        
-        // Handle space restrictions
-        if (this.value.length < 2) {
-            // Don't allow spaces if less than 2 characters
-            this.value = this.value.replace(/\s/g, '');
-        }
-        
-        // Remove consecutive spaces or special characters
-        this.value = this.value.replace(/\s+/g, ' ');
-        this.value = this.value.replace(/'+/g, "'");
-        this.value = this.value.replace(/-+/g, "-");
-        
-        // Restore cursor position (adjusting for any removed characters)
-        this.setSelectionRange(cursorPos, cursorPos);
-        
-        // Validate and add/remove error styling
-        if (this.value && !validateName(this)) {
-            this.classList.add('border-error');
-            this.classList.remove('border-success');
-        } else if (this.value) {
-            this.classList.remove('border-error');
-            this.classList.add('border-success');
-        } else {
-            this.classList.remove('border-error');
-            this.classList.remove('border-success');
-        }
-    });
-    
-    input.addEventListener('paste', function(e) {
-    e.preventDefault();
-    let pastedText = e.clipboardData.getData('text/plain').trim();
-    
-    // Remove any numbers from pasted text
-    pastedText = pastedText.replace(/[0-9]/g, '');
-    
-    // Handle space restrictions in pasted text
-    if (pastedText.length < 2) {
-        pastedText = pastedText.replace(/\s/g, '');
-    }
-    
-    // Validate pasted text
-    if (validateName({ value: pastedText })) {
-        this.value = pastedText;
-        this.classList.remove('border-error');
-        this.classList.add('border-success');
-    } else {
-        this.value = '';
-        this.classList.add('border-error');
-        this.classList.remove('border-success');
-        
-        Swal.fire({
-            title: "Invalid Name",
-            text: "Names must have at least 2 characters before a space can be added.",
-            icon: "error",
-            confirmButtonText: "OK",
-        });
-    }
-});
-    
-    input.addEventListener('drop', function(e) {
-        e.preventDefault();
-    });
-}
 
 // Ensure the edit profile button listener is properly attached
 document.addEventListener('DOMContentLoaded', function() {
@@ -1107,60 +1012,11 @@ document.addEventListener('DOMContentLoaded', function() {
             modal.classList.remove('hidden');
             modal.classList.remove('opacity-0', 'scale-95');
             modal.classList.add('opacity-100', 'scale-100');
-            
-            // Apply name validation to the fields
-            const firstName = document.getElementById('firstName');
-            const lastName = document.getElementById('lastName');
-            const middleName = document.getElementById('middleName');
-            
-            if (firstName && lastName && middleName) {
-                // Apply auto-capitalization
-                autoCapitalizeNames(firstName);
-                autoCapitalizeNames(lastName);
-                autoCapitalizeNames(middleName);
-                
-                // Apply validation
-                preventNumbersInNames(firstName);
-                preventNumbersInNames(lastName);
-                preventNumbersInNames(middleName);
-            }
-            
             setTimeout(loadAddressData, 100);
         });
     }
 });
-
-document.getElementById('profile-form').addEventListener('submit', function(e) {
-    const firstName = document.getElementById('firstName');
-    const lastName = document.getElementById('lastName');
     
-    // Validate required name fields
-    if (!validateName(firstName) || !validateName(lastName)) {
-        e.preventDefault();
-        Swal.fire({
-            title: "Invalid Name",
-            text: "Please enter valid names (letters only, no numbers or special characters except apostrophes and hyphens).",
-            icon: "error",
-            confirmButtonText: "OK",
-        });
-        return false;
-    }
-    
-    // Middle name is optional but if provided, should be valid
-    const middleName = document.getElementById('middleName');
-    if (middleName.value && !validateName(middleName)) {
-        e.preventDefault();
-        Swal.fire({
-            title: "Invalid Middle Name",
-            text: "Please enter a valid middle name (letters only, no numbers or special characters except apostrophes and hyphens).",
-            icon: "error",
-            confirmButtonText: "OK",
-        });
-        return false;
-    }
-    
-    // If all validations pass, the form will submit normally
-});
     // Close modals when clicking outside
     window.addEventListener('click', function(event) {
         if (event.target === document.getElementById('imageModal')) {
