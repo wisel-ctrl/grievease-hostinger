@@ -2015,6 +2015,7 @@ document.addEventListener('DOMContentLoaded', function() {
       </div>
     </div>
   </div>
+                    </div>
 
         <!-- Documents Section -->
         <div class="bg-white rounded-xl shadow-sm p-5">
