@@ -627,15 +627,14 @@ if ($branchResult->num_rows > 0) {
                 <div class="relative filter-dropdown">
                     <button id="filterToggle<?php echo $branchId; ?>" class="px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover"
                             onclick="toggleFilterWindow(<?php echo $branchId; ?>)">
-                        <i class="fas fa-filter text-sidebar-accent"></i>
-                        <span>Filters</span>
-                        <?php if($categoryFilter || $statusFilter): ?>
-                            <span class="h-2 w-2 bg-sidebar-accent rounded-full"></span>
-                        <?php endif; ?>
-                    </button>
-                    
-                    <!-- Filter Window -->
-                    <div id="filterWindow<?php echo $branchId; ?>" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-4">
+                            <i class="fas fa-filter"></i>
+        <span>Filters</span>
+        <?php if($categoryFilter || $statusFilter): ?>
+            <span id="filterIndicator<?php echo $branchId; ?>" class="absolute top-1 right-1 h-2 w-2 bg-sidebar-accent rounded-full"></span>
+        <?php endif; ?>
+    </button>
+    
+    <div id="filterWindow<?php echo $branchId; ?>" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-4">
                         <div class="space-y-4">
                             <!-- Category Filter -->
                             <div>
