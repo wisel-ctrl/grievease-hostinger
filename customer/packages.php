@@ -1432,6 +1432,34 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+// Traditional Reference Number Validation (numbers only, no letters or spaces)
+function validateTraditionalReferenceNumber(input) {
+    // Remove any letters, spaces, or unwanted characters
+    let value = input.value.replace(/[a-zA-Z\s]/g, '');
+    
+    // Update the input value
+    input.value = value;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const referenceNumberInput = document.getElementById('traditionalReferenceNumber');
+    if (referenceNumberInput) {
+        referenceNumberInput.addEventListener('input', function() {
+            validateTraditionalReferenceNumber(this);
+        });
+        
+        referenceNumberInput.addEventListener('blur', function() {
+            validateTraditionalReferenceNumber(this);
+        });
+        
+        referenceNumberInput.addEventListener('paste', function(e) {
+            e.preventDefault();
+            const pastedText = (e.clipboardData || window.clipboardData).getData('text');
+            const cleanedText = pastedText.replace(/[a-zA-Z\s]/g, ''); // Remove letters and spaces
+            document.execCommand('insertText', false, cleanedText);
+        });
+    }
+});
 // Add this function to combine address components
 function combineAddress() {
     const region = document.getElementById('traditionalDeceasedRegion');
