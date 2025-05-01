@@ -778,6 +778,24 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
+<script>
+function confirmCheckout() {
+    const phoneField = document.getElementById('clientPhone');
+    
+    // Check if the phone number is valid
+    if (phoneField && phoneField.validity.valid) {
+        // Proceed with the order confirmation
+        alert("Order confirmed!");
+        // Add your order confirmation logic here
+    } else {
+        // Show an error message if the phone number is invalid
+        alert("Please enter a valid phone number that starts with '09' and is exactly 11 digits long.");
+        phoneField.focus(); // Focus on the phone number field
+    }
+}
+</script>
+
+
 
 <!-- Service Type Selection Modal -->
 <div id="serviceTypeModal" class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto">
