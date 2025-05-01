@@ -94,7 +94,7 @@ try {
             deathcert_url, 
             payment_url, 
             reference_code,
-            service_id,
+            service_id
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ");
 
