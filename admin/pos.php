@@ -950,7 +950,27 @@ $servicesJson = json_encode($allServices);
         }
     }
 
-    function validatePhoneNumber() {
+    
+
+    // Initialize max birthdates when page loads
+    setMaxBirthdate();
+    setMaxBeneficiaryBirthdate();
+
+    // Existing event listeners for the customer form
+    document.getElementById('firstName').addEventListener('input', validateFirstName);
+    document.getElementById('middleName').addEventListener('input', validateMiddleName);
+    document.getElementById('lastName').addEventListener('input', validateLastName);
+    document.getElementById('birthdate').addEventListener('change', validateBirthdate);
+    document.getElementById('customerEmail').addEventListener('input', validateEmail);
+    document.getElementById('customerPhone').addEventListener('input', validatePhoneNumber);
+    document.getElementById('branchLocation').addEventListener('change', validateBranchLocation);
+
+    // Event listeners for modal fields
+    document.getElementById('beneficiaryDateOfBirth')?.addEventListener('change', validateBeneficiaryBirthdate);
+    document.getElementById('lp-clientEmail')?.addEventListener('input', validateModalEmail);
+});
+
+function validatePhoneNumber() {
   const phoneField = document.getElementById('lp-clientPhone');
   phoneField.addEventListener('input', function() {
     // Remove all non-digit characters
@@ -966,7 +986,6 @@ $servicesJson = json_encode($allServices);
     }
   });
 }
-
 function validateEmail() {
   const emailField = document.getElementById('lp-clientEmail');
   emailField.addEventListener('input', function() {
@@ -1020,25 +1039,14 @@ function validatePrices() {
     }
   });
 }
-
-
-    // Initialize max birthdates when page loads
-    setMaxBirthdate();
-    setMaxBeneficiaryBirthdate();
-
-    // Existing event listeners for the customer form
-    document.getElementById('firstName').addEventListener('input', validateFirstName);
-    document.getElementById('middleName').addEventListener('input', validateMiddleName);
-    document.getElementById('lastName').addEventListener('input', validateLastName);
-    document.getElementById('birthdate').addEventListener('change', validateBirthdate);
-    document.getElementById('customerEmail').addEventListener('input', validateEmail);
-    document.getElementById('customerPhone').addEventListener('input', validatePhoneNumber);
-    document.getElementById('branchLocation').addEventListener('change', validateBranchLocation);
-
-    // Event listeners for modal fields
-    document.getElementById('beneficiaryDateOfBirth')?.addEventListener('change', validateBeneficiaryBirthdate);
-    document.getElementById('lp-clientEmail')?.addEventListener('input', validateModalEmail);
+document.addEventListener('DOMContentLoaded', function() {
+  validatePhoneNumber();
+  validateEmail();
+  validateAddress();
+  validateRelationship();
+  validatePrices();
 });
+
 
 </script>
 
