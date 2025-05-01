@@ -950,6 +950,155 @@ $servicesJson = json_encode($allServices);
         }
     }
 
+    // Validate Philippine phone number (starts with 09, 11 digits, no spaces/symbols)
+    function validatePhoneNumber() {
+        const phoneField = document.getElementById('customerPhone');
+        if (phoneField) {
+            // Remove all non-digit characters
+            let newValue = phoneField.value.replace(/\D/g, '');
+            
+            // Ensure it starts with 09 and is exactly 11 digits
+            if (newValue.length > 0) {
+                if (!newValue.startsWith('09')) {
+                    newValue = '09' + newValue.substring(2);
+                }
+                // Limit to 11 characters
+                newValue = newValue.substring(0, 11);
+            }
+            
+            phoneField.value = newValue;
+            
+            if (phoneField.value.length !== 11) {
+                phoneField.setCustomValidity('Philippine phone number must be 11 digits starting with 09');
+            } else {
+                phoneField.setCustomValidity('');
+            }
+        }
+    }
+
+    // Validate modal phone number
+    function validateModalPhoneNumber() {
+        const phoneField = document.getElementById('lp-clientPhone');
+        if (phoneField) {
+            // Remove all non-digit characters
+            let newValue = phoneField.value.replace(/\D/g, '');
+            
+            // Ensure it starts with 09 and is exactly 11 digits
+            if (newValue.length > 0) {
+                if (!newValue.startsWith('09')) {
+                    newValue = '09' + newValue.substring(2);
+                }
+                // Limit to 11 characters
+                newValue = newValue.substring(0, 11);
+            }
+            
+            phoneField.value = newValue;
+            
+            if (phoneField.value.length !== 11) {
+                phoneField.setCustomValidity('Philippine phone number must be 11 digits starting with 09');
+            } else {
+                phoneField.setCustomValidity('');
+            }
+        }
+    }
+
+    // Validate email (no spaces)
+    function validateEmail() {
+        const emailField = document.getElementById('customerEmail');
+        if (emailField) {
+            // Remove any spaces from the email
+            emailField.value = emailField.value.replace(/\s/g, '');
+            
+            // Check if email contains @ symbol
+            if (!emailField.value.includes('@')) {
+                emailField.setCustomValidity('Email must contain @ symbol');
+            } else {
+                emailField.setCustomValidity('');
+            }
+        }
+    }
+
+    // Validate modal email (no spaces)
+    function validateModalEmail() {
+        const emailField = document.getElementById('lp-clientEmail');
+        if (emailField && emailField.value) {
+            // Remove any spaces from the email
+            emailField.value = emailField.value.replace(/\s/g, '');
+            
+            // Check if email contains @ symbol
+            if (!emailField.value.includes('@')) {
+                emailField.setCustomValidity('Email must contain @ symbol');
+            } else {
+                emailField.setCustomValidity('');
+            }
+        }
+    }
+
+    // Validate address (no space as first character, auto capitalize first letter)
+    function validateAddress() {
+        const addressField = document.getElementById('beneficiaryAddress');
+        if (addressField) {
+            // Remove space from start
+            if (addressField.value.startsWith(' ')) {
+                addressField.value = addressField.value.substring(1);
+            }
+            
+            // Capitalize first letter if not empty
+            if (addressField.value.length > 0) {
+                addressField.value = addressField.value.charAt(0).toUpperCase() + 
+                                    addressField.value.slice(1);
+            }
+        }
+    }
+
+    // Validate relationship (no space as first character, no numbers/symbols, auto capitalize)
+    function validateRelationship() {
+        const relationshipField = document.getElementById('beneficiaryRelationship');
+        if (relationshipField) {
+            // Remove numbers and symbols (keep letters, spaces, apostrophes)
+            let newValue = relationshipField.value.replace(/[^a-zA-Z\s'-]/g, '');
+            
+            // Remove space from start
+            if (newValue.startsWith(' ')) {
+                newValue = newValue.substring(1);
+            }
+            
+            relationshipField.value = newValue;
+            
+            // Capitalize first letter if not empty
+            if (relationshipField.value.length > 0) {
+                relationshipField.value = relationshipField.value.charAt(0).toUpperCase() + 
+                                         relationshipField.value.slice(1);
+            }
+        }
+    }
+
+    // Validate total price (no negative values)
+    function validateTotalPrice() {
+        const priceField = document.getElementById('lp-totalPrice');
+        if (priceField) {
+            if (parseFloat(priceField.value) < 0) {
+                priceField.value = '';
+                priceField.setCustomValidity('Price cannot be negative');
+            } else {
+                priceField.setCustomValidity('');
+            }
+        }
+    }
+
+    // Validate amount paid (no negative values)
+    function validateAmountPaid() {
+        const amountField = document.getElementById('lp-amountPaid');
+        if (amountField) {
+            if (parseFloat(amountField.value) < 0) {
+                amountField.value = '';
+                amountField.setCustomValidity('Amount cannot be negative');
+            } else {
+                amountField.setCustomValidity('');
+            }
+        }
+    }
+
     // Initialize max birthdates when page loads
     setMaxBirthdate();
     setMaxBeneficiaryBirthdate();
@@ -966,6 +1115,11 @@ $servicesJson = json_encode($allServices);
     // Event listeners for modal fields
     document.getElementById('beneficiaryDateOfBirth')?.addEventListener('change', validateBeneficiaryBirthdate);
     document.getElementById('lp-clientEmail')?.addEventListener('input', validateModalEmail);
+    document.getElementById('lp-clientPhone')?.addEventListener('input', validateModalPhoneNumber);
+    document.getElementById('beneficiaryAddress')?.addEventListener('input', validateAddress);
+    document.getElementById('beneficiaryRelationship')?.addEventListener('input', validateRelationship);
+    document.getElementById('lp-totalPrice')?.addEventListener('input', validateTotalPrice);
+    document.getElementById('lp-amountPaid')?.addEventListener('input', validateAmountPaid);
 });
 </script>
 
