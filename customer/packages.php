@@ -1846,8 +1846,8 @@ function removeGcash() {
                         <div class="mb-3">
                             <label for="lifeplanEmailAddress" class="block text-sm font-medium text-navy mb-1">Email Address *</label>
                             <input type="email" id="lifeplanEmailAddress" name="emailAddress" required 
-       pattern="[^\s]+" 
-       title="Email address cannot contain spaces"
+       pattern="[^\s]+@[^\s]+\.[^\s]+" 
+       title="Please enter a valid email address (must contain @ and a domain)"
        class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                         </div>
                         
@@ -2024,20 +2024,48 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Email validation - prevent spaces
-    const emailInput = document.getElementById('lifeplanEmailAddress');
-    if (emailInput) {
-        emailInput.addEventListener('input', function() {
-            // Remove any spaces
-            this.value = this.value.replace(/\s/g, '');
-        });
+    // Email validation - ensure it contains @ and prevent spaces
+const emailInput = document.getElementById('lifeplanEmailAddress');
+if (emailInput) {
+    emailInput.addEventListener('input', function() {
+        // Remove any spaces
+        this.value = this.value.replace(/\s/g, '');
         
-        emailInput.addEventListener('paste', function(e) {
-            e.preventDefault();
-            const pastedText = (e.clipboardData || window.clipboardData).getData('text');
-            const cleanedText = pastedText.replace(/\s/g, ''); // Remove spaces
-            document.execCommand('insertText', false, cleanedText);
-        });
-    }
+        // Basic validation to ensure @ is present
+        if (this.value.indexOf('@') === -1) {
+            this.setCustomValidity('Email must contain @ symbol');
+        } else {
+            this.setCustomValidity('');
+        }
+    });
+    
+    emailInput.addEventListener('paste', function(e) {
+        e.preventDefault();
+        const pastedText = (e.clipboardData || window.clipboardData).getData('text');
+        const cleanedText = pastedText.replace(/\s/g, ''); // Remove spaces
+        document.execCommand('insertText', false, cleanedText);
+        
+        // Validate after paste
+        if (this.value.indexOf('@') === -1) {
+            this.setCustomValidity('Email must contain @ symbol');
+        } else {
+            this.setCustomValidity('');
+        }
+    });
+    
+    // Add blur validation
+    emailInput.addEventListener('blur', function() {
+        if (this.value.indexOf('@') === -1) {
+            this.setCustomValidity('Email must contain @ symbol');
+        } else {
+            this.setCustomValidity('');
+        }
+    });
+    
+    // Set pattern attribute for HTML5 validation
+    emailInput.pattern = "[^\s]+@[^\s]+\.[^\s]+";
+    emailInput.title = "Please enter a valid email address (must contain @ and a domain)";
+}
     
     // Add pattern validation for contact number (optional)
     if (contactNumberInput) {
