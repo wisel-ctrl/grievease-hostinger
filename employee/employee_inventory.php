@@ -62,7 +62,7 @@ function generateInventoryRow($row) {
     $html .= '<button class="p-1.5 bg-blue-100 text-blue-600 rounded hover:bg-blue-200 transition-all edit-btn" data-id="'.$row['inventory_id'].'">';
     $html .= '<i class="fas fa-edit"></i>';
     $html .= '</button>';
-    $html .= '<button class="p-1.5 bg-red-100 text-red-600 rounded hover:bg-red-200 transition-all">';
+    $html .= '<button class="p-1.5 bg-red-100 text-red-600 rounded hover:bg-red-200 transition-all archive-btn" data-id="'.$row['inventory_id'].'" data-name="'.htmlspecialchars($row['item_name']).'">';
     $html .= '<i class="fas fa-archive"></i>';
     $html .= '</button>';
     $html .= '</div>';
@@ -91,11 +91,11 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == 1) {
 
     // Fetch inventory items for the employee's branch with pagination
     $inventory_query = "SELECT i.inventory_id, i.item_name, ic.category_name as category, 
-                       i.quantity, i.price, i.total_value, i.status
-                       FROM inventory_tb i
-                       JOIN inventory_category ic ON i.category_id = ic.category_id
-                       WHERE i.branch_id = ?
-                       LIMIT ? OFFSET ?";
+                   i.quantity, i.price, i.total_value, i.status
+                   FROM inventory_tb i
+                   JOIN inventory_category ic ON i.category_id = ic.category_id
+                   WHERE i.branch_id = ? AND i.status = 1
+                   LIMIT ? OFFSET ?";
     $inventory_stmt = $conn->prepare($inventory_query);
     $inventory_stmt->bind_param("iii", $branch_id, $itemsPerPage, $offset);
     $inventory_stmt->execute();
@@ -125,18 +125,18 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == 1) {
     // Generate pagination links
     $paginationLinks = '';
     if ($currentPage > 1) {
-        $paginationLinks .= '<a href="#" onclick="loadPage('.$branch_id.', '.($currentPage - 1).')" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">&laquo;</a>';
+        $paginationLinks .= '<a href="#" onclick="'.(isset($_GET['search']) ? "searchInventory($branch_id, '".addslashes($_GET['search'])."', " : "loadPage($branch_id, ").($currentPage - 1).')" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">&laquo;</a>';
     } else {
         $paginationLinks .= '<button disabled class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm opacity-50 cursor-not-allowed">&laquo;</button>';
     }
     
     for ($i = 1; $i <= $totalPages; $i++) {
         $activeClass = ($i == $currentPage) ? 'bg-sidebar-accent text-white' : '';
-        $paginationLinks .= '<a href="#" onclick="loadPage('.$branch_id.', '.$i.')" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover '.$activeClass.'">'.$i.'</a>';
+        $paginationLinks .= '<a href="#" onclick="'.(isset($_GET['search']) ? "searchInventory($branch_id, '".addslashes($_GET['search'])."', " : "loadPage($branch_id, ").$i.')" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover '.$activeClass.'">'.$i.'</a>';
     }
     
     if ($currentPage < $totalPages) {
-        $paginationLinks .= '<a href="#" onclick="loadPage('.$branch_id.', '.($currentPage + 1).')" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">&raquo;</a>';
+        $paginationLinks .= '<a href="#" onclick="'.(isset($_GET['search']) ? "searchInventory($branch_id, '".addslashes($_GET['search'])."', " : "loadPage($branch_id, ").($currentPage + 1).')" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">&raquo;</a>';
     } else {
         $paginationLinks .= '<button disabled class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm opacity-50 cursor-not-allowed">&raquo;</button>';
     }
@@ -378,14 +378,24 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == 1) {
       <div class="flex justify-between items-center p-5 border-b border-sidebar-border">
         <h3 class="font-medium text-sidebar-text">Inventory Items</h3>
         <div class="flex items-center gap-3">
-          <div class="relative">
-            <input type="text" placeholder="Search inventory..." class="pl-9 pr-4 py-2 border border-sidebar-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
-            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-              <i class="fas fa-search text-gray-400"></i>
+            <!-- Add this button -->
+            <button onclick="openArchivedModal()" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-md text-sm flex items-center hover:bg-gray-300 transition-all duration-300">
+                <i class="fas fa-archive mr-2"></i> View Archived
+            </button>
+            
+            <!-- Existing search and add item buttons -->
+            <div class="relative">
+                <input type="text" id="inventorySearch" placeholder="Search inventory..." 
+                       class="pl-9 pr-8 py-2 border border-sidebar-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
+                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                    <i class="fas fa-search text-gray-400"></i>
+                </div>
+                <button id="clearSearch" class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 hidden">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
-          </div>
             <button onclick="openAddInventoryModal()" class="px-4 py-2 bg-sidebar-accent text-white rounded-md text-sm flex items-center hover:bg-darkgold transition-all duration-300">
-              <i class="fas fa-plus mr-2"></i> Add Item
+                <i class="fas fa-plus mr-2"></i> Add Item
             </button>
         </div>
       </div>
@@ -703,6 +713,58 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == 1) {
   </div>
 </div>
 
+<!-- Archived Items Modal -->
+<div id="archivedItemsModal" class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto">
+  <!-- Modal Backdrop -->
+  <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm" onclick="closeArchivedModal()"></div>
+  
+  <!-- Modal Content -->
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-4xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+    <!-- Close Button -->
+    <button type="button" class="absolute top-4 right-4 text-gray-500 hover:text-sidebar-accent transition-colors" onclick="closeArchivedModal()">
+      <i class="fas fa-times"></i>
+    </button>
+    
+    <!-- Modal Header -->
+    <div class="px-4 sm:px-6 py-4 sm:py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
+      <h3 class="text-lg sm:text-xl font-bold text-white flex items-center">
+        <i class="fas fa-archive mr-2"></i> Archived Inventory Items
+      </h3>
+    </div>
+    
+    <!-- Search Bar -->
+    <div class="px-4 sm:px-6 pt-4 pb-2 border-b border-gray-200">
+      <div class="relative">
+        <input type="text" id="archivedItemsSearch" placeholder="Search archived items..." 
+               class="w-full pl-10 pr-4 py-3 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+          <i class="fas fa-search text-gray-400"></i>
+        </div>
+        <button id="clearArchivedSearch" class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 hidden">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+    </div>
+    
+    <!-- Modal Body -->
+    <div class="px-4 sm:px-6 py-4 sm:py-5">
+      <div id="archivedItemsContent" class="min-h-[200px]">
+        <!-- Content will be loaded via AJAX -->
+        <div class="flex justify-center items-center h-full">
+          <i class="fas fa-spinner fa-spin text-2xl text-gray-400"></i>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Modal Footer --> 
+    <div class="px-4 sm:px-6 py-3 sm:py-4 flex justify-end border-t border-gray-200 sticky bottom-0 bg-white">
+      <button type="button" class="px-4 sm:px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200" onclick="closeArchivedModal()">
+        Close
+      </button>
+    </div>
+  </div>
+</div>
+
 
 <script>
     // Load initial page content
@@ -990,6 +1052,417 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+//functions to archive item in inventory
+// Function to handle archive confirmation
+function confirmArchive(inventoryId, itemName) {
+    Swal.fire({
+        title: 'Archive Inventory Item',
+        html: `Are you sure you want to archive <strong>${itemName}</strong>?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Yes, archive it!',
+        cancelButtonText: 'Cancel'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            archiveInventoryItem(inventoryId);
+        }
+    });
+}
+
+// Function to archive inventory item
+async function archiveInventoryItem(inventoryId) {
+    try {
+        const response = await fetch('inventory/archive_inventory.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ inventory_id: inventoryId })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Archived!',
+                text: data.message,
+                showConfirmButton: false,
+                timer: 1500
+            });
+            
+            // Reload the current page to reflect changes
+            loadPage(<?php echo $branch_id; ?>, 1);
+        } else {
+            throw new Error(data.message || 'Failed to archive item');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: error.message || 'An error occurred while archiving the item',
+        });
+    }
+}
+
+// Add event listener for archive buttons (delegated to handle dynamic content)
+document.addEventListener('click', function(e) {
+    if (e.target.closest('.archive-btn')) {
+        const btn = e.target.closest('.archive-btn');
+        const inventoryId = btn.getAttribute('data-id');
+        const itemName = btn.getAttribute('data-name');
+        confirmArchive(inventoryId, itemName);
+    }
+});
+
+
+//Unarchived functions
+
+
+// Debounce function to limit search execution frequency
+function debounce(func, wait) {
+    let timeout;
+    return function(...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(this, args), wait);
+    };
+}
+
+// Search archived items (client-side)
+function searchArchivedItems() {
+    const searchInput = document.getElementById('archivedItemsSearch');
+    const searchTerm = searchInput.value.toLowerCase();
+    const container = document.getElementById('archivedItemsContent');
+    const rows = container.querySelectorAll('tbody tr');
+    
+    rows.forEach(row => {
+        const cells = row.cells;
+        if (cells.length < 5) return; // Skip if not a data row
+        
+        const itemName = cells[1].textContent.toLowerCase();
+        const itemCategory = cells[2].textContent.toLowerCase();
+        const itemId = cells[0].textContent.toLowerCase();
+        
+        if (itemName.includes(searchTerm) || 
+            itemCategory.includes(searchTerm) || 
+            itemId.includes(searchTerm)) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+}
+
+// Clear search functionality
+function setupArchivedSearchClear() {
+    const searchInput = document.getElementById('archivedItemsSearch');
+    const clearBtn = document.getElementById('clearArchivedSearch');
+    
+    searchInput.addEventListener('input', function() {
+        clearBtn.style.display = this.value ? '' : 'none';
+    });
+    
+    clearBtn.addEventListener('click', function() {
+        searchInput.value = '';
+        this.style.display = 'none';
+        // Reset the display of all rows
+        const rows = document.querySelectorAll('#archivedItemsContent tbody tr');
+        rows.forEach(row => row.style.display = '');
+    });
+}
+
+
+// Function to open archived items modal
+function openArchivedModal() {
+    const modal = document.getElementById('archivedItemsModal');
+    modal.classList.remove('hidden');
+    document.body.classList.add('overflow-hidden');
+    
+    // Load archived items
+    loadArchivedItems();
+    
+    // Set up search functionality
+    document.getElementById('archivedItemsSearch').addEventListener('input', 
+        debounce(searchArchivedItems, 300));
+    
+    // Set up clear button
+    setupArchivedSearchClear();
+}
+
+// Function to close archived items modal
+function closeArchivedModal() {
+    document.getElementById('archivedItemsModal').classList.add('hidden');
+    document.body.classList.remove('overflow-hidden');
+}
+
+// Function to load archived items via AJAX
+async function loadArchivedItems() {
+    try {
+        const response = await fetch('inventory/get_archived_items.php?branch_id=<?php echo $branch_id; ?>');
+        const data = await response.json();
+        
+        if (data.success) {
+            renderArchivedItems(data.items);
+        } else {
+            throw new Error(data.message || 'Failed to load archived items');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        document.getElementById('archivedItemsContent').innerHTML = `
+            <div class="text-center py-10 text-gray-500">
+                <i class="fas fa-exclamation-triangle text-2xl mb-2"></i>
+                <p>${error.message || 'Failed to load archived items'}</p>
+            </div>
+        `;
+    }
+}
+
+// Function to render archived items in the modal
+function renderArchivedItems(items) {
+    const container = document.getElementById('archivedItemsContent');
+    const searchTerm = document.getElementById('archivedItemsSearch').value.toLowerCase();
+    
+    if (!items || items.length === 0) {
+        container.innerHTML = `
+            <div class="text-center py-10 text-gray-500">
+                <i class="fas fa-box-open text-3xl mb-3"></i>
+                <p>No archived items found</p>
+            </div>
+        `;
+        return;
+    }
+    
+    let html = `
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead>
+                    <tr class="bg-gray-50 border-b border-gray-200">
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Item Name</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200">
+    `;
+    
+    items.forEach(item => {
+        // Safely format price
+        const price = typeof item.price === 'number' ? item.price : 
+                     typeof item.price === 'string' ? parseFloat(item.price) : 0;
+        const formattedPrice = isNaN(price) ? '0.00' : price.toFixed(2);
+        
+        // Check if item matches current search term
+        const matchesSearch = searchTerm === '' || 
+                            item.item_name.toLowerCase().includes(searchTerm) ||
+                            (item.category && item.category.toLowerCase().includes(searchTerm)) ||
+                            item.inventory_id.toString().includes(searchTerm);
+        
+        html += `
+            <tr ${matchesSearch ? '' : 'style="display: none"'}>
+                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">#INV-${item.inventory_id}</td>
+                <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">${escapeHtml(item.item_name)}</td>
+                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">${escapeHtml(item.category)}</td>
+                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">${item.quantity || 0}</td>
+                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">₱${formattedPrice}</td>
+                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                    <button class="p-1.5 bg-green-100 text-green-600 rounded hover:bg-green-200 transition-all unarchive-btn" 
+                            data-id="${item.inventory_id}" data-name="${escapeHtml(item.item_name)}">
+                        <i class="fas fa-undo"></i> Unarchive
+                    </button>
+                </td>
+            </tr>
+        `;
+    });
+    
+    html += `
+                </tbody>
+            </table>
+        </div>
+    `;
+    
+    container.innerHTML = html;
+    
+    // Add event listeners for unarchive buttons
+    document.querySelectorAll('.unarchive-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const inventoryId = this.getAttribute('data-id');
+            const itemName = this.getAttribute('data-name');
+            confirmUnarchive(inventoryId, itemName);
+        });
+    });
+}
+
+// Function to confirm unarchive
+function confirmUnarchive(inventoryId, itemName) {
+    Swal.fire({
+        title: 'Unarchive Inventory Item',
+        html: `Are you sure you want to unarchive <strong>${itemName}</strong>?`,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, unarchive it!',
+        cancelButtonText: 'Cancel'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            unarchiveInventoryItem(inventoryId);
+        }
+    });
+}
+
+// Function to unarchive inventory item
+async function unarchiveInventoryItem(inventoryId) {
+    try {
+        const response = await fetch('inventory/unarchive_inventory.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ inventory_id: inventoryId })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Unarchived!',
+                text: data.message,
+                showConfirmButton: false,
+                timer: 1500
+            });
+            
+            // Reload the archived items list
+            loadArchivedItems();
+            // Refresh the main inventory table
+            loadPage(<?php echo $branch_id; ?>, 1);
+        } else {
+            throw new Error(data.message || 'Failed to unarchive item');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: error.message || 'An error occurred while unarchiving the item',
+        });
+    }
+}
+
+// Helper function to escape HTML
+function escapeHtml(unsafe) {
+    return unsafe
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+//searchbar functions
+// Function to perform the search
+function performInventorySearch(searchTerm, branchId, page = 1) {
+    const loadingIndicator = document.getElementById(`loadingIndicator${branchId}`);
+    const inventoryTable = document.getElementById(`inventoryTable_${branchId}`);
+    
+    // Show loading indicator
+    loadingIndicator.classList.remove('hidden');
+    
+    // Make AJAX request to search endpoint
+    fetch(`inventory/search_inventory.php?search=${encodeURIComponent(searchTerm)}&branch_id=${branchId}&page=${page}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Update table with search results
+                inventoryTable.innerHTML = data.rows;
+                
+                // Update pagination info if available
+                if (data.paginationInfo) {
+                    document.getElementById(`paginationInfo_${branchId}`).textContent = data.paginationInfo;
+                }
+                
+                // Update pagination links if available
+                if (data.paginationLinks) {
+                    document.getElementById(`paginationLinks_${branchId}`).innerHTML = data.paginationLinks;
+                }
+            } else {
+                throw new Error(data.message || 'Search failed');
+            }
+        })
+        .catch(error => {
+            console.error('Search error:', error);
+            inventoryTable.innerHTML = `
+                <tr>
+                    <td colspan="7" class="p-6 text-sm text-center text-red-500">
+                        Error: ${error.message || 'Failed to perform search'}
+                    </td>
+                </tr>
+            `;
+        })
+        .finally(() => {
+            loadingIndicator.classList.add('hidden');
+        });
+}
+
+// Function to handle search input
+function setupInventorySearch(branchId) {
+    const searchInput = document.getElementById('inventorySearch');
+    const clearBtn = document.getElementById('clearSearch');
+    
+    // Debounced search function
+    const debouncedSearch = debounce((searchTerm) => {
+        if (searchTerm.length > 0) {
+            performInventorySearch(searchTerm, branchId);
+        } else {
+            // If search is empty, load the regular page
+            loadPage(branchId, 1);
+        }
+    }, 300);
+    
+    // Search input event
+    searchInput.addEventListener('input', function() {
+        const searchTerm = this.value.trim();
+        
+        // Show/hide clear button
+        clearBtn.style.display = searchTerm.length > 0 ? '' : 'none';
+        
+        // Only search if there are at least 2 characters or empty
+        if (searchTerm.length > 1 || searchTerm.length === 0) {
+            debouncedSearch(searchTerm);
+        }
+    });
+    
+    // Clear search button
+    clearBtn.addEventListener('click', function() {
+        searchInput.value = '';
+        clearBtn.style.display = 'none';
+        loadPage(branchId, 1);
+    });
+    
+    // Also trigger search on Enter key
+    searchInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            const searchTerm = this.value.trim();
+            if (searchTerm.length > 0) {
+                performInventorySearch(searchTerm, branchId);
+            }
+        }
+    });
+}
+
+// Initialize the search when the page loads
+document.addEventListener('DOMContentLoaded', function() {
+    setupInventorySearch(<?php echo $branch_id; ?>);
+});
+
 </script>
   <script src="sidebar.js"></script>
   <script src="tailwind.js"></script>
