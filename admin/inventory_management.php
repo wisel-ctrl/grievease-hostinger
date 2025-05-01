@@ -956,14 +956,14 @@ document.getElementById('addInventoryForm').addEventListener('submit', function(
   <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
   
   <!-- Modal Content -->
-  <div class="relative bg-navy rounded-xl shadow-card w-full max-w-md mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-md mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
     <!-- Close Button -->
     <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeEditInventoryModal()">
       <i class="fas fa-times"></i>
     </button>
     
     <!-- Modal Header -->
-    <div class="px-4 sm:px-6 py-4 sm:py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
+    <div class="px-4 sm:px-6 py-4 sm:py-5 border-b bg-gradient-to-r from-black to-darkgold border-gray-200">
       <h3 class="text-lg sm:text-xl font-bold text-white flex items-center">
         Edit Inventory Item
       </h3>
