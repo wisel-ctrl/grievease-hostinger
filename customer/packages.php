@@ -1386,6 +1386,52 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+// Traditional Funeral Deceased Street Address Validation
+function validateTraditionalDeceasedStreet(input) {
+    // Remove any leading spaces
+    let value = input.value.replace(/^\s+/, '');
+    
+    // Remove multiple consecutive spaces
+    value = value.replace(/\s{2,}/g, ' ');
+    
+    // Capitalize first letter of the string if it exists
+    if (value.length > 0) {
+        value = value.charAt(0).toUpperCase() + value.slice(1);
+    }
+    
+    // Update both the visible input and hidden field
+    input.value = value;
+    document.getElementById('deceasedAddress').value = value;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Traditional Funeral Deceased Street field
+    const traditionalDeceasedStreetInput = document.getElementById('traditionalDeceasedStreet');
+    if (traditionalDeceasedStreetInput) {
+        traditionalDeceasedStreetInput.addEventListener('input', function() {
+            validateTraditionalDeceasedStreet(this);
+        });
+        
+        traditionalDeceasedStreetInput.addEventListener('blur', function() {
+            validateTraditionalDeceasedStreet(this);
+        });
+        
+        // Prevent pasting text that starts with space
+        traditionalDeceasedStreetInput.addEventListener('paste', function(e) {
+            e.preventDefault();
+            const pastedText = (e.clipboardData || window.clipboardData).getData('text');
+            let cleanedText = pastedText.replace(/^\s+/, ''); // Remove leading spaces
+            cleanedText = cleanedText.replace(/\s{2,}/g, ' '); // Remove multiple spaces
+            document.execCommand('insertText', false, cleanedText);
+            // Also update the hidden field
+            document.getElementById('deceasedAddress').value = cleanedText;
+        });
+        
+        // Initialize hidden field with current value
+        document.getElementById('deceasedAddress').value = traditionalDeceasedStreetInput.value;
+    }
+});
+
 // Add this function to combine address components
 function combineAddress() {
     const region = document.getElementById('traditionalDeceasedRegion');
