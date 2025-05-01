@@ -127,9 +127,10 @@ function generateInventoryRow($row) {
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
     <?php
     // Get total items count
-    $totalItemsQuery = "SELECT COUNT(*) as total_items FROM inventory_tb WHERE status = 1";
-    $totalItemsResult = $conn->query($totalItemsQuery);
-    $totalItems = $totalItemsResult->fetch_assoc()['total_items'];
+    // Inside the branch loop, replace the total count query with:
+$totalItemsQuery = "SELECT COUNT(*) as total_items FROM inventory_tb WHERE branch_id = $branchId AND status = 1";
+$totalItemsResult = $conn->query($totalItemsQuery);
+$totalItems = $totalItemsResult->fetch_assoc()['total_items'];
     
     // Get total inventory value
     $totalValueQuery = "SELECT SUM(quantity * price) as total_value FROM inventory_tb WHERE status = 1";
@@ -380,10 +381,9 @@ if ($branchResult->num_rows > 0) {
 
     // Calculate pagination for this branch
     $itemsPerPage = 5;
-    $totalItems = $result->num_rows;
-    $totalPages = ceil($totalItems / $itemsPerPage);
-    $currentPage = isset($_GET['page_'.$branchId]) ? (int)$_GET['page_'.$branchId] : 1;
-    $startItem = ($currentPage - 1) * $itemsPerPage;
+$totalPages = ceil($totalItems / $itemsPerPage);
+$currentPage = isset($_GET['page_'.$branchId]) ? (int)$_GET['page_'.$branchId] : 1;
+$startItem = ($currentPage - 1) * $itemsPerPage;
 
     // Modify query to include pagination
     $paginatedSql = $sql . " LIMIT $startItem, $itemsPerPage";
@@ -652,10 +652,13 @@ if ($branchResult->num_rows > 0) {
   
   <!-- Sticky Pagination Footer with improved spacing -->
   <div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
-    <div id="paginationInfo_<?php echo $branchId; ?>" class="text-sm text-gray-500 text-center sm:text-left">
-      Showing <?php echo min(($currentPage - 1) * $itemsPerPage + 1, $totalItems) . ' - ' . min($currentPage * $itemsPerPage, $totalItems); ?> 
-      of <?php echo $totalItems; ?> items
-    </div>
+  <div id="paginationInfo_<?php echo $branchId; ?>" class="text-sm text-gray-500 text-center sm:text-left">
+  Showing <?php 
+    $startItem = ($currentPage - 1) * $itemsPerPage + 1;
+    $endItem = min($currentPage * $itemsPerPage, $totalItems);
+    echo "$startItem - $endItem of $totalItems items"; 
+  ?>
+</div>
           <div class="flex space-x-2">
             <?php if ($currentPage > 1): ?>
                 <button onclick="loadPage(<?php echo $branchId; ?>, <?php echo $currentPage - 1 ?>)" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">&laquo;</button>
