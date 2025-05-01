@@ -786,6 +786,12 @@ if ($branchResult->num_rows > 0) {
       input.value = input.value.replace(/[^0-9.]/g, '').replace(/^\s+|\s+$/g, '').replace(/\s{2,}/g, ' ');
     });
   }
+
+  document.addEventListener('DOMContentLoaded', function() {
+  validateItemName();
+  validateQuantity();
+  validatePrice();
+});
 </script>
 
 
