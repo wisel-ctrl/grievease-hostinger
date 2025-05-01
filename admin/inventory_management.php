@@ -951,7 +951,6 @@ document.getElementById('addInventoryForm').addEventListener('submit', function(
 </script>
 
 <!-- Edit Inventory Modal -->
-
 <div id="editInventoryModal" class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto">
   <!-- Modal Backdrop -->
   <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
@@ -985,8 +984,13 @@ document.getElementById('addInventoryForm').addEventListener('submit', function(
             Item Name <span class="text-red-500">*</span>
           </label>
           <div class="relative">
-            <input type="text" id="editItemName" name="editItemName" value="<?php echo $item_name; ?>" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="Item Name">
+            <input type="text" id="editItemName" name="editItemName" value="<?php echo $item_name; ?>" required 
+                   class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
+                   placeholder="Item Name"
+                   oninput="validateItemName(this)"
+                   onkeydown="preventConsecutiveSpaces(event)">
           </div>
+          <p class="text-xs text-red-500 mt-1 hidden" id="editItemNameError">Invalid item name format</p>
         </div>
 
         <!-- Category Dropdown -->
@@ -1020,8 +1024,12 @@ document.getElementById('addInventoryForm').addEventListener('submit', function(
             Quantity <span class="text-red-500">*</span>
           </label>
           <div class="relative">
-            <input type="number" id="editQuantity" name="editQuantity" value="<?php echo $quantity; ?>" min="1" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="Quantity">
+            <input type="number" id="editQuantity" name="editQuantity" value="<?php echo $quantity; ?>" min="1" required 
+                   class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
+                   placeholder="Quantity"
+                   oninput="validateQuantity(this)">
           </div>
+          <p class="text-xs text-red-500 mt-1 hidden" id="editQuantityError">Quantity must be at least 1</p>
         </div>
 
         <div>
@@ -1032,8 +1040,13 @@ document.getElementById('addInventoryForm').addEventListener('submit', function(
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <span class="text-gray-500">₱</span>
             </div>
-            <input type="number" id="editUnitPrice" name="editUnitPrice" value="<?php echo $unit_price; ?>" step="0.01" required class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="0.00">
+            <input type="text" id="editUnitPrice" name="editUnitPrice" value="<?php echo number_format($unit_price, 2); ?>" required 
+                   class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
+                   placeholder="0.00"
+                   oninput="validateUnitPrice(this)"
+                   onkeydown="preventInvalidPriceInput(event)">
           </div>
+          <p class="text-xs text-red-500 mt-1 hidden" id="editUnitPriceError">Invalid price format (only numbers and one decimal point allowed)</p>
         </div>
 
         <!-- Current Image Preview -->
@@ -1078,6 +1091,123 @@ document.getElementById('addInventoryForm').addEventListener('submit', function(
     </div>
   </div>
 </div>
+
+<script>
+// Item Name Validation
+function validateItemName(input) {
+  const errorElement = document.getElementById('editItemNameError');
+  
+  // Auto-capitalize first letter
+  if (input.value.length === 1) {
+    input.value = input.value.charAt(0).toUpperCase() + input.value.slice(1);
+  }
+  
+  // Check for valid format (allows spaces but not as first character)
+  if (input.value.trim() === '') {
+    errorElement.textContent = 'Item name cannot be empty';
+    errorElement.classList.remove('hidden');
+    return false;
+  }
+  
+  errorElement.classList.add('hidden');
+  return true;
+}
+
+// Prevent consecutive spaces in item name
+function preventConsecutiveSpaces(event) {
+  if (event.target.id === 'editItemName') {
+    if (event.key === ' ' && event.target.value.slice(-1) === ' ') {
+      event.preventDefault();
+    }
+  }
+}
+
+// Quantity Validation
+function validateQuantity(input) {
+  const errorElement = document.getElementById('editQuantityError');
+  
+  if (input.value < 1) {
+    errorElement.classList.remove('hidden');
+    input.value = 1;
+    return false;
+  }
+  
+  errorElement.classList.add('hidden');
+  return true;
+}
+
+// Unit Price Validation
+function validateUnitPrice(input) {
+  const errorElement = document.getElementById('editUnitPriceError');
+  // Remove any non-digit characters except decimal point
+  let value = input.value.replace(/[^\d.]/g, '');
+  
+  // Ensure only one decimal point
+  const decimalParts = value.split('.');
+  if (decimalParts.length > 2) {
+    value = decimalParts[0] + '.' + decimalParts.slice(1).join('');
+  }
+  
+  // Format to 2 decimal places
+  if (value.includes('.')) {
+    const parts = value.split('.');
+    if (parts[1].length > 2) {
+      value = parts[0] + '.' + parts[1].substring(0, 2);
+    }
+  }
+  
+  input.value = value;
+  
+  if (isNaN(parseFloat(value))) {  // Fixed: Added missing closing parenthesis
+    errorElement.classList.remove('hidden');
+    return false;
+  }
+  
+  errorElement.classList.add('hidden');
+  return true;
+}
+
+// Prevent invalid characters in price input
+function preventInvalidPriceInput(event) {
+  if (event.target.id === 'editUnitPrice') {
+    // Allow: backspace, delete, tab, escape, enter, numbers, decimal point
+    if ([46, 8, 9, 27, 13, 110, 190].includes(event.keyCode) ||
+        // Allow: Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
+        (event.keyCode === 65 && event.ctrlKey === true) ||
+        (event.keyCode === 67 && event.ctrlKey === true) ||
+        (event.keyCode === 86 && event.ctrlKey === true) ||
+        (event.keyCode === 88 && event.ctrlKey === true) ||
+        // Allow: home, end, left, right
+        (event.keyCode >= 35 && event.keyCode <= 39)) {
+          return;
+    }
+    
+    // Prevent if not a number or decimal point
+    if ((event.keyCode < 48 || event.keyCode > 57) && (event.keyCode < 96 || event.keyCode > 105) && event.keyCode !== 190) {
+      event.preventDefault();
+    }
+  }
+}
+
+// Form submission validation
+document.getElementById('editInventoryForm').addEventListener('submit', function(e) {
+  const itemNameValid = validateItemName(document.getElementById('editItemName'));
+  const quantityValid = validateQuantity(document.getElementById('editQuantity'));
+  const unitPriceValid = validateUnitPrice(document.getElementById('editUnitPrice'));
+  
+  if (!itemNameValid || !quantityValid || !unitPriceValid) {
+    e.preventDefault();
+    // Scroll to the first error
+    if (!itemNameValid) {
+      document.getElementById('editItemName').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    } else if (!quantityValid) {
+      document.getElementById('editQuantity').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    } else {
+      document.getElementById('editUnitPrice').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }
+});
+</script>
 
 <!-- Archived Items Modal -->
 <div class="fixed inset-0 z-50 flex items-center justify-center hidden" id="archivedItemsModal">
