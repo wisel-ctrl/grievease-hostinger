@@ -1772,10 +1772,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     <!-- Modal Footer -->
                     <div class="flex flex-col sm:flex-row sm:justify-end gap-3 sm:gap-4 mt-8">
                         <button type="button" class="w-full sm:w-auto px-5 sm:px-6 py-3 bg-white border-2 border-yellow-600 text-gray-800 rounded-lg font-medium hover:bg-gray-50 transition-all duration-200 flex items-center justify-center" onclick="closeEditProfileModal()">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
-                                <line x1="18" y1="6" x2="6" y2="18"></line>
-                                <line x1="6" y1="6" x2="18" y2="18"></line>
-                            </svg>
                             Cancel
                         </button>
                         <button type="submit" class="w-full sm:w-auto px-6 sm:px-8 py-3 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center">
