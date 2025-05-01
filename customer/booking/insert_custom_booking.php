@@ -6,6 +6,7 @@ require_once '../../db_connect.php';
 
 // Check if the request is POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    http_response_code(405);
     echo json_encode(['status' => 'error', 'message' => 'Invalid request method']);
     exit;
 }
@@ -14,9 +15,28 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 $input = file_get_contents('php://input');
 $data = json_decode($input, true);
 
-if (json_last_error() !== JSON_ERROR_NONE) {
+if (json_last_error() !== JSON_ERROR_NONE || !$data) {
+    http_response_code(400);
     echo json_encode(['status' => 'error', 'message' => 'Invalid JSON data']);
     exit;
+}
+
+// Validate required fields
+$requiredFields = [
+    'customerId', 
+    'deceasedInfo', 
+    'branchId', 
+    'casket', 
+    'packageTotal',
+    'documents'
+];
+
+foreach ($requiredFields as $field) {
+    if (!isset($data[$field])) {
+        http_response_code(400);
+        echo json_encode(['status' => 'error', 'message' => "Missing required field: $field"]);
+        exit;
+    }
 }
 
 try {
@@ -25,7 +45,7 @@ try {
         INSERT INTO booking_tb (
             customerID, 
             deceased_fname, 
-            deceased_mname, 
+            deceased_midname, 
             deceased_lname, 
             deceased_suffix, 
             deceased_birth, 
@@ -41,75 +61,62 @@ try {
             payment_url, 
             reference_code, 
             flower_design, 
-            inclusion,
-            downpayment
-        ) VALUES (
-            :customerId, 
-            :firstName, 
-            :middleName, 
-            :lastName, 
-            :suffix, 
-            :dateOfBirth, 
-            :dateOfDeath, 
-            :dateOfBurial, 
-            :address, 
-            :branchId, 
-            :notes, 
-            :casket, 
-            :packageTotal, 
-            :cremationSelected, 
-            :deathCertificate, 
-            :paymentReceipt, 
-            :referenceNumber, 
-            :flowerArrangement, 
-            :additionalServices,
-            :downpayment
-        )
+            inclusion
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ");
 
+    if (!$stmt) {
+        throw new Exception($conn->error);
+    }
+
     // Bind parameters
-    $stmt->bindParam(':customerId', $data['customerId']);
-    $stmt->bindParam(':firstName', $data['deceasedInfo']['firstName']);
-    $stmt->bindParam(':middleName', $data['deceasedInfo']['middleName']);
-    $stmt->bindParam(':lastName', $data['deceasedInfo']['lastName']);
-    $stmt->bindParam(':suffix', $data['deceasedInfo']['suffix']);
-    $stmt->bindParam(':dateOfBirth', $data['deceasedInfo']['dateOfBirth']);
-    $stmt->bindParam(':dateOfDeath', $data['deceasedInfo']['dateOfDeath']);
-    $stmt->bindParam(':dateOfBurial', $data['deceasedInfo']['dateOfBurial']);
-    $stmt->bindParam(':address', $data['deceasedInfo']['address']);
-    $stmt->bindParam(':branchId', $data['branchId']);
-    $stmt->bindParam(':notes', $data['notes']);
-    $stmt->bindParam(':casket', $data['casket']);
-    $stmt->bindParam(':packageTotal', $data['packageTotal']);
-    $stmt->bindParam(':cremationSelected', $data['cremationSelected'] ? 'yes' : 'no');
-    $stmt->bindParam(':deathCertificate', $data['documents']['deathCertificate']);
-    $stmt->bindParam(':paymentReceipt', $data['documents']['paymentReceipt']);
-    $stmt->bindParam(':referenceNumber', $data['documents']['referenceNumber']);
-    $stmt->bindParam(':flowerArrangement', $data['flowerArrangement']);
-    $stmt->bindParam(':additionalServices', $data['additionalServices']);
-    $stmt->bindParam(':downpayment', $data['downpayment']);
+    $cremationSelected = isset($data['cremationSelected']) && $data['cremationSelected'] ? 'yes' : 'no';
+    $flowerArrangement = $data['flowerArrangement'] ?? null;
+    $additionalServices = $data['additionalServices'] ?? null;
+    $notes = $data['notes'] ?? null;
+
+    $stmt->bind_param(
+        'issssssssisidssssss',
+        $data['customerId'],
+        $data['deceasedInfo']['firstName'],
+        $data['deceasedInfo']['middleName'],
+        $data['deceasedInfo']['lastName'],
+        $data['deceasedInfo']['suffix'] ?? null,
+        $data['deceasedInfo']['dateOfBirth'],
+        $data['deceasedInfo']['dateOfDeath'],
+        $data['deceasedInfo']['dateOfBurial'],
+        $data['deceasedInfo']['address'],
+        $data['branchId'],
+        $notes,
+        $data['casket'],
+        $data['packageTotal'],
+        $cremationSelected,
+        $data['documents']['deathCertificate'],
+        $data['documents']['paymentReceipt'],
+        $data['documents']['referenceNumber'],
+        $flowerArrangement,
+        $additionalServices
+    );
 
     // Execute the statement
     if ($stmt->execute()) {
-        $bookingId = $conn->lastInsertId();
+        $bookingId = $conn->insert_id;
         echo json_encode([
             'status' => 'success', 
             'message' => 'Booking created successfully',
             'bookingId' => $bookingId
-        ]);
+        ], JSON_UNESCAPED_UNICODE);
     } else {
-        echo json_encode([
-            'status' => 'error', 
-            'message' => 'Failed to create booking'
-        ]);
+        throw new Exception($stmt->error);
     }
-} catch (PDOException $e) {
+} catch (Exception $e) {
+    http_response_code(500);
     echo json_encode([
         'status' => 'error', 
         'message' => 'Database error: ' . $e->getMessage()
-    ]);
+    ], JSON_UNESCAPED_UNICODE);
 }
 
 // Close connection
-$conn = null;
+$conn->close();
 ?>
