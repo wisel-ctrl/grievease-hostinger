@@ -2055,50 +2055,48 @@ document.addEventListener('DOMContentLoaded', function() {
           <input type="hidden" id="modify-service-id" name="service_id">
           <input type="hidden" id="modify-branch-id" name="branch_id">
           
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-            <!-- Service Information -->
-            <div class="space-y-5">
-              <h4 class="font-semibold text-navy text-lg">Service Information</h4>
-              <div class="space-y-4">
-                <div>
-                  <label class="block text-sm font-medium text-navy mb-1 sm:mb-2">Service Package</label>
-                  <div id="display-service-package" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-input-border rounded-lg bg-gray-50 text-sm sm:text-base">
-                    <!-- Service package details will be displayed here -->
-                  </div>
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-navy mb-1 sm:mb-2">Branch Location</label>
-                  <div id="display-branch-location" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-input-border rounded-lg bg-gray-50 text-sm sm:text-base">
-                    <!-- Branch location will be displayed here -->
-                  </div>
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-navy mb-1 sm:mb-2">Burial Date*</label>
-                  <input type="date" name="deceased_dateOfBurial" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base" required>
+          <!-- Service Information -->
+          <div class="space-y-5 mb-6">
+            <h4 class="font-semibold text-navy text-lg">Service Information</h4>
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium text-navy mb-1 sm:mb-2">Service Package</label>
+                <div id="display-service-package" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-input-border rounded-lg bg-gray-50 text-sm sm:text-base">
+                  <!-- Service package details will be displayed here -->
                 </div>
               </div>
+              <div>
+                <label class="block text-sm font-medium text-navy mb-1 sm:mb-2">Branch Location</label>
+                <div id="display-branch-location" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-input-border rounded-lg bg-gray-50 text-sm sm:text-base">
+                  <!-- Branch location will be displayed here -->
+                </div>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-navy mb-1 sm:mb-2">Burial Date*</label>
+                <input type="date" name="deceased_dateOfBurial" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base" required>
+              </div>
             </div>
-            
-            <!-- Deceased Information -->
-            <div class="space-y-5">
-              <h4 class="font-semibold text-navy text-lg">Deceased Information</h4>
-              <div class="space-y-4">
-                <div>
-                  <label class="block text-sm font-medium text-navy mb-1 sm:mb-2">First Name*</label>
-                  <input type="text" name="deceased_fname" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base" required>
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-navy mb-1 sm:mb-2">Middle Name</label>
-                  <input type="text" name="deceased_midname" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base">
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-navy mb-1 sm:mb-2">Last Name*</label>
-                  <input type="text" name="deceased_lname" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base" required>
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-navy mb-1 sm:mb-2">Suffix</label>
-                  <input type="text" name="deceased_suffix" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base">
-                </div>
+          </div>
+          
+          <!-- Deceased Information -->
+          <div class="space-y-5 mb-6">
+            <h4 class="font-semibold text-navy text-lg">Deceased Information</h4>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+              <div>
+                <label class="block text-sm font-medium text-navy mb-1 sm:mb-2">First Name*</label>
+                <input type="text" name="deceased_fname" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base" required>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-navy mb-1 sm:mb-2">Middle Name</label>
+                <input type="text" name="deceased_midname" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-navy mb-1 sm:mb-2">Last Name*</label>
+                <input type="text" name="deceased_lname" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base" required>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-navy mb-1 sm:mb-2">Suffix</label>
+                <input type="text" name="deceased_suffix" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base">
               </div>
             </div>
           </div>
