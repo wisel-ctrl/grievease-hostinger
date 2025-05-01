@@ -390,7 +390,16 @@ $servicesJson = json_encode($allServices);
               </label>
               <div class="relative">
                 <div class="flex items-center border border-gray-300 rounded-lg px-3 py-2 focus-within:ring-1 focus-within:ring-sidebar-accent focus-within:border-sidebar-accent transition-all duration-200">
-                  <input type="file" id="deathCertificate" name="deathCertificate" class="w-full focus:outline-none">
+                  <input type="file" id="deathCertificate" name="deathCertificate" accept="image/*,.pdf" class="w-full focus:outline-none">
+                </div>
+                <!-- Image preview container -->
+                <div id="deathCertificatePreview" class="mt-2 hidden">
+                  <div class="relative inline-block">
+                    <img id="previewImage" src="#" alt="Death Certificate Preview" class="max-h-40 rounded-lg border border-gray-200">
+                    <button type="button" id="removeImageBtn" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600 transition-colors">
+                      <i class="fas fa-times text-xs"></i>
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -716,12 +725,52 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    // Image upload preview functionality
+    function setupImagePreview() {
+        const deathCertificateInput = document.getElementById('deathCertificate');
+        const previewContainer = document.getElementById('deathCertificatePreview');
+        const previewImage = document.getElementById('previewImage');
+        const removeImageBtn = document.getElementById('removeImageBtn');
+
+        if (deathCertificateInput && previewContainer && previewImage && removeImageBtn) {
+            deathCertificateInput.addEventListener('change', function() {
+                const file = this.files[0];
+                if (file) {
+                    // Check if file is an image
+                    if (file.type.match('image.*')) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            previewImage.src = e.target.result;
+                            previewContainer.classList.remove('hidden');
+                        }
+                        reader.readAsDataURL(file);
+                    } else if (file.type === 'application/pdf') {
+                        // For PDF files, show a PDF icon instead
+                        previewImage.src = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzODQgNTEyIj48cGF0aCBmaWxsPSIjMDAwIiBkPSJNMTgxLjkgMjU2LjFjLTUtMTYtNC45LTQ2LjktMi0xNjguOUMxODIuMSA0My4xIDE4Mi4xIDQyLjkgMTgyIDQyLjlzLS4xLjEtLjEgMS4xdjIxMy4yYTEwIDEwIDAgMCAxLTUuNiA5TDEwNiA0MTMuNXYyLjNjMCAyLjQgMS43IDQuMyAzLjkgNC4zLjEgMCAuMiAwIC4zIDBoMTkzLjZjMi4yIDAgNC0xLjkgNC00LjN2LTIuNGMwLTIuNC0xLjctNC4zLTMuOS00LjNoLTc4LjFsMTE1LjktMTc4LjJjMTcuOS0yNy42IDMuOS02MS41LTI2LjYtNjEuNUgxODEuOXptLTI1LjkgMTQ0LjRjLTcgMTctMTkuMiAxNC40LTI4LjcgMTEuMy0zLjYtMS4yLTYuMi0yLjEtNS42LTMuNi44LTEuNSA2LjEtMy43IDkuNy0yLjYgMi45IDEgMy4xIDIuNSA0LjEgNS4zLjkgMi43IDEuMSAzLjMgMy4xIDIuNCAxLjgtLjggMS4xLTIuOSAxLjEtMi45cy0uMS0uMi0uMS0uM2MwLS40LS4xLS43LS4xLS45IDAtMi4xIDIuOS0zLjcgNS44LTQuOCA3LjUtMi44IDE3LjQtMS4xIDE4LjkgMTEuNCAxLjUgMTIuOS0xMS4xIDI0LjItMTkuMSAxOC4yLTIuNS0xLjktNC0zLjctMi4xLTUuNnptLTExLjctMTMxLjljLTE0LjktMi4xLTE5LjYgMTYuMS0xOS42IDE2LjEgMy4zLTEzLjkgMTYuNy0xMy4yIDE5LjYtMTYuMXptLTQ0LjkgOS4xYy0yLjMgOC41LTEyLjEgNS45LTEyLjEgNS45cy0yLjItLjEtMy4zLTEuNGMtMS4xLTEuMy0xLjQtMi42LTEuNC0yLjZzLTEuNyAxMy40LTcuNCAxMy40Yy01LjcgMC04LjYtNy4zLTguNi0xMy40IDAtNi4xIDQuNi0xMy40IDE0LjEtMTMuNCA5LjUgMCAxNC4xIDcuMyAxNC4xIDEzLjQgMCAwLTEuMSA0LjEtMy40IDMuNHptLTQ5LjUgMTYuOWMtMi4zLTEuNC0zLjYtMS4yLTMuNi0xLjJzLTMuMS0uMi02LjEgMS4yYy0zIDEuNC0xLjkgMy4xLTEuOSAzLjFzLTUuNS0yLjctMTEuOS0uOGMtNi40IDEuOS00LjkgNi4xLTQuOSA2LjEgMy4zIDUuMSAxMy43IDMuNiAxNy4yIDIuMiAzLjUtMS40IDUuMS0yLjIgNS4xLTIuMnMxLjQgMS4zIDQuNyAxLjNjMy4zIDAgMTEuOS0xLjQgMTEuOS0xLjQgMCAwIDUuMy0xLjkgMy42LTYuOC0xLjctNC45LTkuNS0zLjEtMTIuMS0xLjl6Ii8+PC9zdmc+';
+                        previewContainer.classList.remove('hidden');
+                    } else {
+                        // For other file types, show a generic file icon
+                        previewImage.src = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzODQgNTEyIj48cGF0aCBmaWxsPSIjMDAwIiBkPSJNMjI0IDEzNlYwSDI0QzEwLjcgMCAwIDEwLjcgMCAyNHY0NjRjMCAxMy4zIDEwLjcgMjQgMjQgMjRoMzM2YzEzLjMgMCAyNC0xMC43IDI0LTI0VjE2MEgyNDhjLTEzLjIgMC0yNC0xMC44LTI0LTI0em02NS4xIDEwNi41TDI4MSAxNDkuMWMtNC43LTQuNy0xMi4zLTQuNy0xNyAwTDIzOSAxNzQuMWMtNC43IDQuNy00LjcgMTIuMyAwIDE3bDM0IDM0YzQuNyA0LjcgMTIuMyA0LjcgMTcgMGwzNC0zNGM0LjctNC43IDQuNy0xMi4zIDAtMTd6Ii8+PC9zdmc+';
+                        previewContainer.classList.remove('hidden');
+                    }
+                }
+            });
+
+            // Remove image functionality
+            removeImageBtn.addEventListener('click', function() {
+                deathCertificateInput.value = '';
+                previewContainer.classList.add('hidden');
+            });
+        }
+    }
+
     // Initialize all validations
     validatePhoneNumber();
     validateEmail();
     validateAddress();
     validateDates();
     validatePrices();
+    setupImagePreview();
 });
 </script>
 
