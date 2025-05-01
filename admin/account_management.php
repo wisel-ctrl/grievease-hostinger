@@ -816,62 +816,87 @@ document.getElementById("customerPhone").addEventListener("input", function (e) 
     this.value = this.value.replace(/[^0-9]/g, ""); // Remove non-numeric characters
   });
 
-// Real-time validation functions
-function validateFirstName() {
-  const firstNameInput = document.getElementById('firstName');
-  const firstNameError = document.getElementById('firstNameError');
-  const firstName = firstNameInput.value.trim();
-  const nameRegex = /^[A-Za-z\s]+$/;
+  document.addEventListener('DOMContentLoaded', function() {
+    // Name fields in the add customer account modal
+    const customerNameFields = [
+        'firstName', 
+        'middleName', 
+        'lastName'
+    ];
 
-  if (firstName === '') {
-    firstNameError.textContent = 'First name is required';
-    firstNameError.classList.remove('hidden');
-    return false;
-  } else if (!nameRegex.test(firstName)) {
-    firstNameError.textContent = 'First name must contain only letters';
-    firstNameError.classList.remove('hidden');
-    return false;
-  } else {
-    firstNameError.classList.add('hidden');
-    return true;
-  }
-}
+    // Function to validate name input
+    function validateNameInput(field) {
+        // Allow only letters, spaces, apostrophes, and hyphens
+        field.value = field.value.replace(/[^a-zA-Z\s'-]/g, '');
+        
+        // Capitalize first letter of each word
+        if (field.value.length > 0) {
+            field.value = field.value.toLowerCase().replace(/(^|\s)\S/g, function(firstLetter) {
+                return firstLetter.toUpperCase();
+            });
+        }
+    }
 
-function validateMiddleName() {
-  const middleNameInput = document.getElementById('middleName');
-  const middleNameError = document.getElementById('middleNameError');
-  const middleName = middleNameInput.value.trim();
-  const nameRegex = /^[A-Za-z\s]+$/;
+    // Function to apply validation to a field
+    function applyNameValidation(field) {
+        if (field) {
+            // Validate on input
+            field.addEventListener('input', function() {
+                validateNameInput(this);
+            });
 
-  if (middleName !== '' && !nameRegex.test(middleName)) {
-    middleNameError.textContent = 'Middle name must contain only letters';
-    middleNameError.classList.remove('hidden');
-    return false;
-  } else {
-    middleNameError.classList.add('hidden');
-    return true;
-  }
-}
+            // Validate on blur (when field loses focus)
+            field.addEventListener('blur', function() {
+                validateNameInput(this);
+            });
 
-function validateLastName() {
-  const lastNameInput = document.getElementById('lastName');
-  const lastNameError = document.getElementById('lastNameError');
-  const lastName = lastNameInput.value.trim();
-  const nameRegex = /^[A-Za-z\s]+$/;
+            // Prevent paste of invalid content
+            field.addEventListener('paste', function(e) {
+                e.preventDefault();
+                const pastedText = (e.clipboardData || window.clipboardData).getData('text');
+                const cleanedText = pastedText.replace(/[^a-zA-Z\s'-]/g, '');
+                document.execCommand('insertText', false, cleanedText);
+            });
+        }
+    }
 
-  if (lastName === '') {
-    lastNameError.textContent = 'Last name is required';
-    lastNameError.classList.remove('hidden');
-    return false;
-  } else if (!nameRegex.test(lastName)) {
-    lastNameError.textContent = 'Last name must contain only letters';
-    lastNameError.classList.remove('hidden');
-    return false;
-  } else {
-    lastNameError.classList.add('hidden');
-    return true;
-  }
-}
+    // Apply validation to customer fields
+    customerNameFields.forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        applyNameValidation(field);
+    });
+
+    // Additional validation for required fields
+    const requiredCustomerFields = ['firstName', 'lastName'];
+
+    // Function to apply required validation
+    function applyRequiredValidation(field) {
+        if (field) {
+            field.addEventListener('blur', function() {
+                if (this.value.trim().length < 2) {
+                    this.setCustomValidity('Please enter at least 2 characters');
+                } else {
+                    this.setCustomValidity('');
+                }
+            });
+        }
+    }
+
+    // Apply to customer fields
+    requiredCustomerFields.forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        applyRequiredValidation(field);
+    });
+
+    // Existing event listeners for the customer form
+    document.getElementById('firstName').addEventListener('input', validateFirstName);
+    document.getElementById('middleName').addEventListener('input', validateMiddleName);
+    document.getElementById('lastName').addEventListener('input', validateLastName);
+    document.getElementById('birthdate').addEventListener('change', validateBirthdate);
+    document.getElementById('customerEmail').addEventListener('input', validateEmail);
+    document.getElementById('customerPhone').addEventListener('input', validatePhoneNumber);
+    document.getElementById('branchLocation').addEventListener('change', validateBranchLocation);
+});
 
 function validateBirthdate() {
   const birthdateInput = document.getElementById('birthdate');
