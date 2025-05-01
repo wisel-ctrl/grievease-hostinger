@@ -597,6 +597,14 @@ require_once '../db_connect.php'; // Database connection
                     </div>
                 </div>
             </div>
+
+            <?php
+            } else {
+                // Handle case where there aren't enough packages
+                echo "Not enough packages found in the database.";
+            }
+            $conn->close();
+            ?>
                 
                 <!-- Package 3: Custom Memorial -->
                 <div class="package-card min-w-full md:min-w-[33.333%] px-2 sm:px-4">
