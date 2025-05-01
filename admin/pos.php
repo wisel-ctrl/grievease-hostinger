@@ -967,6 +967,24 @@ $servicesJson = json_encode($allServices);
     document.getElementById('beneficiaryDateOfBirth')?.addEventListener('change', validateBeneficiaryBirthdate);
     document.getElementById('lp-clientEmail')?.addEventListener('input', validateModalEmail);
 });
+
+function validatePhoneNumber() {
+  const phoneField = document.getElementById('lp-clientPhone');
+  phoneField.addEventListener('input', function() {
+    // Remove all non-digit characters
+    this.value = this.value.replace(/\D/g, '');
+    
+    // Ensure it starts with '09' and is 11 digits long
+    if (this.value.length > 11) {
+      this.value = this.value.substring(0, 11);
+    }
+    if (this.value && !this.value.startsWith('09')) {
+      this.value = '';
+      alert('Phone number must start with 09 and be 11 digits long.');
+    }
+  });
+}
+
 </script>
 
     <!-- Order Confirmation Modal -->
