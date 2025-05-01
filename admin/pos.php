@@ -205,11 +205,14 @@ $servicesJson = json_encode($allServices);
       </h2>
     </div>
     <div class="hidden md:flex">
-      <div class="relative">
-        <input type="text" id="service-search" placeholder="Search services..." class="pl-10 pr-4 py-2 border border-sidebar-border rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
-        <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-      </div>
-    </div>
+  <div class="relative">
+    <input type="text" id="service-search" placeholder="Search services..." 
+           class="pl-10 pr-4 py-2 border border-sidebar-border rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent"
+           oninput="validateSearchInput(this)">
+    <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+    <div id="search-error" class="text-red-500 text-xs mt-1 hidden absolute">Cannot start with space or have consecutive spaces</div>
+  </div>
+</div>
   </div>
   
   <div id="services-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
