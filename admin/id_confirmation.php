@@ -43,7 +43,6 @@ header("Pragma: no-cache");
 require_once '../db_connect.php';
 
 // Process ID validation requests
-// Process ID validation requests
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && isset($_POST['id'])) {
     $id = filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT);
     $action = filter_input(INPUT_POST, 'action', FILTER_SANITIZE_STRING);
@@ -126,391 +125,401 @@ $denied = $result->fetch_assoc()['count'];
     <title>GrievEase - ID Confirmation</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Hedvig+Letters+Serif:opsz@12..24&display=swap" rel="stylesheet">
+    <script src="tailwind.js"></script>
     <!-- Include SweetAlert -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <style>
-     /* Base Typography */
-      body {
-        font-family: 'Hedvig Letters Serif', serif;
-      }
-      
-      /* Message status indicators */
-      .message-new {
-        border-left: 3px solid #CA8A04; /* Using your sidebar accent color */
-      }
-      
-      .message-read {
-        border-left: 3px solid transparent;
-      }
-      
-      /* Header Styles */
-      h1 {
-        font-family: 'Cinzel', serif;
-        font-size: 1.5rem; /* 24px */
-        font-weight: 700;
-        color: #1E293B; /* slate-800 */
-      }
-      
-      h2 {
-        font-family: 'Cinzel', serif;
-        font-size: 1.25rem; /* 20px */
-        font-weight: 600;
-        color: #1E293B; /* slate-800 */
-      }
-      
-      h3 {
-        font-family: 'Cinzel', serif;
-        font-size: 1.125rem; /* 18px */
-        font-weight: 600;
-        color: #1E293B; /* slate-800 */
-      }
-      
-      h5 {
-        font-family: 'Cinzel', serif;
-        font-size: 0.875rem; /* 14px */
-        font-weight: 500;
-        color: #CA8A04; /* sidebar accent color */
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-      }
-      
-      /* Text Colors */
-      .text-sidebar-accent {
-        color: #CA8A04;
-      }
-      
-      .text-sidebar-text {
-        color: #334155; /* slate-700 */
-      }
-      
-      /* Button Styles */
-      button {
-        font-family: 'Hedvig Letters Serif', serif;
-        font-size: 0.875rem; /* 14px */
-        transition: all 0.3s ease;
-      }
-      
-      /* Input Fields */
-      input, textarea {
-        font-family: 'Hedvig Letters Serif', serif;
-        font-size: 0.875rem; /* 14px */
-        border: 1px solid #CBD5E1; /* slate-300 */
-        border-radius: 0.375rem; /* 6px */
-      }
-      
-      /* Icons */
-      .fas {
-        color: #64748B; /* slate-500 */
-        transition: color 0.3s ease;
-      }
-      
-      /* Hover States */
-      button:hover .fas {
-        color: #1E293B; /* slate-800 */
-      }
-      
-      /* Message Bubbles */
-      .admin-message {
-        background-color: #CA8A04; /* sidebar accent */
-        color: white;
-      }
-      
-      .customer-message {
-        background-color: #F1F5F9; /* slate-100 */
-        color: #1E293B; /* slate-800 */
-      }
-      
-      /* Timestamp Text */
-      .message-time {
-        font-size: 0.75rem; /* 12px */
-        color: #64748B; /* slate-500 */
-      }
-      
-      /* Badges */
-      .badge {
-        font-size: 0.75rem; /* 12px */
-        background-color: #CA8A04; /* sidebar accent */
-        color: white;
-      }
-      
-      /* Ensure sidebar maintains styling */
-      #sidebar {
-        background-color: white !important;
-        z-index: 50 !important;
-        font-family: 'Hedvig Letters Serif', serif;
-      }
-      
-      /* Mobile Responsiveness */
-      @media (max-width: 768px) {
-        #sidebar.translate-x-0 {
-          background-color: white !important;
-          box-shadow: 2px 0 10px rgba(0,0,0,0.1);
-        }
-        
-        h1 {
-          font-size: 1.25rem; /* 20px */
-        }
-        
-        h2 {
-          font-size: 1.125rem; /* 18px */
-        }
-      }
-      
-      /* Custom scrollbar to match sidebar */
-      .scrollbar-thin::-webkit-scrollbar {
-        width: 4px;
-        height: 4px;
-      }
-      .scrollbar-thin::-webkit-scrollbar-track {
-        background: rgba(0, 0, 0, 0.05);
-      }
-      .scrollbar-thin::-webkit-scrollbar-thumb {
-        background: rgba(202, 138, 4, 0.6);
-        border-radius: 4px;
-      }
-      .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-        background: rgba(202, 138, 4, 0.9);
-      }
-      
-      /* ID Card styles */
-      .id-card {
-        transition: all 0.3s ease;
-      }
-      
-      .id-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-      }
-      
-      /* Image modal */
-      .modal {
-        display: none;
-        position: fixed;
-        z-index: 100;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        overflow: auto;
-        background-color: rgba(0,0,0,0.8);
-      }
-      
-      .modal-content {
-        margin: auto;
-        display: block;
-        max-width: 90%;
-        max-height: 90%;
-      }
-      
-      .modal-content img {
-        margin: auto;
-        display: block;
-        max-width: 100%;
-        max-height: 90vh;
-      }
-      
-      .close {
-        position: absolute;
-        top: 15px;
-        right: 35px;
-        color: #f1f1f1;
-        font-size: 40px;
-        font-weight: bold;
-        transition: 0.3s;
-      }
-      
-      .close:hover,
-      .close:focus {
-        color: #CA8A04;
-        text-decoration: none;
-        cursor: pointer;
-      }
-    </style>
 </head>
 <body class="flex bg-gray-50">
 <?php include 'admin_sidebar.php'; ?>
 
 <div id="main-content" class="p-6 bg-gray-50 min-h-screen transition-all duration-300 ml-64 w-[calc(100%-16rem)] main-content">
-    <div class="max-w-7xl mx-auto">
-        <div class="flex flex-col md:flex-row justify-between items-center mb-6">
-            <h1 class="mb-4 md:mb-0">ID Verification Management</h1>
-            <div class="flex space-x-4">
-                <!-- Stats Cards -->
-                <div class="bg-white p-3 rounded-lg shadow-sm border border-gray-200">
-                    <div class="text-xs uppercase text-gray-500 font-medium">Pending</div>
-                    <div class="text-xl font-bold text-yellow-500"><?php echo $total_pending; ?></div>
+    <!-- Header with breadcrumb and welcome message -->
+    <div class="flex justify-between items-center mb-6 bg-white p-5 rounded-lg shadow-sidebar">
+      <div>
+        <h1 class="text-2xl font-bold text-sidebar-text">ID Verification Management</h1>
+      </div>
+    </div>
+    
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <!-- Total Pending Card -->
+        <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
+            <div class="bg-gradient-to-r from-blue-100 to-blue-200 px-6 py-4">
+                <div class="flex items-center justify-between mb-1">
+                    <h3 class="text-sm font-medium text-gray-700">Pending Verifications</h3>
+                    <div class="w-10 h-10 rounded-full bg-white/90 text-blue-600 flex items-center justify-center">
+                        <i class="fas fa-clock"></i>
+                    </div>
                 </div>
-                <div class="bg-white p-3 rounded-lg shadow-sm border border-gray-200">
-                    <div class="text-xs uppercase text-gray-500 font-medium">Approved</div>
-                    <div class="text-xl font-bold text-green-500"><?php echo $approved; ?></div>
+                <div class="flex items-end">
+                    <span class="text-2xl md:text-3xl font-bold font-cinzel text-gray-800"><?php echo number_format($total_pending); ?></span>
                 </div>
-                <div class="bg-white p-3 rounded-lg shadow-sm border border-gray-200">
-                    <div class="text-xs uppercase text-gray-500 font-medium">Declined</div>
-                    <div class="text-xl font-bold text-red-500"><?php echo $denied; ?></div>
+            </div>
+            <div class="px-6 py-3 bg-white border-t border-gray-100">
+                <div class="flex items-center text-gray-500">
+                    <span class="text-xs">Updated today</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Approved Card -->
+        <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
+            <div class="bg-gradient-to-r from-green-100 to-green-200 px-6 py-4">
+                <div class="flex items-center justify-between mb-1">
+                    <h3 class="text-sm font-medium text-gray-700">Approved IDs</h3>
+                    <div class="w-10 h-10 rounded-full bg-white/90 text-green-600 flex items-center justify-center">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                </div>
+                <div class="flex items-end">
+                    <span class="text-2xl md:text-3xl font-bold font-cinzel text-gray-800"><?php echo number_format($approved); ?></span>
+                </div>
+            </div>
+            <div class="px-6 py-3 bg-white border-t border-gray-100">
+                <div class="flex items-center text-gray-500">
+                    <span class="text-xs">Updated today</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Denied Card -->
+        <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
+            <div class="bg-gradient-to-r from-red-100 to-red-200 px-6 py-4">
+                <div class="flex items-center justify-between mb-1">
+                    <h3 class="text-sm font-medium text-gray-700">Denied IDs</h3>
+                    <div class="w-10 h-10 rounded-full bg-white/90 text-red-600 flex items-center justify-center">
+                        <i class="fas fa-times-circle"></i>
+                    </div>
+                </div>
+                <div class="flex items-end">
+                    <span class="text-2xl md:text-3xl font-bold font-cinzel text-gray-800"><?php echo number_format($denied); ?></span>
+                </div>
+            </div>
+            <div class="px-6 py-3 bg-white border-t border-gray-100">
+                <div class="flex items-center text-gray-500">
+                    <span class="text-xs">Updated today</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Verifications Card -->
+        <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
+            <div class="bg-gradient-to-r from-purple-100 to-purple-200 px-6 py-4">
+                <div class="flex items-center justify-between mb-1">
+                    <h3 class="text-sm font-medium text-gray-700">Total Verifications</h3>
+                    <div class="w-10 h-10 rounded-full bg-white/90 text-purple-600 flex items-center justify-center">
+                        <i class="fas fa-id-card"></i>
+                    </div>
+                </div>
+                <div class="flex items-end">
+                    <span class="text-2xl md:text-3xl font-bold font-cinzel text-gray-800"><?php echo number_format($total_pending + $approved + $denied); ?></span>
+                </div>
+            </div>
+            <div class="px-6 py-3 bg-white border-t border-gray-100">
+                <div class="flex items-center text-gray-500">
+                    <span class="text-xs">Updated today</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Notifications/Messages -->
+    <?php if(isset($_SESSION['message'])): ?>
+        <div class="mb-6 p-4 rounded-lg <?php echo $_SESSION['message_type'] === 'success' ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-blue-100 text-blue-800 border border-blue-200'; ?> flex items-center justify-between">
+            <div class="flex items-center">
+                <i class="fas <?php echo $_SESSION['message_type'] === 'success' ? 'fa-check-circle text-green-500' : 'fa-info-circle text-blue-500'; ?> mr-3"></i>
+                <span><?php echo $_SESSION['message']; ?></span>
+            </div>
+            <button class="text-gray-500 hover:text-gray-700 focus:outline-none" onclick="this.parentElement.style.display='none'">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <?php 
+        // Clear message after displaying
+        unset($_SESSION['message']); 
+        unset($_SESSION['message_type']);
+        ?>
+    <?php endif; ?>
+    
+    <!-- Table Card -->
+    <div class="bg-white rounded-lg shadow-md mb-8 border border-sidebar-border overflow-hidden">
+        <!-- Header Section -->
+        <div class="bg-sidebar-hover p-4 border-b border-sidebar-border">
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+                <!-- Title and Counter -->
+                <div class="flex items-center gap-3 mb-4 lg:mb-0">
+                    <h4 class="text-lg font-bold text-sidebar-text whitespace-nowrap">Pending ID Verifications</h4>
+                    
+                    <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
+                        <i class="fas fa-id-card"></i>
+                        <?php echo $total_pending . " Pending ID" . ($total_pending != 1 ? "s" : ""); ?>
+                    </span>
+                </div>
+                
+                <!-- Controls for big screens - aligned right -->
+                <div class="hidden lg:flex items-center gap-3">
+                    <!-- Search Input -->
+                    <div class="relative">
+                        <input type="text" id="idSearchInput" 
+                                placeholder="Search verifications..." 
+                                class="pl-8 pr-3 py-2 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
+                        <i class="fas fa-search absolute left-2.5 top-3 text-gray-400"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Mobile/Tablet Controls - Only visible on smaller screens -->
+            <div class="lg:hidden w-full mt-4">
+                <!-- Search Input - Takes most of the space -->
+                <div class="relative flex-grow">
+                    <input type="text" id="mobileIdSearchInput" 
+                            placeholder="Search verifications..." 
+                            class="pl-8 pr-3 py-2.5 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
+                    <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
                 </div>
             </div>
         </div>
         
-        <!-- Notifications/Messages -->
-        <?php if(isset($_SESSION['message'])): ?>
-            <div class="mb-6 p-4 rounded-md <?php echo $_SESSION['message_type'] === 'success' ? 'bg-green-50 text-green-800 border border-green-200' : 'bg-blue-50 text-blue-800 border border-blue-200'; ?> flex items-center justify-between">
-                <div class="flex items-center">
-                    <i class="fas <?php echo $_SESSION['message_type'] === 'success' ? 'fa-check-circle text-green-500' : 'fa-info-circle text-blue-500'; ?> mr-3"></i>
-                    <span><?php echo $_SESSION['message']; ?></span>
-                </div>
-                <button class="text-gray-500 hover:text-gray-700 focus:outline-none" onclick="this.parentElement.style.display='none'">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <?php 
-            // Clear message after displaying
-            unset($_SESSION['message']); 
-            unset($_SESSION['message_type']);
-            ?>
-        <?php endif; ?>
-        
-        <!-- Main Content -->
-        <?php if($total_pending > 0): ?>
-            <div class="mb-4">
-                <h2 class="mb-2">Pending ID Verifications</h2>
-                <p class="text-sm text-gray-600">Review and process submitted identification documents.</p>
+        <!-- Responsive Table Container -->
+        <div class="overflow-x-auto scrollbar-thin" id="idTableContainer">
+            <div id="idLoadingIndicator" class="hidden absolute inset-0 bg-white bg-opacity-50 flex items-center justify-center">
+                <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-sidebar-accent"></div>
             </div>
             
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <?php foreach($pending_ids as $id_request): ?>
-                    <div class="id-card bg-white rounded-lg shadow-md overflow-hidden border border-gray-200">
-                        <!-- ID Preview -->
-                        <div class="relative h-48 overflow-hidden bg-gray-100 cursor-pointer" onclick="openModal('uploads/valid_ids/<?php echo htmlspecialchars(basename($id_request['image_path'])); ?>')">
-                            <img src="uploads/valid_ids/<?php echo htmlspecialchars(basename($id_request['image_path'])); ?>" alt="ID image" class="w-full h-full object-cover">
-                            <div class="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-center py-1 text-xs">
-                                Click to enlarge
-                            </div>
-                        </div>
-                        
-                        <!-- ID Information -->
-                        <div class="p-4">
-                            <h3 class="font-medium"><?php echo htmlspecialchars($id_request['first_name'] . ' ' . $id_request['last_name']); ?></h3>
-                            <div class="mt-2 space-y-1">
-                                <p class="text-sm text-gray-600">
-                                    <i class="fas fa-envelope mr-2 text-gray-400"></i>
-                                    <?php echo htmlspecialchars($id_request['email']); ?>
-                                </p>
-                                <p class="text-sm text-gray-600">
-                                    <i class="fas fa-phone mr-2 text-gray-400"></i>
-                                    <?php echo htmlspecialchars($id_request['phone_number']); ?>
-                                </p>
-                                <p class="text-sm text-gray-600">
-                                    <i class="fas fa-map-marker-alt mr-2 text-gray-400"></i>
-                                    <?php echo htmlspecialchars($id_request['branch_name'] ? $id_request['branch_name'] : 'No branch assigned'); ?>
-                                </p>
-                            </div>
-                        </div>
-                        
-                        <!-- Action Buttons -->
-                        <div class="flex border-t border-gray-200">
-                            <form method="POST" action="" class="w-1/2" id="approveForm<?php echo $id_request['validation_id']; ?>">
-                                <input type="hidden" name="id" value="<?php echo htmlspecialchars($id_request['validation_id']); ?>">
-                                <input type="hidden" name="action" value="approve">
-                                <button type="button" class="w-full py-3 text-green-600 hover:bg-green-50 focus:outline-none focus:bg-green-50 transition duration-150"
-                                        onclick="confirmAction('approveForm<?php echo $id_request['validation_id']; ?>', 'approve')">
-                                    <i class="fas fa-check-circle mr-2"></i>
-                                    Approve
-                                </button>
-                            </form>
-                            <div class="w-px bg-gray-200"></div>
-                            <form method="POST" action="" class="w-1/2" id="denyForm<?php echo $id_request['validation_id']; ?>">
-                                <input type="hidden" name="id" value="<?php echo htmlspecialchars($id_request['validation_id']); ?>">
-                                <input type="hidden" name="action" value="deny">
-                                <button type="button" class="w-full py-3 text-red-600 hover:bg-red-50 focus:outline-none focus:bg-red-50 transition duration-150"
-                                        onclick="confirmDeny('denyForm<?php echo $id_request['validation_id']; ?>')">
-                                    <i class="fas fa-times-circle mr-2"></i>
-                                    Decline
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-                <?php endforeach; ?>
+            <!-- Responsive Table -->
+            <div class="min-w-full">
+                <table class="w-full">
+                    <thead>
+                        <tr class="bg-gray-50 border-b border-sidebar-border">
+                            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap">
+                                <div class="flex items-center gap-1.5">
+                                    <i class="fas fa-user text-sidebar-accent"></i> Customer Name
+                                </div>
+                            </th>
+                            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap">
+                                <div class="flex items-center gap-1.5">
+                                    <i class="fas fa-envelope text-sidebar-accent"></i> Email
+                                </div>
+                            </th>
+                            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap">
+                                <div class="flex items-center gap-1.5">
+                                    <i class="fas fa-phone text-sidebar-accent"></i> Phone
+                                </div>
+                            </th>
+                            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap">
+                                <div class="flex items-center gap-1.5">
+                                    <i class="fas fa-map-marker-alt text-sidebar-accent"></i> Branch
+                                </div>
+                            </th>
+                            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text whitespace-nowrap">
+                                <div class="flex items-center gap-1.5">
+                                    <i class="fas fa-id-card text-sidebar-accent"></i> ID Preview
+                                </div>
+                            </th>
+                            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text whitespace-nowrap">
+                                <div class="flex items-center gap-1.5">
+                                    <i class="fas fa-cogs text-sidebar-accent"></i> Actions
+                                </div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="idTableBody">
+                        <?php if($total_pending > 0): ?>
+                            <?php foreach($pending_ids as $id_request): ?>
+                                <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
+                                    <td class="px-4 py-3.5 text-sm text-sidebar-text">
+                                        <div class="flex items-center">
+                                            <?php echo htmlspecialchars($id_request['first_name'] . ' ' . $id_request['last_name']); ?>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo htmlspecialchars($id_request['email']); ?></td>
+                                    <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo htmlspecialchars($id_request['phone_number']); ?></td>
+                                    <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo htmlspecialchars($id_request['branch_name'] ? $id_request['branch_name'] : 'No branch assigned'); ?></td>
+                                    <td class="px-4 py-3.5 text-sm">
+                                        <button class="text-sidebar-accent hover:text-darkgold transition-colors" 
+                                                onclick="openModal('uploads/valid_ids/<?php echo htmlspecialchars(basename($id_request['image_path'])); ?>')">
+                                            <i class="fas fa-eye mr-1"></i> View ID
+                                        </button>
+                                    </td>
+                                    <td class="px-4 py-3.5 text-sm">
+                                        <div class="flex space-x-2">
+                                            <form method="POST" action="" class="inline">
+                                                <input type="hidden" name="id" value="<?php echo htmlspecialchars($id_request['validation_id']); ?>">
+                                                <input type="hidden" name="action" value="approve">
+                                                <button type="button" class="p-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition-all tooltip"
+                                                        onclick="confirmAction('approve', this.form)"
+                                                        title="Approve ID">
+                                                    <i class="fas fa-check"></i>
+                                                </button>
+                                            </form>
+                                            
+                                            <form method="POST" action="" class="inline">
+                                                <input type="hidden" name="id" value="<?php echo htmlspecialchars($id_request['validation_id']); ?>">
+                                                <input type="hidden" name="action" value="deny">
+                                                <button type="button" class="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-all tooltip"
+                                                        onclick="confirmDeny(this.form)"
+                                                        title="Deny ID">
+                                                    <i class="fas fa-times"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <tr>
+                                <td colspan="6" class="p-6 text-sm text-center">
+                                    <div class="flex flex-col items-center">
+                                        <i class="fas fa-check-circle text-green-500 text-4xl mb-3"></i>
+                                        <p class="text-gray-500">All caught up! No pending ID verification requests at this time.</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
             </div>
-        <?php else: ?>
-            <div class="text-center py-12 bg-white rounded-lg border border-gray-200 shadow-sm">
-                <div class="text-5xl text-gray-300 mb-4">
-                    <i class="fas fa-check-circle"></i>
-                </div>
-                <h2 class="text-xl font-medium text-gray-700 mb-2">All Caught Up!</h2>
-                <p class="text-gray-500">There are no pending ID verification requests at this time.</p>
+        </div>
+        
+        <!-- Sticky Pagination Footer -->
+        <div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div id="paginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
+                Showing 1 - <?php echo min(10, $total_pending); ?> of <?php echo $total_pending; ?> verifications
             </div>
-        <?php endif; ?>
+            <div class="flex space-x-2">
+                <button class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover opacity-50 pointer-events-none">&laquo;</button>
+                <button class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm bg-sidebar-accent text-white">1</button>
+                <button class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover opacity-50 pointer-events-none">&raquo;</button>
+            </div>
+        </div>
     </div>
 </div>
 
 <!-- Image Modal -->
-<div id="imageModal" class="modal">
-    <span class="close" onclick="closeModal()">&times;</span>
-    <div class="modal-content">
-        <img id="modalImage" src="" alt="ID Document Full View">
+<div id="imageModal" class="fixed inset-0 z-50 hidden overflow-y-auto">
+    <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <!-- Background overlay -->
+        <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+            <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+        </div>
+        
+        <!-- Modal container -->
+        <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
+            <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                <div class="sm:flex sm:items-start">
+                    <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
+                        <h3 class="text-lg leading-6 font-medium text-gray-900 border-b pb-2">
+                            ID Document Preview
+                        </h3>
+                        
+                        <div class="mt-4">
+                            <img id="modalImage" src="" alt="ID Document Full View" class="w-full h-auto max-h-[70vh] object-contain">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                <button type="button" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm" onclick="closeModal()">
+                    Close
+                </button>
+            </div>
+        </div>
     </div>
 </div>
 
+<!-- Custom Decline Reason Modal -->
+<div id="customReasonModal" class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto">
+    <!-- Modal Backdrop -->
+    <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+    
+    <!-- Modal Content -->
+    <div class="relative bg-white rounded-xl shadow-card w-full max-w-md mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+        <!-- Close Button -->
+        <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeCustomReasonModal()">
+            <i class="fas fa-times"></i>
+        </button>
+        
+        <!-- Modal Header -->
+        <div class="px-4 sm:px-6 py-4 sm:py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
+            <h3 class="text-lg sm:text-xl font-bold text-white flex items-center">
+                Enter Custom Decline Reason
+            </h3>
+        </div>
+        
+        <!-- Modal Body -->
+        <div class="px-4 sm:px-6 py-4 sm:py-5">
+            <textarea id="customDeclineReason" rows="4" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="Please specify the reason for declining..."></textarea>
+        </div>
+        
+        <!-- Modal Footer -->
+        <div class="px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row sm:justify-end gap-2 sm:gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
+            <button class="w-full sm:w-auto px-4 sm:px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center" onclick="cancelCustomReason()">
+                Cancel
+            </button>
+            <button class="w-full sm:w-auto px-5 sm:px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="saveCustomReason()">
+                Save Reason
+            </button>
+        </div>
+    </div>
+</div>
 
 <script>
-    // Image modal functionality
-    function openModal(imagePath) {
-        const modal = document.getElementById('imageModal');
-        const modalImg = document.getElementById('modalImage');
-        
-        modal.style.display = "flex";
-        modalImg.src = imagePath;
-    }
+// Image modal functionality
+function openModal(imagePath) {
+    const modal = document.getElementById('imageModal');
+    const modalImg = document.getElementById('modalImage');
     
-    function closeModal() {
-        document.getElementById('imageModal').style.display = "none";
+    modal.classList.remove('hidden');
+    modalImg.src = imagePath;
+}
+
+function closeModal() {
+    document.getElementById('imageModal').classList.add('hidden');
+}
+
+// Close modal when clicking outside
+window.addEventListener('click', function(event) {
+    const modal = document.getElementById('imageModal');
+    if (event.target === modal) {
+        closeModal();
     }
-    
-    // Close modal when clicking outside the image
-    window.onclick = function(event) {
-        const modal = document.getElementById('imageModal');
-        if (event.target == modal) {
-            closeModal();
-        }
+});
+
+// Handle escape key to close modal
+document.addEventListener('keydown', function(event) {
+    if (event.key === "Escape") {
+        closeModal();
     }
+});
+
+// SweetAlert confirmation for approve/deny actions
+function confirmAction(actionType, form) {
+    const actionText = actionType === 'approve' ? 'approve' : 'deny';
+    const actionTitle = actionType === 'approve' ? 'Approve ID Verification' : 'Deny ID Verification';
+    const actionMessage = actionType === 'approve' 
+        ? 'Are you sure you want to approve this ID verification?' 
+        : 'Are you sure you want to deny this ID verification?';
+    const iconType = actionType === 'approve' ? 'question' : 'warning';
     
-    // Handle escape key to close modal
-    document.addEventListener('keydown', function(event) {
-        if (event.key === "Escape") {
-            closeModal();
+    Swal.fire({
+        title: actionTitle,
+        text: actionMessage,
+        icon: iconType,
+        showCancelButton: true,
+        confirmButtonColor: actionType === 'approve' ? '#10B981' : '#EF4444',
+        cancelButtonColor: '#6B7280',
+        confirmButtonText: 'Yes, ' + actionText + ' it!',
+        cancelButtonText: 'Cancel'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            form.submit();
         }
     });
-    
-    // SweetAlert confirmation for approve/deny actions
-    function confirmAction(formId, actionType) {
-        const actionText = actionType === 'approve' ? 'approve' : 'deny';
-        const actionTitle = actionType === 'approve' ? 'Approve ID Verification' : 'Deny ID Verification';
-        const actionMessage = actionType === 'approve' 
-            ? 'Are you sure you want to approve this ID verification?' 
-            : 'Are you sure you want to deny this ID verification?';
-        const iconType = actionType === 'approve' ? 'question' : 'warning';
-        
-        Swal.fire({
-            title: actionTitle,
-            text: actionMessage,
-            icon: iconType,
-            showCancelButton: true,
-            confirmButtonColor: actionType === 'approve' ? '#10B981' : '#EF4444',
-            cancelButtonColor: '#6B7280',
-            confirmButtonText: 'Yes, ' + actionText + ' it!',
-            cancelButtonText: 'Cancel'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                document.getElementById(formId).submit();
-            }
-        });
-    }
-    
-let currentDenyFormId = null;
+}
 
-function openCustomReasonModal(formId) {
-    currentDenyFormId = formId;
+let currentDenyForm = null;
+
+function openCustomReasonModal() {
     document.getElementById('customReasonModal').classList.remove('hidden');
 }
 
@@ -522,7 +531,7 @@ function closeCustomReasonModal() {
 function cancelCustomReason() {
     closeCustomReasonModal();
     // Reopen the SweetAlert
-    confirmDeny(currentDenyFormId);
+    confirmDeny(currentDenyForm);
 }
 
 function saveCustomReason() {
@@ -532,27 +541,20 @@ function saveCustomReason() {
         return;
     }
     
-    // Submit the form with the custom reason
-    const form = document.getElementById(currentDenyFormId);
-    
-    // Remove any existing hidden input for decline_reason
-    const existingInput = form.querySelector('input[name="decline_reason"]');
-    if (existingInput) {
-        form.removeChild(existingInput);
-    }
-    
     // Add the custom reason to the form
     const input = document.createElement('input');
     input.type = 'hidden';
     input.name = 'decline_reason';
     input.value = customReason;
-    form.appendChild(input);
+    currentDenyForm.appendChild(input);
     
     // Submit the form
-    form.submit();
+    currentDenyForm.submit();
 }
 
-function confirmDeny(formId) {
+function confirmDeny(form) {
+    currentDenyForm = form;
+    
     const declineReasons = [
         'Incomplete Document Visibility',
         'Cropped or Cut-off Text',
@@ -589,7 +591,7 @@ function confirmDeny(formId) {
             
             if (reason === 'Others...') {
                 // Show custom reason modal and prevent form submission
-                openCustomReasonModal(formId);
+                openCustomReasonModal();
                 return false;
             }
             
@@ -597,14 +599,6 @@ function confirmDeny(formId) {
         }
     }).then((result) => {
         if (result.isConfirmed && result.value) {
-            const form = document.getElementById(formId);
-            
-            // Remove any existing hidden input for decline_reason
-            const existingInput = form.querySelector('input[name="decline_reason"]');
-            if (existingInput) {
-                form.removeChild(existingInput);
-            }
-            
             // Add the selected reason to the form
             const input = document.createElement('input');
             input.type = 'hidden';
@@ -625,24 +619,50 @@ function confirmDeny(formId) {
                 if (this.value === 'Others...') {
                     // Close the SweetAlert and open custom reason modal
                     Swal.close();
-                    openCustomReasonModal(formId);
+                    openCustomReasonModal();
                 }
             });
         }
     }, 100);
 }
-</script>
 
-<!-- Custom Decline Reason Modal -->
-<div id="customReasonModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999] hidden">
-    <div class="bg-white rounded-lg p-6 w-full max-w-md">
-        <h3 class="text-lg font-medium mb-4">Enter Custom Decline Reason</h3>
-        <textarea id="customDeclineReason" class="w-full p-3 border border-gray-300 rounded mb-4" rows="4" placeholder="Please specify the reason for declining..."></textarea>
-        <div class="flex justify-end space-x-3">
-            <button onclick="cancelCustomReason()" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">Cancel</button>
-            <button onclick="saveCustomReason()" class="px-4 py-2 bg-yellow-600 text-white rounded-md hover:bg-yellow-700">Save Reason</button>
-        </div>
-    </div>
-</div>
+// Search functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const desktopSearchInput = document.getElementById('idSearchInput');
+    const mobileSearchInput = document.getElementById('mobileIdSearchInput');
+    
+    if (desktopSearchInput && mobileSearchInput) {
+        desktopSearchInput.addEventListener('input', function() {
+            mobileSearchInput.value = this.value;
+            filterTable();
+        });
+        
+        mobileSearchInput.addEventListener('input', function() {
+            desktopSearchInput.value = this.value;
+            filterTable();
+        });
+    }
+    
+    // Filter table based on search
+    function filterTable() {
+        const searchValue = (desktopSearchInput.value || '').toLowerCase();
+        const rows = document.querySelectorAll('#idTableBody tr');
+        
+        rows.forEach(row => {
+            const nameCell = row.cells[0]?.textContent?.toLowerCase() || '';
+            const emailCell = row.cells[1]?.textContent?.toLowerCase() || '';
+            const phoneCell = row.cells[2]?.textContent?.toLowerCase() || '';
+            const branchCell = row.cells[3]?.textContent?.toLowerCase() || '';
+            
+            const matchesSearch = nameCell.includes(searchValue) || 
+                                emailCell.includes(searchValue) || 
+                                phoneCell.includes(searchValue) || 
+                                branchCell.includes(searchValue);
+            
+            row.style.display = matchesSearch ? '' : 'none';
+        });
+    }
+});
+</script>
 </body>
 </html>
