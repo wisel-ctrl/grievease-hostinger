@@ -41,8 +41,7 @@ try {
             payment_url, 
             reference_code, 
             flower_design, 
-            inclusion,
-            downpayment
+            inclusion
         ) VALUES (
             :customerId, 
             :firstName, 
@@ -62,8 +61,7 @@ try {
             :paymentReceipt, 
             :referenceNumber, 
             :flowerArrangement, 
-            :additionalServices,
-            :downpayment
+            :additionalServices
         )
     ");
 
@@ -87,7 +85,6 @@ try {
     $stmt->bindParam(':referenceNumber', $data['documents']['referenceNumber']);
     $stmt->bindParam(':flowerArrangement', $data['flowerArrangement']);
     $stmt->bindParam(':additionalServices', $data['additionalServices']);
-    $stmt->bindParam(':downpayment', $data['downpayment']);
 
     // Execute the statement
     if ($stmt->execute()) {
