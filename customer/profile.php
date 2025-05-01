@@ -3005,7 +3005,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const modifyBookingNameFields = [
         'deceased_fname',
         'deceased_midname',
-        'deceased_lname'
+        'deceased_lname',
+        'deceased_suffix'
     ];
 
     // Function to apply validation to a field
