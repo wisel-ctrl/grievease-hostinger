@@ -1166,7 +1166,7 @@ document.addEventListener('DOMContentLoaded', function() {
             ?>
             <!-- booking contents -->
             <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden mb-4">
-                <div class="bg-gray-600 px-4 py-3 sm:px-6 sm:py-4 border-b border-gray-200">
+                <div class="bg-navy-300 px-4 py-3 sm:px-6 sm:py-4 border-b border-gray-200">
                     <div class="flex items-center justify-between mb-3">
                         <span class="<?php echo $status_class; ?> text-xs px-2 py-1 rounded-full"><?php echo $status_text; ?></span>
                         <p class="text-sm text-gray-500">Booking ID: <?php echo $booking['booking_id']; ?></p>
