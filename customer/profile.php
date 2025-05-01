@@ -2653,7 +2653,34 @@ document.addEventListener('DOMContentLoaded', function() {
         if (e.target === cancelModal) cancelModal.classList.add('hidden');
         if (e.target === viewDocumentModal) viewDocumentModal.classList.add('hidden');
     });
+// Add this to your existing JavaScript
+document.addEventListener('DOMContentLoaded', function() {
+    // Street address validation for edit profile
+    const streetAddressInput = document.getElementById('street_address');
+    if (streetAddressInput) {
+        streetAddressInput.addEventListener('input', function() {
+            // Remove special characters except spaces, commas, periods, and numbers
+            this.value = this.value.replace(/[^a-zA-Z0-9\s,.-]/g, '');
+            // Capitalize first letter of each word
+            this.value = this.value.toLowerCase().replace(/\b\w/g, function(char) {
+                return char.toUpperCase();
+            });
+        });
+    }
 
+    // Apply similar validation to deceased_address in modify modal
+    const deceasedAddressInput = document.querySelector('#modifyBookingForm textarea[name="deceased_address"]');
+    if (deceasedAddressInput) {
+        deceasedAddressInput.addEventListener('input', function() {
+            // Remove special characters except spaces, commas, periods, and numbers
+            this.value = this.value.replace(/[^a-zA-Z0-9\s,.-]/g, '');
+            // Capitalize first letter of each word
+            this.value = this.value.toLowerCase().replace(/\b\w/g, function(char) {
+                return char.toUpperCase();
+            });
+        });
+    }
+});
     // Functions
 function fetchBookingDetails(bookingId) {
     fetch(`profile/fetch_booking_details.php?booking_id=${bookingId}`)
