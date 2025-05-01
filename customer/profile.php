@@ -4073,6 +4073,72 @@ document.addEventListener('DOMContentLoaded', function() {
     // Set up real-time validation
     setupPasswordFormValidation();
 });
+
+// Add this to your existing JavaScript code
+function preventSpacesInPasswordFields() {
+    const passwordFields = [
+        'current-password',
+        'new-password',
+        'confirm-password'
+    ];
+
+    passwordFields.forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        if (field) {
+            // Prevent space key
+            field.addEventListener('keydown', function(e) {
+                if (e.key === ' ') {
+                    e.preventDefault();
+                }
+            });
+
+            // Clean up if spaces are pasted
+            field.addEventListener('input', function() {
+                if (this.value.includes(' ')) {
+                    this.value = this.value.replace(/\s/g, '');
+                    // Show a warning if you want
+                    showPasswordError(`${fieldId.replace('-', ' ')} cannot contain spaces`);
+                }
+            });
+
+            // Also validate on blur
+            field.addEventListener('blur', function() {
+                if (this.value.includes(' ')) {
+                    this.value = this.value.replace(/\s/g, '');
+                    showPasswordError(`${fieldId.replace('-', ' ')} cannot contain spaces`);
+                }
+            });
+        }
+    });
+}
+
+// Helper function to show error (you can modify this to fit your existing error display)
+function showPasswordError(message) {
+    // Using SweetAlert for nice error messages
+    Swal.fire({
+        icon: 'error',
+        title: 'Invalid Input',
+        text: message,
+        timer: 3000,
+        showConfirmButton: false
+    });
+}
+
+// Call this when the change password modal opens
+document.getElementById('open-change-password-modal').addEventListener('click', function() {
+    // Existing modal open code...
+    preventSpacesInPasswordFields();
+});
+
+// Also call it when the DOM is loaded in case modal is already open
+document.addEventListener('DOMContentLoaded', function() {
+    preventSpacesInPasswordFields();
+});
+
+field.addEventListener('paste', function(e) {
+    e.preventDefault();
+    showPasswordError('Pasting is not allowed in password fields');
+});
 </script>
 
 
