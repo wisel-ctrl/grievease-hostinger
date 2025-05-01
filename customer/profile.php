@@ -2036,7 +2036,7 @@ document.addEventListener('DOMContentLoaded', function() {
 </div>
 
 <!-- Modify Booking Modal -->
-<div id="modifyBookingModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+<div id="modifyBookingModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden backdrop-blur-sm">
     <div class="bg-white rounded-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         <div class="p-6 border-b border-gray-200 flex justify-between items-center">
             <h3 class="font-hedvig text-xl text-navy">Modify Booking</h3>
@@ -2149,7 +2149,7 @@ document.addEventListener('DOMContentLoaded', function() {
 </div>
 
 <!-- Cancel Booking Modal -->
-<div id="cancelBookingModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4 hidden">
+<div id="cancelBookingModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4 hidden backdrop-blur-sm">
   <!-- Modal Content -->
   <div class="w-full max-w-md bg-white rounded-2xl shadow-xl overflow-hidden max-h-[90vh]">
     <div class="modal-scroll-container overflow-y-auto max-h-[90vh]">
@@ -2226,7 +2226,7 @@ document.addEventListener('DOMContentLoaded', function() {
 </div>
 
 <!-- Receipt Modal -->
-<div id="receiptModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full">
+<div id="receiptModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full backdrop-blur-sm">
     <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-2/3 lg:w-1/2 shadow-lg rounded-md bg-white">
         <div class="flex justify-between items-center mb-4">
             <h3 class="text-xl font-bold text-gray-800">Payment Receipt</h3>
