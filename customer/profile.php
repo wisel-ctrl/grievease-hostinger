@@ -4086,5 +4086,155 @@ document.addEventListener('DOMContentLoaded', function() {
     mobileMenu.classList.toggle('hidden');
 }
 </script>
+
+<script>
+// Enhanced name validation function
+function validateName(input) {
+    const value = input.value.trim();
+    // Allow letters, apostrophes, hyphens, and spaces between words
+    // Must have at least 2 letters before allowing a space
+    const nameRegex = /^[A-Za-zÀ-ÿ'-]{2,}(?:\s+[A-Za-zÀ-ÿ'-]+)*$/;
+    return nameRegex.test(value);
+}
+
+// Function to handle name input validation and formatting
+function handleNameInput(input) {
+    input.addEventListener('input', function(e) {
+        // Get current cursor position
+        const cursorPos = this.selectionStart;
+        
+        // Remove any numbers that might have been entered
+        let currentValue = this.value.replace(/[0-9]/g, '');
+        
+        // Prevent starting with space, apostrophe or hyphen
+        if (currentValue.startsWith(' ') || currentValue.startsWith("'") || currentValue.startsWith("-")) {
+            currentValue = currentValue.replace(/^[\s'-]+/, '');
+        }
+        
+        // Remove consecutive spaces or special characters
+        currentValue = currentValue.replace(/\s+/g, ' ');
+        currentValue = currentValue.replace(/'+/g, "'");
+        currentValue = currentValue.replace(/-+/g, "-");
+        
+        // Check if we're trying to add a space
+        if (currentValue.includes(' ')) {
+            const parts = currentValue.split(' ');
+            // Only allow space if previous part has at least 2 characters
+            if (parts.length > 1 && parts[0].length < 2) {
+                // Remove the space if first part is less than 2 chars
+                currentValue = parts[0] + parts.slice(1).join('');
+            }
+        }
+        
+        // Capitalize the first letter of each word
+        currentValue = currentValue.replace(/\b\w/g, function(char) {
+            return char.toUpperCase();
+        });
+        
+        // Update the value
+        this.value = currentValue;
+        
+        // Restore cursor position (approximately)
+        this.setSelectionRange(cursorPos, cursorPos);
+        
+        // Validate and update styling
+        if (this.value && !validateName({ value: this.value })) {
+            this.classList.add('border-error');
+            this.classList.remove('border-success');
+        } else if (this.value) {
+            this.classList.remove('border-error');
+            this.classList.add('border-success');
+        } else {
+            this.classList.remove('border-error');
+            this.classList.remove('border-success');
+        }
+    });
+    
+    // Handle paste events
+    input.addEventListener('paste', function(e) {
+        e.preventDefault();
+        let pastedText = e.clipboardData.getData('text/plain').trim();
+        
+        // Remove numbers
+        pastedText = pastedText.replace(/[0-9]/g, '');
+        
+        // Process pasted text to ensure it meets our space requirements
+        if (pastedText.includes(' ')) {
+            const parts = pastedText.split(' ');
+            // Only keep spaces that follow at least 2 characters
+            pastedText = parts.reduce((acc, part, index) => {
+                if (index === 0 || (index > 0 && acc.replace(/\s/g, '').length >= 2)) {
+                    return acc + (index > 0 ? ' ' : '') + part;
+                }
+                return acc + part;
+            }, '');
+        }
+        
+        // Capitalize first letter of each word
+        pastedText = pastedText.replace(/\b\w/g, function(char) {
+            return char.toUpperCase();
+        });
+        
+        // Validate and update
+        if (validateName({ value: pastedText })) {
+            this.value = pastedText;
+            this.classList.remove('border-error');
+            this.classList.add('border-success');
+        } else {
+            this.value = '';
+            this.classList.add('border-error');
+            this.classList.remove('border-success');
+            
+            Swal.fire({
+                title: "Invalid Name",
+                text: "Names cannot contain numbers or special characters except apostrophes and hyphens. Spaces are only allowed after at least 2 letters.",
+                icon: "error",
+                confirmButtonText: "OK",
+            });
+        }
+    });
+    
+    // Prevent drag-and-drop
+    input.addEventListener('drop', function(e) {
+        e.preventDefault();
+    });
+}
+
+// Apply the validation when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    // Profile name fields
+    const firstName = document.getElementById('firstName');
+    const lastName = document.getElementById('lastName');
+    const middleName = document.getElementById('middleName');
+    
+    if (firstName) handleNameInput(firstName);
+    if (lastName) handleNameInput(lastName);
+    if (middleName) handleNameInput(middleName);
+    
+    // Deceased name fields in modify booking modal
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('.modify-booking')) {
+            // Wait for modal to open and fields to be available
+            setTimeout(() => {
+                const deceasedFname = document.querySelector('#modifyBookingForm input[name="deceased_fname"]');
+                const deceasedMidname = document.querySelector('#modifyBookingForm input[name="deceased_midname"]');
+                const deceasedLname = document.querySelector('#modifyBookingForm input[name="deceased_lname"]');
+                
+                if (deceasedFname) handleNameInput(deceasedFname);
+                if (deceasedMidname) handleNameInput(deceasedMidname);
+                if (deceasedLname) handleNameInput(deceasedLname);
+            }, 500);
+        }
+    });
+    
+    // Add CSS classes for validation states
+    const style = document.createElement('style');
+    style.textContent = `
+        .border-error { border-color: #ef4444 !important; }
+        .border-success { border-color: #10b981 !important; }
+    `;
+    document.head.appendChild(style);
+});
+</script>
 </body> 
 </html>
