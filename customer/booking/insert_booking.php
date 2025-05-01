@@ -94,7 +94,7 @@ try {
             deathcert_url, 
             payment_url, 
             reference_code,
-            service_id,
+            service_id
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ");
 
@@ -104,7 +104,7 @@ try {
 
     // Bind parameters
     $stmt->bind_param(
-        'issssssssiidsssi',
+        'issssssssidssssi',
         $customerId,
         $deceasedFirstName,
         $deceasedMiddleName,
