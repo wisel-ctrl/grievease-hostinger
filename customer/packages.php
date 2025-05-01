@@ -874,7 +874,7 @@ input[name*="LastName"] {
                 <button id="lifeplanServiceBtn" class="bg-cream hover:bg-yellow-100 border-2 border-yellow-600 text-navy px-6 py-8 rounded-lg shadow-md transition-all duration-300 flex flex-col items-center">
                     <i class="fas fa-seedling text-3xl text-yellow-600 mb-2"></i>
                     <span class="font-hedvig text-lg">Lifeplan</span>
-                    <span class="text-sm text-gray-600 mt-2 text-center">lifeplan funeral planning</span>
+                    <span class="text-sm text-gray-600 mt-2 text-center">Lifeplan funeral planning</span>
                 </button>
             </div>
         </div>
