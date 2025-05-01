@@ -1836,13 +1836,19 @@ function removeGcash() {
                             </div>
                             <div class="w-full sm:w-1/2 px-2">
                                 <label for="lifeplanContactNumber" class="block text-sm font-medium text-navy mb-1">Contact Number *</label>
-                                <input type="tel" id="lifeplanContactNumber" name="contactNumber" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                                <input type="tel" id="lifeplanContactNumber" name="contactNumber" required 
+       pattern="\d*" 
+       title="Please enter numbers only (no spaces or symbols)"
+       class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                             </div>
                         </div>
                         
                         <div class="mb-3">
                             <label for="lifeplanEmailAddress" class="block text-sm font-medium text-navy mb-1">Email Address *</label>
-                            <input type="email" id="lifeplanEmailAddress" name="emailAddress" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                            <input type="email" id="lifeplanEmailAddress" name="emailAddress" required 
+       pattern="[^\s]+" 
+       title="Email address cannot contain spaces"
+       class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                         </div>
                         
                         <!-- Address (Improved UI with dropdowns in specified layout) -->
@@ -1994,6 +2000,51 @@ function removeGcash() {
 
 <!-- Add this script at the end -->
 <script>
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Set max date for lifeplan date of birth to today
+    const today = new Date();
+    const todayFormatted = today.toISOString().split('T')[0];
+    document.getElementById('lifeplanDateOfBirth').max = todayFormatted;
+    
+    // Contact number validation - only numbers
+    const contactNumberInput = document.getElementById('lifeplanContactNumber');
+    if (contactNumberInput) {
+        contactNumberInput.addEventListener('input', function() {
+            // Remove any non-digit characters
+            this.value = this.value.replace(/\D/g, '');
+        });
+        
+        contactNumberInput.addEventListener('paste', function(e) {
+            e.preventDefault();
+            const pastedText = (e.clipboardData || window.clipboardData).getData('text');
+            const cleanedText = pastedText.replace(/\D/g, ''); // Remove non-digits
+            document.execCommand('insertText', false, cleanedText);
+        });
+    }
+    
+    // Email validation - prevent spaces
+    const emailInput = document.getElementById('lifeplanEmailAddress');
+    if (emailInput) {
+        emailInput.addEventListener('input', function() {
+            // Remove any spaces
+            this.value = this.value.replace(/\s/g, '');
+        });
+        
+        emailInput.addEventListener('paste', function(e) {
+            e.preventDefault();
+            const pastedText = (e.clipboardData || window.clipboardData).getData('text');
+            const cleanedText = pastedText.replace(/\s/g, ''); // Remove spaces
+            document.execCommand('insertText', false, cleanedText);
+        });
+    }
+    
+    // Add pattern validation for contact number (optional)
+    if (contactNumberInput) {
+        contactNumberInput.pattern = '\\d*'; // Only digits allowed
+        contactNumberInput.title = 'Please enter numbers only (no spaces or symbols)';
+    }
+});
 // Lifeplan GCash Receipt Upload Preview
 // Lifeplan GCash Receipt Upload Handler (similar changes)
 document.getElementById('lifeplanGcashReceipt')?.addEventListener('change', function() {
