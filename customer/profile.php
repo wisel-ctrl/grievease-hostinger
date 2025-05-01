@@ -2035,6 +2035,7 @@ document.addEventListener('DOMContentLoaded', function() {
   </div>
 </div>
 
+
 <!-- Modify Booking Modal -->
 <div id="modifyBookingModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4 hidden">
   <!-- Modal Content -->
@@ -2185,21 +2186,18 @@ document.addEventListener('DOMContentLoaded', function() {
                         </div>
                     </div>
                 </div>
-            </div>
-        </form>
-      </div>
-      
-      <!-- Modal Footer -->
-      <div class="modal-sticky-footer px-6 py-4 flex flex-col sm:flex-row sm:justify-end gap-4 border-t border-gray-200 bg-white sticky bottom-0 z-10">
-        <button class="w-full sm:w-auto px-6 py-3 bg-white border border-yellow-600 text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center close-modal">
-          <i class="fas fa-times mr-2"></i> Cancel
-        </button>
-        <button type="submit" form="modifyBookingForm" class="w-full sm:w-auto px-8 py-3 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg shadow-md transition-all duration-300 flex items-center justify-center">
-          <i class="fas fa-save mr-2"></i> Save Changes
-        </button>
-      </div>
+                
+                <div class="flex justify-end space-x-3">
+                    <button type="button" class="close-modal bg-gray-100 text-gray-700 px-4 py-2 rounded hover:bg-gray-200 transition">
+                        Cancel
+                    </button>
+                    <button type="submit" class="bg-navy text-white px-4 py-2 rounded hover:bg-navy/90 transition">
+                        <i class="fas fa-save mr-2"></i> Save Changes
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
-  </div>
 </div>
 
 <!-- Cancel Booking Modal -->
