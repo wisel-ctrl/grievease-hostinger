@@ -589,7 +589,7 @@ document.addEventListener('DOMContentLoaded', function() {
         applyRequiredValidation(field);
     });
 
-    // Validate phone number - must start with 09
+    // Validate phone number
     function validatePhoneNumber() {
         const phoneField = document.getElementById('clientPhone');
         if (phoneField) {
@@ -601,18 +601,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (this.value.length > 11) {
                     this.value = this.value.substring(0, 11);
                 }
-                
-                // Don't allow input unless it starts with 09
-                if (this.value && !this.value.startsWith('09')) {
-                    this.value = ''; // Clear the input if it doesn't start with 09
-                    this.setCustomValidity('Phone number must start with 09 and be 11 digits long.');
-                } else {
-                    this.setCustomValidity('');
-                }
-            });
-            
-            // Also validate on blur
-            phoneField.addEventListener('blur', function() {
                 if (this.value && !this.value.startsWith('09')) {
                     this.setCustomValidity('Phone number must start with 09 and be 11 digits long.');
                 } else {
@@ -663,42 +651,11 @@ document.addEventListener('DOMContentLoaded', function() {
         const dodField = document.getElementById('dateOfDeath');
         const burialField = document.getElementById('dateOfBurial');
         const today = new Date();
-        today.setHours(0, 0, 0, 0);
         
-        // Set max date for date of death to today
-        if (dodField) {
-            dodField.max = today.toISOString().split('T')[0];
-            
-            // Set min date for date of death to date of birth if available
-            dodField.addEventListener('focus', function() {
-                if (dobField && dobField.value) {
-                    this.min = dobField.value;
-                } else {
-                    this.min = '';
-                }
-            });
-        }
-        
-        // Set min date for burial to tomorrow
-        if (burialField) {
-            const tomorrow = new Date(today);
-            tomorrow.setDate(tomorrow.getDate() + 1);
-            burialField.min = tomorrow.toISOString().split('T')[0];
-            
-            // Also set min date based on date of death if available
-            burialField.addEventListener('focus', function() {
-                if (dodField && dodField.value) {
-                    const dodDate = new Date(dodField.value);
-                    const minBurialDate = new Date(dodDate);
-                    minBurialDate.setDate(dodDate.getDate() + 1);
-                    this.min = minBurialDate.toISOString().split('T')[0];
-                } else {
-                    const tomorrow = new Date();
-                    tomorrow.setDate(tomorrow.getDate() + 1);
-                    this.min = tomorrow.toISOString().split('T')[0];
-                }
-            });
-        }
+        // Set max dates to today
+        if (dobField) dobField.max = today.toISOString().split('T')[0];
+        if (dodField) dodField.max = today.toISOString().split('T')[0];
+        if (burialField) burialField.max = today.toISOString().split('T')[0];
         
         // Validate date of death
         if (dodField) {
@@ -712,35 +669,17 @@ document.addEventListener('DOMContentLoaded', function() {
                         this.setCustomValidity('');
                     }
                 }
-                
-                // Also validate against today's date
-                const dod = new Date(this.value);
-                if (dod > today) {
-                    this.setCustomValidity('Date of death cannot be in the future');
-                } else {
-                    this.setCustomValidity('');
-                }
             });
         }
         
         // Validate date of burial
         if (burialField) {
             burialField.addEventListener('change', function() {
-                // Validate against tomorrow's date
-                const burialDate = new Date(this.value);
-                const tomorrow = new Date(today);
-                tomorrow.setDate(tomorrow.getDate() + 1);
-                
-                if (burialDate < tomorrow) {
-                    this.setCustomValidity('Date of burial must be tomorrow or later');
-                    return;
-                }
-                
                 if (dodField && dodField.value) {
                     const dod = new Date(dodField.value);
                     const burial = new Date(this.value);
-                    if (burial <= dod) {
-                        this.setCustomValidity('Date of burial must be after date of death');
+                    if (burial < dod) {
+                        this.setCustomValidity('Date of burial cannot be before date of death');
                     } else {
                         this.setCustomValidity('');
                     }
@@ -811,7 +750,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         previewContainer.classList.remove('hidden');
                     } else {
                         // For other file types, show a generic file icon
-                        previewImage.src = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzODQgNTEyIj48cGF0aCBmaWxsPSIjMDAwIiBkPSJNMjI0IDEzNlYwSDI0QzEwLjcgMCAwIDEwLjcgMCAyNHY0NjRjMCAxMy4zIDEwLjcgMjQgMjQgMjRoMzM2YzEzLjMgMCAyNC0xMC43IDI0LTI0VjE2MEgyNDhjLTEzLjIgMC0yNC0xMC44LTI0LTI0em42NS4xIDEwNi41TDI4MSAxNDkuMWMtNC43LTQuNy0xMi4zLTQuNy0xNyAwTDIzOSAxNzQuMWMtNC43IDQuNy00LjcgMTIuMyAwIDE3bDM0IDM0YzQuNyA0LjcgMTIuMyA0LjcgMTcgMGwzNC0zNGM0LjctNC43IDQuNy0xMi4zIDAtMTd6Ii8+PC9zdmc+';
+                        previewImage.src = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzODQgNTEyIj48cGF0aCBmaWxsPSIjMDAwIiBkPSJNMjI0IDEzNlYwSDI0QzEwLjcgMCAwIDEwLjcgMCAyNHY0NjRjMCAxMy4zIDEwLjcgMjQgMjQgMjRoMzM2YzEzLjMgMCAyNC0xMC43IDI0LTI0VjE2MEgyNDhjLTEzLjIgMC0yNC0xMC44LTI0LTI0em02NS4xIDEwNi41TDI4MSAxNDkuMWMtNC43LTQuNy0xMi4zLTQuNy0xNyAwTDIzOSAxNzQuMWMtNC43IDQuNy00LjcgMTIuMyAwIDE3bDM0IDM0YzQuNyA0LjcgMTIuMyA0LjcgMTcgMGwzNC0zNGM0LjctNC43IDQuNy0xMi4zIDAtMTd6Ii8+PC9zdmc+';
                         previewContainer.classList.remove('hidden');
                     }
                 }
