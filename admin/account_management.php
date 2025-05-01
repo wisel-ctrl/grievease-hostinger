@@ -127,8 +127,9 @@ $customersResult = mysqli_query($conn, $customersQuery);
 <div class="flex items-center gap-3 mb-4 lg:mb-0">
     <h3 class="text-lg font-bold text-sidebar-text whitespace-nowrap">Customer Accounts</h3>
     <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
-        <i class="fas fa-user-circle"></i>
+        
         <span id="totalCustomers"><?php echo $totalCustomers; ?></span>
+        <i class="fas fa-user-circle"></i>
     </span>
 </div>
             
@@ -1492,8 +1493,9 @@ if ($result->num_rows > 0) {
             <div class="flex items-center gap-3 mb-4 lg:mb-0">
     <h3 class="text-lg font-bold text-sidebar-text whitespace-nowrap">Employee Accounts</h3>
     <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
-        <i class="fas fa-user-circle"></i>
+        
         <span id="totalEmployees"><?php echo $totalRows; ?></span>
+        <i class="fas fa-user-circle"></i>
     </span>
 </div>
             
