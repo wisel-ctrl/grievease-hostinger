@@ -1862,6 +1862,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const packagePrice = packageCard.dataset.price;
             const packageImage = packageCard.dataset.image || '';
             const serviceId = packageCard.dataset.serviceId; // Get service_id
+            console.log('service1: ', serviceId);
             
             // Store package details in sessionStorage for later use
             sessionStorage.setItem('selectedPackageName', packageName);
