@@ -1001,9 +1001,9 @@ header("Pragma: no-cache");
         }
     }, 500);
 }
-// Validation function for names (letters, spaces between words, apostrophes, and hyphens)
+// Updated validation function for names
 function validateName(input) {
-    const nameRegex = /^[A-Za-zÀ-ÿ'-]+(\s[A-Za-zÀ-ÿ'-]+)*$/;
+    const nameRegex = /^[A-Za-zÀ-ÿ'-]{2,}(?:\s[A-Za-zÀ-ÿ'-]+)*$/;
     return nameRegex.test(input.value.trim());
 }
 
@@ -1018,8 +1018,12 @@ function autoCapitalizeNames(input) {
 }
 
 // Function to prevent invalid input - SPECIFICALLY FOR NAME FIELDS
+// Updated function to prevent invalid input
 function preventNumbersInNames(input) {
     input.addEventListener('input', function(e) {
+        // Get cursor position before any changes
+        const cursorPos = this.selectionStart;
+        
         // Remove any numbers that might have been entered
         this.value = this.value.replace(/[0-9]/g, '');
         
@@ -1031,10 +1035,19 @@ function preventNumbersInNames(input) {
             this.value = this.value.replace(/^[\s'-]+/, '');
         }
         
+        // Handle space restrictions
+        if (this.value.length < 2) {
+            // Don't allow spaces if less than 2 characters
+            this.value = this.value.replace(/\s/g, '');
+        }
+        
         // Remove consecutive spaces or special characters
         this.value = this.value.replace(/\s+/g, ' ');
         this.value = this.value.replace(/'+/g, "'");
         this.value = this.value.replace(/-+/g, "-");
+        
+        // Restore cursor position (adjusting for any removed characters)
+        this.setSelectionRange(cursorPos, cursorPos);
         
         // Validate and add/remove error styling
         if (this.value && !validateName(this)) {
@@ -1050,30 +1063,35 @@ function preventNumbersInNames(input) {
     });
     
     input.addEventListener('paste', function(e) {
-        e.preventDefault();
-        let pastedText = e.clipboardData.getData('text/plain').trim();
+    e.preventDefault();
+    let pastedText = e.clipboardData.getData('text/plain').trim();
+    
+    // Remove any numbers from pasted text
+    pastedText = pastedText.replace(/[0-9]/g, '');
+    
+    // Handle space restrictions in pasted text
+    if (pastedText.length < 2) {
+        pastedText = pastedText.replace(/\s/g, '');
+    }
+    
+    // Validate pasted text
+    if (validateName({ value: pastedText })) {
+        this.value = pastedText;
+        this.classList.remove('border-error');
+        this.classList.add('border-success');
+    } else {
+        this.value = '';
+        this.classList.add('border-error');
+        this.classList.remove('border-success');
         
-        // Remove any numbers from pasted text
-        pastedText = pastedText.replace(/[0-9]/g, '');
-        
-        // Validate pasted text
-        if (validateName({ value: pastedText })) {
-            this.value = pastedText;
-            this.classList.remove('border-error');
-            this.classList.add('border-success');
-        } else {
-            this.value = '';
-            this.classList.add('border-error');
-            this.classList.remove('border-success');
-            
-            Swal.fire({
-                title: "Invalid Name",
-                text: "Names cannot contain numbers or special characters except apostrophes and hyphens.",
-                icon: "error",
-                confirmButtonText: "OK",
-            });
-        }
-    });
+        Swal.fire({
+            title: "Invalid Name",
+            text: "Names must have at least 2 characters before a space can be added.",
+            icon: "error",
+            confirmButtonText: "OK",
+        });
+    }
+});
     
     input.addEventListener('drop', function(e) {
         e.preventDefault();
