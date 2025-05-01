@@ -951,7 +951,6 @@ document.getElementById('addInventoryForm').addEventListener('submit', function(
 </script>
 
 <!-- Edit Inventory Modal -->
-
 <div id="editInventoryModal" class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto">
   <!-- Modal Backdrop -->
   <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
@@ -985,17 +984,21 @@ document.getElementById('addInventoryForm').addEventListener('submit', function(
             Item Name <span class="text-red-500">*</span>
           </label>
           <div class="relative">
-            <input type="text" id="editItemName" name="editItemName" value="<?php echo $item_name; ?>" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="Item Name">
+            <input type="text" id="editItemName" name="editItemName" value="<?php echo $item_name; ?>" required 
+                   class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
+                   placeholder="Item Name"
+                   oninput="validateEditItemName(this)">
+            <div id="editItemNameError" class="text-red-500 text-xs mt-1 hidden">Item name cannot start with space or have consecutive spaces</div>
           </div>
         </div>
 
         <!-- Category Dropdown -->
         <div>
-          <label for="category" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+          <label for="editCategory" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
             Category <span class="text-red-500">*</span>
           </label>
           <div class="relative">
-            <select id="category" name="category" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+            <select id="editCategory" name="category" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
               <option value="" disabled>Select a Category</option>
               <?php
               // Fetch categories again
@@ -1020,7 +1023,11 @@ document.getElementById('addInventoryForm').addEventListener('submit', function(
             Quantity <span class="text-red-500">*</span>
           </label>
           <div class="relative">
-            <input type="number" id="editQuantity" name="editQuantity" value="<?php echo $quantity; ?>" min="1" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="Quantity">
+            <input type="number" id="editQuantity" name="editQuantity" value="<?php echo $quantity; ?>" min="1" required 
+                   class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
+                   placeholder="Quantity"
+                   oninput="validateQuantity(this)">
+            <div id="editQuantityError" class="text-red-500 text-xs mt-1 hidden">Quantity must be a positive number</div>
           </div>
         </div>
 
@@ -1032,23 +1039,40 @@ document.getElementById('addInventoryForm').addEventListener('submit', function(
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <span class="text-gray-500">₱</span>
             </div>
-            <input type="number" id="editUnitPrice" name="editUnitPrice" value="<?php echo $unit_price; ?>" step="0.01" required class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="0.00">
+            <input type="text" id="editUnitPrice" name="editUnitPrice" value="<?php echo $unit_price; ?>" required 
+                   class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
+                   placeholder="0.00"
+                   oninput="validatePrice(this)">
+            <div id="editUnitPriceError" class="text-red-500 text-xs mt-1 hidden">Only numbers and one decimal point allowed</div>
           </div>
         </div>
 
-        <!-- Current Image Preview -->
-        <div class="bg-navy p-3 sm:p-4 rounded-lg">
-          <div class="flex flex-col items-center space-y-2 sm:space-y-3">
-            <div class="w-full h-32 bg-center bg-cover rounded-lg shadow-md" style="background-image: url('<?php echo $inventory_img; ?>');"></div>
-            <span class="text-xs sm:text-sm text-gray-600">Current Image</span>
+        <!-- Image Preview Section -->
+        <div class="bg-gray-50 p-3 sm:p-4 rounded-lg border border-gray-200">
+          <label class="block text-xs font-medium text-gray-700 mb-2">Image Preview</label>
+          
+          <!-- Current Image -->
+          <div id="currentImageContainer" class="mb-4">
+            <p class="text-xs text-gray-500 mb-2">Current Image:</p>
+            <div class="w-full h-48 bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center">
+              <img id="currentImagePreview" src="<?php echo $inventory_img; ?>" alt="Current Image" class="max-h-full max-w-full object-contain">
+            </div>
           </div>
-        </div>
-
-        <!-- File Upload -->
-        <div class="bg-gray-50 p-3 sm:p-4 rounded-lg">
-          <label for="editItemImage" class="block text-xs font-medium text-gray-700 mb-2 sm:mb-3 flex items-center">Upload New Image</label>
+          
+          <!-- New Image Preview -->
+          <div id="newImagePreviewContainer" class="hidden mb-4">
+            <p class="text-xs text-gray-500 mb-2">New Image:</p>
+            <div class="w-full h-48 bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center">
+              <img id="newImagePreview" src="#" alt="New Image Preview" class="max-h-full max-w-full object-contain">
+            </div>
+          </div>
+          
+          <!-- File Upload -->
+          <label for="editItemImage" class="block text-xs font-medium text-gray-700 mb-2">Upload New Image</label>
           <div class="relative">
-            <input type="file" id="editItemImage" name="editItemImage" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20">
+            <input type="file" id="editItemImage" name="editItemImage" accept="image/*" 
+                   class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20"
+                   onchange="previewEditImage(this)">
             <div class="w-full px-3 py-2 border border-dashed border-gray-300 rounded-lg bg-gray-50 text-gray-500 text-xs sm:text-sm flex items-center justify-center">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 text-sidebar-accent">
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
@@ -1078,6 +1102,122 @@ document.getElementById('addInventoryForm').addEventListener('submit', function(
     </div>
   </div>
 </div>
+
+<script>
+// Item Name Validation
+function validateEditItemName(input) {
+  const errorElement = document.getElementById('editItemNameError');
+  let value = input.value;
+  
+  // Check if first character is space
+  if (value.length > 0 && value.charAt(0) === ' ') {
+    errorElement.classList.remove('hidden');
+    input.value = value.trim();
+    return;
+  }
+  
+  // Check for consecutive spaces
+  if (value.includes('  ')) {
+    errorElement.classList.remove('hidden');
+    input.value = value.replace(/\s+/g, ' ');
+    return;
+  }
+  
+  errorElement.classList.add('hidden');
+  
+  // Auto-capitalize first letter
+  if (value.length === 1) {
+    input.value = value.charAt(0).toUpperCase() + value.slice(1);
+  }
+}
+
+// Quantity Validation
+function validateQuantity(input) {
+  const errorElement = document.getElementById('editQuantityError');
+  
+  if (input.value < 1) {
+    errorElement.classList.remove('hidden');
+    input.value = '';
+  } else {
+    errorElement.classList.add('hidden');
+  }
+}
+
+// Price Validation (allows numbers and one decimal point)
+function validatePrice(input) {
+  const errorElement = document.getElementById('editUnitPriceError');
+  // Remove any non-digit characters except for the first decimal point
+  let value = input.value.replace(/[^0-9.]/g, '');
+  
+  // Ensure only one decimal point
+  const decimalCount = value.split('.').length - 1;
+  if (decimalCount > 1) {
+    value = value.substring(0, value.lastIndexOf('.'));
+  }
+  
+  // Update the input value
+  input.value = value;
+  
+  // Show error if invalid characters were removed
+  if (value !== input.value) {
+    errorElement.classList.remove('hidden');
+    setTimeout(() => errorElement.classList.add('hidden'), 2000);
+  } else {
+    errorElement.classList.add('hidden');
+  }
+}
+
+// Image Preview for Edit Modal
+function previewEditImage(input) {
+  const newImagePreviewContainer = document.getElementById('newImagePreviewContainer');
+  const newImagePreview = document.getElementById('newImagePreview');
+  
+  if (input.files && input.files[0]) {
+    const reader = new FileReader();
+    
+    reader.onload = function(e) {
+      newImagePreview.src = e.target.result;
+      newImagePreviewContainer.classList.remove('hidden');
+    }
+    
+    reader.readAsDataURL(input.files[0]);
+  } else {
+    newImagePreviewContainer.classList.add('hidden');
+    newImagePreview.src = '#';
+  }
+}
+
+// Form submission validation
+document.getElementById('editInventoryForm').addEventListener('submit', function(e) {
+  const itemName = document.getElementById('editItemName').value;
+  const quantity = document.getElementById('editQuantity').value;
+  const unitPrice = document.getElementById('editUnitPrice').value;
+  
+  // Validate item name
+  if (itemName.trim() === '' || itemName.charAt(0) === ' ' || itemName.includes('  ')) {
+    e.preventDefault();
+    document.getElementById('editItemNameError').classList.remove('hidden');
+    document.getElementById('editItemName').focus();
+    return;
+  }
+  
+  // Validate quantity
+  if (quantity < 1) {
+    e.preventDefault();
+    document.getElementById('editQuantityError').classList.remove('hidden');
+    document.getElementById('editQuantity').focus();
+    return;
+  }
+  
+  // Validate unit price
+  if (!/^\d*\.?\d*$/.test(unitPrice)) {
+    e.preventDefault();
+    document.getElementById('editUnitPriceError').classList.remove('hidden');
+    document.getElementById('editUnitPrice').focus();
+    return;
+  }
+});
+</script>
 
 <!-- Archived Items Modal -->
 <div class="fixed inset-0 z-50 flex items-center justify-center hidden" id="archivedItemsModal">
