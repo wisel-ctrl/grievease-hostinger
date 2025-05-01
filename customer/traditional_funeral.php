@@ -1843,11 +1843,14 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
 
+    
+
 });
 </script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Show traditional modal directly when package is selected
+    
     document.querySelectorAll('.selectPackageBtn').forEach(button => {
         button.addEventListener('click', function() {
             console.log('Select Package button clicked');
@@ -1958,7 +1961,6 @@ document.addEventListener('DOMContentLoaded', function() {
         e.preventDefault();
         // Check if this is a custom package submission
         if (document.getElementById('traditionalSelectedPackageName').value === 'Custom Memorial Package') {
-            e.preventDefault();
             const totalPackagePrice = parseFloat(document.getElementById('traditionalSelectedPackagePrice').value);
             
             // Create FormData object for handling files
@@ -2028,8 +2030,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.error('Error:', error);
                 alert('An error occurred while submitting the form: ' + error.message);
             });
-        }
-         else {
+        } else {
             // Gather all form data
             const packageData = {
             packageType: 'traditional',
@@ -2055,72 +2056,73 @@ document.addEventListener('DOMContentLoaded', function() {
             packageTotal: parseInt(document.getElementById('traditionalSelectedPackagePrice').value),
             downpayment: Math.ceil(parseInt(document.getElementById('traditionalSelectedPackagePrice').value) * 0.3),
             serviceId: document.getElementById('serviceID').value
-        };
+            };
 
-        // Log data for debugging (can be removed in production)
-        console.log('Traditional Package Booking Data:', packageData);
-        console.log('--- Detailed Breakdown ---');
-        console.log('Package Name:', packageData.packageName);
-        console.log('Package Price:', packageData.packagePrice);
-        console.log('Deceased Information:', packageData.deceasedInfo);
-        console.log('Documents:', packageData.documents);
-        console.log('Additional Services:', packageData.additionalServices);
-        console.log('Cremation Selected:', packageData.cremationSelected);
-        console.log('Package Total:', packageData.packageTotal);
-        console.log('Downpayment (30%):', packageData.downpayment);
+            // Log data for debugging (can be removed in production)
+            console.log('Traditional Package Booking Data:', packageData);
+            console.log('--- Detailed Breakdown ---');
+            console.log('Package Name:', packageData.packageName);
+            console.log('Package Price:', packageData.packagePrice);
+            console.log('Deceased Information:', packageData.deceasedInfo);
+            console.log('Documents:', packageData.documents);
+            console.log('Additional Services:', packageData.additionalServices);
+            console.log('Cremation Selected:', packageData.cremationSelected);
+            console.log('Package Total:', packageData.packageTotal);
+            console.log('Downpayment (30%):', packageData.downpayment);
 
-        // Create FormData to handle file uploads
-        const formData = new FormData();
-        
-        // Add structured data as JSON string
-        formData.append('packageData', JSON.stringify(packageData));
-        
-        // Add the files directly for upload
-        if (document.getElementById('traditionalDeathCertificate').files[0]) {
-            formData.append('deathCertificate', document.getElementById('traditionalDeathCertificate').files[0]);
-        }
-        
-        if (document.getElementById('traditionalGcashReceipt').files[0]) {
-            formData.append('paymentReceipt', document.getElementById('traditionalGcashReceipt').files[0]);
-        }
-        
-        // Add individual fields for compatibility with existing PHP code
-        formData.append('serviceId', packageData.serviceId);
-        formData.append('packageName', packageData.packageName);
-        formData.append('packagePrice', packageData.packagePrice);
-        formData.append('cremationSelected', packageData.cremationSelected);
-        formData.append('packageTotal', packageData.packageTotal);
-
-        
-        // Add deceased info fields
-        Object.entries(packageData.deceasedInfo).forEach(([key, value]) => {
-            formData.append(`deceased_${key}`, value);
-        });
-        
-        formData.append('referenceNumber', packageData.documents.referenceNumber);
-        
-        // Send to server
-        fetch('booking/insert_booking.php', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert('Booking successful!');
-                closeAllModals();
-            } else {
-                alert('Error: ' + data.message);
+            // Create FormData to handle file uploads
+            const formData = new FormData();
+            
+            // Add structured data as JSON string
+            formData.append('packageData', JSON.stringify(packageData));
+            
+            // Add the files directly for upload
+            if (document.getElementById('traditionalDeathCertificate').files[0]) {
+                formData.append('deathCertificate', document.getElementById('traditionalDeathCertificate').files[0]);
             }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('An error occurred while submitting the form.');
-        });
+            
+            if (document.getElementById('traditionalGcashReceipt').files[0]) {
+                formData.append('paymentReceipt', document.getElementById('traditionalGcashReceipt').files[0]);
+            }
+            
+            // Add individual fields for compatibility with existing PHP code
+            formData.append('serviceId', packageData.serviceId);
+            formData.append('packageName', packageData.packageName);
+            formData.append('packagePrice', packageData.packagePrice);
+            formData.append('cremationSelected', packageData.cremationSelected);
+            formData.append('packageTotal', packageData.packageTotal);
+
+            
+            // Add deceased info fields
+            Object.entries(packageData.deceasedInfo).forEach(([key, value]) => {
+                formData.append(`deceased_${key}`, value);
+            });
+            
+            formData.append('referenceNumber', packageData.documents.referenceNumber);
+            
+            // Send to server
+            fetch('booking/insert_booking.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Booking successful!');
+                    closeAllModals();
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while submitting the form.');
+            });
+        }
     });
 
-    
 });
+    
 </script>
 
 <!-- Loading Animation Overlay -->
