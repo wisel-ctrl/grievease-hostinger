@@ -2339,41 +2339,61 @@ function openEditEmployeeAccountModal(userId) {
                                 </div>
                                 
                                 <div>
-                                    <label class="block text-sm font-medium text-sidebar-text mb-1">First Name</label>
-                                    <input type="text" name="first_name" value="${data.user.first_name ? data.user.first_name[0].toUpperCase() + data.user.first_name.slice(1) : ''}" 
-                                           class="w-full p-2 border border-input-border rounded focus:ring-gold focus:border-gold">
+                                    <label class="block text-sm font-medium text-sidebar-text mb-1">First Name <span class="text-red-500">*</span></label>
+                                    <input type="text" id="editEmpFirstName" name="first_name" value="${data.user.first_name ? data.user.first_name[0].toUpperCase() + data.user.first_name.slice(1) : ''}" 
+                                           class="w-full p-2 border border-input-border rounded focus:ring-gold focus:border-gold"
+                                           pattern="[A-Za-z'-]{2,}"
+                                           title="Only letters, apostrophes and hyphens allowed (minimum 2 characters)"
+                                           required>
+                                    <p id="empFirstNameError" class="text-red-500 text-xs mt-1 hidden"></p>
                                 </div>
                                 
                                 <div>
-                                    <label class="block text-sm font-medium text-sidebar-text mb-1">Last Name</label>
-                                    <input type="text" name="last_name" value="${data.user.last_name ? data.user.last_name[0].toUpperCase() + data.user.last_name.slice(1) :  ''}" 
-                                           class="w-full p-2 border border-input-border rounded focus:ring-gold focus:border-gold">
+                                    <label class="block text-sm font-medium text-sidebar-text mb-1">Last Name <span class="text-red-500">*</span></label>
+                                    <input type="text" id="editEmpLastName" name="last_name" value="${data.user.last_name ? data.user.last_name[0].toUpperCase() + data.user.last_name.slice(1) : ''}" 
+                                           class="w-full p-2 border border-input-border rounded focus:ring-gold focus:border-gold"
+                                           pattern="[A-Za-z'-]{2,}"
+                                           title="Only letters, apostrophes and hyphens allowed (minimum 2 characters)"
+                                           required>
+                                    <p id="empLastNameError" class="text-red-500 text-xs mt-1 hidden"></p>
                                 </div>
                                 
                                 <div>
                                     <label class="block text-sm font-medium text-sidebar-text mb-1">Middle Name</label>
-                                    <input type="text" name="middle_name" value="${data.user.middle_name ? data.user.middle_name[0].toUpperCase() + data.user.middle_name.slice(1) : ''}" 
-                                           class="w-full p-2 border border-input-border rounded focus:ring-gold focus:border-gold">
+                                    <input type="text" id="editEmpMiddleName" name="middle_name" value="${data.user.middle_name ? data.user.middle_name[0].toUpperCase() + data.user.middle_name.slice(1) : ''}" 
+                                           class="w-full p-2 border border-input-border rounded focus:ring-gold focus:border-gold"
+                                           pattern="[A-Za-z'-]*"
+                                           title="Only letters, apostrophes and hyphens allowed">
                                 </div>
                                 
                                 <div>
-                                    <label class="block text-sm font-medium text-sidebar-text mb-1">Email</label>
-                                    <input type="email" name="email" value="${data.user.email || ''}" 
-                                           class="w-full p-2 border border-input-border rounded focus:ring-gold focus:border-gold">
+                                    <label class="block text-sm font-medium text-sidebar-text mb-1">Email <span class="text-red-500">*</span></label>
+                                    <input type="email" id="editEmpEmail" name="email" value="${data.user.email || ''}" 
+                                           class="w-full p-2 border border-input-border rounded focus:ring-gold focus:border-gold"
+                                           pattern="[^@\s]+@[^@\s]+\.[^@\s]+"
+                                           title="Please enter a valid email address (no spaces allowed)"
+                                           required>
+                                    <p id="empEmailError" class="text-red-500 text-xs mt-1 hidden"></p>
                                 </div>
                                 
                                 <div>
-                                    <label class="block text-sm font-medium text-sidebar-text mb-1">Phone Number</label>
-                                    <input type="tel" name="phone_number" value="${data.user.phone_number || ''}" 
-                                           class="w-full p-2 border border-input-border rounded focus:ring-gold focus:border-gold">
+                                    <label class="block text-sm font-medium text-sidebar-text mb-1">Phone Number <span class="text-red-500">*</span></label>
+                                    <input type="tel" id="editEmpPhone" name="phone_number" value="${data.user.phone_number || ''}" 
+                                           class="w-full p-2 border border-input-border rounded focus:ring-gold focus:border-gold"
+                                           pattern="09\d{9}"
+                                           maxlength="11"
+                                           title="Philippine number must start with 09 and be 11 digits total"
+                                           required>
+                                    <p id="empPhoneError" class="text-red-500 text-xs mt-1 hidden"></p>
                                 </div>
                                 
                                 <div>
-                                    <label class="block text-sm font-medium text-sidebar-text mb-1">Branch Location</label>
-                                    <select name="branch_loc" class="w-full p-2 border border-input-border rounded focus:ring-gold focus:border-gold">
+                                    <label class="block text-sm font-medium text-sidebar-text mb-1">Branch Location <span class="text-red-500">*</span></label>
+                                    <select name="branch_loc" class="w-full p-2 border border-input-border rounded focus:ring-gold focus:border-gold" required>
                                         <option value="">-- Select Branch --</option>
                                         ${branchOptions}
                                     </select>
+                                    <p id="empBranchError" class="text-red-500 text-xs mt-1 hidden">Please select a branch</p>
                                 </div>
                             </form>
                         </div>
@@ -2384,7 +2404,7 @@ function openEditEmployeeAccountModal(userId) {
                                     class="px-4 py-2 border border-input-border rounded text-sidebar-text hover:bg-sidebar-hover">
                                 Cancel
                             </button>
-                            <button onclick="saveEmployeeChanges()" 
+                            <button onclick="validateAndSaveEmployeeChanges()" 
                                     class="px-4 py-2 bg-gold text-white rounded hover:bg-darkgold">
                                 Save Changes
                             </button>
@@ -2394,6 +2414,9 @@ function openEditEmployeeAccountModal(userId) {
                 
                 document.body.appendChild(modal);
                 modal.classList.remove('hidden');
+                
+                // Setup validation event listeners
+                setupEditEmployeeValidations();
                 
                 // Add event listener for Escape key
                 document.addEventListener('keydown', function(e) {
@@ -2409,6 +2432,125 @@ function openEditEmployeeAccountModal(userId) {
             console.error('Error:', error);
             alert('An error occurred while fetching employee details');
         });
+}
+
+function setupEditEmployeeValidations() {
+    // Name validation
+    const nameFields = ['editEmpFirstName', 'editEmpMiddleName', 'editEmpLastName'];
+    nameFields.forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        if (field) {
+            field.addEventListener('input', function() {
+                // Remove invalid characters
+                this.value = this.value.replace(/[^a-zA-Z\s'-]/g, '');
+                
+                // No leading spaces
+                if (this.value.startsWith(' ')) {
+                    this.value = this.value.substring(1);
+                }
+                
+                // No consecutive spaces
+                this.value = this.value.replace(/\s{2,}/g, ' ');
+                
+                // Capitalize first letter of each word
+                if (this.value.length > 0) {
+                    this.value = this.value.toLowerCase().replace(/(^|\s)\S/g, function(firstLetter) {
+                        return firstLetter.toUpperCase();
+                    });
+                }
+            });
+        }
+    });
+
+    // Email validation - no spaces
+    const emailField = document.getElementById('editEmpEmail');
+    if (emailField) {
+        emailField.addEventListener('input', function() {
+            // Remove any spaces
+            if (this.value.includes(' ')) {
+                this.value = this.value.replace(/\s/g, '');
+            }
+        });
+        
+        emailField.addEventListener('keydown', function(e) {
+            if (e.key === ' ') {
+                e.preventDefault();
+            }
+        });
+    }
+
+    // Phone validation - Philippine format
+    const phoneField = document.getElementById('editEmpPhone');
+    if (phoneField) {
+        phoneField.addEventListener('input', function() {
+            // Remove non-digits
+            this.value = this.value.replace(/\D/g, '');
+            
+            // Limit to 11 characters
+            if (this.value.length > 11) {
+                this.value = this.value.substring(0, 11);
+            }
+            
+            // Auto-add 09 if starts with 9
+            if (this.value.length === 1 && this.value === '9') {
+                this.value = '09';
+            }
+        });
+        
+        phoneField.addEventListener('keydown', function(e) {
+            // Allow only numbers, backspace, delete, arrows
+            if (!/[0-9]|Backspace|Delete|ArrowLeft|ArrowRight/.test(e.key)) {
+                e.preventDefault();
+            }
+        });
+    }
+}
+
+function validateAndSaveEmployeeChanges() {
+    // Validate all fields before submission
+    const firstName = document.getElementById('editEmpFirstName');
+    const lastName = document.getElementById('editEmpLastName');
+    const email = document.getElementById('editEmpEmail');
+    const phone = document.getElementById('editEmpPhone');
+    
+    let isValid = true;
+    
+    // Validate required fields
+    if (!firstName.value || firstName.value.length < 2) {
+        document.getElementById('empFirstNameError').textContent = 'Please enter at least 2 characters';
+        document.getElementById('empFirstNameError').classList.remove('hidden');
+        isValid = false;
+    } else {
+        document.getElementById('empFirstNameError').classList.add('hidden');
+    }
+    
+    if (!lastName.value || lastName.value.length < 2) {
+        document.getElementById('empLastNameError').textContent = 'Please enter at least 2 characters';
+        document.getElementById('empLastNameError').classList.remove('hidden');
+        isValid = false;
+    } else {
+        document.getElementById('empLastNameError').classList.add('hidden');
+    }
+    
+    if (!email.value || !email.value.includes('@')) {
+        document.getElementById('empEmailError').textContent = 'Please enter a valid email address';
+        document.getElementById('empEmailError').classList.remove('hidden');
+        isValid = false;
+    } else {
+        document.getElementById('empEmailError').classList.add('hidden');
+    }
+    
+    if (!phone.value || !phone.value.startsWith('09') || phone.value.length !== 11) {
+        document.getElementById('empPhoneError').textContent = 'Philippine number must start with 09 and be 11 digits';
+        document.getElementById('empPhoneError').classList.remove('hidden');
+        isValid = false;
+    } else {
+        document.getElementById('empPhoneError').classList.add('hidden');
+    }
+    
+    if (isValid) {
+        saveEmployeeChanges();
+    }
 }
 
 function closeEditEmployeeModal() {
