@@ -99,35 +99,6 @@ if ($lastMonth > 0) {
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
-
-  <style>
-    /* Add to your stylesheet */
-.table-container {
-    position: relative;
-    min-height: 200px;
-}
-
-.loading-indicator {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(255, 255, 255, 0.8);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 10;
-}
-
-.table-content {
-    transition: opacity 0.3s ease;
-}
-
-.loading .table-content {
-    opacity: 0.5;
-}
-  </style>
  
 </head>
 <body class="flex bg-gray-50">
@@ -627,14 +598,15 @@ if ($branchResult->num_rows > 0) {
                 <div class="relative filter-dropdown">
                     <button id="filterToggle<?php echo $branchId; ?>" class="px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover"
                             onclick="toggleFilterWindow(<?php echo $branchId; ?>)">
-                            <i class="fas fa-filter"></i>
-        <span>Filters</span>
-        <?php if($categoryFilter || $statusFilter): ?>
-            <span id="filterIndicator<?php echo $branchId; ?>" class="absolute top-1 right-1 h-2 w-2 bg-sidebar-accent rounded-full"></span>
-        <?php endif; ?>
-    </button>
-    
-    <div id="filterWindow<?php echo $branchId; ?>" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-4">
+                        <i class="fas fa-filter text-sidebar-accent"></i>
+                        <span>Filters</span>
+                        <?php if($categoryFilter || $statusFilter): ?>
+                            <span class="h-2 w-2 bg-sidebar-accent rounded-full"></span>
+                        <?php endif; ?>
+                    </button>
+                    
+                    <!-- Filter Window -->
+                    <div id="filterWindow<?php echo $branchId; ?>" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-4">
                         <div class="space-y-4">
                             <!-- Category Filter -->
                             <div>
@@ -746,9 +718,9 @@ if ($branchResult->num_rows > 0) {
     
     <!-- Responsive Table Container with improved spacing -->
     <div class="overflow-x-auto scrollbar-thin" id="tableContainer<?php echo $branchId; ?>">
-    <div id="loadingIndicator<?php echo $branchId; ?>" class="hidden absolute inset-0 bg-white bg-opacity-50 flex items-center justify-center z-10">
-    <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-sidebar-accent"></div>
-</div>
+        <div id="loadingIndicator<?php echo $branchId; ?>" class="hidden absolute inset-0 bg-white bg-opacity-50 flex items-center justify-center">
+            <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-sidebar-accent"></div>
+        </div>
         
         <!-- Responsive Table with improved spacing and horizontal scroll for small screens -->
         <div class="min-w-full">
@@ -1550,181 +1522,6 @@ document.addEventListener('DOMContentLoaded', function() {
         alert('Export functionality would download:\n' + 
               JSON.stringify(data, null, 2));
     };
-});
-
-// Debounce function to limit how often search is performed
-function debounce(func, wait) {
-    let timeout;
-    return function(...args) {
-        clearTimeout(timeout);
-        timeout = setTimeout(() => func.apply(this, args), wait);
-    };
-}
-
-// Add this function to get current filters
-function getCurrentFilter(branchId, filterType) {
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('branch') == branchId) {
-        return urlParams.get(filterType) || '';
-    }
-    return '';
-}
-
-// Update the toggleFilterWindow function
-function toggleFilterWindow(branchId) {
-    const filterWindow = document.getElementById(`filterWindow${branchId}`);
-    if (filterWindow) {
-        filterWindow.classList.toggle('hidden');
-    }
-}
-
-// Ensure the search function is properly connected
-function setupSearchInputs() {
-    document.querySelectorAll('[id^="searchInput"]').forEach(input => {
-        const branchId = input.id.replace('searchInput', '').replace('_mobile', '');
-        input.addEventListener('input', () => debouncedSearch(branchId));
-    });
-}
-
-// Call this on DOMContentLoaded
-document.addEventListener('DOMContentLoaded', function() {
-    setupSearchInputs();
-    
-    // Close filter windows when clicking outside
-    document.addEventListener('click', function(e) {
-        if (!e.target.closest('.filter-dropdown')) {
-            document.querySelectorAll('[id^="filterWindow"]').forEach(window => {
-                window.classList.add('hidden');
-            });
-        }
-    });
-});
-
-
-// AJAX function to load expenses
-function loadExpenses(branchId, page = 1) {
-    const searchInput = document.getElementById(`searchInput${branchId}`) || 
-                       document.getElementById(`searchInput${branchId}_mobile`);
-    const searchTerm = searchInput ? searchInput.value.trim() : '';
-    
-    const categoryFilter = getCurrentFilter(branchId, 'category');
-    const statusFilter = getCurrentFilter(branchId, 'status');
-    
-    const loadingIndicator = document.getElementById(`loadingIndicator${branchId}`);
-    const tableContainer = document.getElementById(`tableContainer${branchId}`);
-    
-    if (loadingIndicator) loadingIndicator.classList.remove('hidden');
-    
-    // Create URL with parameters
-    const params = new URLSearchParams();
-    params.append('branch_id', branchId);
-    params.append('page', page);
-    if (searchTerm) params.append('search', searchTerm);
-    if (categoryFilter) params.append('category', categoryFilter);
-    if (statusFilter) params.append('status', statusFilter);
-    
-    fetch(`expenses/load_expenses.php?${params.toString()}`)
-    .then(response => response.text())
-    .then(html => {
-        if (tableContainer) {
-            tableContainer.innerHTML = html;
-        }
-        updateUrlParams(branchId, page, searchTerm, categoryFilter, statusFilter);
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('An error occurred while loading expenses.');
-    })
-    .finally(() => {
-        if (loadingIndicator) loadingIndicator.classList.add('hidden');
-    });
-}
-
-// Update URL parameters without reloading
-function updateUrlParams(branchId, page, searchTerm, categoryFilter, statusFilter) {
-    const url = new URL(window.location);
-    url.searchParams.set('branch', branchId);
-    url.searchParams.set(`page_${branchId}`, page);
-    
-    if (searchTerm) {
-        url.searchParams.set('search', searchTerm);
-    } else {
-        url.searchParams.delete('search');
-    }
-    
-    if (categoryFilter) {
-        url.searchParams.set('category', categoryFilter);
-    } else {
-        url.searchParams.delete('category');
-    }
-    
-    if (statusFilter) {
-        url.searchParams.set('status', statusFilter);
-    } else {
-        url.searchParams.delete('status');
-    }
-    
-    window.history.pushState({}, '', url);
-}
-
-// Search function
-const performSearch = debounce(function(branchId) {
-    loadExpenses(branchId, 1); // Always reset to page 1 when searching
-}, 500);
-
-// Filter function
-function setFilter(branchId, filterType, filterValue) {
-    const url = new URL(window.location);
-    
-    // Update the specific filter
-    if (filterValue) {
-        url.searchParams.set(filterType, filterValue);
-    } else {
-        url.searchParams.delete(filterType);
-    }
-    
-    // Set the current branch
-    url.searchParams.set('branch', branchId);
-    
-    // Reload the page with new filters
-    window.location.href = url.toString();
-}
-
-// Change branch page
-function changeBranchPage(branchId, page) {
-    loadExpenses(branchId, page);
-}
-
-// Initialize on page load
-document.addEventListener('DOMContentLoaded', function() {
-    // Load expenses for each branch with current filters
-    document.querySelectorAll('.branch-expense-container').forEach(container => {
-        const branchId = container.dataset.branchId;
-        const urlParams = new URLSearchParams(window.location.search);
-        const page = urlParams.get(`page_${branchId}`) || 1;
-        
-        // Update filter indicators
-        const hasCategoryFilter = urlParams.get('category') && urlParams.get('branch') == branchId;
-        const hasStatusFilter = urlParams.get('status') && urlParams.get('branch') == branchId;
-        const filterIndicator = document.getElementById(`filterIndicator${branchId}`);
-        
-        if (filterIndicator && (hasCategoryFilter || hasStatusFilter)) {
-            filterIndicator.classList.remove('hidden');
-        }
-        
-        // Load initial data
-        loadExpenses(branchId, page);
-    });
-    
-    // Handle back/forward navigation
-    window.addEventListener('popstate', function() {
-        document.querySelectorAll('.branch-expense-container').forEach(container => {
-            const branchId = container.dataset.branchId;
-            const urlParams = new URLSearchParams(window.location.search);
-            const page = urlParams.get(`page_${branchId}`) || 1;
-            loadExpenses(branchId, page);
-        });
-    });
 });
 </script>
   <script src="script.js"></script>
