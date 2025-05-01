@@ -1066,79 +1066,6 @@ document.getElementById("customerPhone").addEventListener("input", function (e) 
     document.getElementById('branchLocation').addEventListener('change', validateBranchLocation);
 });
 
-function validateBirthdate() {
-  const birthdateInput = document.getElementById('birthdate');
-  const birthdateError = document.getElementById('birthdateError');
-  const birthdate = birthdateInput.value;
-
-  if (birthdate === '') {
-    birthdateError.textContent = 'Birthdate is required';
-    birthdateError.classList.remove('hidden');
-    return false;
-  } 
-
-  const today = new Date();
-  const birthdateObj = new Date(birthdate);
-  let age = today.getFullYear() - birthdateObj.getFullYear();
-  const monthDiff = today.getMonth() - birthdateObj.getMonth();
-  
-  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthdateObj.getDate())) {
-    age--;
-  }
-  
-  if (age < 18) {
-    birthdateError.textContent = 'You must be at least 18 years old';
-    birthdateError.classList.remove('hidden');
-    return false;
-  } else {
-    birthdateError.classList.add('hidden');
-    return true;
-  }
-}
-
-function validateEmail() {
-  const emailInput = document.getElementById('customerEmail');
-  const emailError = document.getElementById('emailError');
-  const email = emailInput.value.trim();
-  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-  if (email === '') {
-    emailError.textContent = 'Email is required';
-    emailError.classList.remove('hidden');
-    return false;
-  } else if (!emailPattern.test(email)) {
-    emailError.textContent = 'Please enter a valid email address';
-    emailError.classList.remove('hidden');
-    return false;
-  } else {
-    emailError.classList.add('hidden');
-    return true;
-  }
-}
-
-function validatePhoneNumber() {
-  const phoneInput = document.getElementById('customerPhone');
-  const phoneError = document.getElementById('phoneError');
-  const phone = phoneInput.value.trim();
-  const phonePattern = /^09\d{9}$/;
-
-  // Remove any non-digit characters
-  const cleanedPhone = phone.replace(/[^0-9]/g, '');
-
-  if (phone === '') {
-    phoneError.textContent = 'Phone number is required';
-    phoneError.classList.remove('hidden');
-    return false;
-  } else if (!phonePattern.test(cleanedPhone)) {
-    phoneError.textContent = 'Please enter a valid 11-digit mobile number (e.g., 09123456789)';
-    phoneError.classList.remove('hidden');
-    return false;
-  } else {
-    phoneError.classList.add('hidden');
-    return true;
-  }
-}
-
 function validateBranchLocation() {
   const branchSelect = document.getElementById('branchLocation');
   const branchError = document.getElementById('branchError');
@@ -2294,6 +2221,8 @@ function saveCustomerChanges() {
     });
 }
 
+
+
 //edit employee Accounts
 function openEditEmployeeAccountModal(userId) {
     // Fetch employee details
@@ -2923,106 +2852,168 @@ function closeAddEmployeeAccountModal() {
 </script>
 
 <!-- Employee Account Modal -->
-<div id="addEmployeeAccountModal" class="fixed inset-0 bg-black bg-opacity-60 z-50 hidden overflow-y-auto flex items-center justify-center p-4 w-full h-full">
-  <div class="bg-white rounded-xl shadow-xl w-full max-w-lg mx-2">
+<div id="addEmployeeAccountModal" class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto">
+  <!-- Modal Backdrop -->
+  <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+  
+  <!-- Modal Content -->
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+    <!-- Close Button -->
+    <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeAddEmployeeAccountModal()">
+      <i class="fas fa-times"></i>
+    </button>
+    
     <!-- Modal Header -->
-    <div class="bg-gradient-to-r from-sidebar-accent to-white flex justify-between items-center p-6 flex-shrink-0 rounded-t-xl">
-      <h3 class="text-xl font-bold text-white"><i class="fas fa-user-plus"></i> Add Employee Account</h3>
-      <button onclick="closeAddEmployeeAccountModal()" class="bg-black bg-opacity-20 hover:bg-opacity-30 rounded-full p-2 text-white hover:text-white transition-all duration-200">
-        <i class="fas fa-times"></i>
-      </button>
+    <div class="px-4 sm:px-6 py-4 sm:py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
+      <h3 class="text-lg sm:text-xl font-bold text-white flex items-center">
+        Add Employee Account
+      </h3>
     </div>
-    <div class="p-6">
-      <form id="addEmployeeAccountForm" method="post" action="addEmployee/add_employee.php">
-        <div class="grid grid-cols-2 gap-4">
-          <div>
-            <label for="empFirstName" class="block text-sm font-medium text-gray-700 mb-1">First Name <span class="text-red-500">*</span></label>
-            <input type="text" id="empFirstName" name="firstName" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent" placeholder="First Name" required>
+    
+    <!-- Modal Body -->
+    <div class="px-4 sm:px-6 py-4 sm:py-5">
+      <form id="addEmployeeAccountForm" method="post" action="addEmployee/add_employee.php" class="space-y-3 sm:space-y-4">
+        <!-- Personal Information Section -->
+        <div class="flex flex-col sm:flex-row gap-2 sm:gap-4">
+          <div class="w-full sm:flex-1">
+            <label for="empFirstName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+              First Name <span class="text-red-500">*</span>
+            </label>
+            <div class="relative">
+              <input type="text" id="empFirstName" name="firstName" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="First Name" required>
+            </div>
             <p id="empFirstNameError" class="text-red-500 text-xs mt-1 hidden">First name is required</p>
           </div>
-          <div>
-            <label for="empMiddleName" class="block text-sm font-medium text-gray-700 mb-1">Middle Name</label>
-            <input type="text" id="empMiddleName" name="middleName" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent" placeholder="Middle Name">
-          </div>
-          <div>
-            <label for="empLastName" class="block text-sm font-medium text-gray-700 mb-1">Last Name <span class="text-red-500">*</span></label>
-            <input type="text" id="empLastName" name="lastName" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent" placeholder="Last Name" required>
-            <p id="empLastNameError" class="text-red-500 text-xs mt-1 hidden">Last name is required</p>
-          </div>
-          <div>
-            <label for="suffix" class="block text-sm font-medium text-gray-700 mb-1">Suffix <span class="text-xs text-gray-500">(Optional)</span></label>
-            <select id="suffix" name="suffix" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
-              <option value="">Select Suffix <option>
-              <option value="Jr">Jr</option>
-              <option value="Sr">Sr</option>
-              <option value="I">I</option>
-              <option value="II">II</option>
-              <option value="III">III</option>
-              <option value="IV">IV</option>
-              <option value="V">V</option>
-            </select>
+          
+          <div class="w-full sm:flex-1">
+            <label for="empMiddleName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+              Middle Name
+            </label>
+            <div class="relative">
+              <input type="text" id="empMiddleName" name="middleName" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="Middle Name">
+            </div>
           </div>
         </div>
         
-        <!-- Birthdate Field -->
-        <div class="mt-4">
-          <label for="empBirthdate" class="block text-sm font-medium text-gray-700 mb-1">Birthdate <span class="text-red-500">*</span></label>
-          <input type="date" id="empBirthdate" name="birthdate" 
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent" 
-                max="<?php echo date('Y-m-d'); ?>" 
-                required>
+        <div class="flex flex-col sm:flex-row gap-2 sm:gap-4">
+          <div class="w-full sm:flex-1">
+            <label for="empLastName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+              Last Name <span class="text-red-500">*</span>
+            </label>
+            <div class="relative">
+              <input type="text" id="empLastName" name="lastName" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="Last Name" required>
+            </div>
+            <p id="empLastNameError" class="text-red-500 text-xs mt-1 hidden">Last name is required</p>
+          </div>
+          
+          <div class="w-full sm:flex-1">
+            <label for="suffix" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+              Suffix <span class="text-xs text-gray-500">(Optional)</span>
+            </label>
+            <div class="relative">
+              <select id="suffix" name="suffix" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+                <option value="">Select Suffix</option>
+                <option value="Jr">Jr</option>
+                <option value="Sr">Sr</option>
+                <option value="I">I</option>
+                <option value="II">II</option>
+                <option value="III">III</option>
+                <option value="IV">IV</option>
+                <option value="V">V</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        
+        <div>
+          <label for="empBirthdate" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            Birthdate <span class="text-red-500">*</span>
+          </label>
+          <div class="relative">
+            <input type="date" id="empBirthdate" name="birthdate" 
+                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
+                  max="<?php echo date('Y-m-d'); ?>" 
+                  required>
+          </div>
           <p id="empBirthdateError" class="text-red-500 text-xs mt-1 hidden">Birthdate is required and cannot be in the future</p>
         </div>
         
-        <div class="mt-4">
-          <label for="employeeEmail" class="block text-sm font-medium text-gray-700 mb-1">Email <span class="text-red-500">*</span></label>
-          <input type="email" id="employeeEmail" name="email" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent" placeholder="Email" required>
-        </div>
-              
-        <div class="mt-4">
-          <label for="employeePhone" class="block text-sm font-medium text-gray-700 mb-1">Phone Number <span class="text-red-500">*</span></label>
-          <input type="tel" id="employeePhone" name="phoneNumber" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent" placeholder="Phone Number" required>
-        </div>
-        
-        <div class="mt-4">
-          <label for="empBranchLocation" class="block text-sm font-medium text-gray-700 mb-1">Branch Location <span class="text-red-500">*</span></label>
-          <select id="empBranchLocation" name="branchLocation" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent" required>
-            <option value="">Select Branch</option>
-            <!-- Branch options will be populated by JavaScript -->
-          </select>
+        <div>
+          <label for="empBranchLocation" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            Branch Location <span class="text-red-500">*</span>
+          </label>
+          <div class="relative">
+            <select id="empBranchLocation" name="branchLocation" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
+              <option value="">Select Branch</option>
+              <!-- Branch options will be populated by JavaScript -->
+            </select>
+          </div>
           <p id="empBranchError" class="text-red-500 text-xs mt-1 hidden">Please select a branch</p>
         </div>
         
-        <!-- Generated Password Display -->
-        <div class="mt-4">
-          <label class="block text-sm font-medium text-gray-700 mb-1">Generated Password</label>
+        <div>
+          <label for="employeeEmail" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            Email <span class="text-red-500">*</span>
+          </label>
           <div class="relative">
-            <input type="password" id="empGeneratedPassword" name="password" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent bg-gray-100" readonly autocomplete="new-password">
-    <button type="button" class="absolute right-2 top-2 text-gray-500 hover:text-gray-700" onclick="toggleEmpPassword()">
-      <svg id="empEyeIcon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 12s2.947-5.455 8.02-5.455S20.02 12 20.02 12s-2.947 5.455-8.02 5.455S3.98 12 3.98 12z" />
-        <path stroke-linecap="round" stroke-linejoin="round" d="M12 15a3 3 0 100-6 3 3 0 000 6z" />
-      </svg>
-    </button>
-  </div>
-</div>
+            <input type="email" id="employeeEmail" name="email" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="Email" required>
+          </div>
+        </div>
+        
+        <div>
+          <label for="employeePhone" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            Phone Number <span class="text-red-500">*</span>
+          </label>
+          <div class="relative">
+            <input type="tel" id="employeePhone" name="phoneNumber" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="Phone Number" required>
+          </div>
+        </div>
+        
+        <div>
+          <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            Generated Password
+          </label>
+          <div class="relative">
+            <input type="password" id="empGeneratedPassword" name="password" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200 bg-gray-100" readonly autocomplete="new-password">
+            <button type="button" class="absolute right-2 top-2 text-gray-500 hover:text-gray-700" onclick="toggleEmpPassword()">
+              <svg id="empEyeIcon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 sm:w-6 sm:h-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 12s2.947-5.455 8.02-5.455S20.02 12 20.02 12s-2.947 5.455-8.02 5.455S3.98 12 3.98 12z" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 15a3 3 0 100-6 3 3 0 000 6z" />
+              </svg>
+            </button>
+          </div>
+        </div>
+        
+        <!-- Additional Information Card -->
+        <div class="bg-gray-50 p-3 sm:p-4 rounded-lg border-l-4 border-sidebar-accent mt-3 sm:mt-4">
+          <h4 class="text-xs sm:text-sm font-medium text-gray-700 mb-2 flex items-center">
+            <i class="fas fa-info-circle mr-2 text-sidebar-accent"></i>
+            Account Information
+          </h4>
+          <p class="text-xs sm:text-sm text-gray-600">
+            An employee account will be created with the provided information. A temporary password will be generated automatically.
+          </p>
+          <p class="text-xs sm:text-sm text-gray-600 mt-2">
+            The employee will be able to change their password after logging in for the first time.
+          </p>
+        </div>
         
         <input type="hidden" name="user_type" value="2">
         <input type="hidden" name="is_verified" value="1">
       </form>
     </div>
+    
     <!-- Modal Footer -->
-    <div class="p-6 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white rounded-b-xl">
-      <button onclick="closeAddEmployeeAccountModal()" class="px-5 py-3 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-semibold hover:bg-navy transition-colors">
+    <div class="px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row sm:justify-end gap-2 sm:gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
+      <button class="w-full sm:w-auto px-4 sm:px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center" onclick="closeAddEmployeeAccountModal()">
         Cancel
       </button>
-      <button onclick="submitEmployeeForm()" class="px-6 py-3 bg-sidebar-accent text-white rounded-lg font-semibold hover:bg-darkgold transition-colors flex items-center">
+      <button class="w-full sm:w-auto px-5 sm:px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="submitEmployeeForm()">
         <i class="fas fa-user-plus mr-2"></i> Create Account
       </button>
     </div>
   </div>
 </div>
-
 <!-- Employee OTP Verification Modal -->
 <div id="empOtpVerificationModal" class="fixed inset-0 bg-black bg-opacity-60 z-50 hidden overflow-y-auto flex items-center justify-center p-4 w-full h-full">
   <div class="bg-white rounded-xl shadow-xl w-full max-w-md mx-2">
@@ -3103,146 +3094,258 @@ document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('empBranchLocation').addEventListener('change', validateEmpBranchLocation);
 });
 
-// Real-time validation functions for Employee Form
-function validateEmpFirstName() {
-  const firstNameInput = document.getElementById('empFirstName');
-  const firstNameError = document.getElementById('empFirstNameError');
-  const firstName = firstNameInput.value.trim();
-  const nameRegex = /^[A-Za-z\s]+$/;
-  if (firstName === '') {
-    firstNameError.textContent = 'First name is required';
-    firstNameError.classList.remove('hidden');
-    return false;
-  } else if (!nameRegex.test(firstName)) {
-    firstNameError.textContent = 'First name must contain only letters';
-    firstNameError.classList.remove('hidden');
-    return false;
-  } else {
-    firstNameError.classList.add('hidden');
-    return true;
-  }
-}
+document.addEventListener('DOMContentLoaded', function() {
+    // Employee Name fields
+    const employeeNameFields = [
+        'empFirstName', 
+        'empMiddleName', 
+        'empLastName'
+    ];
 
-function validateEmpMiddleName() {
-  const middleNameInput = document.getElementById('empMiddleName');
-  const middleNameError = document.getElementById('empMiddleNameError');
-  
-  // If you want to add a middleNameError element, uncomment and add to HTML
-  if (!middleNameError) return true;
-  const middleName = middleNameInput.value.trim();
-  const nameRegex = /^[A-Za-z\s]*$/;
-  if (middleName !== '' && !nameRegex.test(middleName)) {
-    middleNameError.textContent = 'Middle name must contain only letters';
-    middleNameError.classList.remove('hidden');
-    return false;
-  } else {
-    middleNameError.classList.add('hidden');
-    return true;
-  }
-}
+    // Function to validate name input
+    function validateNameInput(field) {
+        // First, remove any invalid characters
+        let newValue = field.value.replace(/[^a-zA-Z\s'-]/g, '');
+        
+        // Don't allow space as first character
+        if (newValue.startsWith(' ')) {
+            newValue = newValue.substring(1);
+        }
+        
+        // Don't allow consecutive spaces
+        newValue = newValue.replace(/\s{2,}/g, ' ');
+        
+        // Only allow space after at least 2 characters
+        if (newValue.length < 2 && newValue.includes(' ')) {
+            newValue = newValue.replace(/\s/g, '');
+        }
+        
+        // Update the field value
+        field.value = newValue;
+        
+        // Capitalize first letter of each word
+        if (field.value.length > 0) {
+            field.value = field.value.toLowerCase().replace(/(^|\s)\S/g, function(firstLetter) {
+                return firstLetter.toUpperCase();
+            });
+        }
+    }
 
-function validateEmpLastName() {
-  const lastNameInput = document.getElementById('empLastName');
-  const lastNameError = document.getElementById('empLastNameError');
-  const lastName = lastNameInput.value.trim();
-  const nameRegex = /^[A-Za-z\s]+$/;
-  if (lastName === '') {
-    lastNameError.textContent = 'Last name is required';
-    lastNameError.classList.remove('hidden');
-    return false;
-  } else if (!nameRegex.test(lastName)) {
-    lastNameError.textContent = 'Last name must contain only letters';
-    lastNameError.classList.remove('hidden');
-    return false;
-  } else {
-    lastNameError.classList.add('hidden');
-    return true;
-  }
-}
+    // Function to apply validation to a field
+    function applyNameValidation(field) {
+        if (field) {
+            // Validate on input
+            field.addEventListener('input', function() {
+                validateNameInput(this);
+            });
 
-function validateEmpBirthdate() {
-  const birthdateInput = document.getElementById('empBirthdate');
-  const birthdateError = document.getElementById('empBirthdateError');
-  const birthdate = birthdateInput.value;
-  if (birthdate === '') {
-    birthdateError.textContent = 'Birthdate is required';
-    birthdateError.classList.remove('hidden');
-    return false;
-  } 
-  const today = new Date();
-  const birthdateObj = new Date(birthdate);
-  let age = today.getFullYear() - birthdateObj.getFullYear();
-  const monthDiff = today.getMonth() - birthdateObj.getMonth();
-  
-  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthdateObj.getDate())) {
-    age--;
-  }
-  
-  if (age < 18) {
-    birthdateError.textContent = 'You must be at least 18 years old';
-    birthdateError.classList.remove('hidden');
-    return false;
-  } else {
-    birthdateError.classList.add('hidden');
-    return true;
-  }
-}
+            // Validate on blur (when field loses focus)
+            field.addEventListener('blur', function() {
+                validateNameInput(this);
+            });
 
-function validateEmpEmail() {
-  const emailInput = document.getElementById('employeeEmail');
-  const emailError = document.getElementById('empEmailError');
-  
-  // Add this error element to your HTML if not present
-  if (!emailError) {
-    const errorEl = document.createElement('p');
-    errorEl.id = 'empEmailError';
-    errorEl.className = 'text-red-500 text-xs mt-1 hidden';
-    emailInput.parentNode.appendChild(errorEl);
-  }
-  const email = emailInput.value.trim();
-  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (email === '') {
-    emailError.textContent = 'Email is required';
-    emailError.classList.remove('hidden');
-    return false;
-  } else if (!emailPattern.test(email)) {
-    emailError.textContent = 'Please enter a valid email address';
-    emailError.classList.remove('hidden');
-    return false;
-  } else {
-    emailError.classList.add('hidden');
-    return true;
-  }
-}
+            // Prevent paste of invalid content
+            field.addEventListener('paste', function(e) {
+                e.preventDefault();
+                const pastedText = (e.clipboardData || window.clipboardData).getData('text');
+                const cleanedText = pastedText.replace(/[^a-zA-Z\s'-]/g, '');
+                document.execCommand('insertText', false, cleanedText);
+            });
+        }
+    }
 
-function validateEmpPhoneNumber() {
-  const phoneInput = document.getElementById('employeePhone');
-  const phoneError = document.getElementById('empPhoneError');
-  
-  // Add this error element to your HTML if not present
-  if (!phoneError) {
-    const errorEl = document.createElement('p');
-    errorEl.id = 'empPhoneError';
-    errorEl.className = 'text-red-500 text-xs mt-1 hidden';
-    phoneInput.parentNode.appendChild(errorEl);
-  }
-  const phone = phoneInput.value.trim();
-  const phonePattern = /^09\d{9}$/;
-  // Remove any non-digit characters
-  const cleanedPhone = phone.replace(/[^0-9]/g, '');
-  if (phone === '') {
-    phoneError.textContent = 'Phone number is required';
-    phoneError.classList.remove('hidden');
-    return false;
-  } else if (!phonePattern.test(cleanedPhone)) {
-    phoneError.textContent = 'Please enter a valid 11-digit mobile number (e.g., 09123456789)';
-    phoneError.classList.remove('hidden');
-    return false;
-  } else {
-    phoneError.classList.add('hidden');
-    return true;
-  }
-}
+    // Apply validation to employee name fields
+    employeeNameFields.forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        applyNameValidation(field);
+    });
+
+    // Additional validation for required fields
+    const requiredEmployeeFields = ['empFirstName', 'empLastName'];
+
+    // Function to apply required validation
+    function applyRequiredValidation(field) {
+        if (field) {
+            field.addEventListener('blur', function() {
+                if (this.value.trim().length < 2) {
+                    this.setCustomValidity('Please enter at least 2 characters');
+                } else {
+                    this.setCustomValidity('');
+                }
+            });
+        }
+    }
+
+    // Apply to employee fields
+    requiredEmployeeFields.forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        applyRequiredValidation(field);
+    });
+
+    // Validate birthdate to ensure employee is at least 18 years old
+    function validateEmpBirthdate() {
+        const birthdateField = document.getElementById('empBirthdate');
+        if (birthdateField) {
+            const selectedDate = new Date(birthdateField.value);
+            const today = new Date();
+            const minBirthdate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
+            
+            if (selectedDate > minBirthdate) {
+                birthdateField.setCustomValidity('Employee must be at least 18 years old');
+            } else {
+                birthdateField.setCustomValidity('');
+            }
+        }
+    }
+
+    // Set max date for birthdate field to 18 years ago
+    function setEmpMaxBirthdate() {
+        const birthdateField = document.getElementById('empBirthdate');
+        if (birthdateField) {
+            const today = new Date();
+            const maxDate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
+            birthdateField.max = maxDate.toISOString().split('T')[0];
+        }
+    }
+
+    // Validate email input
+    function validateEmpEmail() {
+        const emailField = document.getElementById('employeeEmail');
+        if (emailField) {
+            // Remove any spaces from the email in real-time
+            if (emailField.value.includes(' ')) {
+                emailField.value = emailField.value.replace(/\s/g, '');
+            }
+            
+            // Check basic email format requirements
+            if (emailField.value.length > 0) {
+                if (!emailField.value.includes('@')) {
+                    emailField.setCustomValidity('Email must contain @ symbol');
+                } else if (emailField.value.indexOf('@') === 0) {
+                    emailField.setCustomValidity('Email cannot start with @');
+                } else if (emailField.value.indexOf('@') === emailField.value.length - 1) {
+                    emailField.setCustomValidity('Email cannot end with @');
+                } else {
+                    emailField.setCustomValidity('');
+                }
+            } else {
+                emailField.setCustomValidity('');
+            }
+        }
+    }
+
+    // Setup email field validation
+    const empEmailField = document.getElementById('employeeEmail');
+    if (empEmailField) {
+        // Validate on every input
+        empEmailField.addEventListener('input', validateEmpEmail);
+        
+        // Prevent pasting spaces
+        empEmailField.addEventListener('paste', function(e) {
+            e.preventDefault();
+            const pastedText = (e.clipboardData || window.clipboardData).getData('text');
+            const cleanedText = pastedText.replace(/\s/g, '');
+            document.execCommand('insertText', false, cleanedText);
+        });
+        
+        // Prevent spacebar key
+        empEmailField.addEventListener('keydown', function(e) {
+            if (e.key === ' ' || e.code === 'Space') {
+                e.preventDefault();
+            }
+        });
+    }
+
+    // Validate Philippine phone number
+    function validateEmpPhoneNumber() {
+        const phoneField = document.getElementById('employeePhone');
+        if (phoneField) {
+            // Remove any non-digit characters
+            let phoneNumber = phoneField.value.replace(/\D/g, '');
+            
+            // Limit to 11 characters
+            if (phoneNumber.length > 11) {
+                phoneNumber = phoneNumber.substring(0, 11);
+            }
+            
+            // Update the field value
+            phoneField.value = phoneNumber;
+            
+            // Validate the format
+            if (phoneNumber.length > 0) {
+                if (!phoneNumber.startsWith('09')) {
+                    phoneField.setCustomValidity('Philippine numbers must start with 09');
+                } else if (phoneNumber.length < 11) {
+                    phoneField.setCustomValidity('Phone number must be 11 digits');
+                } else {
+                    phoneField.setCustomValidity('');
+                }
+            } else {
+                phoneField.setCustomValidity('');
+            }
+        }
+    }
+
+    // Format phone number as user types
+    function formatEmpPhoneNumber() {
+        const phoneField = document.getElementById('employeePhone');
+        if (phoneField) {
+            let phoneNumber = phoneField.value.replace(/\D/g, '');
+            
+            // Auto-add 09 if user starts with 9
+            if (phoneNumber.length === 1 && phoneNumber === '9') {
+                phoneNumber = '09';
+            }
+            
+            // Format with spaces for better readability (optional)
+            if (phoneNumber.length > 4) {
+                phoneNumber = phoneNumber.replace(/(\d{4})(\d{3})(\d{4})/, '$1 $2 $3');
+            } else if (phoneNumber.length > 2) {
+                phoneNumber = phoneNumber.replace(/(\d{2})(\d+)/, '$1 $2');
+            }
+            
+            phoneField.value = phoneNumber;
+        }
+    }
+
+    // Initialize phone field event listeners
+    const empPhoneField = document.getElementById('employeePhone');
+    if (empPhoneField) {
+        empPhoneField.addEventListener('input', function() {
+            formatEmpPhoneNumber();
+            validateEmpPhoneNumber();
+        });
+        
+        empPhoneField.addEventListener('keydown', function(e) {
+            // Allow: backspace, delete, tab, escape, enter
+            if ([46, 8, 9, 27, 13].includes(e.keyCode) || 
+                // Allow: Ctrl+A
+                (e.keyCode == 65 && e.ctrlKey === true) || 
+                // Allow: home, end, left, right
+                (e.keyCode >= 35 && e.keyCode <= 39)) {
+                return;
+            }
+            // Ensure it's a number and stop the keypress if not
+            if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+                e.preventDefault();
+            }
+        });
+    }
+
+    // Initialize max birthdate when page loads
+    setEmpMaxBirthdate();
+
+    // Event listeners for the employee form
+    document.getElementById('empFirstName').addEventListener('input', validateNameInput);
+    document.getElementById('empMiddleName').addEventListener('input', validateNameInput);
+    document.getElementById('empLastName').addEventListener('input', validateNameInput);
+    document.getElementById('empBirthdate').addEventListener('change', validateEmpBirthdate);
+    document.getElementById('employeeEmail').addEventListener('input', validateEmpEmail);
+    document.getElementById('employeePhone').addEventListener('input', validateEmpPhoneNumber);
+    document.getElementById('branchLocation').addEventListener('change', validateBranchLocation);
+  });
+
+
 
 function validateEmpBranchLocation() {
   const branchSelect = document.getElementById('empBranchLocation');
