@@ -319,162 +319,133 @@ return confirm("Are you sure you want to delete this item?");
 function openViewItemModal(inventoryId) {
   // Show the modal
   document.getElementById('viewItemModal').classList.remove('hidden');
-  document.body.style.overflow = 'hidden';
 
   // Fetch item details via AJAX
   fetch(`inventory/get_item_details.php?inventory_id=${inventoryId}`)
-    .then(response => response.text())
-    .then(data => {
+  .then(response => response.text())
+  .then(data => {
       document.getElementById('itemDetailsContent').innerHTML = data;
       
-      // Attach validation handlers after content is loaded
-      setupViewItemValidations();
-      
-      // Expand image preview functionality
-      setupImagePreview();
-    })
-    .catch(error => {
-      document.getElementById('itemDetailsContent').innerHTML = `
-        <div class="p-4 bg-red-100 text-red-700 rounded-lg">
-          Error: ${error.message}
-        </div>`;
-    });
-}
-
-function setupViewItemValidations() {
-  // Item Name validation
-  const itemNameInput = document.getElementById('editItemName');
-  if (itemNameInput) {
-    itemNameInput.addEventListener('input', function(e) {
-      let value = this.value;
-      
-      // Don't allow space as first character
-      if (value.length > 0 && value.charAt(0) === ' ') {
-        this.value = value.trim();
-        return;
-      }
-      
-      // Don't allow consecutive spaces
-      if (value.includes('  ')) {
-        this.value = value.replace(/\s+/g, ' ');
-        return;
-      }
-      
-      // Auto-capitalize first letter
-      if (value.length === 1) {
-        this.value = value.charAt(0).toUpperCase() + value.slice(1);
-      }
-    });
-  }
-
-  // Quantity validation
-  const quantityInput = document.getElementById('editQuantity');
-  if (quantityInput) {
-    quantityInput.addEventListener('input', function() {
-      if (this.value < 0) {
-        this.value = '';
-      }
-    });
-  }
-
-  // Unit Price validation
-  const unitPriceInput = document.getElementById('editUnitPrice');
-  if (unitPriceInput) {
-    unitPriceInput.addEventListener('input', function() {
-      // Remove any non-numeric characters except dot
-      this.value = this.value.replace(/[^0-9.]/g, '');
-      
-      // Ensure only one dot
-      const dots = this.value.split('.').length - 1;
-      if (dots > 1) {
-        const parts = this.value.split('.');
-        this.value = parts[0] + '.' + parts.slice(1).join('');
-      }
-      
-      // Don't allow dot as first character
-      if (this.value.charAt(0) === '.') {
-        this.value = '';
-      }
-      
-      // Don't allow negative values
-      if (this.value < 0) {
-        this.value = '';
-      }
-    });
-  }
-
-  // Total Value validation (readonly but ensure proper formatting)
-  const totalValueInput = document.getElementById('editTotalValue');
-  if (totalValueInput) {
-    // Calculate total value when quantity or price changes
-    if (quantityInput && unitPriceInput) {
-      const calculateTotal = () => {
-        const quantity = parseFloat(quantityInput.value) || 0;
-        const price = parseFloat(unitPriceInput.value) || 0;
-        totalValueInput.value = (quantity * price).toFixed(2);
-      };
-      
-      quantityInput.addEventListener('input', calculateTotal);
-      unitPriceInput.addEventListener('input', calculateTotal);
-    }
-  }
-}
-
-function setupImagePreview() {
-  const imagePreviewContainer = document.getElementById('imagePreviewContainer');
-  const imagePreview = document.getElementById('imagePreview');
-  const editItemImage = document.getElementById('editItemImage');
-  
-  if (editItemImage && imagePreview) {
-    editItemImage.addEventListener('change', function(e) {
-      if (this.files && this.files[0]) {
-        const reader = new FileReader();
-        
-        reader.onload = function(e) {
-          imagePreview.src = e.target.result;
-          imagePreviewContainer.classList.remove('hidden');
+      // Add event listeners after content is loaded
+      setTimeout(() => {
+          const itemNameInput = document.getElementById('item_name');
+          const priceInput = document.getElementById('price');
+          const quantityInput = document.getElementById('quantity');
           
-          // Make image preview larger and interactive
-          imagePreview.style.maxHeight = '300px';
-          imagePreview.style.cursor = 'zoom-in';
-          imagePreview.onclick = function() {
-            if (this.style.maxHeight === '300px') {
-              this.style.maxHeight = 'none';
-              this.style.cursor = 'zoom-out';
-            } else {
-              this.style.maxHeight = '300px';
-              this.style.cursor = 'zoom-in';
-            }
-          };
-        };
-        
-        reader.readAsDataURL(this.files[0]);
-      }
-    });
+          if (itemNameInput) {
+              itemNameInput.addEventListener('input', function() {
+                  validateItemName(this);
+              });
+          }
+          
+          if (priceInput) {
+              priceInput.addEventListener('input', function() {
+                  validatePrice(this);
+              });
+          }
+          
+          if (quantityInput) {
+              quantityInput.addEventListener('input', function() {
+                  validateQuantity(this);
+              });
+          }
+      }, 100);
+  })
+  .catch(error => {
+      document.getElementById('itemDetailsContent').innerHTML = `<div class="p-4 bg-red-100 text-red-700 rounded-lg">Error: ${error.message}</div>`;
+  });
+}
+
+// Item Name Validation
+function validateItemName(input) {
+  const errorElement = document.getElementById('itemNameError');
+  if (!input || !errorElement) return;
+  
+  let value = input.value;
+  
+  // Check if first character is space
+  if (value.length > 0 && value.charAt(0) === ' ') {
+      errorElement.classList.remove('hidden');
+      input.value = value.trim();
+      return;
   }
   
-  // If there's an existing image, make it zoomable
-  const existingImage = document.querySelector('.current-image-preview');
-  if (existingImage) {
-    existingImage.style.cursor = 'zoom-in';
-    existingImage.onclick = function() {
-      if (this.style.transform === 'scale(2)') {
-        this.style.transform = 'scale(1)';
-      } else {
-        this.style.transform = 'scale(2)';
-      }
-    };
+  // Check for consecutive spaces
+  if (value.includes('  ')) {
+      errorElement.classList.remove('hidden');
+      input.value = value.replace(/\s+/g, ' ');
+      return;
+  }
+  
+  // Check if last character is space
+  if (value.length > 0 && value.charAt(value.length - 1) === ' ') {
+      errorElement.classList.remove('hidden');
+      input.value = value.trim();
+      return;
+  }
+  
+  errorElement.classList.add('hidden');
+  
+  // Auto-capitalize first letter
+  if (value.length === 1) {
+      input.value = value.charAt(0).toUpperCase() + value.slice(1);
   }
 }
 
-// Update closeViewItemModal to reset validations
+// Quantity Validation
+function validateQuantity(input) {
+  if (!input) return;
+  
+  if (input.value < 0) {
+      input.value = 0;
+  }
+  calculateTotalValue();
+}
+
+// Price Validation
+function validatePrice(input) {
+  if (!input) return;
+  
+  // Remove any non-digit and non-dot characters
+  input.value = input.value.replace(/[^\d.]/g, '');
+  
+  // Ensure only one dot is present
+  const dotCount = (input.value.match(/\./g) || []).length;
+  if (dotCount > 1) {
+      input.value = input.value.substring(0, input.value.lastIndexOf('.'));
+  }
+  
+  // Ensure max 2 decimal places
+  if (input.value.includes('.')) {
+      const parts = input.value.split('.');
+      if (parts[1].length > 2) {
+          input.value = parts[0] + '.' + parts[1].substring(0, 2);
+      }
+  }
+  
+  calculateTotalValue();
+}
+
+// Calculate Total Value
+function calculateTotalValue() {
+  const quantityInput = document.getElementById('quantity');
+  const priceInput = document.getElementById('price');
+  const totalValueInput = document.getElementById('total_value');
+  
+  if (!quantityInput || !priceInput || !totalValueInput) return;
+  
+  const quantity = parseFloat(quantityInput.value) || 0;
+  const price = parseFloat(priceInput.value.replace(/[^\d.]/g, '')) || 0;
+  const totalValue = quantity * price;
+  
+  totalValueInput.value = totalValue.toFixed(2);
+}
+
 function closeViewItemModal() {
-  document.getElementById('viewItemModal').classList.add('hidden');
-  document.body.style.overflow = 'auto';
-  document.getElementById('itemDetailsContent').innerHTML = `
-    <div class="flex justify-center">
-      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-sidebar-accent"></div>
-    </div>`;
+document.getElementById('viewItemModal').classList.add('hidden');
+document.getElementById('itemDetailsContent').innerHTML = `<div class="flex justify-center">
+<div class="animate-spin rounded-full h-12 w-12 border-b-2 border-sidebar-accent"></div>
+</div>`;
 }
 
 // Add event listener to the form submission
