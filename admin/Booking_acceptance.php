@@ -298,15 +298,14 @@ $offset = ($current_page - 1) * $bookings_per_page;
                     <?php
                     // Query to get booking data with joins and pagination
                     $query = "SELECT b.booking_id, b.booking_date, b.status, 
-        CONCAT(u.first_name, ' ', COALESCE(u.middle_name, ''), ' ', u.last_name, ' ', COALESCE(u.suffix, '')) AS customer_name,
-        COALESCE(s.service_name, 'Custom Package') AS service_name,
-        b.service_id  
-        FROM booking_tb b
-        JOIN users u ON b.customerID = u.id
-        LEFT JOIN services_tb s ON b.service_id = s.service_id
-        WHERE b.status = 'Pending'
-        ORDER BY b.booking_date DESC
-        LIMIT ?, ?";
+                    CONCAT(u.first_name, ' ', COALESCE(u.middle_name, ''), ' ', u.last_name, ' ', COALESCE(u.suffix, '')) AS customer_name,
+                    COALESCE(s.service_name, 'Custom Package') AS service_name
+                    FROM booking_tb b
+                    JOIN users u ON b.customerID = u.id
+                     JOIN services_tb s ON b.service_id = s.service_id
+                    WHERE b.status = 'Pending'
+                    ORDER BY b.booking_date DESC
+                    LIMIT ?, ?";
 
                     $stmt = $conn->prepare($query);
                     $stmt->bind_param("ii", $offset, $bookings_per_page);
