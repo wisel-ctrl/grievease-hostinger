@@ -1890,89 +1890,106 @@ document.getElementById('removeGcash').addEventListener('click', hideGcashPrevie
 document.getElementById('traditionalBookingForm').addEventListener('submit', function(e) {
     e.preventDefault();
     
-    const formData = new FormData(this);
-    const formElement = this;
-    const serviceId = document.getElementById('serviceID').value;
-    const branchId = document.getElementById('branchID').value; // Get branch_id
+    // Check if this is a custom package submission
+    if (document.getElementById('traditionalSelectedPackageName').value === 'Custom Memorial Package') {
+        // Handle custom package submission
+        submitCustomPackage();
+    } else {
+        // Handle traditional package submission
+        submitTraditionalPackage();
+    }
+});
 
-    // Make sure service_id and branch_id are included
-    if (!serviceId || !branchId) {
+function submitCustomPackage() {
+    const formData = new FormData(document.getElementById('traditionalBookingForm'));
+    
+    // Add custom package flag
+    formData.append('package_type', 'custom');
+    
+    // Add custom package specific data
+    formData.append('casket_id', document.getElementById('casketID').value);
+    formData.append('flower_design', document.getElementById('flowerDesign').value);
+    formData.append('inclusions', document.getElementById('inclusions').value);
+    formData.append('notes', document.getElementById('notes').value);
+    
+    // Send to custom booking handler
+    fetch('booking/insert_custom_booking.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            Swal.fire({
+                title: 'Success!',
+                text: 'Custom package booking submitted successfully!',
+                icon: 'success',
+                confirmButtonColor: '#d97706'
+            });
+            document.getElementById('traditionalModal').classList.add('hidden');
+            document.getElementById('traditionalBookingForm').reset();
+        } else {
+            Swal.fire({
+                title: 'Error',
+                text: data.message || 'An error occurred. Please try again.',
+                icon: 'error',
+                confirmButtonColor: '#d97706'
+            });
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
         Swal.fire({
             title: 'Error',
-            text: 'Required fields are missing. Please try again.',
+            text: 'An error occurred. Please try again.',
             icon: 'error',
             confirmButtonColor: '#d97706'
         });
-        return;
-    }
+    });
+}
 
-    formData.append('service_id', serviceId);
-    formData.append('branch_id', branchId); // Add branch_id to form data
-
-
-    Swal.fire({
-        title: 'Confirm Booking',
-        text: 'Are you sure you want to proceed with this booking?',
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonColor: '#d97706',
-        cancelButtonColor: '#6b7280',
-        confirmButtonText: 'Yes, book now',
-        cancelButtonText: 'Cancel'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            // Show loading indicator
+function submitTraditionalPackage() {
+    const formData = new FormData(document.getElementById('traditionalBookingForm'));
+    
+    // Add traditional package flag
+    formData.append('package_type', 'traditional');
+    formData.append('service_id', document.getElementById('serviceID').value);
+    
+    // Send to traditional booking handler
+    fetch('booking/insert_booking.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
             Swal.fire({
-                title: 'Processing Booking',
-                html: 'Please wait while we process your booking...',
-                allowOutsideClick: false,
-                didOpen: () => {
-                    Swal.showLoading();
-                }
+                title: 'Success!',
+                text: 'Traditional package booking submitted successfully!',
+                icon: 'success',
+                confirmButtonColor: '#d97706'
             });
-            
-            fetch('booking/booking.php', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                Swal.close();
-                
-                if (data.success) {
-                    // Close modal and reset form
-                    document.getElementById('traditionalModal').classList.add('hidden');
-                    formElement.reset();
-                    
-                    // Show success notification
-                    Swal.fire({
-                        title: 'Success!',
-                        text: 'Booking submitted successfully!',
-                        icon: 'success',
-                        confirmButtonColor: '#d97706'
-                    });
-                } else {
-                    Swal.fire({
-                        title: 'Error',
-                        text: data.message || 'An error occurred. Please try again.',
-                        icon: 'error',
-                        confirmButtonColor: '#d97706'
-                    });
-                }
-            })
-            .catch(error => {
-                Swal.close();
-                console.error('Error:', error);
-                Swal.fire({
-                    title: 'Error',
-                    text: 'An error occurred. Please try again.',
-                    icon: 'error',
-                    confirmButtonColor: '#d97706'
-                });
+            document.getElementById('traditionalModal').classList.add('hidden');
+            document.getElementById('traditionalBookingForm').reset();
+        } else {
+            Swal.fire({
+                title: 'Error',
+                text: data.message || 'An error occurred. Please try again.',
+                icon: 'error',
+                confirmButtonColor: '#d97706'
             });
         }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        Swal.fire({
+            title: 'Error',
+            text: 'An error occurred. Please try again.',
+            icon: 'error',
+            confirmButtonColor: '#d97706'
+        });
     });
-});
+}
 
 // QR Code functionality
 const showQrCodeBtn = document.getElementById('showQrCodeBtn');
@@ -2404,7 +2421,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const packageNameElement = document.getElementById('traditionalPackageName');
         const packagePriceElement = document.getElementById('traditionalPackagePrice');
         const packageFeaturesElement = document.getElementById('traditionalPackageFeatures');
-        const hiddenPackageName = document.getElementById('traditionalSelectedPackageName');
+        const hiddenPackageName = document.getElementById('traditionalSelectedPackageName').value = "Custom Memorial Package";
         const hiddenPackagePrice = document.getElementById('traditionalSelectedPackagePrice');
         const totalPriceElement = document.getElementById('traditionalTotalPrice');
         const downpaymentElement = document.getElementById('traditionalDownpayment');
