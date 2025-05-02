@@ -2093,6 +2093,8 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Add individual fields for compatibility with existing PHP code
             formData.append('serviceId', serviceId);
+            formData.append('branchId', document.getElementById('branchID').value);
+            formData.append('customerId', document.getElementById('customerID').value);
             formData.append('packageName', packageData.packageName);
             formData.append('packagePrice', packageData.packagePrice);
             formData.append('cremationSelected', packageData.cremationSelected);
