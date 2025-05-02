@@ -1482,6 +1482,88 @@ require_once '../db_connect.php'; // Database connection
     </div>
 </div>
 
+<!-- QR Code Modal -->
+<div id="lifeplanQrCodeModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
+    <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-hedvig text-navy">Scan to Pay</h3>
+            <button id="lifeplanCloseQrModal" class="text-gray-500 hover:text-navy">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+        <div class="flex flex-col items-center justify-center">
+            <img id="lifeplanQrCodeImage" src="../image\gcashqrvjay.jpg" alt="Payment QR Code" class="w-64 h-64 object-contain mb-4">
+            <p class="text-center text-sm text-gray-600 mb-2">Scan this QR code with your GCash app to make payment</p>
+            <p class="text-center font-bold text-yellow-600" id="lifeplanQrCodeAmount">Amount: ₱0</p>
+        </div>
+    </div>
+</div>
+                        
+                        <!-- GCash Upload with Preview (Improved UI) -->
+                        <div class="mb-4">
+                            <label for="lifeplanGcashReceipt" class="block text-sm font-medium text-navy mb-1">First Payment Receipt</label>
+                            <div class="border border-input-border bg-white rounded-lg p-3 focus-within:ring-2 focus-within:ring-yellow-600">
+                                <!-- Upload Button and File Name -->
+                                <div class="flex items-center mb-2">
+                                    <label for="lifeplanGcashReceipt" class="flex-1 cursor-pointer">
+                                        <div class="flex items-center justify-center py-2 px-3 bg-gray-50 rounded hover:bg-gray-100 transition">
+                                            <i class="fas fa-receipt mr-2 text-blue-500"></i>
+                                            <span class="text-sm text-gray-600">Upload Receipt</span>
+                                        </div>
+                                    </label>
+                                    <span class="text-xs ml-2 text-gray-500" id="lifeplanGcashFileName">No file chosen</span>
+                                </div>
+                                
+                                <!-- Preview Container -->
+                                <div id="lifeplanGcashPreviewContainer" class="hidden mt-2 rounded-lg overflow-hidden border border-gray-200">
+                                    <!-- Image Preview -->
+                                    <div id="lifeplanGcashImagePreview" class="hidden">
+                                        <img id="lifeplanGcashImage" src="" alt="GCash Receipt Preview" class="w-full h-auto max-h-48 object-contain">
+                                    </div>
+                                    
+                                </div>
+                                
+                                <!-- Remove Button -->
+                                <button type="button" id="removeLifeplanGcash" class="text-xs text-red-600 hover:text-red-800 mt-2 hidden">
+                                    <i class="fas fa-trash-alt mr-1"></i> Remove file
+                                </button>
+                                
+                                <input type="file" id="lifeplanGcashReceipt" name="gcashReceipt" accept=".jpg,.jpeg,.png" class="hidden">
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">Accepted formats: JPG, JPEG, PNG</p>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="lifeplanReferenceNumber" class="block text-sm font-medium text-navy mb-1">Reference Number *</label>
+                            <input type="text" id="lifeplanReferenceNumber" name="referenceNumber" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" placeholder="e.g. 1234567890">
+                        </div>
+                    </div>
+
+                    <div class="bg-cream p-3 md:p-4 rounded-lg">
+                        <div class="flex justify-between text-xs md:text-sm mb-2">
+                            <span class="text-navy">Package Total</span>
+                            <span id="lifeplanTotalPrice" class="text-yellow-600">₱0</span>
+                        </div>
+                        <div class="flex justify-between text-xs md:text-sm mb-2">
+                            <span class="text-navy">Payment Term</span>
+                            <span id="lifeplanPaymentTermDisplay" class="text-yellow-600">5 Years (60 Monthly Payments)</span>
+                        </div>
+                        <div class="flex justify-between font-bold mt-2 pt-2 border-t border-gray-300">
+                            <span class="text-navy">Monthly Payment</span>
+                            <span id="lifeplanMonthlyPayment" class="text-yellow-600">₱0</span>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="w-full bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg shadow-md transition-all duration-300">
+                        Confirm Lifeplan Booking
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <!-- Footer -->
 <footer class="bg-black font-playfair text-white py-12">
         <div class="container mx-auto px-6">
