@@ -1892,6 +1892,20 @@ document.getElementById('traditionalBookingForm').addEventListener('submit', fun
     
     const formData = new FormData(this);
     const formElement = this;
+    const serviceId = document.getElementById('serviceID').value;
+
+    // Make sure service_id is included
+    if (!serviceId) {
+        Swal.fire({
+            title: 'Error',
+            text: 'Service ID is missing. Please select a package again.',
+            icon: 'error',
+            confirmButtonColor: '#d97706'
+        });
+        return;
+    }
+
+    formData.append('service_id', serviceId);
 
     Swal.fire({
         title: 'Confirm Booking',
@@ -2513,35 +2527,31 @@ document.addEventListener('DOMContentLoaded', function() {
     // Show traditional modal directly when package is selected
     
     document.querySelectorAll('.selectPackageBtn').forEach(button => {
-        button.addEventListener('click', function() {
-            console.log('Select Package button clicked');
-            // Get package details from the parent card
-            const packageCard = this.closest('.package-card');
-            if (!packageCard) return; // Safety check
-            
-            const packageName = packageCard.dataset.name;
-            const packagePrice = packageCard.dataset.price;
-            const packageImage = packageCard.dataset.image || '';
-            const serviceId = packageCard.dataset.serviceId; // Get service_id
-            console.log('service1: ', packageCard.dataset.serviceId);
-            
-            
-            document.getElementById('serviceID').value = serviceId;    
-
-            // Store package details in sessionStorage for later use
-            sessionStorage.setItem('selectedPackageName', packageName);
-            sessionStorage.setItem('selectedPackagePrice', packagePrice);
-            sessionStorage.setItem('selectedPackageImage', packageImage);
-            sessionStorage.setItem('selectedServiceId', serviceId); // Store service_id
-            
-            // Get other details from the card content
-            const features = Array.from(packageCard.querySelectorAll('ul li')).map(li => li.innerHTML);
-            sessionStorage.setItem('selectedPackageFeatures', JSON.stringify(features));
-            
-            // Open traditional modal directly
-            openTraditionalModal();
-        });
+    button.addEventListener('click', function() {
+        console.log('Select Package button clicked');
+        // Get package details from the parent card
+        const packageCard = this.closest('.package-card');
+        if (!packageCard) return; // Safety check
+        
+        const packageName = packageCard.dataset.name;
+        const packagePrice = packageCard.dataset.price;
+        const packageImage = packageCard.dataset.image || '';
+        const serviceId = packageCard.dataset.serviceId; // Get service_id
+        
+        // Store package details in sessionStorage for later use
+        sessionStorage.setItem('selectedPackageName', packageName);
+        sessionStorage.setItem('selectedPackagePrice', packagePrice);
+        sessionStorage.setItem('selectedPackageImage', packageImage);
+        sessionStorage.setItem('selectedServiceId', serviceId); // Store service_id
+        
+        // Get other details from the card content
+        const features = Array.from(packageCard.querySelectorAll('ul li')).map(li => li.innerHTML);
+        sessionStorage.setItem('selectedPackageFeatures', JSON.stringify(features));
+        
+        // Open traditional modal directly
+        openTraditionalModal();
     });
+});
     
     // Function to open traditional modal with package details
     function openTraditionalModal() {
