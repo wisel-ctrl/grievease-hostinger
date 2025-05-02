@@ -1617,24 +1617,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-// Street address validation
-function validateTraditionalDeceasedStreet(input) {
-    // Remove any leading spaces
-    let value = input.value.replace(/^\s+/, '');
-    
-    // Remove multiple consecutive spaces
-    value = value.replace(/\s{2,}/g, ' ');
-    
-    // Capitalize first letter of the string if it exists
-    if (value.length > 0) {
-        value = value.charAt(0).toUpperCase() + value.slice(1);
-    }
-    
-    // Update both the visible input and hidden field
-    input.value = value;
-    document.getElementById('deceasedAddress').value = value;
-}
-
 // Enhanced street validation function
 function validateTraditionalDeceasedStreet(input) {
     // Remove any leading/trailing spaces
