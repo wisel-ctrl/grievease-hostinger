@@ -51,16 +51,17 @@ $stmt->bind_param("ssssssi", $firstName, $lastName, $middleName, $email, $phoneN
 $result = $stmt->execute();
 
 if ($result) {
-    // Clear OTP session if email was changed
-    if ($email !== $originalUser['email']) {
+    // Clear OTP session after successful update
+    if (isset($_SESSION['edit_account_otp_verified'])) {
+        unset($_SESSION['edit_account_otp_verified']);
+        unset($_SESSION['verified_email']);
         unset($_SESSION['edit_account_otp']);
         unset($_SESSION['edit_account_otp_email']);
         unset($_SESSION['edit_account_otp_time']);
-        unset($_SESSION['edit_account_otp_verified']);
     }
-    echo json_encode(['success' => true]);
+    echo json_encode(['success' => true, 'message' => 'Account updated successfully']);
 } else {
-    echo json_encode(['success' => false, 'message' => 'Failed to update user: ' . $conn->error]);
+    echo json_encode(['success' => false, 'message' => 'Failed to update account: ' . $conn->error]);
 }
 
 $stmt->close();

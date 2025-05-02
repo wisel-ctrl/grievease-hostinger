@@ -1187,77 +1187,94 @@ function closeOtpModal() {
 }
 
 // Resend OTP
-function resendOTP() {
-
-  const email = document.getElementById('customerEmail').value;
-  const formData = new FormData();
-  formData.append('email', email);
-  
-  const xhr = new XMLHttpRequest();
-  xhr.open('POST', 'addCustomer/send_otp.php', true);
-  
-  xhr.onload = function() {
-    if (this.status === 200) {
-      try {
-        const response = JSON.parse(this.responseText);
-        if (response.success) {
-          Swal.fire({
-            title: 'OTP Sent!',
-            text: 'A new OTP has been sent to your email address.',
-            icon: 'success',
-            toast: true,
-            position: 'top-end', 
-            showConfirmButton: false,
-            timer: 5000,
-            timerProgressBar: true,
-            background: '#f8f9fa',
-            iconColor: '#28a745',
-            width: '400px',
-            padding: '1em',
-            customClass: {
-              container: 'custom-swal-container',
-              popup: 'custom-swal-popup'
-            }
-          });
-        } else {
-          Swal.fire({
-            title: 'Failed',
-            text: response.message || 'Failed to send OTP',
-            icon: 'error',
-            toast: true,
-            position: 'top-end', // top-right corner
-            showConfirmButton: false,
-            timer: 4000, // Longer display for errors
-            timerProgressBar: true,
-            background: '#f8f9fa',
-            iconColor: '#dc3545',
-            width: '400px',
-            padding: '1em',
-            customClass: {
-              container: 'custom-swal-container',
-              popup: 'custom-swal-popup-error' // Special class for errors
-            }
-          });
-        }
-      } catch (e) {
-        Swal.fire({
-          title: 'Error',
-          text: 'Invalid server response',
-          icon: 'error'
-        });
-      }
+function resendOtp(accountType) {
+    const emailField = accountType === 'customer' ? document.getElementById('editEmail') : document.getElementById('editEmpEmail');
+    const email = emailField.value.trim();
+    
+    // Disable the resend button
+    const resendBtn = document.getElementById('resendOtpBtn');
+    if (resendBtn) {
+        resendBtn.disabled = true;
+        resendBtn.classList.remove('text-sidebar-accent', 'hover:underline');
+        resendBtn.classList.add('text-gray-400', 'cursor-not-allowed');
     }
-  };
-  
-  xhr.onerror = function() {
-    Swal.fire({
-      title: 'Connection Error',
-      text: 'Failed to connect to server',
-      icon: 'error'
+    
+    // Show the timer
+    const timerDisplay = document.getElementById('resendTimer');
+    if (timerDisplay) {
+        timerDisplay.classList.remove('hidden');
+    }
+    
+    // Reset and start the timer
+    resetResendTimer();
+    startResendTimer();
+    
+    // Send the new OTP
+    sendOtp(email, accountType).catch(error => {
+        console.error('Error resending OTP:', error);
+        // If sending fails, re-enable the button
+        if (resendBtn) {
+            resendBtn.disabled = false;
+            resendBtn.classList.add('text-sidebar-accent', 'hover:underline');
+            resendBtn.classList.remove('text-gray-400', 'cursor-not-allowed');
+        }
+        if (timerDisplay) {
+            timerDisplay.classList.add('hidden');
+        }
     });
-  };
-  
-  xhr.send(formData);
+}
+
+function startResendTimer() {
+    // Clear any existing timer
+    if (resendOtpTimer) {
+        clearInterval(resendOtpTimer);
+    }
+    
+    // Reset time left
+    resendOtpTimeLeft = 60;
+    updateTimerDisplay();
+    
+    // Start new timer
+    resendOtpTimer = setInterval(() => {
+        resendOtpTimeLeft--;
+        updateTimerDisplay();
+        
+        if (resendOtpTimeLeft <= 0) {
+            clearInterval(resendOtpTimer);
+            enableResendButton();
+        }
+    }, 1000);
+}
+
+function resetResendTimer() {
+    resendOtpTimeLeft = 60;
+    if (resendOtpTimer) {
+        clearInterval(resendOtpTimer);
+    }
+}
+
+function updateTimerDisplay() {
+    const timerDisplay = document.getElementById('resendTimer');
+    if (timerDisplay) {
+        const minutes = Math.floor(resendOtpTimeLeft / 60);
+        const seconds = resendOtpTimeLeft % 60;
+        timerDisplay.textContent = ` (Resend available in ${minutes}:${seconds < 10 ? '0' : ''}${seconds})`;
+    }
+}
+
+function enableResendButton() {
+    const resendBtn = document.getElementById('resendOtpBtn');
+    const timerDisplay = document.getElementById('resendTimer');
+    
+    if (resendBtn) {
+        resendBtn.disabled = false;
+        resendBtn.classList.add('text-sidebar-accent', 'hover:underline');
+        resendBtn.classList.remove('text-gray-400', 'cursor-not-allowed');
+    }
+    
+    if (timerDisplay) {
+        timerDisplay.classList.add('hidden');
+    }
 }
 
 // Verify OTP and submit form
@@ -2108,60 +2125,114 @@ function openEditCustomerAccountModal(userId) {
 function setupRealTimeValidation() {
     const emailField = document.getElementById('editEmail');
     const phoneField = document.getElementById('editPhone');
-    
-    // Email validation
+    const userId = document.querySelector('input[name="user_id"]').value;
+
+    // Email validation with visual feedback
     if (emailField) {
+        const emailContainer = emailField.parentElement;
+        const emailFeedback = document.createElement('div');
+        emailFeedback.className = 'absolute right-3 top-1/2 transform -translate-y-1/2';
+        emailContainer.appendChild(emailFeedback);
+
         let emailTimeout;
         emailField.addEventListener('input', function() {
             clearTimeout(emailTimeout);
             const email = this.value.trim();
             
-            // Basic format validation
-            if (!email.includes('@')) {
-                document.getElementById('emailError').textContent = 'Please enter a valid email address';
-                document.getElementById('emailError').classList.remove('hidden');
-                return;
-            } else {
-                document.getElementById('emailError').classList.add('hidden');
-            }
+            // Clear previous feedback
+            emailFeedback.innerHTML = '';
+            emailField.classList.remove('border-green-500', 'border-red-500');
             
-            // Check if email changed from original
-            if (email && email !== originalEmail) {
-                emailTimeout = setTimeout(() => {
-                    checkEmailExists(email, 'emailExistsError');
-                }, 500); // Debounce 500ms
-            } else {
-                document.getElementById('emailExistsError').classList.add('hidden');
+            if (email.length === 0) return;
+            
+            if (!email.includes('@')) {
+                emailField.classList.add('border-red-500');
+                emailFeedback.innerHTML = '<i class="fas fa-times text-red-500"></i>';
+                return;
             }
+
+            emailTimeout = setTimeout(() => {
+                fetch(`../employee/accountManagement/check_email.php?email=${encodeURIComponent(email)}&current_user=${userId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.available) {
+                            emailField.classList.add('border-green-500');
+                            emailFeedback.innerHTML = '<i class="fas fa-check text-green-500"></i>';
+                        } else {
+                            emailField.classList.add('border-red-500');
+                            emailFeedback.innerHTML = '<i class="fas fa-times text-red-500"></i>';
+                            showTooltip(emailFeedback, 'Email already in use');
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+            }, 500);
         });
     }
-    
-    // Phone validation
+
+    // Phone validation with visual feedback
     if (phoneField) {
+        const phoneContainer = phoneField.parentElement;
+        const phoneFeedback = document.createElement('div');
+        phoneFeedback.className = 'absolute right-3 top-1/2 transform -translate-y-1/2';
+        phoneContainer.appendChild(phoneFeedback);
+
         let phoneTimeout;
         phoneField.addEventListener('input', function() {
             clearTimeout(phoneTimeout);
             const phone = this.value.trim();
             
-            // Basic format validation
-            if (!phone.startsWith('09') || phone.length !== 11) {
-                document.getElementById('phoneError').textContent = 'Philippine number must start with 09 and be 11 digits';
-                document.getElementById('phoneError').classList.remove('hidden');
-                return;
-            } else {
-                document.getElementById('phoneError').classList.add('hidden');
-            }
+            // Clear previous feedback
+            phoneFeedback.innerHTML = '';
+            phoneField.classList.remove('border-green-500', 'border-red-500');
             
-            // Check if phone changed from original
-            if (phone && phone !== originalPhone) {
-                phoneTimeout = setTimeout(() => {
-                    checkPhoneExists(phone, 'phoneExistsError');
-                }, 500); // Debounce 500ms
-            } else {
-                document.getElementById('phoneExistsError').classList.add('hidden');
+            if (phone.length === 0) return;
+            
+            if (!phone.startsWith('09') || phone.length !== 11) {
+                phoneField.classList.add('border-red-500');
+                phoneFeedback.innerHTML = '<i class="fas fa-times text-red-500"></i>';
+                return;
             }
+
+            phoneTimeout = setTimeout(() => {
+                fetch(`../employee/accountManagement/check_phone.php?phone=${encodeURIComponent(phone)}&current_user=${userId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.available) {
+                            phoneField.classList.add('border-green-500');
+                            phoneFeedback.innerHTML = '<i class="fas fa-check text-green-500"></i>';
+                        } else {
+                            phoneField.classList.add('border-red-500');
+                            phoneFeedback.innerHTML = '<i class="fas fa-times text-red-500"></i>';
+                            showTooltip(phoneFeedback, 'Phone number already in use');
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+            }, 500);
         });
     }
+}
+
+// Helper function to show tooltips
+function showTooltip(element, message) {
+    const tooltip = document.createElement('div');
+    tooltip.className = 'absolute z-10 w-max px-2 py-1 text-xs text-white bg-gray-800 rounded-md opacity-0 transition-opacity duration-200';
+    tooltip.textContent = message;
+    element.appendChild(tooltip);
+    
+    // Position tooltip
+    tooltip.style.bottom = '100%';
+    tooltip.style.left = '50%';
+    tooltip.style.transform = 'translateX(-50%)';
+    
+    setTimeout(() => {
+        tooltip.classList.remove('opacity-0');
+        tooltip.classList.add('opacity-100');
+    }, 10);
+    
+    // Remove tooltip after delay
+    setTimeout(() => {
+        tooltip.remove();
+    }, 3000);
 }
 
 function setupEmployeeRealTimeValidation() {
@@ -2261,62 +2332,7 @@ function checkPhoneExists(phone, errorElementId) {
         });
 }
 
-function checkPhoneExists(phone, errorElementId) {
-    if (!phone) return;
-    
-    fetch('../employee/accountManagement/check_phone.php?phone=' + encodeURIComponent(phone))
-        .then(response => response.json())
-        .then(data => {
-            const errorElement = document.getElementById(errorElementId);
-            if (data.exists) {
-                errorElement.textContent = 'Phone number already exists in our system';
-                errorElement.classList.remove('hidden');
-            } else {
-                errorElement.classList.add('hidden');
-            }
-        })
-        .catch(error => {
-            console.error('Error checking phone:', error);
-        });
-}
 
-function checkEmailExists(email, errorElementId) {
-    if (!email) return;
-    
-    fetch('../employee/accountManagement/check_email.php?email=' + encodeURIComponent(email))
-        .then(response => response.json())
-        .then(data => {
-            const errorElement = document.getElementById(errorElementId);
-            if (data.exists) {
-                errorElement.textContent = 'Email already exists';
-                errorElement.classList.remove('hidden');
-            } else {
-                errorElement.classList.add('hidden');
-            }
-        })
-        .catch(error => {
-            console.error('Error checking email:', error);
-        });
-}
-
-function checkPhoneExists(phone, errorElementId) {
-    if (!phone) return;
-    
-    fetch('../employee/accountManagement/check_phone.php?phone=' + encodeURIComponent(phone))
-        .then(response => response.json())
-        .then(data => {
-            const errorElement = document.getElementById(errorElementId);
-            if (data.exists) {
-                errorElement.textContent = 'Phone number already exists';
-                errorElement.classList.remove('hidden');
-            } else {
-                errorElement.classList.add('hidden');
-            }
-        })
-        .catch(error => {
-            console.error('Error checking phone:', error);
-        });
-}
 
 function setupEditFormValidations() {
     // Name validation
@@ -2458,23 +2474,72 @@ function saveCustomerChanges() {
     const form = document.getElementById('editCustomerForm');
     const formData = new FormData(form);
     
-    fetch('editAccount/update_customer_account.php', {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            alert('Customer account updated successfully');
-            closeEditCustomerModal();
-            // Refresh the customer list
-            fetchCustomerAccounts(currentPage, currentSearch, currentSort);
-        } else {
-            alert('Failed to update customer: ' + data.message);
+    // Show confirmation dialog
+    Swal.fire({
+        title: 'Confirm Update',
+        text: 'Are you sure you want to update this customer account?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, update it!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Show loading indicator
+            Swal.fire({
+                title: 'Updating...',
+                html: 'Please wait while we update the customer account.',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+            
+            fetch('editAccount/update_customer_account.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                // First check if the response is OK (status 200-299)
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Make sure we got valid JSON data
+                 if (!data) throw new Error('No data received from server');
+                
+                
+                // Check if the update was successful
+                if (data.success === true) {
+                    // Show success message with 2-second timer
+                    Swal.fire({
+                        title: 'Success!',
+                        text: 'Customer account updated successfully.',
+                        icon: 'success',
+                        timer: 2000, // 2 seconds
+                        timerProgressBar: true,
+                        showConfirmButton: false,
+                        willClose: () => {
+                            closeEditCustomerModal();
+                            window.location.reload();
+                        }
+                    });
+                } else {
+                    throw new Error(data.message || 'Update failed without error message');
+                }
+            })
+            .catch(error => {
+                console.error('Update error:', error);
+                Swal.fire({
+                    title: 'Error!',
+                    text: error.message || 'An error occurred while updating the customer account',
+                    icon: 'error',
+                    confirmButtonColor: '#3085d6'
+                });
+            });
         }
-    })
-    .catch(error => {
-        console.error('Error:', error);
     });
 }
 
@@ -2823,25 +2888,73 @@ function saveEmployeeChanges() {
     const form = document.getElementById('editEmployeeForm');
     const formData = new FormData(form);
     
-    fetch('editAccount/update_employee_account.php', {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            alert('Employee account updated successfully');
-            closeEditEmployeeModal();
-            // Refresh the employee list
-            fetchEmployeeAccounts(currentPage, currentSearch, currentSort);
-        } else {
-            alert('Failed to update employee: ' + data.message);
+    // Show confirmation dialog
+    Swal.fire({
+        title: 'Confirm Update',
+        text: 'Are you sure you want to update this employee account?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, update it!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Show loading indicator
+            Swal.fire({
+                title: 'Updating...',
+                html: 'Please wait while we update the employee account.',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+            
+            fetch('editAccount/update_employee_account.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                 if (!data) throw new Error('No data received from server');
+                
+                if (data.success === true) {
+                    // Show success message with 2-second timer - MATCHING CUSTOMER UI
+                    Swal.fire({
+                        title: 'Success!',
+                        text: 'Employee account updated successfully.',
+                        icon: 'success',
+                        timer: 2000, // 2 seconds
+                        timerProgressBar: true,
+                        showConfirmButton: false,
+                        willClose: () => {
+                            closeEditEmployeeModal();
+                            window.location.reload();
+                        }
+                    });
+                } else {
+                    throw new Error(data.message || 'Update failed without error message');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire({
+                    title: 'Error!',
+                    text: error.message || 'An error occurred while updating the employee account',
+                    icon: 'error',
+                    confirmButtonColor: '#3085d6'
+                });
+            });
         }
-    })
-    .catch(error => {
-        console.error('Error:', error);
     });
 }
+
+let resendOtpTimer = null;
+let resendOtpTimeLeft = 60; // 60 seconds countdown
 
 // OTP Verification Modal Functions
 function showOtpVerificationModal(accountType) {
@@ -2890,9 +3003,10 @@ function showOtpVerificationModal(accountType) {
                     <p id="otpError" class="text-red-500 text-sm text-center hidden"></p>
                     
                     <div class="text-center">
-                        <button type="button" class="text-sm text-sidebar-accent hover:underline" onclick="resendOtp('${accountType}')">
+                        <button type="button" id="resendOtpBtn" class="text-sm text-sidebar-accent hover:underline" onclick="resendOtp('${accountType}')">
                             Didn't receive code? Resend
                         </button>
+                        <span id="resendTimer" class="text-sm text-gray-500 hidden"></span>
                     </div>
                 </form>
             </div>
@@ -2938,7 +3052,10 @@ function showOtpVerificationModal(accountType) {
     }
     
     // Send OTP immediately when modal opens
-    sendOtp(email, accountType);
+    sendOtp(email, accountType).then(() => {
+        // Start the timer only after successful OTP send
+        startResendTimer();
+    });
 }
 
 function closeOtpVerificationModal() {
@@ -2947,29 +3064,41 @@ function closeOtpVerificationModal() {
         otpVerificationModal = null;
     }
     isVerificationInProgress = false;
+    
+    // Clear the timer when modal is closed
+    if (resendOtpTimer) {
+        clearInterval(resendOtpTimer);
+        resendOtpTimer = null;
+    }
 }
 
+
 function sendOtp(email, accountType) {
-    fetch('editAccount/send_otp.php', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: `email=${encodeURIComponent(email)}`
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (!data.success) {
-            document.getElementById('otpError').textContent = data.message || 'Failed to send OTP';
+    return new Promise((resolve, reject) => {
+        fetch('editAccount/send_otp.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `email=${encodeURIComponent(email)}`
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (!data.success) {
+                document.getElementById('otpError').textContent = data.message || 'Failed to send OTP';
+                document.getElementById('otpError').classList.remove('hidden');
+                reject(data.message);
+            } else {
+                document.getElementById('otpError').classList.add('hidden');
+                resolve();
+            }
+        })
+        .catch(error => {
+            console.error('Error sending OTP:', error);
+            document.getElementById('otpError').textContent = 'Failed to send OTP. Please try again.';
             document.getElementById('otpError').classList.remove('hidden');
-        } else {
-            document.getElementById('otpError').classList.add('hidden');
-        }
-    })
-    .catch(error => {
-        console.error('Error sending OTP:', error);
-        document.getElementById('otpError').textContent = 'Failed to send OTP. Please try again.';
-        document.getElementById('otpError').classList.remove('hidden');
+            reject(error);
+        });
     });
 }
 
@@ -2978,10 +3107,24 @@ function verifyOtp(accountType) {
     const otp = Array.from(otpInputs).map(input => input.value).join('');
     
     if (otp.length !== 6) {
-        document.getElementById('otpError').textContent = 'Please enter the complete 6-digit code';
-        document.getElementById('otpError').classList.remove('hidden');
+        Swal.fire({
+            title: 'Incomplete Code',
+            text: 'Please enter the complete 6-digit code',
+            icon: 'warning',
+            confirmButtonColor: '#3085d6'
+        });
         return;
     }
+    
+    // Show loading indicator
+    Swal.fire({
+        title: 'Verifying...',
+        html: 'Please wait while we verify your code.',
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
     
     fetch('editAccount/verify_otp.php', {
         method: 'POST',
@@ -2993,23 +3136,38 @@ function verifyOtp(accountType) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            closeOtpVerificationModal();
-            
-            // Proceed with saving changes
-            if (accountType === 'customer') {
-                saveCustomerChanges();
-            } else {
-                saveEmployeeChanges();
-            }
+            Swal.fire({
+                title: 'Verified!',
+                text: 'Your email has been successfully verified',
+                icon: 'success',
+                confirmButtonColor: '#3085d6'
+            }).then(() => {
+                closeOtpVerificationModal();
+                
+                // Proceed with saving changes
+                if (accountType === 'customer') {
+                    saveCustomerChanges();
+                } else {
+                    saveEmployeeChanges();
+                }
+            });
         } else {
-            document.getElementById('otpError').textContent = data.message || 'Invalid verification code';
-            document.getElementById('otpError').classList.remove('hidden');
+            Swal.fire({
+                title: 'Error!',
+                text: data.message || 'Invalid verification code',
+                icon: 'error',
+                confirmButtonColor: '#3085d6'
+            });
         }
     })
     .catch(error => {
         console.error('Error verifying OTP:', error);
-        document.getElementById('otpError').textContent = 'Error verifying code. Please try again.';
-        document.getElementById('otpError').classList.remove('hidden');
+        Swal.fire({
+            title: 'Error!',
+            text: 'Error verifying code. Please try again.',
+            icon: 'error',
+            confirmButtonColor: '#3085d6'
+        });
     });
 }
 // The rest of your existing functions remain unchanged...
@@ -3928,7 +4086,7 @@ function resendEmpOTP() {
             toast: true,
             position: 'top-end', 
             showConfirmButton: false,
-            timer: 5000,
+            timer: 1000,
             timerProgressBar: true,
             background: '#f8f9fa',
             iconColor: '#28a745',

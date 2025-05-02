@@ -29,18 +29,18 @@ $stmt->close();
 
 if ($email !== $originalUser['email']) {
     // Verify OTP session
-    if (!isset($_SESSION['admin_otp_email'])) {
+    if (!isset($_SESSION['edit_account_otp_verified'])) {
         echo json_encode(['success' => false, 'message' => 'OTP verification required for email change']);
         exit;
     }
     
-    if ($_SESSION['admin_otp_email'] !== $email) {
-        echo json_encode(['success' => false, 'message' => 'OTP verification does not match the new email']);
+    if ($_SESSION['edit_account_otp_verified'] !== true) {
+        echo json_encode(['success' => false, 'message' => 'Email change requires OTP verification']);
         exit;
     }
     
-    if (!isset($_SESSION['admin_otp_verified']) || $_SESSION['admin_otp_verified'] !== true) {
-        echo json_encode(['success' => false, 'message' => 'Email change requires OTP verification']);
+    if (!isset($_SESSION['verified_email']) || $_SESSION['verified_email'] !== $email) {
+        echo json_encode(['success' => false, 'message' => 'OTP verification does not match the new email']);
         exit;
     }
 }
@@ -59,15 +59,19 @@ $stmt = $conn->prepare($query);
 $stmt->bind_param("ssssssi", $firstName, $lastName, $middleName, $email, $phoneNumber, $branchLoc, $userId);
 $result = $stmt->execute();
 
+// In update_customer_account.php and update_employee_account.php
 if ($result) {
     // Clear OTP session after successful update
-    if (isset($_SESSION['admin_otp_verified'])) {
-        unset($_SESSION['admin_otp_verified']);
-        unset($_SESSION['admin_otp_email']);
+    if (isset($_SESSION['edit_account_otp_verified'])) {
+        unset($_SESSION['edit_account_otp_verified']);
+        unset($_SESSION['verified_email']);
+        unset($_SESSION['edit_account_otp']);
+        unset($_SESSION['edit_account_otp_email']);
+        unset($_SESSION['edit_account_otp_time']);
     }
-    echo json_encode(['success' => true]);
+    echo json_encode(['success' => true, 'message' => 'Account updated successfully']);
 } else {
-    echo json_encode(['success' => false, 'message' => 'Failed to update employee']);
+    echo json_encode(['success' => false, 'message' => 'Failed to update account: ' . $conn->error]);
 }
 
 $stmt->close();
