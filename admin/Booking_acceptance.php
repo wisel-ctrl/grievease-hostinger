@@ -524,8 +524,41 @@ $offset = ($current_page - 1) * $bookings_per_page;
                 <div class="w-2/3 font-medium text-gray-800 break-words" id="serviceDate">Mar 20, 2025</div>
               </div>
               <div class="flex flex-wrap">
-                <div class="w-1/3 text-sm text-gray-500">Amount Paid</div>
+                <div class="w-1/3 text-sm text-gray-500">Price</div>
                 <div class="w-2/3 font-medium text-gray-800 break-words" id="amountPaid">$3,500.00</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-lg p-4 sm:p-5 border border-gray-200 shadow-sm">
+          <h4 class="font-semibold text-gray-800 mb-3 sm:mb-4 flex items-center">
+            <i class="fas fa-angel mr-2"></i>
+            Deceased Information
+          </h4>
+          <div class="space-y-2 sm:space-y-3">
+            <div class="flex flex-wrap">
+              <div class="w-1/3 text-sm text-gray-500">Full Name</div>
+              <div class="w-2/3 font-medium text-gray-800 break-words" id="deceasedFullName">
+                <!-- Will be populated by JavaScript -->
+              </div>
+            </div>
+            <div class="flex flex-wrap">
+              <div class="w-1/3 text-sm text-gray-500">Date of Birth</div>
+              <div class="w-2/3 font-medium text-gray-800 break-words" id="deceasedBirth">
+                <!-- Will be populated by JavaScript -->
+              </div>
+            </div>
+            <div class="flex flex-wrap">
+              <div class="w-1/3 text-sm text-gray-500">Date of Death</div>
+              <div class="w-2/3 font-medium text-gray-800 break-words" id="deceasedDeath">
+                <!-- Will be populated by JavaScript -->
+              </div>
+            </div>
+            <div class="flex flex-wrap">
+              <div class="w-1/3 text-sm text-gray-500">Address</div>
+              <div class="w-2/3 font-medium text-gray-800 break-words" id="deceasedAddress">
+                <!-- Will be populated by JavaScript -->
               </div>
             </div>
           </div>
@@ -778,7 +811,23 @@ $offset = ($current_page - 1) * $bookings_per_page;
       document.getElementById('serviceDate').textContent = 
         data.deceased_dateOfBurial ? new Date(data.deceased_dateOfBurial).toLocaleDateString('en-US', 
         { month: 'short', day: 'numeric', year: 'numeric' }) : "Not scheduled";
-      document.getElementById('amountPaid').textContent = "₱" + parseFloat(data.amount_paid).toFixed(2);
+      document.getElementById('amountPaid').textContent = "₱" + (parseFloat(data.initial_price) || 0).toFixed(2);
+
+      const deceasedFullName = [
+        data.deceased_fname || '',
+        data.deceased_midname || '',
+        data.deceased_lname || '',
+        data.deceased_suffix || ''
+      ].filter(Boolean).join(' ');
+
+      document.getElementById('deceasedFullName').textContent = deceasedFullName || "Not provided";
+      document.getElementById('deceasedBirth').textContent = data.deceased_birth ? 
+        new Date(data.deceased_birth).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 
+        "Not provided";
+      document.getElementById('deceasedDeath').textContent = data.deceased_dodeath ? 
+        new Date(data.deceased_dodeath).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 
+        "Not provided";
+      document.getElementById('deceasedAddress').textContent = data.deceased_address || "Not provided";
       
       // Update booking status
       const statusElement = document.getElementById('bookingStatus');
