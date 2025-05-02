@@ -1565,13 +1565,13 @@ require_once '../db_connect.php'; // Database connection
 </div>
 
 <script>
-// Name validation functions
+// Enhanced name validation function
 function validateNameInput(input) {
-    // Remove any numbers or symbols
+    // Remove any numbers or symbols except spaces, apostrophes, and hyphens
     let value = input.value.replace(/[^a-zA-Z\s'-]/g, '');
     
-    // Remove leading spaces
-    value = value.replace(/^\s+/, '');
+    // Remove leading/trailing spaces
+    value = value.trim();
     
     // Capitalize first letter of each word
     value = value.toLowerCase().replace(/\b\w/g, function(char) {
@@ -1584,6 +1584,38 @@ function validateNameInput(input) {
     // Update the input value
     input.value = value;
 }
+
+// Apply name validation to relevant fields on blur
+document.addEventListener('DOMContentLoaded', function() {
+    const nameFields = [
+        'traditionalDeceasedFirstName',
+        'traditionalDeceasedMiddleName',
+        'traditionalDeceasedLastName'
+    ];
+    
+    nameFields.forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        if (field) {
+            field.addEventListener('blur', function() {
+                validateNameInput(this);
+            });
+            
+            // Also validate on input for better UX
+            field.addEventListener('input', function() {
+                // Temporarily remove the blur listener to prevent recursion
+                this.removeEventListener('blur', validateNameInput);
+                
+                // Clean the input
+                validateNameInput(this);
+                
+                // Reattach the blur listener
+                this.addEventListener('blur', function() {
+                    validateNameInput(this);
+                });
+            });
+        }
+    });
+});
 
 // Street address validation
 function validateTraditionalDeceasedStreet(input) {
@@ -1603,14 +1635,81 @@ function validateTraditionalDeceasedStreet(input) {
     document.getElementById('deceasedAddress').value = value;
 }
 
-// Reference number validation
-function validateTraditionalReferenceNumber(input) {
-    // Remove any non-digit characters
-    let value = input.value.replace(/[^0-9]/g, '');
+// Enhanced street validation function
+function validateTraditionalDeceasedStreet(input) {
+    // Remove any leading/trailing spaces
+    let value = input.value.trim();
     
-    // Update the input value
+    // Remove multiple consecutive spaces
+    value = value.replace(/\s{2,}/g, ' ');
+    
+    // Capitalize first letter of the string
+    if (value.length > 0) {
+        value = value.charAt(0).toUpperCase() + value.slice(1);
+    }
+    
+    // Update both the visible input and hidden field
     input.value = value;
+    document.getElementById('deceasedAddress').value = value;
 }
+
+// Prevent invalid characters in name fields
+function preventInvalidNameChars(e) {
+    const char = String.fromCharCode(e.keyCode || e.which);
+    if (!/^[a-zA-Z\s'-]$/.test(char)) {
+        e.preventDefault();
+        return false;
+    }
+    return true;
+}
+
+// Apply to name fields
+nameFields.forEach(fieldId => {
+    const field = document.getElementById(fieldId);
+    if (field) {
+        field.addEventListener('keypress', preventInvalidNameChars);
+    }
+});
+
+// Prevent invalid characters in street field
+function preventInvalidStreetChars(e) {
+    const char = String.fromCharCode(e.keyCode || e.which);
+    // Allow letters, numbers, spaces, and common address characters
+    if (!/^[a-zA-Z0-9\s\-#,.]$/.test(char)) {
+        e.preventDefault();
+        return false;
+    }
+    return true;
+}
+
+const streetField = document.getElementById('traditionalDeceasedStreet');
+if (streetField) {
+    streetField.addEventListener('keypress', preventInvalidStreetChars);
+}
+
+// Apply street validation
+document.addEventListener('DOMContentLoaded', function() {
+    const streetField = document.getElementById('traditionalDeceasedStreet');
+    if (streetField) {
+        streetField.addEventListener('blur', function() {
+            validateTraditionalDeceasedStreet(this);
+        });
+        
+        // Also validate on input for better UX
+        streetField.addEventListener('input', function() {
+            // Temporarily remove the blur listener to prevent recursion
+            this.removeEventListener('blur', validateTraditionalDeceasedStreet);
+            
+            // Clean the input
+            validateTraditionalDeceasedStreet(this);
+            
+            // Reattach the blur listener
+            this.addEventListener('blur', function() {
+                validateTraditionalDeceasedStreet(this);
+            });
+        });
+    }
+});
 
 // Apply name validation to relevant fields
 document.getElementById('traditionalDeceasedFirstName').addEventListener('blur', function() {
