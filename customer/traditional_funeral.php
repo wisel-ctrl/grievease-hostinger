@@ -159,6 +159,7 @@ require_once '../db_connect.php'; // Database connection
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Hedvig+Letters+Serif:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="../tailwind.js"></script>
     <style>
         .modal {
@@ -1562,6 +1563,422 @@ require_once '../db_connect.php'; // Database connection
         </div>
     </div>
 </div>
+
+<script>
+// Name validation functions
+function validateNameInput(input) {
+    // Remove any numbers or symbols
+    let value = input.value.replace(/[^a-zA-Z\s'-]/g, '');
+    
+    // Remove leading spaces
+    value = value.replace(/^\s+/, '');
+    
+    // Capitalize first letter of each word
+    value = value.toLowerCase().replace(/\b\w/g, function(char) {
+        return char.toUpperCase();
+    });
+    
+    // Prevent multiple spaces
+    value = value.replace(/\s{2,}/g, ' ');
+    
+    // Update the input value
+    input.value = value;
+}
+
+// Street address validation
+function validateTraditionalDeceasedStreet(input) {
+    // Remove any leading spaces
+    let value = input.value.replace(/^\s+/, '');
+    
+    // Remove multiple consecutive spaces
+    value = value.replace(/\s{2,}/g, ' ');
+    
+    // Capitalize first letter of the string if it exists
+    if (value.length > 0) {
+        value = value.charAt(0).toUpperCase() + value.slice(1);
+    }
+    
+    // Update both the visible input and hidden field
+    input.value = value;
+    document.getElementById('deceasedAddress').value = value;
+}
+
+// Reference number validation
+function validateTraditionalReferenceNumber(input) {
+    // Remove any non-digit characters
+    let value = input.value.replace(/[^0-9]/g, '');
+    
+    // Update the input value
+    input.value = value;
+}
+
+// Apply name validation to relevant fields
+document.getElementById('traditionalDeceasedFirstName').addEventListener('blur', function() {
+    validateNameInput(this);
+});
+
+document.getElementById('traditionalDeceasedMiddleName').addEventListener('blur', function() {
+    validateNameInput(this);
+});
+
+document.getElementById('traditionalDeceasedLastName').addEventListener('blur', function() {
+    validateNameInput(this);
+});
+
+// Apply street validation
+document.getElementById('traditionalDeceasedStreet').addEventListener('blur', function() {
+    validateTraditionalDeceasedStreet(this);
+});
+
+// Apply reference number validation
+document.getElementById('traditionalReferenceNumber').addEventListener('input', function() {
+    validateTraditionalReferenceNumber(this);
+});
+
+// Date validations
+const today = new Date();
+const todayFormatted = today.toISOString().split('T')[0];
+document.getElementById('traditionalDateOfBirth').max = todayFormatted;
+document.getElementById('traditionalDateOfDeath').max = todayFormatted;
+
+// Set min date for date of burial to tomorrow
+const tomorrow = new Date(today);
+tomorrow.setDate(tomorrow.getDate() + 1);
+const tomorrowFormatted = tomorrow.toISOString().split('T')[0];
+document.getElementById('traditionalDateOfBurial').min = tomorrowFormatted;
+
+// Validate date of birth is before date of death
+document.getElementById('traditionalDateOfBirth').addEventListener('change', function() {
+    const dob = this.value;
+    const dod = document.getElementById('traditionalDateOfDeath').value;
+    
+    if (dob && dod && dob > dod) {
+        alert('Date of birth must be before date of death');
+        this.value = '';
+    }
+});
+
+// Validate date of death is after date of birth and before date of burial
+document.getElementById('traditionalDateOfDeath').addEventListener('change', function() {
+    const dod = this.value;
+    const dob = document.getElementById('traditionalDateOfBirth').value;
+    const dobInput = document.getElementById('traditionalDateOfBirth');
+    
+    if (dob && dod < dob) {
+        alert('Date of death must be after date of birth');
+        this.value = '';
+        return;
+    }
+    
+    const burialDate = document.getElementById('traditionalDateOfBurial').value;
+    if (burialDate && dod > burialDate) {
+        alert('Date of death must be before date of burial');
+        this.value = '';
+    }
+});
+
+// Validate date of burial is after date of death
+document.getElementById('traditionalDateOfBurial').addEventListener('change', function() {
+    const burialDate = this.value;
+    const dod = document.getElementById('traditionalDateOfDeath').value;
+    
+    if (dod && burialDate < dod) {
+        alert('Date of burial must be after date of death');
+        this.value = '';
+    }
+});
+
+// Address dropdown functionality
+// Fetch regions via AJAX
+fetch('address/get_regions.php')
+    .then(response => response.json())
+    .then(data => {
+        const regionDropdown = document.getElementById('traditionalDeceasedRegion');
+        regionDropdown.innerHTML = '<option value="">Select Region</option>';
+        data.forEach(region => {
+            regionDropdown.innerHTML += `<option value="${region.region_id}">${region.region_name}</option>`;
+        });
+    });
+
+// Update provinces based on selected region
+function updateTraditionalProvinces() {
+    const regionId = document.getElementById('traditionalDeceasedRegion').value;
+    const provinceDropdown = document.getElementById('traditionalDeceasedProvince');
+    
+    if (!regionId) {
+        provinceDropdown.disabled = true;
+        document.getElementById('traditionalDeceasedCity').disabled = true;
+        document.getElementById('traditionalDeceasedBarangay').disabled = true;
+        return;
+    }
+    
+    fetch('address/get_provinces.php?region_id=' + regionId)
+        .then(response => response.json())
+        .then(data => {
+            provinceDropdown.innerHTML = '<option value="">Select Province</option>';
+            data.forEach(province => {
+                provinceDropdown.innerHTML += `<option value="${province.province_id}">${province.province_name}</option>`;
+            });
+            provinceDropdown.disabled = false;
+            
+            // Reset dependent dropdowns
+            document.getElementById('traditionalDeceasedCity').innerHTML = '<option value="">Select City/Municipality</option>';
+            document.getElementById('traditionalDeceasedCity').disabled = true;
+            document.getElementById('traditionalDeceasedBarangay').innerHTML = '<option value="">Select Barangay</option>';
+            document.getElementById('traditionalDeceasedBarangay').disabled = true;
+        });
+}
+
+// Update cities based on selected province
+function updateTraditionalCities() {
+    const provinceId = document.getElementById('traditionalDeceasedProvince').value;
+    const cityDropdown = document.getElementById('traditionalDeceasedCity');
+    
+    if (!provinceId) {
+        cityDropdown.disabled = true;
+        document.getElementById('traditionalDeceasedBarangay').disabled = true;
+        return;
+    }
+    
+    fetch('address/get_cities.php?province_id=' + provinceId)
+        .then(response => response.json())
+        .then(data => {
+            cityDropdown.innerHTML = '<option value="">Select City/Municipality</option>';
+            data.forEach(city => {
+                cityDropdown.innerHTML += `<option value="${city.municipality_id}">${city.municipality_name}</option>`;
+            });
+            cityDropdown.disabled = false;
+            
+            // Reset dependent dropdown
+            document.getElementById('traditionalDeceasedBarangay').innerHTML = '<option value="">Select Barangay</option>';
+            document.getElementById('traditionalDeceasedBarangay').disabled = true;
+        });
+}
+
+// Update barangays based on selected city
+function updateTraditionalBarangays() {
+    const cityId = document.getElementById('traditionalDeceasedCity').value;
+    const barangayDropdown = document.getElementById('traditionalDeceasedBarangay');
+    
+    if (!cityId) {
+        barangayDropdown.disabled = true;
+        return;
+    }
+    
+    fetch('address/get_barangays.php?city_id=' + cityId)
+        .then(response => response.json())
+        .then(data => {
+            barangayDropdown.innerHTML = '<option value="">Select Barangay</option>';
+            data.forEach(barangay => {
+                barangayDropdown.innerHTML += `<option value="${barangay.barangay_id}">${barangay.barangay_name}</option>`;
+            });
+            barangayDropdown.disabled = false;
+        });
+}
+
+// Initialize event listeners for address fields
+document.getElementById('traditionalDeceasedRegion').addEventListener('change', updateTraditionalProvinces);
+document.getElementById('traditionalDeceasedProvince').addEventListener('change', updateTraditionalCities);
+document.getElementById('traditionalDeceasedCity').addEventListener('change', updateTraditionalBarangays);
+
+// File upload handlers
+// Death Certificate Upload Handler
+document.getElementById('traditionalDeathCertificate').addEventListener('change', function() {
+    const file = this.files[0];
+    if (!file) {
+        hideDeathCertPreview();
+        return;
+    }
+
+    // Check if the file is an image
+    if (!file.type.match('image.*')) {
+        Swal.fire({
+            title: 'Invalid File Type',
+            text: 'Please upload an image file (JPG, JPEG, PNG).',
+            icon: 'error',
+            confirmButtonColor: '#d97706'
+        });
+        this.value = '';
+        return;
+    }
+
+    // Update file name display
+    const fileName = file.name;
+    document.getElementById('traditionalDeathCertFileName').textContent = fileName.length > 20 ? 
+        fileName.substring(0, 17) + '...' : fileName;
+
+    // Show preview container
+    const previewContainer = document.getElementById('deathCertPreviewContainer');
+    previewContainer.classList.remove('hidden');
+
+    // Show remove button
+    document.getElementById('removeDeathCert').classList.remove('hidden');
+
+    // Image Preview
+    document.getElementById('deathCertImagePreview').classList.remove('hidden');
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        document.getElementById('deathCertImage').src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+});
+
+// GCash Receipt Upload Handler
+document.getElementById('traditionalGcashReceipt').addEventListener('change', function() {
+    const file = this.files[0];
+    if (!file) {
+        hideGcashPreview();
+        return;
+    }
+
+    // Check if the file is an image
+    if (!file.type.match('image.*')) {
+        Swal.fire({
+            title: 'Invalid File Type',
+            text: 'Please upload an image file (JPG, JPEG, PNG).',
+            icon: 'error',
+            confirmButtonColor: '#d97706'
+        });
+        this.value = '';
+        return;
+    }
+    
+    // Update file name display
+    const fileName = file.name;
+    document.getElementById('traditionalGcashFileName').textContent = fileName.length > 20 ? 
+        fileName.substring(0, 17) + '...' : fileName;
+    
+    // Show preview container
+    document.getElementById('gcashPreviewContainer').classList.remove('hidden');
+    
+    // Show remove button
+    document.getElementById('removeGcash').classList.remove('hidden');
+    
+    // Image Preview
+    document.getElementById('gcashImagePreview').classList.remove('hidden');
+    
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        document.getElementById('gcashImage').src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+});
+
+// Helper functions to hide previews
+function hideDeathCertPreview() {
+    document.getElementById('deathCertPreviewContainer').classList.add('hidden');
+    document.getElementById('deathCertImagePreview').classList.add('hidden');
+    document.getElementById('removeDeathCert').classList.add('hidden');
+    document.getElementById('traditionalDeathCertificate').value = '';
+    document.getElementById('traditionalDeathCertFileName').textContent = 'No file chosen';
+}
+
+function hideGcashPreview() {
+    document.getElementById('gcashPreviewContainer').classList.add('hidden');
+    document.getElementById('gcashImagePreview').classList.add('hidden');
+    document.getElementById('removeGcash').classList.add('hidden');
+    document.getElementById('traditionalGcashReceipt').value = '';
+    document.getElementById('traditionalGcashFileName').textContent = 'No file chosen';
+}
+
+// Remove button functionality
+document.getElementById('removeDeathCert').addEventListener('click', hideDeathCertPreview);
+document.getElementById('removeGcash').addEventListener('click', hideGcashPreview);
+
+// Form submission handler
+document.getElementById('traditionalBookingForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const formElement = this;
+
+    Swal.fire({
+        title: 'Confirm Booking',
+        text: 'Are you sure you want to proceed with this booking?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#d97706',
+        cancelButtonColor: '#6b7280',
+        confirmButtonText: 'Yes, book now',
+        cancelButtonText: 'Cancel'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Show loading indicator
+            Swal.fire({
+                title: 'Processing Booking',
+                html: 'Please wait while we process your booking...',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+            
+            fetch('booking/booking.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                Swal.close();
+                
+                if (data.success) {
+                    // Close modal and reset form
+                    document.getElementById('traditionalModal').classList.add('hidden');
+                    formElement.reset();
+                    
+                    // Show success notification
+                    Swal.fire({
+                        title: 'Success!',
+                        text: 'Booking submitted successfully!',
+                        icon: 'success',
+                        confirmButtonColor: '#d97706'
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Error',
+                        text: data.message || 'An error occurred. Please try again.',
+                        icon: 'error',
+                        confirmButtonColor: '#d97706'
+                    });
+                }
+            })
+            .catch(error => {
+                Swal.close();
+                console.error('Error:', error);
+                Swal.fire({
+                    title: 'Error',
+                    text: 'An error occurred. Please try again.',
+                    icon: 'error',
+                    confirmButtonColor: '#d97706'
+                });
+            });
+        }
+    });
+});
+
+// QR Code functionality
+const showQrCodeBtn = document.getElementById('showQrCodeBtn');
+const qrCodeModal = document.getElementById('qrCodeModal');
+const closeQrModal = document.getElementById('closeQrModal');
+const qrCodeAmount = document.getElementById('qrCodeAmount');
+
+showQrCodeBtn.addEventListener('click', function() {
+    const amountDue = document.getElementById('traditionalAmountDue').textContent;
+    qrCodeAmount.textContent = 'Amount: ' + amountDue;
+    qrCodeModal.classList.remove('hidden');
+});
+
+closeQrModal.addEventListener('click', function() {
+    qrCodeModal.classList.add('hidden');
+});
+
+qrCodeModal.addEventListener('click', function(e) {
+    if (e.target === qrCodeModal) {
+        qrCodeModal.classList.add('hidden');
+    }
+});
+</script>
 
 
 <!-- Footer -->
