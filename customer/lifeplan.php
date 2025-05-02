@@ -388,7 +388,7 @@ require_once '../db_connect.php'; // Database connection
                     <div class="w-16 h-16 bg-yellow-600/90 rotate-45 transform origin-bottom-left"></div>
                 </div>
             </div>
-            <div class="p-6 flex flex-col">
+            <div class=" flex flex-col">
                 <div class="text-center mb-4">
                     <span class="text-3xl font-hedvig text-navy">5-Year Payment Option</span>
                     <p class="text-dark mt-2">Total Package Price ÷ 60 Months</p>
