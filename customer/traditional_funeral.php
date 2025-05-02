@@ -1617,26 +1617,25 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-// Street Address Validation
-function validateStreetAddress(input) {
-    if (!input) return;
-    
-    // Get current value and trim whitespace
+
+
+// Enhanced street validation function
+function validateTraditionalDeceasedStreet(input) {
+    // Remove any leading/trailing spaces
     let value = input.value.trim();
     
-    // Remove extra spaces between words
-    value = value.replace(/\s+/g, ' ');
+    // Remove multiple consecutive spaces
+    value = value.replace(/\s{2,}/g, ' ');
     
-    // Capitalize first letter of each word
-    value = value.replace(/\b\w/g, char => char.toUpperCase());
+    // Capitalize first letter of the string
+    if (value.length > 0) {
+        value = value.charAt(0).toUpperCase() + value.slice(1);
+    }
     
-    // Update both visible and hidden fields
+    // Update both the visible input and hidden field
     input.value = value;
     document.getElementById('deceasedAddress').value = value;
-    
-    return value;
 }
-
 
 // Prevent invalid characters in name fields
 function preventInvalidNameChars(e) {
@@ -1656,70 +1655,43 @@ nameFields.forEach(fieldId => {
     }
 });
 
-// Prevent invalid characters from being entered
-function restrictStreetAddressInput(e) {
-    // Allow: letters, numbers, spaces, hyphens, commas, periods, #
-    const allowedChars = /^[a-zA-Z0-9\s\-,.#]+$/;
-    
-    // Get the pressed key
+// Prevent invalid characters in street field
+function preventInvalidStreetChars(e) {
     const char = String.fromCharCode(e.keyCode || e.which);
-    
-    // Allow special keys like backspace, delete, arrows
-    if ([8, 9, 13, 27, 37, 38, 39, 40].includes(e.keyCode)) {
-        return;
-    }
-    
-    // Prevent if character is not allowed
-    if (!allowedChars.test(char)) {
+    // Allow letters, numbers, spaces, and common address characters
+    if (!/^[a-zA-Z0-9\s\-#,.]$/.test(char)) {
         e.preventDefault();
         return false;
     }
+    return true;
 }
 
-// Initialize validation when DOM is loaded
+const streetField = document.getElementById('traditionalDeceasedStreet');
+if (streetField) {
+    streetField.addEventListener('keypress', preventInvalidStreetChars);
+}
+
+// Apply street validation
 document.addEventListener('DOMContentLoaded', function() {
     const streetField = document.getElementById('traditionalDeceasedStreet');
-    
     if (streetField) {
-        // Validate on blur (when leaving the field)
         streetField.addEventListener('blur', function() {
-            validateStreetAddress(this);
+            validateTraditionalDeceasedStreet(this);
         });
         
-        // Validate as user types (with slight delay for better UX)
-        let typingTimer;
+        // Also validate on input for better UX
         streetField.addEventListener('input', function() {
-            clearTimeout(typingTimer);
-            typingTimer = setTimeout(() => {
-                validateStreetAddress(this);
-            }, 500); // 0.5 second delay after typing stops
-        });
-        
-        // Prevent invalid characters from being typed
-        streetField.addEventListener('keypress', restrictStreetAddressInput);
-        
-        // Also validate when form is submitted
-        const form = document.getElementById('traditionalBookingForm');
-        if (form) {
-            form.addEventListener('submit', function(e) {
-                const isValid = validateStreetAddress(streetField);
-                if (!isValid || streetField.value.trim() === '') {
-                    e.preventDefault();
-                    // Add visual feedback
-                    streetField.classList.add('border-red-500');
-                    streetField.focus();
-                    
-                    // Show error message
-                    let errorElement = streetField.nextElementSibling;
-                    if (!errorElement || !errorElement.classList.contains('error-message')) {
-                        errorElement = document.createElement('p');
-                        errorElement.className = 'error-message text-red-500 text-xs mt-1';
-                        errorElement.textContent = 'Please enter a valid street address';
-                        streetField.parentNode.insertBefore(errorElement, streetField.nextSibling);
-                    }
-                }
+            // Temporarily remove the blur listener to prevent recursion
+            this.removeEventListener('blur', validateTraditionalDeceasedStreet);
+            
+            // Clean the input
+            validateTraditionalDeceasedStreet(this);
+            
+            // Reattach the blur listener
+            this.addEventListener('blur', function() {
+                validateTraditionalDeceasedStreet(this);
             });
-        }
+        });
     }
 });
 
