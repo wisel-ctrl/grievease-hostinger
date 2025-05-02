@@ -298,19 +298,19 @@ $offset = ($current_page - 1) * $bookings_per_page;
                     <?php
                     // Query to get booking data with joins and pagination
                     $query = "SELECT b.booking_id, b.booking_date, b.status, 
-        CONCAT(u.first_name, ' ', COALESCE(u.middle_name, ''), ' ', u.last_name, ' ', COALESCE(u.suffix, '')) AS customer_name,
-        s.service_name
-        FROM booking_tb b
-        JOIN users u ON b.customerID = u.id
-        JOIN services_tb s ON b.service_id = s.service_id
-        WHERE b.status = 'Pending'
-        ORDER BY b.booking_date DESC
-        LIMIT ?, ?";
+                    CONCAT(u.first_name, ' ', COALESCE(u.middle_name, ''), ' ', u.last_name, ' ', COALESCE(u.suffix, '')) AS customer_name,
+                    COALESCE(s.service_name, 'Custom Package') AS service_name
+                    FROM booking_tb b
+                    JOIN users u ON b.customerID = u.id
+                    LEFT JOIN services_tb s ON b.service_id = s.service_id
+                    WHERE b.status = 'Pending'
+                    ORDER BY b.booking_date DESC
+                    LIMIT ?, ?";
 
-$stmt = $conn->prepare($query);
-$stmt->bind_param("ii", $offset, $bookings_per_page);
-$stmt->execute();
-$result = $stmt->get_result();
+                    $stmt = $conn->prepare($query);
+                    $stmt->bind_param("ii", $offset, $bookings_per_page);
+                    $stmt->execute();
+                    $result = $stmt->get_result();
 
                     if ($result->num_rows > 0) {
                         while ($row = $result->fetch_assoc()) {
