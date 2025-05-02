@@ -1,3 +1,4 @@
+@ -1,1248 +1,1255 @@
 <?php
 
 session_start();
@@ -832,7 +833,6 @@ $offset = ($current_page - 1) * $bookings_per_page;
           console.error("Failed to load death certificate image:", deathCertPath);
           deathCertAvailable.classList.add('hidden');
           deathCertNotAvailable.classList.remove('hidden');
-        };
         
         deathCertImage.src = deathCertPath;
         deathCertAvailable.classList.remove('hidden');
