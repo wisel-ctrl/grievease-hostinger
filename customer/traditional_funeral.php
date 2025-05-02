@@ -157,8 +157,8 @@ require_once '../db_connect.php'; // Database connection
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Hedvig+Letters+Serif:wght@400;500&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Hedvig+Letters+Serif:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="../tailwind.js"></script>
     <style>
@@ -1169,7 +1169,8 @@ require_once '../db_connect.php'; // Database connection
                         </div>
                         
                         <!-- Address field -->
-                        <<div class="mb-3">
+                        <!-- Replace the current address field with this: -->
+<div class="mb-3">
     <label for="traditionalDeceasedAddress" class="block text-sm font-medium text-navy mb-1">Address of the Deceased</label>
     <div class="grid grid-cols-1 gap-3">
         <input type="text" id="traditionalDeceasedStreet" name="deceasedStreet" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" placeholder="Street Address" onblur="validateTraditionalDeceasedStreet(this)">
@@ -1193,6 +1194,8 @@ require_once '../db_connect.php'; // Database connection
         </div>
     </div>
 </div>
+                    </div>
+
                     <div class="border-b border-gray-200 pb-4 mb-4">
                         <h3 class="text-base md:text-lg font-hedvig text-navy mb-3 md:mb-4">Payment</h3>
 
@@ -1555,7 +1558,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
-
 <script>
 // Address dropdown functionality
 document.addEventListener('DOMContentLoaded', function() {
