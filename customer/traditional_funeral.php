@@ -1617,7 +1617,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-// Enhanced street validation function
+// Remove the duplicate function and keep this single implementation
 function validateTraditionalDeceasedStreet(input) {
     // Remove any leading/trailing spaces
     let value = input.value.trim();
@@ -1625,10 +1625,10 @@ function validateTraditionalDeceasedStreet(input) {
     // Remove multiple consecutive spaces
     value = value.replace(/\s{2,}/g, ' ');
     
-    // Capitalize first letter of the string
-    if (value.length > 0) {
-        value = value.charAt(0).toUpperCase() + value.slice(1);
-    }
+    // Capitalize first letter of each word
+    value = value.toLowerCase().replace(/\b\w/g, function(char) {
+        return char.toUpperCase();
+    });
     
     // Update both the visible input and hidden field
     input.value = value;
@@ -1673,6 +1673,7 @@ if (streetField) {
 document.addEventListener('DOMContentLoaded', function() {
     const streetField = document.getElementById('traditionalDeceasedStreet');
     if (streetField) {
+        // Initial validation on blur
         streetField.addEventListener('blur', function() {
             validateTraditionalDeceasedStreet(this);
         });
@@ -1689,6 +1690,17 @@ document.addEventListener('DOMContentLoaded', function() {
             this.addEventListener('blur', function() {
                 validateTraditionalDeceasedStreet(this);
             });
+        });
+        
+        // Prevent invalid characters
+        streetField.addEventListener('keypress', function(e) {
+            const char = String.fromCharCode(e.keyCode || e.which);
+            // Allow letters, numbers, spaces, and common address characters
+            if (!/^[a-zA-Z0-9\s\-#,.]$/.test(char)) {
+                e.preventDefault();
+                return false;
+            }
+            return true;
         });
     }
 });
