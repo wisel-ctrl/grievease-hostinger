@@ -1156,8 +1156,6 @@ require_once '../db_connect.php'; // Database connection
                                     <div id="deathCertImagePreview" class="hidden">
                                         <img id="deathCertImage" src="" alt="Death Certificate Preview" class="w-full h-auto max-h-48 object-contain">
                                     </div>
-                                    
-                                    
                                 </div>
                                 
                                 <!-- Remove Button -->
@@ -1272,7 +1270,6 @@ require_once '../db_connect.php'; // Database connection
                                     <div id="gcashImagePreview" class="hidden">
                                         <img id="gcashImage" src="" alt="GCash Receipt Preview" class="w-full h-auto max-h-48 object-contain">
                                     </div>
-                                    
                                 </div>
                                 
                                 <!-- Remove Button -->
@@ -1280,8 +1277,7 @@ require_once '../db_connect.php'; // Database connection
                                     <i class="fas fa-trash-alt mr-1"></i> Remove file
                                 </button>
                                 
-                                <!-- Traditional GCash Receipt Input -->
-<input type="file" id="traditionalGcashReceipt" name="gcashReceipt" accept=".jpg,.jpeg,.png" class="hidden">
+                                <input type="file" id="traditionalGcashReceipt" name="gcashReceipt" accept=".jpg,.jpeg,.png" class="hidden">
                             </div>
                             <p class="text-xs text-gray-500 mt-1">Accepted formats: JPG, JPEG, PNG</p>
                         </div>
