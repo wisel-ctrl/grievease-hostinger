@@ -1893,12 +1893,13 @@ document.getElementById('traditionalBookingForm').addEventListener('submit', fun
     const formData = new FormData(this);
     const formElement = this;
     const serviceId = document.getElementById('serviceID').value;
+    const branchId = document.getElementById('branchID').value; // Get branch_id
 
-    // Make sure service_id is included
-    if (!serviceId) {
+    // Make sure service_id and branch_id are included
+    if (!serviceId || !branchId) {
         Swal.fire({
             title: 'Error',
-            text: 'Service ID is missing. Please select a package again.',
+            text: 'Required fields are missing. Please try again.',
             icon: 'error',
             confirmButtonColor: '#d97706'
         });
@@ -1906,6 +1907,8 @@ document.getElementById('traditionalBookingForm').addEventListener('submit', fun
     }
 
     formData.append('service_id', serviceId);
+    formData.append('branch_id', branchId); // Add branch_id to form data
+
 
     Swal.fire({
         title: 'Confirm Booking',
