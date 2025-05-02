@@ -84,19 +84,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             // Insert or update user's ID image path in valid_id_tb table
             $upload_at = date('Y-m-d H:i:s');
-            
-            $query = "INSERT INTO valid_id_tb (id, image_path, upload_at) 
-                      VALUES (?, ?, ?) 
+    
+            $query = "INSERT INTO valid_id_tb (id, image_path, upload_at, is_validated, decline_reason, decline_at) 
+                      VALUES (?, ?, ?, 'no', NULL, NULL) 
                       ON DUPLICATE KEY UPDATE 
                           image_path = VALUES(image_path),
-                          upload_at = VALUES(upload_at)";
+                          upload_at = VALUES(upload_at),
+                          is_validated = 'no',
+                          decline_reason = NULL,
+                          decline_at = NULL";
             
             $stmt = $conn->prepare($query);
             $stmt->bind_param("iss", $user_id, $destination, $upload_at);
             $stmt->execute();
             $stmt->close();
             
-            $validated_id = 'yes';
+            $validated_id = 'no';
         }
         
         // Update user's basic information
