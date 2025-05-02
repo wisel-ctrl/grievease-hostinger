@@ -1446,7 +1446,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     casketOption.dataset.id = casket.inventory_id;
                     
                     casketOption.innerHTML = `
-                        <img src="${casket.inventory_img || '/api/placeholder/300/200'}" alt="${casket.item_name}" class="w-full h-32 object-cover rounded-lg mb-2">
+                        <img src="${casket.inventory_img ? '../admin/' + casket.inventory_img : '/api/placeholder/300/200'}" alt="${casket.item_name}" class="w-full h-32 object-cover rounded-lg mb-2">
                         <h5 class="font-medium mb-1">${casket.item_name}</h5>
                         <p class="text-yellow-600">₱${casket.price.toLocaleString()}</p>
                     `;
