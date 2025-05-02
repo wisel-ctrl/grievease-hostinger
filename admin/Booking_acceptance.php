@@ -431,6 +431,419 @@ $offset = ($current_page - 1) * $bookings_per_page;
         <?php endif; ?>
     </div>
 </div>
+
+<!-- Custom Bookings List -->
+<div id="custom-bookings" class="bg-white rounded-lg shadow-md mb-8 border border-sidebar-border overflow-hidden">
+    <!-- Header Section - Made responsive with better stacking -->
+    <div class="bg-sidebar-hover p-4 border-b border-sidebar-border">
+        <!-- Desktop layout for big screens - Title on left, controls on right -->
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+            <!-- Title and Counter -->
+            <div class="flex items-center gap-3 mb-4 lg:mb-0">
+                <h3 class="text-lg font-bold text-sidebar-text whitespace-nowrap">Custom Bookings</h3>
+                
+                <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
+                    <i class="fas fa-list-ul"></i>
+                    <span id="totalCustomBookings">0</span>
+                </span>
+            </div>
+            
+            <!-- Controls for big screens - aligned right -->
+            <div class="hidden lg:flex items-center gap-3">
+                <!-- Search Input -->
+                <div class="relative">
+                    <input type="text" id="customBookingSearchInput" 
+                           placeholder="Search custom bookings..." 
+                           class="pl-8 pr-3 py-2 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
+                    <i class="fas fa-search absolute left-2.5 top-3 text-gray-400"></i>
+                </div>
+
+                <!-- Status Dropdown Acting as Filter -->
+                <div class="relative filter-dropdown">
+                    <button id="customBookingFilterToggle" class="px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover">
+                        <i class="fas fa-filter text-sidebar-accent"></i>
+                        <span>Filters</span>
+                        <span id="customFilterIndicator" class="hidden h-2 w-2 bg-sidebar-accent rounded-full"></span>
+                    </button>
+                    
+                    <!-- Filter Options Dropdown -->
+                    <div id="customBookingFilterDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-2">
+                        <h5 class="text-sm font-medium text-sidebar-text mb-2">Sort By</h5>
+                        <div class="space-y-1">
+                            <div class="flex items-center cursor-pointer custom-filter-option" data-sort="id_asc">
+                                <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                                    ID: Ascending
+                                </span>
+                            </div>
+                            <div class="flex items-center cursor-pointer custom-filter-option" data-sort="id_desc">
+                                <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                                    ID: Descending
+                                </span>
+                            </div>
+                            <div class="flex items-center cursor-pointer custom-filter-option" data-sort="customer_asc">
+                                <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                                    Customer: A-Z
+                                </span>
+                            </div>
+                            <div class="flex items-center cursor-pointer custom-filter-option" data-sort="customer_desc">
+                                <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                                    Customer: Z-A
+                                </span>
+                            </div>
+                            <div class="flex items-center cursor-pointer custom-filter-option" data-sort="newest">
+                                <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                                    Newest First
+                                </span>
+                            </div>
+                            <div class="flex items-center cursor-pointer custom-filter-option" data-sort="oldest">
+                                <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                                    Oldest First
+                                </span>
+                            </div>
+                        </div>
+                    </div>      
+                </div>
+            </div>
+        
+            <!-- Mobile/Tablet Controls - Only visible on smaller screens -->
+            <div class="lg:hidden w-full mt-4">
+                <!-- First row: Search bar with filter and archive icons on the right -->
+                <div class="flex items-center w-full gap-3 mb-4">
+                    <!-- Search Input - Takes most of the space -->
+                    <div class="relative flex-grow">
+                        <input type="text" id="customBookingSearchInputMobile" 
+                               placeholder="Search custom bookings..." 
+                               class="pl-8 pr-3 py-2.5 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
+                        <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                    </div>
+
+                    <!-- Icon-only buttons for filter -->
+                    <div class="flex items-center gap-3">
+                        <!-- Filter Status Dropdown for Mobile -->
+                        <div class="relative filter-dropdown">
+                            <button id="customBookingFilterToggleMobile" class="w-10 h-10 flex items-center justify-center text-sidebar-accent">
+                                <i class="fas fa-filter text-xl"></i>
+                                <span id="customFilterIndicatorMobile" class="hidden absolute top-1 right-1 h-2 w-2 bg-sidebar-accent rounded-full"></span>
+                            </button>
+                            
+                            <!-- Filter Options Dropdown -->
+                            <div id="customBookingFilterDropdownMobile" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-2">
+                                <h5 class="text-sm font-medium text-sidebar-text mb-2">Sort By</h5>
+                                <div class="space-y-1">
+                                    <div class="flex items-center cursor-pointer custom-filter-option-mobile" data-sort="id_asc">
+                                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                                            ID: Ascending
+                                        </span>
+                                    </div>
+                                    <div class="flex items-center cursor-pointer custom-filter-option-mobile" data-sort="id_desc">
+                                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                                            ID: Descending
+                                        </span>
+                                    </div>
+                                    <div class="flex items-center cursor-pointer custom-filter-option-mobile" data-sort="customer_asc">
+                                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                                            Customer: A-Z
+                                        </span>
+                                    </div>
+                                    <div class="flex items-center cursor-pointer custom-filter-option-mobile" data-sort="customer_desc">
+                                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                                            Customer: Z-A
+                                        </span>
+                                    </div>
+                                    <div class="flex items-center cursor-pointer custom-filter-option-mobile" data-sort="newest">
+                                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                                            Newest First
+                                        </span>
+                                    </div>
+                                    <div class="flex items-center cursor-pointer custom-filter-option-mobile" data-sort="oldest">
+                                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                                            Oldest First
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>      
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Responsive Table Container with improved spacing -->
+    <div class="overflow-x-auto scrollbar-thin" id="customBookingTableContainer">
+        <div id="customLoadingIndicator" class="hidden absolute inset-0 bg-white bg-opacity-50 flex items-center justify-center">
+            <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-sidebar-accent"></div>
+        </div>
+        
+        <!-- Responsive Table with improved spacing and horizontal scroll for small screens -->
+        <div class="min-w-full">
+            <table class="w-full">
+                <thead>
+                    <tr class="bg-gray-50 border-b border-sidebar-border">
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortCustomTable('booking_id')">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fas fa-hashtag text-sidebar-accent"></i> Booking ID 
+                            </div>
+                        </th>
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortCustomTable('customer')">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fas fa-user text-sidebar-accent"></i> Customer 
+                            </div>
+                        </th>
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortCustomTable('package')">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fas fa-box text-sidebar-accent"></i> Package Details
+                            </div>
+                        </th>
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortCustomTable('date')">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fas fa-calendar text-sidebar-accent"></i> Date Requested 
+                            </div>
+                        </th>
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortCustomTable('status')">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fas fa-toggle-on text-sidebar-accent"></i> Status 
+                            </div>
+                        </th>
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text whitespace-nowrap">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fas fa-cogs text-sidebar-accent"></i> Actions
+                            </div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody id="customBookingTableBody">
+                    <!-- This section will be populated when you add your data -->
+                    <tr>
+                        <td colspan="6" class="px-4 py-6 text-sm text-center">
+                            <div class="flex flex-col items-center">
+                                <i class="fas fa-inbox text-gray-300 text-4xl mb-3"></i>
+                                <p class="text-gray-500">No custom bookings found</p>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <!-- Sticky Pagination Footer with improved spacing -->
+    <div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div id="customPaginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
+            No custom bookings found
+        </div>
+        <div id="customPaginationContainer" class="flex space-x-1">
+            <!-- Pagination will be added when there are records -->
+        </div>
+    </div>
+</div>
+
+<!-- LifePlan Bookings List -->
+<div id="lifeplan-bookings" class="bg-white rounded-lg shadow-md mb-8 border border-sidebar-border overflow-hidden">
+    <!-- Header Section - Made responsive with better stacking -->
+    <div class="bg-sidebar-hover p-4 border-b border-sidebar-border">
+        <!-- Desktop layout for big screens - Title on left, controls on right -->
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+            <!-- Title and Counter -->
+            <div class="flex items-center gap-3 mb-4 lg:mb-0">
+                <h3 class="text-lg font-bold text-sidebar-text whitespace-nowrap">LifePlan Bookings</h3>
+                
+                <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
+                    <i class="fas fa-list-ul"></i>
+                    <span id="totalLifeplanBookings">0</span>
+                </span>
+            </div>
+            
+            <!-- Controls for big screens - aligned right -->
+            <div class="hidden lg:flex items-center gap-3">
+                <!-- Search Input -->
+                <div class="relative">
+                    <input type="text" id="lifeplanBookingSearchInput" 
+                           placeholder="Search lifeplan bookings..." 
+                           class="pl-8 pr-3 py-2 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
+                    <i class="fas fa-search absolute left-2.5 top-3 text-gray-400"></i>
+                </div>
+
+                <!-- Status Dropdown Acting as Filter -->
+                <div class="relative filter-dropdown">
+                    <button id="lifeplanBookingFilterToggle" class="px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover">
+                        <i class="fas fa-filter text-sidebar-accent"></i>
+                        <span>Filters</span>
+                        <span id="lifeplanFilterIndicator" class="hidden h-2 w-2 bg-sidebar-accent rounded-full"></span>
+                    </button>
+                    
+                    <!-- Filter Options Dropdown -->
+                    <div id="lifeplanBookingFilterDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-2">
+                        <h5 class="text-sm font-medium text-sidebar-text mb-2">Sort By</h5>
+                        <div class="space-y-1">
+                            <div class="flex items-center cursor-pointer lifeplan-filter-option" data-sort="id_asc">
+                                <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                                    ID: Ascending
+                                </span>
+                            </div>
+                            <div class="flex items-center cursor-pointer lifeplan-filter-option" data-sort="id_desc">
+                                <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                                    ID: Descending
+                                </span>
+                            </div>
+                            <div class="flex items-center cursor-pointer lifeplan-filter-option" data-sort="customer_asc">
+                                <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                                    Customer: A-Z
+                                </span>
+                            </div>
+                            <div class="flex items-center cursor-pointer lifeplan-filter-option" data-sort="customer_desc">
+                                <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                                    Customer: Z-A
+                                </span>
+                            </div>
+                            <div class="flex items-center cursor-pointer lifeplan-filter-option" data-sort="newest">
+                                <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                                    Newest First
+                                </span>
+                            </div>
+                            <div class="flex items-center cursor-pointer lifeplan-filter-option" data-sort="oldest">
+                                <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                                    Oldest First
+                                </span>
+                            </div>
+                        </div>
+                    </div>      
+                </div>
+            </div>
+        
+            <!-- Mobile/Tablet Controls - Only visible on smaller screens -->
+            <div class="lg:hidden w-full mt-4">
+                <!-- First row: Search bar with filter and archive icons on the right -->
+                <div class="flex items-center w-full gap-3 mb-4">
+                    <!-- Search Input - Takes most of the space -->
+                    <div class="relative flex-grow">
+                        <input type="text" id="lifeplanBookingSearchInputMobile" 
+                               placeholder="Search lifeplan bookings..." 
+                               class="pl-8 pr-3 py-2.5 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
+                        <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                    </div>
+
+                    <!-- Icon-only buttons for filter -->
+                    <div class="flex items-center gap-3">
+                        <!-- Filter Status Dropdown for Mobile -->
+                        <div class="relative filter-dropdown">
+                            <button id="lifeplanBookingFilterToggleMobile" class="w-10 h-10 flex items-center justify-center text-sidebar-accent">
+                                <i class="fas fa-filter text-xl"></i>
+                                <span id="lifeplanFilterIndicatorMobile" class="hidden absolute top-1 right-1 h-2 w-2 bg-sidebar-accent rounded-full"></span>
+                            </button>
+                            
+                            <!-- Filter Options Dropdown -->
+                            <div id="lifeplanBookingFilterDropdownMobile" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-2">
+                                <h5 class="text-sm font-medium text-sidebar-text mb-2">Sort By</h5>
+                                <div class="space-y-1">
+                                    <div class="flex items-center cursor-pointer lifeplan-filter-option-mobile" data-sort="id_asc">
+                                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                                            ID: Ascending
+                                        </span>
+                                    </div>
+                                    <div class="flex items-center cursor-pointer lifeplan-filter-option-mobile" data-sort="id_desc">
+                                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                                            ID: Descending
+                                        </span>
+                                    </div>
+                                    <div class="flex items-center cursor-pointer lifeplan-filter-option-mobile" data-sort="customer_asc">
+                                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                                            Customer: A-Z
+                                        </span>
+                                    </div>
+                                    <div class="flex items-center cursor-pointer lifeplan-filter-option-mobile" data-sort="customer_desc">
+                                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                                            Customer: Z-A
+                                        </span>
+                                    </div>
+                                    <div class="flex items-center cursor-pointer lifeplan-filter-option-mobile" data-sort="newest">
+                                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                                            Newest First
+                                        </span>
+                                    </div>
+                                    <div class="flex items-center cursor-pointer lifeplan-filter-option-mobile" data-sort="oldest">
+                                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                                            Oldest First
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>      
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Responsive Table Container with improved spacing -->
+    <div class="overflow-x-auto scrollbar-thin" id="lifeplanBookingTableContainer">
+        <div id="lifeplanLoadingIndicator" class="hidden absolute inset-0 bg-white bg-opacity-50 flex items-center justify-center">
+            <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-sidebar-accent"></div>
+        </div>
+        
+        <!-- Responsive Table with improved spacing and horizontal scroll for small screens -->
+        <div class="min-w-full">
+            <table class="w-full">
+                <thead>
+                    <tr class="bg-gray-50 border-b border-sidebar-border">
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortLifeplanTable('booking_id')">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fas fa-hashtag text-sidebar-accent"></i> Booking ID 
+                            </div>
+                        </th>
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortLifeplanTable('customer')">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fas fa-user text-sidebar-accent"></i> Customer 
+                            </div>
+                        </th>
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortLifeplanTable('plan_type')">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fas fa-heart text-sidebar-accent"></i> Plan Type
+                            </div>
+                        </th>
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortLifeplanTable('date')">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fas fa-calendar text-sidebar-accent"></i> Date Requested 
+                            </div>
+                        </th>
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortLifeplanTable('status')">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fas fa-toggle-on text-sidebar-accent"></i> Status 
+                            </div>
+                        </th>
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text whitespace-nowrap">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fas fa-cogs text-sidebar-accent"></i> Actions
+                            </div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody id="lifeplanBookingTableBody">
+                    <!-- This section will be populated when you add your data -->
+                    <tr>
+                        <td colspan="6" class="px-4 py-6 text-sm text-center">
+                            <div class="flex flex-col items-center">
+                                <i class="fas fa-inbox text-gray-300 text-4xl mb-3"></i>
+                                <p class="text-gray-500">No lifeplan bookings found</p>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <!-- Sticky Pagination Footer with improved spacing -->
+    <div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div id="lifeplanPaginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
+            No lifeplan bookings found
+        </div>
+        <div id="lifeplanPaginationContainer" class="flex space-x-1">
+            <!-- Pagination will be added when there are records -->
+        </div>
+    </div>
+</div>
+
 </div>
  
 
