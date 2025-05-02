@@ -291,7 +291,7 @@ $booking_icon_class = 'text-gray-400';
 $booking_bg_class = 'bg-gray-200';
 $booking_message = 'You haven\'t made any service bookings yet.';
 $booking_link_text = 'Book a Service';
-$booking_redirect_url = 'services.php'; // Default for no booking
+$booking_redirect_url = 'packages.php'; // Default for no booking
 
 if ($has_booking) {
     switch(strtolower($booking_data['status'])) {
