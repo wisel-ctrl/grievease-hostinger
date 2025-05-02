@@ -302,7 +302,7 @@ $offset = ($current_page - 1) * $bookings_per_page;
                     COALESCE(s.service_name, 'Custom Package') AS service_name
                     FROM booking_tb b
                     JOIN users u ON b.customerID = u.id
-                     JOIN services_tb s ON b.service_id = s.service_id
+                    JOIN services_tb s ON b.service_id = s.service_id
                     WHERE b.status = 'Pending'
                     ORDER BY b.booking_date DESC
                     LIMIT ?, ?";
