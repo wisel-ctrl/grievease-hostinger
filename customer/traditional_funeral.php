@@ -501,7 +501,7 @@ require_once '../db_connect.php'; // Database connection
         s.flower_design, 
         s.inclusions, 
         s.selling_price, 
-        s.image_url
+        REPLACE(s.image_url, 'uploads/services/', '../admin/servicesManagement/uploads/services/') as image_url
     FROM services_tb s
     JOIN inventory_tb i ON s.casket_id = i.inventory_id
     WHERE s.branch_id = 2 AND s.status = 'active'
