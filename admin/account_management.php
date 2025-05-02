@@ -826,6 +826,8 @@ document.getElementById("customerPhone").addEventListener("input", function (e) 
 
     // Function to validate name input
     function validateNameInput(field) {
+        if (!field || !field.value) return '';
+        
         // First, remove any invalid characters
         let newValue = field.value.replace(/[^a-zA-Z\s'-]/g, '');
         
@@ -851,6 +853,8 @@ document.getElementById("customerPhone").addEventListener("input", function (e) 
                 return firstLetter.toUpperCase();
             });
         }
+        
+        return field.value;
     }
 
     // Function to apply validation to a field
@@ -1394,6 +1398,91 @@ function checkCustomerPhoneAvailability() {
     
     xhr.send('phoneNumber=' + encodeURIComponent(phone));
   });
+}
+
+function validateFirstName() {
+    const firstName = document.getElementById('firstName');
+    const errorElement = document.getElementById('firstNameError');
+    
+    if (!firstName.value || firstName.value.length < 2) {
+        errorElement.textContent = 'Please enter at least 2 characters';
+        errorElement.classList.remove('hidden');
+        return false;
+    }
+    
+    errorElement.classList.add('hidden');
+    return true;
+}
+
+function validateMiddleName() {
+    // Middle name is optional, so validation always passes
+    return true;
+}
+
+function validateLastName() {
+    const lastName = document.getElementById('lastName');
+    const errorElement = document.getElementById('lastNameError');
+    
+    if (!lastName.value || lastName.value.length < 2) {
+        errorElement.textContent = 'Please enter at least 2 characters';
+        errorElement.classList.remove('hidden');
+        return false;
+    }
+    
+    errorElement.classList.add('hidden');
+    return true;
+}
+
+function validateBirthdate() {
+    const birthdateField = document.getElementById('birthdate');
+    const errorElement = document.getElementById('birthdateError');
+    
+    if (!birthdateField.value) {
+        errorElement.textContent = 'Birthdate is required';
+        errorElement.classList.remove('hidden');
+        return false;
+    }
+    
+    const selectedDate = new Date(birthdateField.value);
+    const today = new Date();
+    const minBirthdate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
+    
+    if (selectedDate > minBirthdate) {
+        errorElement.textContent = 'Customer must be at least 18 years old';
+        errorElement.classList.remove('hidden');
+        return false;
+    }
+    
+    errorElement.classList.add('hidden');
+    return true;
+}
+
+function validateEmail() {
+    const emailField = document.getElementById('customerEmail');
+    const errorElement = document.getElementById('emailError');
+    
+    if (!emailField.value || !emailField.value.includes('@')) {
+        errorElement.textContent = 'Please enter a valid email address';
+        errorElement.classList.remove('hidden');
+        return false;
+    }
+    
+    errorElement.classList.add('hidden');
+    return true;
+}
+
+function validatePhoneNumber() {
+    const phoneField = document.getElementById('customerPhone');
+    const errorElement = document.getElementById('phoneError');
+    
+    if (!phoneField.value || !phoneField.value.startsWith('09') || phoneField.value.length !== 11) {
+        errorElement.textContent = 'Philippine number must start with 09 and be 11 digits';
+        errorElement.classList.remove('hidden');
+        return false;
+    }
+    
+    errorElement.classList.add('hidden');
+    return true;
 }
 
 // Form submission function
@@ -3587,6 +3676,7 @@ function closeAddEmployeeAccountModal() {
           <div class="relative">
             <input type="email" id="employeeEmail" name="email" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="Email" required>
           </div>
+          <p id="empEmailError" class="text-red-500 text-xs mt-1 hidden"></p>
         </div>
         
         <div>
@@ -3596,6 +3686,7 @@ function closeAddEmployeeAccountModal() {
           <div class="relative">
             <input type="tel" id="employeePhone" name="phoneNumber" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="Phone Number" required>
           </div>
+          <p id="empPhoneError" class="text-red-500 text-xs mt-1 hidden"></p>
         </div>
         
         <div>
@@ -3731,8 +3822,9 @@ document.addEventListener('DOMContentLoaded', function() {
         'empLastName'
     ];
 
-    // Function to validate name input
     function validateNameInput(field) {
+        if (!field || !field.value) return '';
+        
         // First, remove any invalid characters
         let newValue = field.value.replace(/[^a-zA-Z\s'-]/g, '');
         
@@ -3758,8 +3850,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 return firstLetter.toUpperCase();
             });
         }
+        
+        return field.value;
     }
-
     // Function to apply validation to a field
     function applyNameValidation(field) {
         if (field) {
@@ -4259,9 +4352,111 @@ function checkPhoneAvailability() {
   });
 }
 
+// Employee validation functions
+function validateEmpFirstName() {
+    const firstName = document.getElementById('empFirstName');
+    const errorElement = document.getElementById('empFirstNameError');
+    
+    if (!firstName.value || firstName.value.length < 2) {
+        errorElement.textContent = 'Please enter at least 2 characters';
+        errorElement.classList.remove('hidden');
+        return false;
+    }
+    
+    errorElement.classList.add('hidden');
+    return true;
+}
 
+function validateEmpMiddleName() {
+    // Middle name is optional, so validation always passes
+    return true;
+}
+
+function validateEmpLastName() {
+    const lastName = document.getElementById('empLastName');
+    const errorElement = document.getElementById('empLastNameError');
+    
+    if (!lastName.value || lastName.value.length < 2) {
+        errorElement.textContent = 'Please enter at least 2 characters';
+        errorElement.classList.remove('hidden');
+        return false;
+    }
+    
+    errorElement.classList.add('hidden');
+    return true;
+}
+
+function validateEmpBirthdate() {
+    const birthdateField = document.getElementById('empBirthdate');
+    const errorElement = document.getElementById('empBirthdateError');
+    
+    if (!birthdateField.value) {
+        errorElement.textContent = 'Birthdate is required';
+        errorElement.classList.remove('hidden');
+        return false;
+    }
+    
+    const selectedDate = new Date(birthdateField.value);
+    const today = new Date();
+    const minBirthdate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
+    
+    if (selectedDate > minBirthdate) {
+        errorElement.textContent = 'Employee must be at least 18 years old';
+        errorElement.classList.remove('hidden');
+        return false;
+    }
+    
+    errorElement.classList.add('hidden');
+    return true;
+}
+
+function validateEmpEmail() {
+    const emailField = document.getElementById('employeeEmail');
+    const errorElement = document.getElementById('empEmailError');
+    
+    // Add null checks
+    if (!emailField || !errorElement) {
+        console.error("Email validation elements not found");
+        return false;
+    }
+    
+    if (!emailField.value || !emailField.value.includes('@')) {
+        errorElement.textContent = 'Please enter a valid email address';
+        errorElement.classList.remove('hidden');
+        return false;
+    }
+    
+    errorElement.classList.add('hidden');
+    return true;
+}
+
+function validateEmpPhoneNumber() {
+    const phoneField = document.getElementById('employeePhone');
+    const errorElement = document.getElementById('empPhoneError');
+    
+    // Add null checks
+    if (!phoneField || !errorElement) {
+        console.error("Phone validation elements not found");
+        return false;
+    }
+    
+    if (!phoneField.value || !phoneField.value.startsWith('09') || phoneField.value.length !== 11) {
+        errorElement.textContent = 'Philippine number must start with 09 and be 11 digits';
+        errorElement.classList.remove('hidden');
+        return false;
+    }
+    
+    errorElement.classList.add('hidden');
+    return true;
+}
 // Modify your existing submitEmployeeForm function to use OTP verification
 function submitEmployeeForm() {
+    
+    console.log("Checking if elements exist:");
+    console.log("employeeEmail:", document.getElementById('employeeEmail'));
+    console.log("empEmailError:", document.getElementById('empEmailError'));
+    console.log("employeePhone:", document.getElementById('employeePhone'));
+    console.log("empPhoneError:", document.getElementById('empPhoneError'));
   // Validate all fields
   const isValid = validateEmpFirstName() && 
                   validateEmpMiddleName() && 
@@ -4529,5 +4724,6 @@ function togglePassword() {
   <script src="script.js"></script>
   <script src="tailwind.js"></script>
 
+  
 </body>
 </html>
