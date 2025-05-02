@@ -391,7 +391,7 @@ require_once '../db_connect.php'; // Database connection
             <div class="py-7 px-5 flex flex-col">
                 <div class="text-center mb-4">
                     <span class="text-3xl font-hedvig text-navy">5-Year Payment Option</span>
-                    <p class="text-dark mt-2">Total Package Price ÷ 60 Months</p>
+                    <p class="text-dark mt-2">Total Package Price by 60 Months</p>
                 </div>
                 <ul class="space-y-2 mb-4">
                     <li class="flex items-start">
