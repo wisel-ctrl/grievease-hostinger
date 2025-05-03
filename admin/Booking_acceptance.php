@@ -416,6 +416,20 @@ $custom_offset = ($custom_current_page - 1) * $custom_bookings_per_page;
 <!-- Sticky Pagination Footer with improved spacing -->
 <div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
     <div id="paginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
+    <?php 
+        // Get the number of bookings on the current page
+        $current_page_bookings = $result->num_rows;
+
+        if ($total_bookings > 0) {
+            $start = $offset + 1;
+            $end = $offset + $result->num_rows;
+        
+            echo "Showing {$start} - {$end} of {$total_bookings} bookings";
+        } else {
+            echo "No bookings found";
+        }
+        ?>
+
         Showing <?php echo ($current_page - 1) * $per_page + 1; ?> - <?php echo min($current_page * $per_page, $total_items); ?> of <?php echo $total_items; ?> items
     </div>
     <div id="paginationContainer"class="flex space-x-2">
