@@ -1001,7 +1001,7 @@ $offset = ($current_page - 1) * $bookings_per_page;
           <!-- Deceased Information -->
           <div class="bg-white rounded-lg p-4 sm:p-5 border border-gray-200 shadow-sm">
             <h4 class="font-semibold text-gray-800 mb-3 sm:mb-4 flex items-center">
-              <i class="fas fa-angel mr-2 text-sidebar-accent"></i>
+              <i class="fas fa-note-sticky mr-2 text-sidebar-accent"></i>
               Deceased Information
             </h4>
             <div class="space-y-2 sm:space-y-3">
