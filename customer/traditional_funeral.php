@@ -1634,19 +1634,52 @@ if (dodField) {
     const provinceField = document.getElementById('traditionalDeceasedProvince');
     const cityField = document.getElementById('traditionalDeceasedCity');
     const barangayField = document.getElementById('traditionalDeceasedBarangay');
-    const streetField = document.getElementById('traditionalDeceasedStreet');
-    
-    if (streetField) {
-        streetField.addEventListener('input', function() {
-            // Remove multiple spaces
-            this.value = this.value.replace(/\s{2,}/g, ' ').trim();
-            
-            // Capitalize first letter of each word
-            this.value = this.value.toLowerCase().replace(/(^|\s)([a-z])/g, function(match) {
-                return match.toUpperCase();
-            });
+    // Street address validation
+const streetField = document.getElementById('traditionalDeceasedStreet');
+if (streetField) {
+    streetField.addEventListener('input', function() {
+        let value = this.value;
+        
+        // If the input is just a space and we don't have at least 2 characters yet, prevent it
+        if (value.endsWith(' ') && value.trim().length < 2) {
+            this.value = value.trim(); // Remove the space
+            return;
+        }
+        
+        // Remove multiple spaces
+        value = value.replace(/\s{2,}/g, ' ').trim();
+        
+        // Capitalize first letter of each word
+        this.value = value.toLowerCase().replace(/(^|\s)([a-z])/g, function(match) {
+            return match.toUpperCase();
         });
-    }
+    });
+    
+    // Handle paste event to prevent unwanted spaces
+    streetField.addEventListener('paste', function(e) {
+        e.preventDefault();
+        let pastedText = (e.clipboardData || window.clipboardData).getData('text');
+        
+        // Clean the pasted text
+        pastedText = pastedText.replace(/\s{2,}/g, ' ').trim();
+        
+        // If pasted text starts with space and we don't have content yet, remove it
+        if (pastedText.startsWith(' ') && this.value.length < 2) {
+            pastedText = pastedText.trim();
+        }
+        
+        // Insert at cursor position
+        const startPos = this.selectionStart;
+        const endPos = this.selectionEnd;
+        this.value = this.value.substring(0, startPos) + pastedText + this.value.substring(endPos);
+        
+        // Move cursor to end of inserted text
+        this.selectionStart = this.selectionEnd = startPos + pastedText.length;
+        
+        // Trigger input event to apply formatting
+        this.dispatchEvent(new Event('input'));
+    });
+}
     
     // Cascading dropdowns for address
     if (regionField) {
