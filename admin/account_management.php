@@ -411,26 +411,6 @@ document.addEventListener('DOMContentLoaded', function() {
     function createPaginationButtons() {
     paginationContainer.innerHTML = ''; // Clear existing buttons
     
-    // Add pagination info div if it doesn't exist
-    let paginationInfo = document.getElementById('paginationInfo');
-    if (!paginationInfo) {
-        paginationInfo = document.createElement('div');
-        paginationInfo.id = 'paginationInfo';
-        paginationInfo.className = 'text-sm text-gray-500 text-center sm:text-left';
-        
-        // Insert before pagination container
-        paginationContainer.parentNode.insertBefore(paginationInfo, paginationContainer);
-    }
-    
-    // Update pagination info text
-    if (totalItems > 0) {
-        const start = (currentPage - 1) * itemsPerPage + 1;
-        const end = Math.min(totalItems, currentPage * itemsPerPage);
-        paginationInfo.textContent = `Showing ${start} - ${end} of ${totalItems} accounts`;
-    } else {
-        paginationInfo.textContent = "No accounts found";
-    }
-    
     if (totalPages > 1) {
         // First page button (double arrow)
         const firstButton = document.createElement('a');
