@@ -13,7 +13,7 @@ if ($branchId <= 0 || $page <= 0) {
 
 // Set items per page
 $itemsPerPage = 5;
-$totalPages = ceil($totalItems / $itemsPerPage);
+$startItem = ($page - 1) * $itemsPerPage;
 
 // Query to get total items count for this branch
 $countSql = "SELECT COUNT(*) as total FROM inventory_tb WHERE branch_id = ? AND status = 1";
