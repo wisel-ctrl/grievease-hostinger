@@ -1292,7 +1292,7 @@ require_once '../db_connect.php'; // Database connection
         <div class="modal-scroll-container overflow-y-auto max-h-[80vh]">
             <div class="bg-cream p-8">
                 <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-3xl font-hedvig text-navy">Custom Memorial Package</h2>
+                    <h2 class="text-2xl font-hedvig text-navy">Custom Memorial Package</h2>
                     <button class="closeModalBtn text-gray-500 hover:text-navy">
                         <i class="fas fa-times text-2xl"></i>
                     </button>
