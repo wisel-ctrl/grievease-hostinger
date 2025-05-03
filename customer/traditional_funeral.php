@@ -157,6 +157,12 @@ require_once '../db_connect.php'; // Database connection
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Required CSS for Pikaday -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/pikaday/1.8.2/css/pikaday.min.css" rel="stylesheet">
+
+<!-- Required JS for Pikaday -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pikaday/1.8.2/pikaday.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Hedvig+Letters+Serif:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="../tailwind.js"></script>
@@ -1095,15 +1101,32 @@ require_once '../db_connect.php'; // Database connection
                         <div class="grid grid-cols-3 gap-4">
                             <div>
                                 <label for="traditionalDateOfBirth" class="block text-sm font-medium text-navy mb-2">Date of Birth</label>
-                                <input type="date" id="traditionalDateOfBirth" name="dateOfBirth" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                                <input 
+        type="text" 
+        id="traditionalDateOfBirth" 
+        name="dateOfBirth" 
+        readonly
+        class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600"
+    >
                             </div>
                             <div>
                                 <label for="traditionalDateOfDeath" class="block text-sm font-medium text-navy mb-2">Date of Death <span class="text-red-500">*</label>
-                                <input type="date" id="traditionalDateOfDeath" name="dateOfDeath" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                                <input 
+        type="text" 
+        id="traditionalDateOfDeath" 
+        name="dateOfDeath" 
+        readonly
+        required 
+        class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                             </div>
                             <div>
                                 <label for="traditionalDateOfBurial" class="block text-sm font-medium text-navy mb-2">Date of Burial</label>
-                                <input type="date" id="traditionalDateOfBurial" name="dateOfBurial" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                                <input 
+        type="text" 
+        id="traditionalDateOfBurial" 
+        name="dateOfBurial" 
+        readonly
+        class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                             </div>
                         </div>
 
@@ -2795,6 +2818,85 @@ document.addEventListener('DOMContentLoaded', function() {
     const mobileMenu = document.getElementById('mobile-menu');
     mobileMenu.classList.toggle('hidden');
     }
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Custom CSS for Pikaday
+    const style = document.createElement('style');
+    style.textContent = `
+        .pika-single {
+            font-family: 'Hedvig Letters Serif', serif;
+            border-radius: 0.5rem;
+            box-shadow: 0 10px 25px rgb(0, 0, 0);
+            border: 1px solid rgb(110, 110, 110);
+            padding: 0.5rem;
+        }
+        .pika-title {
+            padding: 0.25rem;
+            text-align: center;
+        }
+        .pika-label {
+            font-size: 1rem;
+            font-weight: bold;
+            color: #1E1E1E;
+        }
+        .pika-button {
+            border-radius: 0.25rem !important;
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+        .pika-button:hover {
+            background: #F1F5F9 !important;
+            color: rgb(0, 0, 0) !important;
+            box-shadow: none !important;
+        }
+        .is-selected .pika-button {
+            background: #C98522 !important;
+            box-shadow: none !important;
+            color: #fff !important;
+        }
+        .is-today .pika-button {
+            color: #C98522;
+            font-weight: bold;
+        }
+        .pika-prev, .pika-next {
+            background-color: #F1F5F9;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+        }
+    `;
+    document.head.appendChild(style);
+
+    // Initialize Pikaday for all date inputs
+    const dateInputs = [
+        { id: 'traditionalDateOfBirth', maxDate: new Date() },
+        { id: 'traditionalDateOfDeath', maxDate: new Date() },
+        { id: 'traditionalDateOfBurial', minDate: new Date(new Date().setDate(new Date().getDate() + 1)) }
+    ];
+
+    dateInputs.forEach(inputConfig => {
+        const input = document.getElementById(inputConfig.id);
+        if (input) {
+            const picker = new Pikaday({
+                field: input,
+                format: 'YYYY-MM-DD',
+                maxDate: inputConfig.maxDate || null,
+                minDate: inputConfig.minDate || null,
+                yearRange: [1900, new Date().getFullYear()],
+                theme: 'custom-theme',
+                bound: true
+            });
+
+            // Add calendar icon
+            const icon = document.createElement('span');
+            icon.className = 'absolute right-2 top-1/2 transform -translate-y-1/2 text-yellow-600 text-sm';
+            icon.innerHTML = '<i class="fas fa-calendar-alt"></i>';
+            input.parentNode.appendChild(icon);
+        }
+    });
+});
 </script>
 
 
