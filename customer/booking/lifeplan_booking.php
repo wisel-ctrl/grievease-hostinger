@@ -40,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ]));
         
         $phone = $_POST['contactNumber'];
-        $with_cremate = isset($_POST['with_cremate']) ? 'yes' : 'no';
+        $with_cremate = isset($_POST['cremationOption']) ? 'yes' : 'no';
         $reference_code = $_POST['referenceNumber'];
         
         // Process payment receipt
