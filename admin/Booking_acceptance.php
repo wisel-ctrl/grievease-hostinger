@@ -61,7 +61,7 @@ header("Pragma: no-cache");
 
 // Set pagination variables
 // Set pagination variables
-$bookings_per_page = 10; // This is already set correctly
+$bookings_per_page = 5; // This is already set correctly
 $current_page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 if ($current_page < 1) $current_page = 1;
 
