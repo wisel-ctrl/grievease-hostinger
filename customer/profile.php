@@ -183,6 +183,25 @@ input[name*="MiddleName"],
 input[name*="LastName"] {
     text-transform: capitalize;
 }
+
+/* Add to your existing styles */
+#documentModal {
+    transition: opacity 0.3s ease;
+}
+
+#documentImage {
+    max-height: calc(100vh - 200px);
+}
+
+#documentPdf {
+    height: calc(100vh - 200px);
+    border: none;
+}
+
+#documentUnsupported {
+    max-width: 500px;
+    margin: 0 auto;
+}
         .modal {
             transition: opacity 0.3s ease-in-out;
             pointer-events: none;
@@ -2039,6 +2058,40 @@ document.addEventListener('DOMContentLoaded', function() {
   </div>
 </div>
 
+<!-- View Document Modal -->
+<div id="documentModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70 p-4 hidden">
+    <div class="bg-white rounded-lg w-full max-w-4xl max-h-[90vh] overflow-hidden">
+        <div class="p-4 border-b border-gray-200 flex justify-between items-center">
+            <h3 id="documentModalTitle" class="text-lg font-semibold">Document</h3>
+            <button onclick="closeDocumentModal()" class="text-gray-500 hover:text-gray-700">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="p-4 max-h-[80vh] overflow-auto">
+            <!-- For images -->
+            <img id="documentImage" src="" alt="Document" class="max-w-full max-h-[70vh] mx-auto hidden">
+            
+            <!-- For PDFs -->
+            <iframe id="documentPdf" src="" class="w-full h-[70vh] hidden"></iframe>
+            
+            <!-- For unsupported formats -->
+            <div id="documentUnsupported" class="hidden text-center p-8">
+                <i class="fas fa-file-exclamation text-5xl text-yellow-500 mb-4"></i>
+                <p class="text-lg font-medium">This document format cannot be previewed</p>
+                <p class="text-gray-600 mt-2">You can download the file to view it</p>
+                <button onclick="downloadDocument()" class="mt-4 bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded">
+                    <i class="fas fa-download mr-2"></i> Download Document
+                </button>
+            </div>
+        </div>
+        <div class="p-4 border-t border-gray-200 flex justify-end">
+            <button onclick="closeDocumentModal()" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded">
+                Close
+            </button>
+        </div>
+    </div>
+</div>
+
 <!-- Modify Booking Modal -->
 <div id="modifyBookingModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4 hidden backdrop-blur-sm">
   <!-- Modal Content -->
@@ -2332,6 +2385,64 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
+// Global variables to track current document
+let currentDocumentUrl = '';
+let currentDocumentType = '';
+
+function openDocumentModal(type, url) {
+    currentDocumentUrl = url;
+    currentDocumentType = type;
+    
+    // Set modal title based on document type
+    const title = type === 'death_cert' ? 'Death Certificate' : 'Payment Proof';
+    document.getElementById('documentModalTitle').textContent = title;
+    
+    // Hide all content initially
+    document.getElementById('documentImage').classList.add('hidden');
+    document.getElementById('documentPdf').classList.add('hidden');
+    document.getElementById('documentUnsupported').classList.add('hidden');
+    
+    if (!url) {
+        // No document available
+        document.getElementById('documentUnsupported').classList.remove('hidden');
+        document.getElementById('documentUnsupported').innerHTML = `
+            <i class="fas fa-file-exclamation text-5xl text-yellow-500 mb-4"></i>
+            <p class="text-lg font-medium">No document uploaded</p>
+        `;
+    } else if (url.toLowerCase().endsWith('.pdf')) {
+        // Show PDF
+        document.getElementById('documentPdf').src = url;
+        document.getElementById('documentPdf').classList.remove('hidden');
+    } else if (url.match(/\.(jpeg|jpg|gif|png)$/i)) {
+        // Show image
+        document.getElementById('documentImage').src = url;
+        document.getElementById('documentImage').classList.remove('hidden');
+    } else {
+        // Unsupported format
+        document.getElementById('documentUnsupported').classList.remove('hidden');
+    }
+    
+    document.getElementById('documentModal').classList.remove('hidden');
+}
+
+function closeDocumentModal() {
+    document.getElementById('documentModal').classList.add('hidden');
+    // Clear PDF src to stop loading
+    document.getElementById('documentPdf').src = '';
+}
+
+function downloadDocument() {
+    if (currentDocumentUrl) {
+        const link = document.createElement('a');
+        link.href = currentDocumentUrl;
+        link.download = currentDocumentType === 'death_cert' ? 'death_certificate' : 'payment_proof';
+        link.target = '_blank';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+}
 </script>
 
 <!-- Cancel Booking Modal -->
@@ -2678,15 +2789,32 @@ document.addEventListener('DOMContentLoaded', function() {
     let currentDocumentType = '';
     let currentDocumentUrl = '';
     
-    viewDeathCertBtn.addEventListener('click', function() {
-        currentDocumentType = 'death_cert';
-        showDocument('Death Certificate', currentDocumentUrl);
-    });
-    
-    viewPaymentBtn.addEventListener('click', function() {
-        currentDocumentType = 'payment_proof';
-        showDocument('Payment Proof', currentDocumentUrl);
-    });
+    // In your fetchBookingDetails function, update the button event handlers:
+viewDeathCertBtn.addEventListener('click', function() {
+    if (currentDeathCertUrl) {
+        openDocumentModal('death_cert', currentDeathCertUrl);
+    } else {
+        Swal.fire({
+            icon: 'info',
+            title: 'No Document',
+            text: 'No death certificate has been uploaded for this booking',
+            confirmButtonColor: '#d4a933'
+        });
+    }
+});
+
+viewPaymentBtn.addEventListener('click', function() {
+    if (currentPaymentUrl) {
+        openDocumentModal('payment_proof', currentPaymentUrl);
+    } else {
+        Swal.fire({
+            icon: 'info',
+            title: 'No Document',
+            text: 'No payment proof has been uploaded for this booking',
+            confirmButtonColor: '#d4a933'
+        });
+    }
+});
 
     // Close Modal Buttons
     const closeModalButtons = document.querySelectorAll('.close-modal');
