@@ -206,6 +206,45 @@ require_once '../db_connect.php'; // Database connection
         html {
         scroll-behavior: smooth;
     }
+
+    /* Mobile form adjustments */
+@media (max-width: 767px) {
+    .modal-scroll-container {
+        display: block;
+    }
+
+    .details-section, .form-section {
+        padding: 1rem;
+    }
+
+    /* Form input sizing */
+    input, select, textarea {
+        font-size: 16px !important; /* Prevent iOS zoom */
+    }
+
+    /* Stack form fields vertically */
+    .flex-wrap > div {
+        width: 100% !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        margin-bottom: 1rem;
+    }
+
+    /* Adjust button sizes */
+    button, .btn {
+        padding: 12px !important;
+    }
+
+    /* File upload areas */
+    .border-input-border {
+        padding: 12px;
+    }
+
+    /* Summary section */
+    .bg-cream {
+        padding: 1rem;
+    }
+}
     </style>
     <script>
         function toggleMenu() {
@@ -1616,37 +1655,54 @@ if (dodField) {
 }
 
     // Death certificate upload validation
+    // Mobile file upload handling
+document.addEventListener('DOMContentLoaded', function() {
+    // Death certificate upload
     const deathCertInput = document.getElementById('traditionalDeathCertificate');
+    const deathCertFileName = document.getElementById('traditionalDeathCertFileName');
+    
     if (deathCertInput) {
         deathCertInput.addEventListener('change', function() {
-            const file = this.files[0];
-            if (file) {
-                const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
-                if (!validTypes.includes(file.type)) {
-                    alert('Please upload a JPG, JPEG, or PNG file for the death certificate.');
-                    this.value = '';
-                    document.getElementById('traditionalDeathCertFileName').textContent = 'No file chosen';
-                    document.getElementById('deathCertPreviewContainer').classList.add('hidden');
-                    document.getElementById('removeDeathCert').classList.add('hidden');
-                } else {
-                    document.getElementById('traditionalDeathCertFileName').textContent = file.name;
-                    
-                    // Show preview for images
-                    if (file.type.startsWith('image/')) {
-                        const reader = new FileReader();
-                        reader.onload = function(e) {
-                            document.getElementById('deathCertImage').src = e.target.result;
-                            document.getElementById('deathCertImagePreview').classList.remove('hidden');
-                            document.getElementById('deathCertPreviewContainer').classList.remove('hidden');
-                        };
-                        reader.readAsDataURL(file);
-                    }
-                    
-                    document.getElementById('removeDeathCert').classList.remove('hidden');
+            if (this.files.length > 0) {
+                deathCertFileName.textContent = this.files[0].name;
+                // Show preview if image
+                if (this.files[0].type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        document.getElementById('deathCertImage').src = e.target.result;
+                        document.getElementById('deathCertImagePreview').classList.remove('hidden');
+                        document.getElementById('deathCertPreviewContainer').classList.remove('hidden');
+                    };
+                    reader.readAsDataURL(this.files[0]);
                 }
+                document.getElementById('removeDeathCert').classList.remove('hidden');
             }
         });
     }
+
+    // GCash receipt upload
+    const gcashInput = document.getElementById('traditionalGcashReceipt');
+    const gcashFileName = document.getElementById('traditionalGcashFileName');
+    
+    if (gcashInput) {
+        gcashInput.addEventListener('change', function() {
+            if (this.files.length > 0) {
+                gcashFileName.textContent = this.files[0].name;
+                // Show preview if image
+                if (this.files[0].type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        document.getElementById('gcashImage').src = e.target.result;
+                        document.getElementById('gcashImagePreview').classList.remove('hidden');
+                        document.getElementById('gcashPreviewContainer').classList.remove('hidden');
+                    };
+                    reader.readAsDataURL(this.files[0]);
+                }
+                document.getElementById('removeGcash').classList.remove('hidden');
+            }
+        });
+    }
+});
     
     // Remove death certificate button
     const removeDeathCert = document.getElementById('removeDeathCert');
@@ -1890,6 +1946,31 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 })
+
+
+// Mobile navigation between package details and booking form
+document.addEventListener('DOMContentLoaded', function() {
+    const continueBtn = document.getElementById('continueToFormBtn');
+    const backBtn = document.getElementById('backToDetailsBtn');
+    const detailsSection = document.querySelector('.details-section');
+    const formSection = document.querySelector('.form-section');
+
+    if (continueBtn && backBtn) {
+        continueBtn.addEventListener('click', function() {
+            detailsSection.classList.add('hidden');
+            formSection.classList.remove('hidden');
+            // Scroll to top of form
+            formSection.scrollIntoView({ behavior: 'smooth' });
+        });
+
+        backBtn.addEventListener('click', function() {
+            formSection.classList.add('hidden');
+            detailsSection.classList.remove('hidden');
+            // Scroll to top of details
+            detailsSection.scrollIntoView({ behavior: 'smooth' });
+        });
+    }
+});
 </script>
 
 
@@ -2536,6 +2617,83 @@ document.addEventListener('DOMContentLoaded', function() {
 
     document.getElementById('traditionalBookingForm').addEventListener('submit', function(e) {
         e.preventDefault();
+
+         // Show loading state
+    const submitBtn = this.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+    submitBtn.disabled = true;
+
+    // Handle form data
+    const formData = new FormData(this);
+
+    // Mobile-specific validation
+    if (window.innerWidth <= 767) {
+        // Check if required fields are filled
+        const requiredFields = this.querySelectorAll('[required]');
+        let isValid = true;
+        
+        requiredFields.forEach(field => {
+            if (!field.value.trim()) {
+                field.classList.add('border-red-500');
+                isValid = false;
+            } else {
+                field.classList.remove('border-red-500');
+            }
+        });
+
+        if (!isValid) {
+            alert('Please fill in all required fields');
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+            return;
+        }
+    }
+
+    // Submit form (AJAX example)
+    fetch('process_booking.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Show success message
+            showNotification('Booking submitted successfully!', 'success');
+            
+            // Close modal after delay
+            setTimeout(() => {
+                document.getElementById('traditionalModal').classList.add('hidden');
+                // Reset form
+                this.reset();
+                // Reset button
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }, 1500);
+        } else {
+            showNotification(data.message || 'Error submitting booking', 'error');
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+        }
+    })
+    .catch(error => {
+        showNotification('Network error. Please try again.', 'error');
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+    });
+});
+
+function showNotification(message, type) {
+    const notification = document.getElementById('notification');
+    notification.textContent = message;
+    notification.classList.remove('hidden', 'bg-red-500', 'bg-green-500');
+    notification.classList.add(type === 'success' ? 'bg-green-500' : 'bg-red-500');
+    
+    setTimeout(() => {
+        notification.classList.add('hidden');
+    }, 5000);
+}
+
 
         // Check if payment proof is uploaded
     const paymentProof = document.getElementById('traditionalGcashReceipt').files[0];
