@@ -71,6 +71,25 @@ header("Pragma: no-cache");
   <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    .modal-scroll-container {
+    scrollbar-width: thin;
+    scrollbar-color: #d4a933 #f5f5f5;
+}
+
+.modal-scroll-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.modal-scroll-container::-webkit-scrollbar-track {
+    background: #f5f5f5;
+}
+
+.modal-scroll-container::-webkit-scrollbar-thumb {
+    background-color: #d4a933;
+    border-radius: 6px;
+}
+  </style>
 
 </head>
 <body class="flex bg-gray-50">
@@ -610,6 +629,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <!-- Add Customer Account Modal -->
 <div id="addCustomerAccountModal" class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto">
+  <div class="modal-scroll-container overflow-y-auto max-h-[90vh]">
+
   <!-- Modal Backdrop -->
   <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
   
