@@ -1849,7 +1849,7 @@ document.addEventListener('DOMContentLoaded', function() {
           
           <!-- Confirm Password -->
           <div>
-            <label for="confirm-password" class="block text-sm font-medium text-navy mb-1 sm:mb-2">Confirm New Password*</label>
+            <label for="confirm-password" class="block text-sm font-medium text-navy mb-1 sm:mb-2">Confirm New Password<span class="text-red-500">*</span></label>
             <div class="relative">
               <input type="password" id="confirm-password" name="confirm-password" required class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base">
               <span class="password-toggle absolute right-3 sm:right-4 top-1/2 transform -translate-y-1/2 text-gray-600 cursor-pointer" data-target="confirm-password">
