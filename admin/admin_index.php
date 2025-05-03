@@ -993,7 +993,7 @@ foreach ($serviceData as $service => $branches) {
     </div>
   </div>
   
-  
+              </div>
 
 </div>
             
