@@ -1073,197 +1073,65 @@ require_once '../db_connect.php'; // Database connection
                                 <input type="text" id="traditionalDeceasedMiddleName" name="deceasedMiddleName" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                             </div>
                         </div>
-                        <!-- Last Name & Suffix (Side by side) -->
-                        <div class="flex flex-wrap -mx-2 mb-3">
-                            <div class="w-full sm:w-3/4 px-2 mb-3 sm:mb-0">
-                                <label for="traditionalDeceasedLastName" class="block text-sm font-medium text-navy mb-1">Last Name *</label>
-                                <input type="text" id="traditionalDeceasedLastName" name="deceasedLastName" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" pattern="[A-Za-z'-][A-Za-z'-]*( [A-Za-z'-]+)*" title="Please enter a valid name (letters only, no leading spaces, numbers or symbols)">
+                        <div class="grid grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label for="traditionalDeceasedLastName" class="block text-sm font-medium text-navy mb-2">Last Name *</label>
+                                <input type="text" id="traditionalDeceasedLastName" name="deceasedLastName" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                             </div>
-                            <div class="w-full sm:w-1/4 px-2">
-                                <label for="traditionalDeceasedSuffix" class="block text-sm font-medium text-navy mb-1">Suffix</label>
-                                <select id="traditionalDeceasedSuffix" name="deceasedSuffix" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
-                                    <option value="">None</option>
-                                    <option value="Jr.">Jr.</option>
-                                    <option value="Sr.">Sr.</option>
-                                    <option value="I">I</option>
-                                    <option value="II">II</option>
-                                    <option value="III">III</option>
-                                    <option value="IV">IV</option>
-                                    <option value="V">V</option>
-                                </select>
+                            <div>
+                                <label for="traditionalDeceasedSuffix" class="block text-sm font-medium text-navy mb-2">Suffix</label>
+                                <input type="text" id="traditionalDeceasedSuffix" name="deceasedSuffix" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                             </div>
                         </div>
-                        
-                        <!-- Date fields (Three in a row on larger screens, stacked on mobile) -->
-                        <div class="flex flex-wrap -mx-2 mb-3">
-                            <div class="w-full sm:w-1/3 px-2 mb-3 sm:mb-0">
-                                <label for="traditionalDateOfBirth" class="block text-sm font-medium text-navy mb-1">Date of Birth</label>
+                        <div class="grid grid-cols-3 gap-4">
+                            <div>
+                                <label for="traditionalDateOfBirth" class="block text-sm font-medium text-navy mb-2">Date of Birth</label>
                                 <input type="date" id="traditionalDateOfBirth" name="dateOfBirth" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                             </div>
-                            <div class="w-full sm:w-1/3 px-2 mb-3 sm:mb-0">
-                                <label for="traditionalDateOfDeath" class="block text-sm font-medium text-navy mb-1">Date of Death *</label>
+                            <div>
+                                <label for="traditionalDateOfDeath" class="block text-sm font-medium text-navy mb-2">Date of Death *</label>
                                 <input type="date" id="traditionalDateOfDeath" name="dateOfDeath" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                             </div>
-                            <div class="w-full sm:w-1/3 px-2">
-                                <label for="traditionalDateOfBurial" class="block text-sm font-medium text-navy mb-1">Date of Burial</label>
+                            <div>
+                                <label for="traditionalDateOfBurial" class="block text-sm font-medium text-navy mb-2">Date of Burial</label>
                                 <input type="date" id="traditionalDateOfBurial" name="dateOfBurial" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                             </div>
                         </div>
-
-                        <!-- Death Certificate Upload with Preview -->
-                        <div class="mb-4">
-                            <label for="traditionalDeathCertificate" class="block text-sm font-medium text-navy mb-1">Death Certificate</label>
-                            <div class="border border-input-border bg-white rounded-lg p-3 focus-within:ring-2 focus-within:ring-yellow-600">
-                                <!-- Upload Button and File Name -->
-                                <div class="flex items-center mb-2">
-                                    <label for="traditionalDeathCertificate" class="flex-1 cursor-pointer">
-                                        <div class="flex items-center justify-center py-2 px-3 bg-gray-50 rounded hover:bg-gray-100 transition">
-                                            <i class="fas fa-upload mr-2 text-gray-500"></i>
-                                            <span class="text-sm text-gray-600">Upload Certificate</span>
-                                        </div>
-                                    </label>
-                                    <span class="text-xs ml-2 text-gray-500" id="traditionalDeathCertFileName">No file chosen</span>
-                                </div>
-                                
-                                <!-- Preview Container -->
-                                <div id="deathCertPreviewContainer" class="hidden mt-2 rounded-lg overflow-hidden border border-gray-200">
-                                    <!-- Image Preview -->
-                                    <div id="deathCertImagePreview" class="hidden">
-                                        <img id="deathCertImage" src="" alt="Death Certificate Preview" class="w-full h-auto max-h-48 object-contain">
-                                    </div>
-                                    
-                                    
-                                </div>
-                                
-                                <!-- Remove Button -->
-                                <button type="button" id="removeDeathCert" class="text-xs text-red-600 hover:text-red-800 mt-2 hidden">
-                                    <i class="fas fa-trash-alt mr-1"></i> Remove file
-                                </button>
-                                
-                                <input type="file" id="traditionalDeathCertificate" name="deathCertificate" accept=".jpg,.jpeg,.png" class="hidden">
-                            </div>
-                            <p class="text-xs text-gray-500 mt-1">Accepted formats: JPG, JPEG, PNG</p>
+                        <div class="mt-4">
+                            <label for="traditionalDeathCertificate" class="block text-sm font-medium text-navy mb-2">Death Certificate</label>
+                            <input type="file" id="traditionalDeathCertificate" name="deathCertificate" accept=".pdf,.jpg,.jpeg,.png" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                         </div>
-                        
-                        <!-- Address (Improved UI with dropdowns in specified layout) -->
-                        <div class="flex flex-wrap -mx-2 mb-3">
-                            <div class="w-full sm:w-1/2 px-2 mb-3 sm:mb-0">
-                                <label for="traditionalDeceasedRegion" class="block text-sm font-medium text-navy mb-1">Region</label>
-                                <select id="traditionalDeceasedRegion" name="deceasedRegion" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
-                                    <option value="">Select Region</option>
-                                    <option value="NCR">National Capital Region (NCR)</option>
-                                    <option value="CAR">Cordillera Administrative Region (CAR)</option>
-                                    <option value="Region I">Ilocos Region (Region I)</option>
-                                    <!-- Add more regions as needed -->
-                                </select>
-                            </div>
-                            <div class="w-full sm:w-1/2 px-2">
-                                <label for="traditionalDeceasedProvince" class="block text-sm font-medium text-navy mb-1">Province</label>
-                                <select id="traditionalDeceasedProvince" name="deceasedProvince" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
-                                    <option value="">Select Province</option>
-                                    <!-- Provinces will be populated by JavaScript based on selected region -->
-                                </select>
-                            </div>
-                        </div>
-                        
-                        <div class="flex flex-wrap -mx-2 mb-3">
-                            <div class="w-full sm:w-1/2 px-2 mb-3 sm:mb-0">
-                                <label for="traditionalDeceasedCity" class="block text-sm font-medium text-navy mb-1">City/Municipality</label>
-                                <select id="traditionalDeceasedCity" name="deceasedCity" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
-                                    <option value="">Select City/Municipality</option>
-                                    <!-- Cities will be populated by JavaScript based on selected province -->
-                                </select>
-                            </div>
-                            <div class="w-full sm:w-1/2 px-2">
-                                <label for="traditionalDeceasedBarangay" class="block text-sm font-medium text-navy mb-1">Barangay</label>
-                                <select id="traditionalDeceasedBarangay" name="deceasedBarangay" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
-                                    <option value="">Select Barangay</option>
-                                    <!-- Barangays will be populated by JavaScript based on selected city -->
-                                </select>
-                            </div>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label for="traditionalDeceasedStreet" class="block text-sm font-medium text-navy mb-1">Street/Block/House Number</label>
-                            <input type="text" id="traditionalDeceasedStreet" name="deceasedStreet" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" placeholder="Enter detailed street address">
-                        </div>
-                        
-                        <input type="hidden" id="deceasedAddress" name="deceasedAddress">
-                        
-                        <div class="flex items-center mt-3 md:mt-4">
-                            <input type="checkbox" id="traditionalWithCremate" name="with_cremate" value="yes" class="h-4 w-4 text-yellow-600 focus:ring-yellow-500 border-gray-300 rounded">
-                            <label for="traditionalWithCremate" class="ml-2 block text-sm text-navy">
-                                Include cremation service
-                            </label>
+                        <div class="mt-4">
+                            <label for="traditionalDeceasedAddress" class="block text-sm font-medium text-navy mb-2">Address of the Deceased</label>
+                            <textarea id="traditionalDeceasedAddress" name="deceasedAddress" rows="3" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600"></textarea>
                         </div>
                     </div>
 
                     <div class="border-b border-gray-200 pb-4 mb-4">
-                        <h3 class="text-base md:text-lg font-hedvig text-navy mb-3 md:mb-4">Payment</h3>
+                        <h3 class="text-lg font-hedvig text-navy mb-4">Payment</h3>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label for="traditionalGcashReceipt" class="block text-sm font-medium text-navy mb-2">GCash Receipt *</label>
+                                <input type="file" id="traditionalGcashReceipt" name="gcashReceipt" accept=".pdf,.jpg,.jpeg,.png" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                            </div>
+                            <div>
+                                <label for="traditionalReferenceNumber" class="block text-sm font-medium text-navy mb-2">GCash Reference Number *</label>
+                                <input type="text" id="traditionalReferenceNumber" name="referenceNumber" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                            </div>
+                        </div>
+                    </div>
 
-                        <!-- QR Code Button and Modal -->
-                        <div class="mb-4">
-                            <button type="button" id="showQrCodeBtn" class="w-full bg-navy hover:bg-navy-600 text-white px-4 py-2 rounded-lg flex items-center justify-center transition-all duration-200">
-                                <i class="fas fa-qrcode mr-2"></i>
-                                <span>View GCash QR Code</span>
-                            </button>
-                        </div>
-                        
-                        <!-- QR Code Modal -->
-                        <div id="qrCodeModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
-                            <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-                                <div class="flex justify-between items-center mb-4">
-                                    <h3 class="text-lg font-hedvig text-navy">Scan to Pay</h3>
-                                    <button id="closeQrModal" class="text-gray-500 hover:text-navy">
-                                        <i class="fas fa-times text-xl"></i>
-                                    </button>
-                                </div>
-                                <div class="flex flex-col items-center justify-center">
-                                    <img id="qrCodeImage" src="..\image\gcashqrvjay.jpg" alt="Payment QR Code" class="w-64 h-64 object-contain mb-4">
-                                    <p class="text-center text-sm text-gray-600 mb-2">Scan this QR code with your GCash app to make payment</p>
-                                    <p class="text-center font-bold text-yellow-600" id="qrCodeAmount">Amount: ₱0</p>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- GCash Upload with Preview -->
-                        <div class="mb-4">
-                            <label for="traditionalGcashReceipt" class="block text-sm font-medium text-navy mb-1">Payment Proof</label>
-                            <div class="border border-input-border bg-white rounded-lg p-3 focus-within:ring-2 focus-within:ring-yellow-600">
-                                <!-- Upload Button and File Name -->
-                                <div class="flex items-center mb-2">
-                                    <label for="traditionalGcashReceipt" class="flex-1 cursor-pointer">
-                                        <div class="flex items-center justify-center py-2 px-3 bg-gray-50 rounded hover:bg-gray-100 transition">
-                                            <i class="fas fa-receipt mr-2 text-blue-500"></i>
-                                            <span class="text-sm text-gray-600">Upload Receipt</span>
-                                        </div>
-                                    </label>
-                                    <span class="text-xs ml-2 text-gray-500" id="traditionalGcashFileName">No file chosen</span>
-                                </div>
-                                
-                                <!-- Preview Container -->
-                                <div id="gcashPreviewContainer" class="hidden mt-2 rounded-lg overflow-hidden border border-gray-200">
-                                    <!-- Image Preview -->
-                                    <div id="gcashImagePreview" class="hidden">
-                                        <img id="gcashImage" src="" alt="GCash Receipt Preview" class="w-full h-auto max-h-48 object-contain">
-                                    </div>
-                                    
-                                </div>
-                                
-                                <!-- Remove Button -->
-                                <button type="button" id="removeGcash" class="text-xs text-red-600 hover:text-red-800 mt-2 hidden">
-                                    <i class="fas fa-trash-alt mr-1"></i> Remove file
-                                </button>
-                                
-                                <!-- Traditional GCash Receipt Input -->
-<input type="file" id="traditionalGcashReceipt" name="gcashReceipt" accept=".jpg,.jpeg,.png" class="hidden">
-                            </div>
-                            <p class="text-xs text-gray-500 mt-1">Accepted formats: JPG, JPEG, PNG</p>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label for="traditionalReferenceNumber" class="block text-sm font-medium text-navy mb-1">Reference Number *</label>
-                            <input type="text" id="traditionalReferenceNumber" name="referenceNumber" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" placeholder="e.g. 1234567890">
+                    <div class="border-b border-gray-200 pb-4 mb-4">
+                        <h3 class="text-lg font-hedvig text-navy mb-4">Additional Options</h3>
+                        <div class="flex items-start border rounded-lg p-4">
+                            <input type="checkbox" id="cremationCheckbox" name="cremation" value="40000" 
+                                class="traditional-addon h-5 w-5 text-yellow-600 rounded focus:ring-yellow-500 mt-1" 
+                                data-name="Cremation Service">
+                            <label for="cremationCheckbox" class="ml-3">
+                                <span class="block font-medium mb-1">Cremation Service</span>
+                                <span class="block text-sm text-gray-600 mb-1">Includes cremation and urn</span>
+                                <span class="text-yellow-600">₱40,000</span>
+                            </label>
                         </div>
                     </div>
 
