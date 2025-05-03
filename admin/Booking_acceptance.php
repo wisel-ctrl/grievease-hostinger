@@ -418,7 +418,7 @@ $custom_offset = ($custom_current_page - 1) * $custom_bookings_per_page;
     <div id="paginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
         Showing <?php echo ($current_page - 1) * $per_page + 1; ?> - <?php echo min($current_page * $per_page, $total_items); ?> of <?php echo $total_items; ?> items
     </div>
-    <div class="flex space-x-2">
+    <div id="paginationContainer"class="flex space-x-2">
         <?php if ($total_pages > 1): ?>
             <!-- First page button (double arrow) -->
             <a href="?page=1" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($current_page == 1) ? 'opacity-50 pointer-events-none' : ''; ?>">
