@@ -2530,48 +2530,66 @@ function populateReceipt(data) {
     }
 
     receiptContent.innerHTML = `
-    <div class="text-center mb-6">
-        <h2 class="text-3xl font-bold text-navy capitalize">${data.branch_name} Branch</h2>
-        <p class="text-yellow-600">Official Receipt</p>
-    </div>
-    
-    <div class="flex justify-between mb-6">
-        <div>
-            <p class="font-semibold mb-2 text-dark">${data.transaction_details_title || 'Transaction Details'}</p>
-            <p><strong>Receipt #:</strong> ${data.receipt_number || 'N/A'}</p>
-            <p><strong>Reference Code:</strong> ${data.reference_code || 'N/A'}</p>
-            <p><strong>Booking Date:</strong> ${formatDate(data.booking_date)}</p>
-            <p><strong>Accepted Date:</strong> ${formatDate(data.accepted_date)}</p>
+    <div class="bg-cream p-6 rounded-lg shadow-card max-w-lg mx-auto">
+        <!-- Header with elegant styling -->
+        <div class="text-center mb-6 border-b border-gold pb-4">
+            <h2 class="text-2xl font-bold capitalize font-cinzel text-primary">${data.branch_name} Branch</h2>
+            <p class="text-dark text-sm mt-1">Official Receipt</p>
         </div>
-        <div class="text-right">
-            <p><span class="text-success font-semibold">${data.status}</span></p>
+       
+        <!-- Receipt information with improved layout -->
+        <div class="flex justify-between mb-6">
+            <div class="space-y-1">
+                <p class="font-semibold mb-2 text-primary font-inter">Transaction Details</p>
+                <p class="text-sm"><span class="text-darkgold font-medium">Receipt #:</span> ${data.receipt_number || 'N/A'}</p>
+                <p class="text-sm"><span class="text-darkgold font-medium">Reference Code:</span> ${data.reference_code || 'N/A'}</p>
+                <p class="text-sm"><span class="text-darkgold font-medium">Booking Date:</span> ${formatDate(data.booking_date)}</p>
+                <p class="text-sm"><span class="text-darkgold font-medium">Accepted Date:</span> ${formatDate(data.accepted_date)}</p>
+            </div>
+            <div class="text-right">
+                <p class="inline-block px-3 py-1 rounded-full bg-success bg-opacity-10 text-success font-medium text-sm">${data.status}</p>
+            </div>
         </div>
-    </div>
-    
-    <div class="border-t border-b border-border py-4 mb-4 bg-cream shadow-card">
-        <h3 class="font-bold mb-2 text-navy">Service Details</h3>
-        <p><strong>Service:</strong> ${data.service_name}</p>
-        <p><strong>Total Amount:</strong> ₱<span class="text-darkgold">${parseFloat(data.selling_price).toFixed(2)}</span></p>
-        <p><strong>Amount Paid:</strong> ₱<span class="text-darkgold">${parseFloat(data.amount_paid || 0).toFixed(2)}</span></p>
-        <p><strong>Balance:</strong> ₱<span class="text-error">${(parseFloat(data.selling_price) - parseFloat(data.amount_paid || 0)).toFixed(2)}</span></p>
-    </div>
-    
-    <div class="border-t border-b border-border py-4 mb-4 bg-cream shadow-card">
-        <h3 class="font-bold mb-2 text-navy">Deceased Information</h3>
-        <p><strong>Name:</strong> ${deceasedName ? deceasedName.toLowerCase().replace(/\b\w/g, c => c.toUpperCase()) : ''}</p>
-        ${data.deceased_birth ? `<p><strong>Date of Birth:</strong> ${new Date(data.deceased_birth).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>` : ''}
-        ${data.deceased_dodeath ? `<p><strong>Date of Death:</strong> ${new Date(data.deceased_dodeath).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>` : ''}
-        ${data.deceased_dateOfBurial ? `<p><strong>Date of Burial:</strong> ${new Date(data.deceased_dateOfBurial).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>` : ''}        
-    </div>
-    
-    ${accepterInfo}
-    
-    <div class="text-center mt-8 text-sm text-gray-500">
-        <p>Thank you for your business!</p>
-        <p>For inquiries, please contact our branch.</p>
+       
+        <!-- Service details with enhanced visual separation -->
+        <div class="border border-border rounded-lg p-4 mb-4 bg-secondary bg-opacity-30">
+            <h3 class="font-bold mb-2 text-primary font-inter">Service Details</h3>
+            <div class="grid grid-cols-2 gap-2">
+                <p class="text-sm"><span class="text-darkgold font-medium">Service:</span> ${data.service_name}</p>
+                <p class="text-sm text-right font-medium">${data.service_name}</p>
+                <p class="text-sm"><span class="text-darkgold font-medium">Total Amount:</span></p>
+                <p class="text-sm text-right font-medium">₱${parseFloat(data.selling_price).toFixed(2)}</p>
+                <p class="text-sm"><span class="text-darkgold font-medium">Amount Paid:</span></p>
+                <p class="text-sm text-right font-medium">₱${parseFloat(data.amount_paid || 0).toFixed(2)}</p>
+                <p class="text-sm"><span class="text-darkgold font-medium">Balance:</span></p>
+                <p class="text-sm text-right font-medium text-primary">₱${(parseFloat(data.selling_price) - parseFloat(data.amount_paid || 0)).toFixed(2)}</p>
+            </div>
+        </div>
+       
+        <!-- Deceased information with better typography -->
+        <div class="border border-border rounded-lg p-4 mb-4 bg-secondary bg-opacity-30">
+            <h3 class="font-bold mb-2 text-primary font-inter">Deceased Information</h3>
+            <p class="text-sm"><span class="text-darkgold font-medium">Name:</span> ${deceasedName ? deceasedName.toLowerCase().replace(/\b\w/g, c => c.toUpperCase()) : ''}</p>
+            ${data.deceased_birth ? `<p class="text-sm"><span class="text-darkgold font-medium">Date of Birth:</span> ${new Date(data.deceased_birth).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>` : ''}
+            ${data.deceased_dodeath ? `<p class="text-sm"><span class="text-darkgold font-medium">Date of Death:</span> ${new Date(data.deceased_dodeath).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>` : ''}
+            ${data.deceased_dateOfBurial ? `<p class="text-sm"><span class="text-darkgold font-medium">Date of Burial:</span> ${new Date(data.deceased_dateOfBurial).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>` : ''}        
+        </div>
+       
+        <!-- Accepter information with consistent styling -->
+        ${accepterInfo ? `
+        <div class="border border-border rounded-lg p-4 mb-4 bg-secondary bg-opacity-30">
+            <h3 class="font-bold mb-2 text-primary font-inter">Accepter Information</h3>
+            ${accepterInfo}
+        </div>
+        ` : ''}
+       
+        <!-- Footer with branding -->
+        <div class="text-center mt-8 pt-4 border-t border-gold">
+            <p class="text-gold font-medium mb-1">Thank you for your business!</p>
+            <p class="text-sm text-primary">For inquiries, please contact our branch.</p>
+        </div>
     </div>
 `;
-
 }
 
     // Print receipt
