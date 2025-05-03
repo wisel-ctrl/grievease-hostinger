@@ -2193,9 +2193,6 @@ function hideLifeplanGcashPreview() {
 }
 
 
-
-
-
 // Mobile view navigation
 document.getElementById('continueToLifeplanFormBtn').addEventListener('click', function() {
     // Hide details section and show form section on mobile
@@ -2227,7 +2224,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const lifeplanFormSection = document.querySelector('#lifeplanModal .form-section');
     
     // Update your existing continue/back button handlers
-if (continueBtn && backBtn && detailsSection && formSection) {
+    if (continueBtn && backBtn && detailsSection && formSection) {
     continueBtn.addEventListener('click', function() {
         detailsSection.classList.add('hidden');
         formSection.classList.remove('hidden');
@@ -2240,26 +2237,26 @@ if (continueBtn && backBtn && detailsSection && formSection) {
         formSection.classList.remove('force-show');
         detailsSection.classList.remove('hidden');
     });
-}
+    }
 
     // Update your existing Lifeplan button handlers
-if (continueToLifeplanFormBtn && backToLifeplanDetailsBtn && lifeplanDetailsSection && lifeplanFormSection) {
-    continueToLifeplanFormBtn.addEventListener('click', function() {
-        lifeplanDetailsSection.classList.add('hidden');
-        lifeplanFormSection.classList.remove('hidden');
-        // Force show on mobile when navigating to form
-        lifeplanFormSection.classList.add('force-show');
-    });
-    
-    backToLifeplanDetailsBtn.addEventListener('click', function() {
-        lifeplanFormSection.classList.add('hidden');
-        lifeplanFormSection.classList.remove('force-show');
-        lifeplanDetailsSection.classList.remove('hidden');
-    });
-}
+    if (continueToLifeplanFormBtn && backToLifeplanDetailsBtn && lifeplanDetailsSection && lifeplanFormSection) {
+        continueToLifeplanFormBtn.addEventListener('click', function() {
+            lifeplanDetailsSection.classList.add('hidden');
+            lifeplanFormSection.classList.remove('hidden');
+            // Force show on mobile when navigating to form
+            lifeplanFormSection.classList.add('force-show');
+        });
+        
+        backToLifeplanDetailsBtn.addEventListener('click', function() {
+            lifeplanFormSection.classList.add('hidden');
+            lifeplanFormSection.classList.remove('force-show');
+            lifeplanDetailsSection.classList.remove('hidden');
+        });
+    }
     
     // Update your close modal handler
-document.querySelectorAll('.closeModalBtn').forEach(btn => {
+    document.querySelectorAll('.closeModalBtn').forEach(btn => {
     btn.addEventListener('click', function() {
         const traditionalModal = document.getElementById('traditionalModal');
         const lifeplanModal = document.getElementById('lifeplanModal');
@@ -2784,7 +2781,59 @@ document.getElementById('lifeplanServiceBtn').addEventListener('click', function
     formSection.classList.remove('force-show');
     
     // Initialize address fields
-    initializeLifeplanAddressFields();
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOM Content Loaded');
+        
+        // Load regions via AJAX
+        fetch('address/get_regions.php')
+            .then(response => {
+                console.log('Regions response status:', response.status);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Regions data:', data);
+                const regionDropdown = document.getElementById('lifeplanHolderRegion');
+                
+                // Check if dropdown exists
+                if (regionDropdown) {
+                    regionDropdown.innerHTML = '<option value="">Select Region</option>';
+                    data.forEach(region => {
+                        regionDropdown.innerHTML += `<option value="${region.region_id}">${region.region_name}</option>`;
+                    });
+                } else {
+                    console.error('lifeplanHolderRegion dropdown not found in the DOM');
+                }
+            })
+            .catch(error => {
+                console.error('Error loading regions:', error);
+            });
+        
+        // Set up event listeners
+        const regionElement = document.getElementById('lifeplanHolderRegion');
+        const provinceElement = document.getElementById('lifeplanHolderProvince');
+        const cityElement = document.getElementById('lifeplanHolderCity');
+        
+        if (regionElement) {
+            regionElement.addEventListener('change', updateLifeplanProvinces);
+        } else {
+            console.error('lifeplanHolderRegion element not found for event listener');
+        }
+        
+        if (provinceElement) {
+            provinceElement.addEventListener('change', updateLifeplanCities);
+        } else {
+            console.error('lifeplanHolderProvince element not found for event listener');
+        }
+        
+        if (cityElement) {
+            cityElement.addEventListener('change', updateLifeplanBarangays);
+        } else {
+            console.error('lifeplanHolderCity element not found for event listener');
+        }
+    });
     
     // Show the modal
     document.getElementById('lifeplanModal').classList.remove('hidden');
