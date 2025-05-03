@@ -493,7 +493,6 @@ $offset = ($current_page - 1) * $bookings_per_page;
     </div>
 </div>
 </div>
-          </div>
 
 <!-- Custom Bookings List -->
 <div id="custom-bookings" class="bg-white rounded-lg shadow-md mb-8 border border-sidebar-border overflow-hidden">
