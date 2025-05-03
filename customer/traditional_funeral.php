@@ -546,13 +546,13 @@ require_once '../db_connect.php'; // Database connection
                             <!-- Display Casket Name -->
                             <li class="flex items-start">
                                 <i class="fas fa-check-circle mr-2 text-yellow-600 mt-1 flex-shrink-0"></i>
-                                <span class="text-dark"><strong>Casket:</strong> <?php echo htmlspecialchars($package1['item_name']); ?></span>
+                                <span class="text-dark"><?php echo htmlspecialchars($package1['item_name']); ?></span>
                             </li>
                             
                             <!-- Display Flower Design -->
                             <li class="flex items-start">
                                 <i class="fas fa-check-circle mr-2 text-yellow-600 mt-1 flex-shrink-0"></i>
-                                <span class="text-dark"><strong>Flower Design:</strong> <?php echo htmlspecialchars($package1['flower_design']); ?></span>
+                                <span class="text-dark"><?php echo htmlspecialchars($package1['flower_design']); ?></span>
                             </li>
                             
                             <!-- Display Inclusions -->
@@ -603,13 +603,13 @@ require_once '../db_connect.php'; // Database connection
                             <!-- Display Casket Name -->
                             <li class="flex items-start">
                                 <i class="fas fa-check-circle mr-2 text-yellow-600 mt-1 flex-shrink-0"></i>
-                                <span class="text-dark"><strong>Casket:</strong> <?php echo htmlspecialchars($package2['item_name']); ?></span>
+                                <span class="text-dark"><?php echo htmlspecialchars($package2['item_name']); ?></span>
                             </li>
                             
                             <!-- Display Flower Design -->
                             <li class="flex items-start">
                                 <i class="fas fa-check-circle mr-2 text-yellow-600 mt-1 flex-shrink-0"></i>
-                                <span class="text-dark"><strong>Flower Design:</strong> <?php echo htmlspecialchars($package2['flower_design']); ?></span>
+                                <span class="text-dark"><?php echo htmlspecialchars($package2['flower_design']); ?></span>
                             </li>
                             
                             <!-- Display Inclusions -->
