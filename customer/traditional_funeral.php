@@ -1101,15 +1101,32 @@ require_once '../db_connect.php'; // Database connection
                         <div class="grid grid-cols-3 gap-4">
                             <div>
                                 <label for="traditionalDateOfBirth" class="block text-sm font-medium text-navy mb-2">Date of Birth</label>
-                                <input type="date" id="traditionalDateOfBirth" name="dateOfBirth" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                                <input 
+        type="text" 
+        id="traditionalDateOfBirth" 
+        name="dateOfBirth" 
+        readonly
+        class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600"
+    >
                             </div>
                             <div>
                                 <label for="traditionalDateOfDeath" class="block text-sm font-medium text-navy mb-2">Date of Death <span class="text-red-500">*</label>
-                                <input type="date" id="traditionalDateOfDeath" name="dateOfDeath" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                                <input 
+        type="text" 
+        id="traditionalDateOfDeath" 
+        name="dateOfDeath" 
+        readonly
+        required 
+        class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                             </div>
                             <div>
                                 <label for="traditionalDateOfBurial" class="block text-sm font-medium text-navy mb-2">Date of Burial</label>
-                                <input type="date" id="traditionalDateOfBurial" name="dateOfBurial" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                                <input 
+        type="text" 
+        id="traditionalDateOfBurial" 
+        name="dateOfBurial" 
+        readonly
+        class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                             </div>
                         </div>
 
