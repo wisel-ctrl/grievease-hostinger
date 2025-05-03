@@ -394,22 +394,6 @@ foreach ($serviceData as $service => $branches) {
   <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-
-  <style>
-.branch-card {
-    transition: all 0.3s ease;
-}
-
-.branch-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-}
-
-.branch-card.selected {
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
-}
-</style>
   
 </head>
 <body class="flex bg-gray-50">
@@ -543,7 +527,7 @@ foreach ($serviceData as $service => $branches) {
  <!-- Branch Comparison -->
  <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
   <!-- Pila Branch Card -->
-  <div class="bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-200 cursor-pointer branch-card" data-branch-id="2">
+  <div class="bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-200">
     <!-- Card header with subdued gradient background -->
     <div class="bg-gradient-to-r from-gray-100 to-slate-500 p-5 border-b border-gray-200">
       <div class="flex items-center justify-between">
@@ -612,7 +596,7 @@ foreach ($serviceData as $service => $branches) {
   </div>
   
   <!-- Paete Branch Card -->
-  <div class="bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-200 cursor-pointer branch-card" data-branch-id="1">
+  <div class="bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-200">
     <!-- Card header with subdued gradient background -->
     <div class="bg-gradient-to-r from-gray-100 to-slate-500 p-5 border-b border-gray-200">
       <div class="flex items-center justify-between">
@@ -1652,131 +1636,6 @@ branchRevenueChart.render();
 };
 
 var branchServicesChart = new ApexCharts(document.querySelector("#branchServicesChart"), branchServicesOptions);
-branchServicesChart.render();
-</script>
-
-
-<script>
-// Track the currently selected branch (null means all branches)
-let selectedBranch = null;
-
-// Function to update the dashboard for a specific branch
-function updateDashboardForBranch(branchId) {
-    selectedBranch = branchId;
-    
-    // Highlight the selected branch card
-    document.querySelectorAll('.branch-card').forEach(card => {
-        if (card.dataset.branchId == branchId) {
-            card.classList.add('ring-2', 'ring-blue-500');
-            card.classList.remove('border-gray-200');
-            card.classList.add('border-blue-500');
-        } else {
-            card.classList.remove('ring-2', 'ring-blue-500');
-            card.classList.remove('border-blue-500');
-            card.classList.add('border-gray-200');
-        }
-    });
-    
-    // Show loading indicators
-    document.querySelectorAll('.chart-container').forEach(container => {
-        container.innerHTML = '<div class="flex items-center justify-center h-full"><div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div></div>';
-    });
-    
-    // Fetch filtered data via AJAX
-    fetch(`dashboard/fetch_branch_data.php?branch_id=${branchId}`)
-        .then(response => response.json())
-        .then(data => {
-            // Update all the charts and metrics with the filtered data
-            updateCharts(data);
-            updateMetrics(data);
-        })
-        .catch(error => {
-            console.error('Error fetching branch data:', error);
-            // Optionally show an error message to the user
-        });
-}
-
-// Function to reset to all branches view
-function resetToAllBranches() {
-    selectedBranch = null;
-    
-    // Remove highlights from all branch cards
-    document.querySelectorAll('.branch-card').forEach(card => {
-        card.classList.remove('ring-2', 'ring-blue-500');
-        card.classList.remove('border-blue-500');
-        card.classList.add('border-gray-200');
-    });
-    
-    // Reload the original data
-    location.reload(); // Simple solution, or you could fetch all data again
-}
-
-// Add click handlers to branch cards
-document.querySelectorAll('.branch-card').forEach(card => {
-    card.addEventListener('click', function() {
-        const branchId = this.dataset.branchId;
-        if (selectedBranch === branchId) {
-            // If clicking the already selected branch, reset to all branches
-            resetToAllBranches();
-        } else {
-            updateDashboardForBranch(branchId);
-        }
-    });
-});
-
-// Example function to update charts (you'll need to implement this based on your chart libraries)
-function updateCharts(data) {
-    // Update the revenue chart
-    revenueChart.updateSeries([{
-        name: "Revenue",
-        data: data.monthlyRevenue
-    }]);
-    
-    // Update the projected income chart
-    projectedIncomeChart.updateSeries([{
-        name: "Projected Income",
-        data: data.monthlyProjectedIncome
-    }]);
-    
-    // Update the branch revenue chart (will only show one branch now)
-    branchRevenueChart.updateSeries([{
-        name: data.branchName + " Revenue",
-        data: data.monthlyRevenue
-    }]);
-    
-    // Update the services chart
-    branchServicesChart.updateSeries([{
-        name: data.branchName + " Sales",
-        data: data.serviceData
-    }]);
-}
-
-// Example function to update metrics
-function updateMetrics(data) {
-    // Update the metrics cards
-    document.querySelector('#servicesCount').textContent = data.servicesCount;
-    document.querySelector('#revenueAmount').textContent = '₱' + data.formattedRevenue;
-    document.querySelector('#pendingCount').textContent = data.pendingCount;
-    document.querySelector('#completedCount').textContent = data.completedCount;
-    
-    // Update the branch performance table
-    updateBranchTable(data.branchPerformance);
-}
-
-// Initialize and store chart instances globally
-window.revenueChart = new ApexCharts(document.querySelector("#revenueChart"), options);
-window.revenueChart.render();
-
-var projectedIncomeChart = new ApexCharts(document.querySelector("#projectedIncomeChart"), projectedIncomeOptions);
-window.projectedIncomeChart = projectedIncomeChart; // Store globally
-projectedIncomeChart.render();
-
-var branchRevenueChart = new ApexCharts(document.querySelector("#branchRevenueChart"), branchRevenueOptions);
-window.branchRevenueChart = branchRevenueChart; // Store globally
-branchRevenueChart.render();
-
-var branchServicesChart = new ApexCharts(document.querySelector("#branchServicesChart"), branchServicesOptions);
-window.branchServicesChart = branchServicesChart; // Store globally
 branchServicesChart.render();
 </script>
   </body>
