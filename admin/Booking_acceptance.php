@@ -1026,7 +1026,7 @@ $custom_offset = ($custom_current_page - 1) * $custom_bookings_per_page;
                                         <?php echo htmlspecialchars($row['service_name'] ?: 'Custom LifePlan'); ?>
                                     </span>
                                 </td>
-                                <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo htmlspecialchars($row['payment_duration']); ?></td>
+                                <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo htmlspecialchars($row['initial_date']); ?></td>
                                 <td class="px-4 py-3.5 text-sm text-sidebar-text">₱<?php echo number_format($row['package_price'], 2); ?></td>
                                 <td class="px-4 py-3.5 text-sm">
                                     <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium <?php echo $statusClass; ?>">
