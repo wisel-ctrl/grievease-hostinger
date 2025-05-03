@@ -783,6 +783,7 @@ document.addEventListener('DOMContentLoaded', function() {
       </form>
     </div>
 </div>
+</div>
     
     <!-- Modal Footer -->
     <div class="px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row sm:justify-end gap-2 sm:gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
