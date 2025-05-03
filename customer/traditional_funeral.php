@@ -1441,6 +1441,448 @@ require_once '../db_connect.php'; // Database connection
     </div>
 </div>
 
+
+<script>
+    // Add this script in the <head> section or before the closing </body> tag
+document.addEventListener('DOMContentLoaded', function() {
+    // Name fields validation
+    const nameFields = ['traditionalDeceasedFirstName', 'traditionalDeceasedMiddleName', 'traditionalDeceasedLastName'];
+    
+    nameFields.forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        if (field) {
+            field.addEventListener('input', function() {
+                // Remove numbers and special characters (except apostrophes and hyphens)
+                let value = this.value.replace(/[^a-zA-Z'\s-]/g, '');
+                
+                // Remove consecutive spaces (but allow single space after at least 2 characters)
+                value = value.replace(/(\S{2,})\s{2,}/g, '$1 ');
+                
+                // Capitalize first letter of each word
+                value = value.toLowerCase().replace(/(^|\s)([a-z])/g, function(match) {
+                    return match.toUpperCase();
+                });
+                
+                // Remove leading spaces
+                value = value.trimStart();
+                
+                this.value = value;
+            });
+            
+            // Handle paste event
+            field.addEventListener('paste', function(e) {
+                e.preventDefault();
+                let pastedText = (e.clipboardData || window.clipboardData).getData('text');
+                
+                // Clean the pasted text
+                pastedText = pastedText.replace(/[^a-zA-Z'\s-]/g, '');
+                pastedText = pastedText.replace(/(\S{2,})\s{2,}/g, '$1 ');
+                pastedText = pastedText.toLowerCase().replace(/(^|\s)([a-z])/g, function(match) {
+                    return match.toUpperCase();
+                });
+                pastedText = pastedText.trimStart();
+                
+                // Insert at cursor position
+                const startPos = this.selectionStart;
+                const endPos = this.selectionEnd;
+                this.value = this.value.substring(0, startPos) + pastedText + this.value.substring(endPos);
+                
+                // Move cursor to end of inserted text
+                this.selectionStart = this.selectionEnd = startPos + pastedText.length;
+            });
+        }
+    });
+
+    // Date fields validation
+    const dobField = document.getElementById('traditionalDateOfBirth');
+    const dodField = document.getElementById('traditionalDateOfDeath');
+    const burialField = document.getElementById('traditionalDateOfBurial');
+    
+    // Set max date for date of birth (100 years ago)
+    if (dobField) {
+        const today = new Date();
+        const maxDate = new Date(today.getFullYear() - 100, today.getMonth(), today.getDate());
+        dobField.max = formatDate(maxDate);
+        dobField.max = formatDate(today); // Also can't be in the future
+        
+        dobField.addEventListener('change', function() {
+            if (dodField.value) {
+                if (new Date(this.value) > new Date(dodField.value)) {
+                    alert('Date of birth must be before date of death');
+                    this.value = '';
+                }
+            }
+            updateDateConstraints();
+        });
+    }
+    
+    if (dodField) {
+        dodField.addEventListener('change', function() {
+            if (dobField.value && new Date(this.value) < new Date(dobField.value)) {
+                alert('Date of death must be after date of birth');
+                this.value = '';
+            }
+            if (burialField.value && new Date(this.value) > new Date(burialField.value)) {
+                alert('Date of death must be before date of burial');
+                this.value = '';
+            }
+            updateDateConstraints();
+        });
+    }
+    
+    if (burialField) {
+        // Set min date to tomorrow
+        const today = new Date();
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        burialField.min = formatDate(tomorrow);
+        
+        burialField.addEventListener('change', function() {
+            if (dodField.value && new Date(this.value) < new Date(dodField.value)) {
+                alert('Date of burial must be after date of death');
+                this.value = '';
+            }
+            updateDateConstraints();
+        });
+    }
+    
+    function updateDateConstraints() {
+        // Update date of death constraints based on date of birth
+        if (dobField.value) {
+            dodField.min = formatDate(new Date(dobField.value));
+        }
+        
+        // Update date of burial constraints based on date of death
+        if (dodField.value) {
+            burialField.min = formatDate(new Date(dodField.value));
+            const nextDay = new Date(dodField.value);
+            nextDay.setDate(nextDay.getDate() + 1);
+            burialField.min = formatDate(nextDay);
+        }
+    }
+    
+    function formatDate(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+
+    // Death certificate upload validation
+    const deathCertInput = document.getElementById('traditionalDeathCertificate');
+    if (deathCertInput) {
+        deathCertInput.addEventListener('change', function() {
+            const file = this.files[0];
+            if (file) {
+                const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+                if (!validTypes.includes(file.type)) {
+                    alert('Please upload a JPG, JPEG, or PNG file for the death certificate.');
+                    this.value = '';
+                    document.getElementById('traditionalDeathCertFileName').textContent = 'No file chosen';
+                    document.getElementById('deathCertPreviewContainer').classList.add('hidden');
+                    document.getElementById('removeDeathCert').classList.add('hidden');
+                } else {
+                    document.getElementById('traditionalDeathCertFileName').textContent = file.name;
+                    
+                    // Show preview for images
+                    if (file.type.startsWith('image/')) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            document.getElementById('deathCertImage').src = e.target.result;
+                            document.getElementById('deathCertImagePreview').classList.remove('hidden');
+                            document.getElementById('deathCertPreviewContainer').classList.remove('hidden');
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                    
+                    document.getElementById('removeDeathCert').classList.remove('hidden');
+                }
+            }
+        });
+    }
+    
+    // Remove death certificate button
+    const removeDeathCert = document.getElementById('removeDeathCert');
+    if (removeDeathCert) {
+        removeDeathCert.addEventListener('click', function() {
+            deathCertInput.value = '';
+            document.getElementById('traditionalDeathCertFileName').textContent = 'No file chosen';
+            document.getElementById('deathCertPreviewContainer').classList.add('hidden');
+            this.classList.add('hidden');
+        });
+    }
+
+    // Address fields validation
+    const regionField = document.getElementById('traditionalDeceasedRegion');
+    const provinceField = document.getElementById('traditionalDeceasedProvince');
+    const cityField = document.getElementById('traditionalDeceasedCity');
+    const barangayField = document.getElementById('traditionalDeceasedBarangay');
+    const streetField = document.getElementById('traditionalDeceasedStreet');
+    
+    if (streetField) {
+        streetField.addEventListener('input', function() {
+            // Remove multiple spaces
+            this.value = this.value.replace(/\s{2,}/g, ' ').trim();
+            
+            // Capitalize first letter of each word
+            this.value = this.value.toLowerCase().replace(/(^|\s)([a-z])/g, function(match) {
+                return match.toUpperCase();
+            });
+        });
+    }
+    
+    // Cascading dropdowns for address
+    if (regionField) {
+        regionField.addEventListener('change', function() {
+            provinceField.innerHTML = '<option value="">Select Province</option>';
+            cityField.innerHTML = '<option value="">Select City/Municipality</option>';
+            barangayField.innerHTML = '<option value="">Select Barangay</option>';
+            
+            if (this.value) {
+                // In a real implementation, you would fetch provinces based on region
+                // This is just a placeholder
+                fetchProvinces(this.value).then(provinces => {
+                    provinces.forEach(province => {
+                        const option = document.createElement('option');
+                        option.value = province;
+                        option.textContent = province;
+                        provinceField.appendChild(option);
+                    });
+                });
+            }
+        });
+    }
+    
+    if (provinceField) {
+        provinceField.addEventListener('change', function() {
+            cityField.innerHTML = '<option value="">Select City/Municipality</option>';
+            barangayField.innerHTML = '<option value="">Select Barangay</option>';
+            
+            if (this.value) {
+                // Fetch cities based on province
+                fetchCities(this.value).then(cities => {
+                    cities.forEach(city => {
+                        const option = document.createElement('option');
+                        option.value = city;
+                        option.textContent = city;
+                        cityField.appendChild(option);
+                    });
+                });
+            }
+        });
+    }
+    
+    if (cityField) {
+        cityField.addEventListener('change', function() {
+            barangayField.innerHTML = '<option value="">Select Barangay</option>';
+            
+            if (this.value) {
+                // Fetch barangays based on city
+                fetchBarangays(this.value).then(barangays => {
+                    barangays.forEach(barangay => {
+                        const option = document.createElement('option');
+                        option.value = barangay;
+                        option.textContent = barangay;
+                        barangayField.appendChild(option);
+                    });
+                });
+            }
+        });
+    }
+    
+    // Payment reference number validation
+    const refNumberField = document.getElementById('traditionalReferenceNumber');
+    if (refNumberField) {
+        refNumberField.addEventListener('input', function() {
+            // Remove non-digit characters
+            this.value = this.value.replace(/\D/g, '');
+            
+            // Limit to 20 characters
+            if (this.value.length > 20) {
+                this.value = this.value.substring(0, 20);
+            }
+        });
+        
+        // Handle paste event
+        refNumberField.addEventListener('paste', function(e) {
+            e.preventDefault();
+            let pastedText = (e.clipboardData || window.clipboardData).getData('text');
+            
+            // Clean the pasted text
+            pastedText = pastedText.replace(/\D/g, '');
+            if (pastedText.length > 20) {
+                pastedText = pastedText.substring(0, 20);
+            }
+            
+            // Insert at cursor position
+            const startPos = this.selectionStart;
+            const endPos = this.selectionEnd;
+            this.value = this.value.substring(0, startPos) + pastedText + this.value.substring(endPos);
+            
+            // Move cursor to end of inserted text
+            this.selectionStart = this.selectionEnd = startPos + pastedText.length;
+        });
+    }
+
+    // GCash receipt upload validation
+    const gcashInput = document.getElementById('traditionalGcashReceipt');
+    if (gcashInput) {
+        gcashInput.addEventListener('change', function() {
+            const file = this.files[0];
+            if (file) {
+                const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+                if (!validTypes.includes(file.type)) {
+                    alert('Please upload a JPG, JPEG, or PNG file for the GCash receipt.');
+                    this.value = '';
+                    document.getElementById('traditionalGcashFileName').textContent = 'No file chosen';
+                    document.getElementById('gcashPreviewContainer').classList.add('hidden');
+                    document.getElementById('removeGcash').classList.add('hidden');
+                } else {
+                    document.getElementById('traditionalGcashFileName').textContent = file.name;
+                    
+                    // Show preview for images
+                    if (file.type.startsWith('image/')) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            document.getElementById('gcashImage').src = e.target.result;
+                            document.getElementById('gcashImagePreview').classList.remove('hidden');
+                            document.getElementById('gcashPreviewContainer').classList.remove('hidden');
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                    
+                    document.getElementById('removeGcash').classList.remove('hidden');
+                }
+            }
+        });
+    }
+    
+    // Remove GCash receipt button
+    const removeGcash = document.getElementById('removeGcash');
+    if (removeGcash) {
+        removeGcash.addEventListener('click', function() {
+            gcashInput.value = '';
+            document.getElementById('traditionalGcashFileName').textContent = 'No file chosen';
+            document.getElementById('gcashPreviewContainer').classList.add('hidden');
+            this.classList.add('hidden');
+        });
+    }
+
+    // Form submission validation
+    const bookingForm = document.getElementById('traditionalBookingForm');
+    if (bookingForm) {
+        bookingForm.addEventListener('submit', function(e) {
+            let isValid = true;
+            
+            // Validate required name fields
+            if (!document.getElementById('traditionalDeceasedFirstName').value.trim() || 
+                document.getElementById('traditionalDeceasedFirstName').value.trim().length < 2) {
+                alert('Please enter a valid first name (at least 2 characters)');
+                isValid = false;
+            }
+            
+            if (!document.getElementById('traditionalDeceasedLastName').value.trim() || 
+                document.getElementById('traditionalDeceasedLastName').value.trim().length < 2) {
+                alert('Please enter a valid last name (at least 2 characters)');
+                isValid = false;
+            }
+            
+            // Validate date of death
+            if (!document.getElementById('traditionalDateOfDeath').value) {
+                alert('Please select a date of death');
+                isValid = false;
+            }
+            
+            // Validate death certificate
+            if (!document.getElementById('traditionalDeathCertificate').files[0]) {
+                alert('Please upload a death certificate');
+                isValid = false;
+            }
+            
+            // Validate address
+            if (!document.getElementById('traditionalDeceasedRegion').value ||
+                !document.getElementById('traditionalDeceasedProvince').value ||
+                !document.getElementById('traditionalDeceasedCity').value ||
+                !document.getElementById('traditionalDeceasedBarangay').value ||
+                !document.getElementById('traditionalDeceasedStreet').value.trim()) {
+                alert('Please complete the address information');
+                isValid = false;
+            }
+            
+            // Validate payment
+            if (!document.getElementById('traditionalGcashReceipt').files[0]) {
+                alert('Please upload a GCash receipt');
+                isValid = false;
+            }
+            
+            if (!document.getElementById('traditionalReferenceNumber').value.trim()) {
+                alert('Please enter a reference number');
+                isValid = false;
+            }
+            
+            if (isValid) {
+                // Combine address components into JSON string
+                const address = {
+                    region: document.getElementById('traditionalDeceasedRegion').value,
+                    province: document.getElementById('traditionalDeceasedProvince').value,
+                    city: document.getElementById('traditionalDeceasedCity').value,
+                    barangay: document.getElementById('traditionalDeceasedBarangay').value,
+                    street: document.getElementById('traditionalDeceasedStreet').value.trim()
+                };
+                document.getElementById('deceasedAddress').value = JSON.stringify(address);
+                
+                // Show loading indicator
+                showLoader();
+            } else {
+                e.preventDefault();
+            }
+        });
+    }
+
+    // Placeholder functions for address data fetching
+    function fetchProvinces(region) {
+        // In a real implementation, this would be an API call
+        return new Promise(resolve => {
+            // Simulate API delay
+            setTimeout(() => {
+                const provinces = {
+                    'NCR': ['Metro Manila'],
+                    'CAR': ['Abra', 'Apayao', 'Benguet', 'Ifugao', 'Kalinga', 'Mountain Province'],
+                    'Region I': ['Ilocos Norte', 'Ilocos Sur', 'La Union', 'Pangasinan']
+                };
+                resolve(provinces[region] || []);
+            }, 300);
+        });
+    }
+    
+    function fetchCities(province) {
+        return new Promise(resolve => {
+            setTimeout(() => {
+                const cities = {
+                    'Metro Manila': ['Manila', 'Quezon City', 'Makati', 'Pasig', 'Taguig'],
+                    'Benguet': ['Baguio City', 'La Trinidad', 'Itogon'],
+                    'Pangasinan': ['Dagupan City', 'San Carlos City', 'Lingayen']
+                };
+                resolve(cities[province] || []);
+            }, 300);
+        });
+    }
+    
+    function fetchBarangays(city) {
+        return new Promise(resolve => {
+            setTimeout(() => {
+                const barangays = {
+                    'Manila': ['Ermita', 'Malate', 'Paco', 'Pandacan'],
+                    'Baguio City': ['Camp Allen', 'Camp 7', 'Loakan'],
+                    'Dagupan City': ['Barangay 1', 'Barangay 2', 'Barangay 3']
+                };
+                resolve(barangays[city] || []);
+            }, 300);
+        });
+    }
+});
+</script>
+
 <!-- Footer -->
 <footer class="bg-black font-playfair text-white py-12">
         <div class="container mx-auto px-6">
