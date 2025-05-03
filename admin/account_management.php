@@ -2280,6 +2280,9 @@ function openEditCustomerAccountModal(userId) {
                 
                 document.body.appendChild(modal);
                 
+                // Add phone validation
+setupPhoneValidation('editPhone');
+                
                 // Add validation event listeners
                 setupEditFormValidations();
                 
@@ -2479,6 +2482,23 @@ function showTooltip(element, message) {
     setTimeout(() => {
         tooltip.remove();
     }, 3000);
+}
+
+function setupPhoneValidation(phoneFieldId) {
+    const phoneField = document.getElementById(phoneFieldId);
+    if (!phoneField) return;
+    
+    phoneField.addEventListener('input', function() {
+        this.value = this.value.replace(/\D/g, '');
+        if (this.value.length > 11) this.value = this.value.substring(0, 11);
+        if (this.value.length === 1 && this.value === '9') this.value = '09';
+    });
+    
+    phoneField.addEventListener('keydown', function(e) {
+        if (!/[0-9]|Backspace|Delete|ArrowLeft|ArrowRight/.test(e.key)) {
+            e.preventDefault();
+        }
+    });
 }
 
 function setupEditPhoneValidation(phoneFieldId, errorElementId, userId, userType) {
@@ -3113,6 +3133,8 @@ function openEditEmployeeAccountModal(userId) {
                 `;
                 
                 document.body.appendChild(modal);
+                
+                setupPhoneValidation('editEmpPhone');
                 
                 setupEditFieldValidation('email', 'editEmpEmail', 'empEmailExistsError', userId, 2);
                 setupEditFieldValidation('phone', 'editEmpPhone', 'empPhoneExistsError', userId, 2);
