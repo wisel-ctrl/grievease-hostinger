@@ -2794,6 +2794,18 @@ document.getElementById('lifeplanServiceBtn').addEventListener('click', function
     }
     
     const totalPrice = parseInt(packagePrice);
+
+    const selectedPackage = packagesFromDB.find(pkg => pkg.name === packageName);
+
+        if (selectedPackage) {
+            console.log('Selected Package:', selectedPackage);
+        } else {
+            console.warn(`No package found with the name: "${packageName}"`);
+        }
+        if (selectedPackage) {
+            document.getElementById('lifeplanServiceId').value = selectedPackage.id;
+        }
+        document.getElementById('lifeplanBranchId').value = <?php echo $branch_id; ?>;
     
     document.getElementById('lifeplanTotalPrice').textContent = `₱${totalPrice.toLocaleString()}`;
     document.getElementById('lifeplanSelectedPackageName').value = packageName;
@@ -2853,10 +2865,7 @@ document.getElementById('lifeplanServiceBtn').addEventListener('click', function
         document.getElementById('lifeplanSelectedPackagePrice').value = packagePrice;
         
         // Set the service_id and branch_id hidden inputs
-        if (selectedPackage) {
-            document.getElementById('lifeplanServiceId').value = selectedPackage.id;
-        }
-        document.getElementById('lifeplanBranchId').value = <?php echo $branch_id; ?>;
+        
         
         const featuresList = document.getElementById('lifeplanPackageFeatures');
         featuresList.innerHTML = '';
