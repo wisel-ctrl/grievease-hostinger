@@ -2009,8 +2009,8 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Contact number validation - only numbers
     // Contact number validation - Philippine mobile number starting with 09
-const contactNumberInput = document.getElementById('lifeplanContactNumber');
-if (contactNumberInput) {
+    const contactNumberInput = document.getElementById('lifeplanContactNumber');
+        if (contactNumberInput) {
     contactNumberInput.addEventListener('input', function() {
         // Remove any non-digit characters
         this.value = this.value.replace(/\D/g, '');
@@ -2053,12 +2053,12 @@ if (contactNumberInput) {
     // Set pattern attribute for HTML5 validation
     contactNumberInput.pattern = "09[0-9]{9}";
     contactNumberInput.title = "Please enter a valid Philippine mobile number starting with 09 (11 digits total)";
-}
+    }
     
     // Email validation - prevent spaces
     // Email validation - ensure it contains @ and prevent spaces
-const emailInput = document.getElementById('lifeplanEmailAddress');
-if (emailInput) {
+    const emailInput = document.getElementById('lifeplanEmailAddress');
+    if (emailInput) {
     emailInput.addEventListener('input', function() {
         // Remove any spaces
         this.value = this.value.replace(/\s/g, '');
@@ -2097,7 +2097,7 @@ if (emailInput) {
     // Set pattern attribute for HTML5 validation
     emailInput.pattern = "[^\s]+@[^\s]+\.[^\s]+";
     emailInput.title = "Please enter a valid email address (must contain @ and a domain)";
-}
+    }
     
     // Add pattern validation for contact number (optional)
     if (contactNumberInput) {
@@ -2192,6 +2192,60 @@ function hideLifeplanGcashPreview() {
     document.getElementById('removeLifeplanGcash').classList.add('hidden');
 }
 
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM Content Loaded');
+    
+    // Load regions via AJAX
+    fetch('address/get_regions.php')
+        .then(response => {
+            console.log('Regions response status:', response.status);
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Regions data:', data);
+            const regionDropdown = document.getElementById('lifeplanHolderRegion');
+            
+            // Check if dropdown exists
+            if (regionDropdown) {
+                regionDropdown.innerHTML = '<option value="">Select Region</option>';
+                data.forEach(region => {
+                    regionDropdown.innerHTML += `<option value="${region.region_id}">${region.region_name}</option>`;
+                });
+            } else {
+                console.error('lifeplanHolderRegion dropdown not found in the DOM');
+            }
+        })
+        .catch(error => {
+            console.error('Error loading regions:', error);
+        });
+    
+    // Set up event listeners
+    const regionElement = document.getElementById('lifeplanHolderRegion');
+    const provinceElement = document.getElementById('lifeplanHolderProvince');
+    const cityElement = document.getElementById('lifeplanHolderCity');
+    
+    if (regionElement) {
+        regionElement.addEventListener('change', updateLifeplanProvinces);
+    } else {
+        console.error('lifeplanHolderRegion element not found for event listener');
+    }
+    
+    if (provinceElement) {
+        provinceElement.addEventListener('change', updateLifeplanCities);
+    } else {
+        console.error('lifeplanHolderProvince element not found for event listener');
+    }
+    
+    if (cityElement) {
+        cityElement.addEventListener('change', updateLifeplanBarangays);
+    } else {
+        console.error('lifeplanHolderCity element not found for event listener');
+    }
+});
+
 // Cascading dropdowns for address in Lifeplan
 document.getElementById('lifeplanHolderRegion').addEventListener('change', function() {
     // Code to populate province dropdown based on selected region
@@ -2203,7 +2257,7 @@ document.getElementById('lifeplanHolderRegion').addEventListener('change', funct
     
     // Add logic to populate provinces based on selected region
     // This would typically involve an API call or using predefined data
-    updateLifeplanProvinces();
+    
 });
 
 document.getElementById('lifeplanHolderProvince').addEventListener('change', function() {
@@ -2215,7 +2269,7 @@ document.getElementById('lifeplanHolderProvince').addEventListener('change', fun
     cityDropdown.innerHTML = '<option value="">Select City/Municipality</option>';
     
     // Add logic to populate cities based on selected province
-    updateLifeplanCities();
+    
 });
 
 document.getElementById('lifeplanHolderCity').addEventListener('change', function() {
@@ -2227,7 +2281,7 @@ document.getElementById('lifeplanHolderCity').addEventListener('change', functio
     barangayDropdown.innerHTML = '<option value="">Select Barangay</option>';
     
     // Add logic to populate barangays based on selected city
-    updateLifeplanBarangays();
+    
 });
 
 // Mobile view navigation
