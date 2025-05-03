@@ -2214,6 +2214,7 @@ document.getElementById('lifeplanHolderProvince').addEventListener('change', fun
     cityDropdown.innerHTML = '<option value="">Select City/Municipality</option>';
     
     // Add logic to populate cities based on selected province
+    initializeLifeplanAddressFields();
 });
 
 document.getElementById('lifeplanHolderCity').addEventListener('change', function() {
