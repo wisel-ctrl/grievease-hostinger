@@ -2834,12 +2834,12 @@ document.getElementById('lifeplanServiceBtn').addEventListener('click', function
     formSection.classList.add('hidden');
     formSection.classList.remove('force-show');
     
-    
+    initializeLifeplanAddressFields();
     
     // Show the modal
     document.getElementById('lifeplanModal').classList.remove('hidden');
-    // Initialize address fields
-    initializeLifeplanAddressFields();
+    
+    
 }
 
 // Helper functions for lifeplan file uploads
@@ -2933,23 +2933,45 @@ function updateLifeplanPayment() {
 }
 
 function initializeLifeplanAddressFields() {
+    // Remove existing event listeners to prevent duplicates
+    const regionElement = document.getElementById('lifeplanHolderRegion');
+    const provinceElement = document.getElementById('lifeplanHolderProvince');
+    const cityElement = document.getElementById('lifeplanHolderCity');
+    
+    if (regionElement) {
+        regionElement.removeEventListener('change', updateLifeplanProvinces);
+        regionElement.addEventListener('change', updateLifeplanProvinces);
+    }
+    
+    if (provinceElement) {
+        provinceElement.removeEventListener('change', updateLifeplanCities);
+        provinceElement.addEventListener('change', updateLifeplanCities);
+    }
+    
+    if (cityElement) {
+        cityElement.removeEventListener('change', updateLifeplanBarangays);
+        cityElement.addEventListener('change', updateLifeplanBarangays);
+    }
+    
     // Reset address fields
-    document.getElementById('lifeplanHolderRegion').value = '';
-    document.getElementById('lifeplanHolderProvince').value = '';
-    document.getElementById('lifeplanHolderCity').value = '';
+    if (regionElement) regionElement.value = '';
+    if (provinceElement) provinceElement.value = '';
+    if (cityElement) cityElement.value = '';
     document.getElementById('lifeplanHolderBarangay').value = '';
     document.getElementById('lifeplanHolderStreet').value = '';
     
-    // Re-enable event listeners for address fields
-    document.getElementById('lifeplanHolderRegion').addEventListener('change', updateLifeplanProvinces);
-    document.getElementById('lifeplanHolderProvince').addEventListener('change', updateLifeplanCities);
-    document.getElementById('lifeplanHolderCity').addEventListener('change', updateLifeplanBarangays);
+    // Disable dependent dropdowns initially
+    if (provinceElement) provinceElement.disabled = true;
+    if (cityElement) cityElement.disabled = true;
+    document.getElementById('lifeplanHolderBarangay').disabled = true;
 }
 
 // Lifeplan address dropdown functions
 function updateLifeplanProvinces() {
     const regionId = document.getElementById('lifeplanHolderRegion').value;
     const provinceDropdown = document.getElementById('lifeplanHolderProvince');
+    console.log('updateLifeplanProvinces called');
+    console.log('Selected region ID:', regionId)
     
     if (!regionId) {
         provinceDropdown.disabled = true;
