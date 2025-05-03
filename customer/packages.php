@@ -2069,6 +2069,20 @@ function removeGcash() {
                     </div>
 
                     <div class="border-b border-gray-200 pb-4 mb-4">
+                        <h3 class="text-base md:text-lg font-hedvig text-navy mb-3 md:mb-4">Additional Services</h3>
+                        
+                        <div class="mb-3">
+                            <div class="flex items-center">
+                                <input type="checkbox" id="cremationOption" name="cremationOption" class="h-4 w-4 text-yellow-600 focus:ring-yellow-500 border-gray-300 rounded">
+                                <label for="cremationOption" class="ml-2 block text-sm text-navy">
+                                    Include Cremation Services
+                                </label>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1 ml-6">Select this option if you wish to include cremation services in your Lifeplan package.</p>
+                        </div>
+                    </div>
+
+                    <div class="border-b border-gray-200 pb-4 mb-4">
                         <h3 class="text-base md:text-lg font-hedvig text-navy mb-3 md:mb-4">Payment Plan</h3>
 
                         <div class="mb-3 md:mb-4">
@@ -3157,33 +3171,41 @@ function closeAllModals() {
                     }
                 });
 
-                // Simulate processing delay
-                setTimeout(() => {
+                // Send data to backend using fetch
+                fetch('booking/lifeplan_booking.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json()) // Expecting JSON response
+                .then(data => {
                     Swal.close();
 
-                    // Log form data to console
-                    console.log('Submitted Lifeplan Form Data:');
-                    for (let [key, value] of formData.entries()) {
-                        console.log(`${key}: ${value}`);
+                    if (data.success) {
+                        // Success handling
+                        document.getElementById('lifeplanModal').classList.add('hidden');
+                        formElement.reset();
+
+                        const detailsSection = document.querySelector('#lifeplanModal .details-section');
+                        const formSection = document.querySelector('#lifeplanModal .form-section');
+
+                        detailsSection.classList.remove('hidden');
+                        formSection.classList.add('hidden');
+
+                        showNotification('Lifeplan Created', 'Your lifeplan has been successfully created.', '#');
+                    } else {
+                        // Show error from backend
+                        Swal.fire('Error', data.message || 'Something went wrong.', 'error');
                     }
-
-                    // Close modal and reset form
-                    document.getElementById('lifeplanModal').classList.add('hidden');
-                    formElement.reset();
-
-                    // Reset to show details section for next time
-                    const detailsSection = document.querySelector('#lifeplanModal .details-section');
-                    const formSection = document.querySelector('#lifeplanModal .form-section');
-                    
-                    detailsSection.classList.remove('hidden');
-                    formSection.classList.add('hidden');
-
-                    // Show success notification
-                    showNotification('Lifeplan Created', 'Your lifeplan has been successfully created (locally). Check console for data.', '#');
-                }, 1500); // Simulated delay (1.5s)
+                })
+                .catch(error => {
+                    Swal.close();
+                    console.error('Fetch error:', error);
+                    Swal.fire('Error', 'An error occurred while processing your request.', 'error');
+                });
             }
         });
     });
+
 
 
     // Process packages from database
