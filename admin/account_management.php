@@ -159,7 +159,7 @@ $customersResult = mysqli_query($conn, $customersQuery);
                                 <div class="space-y-1">
                                     <div class="flex items-center cursor-pointer filter-option" data-sort="id_asc">
                                         <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                                            ID: Ascending
+                                            Default
                                         </span>
                                     </div>
                                     <div class="flex items-center cursor-pointer filter-option" data-sort="id_desc">
