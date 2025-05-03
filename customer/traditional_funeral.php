@@ -1191,12 +1191,6 @@ require_once '../db_connect.php'; // Database connection
 
                         <input type="hidden" id="deceasedAddress" name="deceasedAddress">
 
-                        <div class="flex items-center mt-3 md:mt-4">
-                            <input type="checkbox" id="traditionalWithCremate" name="with_cremate" value="yes" class="h-4 w-4 text-yellow-600 focus:ring-yellow-500 border-gray-300 rounded">
-                            <label for="traditionalWithCremate" class="ml-2 block text-sm text-navy">
-                                Include cremation service
-                            </label>
-                        </div>
                     </div>
 
                     <div class="border-b border-gray-200 pb-4 mb-4">
@@ -1269,7 +1263,17 @@ require_once '../db_connect.php'; // Database connection
                     </div>
 
                     <div class="border-b border-gray-200 pb-4 mb-4">
-                        
+                        <h3 class="text-lg font-hedvig text-navy mb-4">Additional Options</h3>
+                        <div class="flex items-start border rounded-lg p-4">
+                            <input type="checkbox" id="cremationCheckbox" name="cremation" value="40000" 
+                                class="traditional-addon h-5 w-5 text-yellow-600 rounded focus:ring-yellow-500 mt-1" 
+                                data-name="Cremation Service">
+                            <label for="cremationCheckbox" class="ml-3">
+                                <span class="block font-medium mb-1">Cremation Service</span>
+                                <span class="block text-sm text-gray-600 mb-1">Includes cremation and urn</span>
+                                <span class="text-yellow-600">₱40,000</span>
+                            </label>
+                        </div>
                     </div>
 
                     <div class="bg-cream p-4 rounded-lg">
