@@ -997,7 +997,7 @@ $custom_offset = ($custom_current_page - 1) * $custom_bookings_per_page;
                                     FROM lifeplan_booking_tb lb
                                     JOIN users u ON lb.customer_id = u.id
                                     LEFT JOIN services_tb s ON lb.service_id = s.service_id
-                                    ORDER BY lb.id DESC
+                                    ORDER BY lb.lpbooking_id DESC
                                     LIMIT 10";
                     
                     $lifeplanResult = $conn->query($lifeplanQuery);
