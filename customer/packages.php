@@ -1973,20 +1973,20 @@ function removeGcash() {
                         
                         <!-- QR Code Modal -->
                         <div id="lifeplanQrCodeModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
-    <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-        <div class="flex justify-between items-center mb-4">
-            <h3 class="text-lg font-hedvig text-navy">Scan to Pay</h3>
-            <button id="lifeplanCloseQrModal" class="text-gray-500 hover:text-navy">
-                <i class="fas fa-times text-xl"></i>
-            </button>
-        </div>
-        <div class="flex flex-col items-center justify-center">
-            <img id="lifeplanQrCodeImage" src="../image\gcashqrvjay.jpg" alt="Payment QR Code" class="w-64 h-64 object-contain mb-4">
-            <p class="text-center text-sm text-gray-600 mb-2">Scan this QR code with your GCash app to make payment</p>
-            <p class="text-center font-bold text-yellow-600" id="lifeplanQrCodeAmount">Amount: ₱0</p>
-        </div>
-    </div>
-</div>
+                            <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+                                <div class="flex justify-between items-center mb-4">
+                                    <h3 class="text-lg font-hedvig text-navy">Scan to Pay</h3>
+                                    <button id="lifeplanCloseQrModal" class="text-gray-500 hover:text-navy">
+                                        <i class="fas fa-times text-xl"></i>
+                                    </button>
+                                </div>
+                                <div class="flex flex-col items-center justify-center">
+                                    <img id="lifeplanQrCodeImage" src="../image\gcashqrvjay.jpg" alt="Payment QR Code" class="w-64 h-64 object-contain mb-4">
+                                    <p class="text-center text-sm text-gray-600 mb-2">Scan this QR code with your GCash app to make payment</p>
+                                    <p class="text-center font-bold text-yellow-600" id="lifeplanQrCodeAmount">Amount: ₱0</p>
+                                </div>
+                            </div>
+                        </div>
                         
                         <!-- GCash Upload with Preview (Improved UI) -->
                         <div class="mb-4">
@@ -2835,7 +2835,7 @@ document.getElementById('lifeplanServiceBtn').addEventListener('click', function
     formSection.classList.remove('force-show');
     
     // Initialize address fields
-    
+    initializeLifeplanAddressFields();
     
     // Show the modal
     document.getElementById('lifeplanModal').classList.remove('hidden');
@@ -3102,40 +3102,15 @@ function updateLifeplanPayment() {
             cancelButtonText: 'Cancel'
         }).then((result) => {
             if (result.isConfirmed) {
-                fetch('booking/lifeplan_booking.php', {
-                    method: 'POST',
-                    body: formData
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        Swal.fire({
-                            title: 'Success!',
-                            text: 'Lifeplan booking submitted successfully!',
-                            icon: 'success',
-                            confirmButtonColor: '#d97706'
-                        });
-                        closeAllModals();
-                        formElement.reset();
-                        showNotification('New Lifeplan', 'Your lifeplan has been confirmed. Click to view details.', 'notification.php');
-                    } else {
-                        Swal.fire({
-                            title: 'Error',
-                            text: data.message || 'An error occurred. Please try again.',
-                            icon: 'error',
-                            confirmButtonColor: '#d97706'
-                        });
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    Swal.fire({
-                        title: 'Error',
-                        text: 'An error occurred. Please try again.',
-                        icon: 'error',
-                        confirmButtonColor: '#d97706'
-                    });
+                // Here you can handle the confirmation if needed
+                Swal.fire({
+                    title: 'Success!',
+                    text: 'Form data logged to console!',
+                    icon: 'success',
+                    confirmButtonColor: '#d97706'
                 });
+                closeAllModals();
+                this.reset(); // Reset the form if needed
             }
         });
     });
