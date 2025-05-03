@@ -2537,6 +2537,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
     document.getElementById('traditionalBookingForm').addEventListener('submit', function(e) {
         e.preventDefault();
+
+        // First, ensure the serviceID element exists
+    const serviceIdElement = document.getElementById('serviceID');
+    if (!serviceIdElement) {
+        console.error('serviceID element not found');
+        alert('An error occurred. Please try again.');
+        return;
+    }
+    
+    const serviceId = serviceIdElement.value;
+    console.log('Submitting with serviceId:', serviceId);
+
         // Check if this is a custom package submission
         if (document.getElementById('traditionalSelectedPackageName').value === 'Custom Memorial Package') {
             const totalPackagePrice = parseFloat(document.getElementById('traditionalSelectedPackagePrice').value);
