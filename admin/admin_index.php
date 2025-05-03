@@ -1015,7 +1015,6 @@ foreach ($serviceData as $service => $branches) {
   <!-- Pagination Footer -->
   <div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
     <div id="paginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
-      Loading data...
     </div>
     <div class="flex space-x-2" id="paginationControls">
       <button class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover opacity-50 cursor-not-allowed" disabled>&laquo;</button>
