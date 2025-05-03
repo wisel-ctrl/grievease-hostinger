@@ -206,45 +206,6 @@ require_once '../db_connect.php'; // Database connection
         html {
         scroll-behavior: smooth;
     }
-
-    /* Mobile form adjustments */
-@media (max-width: 767px) {
-    .modal-scroll-container {
-        display: block;
-    }
-
-    .details-section, .form-section {
-        padding: 1rem;
-    }
-
-    /* Form input sizing */
-    input, select, textarea {
-        font-size: 16px !important; /* Prevent iOS zoom */
-    }
-
-    /* Stack form fields vertically */
-    .flex-wrap > div {
-        width: 100% !important;
-        padding-left: 0 !important;
-        padding-right: 0 !important;
-        margin-bottom: 1rem;
-    }
-
-    /* Adjust button sizes */
-    button, .btn {
-        padding: 12px !important;
-    }
-
-    /* File upload areas */
-    .border-input-border {
-        padding: 12px;
-    }
-
-    /* Summary section */
-    .bg-cream {
-        padding: 1rem;
-    }
-}
     </style>
     <script>
         function toggleMenu() {
@@ -1047,73 +1008,41 @@ require_once '../db_connect.php'; // Database connection
 
     <!-- Traditional Funeral Modal (Hidden by Default) -->
 <div id="traditionalModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4 hidden">
-    <div class="w-full max-w-5xl bg-white rounded-2xl shadow-xl overflow-hidden max-h-[90vh] md:max-h-[80vh]">
+    <div class="w-full max-w-5xl bg-white rounded-2xl shadow-xl overflow-hidden max-h-[80vh]">
         <!-- Scroll container for both columns -->
-        <div class="modal-scroll-container grid grid-cols-1 md:grid-cols-2 overflow-y-auto max-h-[90vh] md:max-h-[80vh]">
+        <div class="modal-scroll-container grid grid-cols-1 md:grid-cols-2 overflow-y-auto max-h-[80vh]">
             <!-- Left Side: Package Details -->
-            <div class="bg-cream p-4 md:p-8 details-section">
-                <!-- Header and Close Button for Mobile -->
-                <div class="flex justify-between items-center mb-4 md:hidden">
-                    <h2 class="text-xl font-hedvig text-navy">Package Details</h2>
-                    <button class="closeModalBtn text-gray-500 hover:text-navy">
-                        <i class="fas fa-times text-xl"></i>
-                    </button>
-                </div>
-                
+            <div class="bg-cream p-8">
                 <!-- Package Image -->
-                <div class="mb-4 md:mb-6">
-                    <img id="traditionalPackageImage" src="" alt="" class="w-full h-48 md:h-64 object-cover rounded-lg mb-4">
+                <div class="mb-6">
+                    <img id="traditionalPackageImage" src="" alt="" class="w-full h-64 object-cover rounded-lg mb-4">
                 </div>
 
                 <!-- Package Header -->
-                <div class="flex justify-between items-center mb-4 md:mb-6">
-                    <h2 id="traditionalPackageName" class="text-2xl md:text-3xl font-hedvig text-navy"></h2>
-                    <div id="traditionalPackagePrice" class="text-2xl md:text-3xl font-hedvig text-yellow-600"></div>
+                <div class="flex justify-between items-center mb-6">
+                    <h2 id="traditionalPackageName" class="text-2xl font-hedvig text-navy"></h2>
+                    <div id="traditionalPackagePrice" class="text-3xl font-hedvig text-yellow-600"></div>
                 </div>
 
                 <!-- Package Description -->
-                <p id="traditionalPackageDesc" class="text-dark mb-4 md:mb-6 text-sm md:text-base"></p>
+                <p id="traditionalPackageDesc" class="text-dark mb-6"></p>
 
                 <!-- Main Package Details -->
                 <div class="border-t border-gray-200 pt-4">
-                    <h3 class="text-lg md:text-xl font-hedvig text-navy mb-3 md:mb-4">Package Includes:</h3>
-                    <ul id="traditionalPackageFeatures" class="space-y-1 md:space-y-2">
+                    <h3 class="text-xl font-hedvig text-navy mb-4">Package Includes:</h3>
+                    <ul id="traditionalPackageFeatures" class="space-y-2">
                         <!-- Features will be inserted here by JavaScript -->
                     </ul>
                 </div>
-
-                <!-- Mobile-only summary and navigation button -->
-                <div class="mt-6 border-t border-gray-200 pt-4 md:hidden">
-                    <div class="bg-white p-4 rounded-lg shadow-sm">
-                        <div class="flex justify-between text-sm mb-2">
-                            <span class="text-navy">Package Total</span>
-                            <span id="traditionalTotalPriceMobile" class="text-yellow-600">₱0</span>
-                        </div>
-                        <div class="flex justify-between font-bold mt-2 pt-2 border-t border-gray-300">
-                            <span class="text-navy">Amount Due Now (30%)</span>
-                            <span id="traditionalAmountDueMobile" class="text-yellow-600">₱0</span>
-                        </div>
-                    </div>
-                    <button id="continueToFormBtn" class="mt-4 w-full bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg shadow-md transition-all duration-300">
-                        Continue to Booking
-                    </button>
-                </div>
             </div>
 
-            <!-- Right Side: Booking Form -->
-            <div class="bg-white p-4 md:p-8 border-t md:border-t-0 md:border-l border-gray-200 overflow-y-auto form-section hidden md:block">
-                <!-- Header and back button for mobile -->
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-xl md:text-2xl font-hedvig text-navy">Book Your Package</h2>
-                    <div class="flex items-center">
-                        <button id="backToDetailsBtn" class="mr-2 text-gray-500 hover:text-navy md:hidden flex items-center">
-                            <i class="fas fa-arrow-left text-lg mr-1"></i>
-                            <span class="text-sm">Back</span>
-                        </button>
-                        <button class="closeModalBtn text-gray-500 hover:text-navy">
-                            <i class="fas fa-times text-xl md:text-2xl"></i>
-                        </button>
-                    </div>
+            <!-- Right Side: Traditional Booking Form -->
+            <div class="bg-white p-8 border-l border-gray-200 overflow-y-auto">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-hedvig text-navy">Book Your Package</h2>
+                    <button class="closeModalBtn text-gray-500 hover:text-navy">
+                        <i class="fas fa-times text-2xl"></i>
+                    </button>
                 </div>
 
                 <form id="traditionalBookingForm" class="space-y-4">
@@ -1129,26 +1058,23 @@ require_once '../db_connect.php'; // Database connection
                     <input type="hidden" id="notes" name="bookingNotes" value="">
 
                     <input type="hidden" id="serviceID" name="serviceId" value="">
-                    
+                     
                     <div class="border-b border-gray-200 pb-4 mb-4">
-                        <h3 class="text-base md:text-lg font-hedvig text-navy mb-3 md:mb-4">Deceased Information</h3>
-                        
-                        <!-- First Name & Middle Name (Side by side) -->
-                        <div class="flex flex-wrap -mx-2 mb-3">
-                            <div class="w-full sm:w-1/2 px-2 mb-3 sm:mb-0">
-                                <label for="traditionalDeceasedFirstName" class="block text-sm font-medium text-navy mb-1">First Name <span class="text-red-500">*</span></label>
-                                <input type="text" id="traditionalDeceasedFirstName" name="deceasedFirstName" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" pattern="[A-Za-z'-][A-Za-z'-]*( [A-Za-z'-]+)*" title="Please enter a valid name (letters only, no leading spaces, numbers or symbols)">
+                        <h3 class="text-lg font-hedvig text-navy mb-4">Deceased Information</h3>
+                        <div class="grid grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label for="traditionalDeceasedFirstName" class="block text-sm font-medium text-navy mb-2">First Name <span class="text-red-500">*</label>
+                                <input type="text" id="traditionalDeceasedFirstName" name="deceasedFirstName" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                             </div>
-                            <div class="w-full sm:w-1/2 px-2">
-                                <label for="traditionalDeceasedMiddleName" class="block text-sm font-medium text-navy mb-1">Middle Name</label>
-                                <input type="text" id="traditionalDeceasedMiddleName" name="deceasedMiddleName" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" pattern="[A-Za-z'-][A-Za-z'-]*( [A-Za-z'-]+)*" title="Please enter a valid name (letters only, no leading spaces, numbers or symbols)">
+                            <div>
+                                <label for="traditionalDeceasedMiddleName" class="block text-sm font-medium text-navy mb-2">Middle Name</label>
+                                <input type="text" id="traditionalDeceasedMiddleName" name="deceasedMiddleName" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                             </div>
                         </div>
-                        
                         <!-- Last Name & Suffix (Side by side) -->
                         <div class="flex flex-wrap -mx-2 mb-3">
                             <div class="w-full sm:w-3/4 px-2 mb-3 sm:mb-0">
-                                <label for="traditionalDeceasedLastName" class="block text-sm font-medium text-navy mb-1">Last Name <span class="text-red-500">*</span></label>
+                                <label for="traditionalDeceasedLastName" class="block text-sm font-medium text-navy mb-1">Last Name <span class="text-red-500">*</label>
                                 <input type="text" id="traditionalDeceasedLastName" name="deceasedLastName" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" pattern="[A-Za-z'-][A-Za-z'-]*( [A-Za-z'-]+)*" title="Please enter a valid name (letters only, no leading spaces, numbers or symbols)">
                             </div>
                             <div class="w-full sm:w-1/4 px-2">
@@ -1165,25 +1091,24 @@ require_once '../db_connect.php'; // Database connection
                                 </select>
                             </div>
                         </div>
-                        
-                        <!-- Date fields (Three in a row on larger screens, stacked on mobile) -->
-                        <div class="flex flex-wrap -mx-2 mb-3">
-                            <div class="w-full sm:w-1/3 px-2 mb-3 sm:mb-0">
-                                <label for="traditionalDateOfBirth" class="block text-sm font-medium text-navy mb-1">Date of Birth</label>
+
+                        <div class="grid grid-cols-3 gap-4">
+                            <div>
+                                <label for="traditionalDateOfBirth" class="block text-sm font-medium text-navy mb-2">Date of Birth</label>
                                 <input type="date" id="traditionalDateOfBirth" name="dateOfBirth" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                             </div>
-                            <div class="w-full sm:w-1/3 px-2 mb-3 sm:mb-0">
-                                <label for="traditionalDateOfDeath" class="block text-sm font-medium text-navy mb-1">Date of Death <span class="text-red-500">*</span></label>
+                            <div>
+                                <label for="traditionalDateOfDeath" class="block text-sm font-medium text-navy mb-2">Date of Death <span class="text-red-500">*</label>
                                 <input type="date" id="traditionalDateOfDeath" name="dateOfDeath" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                             </div>
-                            <div class="w-full sm:w-1/3 px-2">
-                                <label for="traditionalDateOfBurial" class="block text-sm font-medium text-navy mb-1">Date of Burial</label>
+                            <div>
+                                <label for="traditionalDateOfBurial" class="block text-sm font-medium text-navy mb-2">Date of Burial</label>
                                 <input type="date" id="traditionalDateOfBurial" name="dateOfBurial" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                             </div>
                         </div>
-                        
+
                         <!-- Death Certificate Upload with Preview -->
-                        <div class="mb-4">
+                        <div class="mb-4 mt-4">
                             <label for="traditionalDeathCertificate" class="block text-sm font-medium text-navy mb-1">Death Certificate</label>
                             <div class="border border-input-border bg-white rounded-lg p-3 focus-within:ring-2 focus-within:ring-yellow-600">
                                 <!-- Upload Button and File Name -->
@@ -1214,11 +1139,11 @@ require_once '../db_connect.php'; // Database connection
                             </div>
                             <p class="text-xs text-gray-500 mt-1">Accepted formats: JPG, JPEG, PNG</p>
                         </div>
-                        
+
                         <!-- Address (Improved UI with dropdowns in specified layout) -->
                         <div class="flex flex-wrap -mx-2 mb-3">
                             <div class="w-full sm:w-1/2 px-2 mb-3 sm:mb-0">
-                                <label for="traditionalDeceasedRegion" class="block text-sm font-medium text-navy mb-1">Region <span class="text-red-500">*</span></label>
+                                <label for="traditionalDeceasedRegion" class="block text-sm font-medium text-navy mb-1">Region <span class="text-red-500">*</label>
                                 <select id="traditionalDeceasedRegion" name="deceasedRegion" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                                     <option value="">Select Region</option>
                                     <option value="NCR">National Capital Region (NCR)</option>
@@ -1228,7 +1153,7 @@ require_once '../db_connect.php'; // Database connection
                                 </select>
                             </div>
                             <div class="w-full sm:w-1/2 px-2">
-                                <label for="traditionalDeceasedProvince" class="block text-sm font-medium text-navy mb-1">Province <span class="text-red-500">*</span></label>
+                                <label for="traditionalDeceasedProvince" class="block text-sm font-medium text-navy mb-1">Province <span class="text-red-500">*</label>
                                 <select id="traditionalDeceasedProvince" name="deceasedProvince" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                                     <option value="">Select Province</option>
                                     <!-- Provinces will be populated by JavaScript based on selected region -->
@@ -1238,47 +1163,32 @@ require_once '../db_connect.php'; // Database connection
                         
                         <div class="flex flex-wrap -mx-2 mb-3">
                             <div class="w-full sm:w-1/2 px-2 mb-3 sm:mb-0">
-                                <label for="traditionalDeceasedCity" class="block text-sm font-medium text-navy mb-1">City/Municipality <span class="text-red-500">*</span></label>
+                                <label for="traditionalDeceasedCity" class="block text-sm font-medium text-navy mb-1">City/Municipality <span class="text-red-500">*</label>
                                 <select id="traditionalDeceasedCity" name="deceasedCity" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                                     <option value="">Select City/Municipality</option>
                                     <!-- Cities will be populated by JavaScript based on selected province -->
                                 </select>
                             </div>
                             <div class="w-full sm:w-1/2 px-2">
-                                <label for="traditionalDeceasedBarangay" class="block text-sm font-medium text-navy mb-1">Barangay <span class="text-red-500">*</span></label>
+                                <label for="traditionalDeceasedBarangay" class="block text-sm font-medium text-navy mb-1">Barangay <span class="text-red-500">*</label>
                                 <select id="traditionalDeceasedBarangay" name="deceasedBarangay" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                                     <option value="">Select Barangay</option>
                                     <!-- Barangays will be populated by JavaScript based on selected city -->
                                 </select>
                             </div>
                         </div>
-                        
-                        <div class="mb-3">
-                            <label for="traditionalDeceasedStreet" class="block text-sm font-medium text-navy mb-1">Street/Block/House Number <span class="text-red-500">*</span></label>
-                            <textarea id="traditionalDeceasedStreet" name="deceasedStreet" rows="3" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" placeholder="Enter detailed street address"></textarea>
+
+                        <div class="mt-4">
+                            <label for="traditionalDeceasedAddress" class="block text-sm font-medium text-navy mb-2">Street/Block/House Number <span class="text-red-500">*</label>
+                            <textarea id="traditionalDeceasedAddress" name="deceasedAddress" rows="3" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600"></textarea>
                         </div>
-                        
+
                         <input type="hidden" id="deceasedAddress" name="deceasedAddress">
                     </div>
 
-                    <!-- Additional Options section -->
                     <div class="border-b border-gray-200 pb-4 mb-4">
-                        <h3 class="text-base md:text-lg font-hedvig text-navy mb-3 md:mb-4">Additional Options</h3>
-                        <div class="flex items-start border rounded-lg p-4">
-                            <input type="checkbox" id="cremationCheckbox" name="cremation" value="40000" 
-                                class="traditional-addon h-5 w-5 text-yellow-600 rounded focus:ring-yellow-500 mt-1" 
-                                data-name="Cremation Service">
-                            <label for="cremationCheckbox" class="ml-3">
-                                <span class="block font-medium mb-1">Cremation Service</span>
-                                <span class="block text-sm text-gray-600 mb-1">Includes cremation and urn</span>
-                                <span class="text-yellow-600">₱40,000</span>
-                            </label>
-                        </div>
-                    </div>
-
-                    <div class="border-b border-gray-200 pb-4 mb-4">
-                        <h3 class="text-base md:text-lg font-hedvig text-navy mb-3 md:mb-4">Payment</h3>
-
+                        <h3 class="text-lg font-hedvig text-navy mb-4">Payment</h3>
+                        
                         <!-- QR Code Button and Modal -->
                         <div class="mb-4">
                             <button type="button" id="showQrCodeBtn" class="w-full bg-navy hover:bg-navy-600 text-white px-4 py-2 rounded-lg flex items-center justify-center transition-all duration-200">
@@ -1286,7 +1196,7 @@ require_once '../db_connect.php'; // Database connection
                                 <span>View GCash QR Code</span>
                             </button>
                         </div>
-                        
+
                         <!-- QR Code Modal -->
                         <div id="qrCodeModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
                             <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
@@ -1303,10 +1213,10 @@ require_once '../db_connect.php'; // Database connection
                                 </div>
                             </div>
                         </div>
-                        
+
                         <!-- GCash Upload with Preview -->
                         <div class="mb-4">
-                            <label for="traditionalGcashReceipt" class="block text-sm font-medium text-navy mb-1">Payment Proof <span class="text-red-500">*</span></label>
+                            <label for="traditionalGcashReceipt" class="block text-sm font-medium text-navy mb-1">Payment Proof <span class="text-red-500">*</label>
                             <div class="border border-input-border bg-white rounded-lg p-3 focus-within:ring-2 focus-within:ring-yellow-600">
                                 <!-- Upload Button and File Name -->
                                 <div class="flex items-center mb-2">
@@ -1336,19 +1246,34 @@ require_once '../db_connect.php'; // Database connection
                             </div>
                             <p class="text-xs text-gray-500 mt-1">Accepted formats: JPG, JPEG, PNG</p>
                         </div>
-                        
                         <div class="mb-3">
-                            <label for="traditionalReferenceNumber" class="block text-sm font-medium text-navy mb-1">Reference Number <span class="text-red-500">*</span></label>
+                            <label for="traditionalReferenceNumber" class="block text-sm font-medium text-navy mb-1">Reference Number <span class="text-red-500">*</label>
                             <input type="text" id="traditionalReferenceNumber" name="referenceNumber" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" placeholder="e.g. 1234567890">
                         </div>
                     </div>
 
-                    <div class="bg-cream p-3 md:p-4 rounded-lg">
-                        <div class="flex justify-between text-xs md:text-sm mb-2">
+                    <!-- Additional Options moved here -->
+                    <div class="border-b border-gray-200 pb-4 mb-4">
+                        <h3 class="text-lg font-hedvig text-navy mb-4">Additional Options</h3>
+                        <div class="flex items-start border rounded-lg p-4">
+                            <input type="checkbox" id="cremationCheckbox" name="cremation" value="40000" 
+                                class="traditional-addon h-5 w-5 text-yellow-600 rounded focus:ring-yellow-500 mt-1" 
+                                data-name="Cremation Service">
+                            <label for="cremationCheckbox" class="ml-3">
+                                <span class="block font-medium mb-1">Cremation Service</span>
+                                <span class="block text-sm text-gray-600 mb-1">Includes cremation and urn</span>
+                                <span class="text-yellow-600">₱40,000</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Payment Summary and Confirm Booking moved here -->
+                    <div class="bg-cream p-4 rounded-lg">
+                        <div class="flex justify-between text-sm mb-2">
                             <span class="text-navy">Package Total</span>
                             <span id="traditionalTotalPrice" class="text-yellow-600">₱0</span>
                         </div>
-                        <div class="flex justify-between text-xs md:text-sm mb-2">
+                        <div class="flex justify-between text-sm mb-2">
                             <span class="text-navy">Required Downpayment (30%)</span>
                             <span id="traditionalDownpayment" class="text-yellow-600">₱0</span>
                         </div>
@@ -1655,54 +1580,37 @@ if (dodField) {
 }
 
     // Death certificate upload validation
-    // Mobile file upload handling
-document.addEventListener('DOMContentLoaded', function() {
-    // Death certificate upload
     const deathCertInput = document.getElementById('traditionalDeathCertificate');
-    const deathCertFileName = document.getElementById('traditionalDeathCertFileName');
-    
     if (deathCertInput) {
         deathCertInput.addEventListener('change', function() {
-            if (this.files.length > 0) {
-                deathCertFileName.textContent = this.files[0].name;
-                // Show preview if image
-                if (this.files[0].type.startsWith('image/')) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        document.getElementById('deathCertImage').src = e.target.result;
-                        document.getElementById('deathCertImagePreview').classList.remove('hidden');
-                        document.getElementById('deathCertPreviewContainer').classList.remove('hidden');
-                    };
-                    reader.readAsDataURL(this.files[0]);
+            const file = this.files[0];
+            if (file) {
+                const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+                if (!validTypes.includes(file.type)) {
+                    alert('Please upload a JPG, JPEG, or PNG file for the death certificate.');
+                    this.value = '';
+                    document.getElementById('traditionalDeathCertFileName').textContent = 'No file chosen';
+                    document.getElementById('deathCertPreviewContainer').classList.add('hidden');
+                    document.getElementById('removeDeathCert').classList.add('hidden');
+                } else {
+                    document.getElementById('traditionalDeathCertFileName').textContent = file.name;
+                    
+                    // Show preview for images
+                    if (file.type.startsWith('image/')) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            document.getElementById('deathCertImage').src = e.target.result;
+                            document.getElementById('deathCertImagePreview').classList.remove('hidden');
+                            document.getElementById('deathCertPreviewContainer').classList.remove('hidden');
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                    
+                    document.getElementById('removeDeathCert').classList.remove('hidden');
                 }
-                document.getElementById('removeDeathCert').classList.remove('hidden');
             }
         });
     }
-
-    // GCash receipt upload
-    const gcashInput = document.getElementById('traditionalGcashReceipt');
-    const gcashFileName = document.getElementById('traditionalGcashFileName');
-    
-    if (gcashInput) {
-        gcashInput.addEventListener('change', function() {
-            if (this.files.length > 0) {
-                gcashFileName.textContent = this.files[0].name;
-                // Show preview if image
-                if (this.files[0].type.startsWith('image/')) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        document.getElementById('gcashImage').src = e.target.result;
-                        document.getElementById('gcashImagePreview').classList.remove('hidden');
-                        document.getElementById('gcashPreviewContainer').classList.remove('hidden');
-                    };
-                    reader.readAsDataURL(this.files[0]);
-                }
-                document.getElementById('removeGcash').classList.remove('hidden');
-            }
-        });
-    }
-});
     
     // Remove death certificate button
     const removeDeathCert = document.getElementById('removeDeathCert');
@@ -1946,31 +1854,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 })
-
-
-// Mobile navigation between package details and booking form
-document.addEventListener('DOMContentLoaded', function() {
-    const continueBtn = document.getElementById('continueToFormBtn');
-    const backBtn = document.getElementById('backToDetailsBtn');
-    const detailsSection = document.querySelector('.details-section');
-    const formSection = document.querySelector('.form-section');
-
-    if (continueBtn && backBtn) {
-        continueBtn.addEventListener('click', function() {
-            detailsSection.classList.add('hidden');
-            formSection.classList.remove('hidden');
-            // Scroll to top of form
-            formSection.scrollIntoView({ behavior: 'smooth' });
-        });
-
-        backBtn.addEventListener('click', function() {
-            formSection.classList.add('hidden');
-            detailsSection.classList.remove('hidden');
-            // Scroll to top of details
-            detailsSection.scrollIntoView({ behavior: 'smooth' });
-        });
-    }
-});
 </script>
 
 
@@ -2617,83 +2500,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     document.getElementById('traditionalBookingForm').addEventListener('submit', function(e) {
         e.preventDefault();
-
-         // Show loading state
-    const submitBtn = this.querySelector('button[type="submit"]');
-    const originalText = submitBtn.innerHTML;
-    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
-    submitBtn.disabled = true;
-
-    // Handle form data
-    const formData = new FormData(this);
-
-    // Mobile-specific validation
-    if (window.innerWidth <= 767) {
-        // Check if required fields are filled
-        const requiredFields = this.querySelectorAll('[required]');
-        let isValid = true;
-        
-        requiredFields.forEach(field => {
-            if (!field.value.trim()) {
-                field.classList.add('border-red-500');
-                isValid = false;
-            } else {
-                field.classList.remove('border-red-500');
-            }
-        });
-
-        if (!isValid) {
-            alert('Please fill in all required fields');
-            submitBtn.innerHTML = originalText;
-            submitBtn.disabled = false;
-            return;
-        }
-    }
-
-    // Submit form (AJAX example)
-    fetch('process_booking.php', {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            // Show success message
-            showNotification('Booking submitted successfully!', 'success');
-            
-            // Close modal after delay
-            setTimeout(() => {
-                document.getElementById('traditionalModal').classList.add('hidden');
-                // Reset form
-                this.reset();
-                // Reset button
-                submitBtn.innerHTML = originalText;
-                submitBtn.disabled = false;
-            }, 1500);
-        } else {
-            showNotification(data.message || 'Error submitting booking', 'error');
-            submitBtn.innerHTML = originalText;
-            submitBtn.disabled = false;
-        }
-    })
-    .catch(error => {
-        showNotification('Network error. Please try again.', 'error');
-        submitBtn.innerHTML = originalText;
-        submitBtn.disabled = false;
-    });
-});
-
-function showNotification(message, type) {
-    const notification = document.getElementById('notification');
-    notification.textContent = message;
-    notification.classList.remove('hidden', 'bg-red-500', 'bg-green-500');
-    notification.classList.add(type === 'success' ? 'bg-green-500' : 'bg-red-500');
-    
-    setTimeout(() => {
-        notification.classList.add('hidden');
-    }, 5000);
-}
-
 
         // Check if payment proof is uploaded
     const paymentProof = document.getElementById('traditionalGcashReceipt').files[0];
