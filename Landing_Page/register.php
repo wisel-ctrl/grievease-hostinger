@@ -58,7 +58,7 @@
                     <!-- Name fields -->
                     <div class="grid grid-cols-2 gap-3">
                         <div class="col-span-1">
-                            <label for="firstName" class="block text-xs font-medium text-white mb-1">First Name</label>
+                            <label for="firstName" class="block text-xs font-medium text-white mb-1">First Name <span class="text-red-500">*</label>
                             <input 
                                 type="text" 
                                 id="firstName" 
@@ -69,7 +69,7 @@
                         </div>
                         
                         <div class="col-span-1">
-                            <label for="lastName" class="block text-xs font-medium text-white mb-1">Last Name</label>
+                            <label for="lastName" class="block text-xs font-medium text-white mb-1">Last Name <span class="text-red-500">*</label>
                             <input 
                                 type="text" 
                                 id="lastName" 
@@ -93,7 +93,7 @@
                         </div>
                         
                         <div class="col-span-1">
-                            <label for="birthdate" class="block text-xs font-medium text-white mb-1">Birthdate</label>
+                            <label for="birthdate" class="block text-xs font-medium text-white mb-1">Birthdate <span class="text-red-500">*</label>
                             <div class="relative">
                                 <input 
                                     type="text" 
@@ -117,7 +117,7 @@
                     
                     <!-- Email -->
                     <div>
-                        <label for="email" class="block text-xs font-medium text-white mb-1">Email Address</label>
+                        <label for="email" class="block text-xs font-medium text-white mb-1">Email Address <span class="text-red-500">*</label>
                         <div class="relative">
                             <input 
                                 type="email" 
@@ -134,7 +134,7 @@
                     
                     <!-- Password -->
                     <div>
-                        <label for="password" class="block text-xs font-medium text-white mb-1">Password</label>
+                        <label for="password" class="block text-xs font-medium text-white mb-1">Password <span class="text-red-500">*</label>
                         <div class="relative">
                             <input 
                                 type="password" 
@@ -154,7 +154,7 @@
 
                     <!-- Confirm Password -->
                     <div>
-                        <label for="confirmPassword" class="block text-xs font-medium text-white mb-1">Confirm Password</label>
+                        <label for="confirmPassword" class="block text-xs font-medium text-white mb-1">Confirm Password <span class="text-red-500">*</label>
                         <div class="relative">
                             <input 
                                 type="password" 
