@@ -2547,7 +2547,7 @@ function populateReceipt(data) {
                 <p class="text-sm"><span class="text-darkgold font-medium">Accepted Date:</span> ${formatDate(data.accepted_date)}</p>
             </div>
             <div class="text-right">
-                <p class="inline-block px-3 py-1 rounded-full bg-success bg-opacity-10 text-success font-medium text-sm">${data.status}</p>
+                <p class="inline-block px-3 py-1 rounded-full bg-opacity-10 text-success font-medium text-sm">${data.status}</p>
             </div>
         </div>
        
