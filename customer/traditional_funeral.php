@@ -1266,7 +1266,21 @@ require_once '../db_connect.php'; // Database connection
                             <input type="text" id="traditionalReferenceNumber" name="referenceNumber" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" placeholder="e.g. 1234567890">
                         </div>
                     </div>
+                    </div>
 
+                    <div class="border-b border-gray-200 pb-4 mb-4">
+                        <h3 class="text-lg font-hedvig text-navy mb-4">Additional Options</h3>
+                        <div class="flex items-start border rounded-lg p-4">
+                            <input type="checkbox" id="cremationCheckbox" name="cremation" value="40000" 
+                                class="traditional-addon h-5 w-5 text-yellow-600 rounded focus:ring-yellow-500 mt-1" 
+                                data-name="Cremation Service">
+                            <label for="cremationCheckbox" class="ml-3">
+                                <span class="block font-medium mb-1">Cremation Service</span>
+                                <span class="block text-sm text-gray-600 mb-1">Includes cremation and urn</span>
+                                <span class="text-yellow-600">₱40,000</span>
+                            </label>
+                        </div>
+                    </div>
 
                     <div class="bg-cream p-4 rounded-lg">
                         <div class="flex justify-between text-sm mb-2">
@@ -1282,7 +1296,6 @@ require_once '../db_connect.php'; // Database connection
                             <span id="traditionalAmountDue" class="text-yellow-600">₱0</span>
                         </div>
                     </div>
-</div>
 
                     <button type="submit" class="w-full bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg shadow-md transition-all duration-300">
                         Confirm Booking
