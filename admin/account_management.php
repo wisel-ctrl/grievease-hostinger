@@ -181,11 +181,6 @@ $customersResult = mysqli_query($conn, $customersQuery);
                                             Default
                                         </span>
                                     </div>
-                                    <div class="flex items-center cursor-pointer filter-option" data-sort="id_desc">
-                                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                                            ID: Descending
-                                        </span>
-                                    </div>
                                     <div class="flex items-center cursor-pointer filter-option" data-sort="name_asc">
                                         <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
                                             Name: A-Z
@@ -256,11 +251,6 @@ $customersResult = mysqli_query($conn, $customersQuery);
                                     <div class="flex items-center cursor-pointer filter-option-mobile" data-sort="id_asc">
                                         <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
                                             Default
-                                        </span>
-                                    </div>
-                                    <div class="flex items-center cursor-pointer filter-option-mobile" data-sort="id_desc">
-                                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                                            ID: Descending
                                         </span>
                                     </div>
                                     <div class="flex items-center cursor-pointer filter-option-mobile" data-sort="name_asc">
@@ -1777,11 +1767,6 @@ if ($result->num_rows > 0) {
                                             Default
                                         </span>
                                     </div>
-                                    <div class="flex items-center cursor-pointer filter-option" data-sort="id_desc">
-                                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                                            ID: Descending
-                                        </span>
-                                    </div>
                                     <div class="flex items-center cursor-pointer filter-option" data-sort="name_asc">
                                         <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
                                             Name: A-Z
@@ -1863,11 +1848,6 @@ if ($result->num_rows > 0) {
                                     <div class="flex items-center cursor-pointer filter-option-mobile" data-sort="id_asc">
                                         <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
                                             Default
-                                        </span>
-                                    </div>
-                                    <div class="flex items-center cursor-pointer filter-option-mobile" data-sort="id_desc">
-                                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                                            ID: Descending
                                         </span>
                                     </div>
                                     <div class="flex items-center cursor-pointer filter-option-mobile" data-sort="name_asc">
