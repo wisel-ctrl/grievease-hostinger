@@ -104,25 +104,7 @@ function generateInventoryRow($row) {
   <!-- Include SweetAlert2 CSS and JS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
-  <style>
-    .modal-scroll-container {
-    scrollbar-width: thin;
-    scrollbar-color: #d4a933 #f5f5f5;
-}
 
-.modal-scroll-container::-webkit-scrollbar {
-    width: 8px;
-}
-
-.modal-scroll-container::-webkit-scrollbar-track {
-    background: #f5f5f5;
-}
-
-.modal-scroll-container::-webkit-scrollbar-thumb {
-    background-color: #d4a933;
-    border-radius: 6px;
-}
-  </style>
 
   
 </head>
@@ -732,7 +714,7 @@ if ($branchResult->num_rows > 0) {
   <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
   
   <!-- Modal Content -->
-  <div class="relative bg-white rounded-xl shadow-card w-full max-w-xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] flex flex-col">
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
     <!-- Close Button -->
     <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeViewItemModal()">
       <i class="fas fa-times"></i>
@@ -746,7 +728,7 @@ if ($branchResult->num_rows > 0) {
     </div>
     
     <!-- Modal Body -->
-    <div class="px-4 sm:px-6 py-4 sm:py-5 overflow-y-auto modal-scroll-container" id="itemDetailsContent">
+    <div class="px-4 sm:px-6 py-4 sm:py-5" id="itemDetailsContent">
       <!-- Item details will be loaded here via AJAX -->
       <div class="flex justify-center">
         <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-sidebar-accent"></div>
@@ -772,7 +754,7 @@ if ($branchResult->num_rows > 0) {
   <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
   
   <!-- Modal Content -->
-  <div class="relative bg-white rounded-xl shadow-card w-full max-w-xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] flex flex-col">
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
     <!-- Close Button -->
     <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeAddInventoryModal()">
       <i class="fas fa-times"></i>
@@ -786,7 +768,7 @@ if ($branchResult->num_rows > 0) {
     </div>
     
     <!-- Modal Body -->
-    <div class="px-4 sm:px-6 py-4 sm:py-5 overflow-y-auto modal-scroll-container">
+    <div class="px-4 sm:px-6 py-4 sm:py-5">
       <form id="addInventoryForm" class="space-y-3 sm:space-y-4">
         <!-- Item Name -->
         <div>
@@ -1207,6 +1189,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Update the loadPage function
 function loadPage(branchId, page) {
+    // Validate page number
+    if (page < 1) page = 1;
+    
+    // Get total pages from the container's data attribute
+    const container = document.querySelector(`.branch-container[data-branch-id="${branchId}"]`);
+    const totalItems = parseInt(container.dataset.totalItems);
+    const itemsPerPage = 5;
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
+    
+    if (page > totalPages) page = totalPages;
+    
     // Show loading indicator
     const loadingIndicator = document.getElementById(`loadingIndicator${branchId}`);
     const tableContainer = document.getElementById(`tableContainer${branchId}`);
@@ -1216,16 +1209,20 @@ function loadPage(branchId, page) {
     
     // Make AJAX request
     fetch(`inventory/load_inventory_table.php?branch_id=${branchId}&page=${page}`)
-        .then(response => response.text())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.text();
+        })
         .then(data => {
             // Update the table content
             document.getElementById(`inventoryTable_${branchId}`).innerHTML = data;
             
-            // Get total items from the container's data attribute
-            const container = document.querySelector(`.branch-container[data-branch-id="${branchId}"]`);
-            const totalItems = parseInt(container.dataset.totalItems);
-            const itemsPerPage = 5;
-            const totalPages = Math.ceil(totalItems / itemsPerPage);
+            // Update URL without reloading
+            const url = new URL(window.location);
+            url.searchParams.set(`page_${branchId}`, page);
+            window.history.pushState({ branchId, page }, '', url);
             
             // Update pagination info
             updatePaginationInfo(branchId, page, totalItems, itemsPerPage);
@@ -1241,6 +1238,11 @@ function loadPage(branchId, page) {
             console.error('Error:', error);
             loadingIndicator.classList.add('hidden');
             tableContainer.style.opacity = '1';
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Failed to load inventory data. Please try again.'
+            });
         });
 }
 
@@ -1359,13 +1361,13 @@ document.addEventListener('DOMContentLoaded', function() {
         const urlParams = new URLSearchParams(window.location.search);
         const currentPage = urlParams.get(`page_${branchId}`) || 1;
         
-        // Get total items from server or container attribute
-        const totalItems = parseInt(container.dataset.totalItems);
-        const itemsPerPage = 5;
+        // Store total items in the container's dataset
+        const totalItems = <?php echo $totalItems; ?>;
+        container.dataset.totalItems = totalItems;
         
         // Initialize pagination
-        updatePaginationInfo(branchId, currentPage, totalItems, itemsPerPage);
-        updatePaginationControls(branchId, currentPage, Math.ceil(totalItems / itemsPerPage));
+        updatePaginationInfo(branchId, currentPage);
+        updatePaginationActiveState(branchId, currentPage);
     });
 });
 
