@@ -1635,7 +1635,7 @@ if (dodField) {
     const cityField = document.getElementById('traditionalDeceasedCity');
     const barangayField = document.getElementById('traditionalDeceasedBarangay');
     // Street address validation
-const streetField = document.getElementById('traditionalDeceasedStreet');
+const streetField = document.getElementById('traditionalDeceasedAddress');
 if (streetField) {
     streetField.addEventListener('input', function(e) {
         let value = this.value;
