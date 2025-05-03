@@ -758,29 +758,19 @@ $custom_offset = ($custom_current_page - 1) * $custom_bookings_per_page;
     
     <!-- Sticky Pagination Footer with improved spacing -->
     <div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
-        <div id="customPaginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
-            <?php 
-            $total_custom_query = "SELECT COUNT(*) as total FROM booking_tb WHERE service_id IS NULL AND status = 'Pending'";
-            $total_custom_result = $conn->query($total_custom_query);
-            $total_custom_bookings = $total_custom_result->fetch_assoc()['total'];
-            
-            if ($total_custom_bookings > 0) {
-                $start = $offset + 1;
-                $end = min($offset + $bookings_per_page, $total_custom_bookings);
-                echo "Showing <span class='font-medium'>{$start}-{$end}</span> of <span class='font-medium'>{$total_custom_bookings}</span> custom " . ($total_custom_bookings != 1 ? "bookings" : "booking");
-            } else {
-                echo "No custom bookings found";
-            }
-            ?>
-        </div>
-        <div id="customPaginationContainer" class="flex space-x-1">
-            <!-- Pagination will be added when there are records -->
-        </div>
-    </div>
+    <div id="customPaginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
+    <?php 
+    if ($total_custom_bookings > 0) {
+        $custom_start = $custom_offset + 1;
+        $custom_end = min($custom_offset + $custom_bookings_per_page, $total_custom_bookings);
+        echo "Showing {$custom_start}-{$custom_end} of {$total_custom_bookings} custom " . ($total_custom_bookings != 1 ? "bookings" : "booking");
+    } else {
+        echo "No custom bookings found";
+    }
+    ?>
 </div>
-
-
-<div id="customPaginationContainer" class="flex items-center justify-center space-x-2">
+        </div>
+        <div id="customPaginationContainer" class="flex items-center justify-center space-x-2">
 <?php if ($total_custom_pages > 1): ?>
     <!-- First page button -->
     <a href="?custom_page=1" class="flex items-center justify-center w-9 h-9 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($custom_current_page == 1) ? 'opacity-50 pointer-events-none' : ''; ?>">
@@ -814,6 +804,8 @@ $custom_offset = ($custom_current_page - 1) * $custom_bookings_per_page;
     </a>
 <?php endif; ?>
 </div>
+  </div>
+
 
 <!-- LifePlan Bookings List -->
 <div id="lifeplan-bookings" class="bg-white rounded-lg shadow-md mb-8 border border-sidebar-border overflow-hidden">
