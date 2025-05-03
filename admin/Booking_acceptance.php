@@ -947,7 +947,7 @@ $offset = ($current_page - 1) * $bookings_per_page;
     
     <!-- Modal Body -->
     <div class="px-4 sm:px-6 py-4 sm:py-5">
-      <!-- Booking ID and Status Banner - Always in same row -->
+      <!-- Top Info Bar - Booking ID and Status -->
       <div class="flex justify-between items-center mb-6 bg-gray-50 p-3 sm:p-4 rounded-lg">
         <div class="flex items-center">
           <div class="bg-navy rounded-full p-2 mr-3">
@@ -968,13 +968,14 @@ $offset = ($current_page - 1) * $bookings_per_page;
         </div>
       </div>
       
-      <!-- Content Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-        <!-- Left Column -->
-        <div class="space-y-3 sm:space-y-4">
+      <!-- Main Content Area -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+        <!-- Left Column - Essential Information -->
+        <div class="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
           <!-- Customer Information -->
           <div class="bg-white rounded-lg p-4 sm:p-5 border border-gray-200 shadow-sm">
             <h4 class="font-semibold text-gray-800 mb-3 sm:mb-4 flex items-center">
+              <i class="fas fa-user mr-2 text-sidebar-accent"></i>
               Customer Information
             </h4>
             <div class="space-y-2 sm:space-y-3">
@@ -997,76 +998,83 @@ $offset = ($current_page - 1) * $bookings_per_page;
             </div>
           </div>
 
-          <!-- Service Details -->
+          <!-- Deceased Information -->
           <div class="bg-white rounded-lg p-4 sm:p-5 border border-gray-200 shadow-sm">
             <h4 class="font-semibold text-gray-800 mb-3 sm:mb-4 flex items-center">
-              Service Details
+              <i class="fas fa-angel mr-2 text-sidebar-accent"></i>
+              Deceased Information
             </h4>
             <div class="space-y-2 sm:space-y-3">
               <div class="flex flex-wrap">
-                <div class="w-1/3 text-sm text-gray-500">Service Type</div>
-                <div class="w-2/3 font-medium text-gray-800 break-words" id="serviceType">Funeral Service Package A</div>
+                <div class="w-1/3 text-sm text-gray-500">Full Name</div>
+                <div class="w-2/3 font-medium text-gray-800 break-words" id="deceasedFullName">
+                  <!-- Will be populated by JavaScript -->
+                </div>
               </div>
               <div class="flex flex-wrap">
-                <div class="w-1/3 text-sm text-gray-500">Date Requested</div>
-                <div class="w-2/3 font-medium text-gray-800 break-words" id="dateRequested">Mar 15, 2025</div>
+                <div class="w-1/3 text-sm text-gray-500">Date of Birth</div>
+                <div class="w-2/3 font-medium text-gray-800 break-words" id="deceasedBirth">
+                  <!-- Will be populated by JavaScript -->
+                </div>
               </div>
               <div class="flex flex-wrap">
-                <div class="w-1/3 text-sm text-gray-500">Service Date</div>
-                <div class="w-2/3 font-medium text-gray-800 break-words" id="serviceDate">Mar 20, 2025</div>
+                <div class="w-1/3 text-sm text-gray-500">Date of Death</div>
+                <div class="w-2/3 font-medium text-gray-800 break-words" id="deceasedDeath">
+                  <!-- Will be populated by JavaScript -->
+                </div>
               </div>
               <div class="flex flex-wrap">
-                <div class="w-1/3 text-sm text-gray-500">Price</div>
-                <div class="w-2/3 font-medium text-gray-800 break-words" id="amountPaid">$3,500.00</div>
+                <div class="w-1/3 text-sm text-gray-500">Address</div>
+                <div class="w-2/3 font-medium text-gray-800 break-words" id="deceasedAddress">
+                  <!-- Will be populated by JavaScript -->
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        <div class="bg-white rounded-lg p-4 sm:p-5 border border-gray-200 shadow-sm">
-          <h4 class="font-semibold text-gray-800 mb-3 sm:mb-4 flex items-center">
-            <i class="fas fa-angel mr-2"></i>
-            Deceased Information
-          </h4>
-          <div class="space-y-2 sm:space-y-3">
-            <div class="flex flex-wrap">
-              <div class="w-1/3 text-sm text-gray-500">Full Name</div>
-              <div class="w-2/3 font-medium text-gray-800 break-words" id="deceasedFullName">
-                <!-- Will be populated by JavaScript -->
+          <!-- Service Details -->
+          <div class="bg-white rounded-lg p-4 sm:p-5 border border-gray-200 shadow-sm md:col-span-2">
+            <h4 class="font-semibold text-gray-800 mb-3 sm:mb-4 flex items-center">
+              <i class="fas fa-calendar-check mr-2 text-sidebar-accent"></i>
+              Service Details
+            </h4>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div class="space-y-2 sm:space-y-3">
+                <div class="flex flex-wrap">
+                  <div class="w-1/3 text-sm text-gray-500">Service Type</div>
+                  <div class="w-2/3 font-medium text-gray-800 break-words" id="serviceType">Funeral Service Package A</div>
+                </div>
+                <div class="flex flex-wrap">
+                  <div class="w-1/3 text-sm text-gray-500">Date Requested</div>
+                  <div class="w-2/3 font-medium text-gray-800 break-words" id="dateRequested">Mar 15, 2025</div>
+                </div>
               </div>
-            </div>
-            <div class="flex flex-wrap">
-              <div class="w-1/3 text-sm text-gray-500">Date of Birth</div>
-              <div class="w-2/3 font-medium text-gray-800 break-words" id="deceasedBirth">
-                <!-- Will be populated by JavaScript -->
-              </div>
-            </div>
-            <div class="flex flex-wrap">
-              <div class="w-1/3 text-sm text-gray-500">Date of Death</div>
-              <div class="w-2/3 font-medium text-gray-800 break-words" id="deceasedDeath">
-                <!-- Will be populated by JavaScript -->
-              </div>
-            </div>
-            <div class="flex flex-wrap">
-              <div class="w-1/3 text-sm text-gray-500">Address</div>
-              <div class="w-2/3 font-medium text-gray-800 break-words" id="deceasedAddress">
-                <!-- Will be populated by JavaScript -->
+              <div class="space-y-2 sm:space-y-3">
+                <div class="flex flex-wrap">
+                  <div class="w-1/3 text-sm text-gray-500">Service Date</div>
+                  <div class="w-2/3 font-medium text-gray-800 break-words" id="serviceDate">Mar 20, 2025</div>
+                </div>
+                <div class="flex flex-wrap">
+                  <div class="w-1/3 text-sm text-gray-500">Price</div>
+                  <div class="w-2/3 font-medium text-gray-800 break-words" id="amountPaid">$3,500.00</div>
+                </div>
               </div>
             </div>
           </div>
         </div>
         
-        <!-- Right Column -->
-        <div class="space-y-3 sm:space-y-4">
-          <!-- Documents -->
-          <div class="bg-white rounded-lg p-4 sm:p-5 border border-gray-200 shadow-sm">
+        <!-- Right Column - Documents -->
+        <div class="lg:col-span-1">
+          <div class="bg-white rounded-lg p-4 sm:p-5 border border-gray-200 shadow-sm h-full">
             <h4 class="font-semibold text-gray-800 mb-3 sm:mb-4 flex items-center">
+              <i class="fas fa-file-alt mr-2 text-sidebar-accent"></i>
               Documents
             </h4>
             
             <!-- Death Certificate -->
             <div id="deathCertificateSection" class="mb-4 sm:mb-5">
               <h5 class="font-medium text-gray-700 mb-2 flex items-center">
+                <i class="fas fa-certificate text-sm mr-2 text-gray-500"></i>
                 Death Certificate
               </h5>
               <div class="border border-gray-200 rounded-lg overflow-hidden">
@@ -1092,6 +1100,7 @@ $offset = ($current_page - 1) * $bookings_per_page;
             <!-- Payment Proof -->
             <div>
               <h5 class="font-medium text-gray-700 mb-2 flex items-center">
+                <i class="fas fa-receipt text-sm mr-2 text-gray-500"></i>
                 Payment Proof
               </h5>
               <div class="border border-gray-200 rounded-lg overflow-hidden">
@@ -1113,9 +1122,11 @@ $offset = ($current_page - 1) * $bookings_per_page;
     <!-- Modal Footer --> 
     <div class="px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row sm:justify-end gap-2 sm:gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
       <button class="w-full sm:w-auto px-4 sm:px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center" onclick="confirmDecline()">
+        <i class="fas fa-times-circle mr-2"></i>
         Decline Booking
       </button>
       <button class="w-full sm:w-auto px-5 sm:px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="confirmAccept()">
+        <i class="fas fa-check-circle mr-2"></i>
         Accept Booking
       </button>
     </div>
