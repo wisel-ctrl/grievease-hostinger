@@ -1174,51 +1174,7 @@ function formatQuantityChange(change, oldQty, newQty) {
 }
 
 // Helper function to update pagination info
-// Update the loadInventoryLogs function to properly initialize the pagination info
-function loadInventoryLogs(page = 1) {
-    const loadingIndicator = document.getElementById('inventoryLoadingIndicator');
-    const tableBody = document.getElementById('inventoryLogsBody');
-    const paginationInfo = document.getElementById('paginationInfo');
-    const paginationControls = document.getElementById('paginationControls');
-    
-    // Show loading state
-    loadingIndicator.classList.remove('hidden');
-    tableBody.innerHTML = '';
-    paginationInfo.innerHTML = 'Loading data...';
-    
-    // Disable pagination controls while loading
-    paginationControls.innerHTML = `
-        <button class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm opacity-50 cursor-not-allowed" disabled>&laquo;</button>
-        <button class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm bg-sidebar-accent text-white">${page}</button>
-        <button class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm opacity-50 cursor-not-allowed" disabled>&raquo;</button>
-    `;
-    
-    fetch(`dashboard/fetch_inventory_logs.php?page=${page}`)
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // ... rest of your existing success handling code ...
-            } else {
-                showError(tableBody, data.error);
-                paginationInfo.innerHTML = 'Error loading data';
-            }
-        })
-        .catch(error => {
-            showError(tableBody, error.message);
-            paginationInfo.innerHTML = 'Error loading data';
-        })
-        .finally(() => {
-            loadingIndicator.classList.add('hidden');
-        });
-}
-
-// Update the updatePaginationInfo function to handle initial state
 function updatePaginationInfo(element, currentPage, perPage, totalItems) {
-    if (totalItems === 0) {
-        element.innerHTML = 'No activities found';
-        return;
-    }
-    
     const startItem = (currentPage - 1) * perPage + 1;
     const endItem = Math.min(currentPage * perPage, totalItems);
     element.innerHTML = `
