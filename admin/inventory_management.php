@@ -714,7 +714,7 @@ if ($branchResult->num_rows > 0) {
   <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
   
   <!-- Modal Content -->
-  <div class="relative bg-white rounded-xl shadow-card w-full max-w-xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] flex flex-col">
     <!-- Close Button -->
     <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeViewItemModal()">
       <i class="fas fa-times"></i>
@@ -728,7 +728,7 @@ if ($branchResult->num_rows > 0) {
     </div>
     
     <!-- Modal Body -->
-    <div class="px-4 sm:px-6 py-4 sm:py-5" id="itemDetailsContent">
+    <div class="px-4 sm:px-6 py-4 sm:py-5 overflow-y-auto modal-scroll-container" id="itemDetailsContent">
       <!-- Item details will be loaded here via AJAX -->
       <div class="flex justify-center">
         <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-sidebar-accent"></div>
