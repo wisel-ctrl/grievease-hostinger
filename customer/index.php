@@ -703,74 +703,68 @@ $show_id_card = !$has_id || strtolower($id_data['is_validated']) != 'valid';
     <?php endif; ?>
     
     <?php if ($show_profile_card): ?>
-<!-- Profile Completion Card -->
-<div class="bg-white rounded-xl shadow-lg p-6 dashboard-card transition-all duration-300">
-    <div class="flex items-start justify-between mb-4">
-        <div>
-            <p class="text-sm text-gray-500 font-medium">Profile Completion</p>
-            <h3 class="text-xl font-hedvig text-navy"><?= $status_text ?></h3>
+    <!-- Profile Completion Card -->
+    <div class="bg-white rounded-xl shadow-lg p-6 dashboard-card transition-all duration-300">
+        <div class="flex items-start justify-between mb-4">
+            <div>
+                <p class="text-sm text-gray-500 font-medium">Profile Completion</p>
+                <h3 class="text-xl font-hedvig text-navy"><?= $status_text ?></h3>
+            </div>
+            <div class="w-10 h-10 rounded-full bg-yellow-600/10 flex items-center justify-center">
+                <i class="fas fa-user-circle text-yellow-600"></i>
+            </div>
         </div>
-        <div class="w-10 h-10 rounded-full bg-yellow-600/10 flex items-center justify-center">
-            <i class="fas fa-user-circle text-yellow-600"></i>
-        </div>
-    </div>
-    
-    <!-- Progress bar -->
-    <div class="w-full bg-gray-200 rounded-full h-2.5 mb-4">
-        <div class="bg-yellow-600 h-2.5 rounded-full" style="width: <?= $percentage ?>%"></div>
-    </div>
-    
-    <!-- Completion steps -->
-    <div class="space-y-2 mb-4">
-        <?php foreach ($check_icons as $item): ?>
-        <div class="flex items-center text-sm">
-            <i class="fas <?= $item['icon'] ?> <?= $item['color'] ?> mr-2"></i>
-            <span><?= $item['text'] ?></span>
-        </div>
-        <?php endforeach; ?>
         
-        <?php if ($percentage < 100): ?>
-            <?php if (!in_array('Account Verified', array_column($check_icons, 'text'))): ?>
-                <div class="flex items-center text-sm text-gray-400">
-                    <i class="far fa-circle mr-2"></i>
-                    <span>Verify Account</span>
-                </div>
-            <?php endif; ?>
+        <!-- Progress bar -->
+        <div class="w-full bg-gray-200 rounded-full h-2.5 mb-4">
+            <div class="bg-yellow-600 h-2.5 rounded-full" style="width: <?= $percentage ?>%"></div>
+        </div>
+        
+        <!-- Completion steps -->
+        <div class="space-y-2 mb-4">
+            <?php foreach ($check_icons as $item): ?>
+            <div class="flex items-center text-sm">
+                <i class="fas <?= $item['icon'] ?> <?= $item['color'] ?> mr-2"></i>
+                <span><?= $item['text'] ?></span>
+            </div>
+            <?php endforeach; ?>
             
-            <?php if (!in_array('Branch Selected', array_column($check_icons, 'text'))): ?>
-                <div class="flex items-center text-sm text-gray-400">
-                    <i class="far fa-circle mr-2"></i>
-                    <span>
-                        <?php if (in_array('Account Verified', array_column($check_icons, 'text'))): ?>
-                            <a href="packages.php" class="text-yellow-600 hover:underline">Select Branch</a>
-                        <?php else: ?>
-                            Select Branch
-                        <?php endif; ?>
-                    </span>
-                </div>
+            <?php if ($percentage < 100): ?>
+                <?php if (!in_array('Account Verified', array_column($check_icons, 'text'))): ?>
+                    <div class="flex items-center text-sm text-gray-400">
+                        <i class="far fa-circle mr-2"></i>
+                        <span>Verify Account</span>
+                    </div>
+                <?php endif; ?>
+                
+                <?php if (!in_array('Branch Selected', array_column($check_icons, 'text'))): ?>
+                    <div class="flex items-center text-sm text-gray-400">
+                        <i class="far fa-circle mr-2"></i>
+                        <span>Select Branch</span>
+                    </div>
+                <?php endif; ?>
+                
+                <?php if (!in_array('ID Uploaded', array_column($check_icons, 'text')) && !in_array('ID Verified', array_column($check_icons, 'text'))): ?>
+                    <div class="flex items-center text-sm text-gray-400">
+                        <i class="far fa-circle mr-2"></i>
+                        <span>Upload ID</span>
+                    </div>
+                <?php endif; ?>
+                
+                <?php if (in_array('ID Uploaded', array_column($check_icons, 'text')) && !in_array('ID Verified', array_column($check_icons, 'text'))): ?>
+                    <div class="flex items-center text-sm text-gray-400">
+                        <i class="far fa-circle mr-2"></i>
+                        <span>Verify ID</span>
+                    </div>
+                <?php endif; ?>
             <?php endif; ?>
-            
-            <?php if (!in_array('ID Uploaded', array_column($check_icons, 'text')) && !in_array('ID Verified', array_column($check_icons, 'text'))): ?>
-                <div class="flex items-center text-sm text-gray-400">
-                    <i class="far fa-circle mr-2"></i>
-                    <span>Upload ID</span>
-                </div>
-            <?php endif; ?>
-            
-            <?php if (in_array('ID Uploaded', array_column($check_icons, 'text')) && !in_array('ID Verified', array_column($check_icons, 'text'))): ?>
-                <div class="flex items-center text-sm text-gray-400">
-                    <i class="far fa-circle mr-2"></i>
-                    <span>Verify ID</span>
-                </div>
-            <?php endif; ?>
-        <?php endif; ?>
+        </div>
+        
+        <a href="profile.php#personal-info" class="text-sm text-yellow-600 hover:text-darkgold font-medium flex items-center">
+            <?= $percentage < 100 ? 'Complete Profile' : 'View Profile' ?> <i class="fas fa-arrow-right ml-2"></i>
+        </a>
     </div>
-    
-    <a href="profile.php#personal-info" class="text-sm text-yellow-600 hover:text-darkgold font-medium flex items-center">
-        <?= $percentage < 100 ? 'Complete Profile' : 'View Profile' ?> <i class="fas fa-arrow-right ml-2"></i>
-    </a>
-</div>
-<?php endif; ?>
+    <?php endif; ?>
     
     <?php if ($show_id_card): ?>
     <!-- ID Verification Card -->
