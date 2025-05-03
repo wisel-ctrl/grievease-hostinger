@@ -2790,31 +2790,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let currentDocumentUrl = '';
     
     // In your fetchBookingDetails function, update the button event handlers:
-viewDeathCertBtn.addEventListener('click', function() {
-    if (currentDeathCertUrl) {
-        openDocumentModal('death_cert', currentDeathCertUrl);
-    } else {
-        Swal.fire({
-            icon: 'info',
-            title: 'No Document',
-            text: 'No death certificate has been uploaded for this booking',
-            confirmButtonColor: '#d4a933'
-        });
-    }
-});
 
-viewPaymentBtn.addEventListener('click', function() {
-    if (currentPaymentUrl) {
-        openDocumentModal('payment_proof', currentPaymentUrl);
-    } else {
-        Swal.fire({
-            icon: 'info',
-            title: 'No Document',
-            text: 'No payment proof has been uploaded for this booking',
-            confirmButtonColor: '#d4a933'
-        });
-    }
-});
 
     // Close Modal Buttons
     const closeModalButtons = document.querySelectorAll('.close-modal');
