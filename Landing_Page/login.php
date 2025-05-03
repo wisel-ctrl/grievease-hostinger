@@ -37,8 +37,27 @@ header("Pragma: no-cache");
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Hedvig+Letters+Serif&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
     <script src="../tailwind.js"></script>
+    <style>/* Custom SweetAlert button colors */
+.swal2-styled.swal2-confirm {
+    background-color: #d97706 !important; /* Your yellow-600 color */
+    border-color: #d97706 !important;
+}
+
+.swal2-styled.swal2-confirm:hover {
+    background-color: #b65c04 !important; /* Darker yellow for hover */
+}
+
+.swal2-styled.swal2-cancel {
+    background-color: #ef4444 !important; /* Your red color */
+    border-color: #ef4444 !important;
+}
+
+.swal2-styled.swal2-cancel:hover {
+    background-color: #dc2626 !important; /* Darker red for hover */
+}</style>
 </head>
 <body class="font-hedvig text-navy antialiased">
     <!-- Semi-transparent overlay -->
@@ -474,7 +493,6 @@ header("Pragma: no-cache");
                                     text: `You have successfully logged in as ${response.role}.`,
                                     icon: "success",
                                     button: "Continue",
-                                    confirmButtonColor: "#4CAF50",
                                 }).then(() => {
                                     // Redirect based on user type
                                     window.location.href = response.redirect;
