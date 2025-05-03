@@ -1063,7 +1063,7 @@ require_once '../db_connect.php'; // Database connection
                         <h3 class="text-lg font-hedvig text-navy mb-4">Deceased Information</h3>
                         <div class="grid grid-cols-2 gap-4 mb-4">
                             <div>
-                                <label for="traditionalDeceasedFirstName" class="block text-sm font-medium text-navy mb-2">First Name *</label>
+                                <label for="traditionalDeceasedFirstName" class="block text-sm font-medium text-navy mb-2">First Name <span class="text-red-500">*</label>
                                 <input type="text" id="traditionalDeceasedFirstName" name="deceasedFirstName" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                             </div>
                             <div>
@@ -1074,9 +1074,7 @@ require_once '../db_connect.php'; // Database connection
                         <!-- Last Name & Suffix (Side by side) -->
                         <div class="flex flex-wrap -mx-2 mb-3">
                             <div class="w-full sm:w-3/4 px-2 mb-3 sm:mb-0">
-                            <label for="traditionalDeceasedLastName" class="block text-sm font-medium text-navy mb-1">
-    <span class="text-red-500">*</span> Last Name <span class="text-red-500">*</span>
-</label>
+                                <label for="traditionalDeceasedLastName" class="block text-sm font-medium text-navy mb-1">Last Name <span class="text-red-500">*</label>
                                 <input type="text" id="traditionalDeceasedLastName" name="deceasedLastName" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" pattern="[A-Za-z'-][A-Za-z'-]*( [A-Za-z'-]+)*" title="Please enter a valid name (letters only, no leading spaces, numbers or symbols)">
                             </div>
                             <div class="w-full sm:w-1/4 px-2">
@@ -1100,7 +1098,7 @@ require_once '../db_connect.php'; // Database connection
                                 <input type="date" id="traditionalDateOfBirth" name="dateOfBirth" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                             </div>
                             <div>
-                                <label for="traditionalDateOfDeath" class="block text-sm font-medium text-navy mb-2">Date of Death *</label>
+                                <label for="traditionalDateOfDeath" class="block text-sm font-medium text-navy mb-2">Date of Death <span class="text-red-500">*</label>
                                 <input type="date" id="traditionalDateOfDeath" name="dateOfDeath" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                             </div>
                             <div>
@@ -1145,7 +1143,7 @@ require_once '../db_connect.php'; // Database connection
                         <!-- Address (Improved UI with dropdowns in specified layout) -->
                         <div class="flex flex-wrap -mx-2 mb-3">
                             <div class="w-full sm:w-1/2 px-2 mb-3 sm:mb-0">
-                                <label for="traditionalDeceasedRegion" class="block text-sm font-medium text-navy mb-1">Region</label>
+                                <label for="traditionalDeceasedRegion" class="block text-sm font-medium text-navy mb-1">Region <span class="text-red-500">*</label>
                                 <select id="traditionalDeceasedRegion" name="deceasedRegion" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                                     <option value="">Select Region</option>
                                     <option value="NCR">National Capital Region (NCR)</option>
@@ -1155,7 +1153,7 @@ require_once '../db_connect.php'; // Database connection
                                 </select>
                             </div>
                             <div class="w-full sm:w-1/2 px-2">
-                                <label for="traditionalDeceasedProvince" class="block text-sm font-medium text-navy mb-1">Province</label>
+                                <label for="traditionalDeceasedProvince" class="block text-sm font-medium text-navy mb-1">Province <span class="text-red-500">*</label>
                                 <select id="traditionalDeceasedProvince" name="deceasedProvince" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                                     <option value="">Select Province</option>
                                     <!-- Provinces will be populated by JavaScript based on selected region -->
@@ -1165,14 +1163,14 @@ require_once '../db_connect.php'; // Database connection
                         
                         <div class="flex flex-wrap -mx-2 mb-3">
                             <div class="w-full sm:w-1/2 px-2 mb-3 sm:mb-0">
-                                <label for="traditionalDeceasedCity" class="block text-sm font-medium text-navy mb-1">City/Municipality</label>
+                                <label for="traditionalDeceasedCity" class="block text-sm font-medium text-navy mb-1">City/Municipality <span class="text-red-500">*</label>
                                 <select id="traditionalDeceasedCity" name="deceasedCity" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                                     <option value="">Select City/Municipality</option>
                                     <!-- Cities will be populated by JavaScript based on selected province -->
                                 </select>
                             </div>
                             <div class="w-full sm:w-1/2 px-2">
-                                <label for="traditionalDeceasedBarangay" class="block text-sm font-medium text-navy mb-1">Barangay</label>
+                                <label for="traditionalDeceasedBarangay" class="block text-sm font-medium text-navy mb-1">Barangay <span class="text-red-500">*</label>
                                 <select id="traditionalDeceasedBarangay" name="deceasedBarangay" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                                     <option value="">Select Barangay</option>
                                     <!-- Barangays will be populated by JavaScript based on selected city -->
@@ -1181,7 +1179,7 @@ require_once '../db_connect.php'; // Database connection
                         </div>
 
                         <div class="mt-4">
-                            <label for="traditionalDeceasedAddress" class="block text-sm font-medium text-navy mb-2">Street/Block/House Number</label>
+                            <label for="traditionalDeceasedAddress" class="block text-sm font-medium text-navy mb-2">Street/Block/House Number <span class="text-red-500">*</label>
                             <textarea id="traditionalDeceasedAddress" name="deceasedAddress" rows="3" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600"></textarea>
                         </div>
 
@@ -1189,7 +1187,7 @@ require_once '../db_connect.php'; // Database connection
                     </div>
 
                     <div class="border-b border-gray-200 pb-4 mb-4">
-                        <h3 class="text-lg font-hedvig text-navy mb-4">Payment</h3>
+                        <h3 class="text-lg font-hedvig text-navy mb-4">Payment <span class="text-red-500">*</h3>
                         
                         <!-- QR Code Button and Modal -->
                         <div class="mb-4">
@@ -1218,7 +1216,7 @@ require_once '../db_connect.php'; // Database connection
 
                         <!-- GCash Upload with Preview -->
                         <div class="mb-4">
-                            <label for="traditionalGcashReceipt" class="block text-sm font-medium text-navy mb-1">Payment Proof</label>
+                            <label for="traditionalGcashReceipt" class="block text-sm font-medium text-navy mb-1">Payment Proof <span class="text-red-500">*</label>
                             <div class="border border-input-border bg-white rounded-lg p-3 focus-within:ring-2 focus-within:ring-yellow-600">
                                 <!-- Upload Button and File Name -->
                                 <div class="flex items-center mb-2">
@@ -1249,7 +1247,7 @@ require_once '../db_connect.php'; // Database connection
                             <p class="text-xs text-gray-500 mt-1">Accepted formats: JPG, JPEG, PNG</p>
                         </div>
                         <div class="mb-3">
-                            <label for="traditionalReferenceNumber" class="block text-sm font-medium text-navy mb-1">Reference Number *</label>
+                            <label for="traditionalReferenceNumber" class="block text-sm font-medium text-navy mb-1">Reference Number <span class="text-red-500">*</label>
                             <input type="text" id="traditionalReferenceNumber" name="referenceNumber" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" placeholder="e.g. 1234567890">
                         </div>
                     </div>
