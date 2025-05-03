@@ -989,15 +989,75 @@ $custom_offset = ($custom_current_page - 1) * $custom_bookings_per_page;
                     </tr>
                 </thead>
                 <tbody id="lifeplanBookingTableBody">
-                    <!-- This section will be populated when you add your data -->
-                    <tr>
-                        <td colspan="6" class="px-4 py-6 text-sm text-center">
-                            <div class="flex flex-col items-center">
-                                <i class="fas fa-inbox text-gray-300 text-4xl mb-3"></i>
-                                <p class="text-gray-500">No lifeplan bookings found</p>
-                            </div>
-                        </td>
-                    </tr>
+                    <?php
+                    // Query to get lifeplan bookings
+                    $lifeplanQuery = "SELECT lb.*, 
+                                    CONCAT(u.first_name, ' ', COALESCE(u.middle_name, ''), ' ', u.last_name, ' ', COALESCE(u.suffix, '')) AS customer_name,
+                                    s.service_name
+                                    FROM lifeplan_booking_tb lb
+                                    JOIN users u ON lb.customer_id = u.id
+                                    LEFT JOIN services_tb s ON lb.service_id = s.service_id
+                                    ORDER BY lb.id DESC
+                                    LIMIT 10";
+                    
+                    $lifeplanResult = $conn->query($lifeplanQuery);
+                    
+                    if ($lifeplanResult->num_rows > 0) {
+                        while ($row = $lifeplanResult->fetch_assoc()) {
+                            // Format booking ID
+                            $bookingId = "#LP-" . date('Y') . "-" . str_pad($row['id'], 3, '0', STR_PAD_LEFT);
+                            
+                            // Status badge class
+                            $statusClass = "bg-yellow-100 text-yellow-800 border border-yellow-200";
+                            $statusIcon = "fa-clock";
+                            if ($row['booking_status'] == 'Confirmed') {
+                                $statusClass = "bg-green-100 text-green-600 border border-green-200";
+                                $statusIcon = "fa-check-circle";
+                            } elseif ($row['booking_status'] == 'Cancelled') {
+                                $statusClass = "bg-red-100 text-red-600 border border-red-200";
+                                $statusIcon = "fa-times-circle";
+                            }
+                    ?>
+                            <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
+                                <td class="px-4 py-3.5 text-sm text-sidebar-text font-medium"><?php echo htmlspecialchars($bookingId); ?></td>
+                                <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo htmlspecialchars($row['customer_name']); ?></td>
+                                <td class="px-4 py-3.5 text-sm text-sidebar-text">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-50 text-purple-700 border border-purple-100">
+                                        <?php echo htmlspecialchars($row['service_name'] ?: 'Custom LifePlan'); ?>
+                                    </span>
+                                </td>
+                                <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo htmlspecialchars($row['payment_duration']); ?></td>
+                                <td class="px-4 py-3.5 text-sm text-sidebar-text">₱<?php echo number_format($row['package_price'], 2); ?></td>
+                                <td class="px-4 py-3.5 text-sm">
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium <?php echo $statusClass; ?>">
+                                        <i class="fas <?php echo $statusIcon; ?> mr-1"></i> <?php echo htmlspecialchars($row['booking_status']); ?>
+                                    </span>
+                                </td>
+                                <td class="px-4 py-3.5 text-sm">
+                                    <div class="flex space-x-2">
+                                        <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" 
+                                                title="View Details" 
+                                                onclick="openLifeplanDetails(<?php echo $row['id']; ?>)">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                    <?php
+                        }
+                    } else {
+                    ?>
+                        <tr>
+                            <td colspan="7" class="px-4 py-6 text-sm text-center">
+                                <div class="flex flex-col items-center">
+                                    <i class="fas fa-inbox text-gray-300 text-4xl mb-3"></i>
+                                    <p class="text-gray-500">No lifeplan bookings found</p>
+                                </div>
+                            </td>
+                        </tr>
+                    <?php
+                    }
+                    ?>
                 </tbody>
             </table>
         </div>
