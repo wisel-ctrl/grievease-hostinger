@@ -1546,7 +1546,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             </div>
 
                             <div>
-                                <label for="dob" class="block text-sm font-medium text-gray-700 mb-2">Date of Birth</label>
+                                <label for="dob" class="block text-sm font-medium text-gray-700 mb-2">Date of Birth <span class="text-red-500">*</span></label>
                                 <div class="relative">
                                     <input type="date" id="dob" name="dob" value="<?php echo htmlspecialchars($birthdate); ?>" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-base shadow-sm transition-all duration-200">
                                     <span class="absolute right-4 top-1/2 transform -translate-y-1/2 text-yellow-600">
@@ -1598,7 +1598,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6">
                             <!-- Region Dropdown -->
                             <div class="relative">
-                                <label for="region" class="block text-sm font-medium text-gray-700 mb-2">Region</label>
+                                <label for="region" class="block text-sm font-medium text-gray-700 mb-2">Region <span class="text-red-500">*</span></label>
                                 <div class="relative">
                                     <select id="region" name="region" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent appearance-none text-base shadow-sm transition-all duration-200" onchange="updateProvinces()">
                                         <option value="" selected disabled>Select Region</option>
@@ -1618,7 +1618,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             
                             <!-- Province Dropdown -->
                             <div class="relative">
-                                <label for="province" class="block text-sm font-medium text-gray-700 mb-2">Province</label>
+                                <label for="province" class="block text-sm font-medium text-gray-700 mb-2">Province <span class="text-red-500">*</span></label>
                                 <div class="relative">
                                     <select id="province" name="province" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent appearance-none text-base shadow-sm transition-all duration-200" onchange="updateCities()" disabled>
                                         <option value="" selected disabled>Select Province</option>
@@ -1633,7 +1633,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             
                             <!-- City/Municipality Dropdown -->
                             <div class="relative">
-                                <label for="city" class="block text-sm font-medium text-gray-700 mb-2">City/Municipality</label>
+                                <label for="city" class="block text-sm font-medium text-gray-700 mb-2">City/Municipality <span class="text-red-500">*</span></label>
                                 <div class="relative">
                                     <select id="city" name="city" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent appearance-none text-base shadow-sm transition-all duration-200" onchange="updateBarangays()" disabled>
                                         <option value="" selected disabled>Select City/Municipality</option>
@@ -1648,7 +1648,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             
                             <!-- Barangay Dropdown -->
                             <div class="relative">
-                                <label for="barangay" class="block text-sm font-medium text-gray-700 mb-2">Barangay</label>
+                                <label for="barangay" class="block text-sm font-medium text-gray-700 mb-2">Barangay <span class="text-red-500">*</span></label>
                                 <div class="relative">
                                     <select id="barangay" name="barangay" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent appearance-none text-base shadow-sm transition-all duration-200" disabled>
                                         <option value="" selected disabled>Select Barangay</option>
@@ -1665,7 +1665,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             <div class="sm:col-span-2 grid grid-cols-1 sm:grid-cols-4 gap-5">
                                 <!-- Street Address (taking 3/4 of the width) -->
                                 <div class="sm:col-span-3">
-                                    <label for="street_address" class="block text-sm font-medium text-gray-700 mb-2">Street Address</label>
+                                    <label for="street_address" class="block text-sm font-medium text-gray-700 mb-2">Street Address <span class="text-red-500">*</span></label>
                                     <input type="text" id="street_address" name="street_address" placeholder="House/Lot/Unit No., Building, Street Name" 
                                         value="<?php echo htmlspecialchars($street_address); ?>" 
                                         class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-base shadow-sm transition-all duration-200">
@@ -1673,7 +1673,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 
                                 <!-- Zip/Postal Code (taking 1/4 of the width) -->
                                 <div class="sm:col-span-1">
-                                    <label for="zip" class="block text-sm font-medium text-gray-700 mb-2">Zip Code</label>
+                                    <label for="zip" class="block text-sm font-medium text-gray-700 mb-2">Zip Code <span class="text-red-500">*</span></label>
                                     <!-- Change this line in the zip code input field -->
 <input type="text" id="zip" name="zip" placeholder="Zip Code" 
     value="<?php echo htmlspecialchars($zip_code); ?>" 
