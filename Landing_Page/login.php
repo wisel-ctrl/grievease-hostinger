@@ -470,10 +470,11 @@ header("Pragma: no-cache");
                             
                             if (response.status === 'success') {
                                 swal({
-                                    title: "Welcome Back!",
+                                    title: "Welcome!",
                                     text: `You have successfully logged in as ${response.role}.`,
                                     icon: "success",
                                     button: "Continue",
+                                    buttoncolor: "#4CAF50",
                                 }).then(() => {
                                     // Redirect based on user type
                                     window.location.href = response.redirect;
