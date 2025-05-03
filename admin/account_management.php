@@ -822,7 +822,7 @@ document.addEventListener('DOMContentLoaded', function() {
       <button onclick="closeOtpModal()" class="px-5 py-3 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-semibold hover:bg-navy transition-colors">
         Cancel
       </button>
-      <button onclick="verifyOTP()" class="px-6 py-3 bg-sidebar-accent text-white rounded-lg font-semibold hover:bg-darkgold transition-colors flex items-center">
+      <button onclick="verifyOTP()" class="px-6 py-3 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-semibold hover:bg-darkgold transition-colors flex items-center">
         <i class="fas fa-check-circle mr-2"></i> Verify
       </button>
     </div>
