@@ -1034,8 +1034,6 @@ require_once '../db_connect.php'; // Database connection
                         <!-- Features will be inserted here by JavaScript -->
                     </ul>
                 </div>
-
-                
             </div>
 
             <!-- Right Side: Traditional Booking Form -->
@@ -1130,8 +1128,6 @@ require_once '../db_connect.php'; // Database connection
                                     <div id="deathCertImagePreview" class="hidden">
                                         <img id="deathCertImage" src="" alt="Death Certificate Preview" class="w-full h-auto max-h-48 object-contain">
                                     </div>
-                                    
-                                    
                                 </div>
                                 
                                 <!-- Remove Button -->
@@ -1181,8 +1177,6 @@ require_once '../db_connect.php'; // Database connection
                                 </select>
                             </div>
                         </div>
-
-
 
                         <div class="mt-4">
                             <label for="traditionalDeceasedAddress" class="block text-sm font-medium text-navy mb-2">Address of the Deceased</label>
@@ -1248,7 +1242,6 @@ require_once '../db_connect.php'; // Database connection
                                     <div id="gcashImagePreview" class="hidden">
                                         <img id="gcashImage" src="" alt="GCash Receipt Preview" class="w-full h-auto max-h-48 object-contain">
                                     </div>
-                                    
                                 </div>
                                 
                                 <!-- Remove Button -->
@@ -1256,8 +1249,7 @@ require_once '../db_connect.php'; // Database connection
                                     <i class="fas fa-trash-alt mr-1"></i> Remove file
                                 </button>
                                 
-                                <!-- Traditional GCash Receipt Input -->
-<input type="file" id="traditionalGcashReceipt" name="gcashReceipt" accept=".jpg,.jpeg,.png" class="hidden">
+                                <input type="file" id="traditionalGcashReceipt" name="gcashReceipt" accept=".jpg,.jpeg,.png" class="hidden">
                             </div>
                             <p class="text-xs text-gray-500 mt-1">Accepted formats: JPG, JPEG, PNG</p>
                         </div>
@@ -1266,8 +1258,8 @@ require_once '../db_connect.php'; // Database connection
                             <input type="text" id="traditionalReferenceNumber" name="referenceNumber" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" placeholder="e.g. 1234567890">
                         </div>
                     </div>
-                    </div>
 
+                    <!-- Additional Options moved here -->
                     <div class="border-b border-gray-200 pb-4 mb-4">
                         <h3 class="text-lg font-hedvig text-navy mb-4">Additional Options</h3>
                         <div class="flex items-start border rounded-lg p-4">
@@ -1282,6 +1274,7 @@ require_once '../db_connect.php'; // Database connection
                         </div>
                     </div>
 
+                    <!-- Payment Summary and Confirm Booking moved here -->
                     <div class="bg-cream p-4 rounded-lg">
                         <div class="flex justify-between text-sm mb-2">
                             <span class="text-navy">Package Total</span>
