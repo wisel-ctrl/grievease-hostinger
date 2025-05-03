@@ -1935,6 +1935,7 @@ function removeGcash() {
                     <input type="hidden" id="lifeplanServiceId" name="service_id">
                     <input type="hidden" id="lifeplanBranchId" name="branch_id">
                     <input type="hidden" name="customerID" value="<?php echo isset($_SESSION['user_id']) ? $_SESSION['user_id'] : ''; ?>">
+                    <input type="hidden" id="holderAddress" name="holderAddress">
                     
                     <div class="border-b border-gray-200 pb-4 mb-4">
                         <h3 class="text-base md:text-lg font-hedvig text-navy mb-3 md:mb-4">Plan Holder Information</h3>
@@ -2778,6 +2779,7 @@ function initializeAddressFields() {
     // Lifeplan Service button click event
     // Update the lifeplanServiceBtn click event to initialize the payment calculation
 document.getElementById('lifeplanServiceBtn').addEventListener('click', function() {
+    //DITO MAGCOCODE PAG MAY DATA RELATED KINEMERUTS SA LIFEPLAN!!!!!
     document.getElementById('serviceTypeModal').classList.add('hidden');
     
     const packageName = sessionStorage.getItem('selectedPackageName');
@@ -2835,7 +2837,7 @@ document.getElementById('lifeplanServiceBtn').addEventListener('click', function
         });
     });
 
-    function openLifeplanModal() {
+    function openLifeplanModal() { //walang silbe to di nagana to kaya wag kayo dito maglagay ng code mga animal
         const packageName = sessionStorage.getItem('selectedPackageName');
         const packagePrice = sessionStorage.getItem('selectedPackagePrice');
         const packageImage = sessionStorage.getItem('selectedPackageImage');
@@ -3002,7 +3004,7 @@ function updateLifeplanPayment() {
     document.getElementById('lifeplanMonthlyPayment').textContent = `₱${monthlyPayment.toLocaleString()}`;
 }
 
-function initializeLifeplanAddressFields() {
+function initializeLifeplanAddressFields() { // WALA DIN PALA TONG SILBI 
     // Remove existing event listeners to prevent duplicates
     const regionElement = document.getElementById('lifeplanHolderRegion');
     const provinceElement = document.getElementById('lifeplanHolderProvince');
@@ -3080,26 +3082,47 @@ function closeAllModals() {
 });
 
 // Function to update lifeplan payment details
-function updateLifeplanPayment() {
-    const months = parseInt(document.getElementById('lifeplanPaymentTerm').value);
-    const totalPrice = parseInt(sessionStorage.getItem('selectedPackagePrice') || '0');
-    const monthlyPayment = Math.ceil(totalPrice / months);
-    
-    let termText = '';
-    if (months === 60) termText = '5 Years (60 Monthly Payments)';
-    else if (months === 36) termText = '3 Years (36 Monthly Payments)';
-    else if (months === 24) termText = '2 Years (24 Monthly Payments)';
-    else if (months === 12) termText = '1 Year (12 Monthly Payments)';
-    
-    document.getElementById('lifeplanPaymentTermDisplay').textContent = termText;
-    document.getElementById('lifeplanMonthlyPayment').textContent = `₱${monthlyPayment.toLocaleString()}`;
-}
+    function updateLifeplanPayment() {
+        const months = parseInt(document.getElementById('lifeplanPaymentTerm').value);
+        const totalPrice = parseInt(sessionStorage.getItem('selectedPackagePrice') || '0');
+        const monthlyPayment = Math.ceil(totalPrice / months);
+        
+        let termText = '';
+        if (months === 60) termText = '5 Years (60 Monthly Payments)';
+        else if (months === 36) termText = '3 Years (36 Monthly Payments)';
+        else if (months === 24) termText = '2 Years (24 Monthly Payments)';
+        else if (months === 12) termText = '1 Year (12 Monthly Payments)';
+        
+        document.getElementById('lifeplanPaymentTermDisplay').textContent = termText;
+        document.getElementById('lifeplanMonthlyPayment').textContent = `₱${monthlyPayment.toLocaleString()}`;
+    }
 
-    // Lifeplan Form submission
+    function combineLifeplanAddress() {
+        const region = document.getElementById('lifeplanHolderRegion');
+        const province = document.getElementById('lifeplanHolderProvince');
+        const city = document.getElementById('lifeplanHolderCity');
+        const barangay = document.getElementById('lifeplanHolderBarangay');
+        const street = document.getElementById('lifeplanHolderStreet');
+        
+        // Create an address object
+        const address = {
+            region: region.options[region.selectedIndex]?.text || '',
+            province: province.options[province.selectedIndex]?.text || '',
+            city: city.options[city.selectedIndex]?.text || '',
+            barangay: barangay.options[barangay.selectedIndex]?.text || '',
+            street: street.value || ''
+        };
+        
+        // Convert to JSON string and store in the hidden input
+        document.getElementById('holderAddress').value = JSON.stringify(address);
+    }
+
     // Lifeplan Form submission
     document.getElementById('lifeplanBookingForm').addEventListener('submit', function(e) {
         e.preventDefault();
         
+        combineLifeplanAddress();
+
         const formData = new FormData(this);
         const formElement = this;
 
