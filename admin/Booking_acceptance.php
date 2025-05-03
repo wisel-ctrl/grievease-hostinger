@@ -411,44 +411,55 @@ $offset = ($current_page - 1) * $bookings_per_page;
         }
         ?>
     </div>
-    <div id="paginationContainer" class="flex space-x-1">
-        <?php if ($total_pages > 1): ?>
-            <!-- First page and Previous page -->
-            <a href="<?php echo '?page=' . max(1, $current_page - 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($current_page == 1) ? 'opacity-50 pointer-events-none' : ''; ?>">&laquo;</a>
-            
-            <?php
-            // Determine the range of page numbers to show
-            $range = 2; // Show 2 pages before and after the current page
-            $start_page = max(1, $current_page - $range);
-            $end_page = min($total_pages, $current_page + $range);
-            
-            // Always show first page
-            if ($start_page > 1) {
-                echo '<a href="?page=1" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">1</a>';
-                if ($start_page > 2) {
-                    echo '<span class="px-3.5 py-1.5 text-gray-500">...</span>';
-                }
+    <!-- Replace the existing pagination section with this code -->
+<div id="paginationContainer" class="flex space-x-1">
+    <?php if ($total_pages > 1): ?>
+        <!-- First page and Previous page -->
+        <a href="<?php echo '?page=' . max(1, $current_page - 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($current_page == 1) ? 'opacity-50 pointer-events-none' : ''; ?>">
+            &laquo;
+        </a>
+        
+        <?php
+        // Calculate page range to show (only 3 pages at a time)
+        $start_page = max(1, $current_page - 1);
+        $end_page = min($total_pages, $current_page + 1);
+        
+        // Adjust if we're at the beginning or end
+        if ($current_page <= 2) {
+            $end_page = min(3, $total_pages);
+        } elseif ($current_page >= $total_pages - 1) {
+            $start_page = max($total_pages - 2, 1);
+        }
+        
+        // Always show first page if not in current range
+        if ($start_page > 1) {
+            echo '<a href="?page=1" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">1</a>';
+            if ($start_page > 2) {
+                echo '<span class="px-3.5 py-1.5 text-gray-500">...</span>';
             }
-            
-            // Show page numbers
-            for ($i = $start_page; $i <= $end_page; $i++) {
-                $active_class = ($i == $current_page) ? 'bg-sidebar-accent text-white' : 'border border-sidebar-border hover:bg-sidebar-hover';
-                echo '<a href="?page=' . $i . '" class="px-3.5 py-1.5 rounded text-sm ' . $active_class . '">' . $i . '</a>';
+        }
+        
+        // Show page numbers in current range
+        for ($i = $start_page; $i <= $end_page; $i++) {
+            $active_class = ($i == $current_page) ? 'bg-sidebar-accent text-white' : 'border border-sidebar-border hover:bg-sidebar-hover';
+            echo '<a href="?page=' . $i . '" class="px-3.5 py-1.5 rounded text-sm ' . $active_class . '">' . $i . '</a>';
+        }
+        
+        // Always show last page if not in current range
+        if ($end_page < $total_pages) {
+            if ($end_page < $total_pages - 1) {
+                echo '<span class="px-3.5 py-1.5 text-gray-500">...</span>';
             }
-            
-            // Always show last page
-            if ($end_page < $total_pages) {
-                if ($end_page < $total_pages - 1) {
-                    echo '<span class="px-3.5 py-1.5 text-gray-500">...</span>';
-                }
-                echo '<a href="?page=' . $total_pages . '" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">' . $total_pages . '</a>';
-            }
-            ?>
-            
-            <!-- Next page -->
-            <a href="<?php echo '?page=' . min($total_pages, $current_page + 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($current_page == $total_pages) ? 'opacity-50 pointer-events-none' : ''; ?>">&raquo;</a>
-        <?php endif; ?>
-    </div>
+            echo '<a href="?page=' . $total_pages . '" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">' . $total_pages . '</a>';
+        }
+        ?>
+        
+        <!-- Next page -->
+        <a href="<?php echo '?page=' . min($total_pages, $current_page + 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($current_page == $total_pages) ? 'opacity-50 pointer-events-none' : ''; ?>">
+            &raquo;
+        </a>
+    <?php endif; ?>
+</div>
 </div>
 </div>
 
