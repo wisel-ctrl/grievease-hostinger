@@ -2507,6 +2507,32 @@ document.addEventListener('DOMContentLoaded', function() {
         alert('Please upload your payment proof before submitting.');
         return;
     }
+
+    // Validate address fields
+    const requiredAddressFields = [
+        { id: 'traditionalDeceasedRegion', name: 'Region' },
+        { id: 'traditionalDeceasedProvince', name: 'Province' },
+        { id: 'traditionalDeceasedCity', name: 'City/Municipality' },
+        { id: 'traditionalDeceasedBarangay', name: 'Barangay' },
+        { id: 'traditionalDeceasedAddress', name: 'Street Address' }
+    ];
+    
+    let missingFields = [];
+    
+    requiredAddressFields.forEach(field => {
+        const element = document.getElementById(field.id);
+        if (!element.value.trim()) {
+            missingFields.push(field.name);
+            element.classList.add('border-red-500');
+        } else {
+            element.classList.remove('border-red-500');
+        }
+    });
+    
+    if (missingFields.length > 0) {
+        alert(`Please complete all address fields:\n${missingFields.join('\n')}`);
+        return;
+    }
         // Check if this is a custom package submission
         if (document.getElementById('traditionalSelectedPackageName').value === 'Custom Memorial Package') {
             const totalPackagePrice = parseFloat(document.getElementById('traditionalSelectedPackagePrice').value);
