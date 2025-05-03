@@ -2395,7 +2395,7 @@ document.addEventListener('DOMContentLoaded', function() {
     <div class="bg-white rounded-lg w-full max-w-4xl max-h-[90vh] overflow-hidden">
         <div class="p-6 border-b border-gray-200 flex justify-between items-center">
             <h3 class="font-hedvig text-xl text-navy" id="document-modal-title">Document</h3>
-            <button class="close-modal text-gray-500 hover:text-gray-700">
+            <button class="close-document-modal text-gray-500 hover:text-gray-700">
                 <i class="fas fa-times"></i>
             </button>
         </div>
@@ -2404,7 +2404,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <iframe id="document-pdf" src="" class="hidden w-full h-[70vh]"></iframe>
         </div>
         <div class="p-4 border-t border-gray-200 flex justify-end">
-            <button class="close-modal bg-navy text-white px-4 py-2 rounded hover:bg-navy/90 transition">
+            <button class="close-document-modal bg-navy text-white px-4 py-2 rounded hover:bg-navy/90 transition">
                 Close
             </button>
         </div>
@@ -2678,26 +2678,53 @@ document.addEventListener('DOMContentLoaded', function() {
     let currentDocumentType = '';
     let currentDocumentUrl = '';
     
-    viewDeathCertBtn.addEventListener('click', function() {
-        currentDocumentType = 'death_cert';
-        showDocument('Death Certificate', currentDocumentUrl);
-    });
-    
-    viewPaymentBtn.addEventListener('click', function() {
-        currentDocumentType = 'payment_proof';
-        showDocument('Payment Proof', currentDocumentUrl);
-    });
+    // Update your document viewing functions
+viewDeathCertBtn.addEventListener('click', function() {
+    if (!currentDeathCertUrl) {
+        showError('No death certificate available');
+        return;
+    }
+    showDocument('Death Certificate', currentDeathCertUrl);
+});
 
-    // Close Modal Buttons
-    const closeModalButtons = document.querySelectorAll('.close-modal');
-    closeModalButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            viewDetailsModal.classList.add('hidden');
-            modifyModal.classList.add('hidden');
-            cancelModal.classList.add('hidden');
-            viewDocumentModal.classList.add('hidden');
-        });
+viewPaymentBtn.addEventListener('click', function() {
+    if (!currentPaymentUrl) {
+        showError('No payment proof available');
+        return;
+    }
+    showDocument('Payment Proof', currentPaymentUrl);
+});
+    // Close document modal
+document.querySelectorAll('.close-document-modal').forEach(button => {
+    button.addEventListener('click', function() {
+        document.getElementById('viewDocumentModal').classList.add('hidden');
     });
+});
+
+// Close details modal (keep existing functionality)
+document.querySelectorAll('.close-modal').forEach(button => {
+    button.addEventListener('click', function() {
+        document.getElementById('viewDetailsModal').classList.add('hidden');
+        document.getElementById('modifyBookingModal').classList.add('hidden');
+        document.getElementById('cancelBookingModal').classList.add('hidden');
+    });
+});
+
+// Click outside modal to close
+window.addEventListener('click', function(e) {
+    if (e.target === document.getElementById('viewDetailsModal')) {
+        document.getElementById('viewDetailsModal').classList.add('hidden');
+    }
+    if (e.target === document.getElementById('modifyBookingModal')) {
+        document.getElementById('modifyBookingModal').classList.add('hidden');
+    }
+    if (e.target === document.getElementById('cancelBookingModal')) {
+        document.getElementById('cancelBookingModal').classList.add('hidden');
+    }
+    if (e.target === document.getElementById('viewDocumentModal')) {
+        document.getElementById('viewDocumentModal').classList.add('hidden');
+    }
+});
 
     // Form Submissions
     document.getElementById('modifyBookingForm').addEventListener('submit', function(e) {
@@ -2803,7 +2830,10 @@ viewPaymentBtn.addEventListener('click', function() {
 });
 
 function showDocument(title, url) {
-    
+    if (!url) {
+        showError('No document available');
+        return;
+    }
     
     document.getElementById('document-modal-title').textContent = title;
     const imgElement = document.getElementById('document-image');
@@ -2821,7 +2851,7 @@ function showDocument(title, url) {
         imgElement.src = url;
     }
     
-    viewDocumentModal.classList.remove('hidden');
+    document.getElementById('viewDocumentModal').classList.remove('hidden');
 }
 
 function fetchBookingForModification(bookingId) {
