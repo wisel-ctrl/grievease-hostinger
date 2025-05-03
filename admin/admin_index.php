@@ -1062,9 +1062,6 @@ function loadInventoryLogs(page = 1) {
         <button class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm bg-sidebar-accent text-white">${page}</button>
         <button class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm opacity-50 cursor-not-allowed" disabled>&raquo;</button>
     `;
-
-    loadInventoryLogs();
-};
     
     fetch(`dashboard/fetch_inventory_logs.php?page=${page}`)
         .then(response => response.json())
