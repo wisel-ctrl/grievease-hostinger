@@ -1881,6 +1881,33 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+// QR Code functionality for both modals
+document.addEventListener('DOMContentLoaded', function() {
+    // Traditional modal QR code
+    const showQrCodeBtn = document.getElementById('showQrCodeBtn');
+    const qrCodeModal = document.getElementById('qrCodeModal');
+    const closeQrModal = document.getElementById('closeQrModal');
+    const qrCodeAmount = document.getElementById('qrCodeAmount');
+    
+    if (showQrCodeBtn && qrCodeModal) {
+        showQrCodeBtn.addEventListener('click', function() {
+            const amountDue = document.getElementById('traditionalAmountDue').textContent;
+            qrCodeAmount.textContent = 'Amount: ' + amountDue;
+            qrCodeModal.classList.remove('hidden');
+        });
+        
+        closeQrModal.addEventListener('click', function() {
+            qrCodeModal.classList.add('hidden');
+        });
+        
+        qrCodeModal.addEventListener('click', function(e) {
+            if (e.target === qrCodeModal) {
+                qrCodeModal.classList.add('hidden');
+            }
+        });
+    }
+})
 </script>
 
 <!-- Footer -->
