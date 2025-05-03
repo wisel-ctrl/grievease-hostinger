@@ -651,28 +651,48 @@ if ($branchResult->num_rows > 0) {
   </div>
   
   <!-- Sticky Pagination Footer with improved spacing -->
-  <div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
-    <div id="paginationInfo_<?php echo $branchId; ?>" class="text-sm text-gray-500 text-center sm:text-left">
-      Showing <?php echo min(($currentPage - 1) * $itemsPerPage + 1, $totalItems) . ' - ' . min($currentPage * $itemsPerPage, $totalItems); ?> 
-      of <?php echo $totalItems; ?> items
-    </div>
-          <div class="flex space-x-2">
-            <?php if ($currentPage > 1): ?>
-                <button onclick="loadPage(<?php echo $branchId; ?>, <?php echo $currentPage - 1 ?>)" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">&laquo;</button>
-            <?php else: ?>
-                <button disabled class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm opacity-50 cursor-not-allowed">&laquo;</button>
-            <?php endif; ?>
+    <div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div id="paginationInfo_<?php echo $branchId; ?>" class="text-sm text-gray-500 text-center sm:text-left">
+            Showing <?php echo min(($currentPage - 1) * $itemsPerPage + 1, $totalItems) . ' - ' . min($currentPage * $itemsPerPage, $totalItems); ?> 
+            of <?php echo $totalItems; ?> items
+        </div>
+        <div class="flex space-x-2" id="paginationControls_<?php echo $branchId; ?>">
+            <!-- Previous Button -->
+            <button onclick="loadPage(<?php echo $branchId; ?>, <?php echo $currentPage - 1; ?>)" 
+                    class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($currentPage <= 1) ? 'opacity-50 cursor-not-allowed' : ''; ?>"
+                    <?php echo ($currentPage <= 1) ? 'disabled' : ''; ?>>
+                &laquo;
+            </button>
             
-            <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-                <button onclick="loadPage(<?php echo $branchId; ?>, <?php echo $i ?>)" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover"><?php echo $i ?></button>
+            <!-- Page Numbers -->
+            <?php 
+            // Calculate page range to display (max 5 pages)
+            $startPage = max(1, $currentPage - 2);
+            $endPage = min($totalPages, $currentPage + 2);
+            
+            // Adjust if we're at the beginning
+            if ($currentPage <= 3) {
+                $endPage = min(5, $totalPages);
+            }
+            // Adjust if we're at the end
+            if ($currentPage >= $totalPages - 2) {
+                $startPage = max(1, $totalPages - 4);
+            }
+            
+            for ($i = $startPage; $i <= $endPage; $i++): ?>
+                <button onclick="loadPage(<?php echo $branchId; ?>, <?php echo $i; ?>)" 
+                        class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($i == $currentPage) ? 'bg-sidebar-accent text-white' : ''; ?>">
+                    <?php echo $i; ?>
+                </button>
             <?php endfor; ?>
             
-            <?php if ($currentPage < $totalPages): ?>
-                <button onclick="loadPage(<?php echo $branchId; ?>, <?php echo $currentPage + 1 ?>)" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">&raquo;</button>
-            <?php else: ?>
-                <button disabled class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm opacity-50 cursor-not-allowed">&raquo;</button>
-            <?php endif; ?>
-          </div>
+            <!-- Next Button -->
+            <button onclick="loadPage(<?php echo $branchId; ?>, <?php echo $currentPage + 1; ?>)" 
+                    class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($currentPage >= $totalPages) ? 'opacity-50 cursor-not-allowed' : ''; ?>"
+                    <?php echo ($currentPage >= $totalPages) ? 'disabled' : ''; ?>>
+                &raquo;
+            </button>
+        </div>
     </div>
 </div> 
  
@@ -1169,6 +1189,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Update the loadPage function
 function loadPage(branchId, page) {
+    // Validate page number
+    if (page < 1) page = 1;
+    
+    // Get total pages from the container's data attribute
+    const container = document.querySelector(`.branch-container[data-branch-id="${branchId}"]`);
+    const totalItems = parseInt(container.dataset.totalItems);
+    const itemsPerPage = 5;
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
+    
+    if (page > totalPages) page = totalPages;
+    
     // Show loading indicator
     const loadingIndicator = document.getElementById(`loadingIndicator${branchId}`);
     const tableContainer = document.getElementById(`tableContainer${branchId}`);
@@ -1193,14 +1224,11 @@ function loadPage(branchId, page) {
             url.searchParams.set(`page_${branchId}`, page);
             window.history.pushState({ branchId, page }, '', url);
             
-            // Update pagination info text
-            updatePaginationInfo(branchId, page);
+            // Update pagination info
+            updatePaginationInfo(branchId, page, totalItems, itemsPerPage);
             
-            // Update pagination buttons active state
-            updatePaginationActiveState(branchId, page);
-            
-            // Reattach event listeners
-            reattachEventListeners(branchId);
+            // Update pagination controls
+            updatePaginationControls(branchId, page, totalPages);
             
             // Hide loading indicator
             loadingIndicator.classList.add('hidden');
@@ -1218,16 +1246,46 @@ function loadPage(branchId, page) {
         });
 }
 
+
 // Add this function to update pagination info text
-function updatePaginationInfo(branchId, currentPage) {
-    const itemsPerPage = 5;
-    const totalItems = parseInt(document.querySelector(`.branch-container[data-branch-id="${branchId}"]`).dataset.totalItems);
-    
+function updatePaginationInfo(branchId, currentPage, totalItems, itemsPerPage) {
     const startItem = (currentPage - 1) * itemsPerPage + 1;
     const endItem = Math.min(currentPage * itemsPerPage, totalItems);
     
     document.getElementById(`paginationInfo_${branchId}`).textContent = 
         `Showing ${startItem} - ${endItem} of ${totalItems} items`;
+}
+
+function updatePaginationControls(branchId, currentPage, totalPages) {
+    const paginationContainer = document.getElementById(`paginationControls_${branchId}`);
+    if (!paginationContainer) return;
+    
+    // Update previous button
+    const prevButton = paginationContainer.querySelector('button:first-child');
+    if (prevButton) {
+        prevButton.disabled = currentPage <= 1;
+        prevButton.classList.toggle('opacity-50', currentPage <= 1);
+        prevButton.classList.toggle('cursor-not-allowed', currentPage <= 1);
+        prevButton.onclick = function() { loadPage(branchId, currentPage - 1); };
+    }
+    
+    // Update next button
+    const nextButton = paginationContainer.querySelector('button:last-child');
+    if (nextButton) {
+        nextButton.disabled = currentPage >= totalPages;
+        nextButton.classList.toggle('opacity-50', currentPage >= totalPages);
+        nextButton.classList.toggle('cursor-not-allowed', currentPage >= totalPages);
+        nextButton.onclick = function() { loadPage(branchId, currentPage + 1); };
+    }
+    
+    // Update page number buttons
+    const pageButtons = paginationContainer.querySelectorAll('button:not(:first-child):not(:last-child)');
+    pageButtons.forEach(button => {
+        const pageNum = parseInt(button.textContent);
+        button.classList.toggle('bg-sidebar-accent', pageNum === currentPage);
+        button.classList.toggle('text-white', pageNum === currentPage);
+        button.onclick = function() { loadPage(branchId, pageNum); };
+    });
 }
 
 // Update the updatePaginationActiveState function
