@@ -948,7 +948,6 @@ $offset = ($current_page - 1) * $bookings_per_page;
 <!-- Improved Booking Details Modal -->
 <div id="bookingDetailsModal" class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto">
   <!-- Modal Backdrop -->
-
   <div class="modal-scroll-container overflow-y-auto max-h-[90vh]">
 
   <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
@@ -992,6 +991,36 @@ $offset = ($current_page - 1) * $bookings_per_page;
       
       <!-- Main Content Area -->
       <div class="space-y-4 sm:space-y-6">
+        <!-- Service Details -->
+        <div class="bg-white rounded-lg p-4 sm:p-5 border border-gray-200 shadow-sm">
+          <h4 class="font-semibold text-gray-800 mb-3 sm:mb-4 flex items-center">
+            <i class="fas fa-calendar-check mr-2 text-sidebar-accent"></i>
+            Service Details
+          </h4>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="space-y-2 sm:space-y-3">
+              <div class="flex flex-wrap">
+                <div class="w-1/3 text-sm text-gray-500">Service Type</div>
+                <div class="w-2/3 font-medium text-gray-800 break-words" id="serviceType">Funeral Service Package A</div>
+              </div>
+              <div class="flex flex-wrap">
+                <div class="w-1/3 text-sm text-gray-500">Date Requested</div>
+                <div class="w-2/3 font-medium text-gray-800 break-words" id="dateRequested">Mar 15, 2025</div>
+              </div>
+            </div>
+            <div class="space-y-2 sm:space-y-3">
+              <div class="flex flex-wrap">
+                <div class="w-1/3 text-sm text-gray-500">Service Date</div>
+                <div class="w-2/3 font-medium text-gray-800 break-words" id="serviceDate">Mar 20, 2025</div>
+              </div>
+              <div class="flex flex-wrap">
+                <div class="w-1/3 text-sm text-gray-500">Price</div>
+                <div class="w-2/3 font-medium text-gray-800 break-words" id="amountPaid">$3,500.00</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- Customer Information -->
         <div class="bg-white rounded-lg p-4 sm:p-5 border border-gray-200 shadow-sm">
           <h4 class="font-semibold text-gray-800 mb-3 sm:mb-4 flex items-center">
@@ -1047,36 +1076,6 @@ $offset = ($current_page - 1) * $bookings_per_page;
               <div class="w-1/3 text-sm text-gray-500">Address</div>
               <div class="w-2/3 font-medium text-gray-800 break-words" id="deceasedAddress">
                 <!-- Will be populated by JavaScript -->
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Service Details -->
-        <div class="bg-white rounded-lg p-4 sm:p-5 border border-gray-200 shadow-sm">
-          <h4 class="font-semibold text-gray-800 mb-3 sm:mb-4 flex items-center">
-            <i class="fas fa-calendar-check mr-2 text-sidebar-accent"></i>
-            Service Details
-          </h4>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div class="space-y-2 sm:space-y-3">
-              <div class="flex flex-wrap">
-                <div class="w-1/3 text-sm text-gray-500">Service Type</div>
-                <div class="w-2/3 font-medium text-gray-800 break-words" id="serviceType">Funeral Service Package A</div>
-              </div>
-              <div class="flex flex-wrap">
-                <div class="w-1/3 text-sm text-gray-500">Date Requested</div>
-                <div class="w-2/3 font-medium text-gray-800 break-words" id="dateRequested">Mar 15, 2025</div>
-              </div>
-            </div>
-            <div class="space-y-2 sm:space-y-3">
-              <div class="flex flex-wrap">
-                <div class="w-1/3 text-sm text-gray-500">Service Date</div>
-                <div class="w-2/3 font-medium text-gray-800 break-words" id="serviceDate">Mar 20, 2025</div>
-              </div>
-              <div class="flex flex-wrap">
-                <div class="w-1/3 text-sm text-gray-500">Price</div>
-                <div class="w-2/3 font-medium text-gray-800 break-words" id="amountPaid">$3,500.00</div>
               </div>
             </div>
           </div>
