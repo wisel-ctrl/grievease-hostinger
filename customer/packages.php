@@ -2042,11 +2042,14 @@ function removeGcash() {
                     <div class="border-b border-gray-200 pb-4 mb-4">
                         <h3 class="text-base md:text-lg font-hedvig text-navy mb-3 md:mb-4">Payment Plan</h3>
 
-                        
                         <div class="mb-3 md:mb-4">
                             <label class="block text-sm font-medium text-navy mb-1">Payment Term:</label>
-                            <input type="text" id="lifeplanPaymentTerm" name="paymentTerm" value="5 Years (60 Monthly Payments)" readonly
+                            <!-- Displayed read-only input -->
+                            <input type="text" value="5 Years (60 Monthly Payments)" readonly
                                 class="w-full px-3 py-2 border border-input-border rounded-lg bg-gray-100 text-gray-700 cursor-not-allowed focus:outline-none">
+
+                            <!-- Hidden input to submit the actual value -->
+                            <input type="hidden" id="lifeplanPaymentTerm" name="paymentTerm" value="5">
                         </div>
 
 
