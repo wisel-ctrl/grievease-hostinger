@@ -198,12 +198,6 @@ require_once '../db_connect.php'; // Database connection
             box-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
             transition: all 0.3s ease;
         }
-        .rotate-180 {
-    transform: rotate(180deg);
-}
-.transform {
-    transition: transform 0.3s ease;
-}
 
         .candlelight:hover {
             transform: scale(1.1);
@@ -1147,20 +1141,18 @@ require_once '../db_connect.php'; // Database connection
                         </div>
 
                         <!-- Address (Improved UI with dropdowns in specified layout) -->
+                        <!-- Address (Improved UI with dropdowns in specified layout) -->
                         <div class="flex flex-wrap -mx-2 mb-3">
                             <div class="w-full sm:w-1/2 px-2 mb-3 sm:mb-0">
                                 <label for="traditionalDeceasedRegion" class="block text-sm font-medium text-navy mb-1">Region <span class="text-red-500">*</label>
-                                <select id="traditionalDeceasedRegion" name="deceasedRegion" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                                <select id="traditionalDeceasedRegion" name="deceasedRegion" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" required>
                                     <option value="">Select Region</option>
-                                    <option value="NCR">National Capital Region (NCR)</option>
-                                    <option value="CAR">Cordillera Administrative Region (CAR)</option>
-                                    <option value="Region I">Ilocos Region (Region I)</option>
-                                    <!-- Add more regions as needed -->
+                                    <!-- Regions will be populated by JavaScript -->
                                 </select>
                             </div>
                             <div class="w-full sm:w-1/2 px-2">
                                 <label for="traditionalDeceasedProvince" class="block text-sm font-medium text-navy mb-1">Province <span class="text-red-500">*</label>
-                                <select id="traditionalDeceasedProvince" name="deceasedProvince" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                                <select id="traditionalDeceasedProvince" name="deceasedProvince" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" disabled required>
                                     <option value="">Select Province</option>
                                     <!-- Provinces will be populated by JavaScript based on selected region -->
                                 </select>
@@ -1170,25 +1162,25 @@ require_once '../db_connect.php'; // Database connection
                         <div class="flex flex-wrap -mx-2 mb-3">
                             <div class="w-full sm:w-1/2 px-2 mb-3 sm:mb-0">
                                 <label for="traditionalDeceasedCity" class="block text-sm font-medium text-navy mb-1">City/Municipality <span class="text-red-500">*</label>
-                                <select id="traditionalDeceasedCity" name="deceasedCity" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                                <select id="traditionalDeceasedCity" name="deceasedCity" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" disabled required>
                                     <option value="">Select City/Municipality</option>
                                     <!-- Cities will be populated by JavaScript based on selected province -->
                                 </select>
                             </div>
                             <div class="w-full sm:w-1/2 px-2">
                                 <label for="traditionalDeceasedBarangay" class="block text-sm font-medium text-navy mb-1">Barangay <span class="text-red-500">*</label>
-                                <select id="traditionalDeceasedBarangay" name="deceasedBarangay" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                                <select id="traditionalDeceasedBarangay" name="deceasedBarangay" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" disabled required>
                                     <option value="">Select Barangay</option>
                                     <!-- Barangays will be populated by JavaScript based on selected city -->
                                 </select>
                             </div>
                         </div>
-
+                        
                         <div class="mt-4">
                             <label for="traditionalDeceasedAddress" class="block text-sm font-medium text-navy mb-2">Street/Block/House Number <span class="text-red-500">*</label>
-                            <textarea id="traditionalDeceasedAddress" name="deceasedAddress" rows="3" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600"></textarea>
+                            <input type="text" id="traditionalDeceasedAddress" name="deceasedAddress" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" placeholder="e.g. 123 Main Street">
                         </div>
-
+                        
                         <input type="hidden" id="deceasedAddress" name="deceasedAddress">
                     </div>
 
@@ -1455,6 +1447,178 @@ require_once '../db_connect.php'; // Database connection
 
 
 <script>
+    // Address handling functions
+function fetchRegions() {
+    fetch('address/get_regions.php')
+        .then(response => response.json())
+        .then(data => {
+            const regionSelect = document.getElementById('traditionalDeceasedRegion');
+            regionSelect.innerHTML = '<option value="">Select Region</option>';
+            
+            data.forEach(region => {
+                const option = document.createElement('option');
+                option.value = region.region_id;
+                option.textContent = region.region_name;
+                regionSelect.appendChild(option);
+            });
+        })
+        .catch(error => console.error('Error fetching regions:', error));
+}
+
+function fetchProvinces(regionId) {
+    const provinceSelect = document.getElementById('traditionalDeceasedProvince');
+    provinceSelect.innerHTML = '<option value="">Select Province</option>';
+    provinceSelect.disabled = true;
+    
+    if (!regionId) return;
+    
+    fetch(`address/get_provinces.php?region_id=${regionId}`)
+        .then(response => response.json())
+        .then(data => {
+            provinceSelect.innerHTML = '<option value="">Select Province</option>';
+            
+            data.forEach(province => {
+                const option = document.createElement('option');
+                option.value = province.province_id;
+                option.textContent = province.province_name;
+                provinceSelect.appendChild(option);
+            });
+            
+            provinceSelect.disabled = false;
+        })
+        .catch(error => console.error('Error fetching provinces:', error));
+}
+
+function fetchCities(provinceId) {
+    const citySelect = document.getElementById('traditionalDeceasedCity');
+    citySelect.innerHTML = '<option value="">Select City/Municipality</option>';
+    citySelect.disabled = true;
+    
+    if (!provinceId) return;
+    
+    fetch(`address/get_cities.php?province_id=${provinceId}`)
+        .then(response => response.json())
+        .then(data => {
+            citySelect.innerHTML = '<option value="">Select City/Municipality</option>';
+            
+            data.forEach(city => {
+                const option = document.createElement('option');
+                option.value = city.municipality_id;
+                option.textContent = city.municipality_name;
+                citySelect.appendChild(option);
+            });
+            
+            citySelect.disabled = false;
+        })
+        .catch(error => console.error('Error fetching cities:', error));
+}
+
+function fetchBarangays(cityId) {
+    const barangaySelect = document.getElementById('traditionalDeceasedBarangay');
+    barangaySelect.innerHTML = '<option value="">Select Barangay</option>';
+    barangaySelect.disabled = true;
+    
+    if (!cityId) return;
+    
+    fetch(`address/get_barangays.php?city_id=${cityId}`)
+        .then(response => response.json())
+        .then(data => {
+            barangaySelect.innerHTML = '<option value="">Select Barangay</option>';
+            
+            data.forEach(barangay => {
+                const option = document.createElement('option');
+                option.value = barangay.barangay_id;
+                option.textContent = barangay.barangay_name;
+                barangaySelect.appendChild(option);
+            });
+            
+            barangaySelect.disabled = false;
+        })
+        .catch(error => console.error('Error fetching barangays:', error));
+}
+
+function updateCombinedAddress() {
+    const regionSelect = document.getElementById('traditionalDeceasedRegion');
+    const provinceSelect = document.getElementById('traditionalDeceasedProvince');
+    const citySelect = document.getElementById('traditionalDeceasedCity');
+    const barangaySelect = document.getElementById('traditionalDeceasedBarangay');
+    const streetAddress = document.getElementById('traditionalDeceasedAddress').value;
+    
+    const region = regionSelect.options[regionSelect.selectedIndex]?.text || '';
+    const province = provinceSelect.options[provinceSelect.selectedIndex]?.text || '';
+    const city = citySelect.options[citySelect.selectedIndex]?.text || '';
+    const barangay = barangaySelect.options[barangaySelect.selectedIndex]?.text || '';
+    
+    // Combine all address components into one string
+    const combinedAddress = `${streetAddress}, ${barangay}, ${city}, ${province}, ${region}`;
+    document.getElementById('deceasedAddress').value = combinedAddress;
+}
+
+// Initialize address dropdowns when the page loads
+document.addEventListener('DOMContentLoaded', function() {
+    fetchRegions();
+    
+    // Set up event listeners for cascading dropdowns
+    document.getElementById('traditionalDeceasedRegion').addEventListener('change', function() {
+        fetchProvinces(this.value);
+        document.getElementById('traditionalDeceasedProvince').value = '';
+        document.getElementById('traditionalDeceasedCity').value = '';
+        document.getElementById('traditionalDeceasedBarangay').value = '';
+        document.getElementById('traditionalDeceasedCity').disabled = true;
+        document.getElementById('traditionalDeceasedBarangay').disabled = true;
+        updateCombinedAddress();
+    });
+    
+    document.getElementById('traditionalDeceasedProvince').addEventListener('change', function() {
+        fetchCities(this.value);
+        document.getElementById('traditionalDeceasedCity').value = '';
+        document.getElementById('traditionalDeceasedBarangay').value = '';
+        document.getElementById('traditionalDeceasedBarangay').disabled = true;
+        updateCombinedAddress();
+    });
+    
+    document.getElementById('traditionalDeceasedCity').addEventListener('change', function() {
+        fetchBarangays(this.value);
+        document.getElementById('traditionalDeceasedBarangay').value = '';
+        updateCombinedAddress();
+    });
+    
+    document.getElementById('traditionalDeceasedBarangay').addEventListener('change', updateCombinedAddress);
+    document.getElementById('traditionalDeceasedAddress').addEventListener('input', updateCombinedAddress);
+    
+    // Also update combined address when form is submitted
+    document.getElementById('traditionalBookingForm').addEventListener('submit', function(e) {
+        updateCombinedAddress();
+        // Continue with form submission
+    });
+});
+
+
+function updateCombinedAddress() {
+    const regionSelect = document.getElementById('traditionalDeceasedRegion');
+    const provinceSelect = document.getElementById('traditionalDeceasedProvince');
+    const citySelect = document.getElementById('traditionalDeceasedCity');
+    const barangaySelect = document.getElementById('traditionalDeceasedBarangay');
+    const streetAddress = document.getElementById('traditionalDeceasedAddress').value;
+    
+    const region = regionSelect.options[regionSelect.selectedIndex]?.text || '';
+    const province = provinceSelect.options[provinceSelect.selectedIndex]?.text || '';
+    const city = citySelect.options[citySelect.selectedIndex]?.text || '';
+    const barangay = barangaySelect.options[barangaySelect.selectedIndex]?.text || '';
+    
+    // Create an array of non-empty address components
+    const addressParts = [];
+    if (streetAddress) addressParts.push(streetAddress);
+    if (barangay) addressParts.push(barangay);
+    if (city) addressParts.push(city);
+    if (province) addressParts.push(province);
+    if (region) addressParts.push(region);
+    
+    // Join the parts with commas
+    const combinedAddress = addressParts.join(', ');
+    document.getElementById('deceasedAddress').value = combinedAddress;
+}
+    
     // Add this script in the <head> section or before the closing </body> tag
 document.addEventListener('DOMContentLoaded', function() {
     // Name fields validation
@@ -2801,24 +2965,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const mobileMenu = document.getElementById('mobile-menu');
     mobileMenu.classList.toggle('hidden');
     }
-
-    document.addEventListener('DOMContentLoaded', function() {
-    // FAQ Accordion Functionality
-    const faqQuestions = document.querySelectorAll('.faq-question');
-    
-    faqQuestions.forEach(question => {
-        question.addEventListener('click', function() {
-            // Toggle the answer visibility
-            const answer = this.nextElementSibling;
-            answer.classList.toggle('hidden');
-            
-            // Rotate the chevron icon
-            const icon = this.querySelector('i');
-            icon.classList.toggle('transform');
-            icon.classList.toggle('rotate-180');
-        });
-    });
-});
 </script>
 
 
