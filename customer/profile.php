@@ -2736,22 +2736,31 @@ function fetchBookingDetails(bookingId) {
                 const container = document.querySelector('.space-y-2');
 
                 // Check if status is Accepted or Declined
-                if (data.status === 'Accepted' && data.accepted_date) {
-                    // Create new paragraph for Accepted Date
-                    const acceptedDateP = document.createElement('p');
-                    acceptedDateP.innerHTML = `<span class="text-gray-500">Accepted Date:</span> <span class="text-navy">${formatDate(data.accepted_date)}</span>`;
-                    
-                    // Insert after the status paragraph
-                    document.getElementById('detail-status').parentNode.insertAdjacentElement('afterend', acceptedDateP);
-                } 
-                else if (data.status === 'Declined' && data.decline_date) {
-                    // Create new paragraph for Declined Date
-                    const declinedDateP = document.createElement('p');
-                    declinedDateP.innerHTML = `<span class="text-gray-500"> Declined Date:</span> <span class="text-navy">${formatDate(data.decline_date)}</span>`;
-                    
-                    // Insert after the status paragraph
-                    document.getElementById('detail-status').parentNode.insertAdjacentElement('afterend', declinedDateP);
-                }
+                // Remove any existing date paragraphs first
+const existingDatePs = document.querySelectorAll('#detail-status').parentNode.nextElementSibling);
+existingDatePs.forEach(p => {
+    if (p.textContent.includes('Date:')) {
+        p.remove();
+    }
+});
+
+// Then add the appropriate date based on status
+if (data.status === 'Accepted' && data.accepted_date) {
+    // Create new paragraph for Accepted Date
+    const acceptedDateP = document.createElement('p');
+    acceptedDateP.innerHTML = `<span class="text-gray-500">Accepted Date:</span> <span class="text-navy">${formatDate(data.accepted_date)}</span>`;
+    
+    // Insert after the status paragraph
+    document.getElementById('detail-status').parentNode.insertAdjacentElement('afterend', acceptedDateP);
+} 
+else if (data.status === 'Declined' && data.decline_date) {
+    // Create new paragraph for Declined Date
+    const declinedDateP = document.createElement('p');
+    declinedDateP.innerHTML = `<span class="text-gray-500"> Declined Date:</span> <span class="text-navy">${formatDate(data.decline_date)}</span>`;
+    
+    // Insert after the status paragraph
+    document.getElementById('detail-status').parentNode.insertAdjacentElement('afterend', declinedDateP);
+}
                 
                 // Deceased info
                 let deceasedName = `${data.deceased_lname}, ${data.deceased_fname}`;
@@ -3044,6 +3053,9 @@ function showError(message) {
         notification.classList.add('hidden');
     }, 5000);
 }
+
+
+
 </script>
 
 <script>
