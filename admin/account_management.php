@@ -2025,80 +2025,37 @@ if ($result->num_rows > 0) {
         Showing <span id="empShowingFrom"><?php echo $showingFrom; ?></span> - <span id="empShowingTo"><?php echo $showingTo; ?></span> 
         of <span id="empTotalCount"><?php echo $totalRows; ?></span> employees
     </div>
-    <!-- Sticky Pagination Footer with improved spacing -->
-<div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
-    <div id="empPaginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
-        <?php 
-        // Calculate and display pagination info
-        if ($totalItems > 0) {
-            $start = ($page - 1) * $itemsPerPage + 1;
-            $end = min($start + $itemsPerPage - 1, $totalItems);
-        
-            echo "Showing {$start} - {$end} of {$totalItems} items";
-        } else {
-            echo "No items found";
-        }
-        ?>
-    </div>
-    <div id="empPaginationContainer" class="flex space-x-2">
-        <?php if ($totalPages > 1): ?>
-            <!-- First page button (double arrow) -->
-            <button onclick="changeEmpPage(1)" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($page == 1) ? 'opacity-50 pointer-events-none' : ''; ?>">
+    <div id="empPaginationContainer" class="flex space-x-1">
+        <!-- Previous Button -->
+        <?php if ($page > 1): ?>
+            <button onclick="changeEmpPage(<?php echo $page - 1; ?>)" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">
                 &laquo;
             </button>
-            
-            <!-- Previous page button (single arrow) -->
-            <button onclick="changeEmpPage(<?php echo max(1, $page - 1); ?>)" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($page == 1) ? 'opacity-50 pointer-events-none' : ''; ?>">
-                &lsaquo;
+        <?php else: ?>
+            <button disabled class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm opacity-50 cursor-not-allowed">
+                &laquo;
             </button>
-            
-            <?php
-            // Show exactly 3 page numbers
-            if ($totalPages <= 3) {
-                // If total pages is 3 or less, show all pages
-                $startPage = 1;
-                $endPage = $totalPages;
-            } else {
-                // With more than 3 pages, determine which 3 to show
-                if ($page == 1) {
-                    // At the beginning, show first 3 pages
-                    $startPage = 1;
-                    $endPage = 3;
-                } elseif ($page == $totalPages) {
-                    // At the end, show last 3 pages
-                    $startPage = $totalPages - 2;
-                    $endPage = $totalPages;
-                } else {
-                    // In the middle, show current page with one before and after
-                    $startPage = $page - 1;
-                    $endPage = $page + 1;
-                    
-                    // Handle edge cases
-                    if ($startPage < 1) {
-                        $startPage = 1;
-                        $endPage = 3;
-                    }
-                    if ($endPage > $totalPages) {
-                        $endPage = $totalPages;
-                        $startPage = $totalPages - 2;
-                    }
-                }
-            }
-            
-            // Generate the page buttons
-            for ($i = $startPage; $i <= $endPage; $i++) {
-                $active_class = ($i == $page) ? 'bg-sidebar-accent text-white' : 'border border-sidebar-border hover:bg-sidebar-hover';
-                echo '<button onclick="changeEmpPage(' . $i . ')" class="px-3.5 py-1.5 rounded text-sm ' . $active_class . '">' . $i . '</button>';
-            }
-            ?>
-            
-            <!-- Next page button (single arrow) -->
-            <button onclick="changeEmpPage(<?php echo min($totalPages, $page + 1); ?>)" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($page == $totalPages) ? 'opacity-50 pointer-events-none' : ''; ?>">
-                &rsaquo;
+        <?php endif; ?>
+
+        <!-- Page Numbers -->
+        <?php 
+        $startPage = max(1, $page - 2);
+        $endPage = min($totalPages, $page + 2);
+        
+        for ($i = $startPage; $i <= $endPage; $i++): ?>
+            <button onclick="changeEmpPage(<?php echo $i; ?>)" 
+                    class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm <?php echo $i == $page ? 'bg-sidebar-accent text-white' : 'hover:bg-sidebar-hover'; ?>">
+                <?php echo $i; ?>
             </button>
-            
-            <!-- Last page button (double arrow) -->
-            <button onclick="changeEmpPage(<?php echo $totalPages; ?>)" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($page == $totalPages) ? 'opacity-50 pointer-events-none' : ''; ?>">
+        <?php endfor; ?>
+
+        <!-- Next Button -->
+        <?php if ($page < $totalPages): ?>
+            <button onclick="changeEmpPage(<?php echo $page + 1; ?>)" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">
+                &raquo;
+            </button>
+        <?php else: ?>
+            <button disabled class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm opacity-50 cursor-not-allowed">
                 &raquo;
             </button>
         <?php endif; ?>
@@ -4063,13 +4020,47 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Function to create pagination buttons for employees
     function createEmpPaginationButtons() {
-        empPaginationContainer.innerHTML = ''; // Clear existing buttons
+    // Clear existing buttons
+    empPaginationContainer.innerHTML = '';
+    
+    // Add spacing class to container if not already present
+    if (!empPaginationContainer.classList.contains('space-x-2')) {
+        empPaginationContainer.classList.add('flex', 'space-x-2');
+    }
+    
+    // Update pagination info if the container exists
+    const paginationInfo = document.getElementById('empPaginationInfo');
+    if (paginationInfo) {
+        const start = ((currentEmpPage - 1) * itemsPerPage) + 1;
+        const end = Math.min(start + itemsPerPage - 1, totalEmpItems);
         
-        // Previous button
+        if (totalEmpItems > 0) {
+            paginationInfo.textContent = `Showing ${start} - ${end} of ${totalEmpItems} items`;
+        } else {
+            paginationInfo.textContent = "No items found";
+        }
+    }
+    
+    if (totalEmpPages > 1) {
+        // First page button (double arrow)
+        const firstButton = document.createElement('button');
+        firstButton.innerHTML = '&laquo;';
+        firstButton.className = 'px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover' + 
+            (currentEmpPage === 1 ? ' opacity-50 pointer-events-none' : '');
+        firstButton.disabled = currentEmpPage === 1;
+        firstButton.addEventListener('click', () => {
+            if (currentEmpPage !== 1) {
+                currentEmpPage = 1;
+                fetchEmployeeAccounts();
+            }
+        });
+        empPaginationContainer.appendChild(firstButton);
+        
+        // Previous page button (single arrow)
         const prevButton = document.createElement('button');
-        prevButton.innerHTML = '&laquo;';
+        prevButton.innerHTML = '&lsaquo;';
         prevButton.className = 'px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover' + 
-            (currentEmpPage === 1 ? ' opacity-50 cursor-not-allowed' : '');
+            (currentEmpPage === 1 ? ' opacity-50 pointer-events-none' : '');
         prevButton.disabled = currentEmpPage === 1;
         prevButton.addEventListener('click', () => {
             if (currentEmpPage > 1) {
@@ -4079,17 +4070,48 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         empPaginationContainer.appendChild(prevButton);
         
-        // Page number buttons - show up to 5 pages around current page
-        const startPage = Math.max(1, currentEmpPage - 2);
-        const endPage = Math.min(totalEmpPages, currentEmpPage + 2);
+        // Logic for showing exactly 3 page numbers
+        let startPage, endPage;
         
+        if (totalEmpPages <= 3) {
+            // If total pages is 3 or less, show all pages
+            startPage = 1;
+            endPage = totalEmpPages;
+        } else {
+            // With more than 3 pages, determine which 3 to show
+            if (currentEmpPage === 1) {
+                // At the beginning, show first 3 pages
+                startPage = 1;
+                endPage = 3;
+            } else if (currentEmpPage === totalEmpPages) {
+                // At the end, show last 3 pages
+                startPage = totalEmpPages - 2;
+                endPage = totalEmpPages;
+            } else {
+                // In the middle, show current page with one before and after
+                startPage = currentEmpPage - 1;
+                endPage = currentEmpPage + 1;
+                
+                // Handle edge cases
+                if (startPage < 1) {
+                    startPage = 1;
+                    endPage = 3;
+                }
+                if (endPage > totalEmpPages) {
+                    endPage = totalEmpPages;
+                    startPage = totalEmpPages - 2;
+                }
+            }
+        }
+        
+        // Page number buttons
         for (let i = startPage; i <= endPage; i++) {
             const pageButton = document.createElement('button');
             pageButton.textContent = i;
-            pageButton.className = 'px-3.5 py-1.5 border border-sidebar-border rounded text-sm ' + 
+            pageButton.className = 'px-3.5 py-1.5 rounded text-sm ' + 
                 (i === currentEmpPage 
                     ? 'bg-sidebar-accent text-white' 
-                    : 'hover:bg-sidebar-hover');
+                    : 'border border-sidebar-border hover:bg-sidebar-hover');
             pageButton.addEventListener('click', () => {
                 currentEmpPage = i;
                 fetchEmployeeAccounts();
@@ -4097,11 +4119,11 @@ document.addEventListener('DOMContentLoaded', function() {
             empPaginationContainer.appendChild(pageButton);
         }
         
-        // Next button
+        // Next page button (single arrow)
         const nextButton = document.createElement('button');
-        nextButton.innerHTML = '&raquo;';
+        nextButton.innerHTML = '&rsaquo;';
         nextButton.className = 'px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover' + 
-            (currentEmpPage === totalEmpPages ? ' opacity-50 cursor-not-allowed' : '');
+            (currentEmpPage === totalEmpPages ? ' opacity-50 pointer-events-none' : '');
         nextButton.disabled = currentEmpPage === totalEmpPages;
         nextButton.addEventListener('click', () => {
             if (currentEmpPage < totalEmpPages) {
@@ -4110,7 +4132,22 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
         empPaginationContainer.appendChild(nextButton);
+        
+        // Last page button (double arrow)
+        const lastButton = document.createElement('button');
+        lastButton.innerHTML = '&raquo;';
+        lastButton.className = 'px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover' + 
+            (currentEmpPage === totalEmpPages ? ' opacity-50 pointer-events-none' : '');
+        lastButton.disabled = currentEmpPage === totalEmpPages;
+        lastButton.addEventListener('click', () => {
+            if (currentEmpPage !== totalEmpPages) {
+                currentEmpPage = totalEmpPages;
+                fetchEmployeeAccounts();
+            }
+        });
+        empPaginationContainer.appendChild(lastButton);
     }
+}
 
     // Function to fetch employee accounts via AJAX
     function fetchEmployeeAccounts() {
