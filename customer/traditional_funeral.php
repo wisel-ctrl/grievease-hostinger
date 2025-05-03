@@ -198,6 +198,12 @@ require_once '../db_connect.php'; // Database connection
             box-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
             transition: all 0.3s ease;
         }
+        .rotate-180 {
+    transform: rotate(180deg);
+}
+.transform {
+    transition: transform 0.3s ease;
+}
 
         .candlelight:hover {
             transform: scale(1.1);
@@ -2796,17 +2802,23 @@ document.addEventListener('DOMContentLoaded', function() {
     mobileMenu.classList.toggle('hidden');
     }
 
-    // FAQ accordion toggle
-    document.querySelectorAll('.faq-question').forEach(question => {
-            question.addEventListener('click', function() {
-                const answer = this.nextElementSibling;
-                const icon = this.querySelector('.fa-chevron-down');
-                
-                // Toggle current answer
-                answer.classList.toggle('hidden');
-                icon.classList.toggle('rotate-180');
-            });
+    document.addEventListener('DOMContentLoaded', function() {
+    // FAQ Accordion Functionality
+    const faqQuestions = document.querySelectorAll('.faq-question');
+    
+    faqQuestions.forEach(question => {
+        question.addEventListener('click', function() {
+            // Toggle the answer visibility
+            const answer = this.nextElementSibling;
+            answer.classList.toggle('hidden');
+            
+            // Rotate the chevron icon
+            const icon = this.querySelector('i');
+            icon.classList.toggle('transform');
+            icon.classList.toggle('rotate-180');
         });
+    });
+});
 </script>
 
 
