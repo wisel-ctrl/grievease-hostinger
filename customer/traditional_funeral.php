@@ -1187,7 +1187,7 @@ require_once '../db_connect.php'; // Database connection
                     </div>
 
                     <div class="border-b border-gray-200 pb-4 mb-4">
-                        <h3 class="text-lg font-hedvig text-navy mb-4">Payment <span class="text-red-500">*</h3>
+                        <h3 class="text-lg font-hedvig text-navy mb-4">Payment</h3>
                         
                         <!-- QR Code Button and Modal -->
                         <div class="mb-4">
