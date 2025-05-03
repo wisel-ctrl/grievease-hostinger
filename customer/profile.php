@@ -2520,96 +2520,122 @@ function populateReceipt(data) {
                            (data.accepter_middle ? ` ${data.accepter_middle}` : '') + 
                            (data.accepter_suffix ? ` ${data.accepter_suffix}` : '');
         accepterInfo = `
-            <div class="border-t border-b border-gray-200 py-4 mb-4">
-                <h3 class="font-bold mb-2">Processed By</h3>
-                <p><strong>Staff Name:</strong> ${accepterName ? accepterName.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ') : ''}</p>
-                ${data.accepter_email ? `<p><strong>Email:</strong> ${data.accepter_email}</p>` : ''}
-                ${data.accepter_phone ? `<p><strong>Phone:</strong> ${data.accepter_phone}</p>` : ''}
+            <div class="border-t border-gold py-6 mb-6">
+                <h3 class="font-cinzel font-bold mb-3 text-navy">Processed By</h3>
+                <div class="bg-cream rounded-lg p-4 shadow-card">
+                    <p class="mb-2"><span class="font-medium text-navy">Staff Name:</span> ${accepterName ? accepterName.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ') : ''}</p>
+                    ${data.accepter_email ? `<p class="mb-2"><span class="font-medium text-navy">Email:</span> ${data.accepter_email}</p>` : ''}
+                    ${data.accepter_phone ? `<p><span class="font-medium text-navy">Phone:</span> ${data.accepter_phone}</p>` : ''}
+                </div>
             </div>
         `;
     }
 
     receiptContent.innerHTML = `
-        <div class="text-center mb-6">
-            <h2 class="text-2xl font-bold capitalize">${data.branch_name} Branch</h2>
-            <p class="text-gray-600">Official Receipt</p>
-        </div>
-        
-        <div class="flex justify-between mb-6">
-            <div>
-                    <p class="font-semibold mb-2">Transaction Details</p>
-                    <p><strong>Receipt #:</strong> ${data.receipt_number || 'N/A'}</p>
-                    <p><strong>Reference Code:</strong> ${data.reference_code || 'N/A'}</p>
-                <p><strong>Booking Date:</strong> ${formatDate(data.booking_date)}</p>
-                <p><strong>Accepted Date:</strong> ${formatDate(data.accepted_date)}</p>
+        <div class="bg-cream p-8 rounded-lg shadow-card max-w-2xl mx-auto font-inter">
+            <div class="text-center mb-8 border-b border-gold pb-6">
+                <h1 class="font-cinzel text-3xl font-bold text-navy mb-1 capitalize">${data.branch_name} Branch</h1>
+                <p class="font-hedvig text-xl text-gold">Official Receipt</p>
+                <div class="w-24 h-1 bg-gold mx-auto mt-4"></div>
             </div>
-            <div class="text-right">
-                <p> <span class="text-green-600">${data.status}</span></p>
+            
+            <div class="flex flex-col md:flex-row justify-between mb-6 gap-6">
+                <div class="flex-1">
+                    <p class="font-cinzel font-semibold text-navy mb-3">Transaction Details</p>
+                    <div class="bg-white rounded-lg p-4 shadow-input">
+                        <p class="mb-2"><span class="font-medium text-navy">Receipt #:</span> <span class="text-dark">${data.receipt_number || 'N/A'}</span></p>
+                        <p class="mb-2"><span class="font-medium text-navy">Reference Code:</span> <span class="text-dark">${data.reference_code || 'N/A'}</span></p>
+                        <p class="mb-2"><span class="font-medium text-navy">Booking Date:</span> <span class="text-dark">${formatDate(data.booking_date)}</span></p>
+                        <p><span class="font-medium text-navy">Accepted Date:</span> <span class="text-dark">${formatDate(data.accepted_date)}</span></p>
+                    </div>
+                </div>
+                <div class="md:text-right self-start">
+                    <div class="inline-block px-4 py-2 bg-success text-white rounded-lg font-medium">
+                        ${data.status}
+                    </div>
+                </div>
             </div>
-        </div>
-        
-        <div class="border-t border-b border-gray-200 py-4 mb-4">
-            <h3 class="font-bold mb-2">Service Details</h3>
-            <p><strong>Service:</strong> ${data.service_name}</p>
-            <p><strong>Total Amount:</strong> ₱${parseFloat(data.selling_price).toFixed(2)}</p>
-            <p><strong>Amount Paid:</strong> ₱${parseFloat(data.amount_paid || 0).toFixed(2)}</p>
-            <p><strong>Balance:</strong> ₱${(parseFloat(data.selling_price) - parseFloat(data.amount_paid || 0)).toFixed(2)}</p>
-        </div>
-        
-        <div class="border-t border-b border-gray-200 py-4 mb-4">
-            <h3 class="font-bold mb-2">Deceased Information</h3>
-            <p><strong>Name:</strong> ${deceasedName ? deceasedName.toLowerCase().replace(/\b\w/g, c => c.toUpperCase()) : ''}</p>
-            ${data.deceased_birth ? `<p><strong>Date of Birth:</strong> ${new Date(data.deceased_birth).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>` : ''}
-            ${data.deceased_dodeath ? `<p><strong>Date of Death:</strong> ${new Date(data.deceased_dodeath).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>` : ''}
-            ${data.deceased_dateOfBurial ? `<p><strong>Date of Burial:</strong> ${new Date(data.deceased_dateOfBurial).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>` : ''}        
-        </div>
-        
-        ${accepterInfo}
-        
-        <div class="text-center mt-8 text-sm text-gray-500">
-            <p>Thank you for your business!</p>
-            <p>For inquiries, please contact our branch.</p>
+            
+            <div class="border-t border-gold py-6 mb-6">
+                <h3 class="font-cinzel font-bold mb-3 text-navy">Service Details</h3>
+                <div class="bg-cream rounded-lg p-4 shadow-card border border-gold">
+                    <p class="mb-3"><span class="font-medium text-navy">Service:</span> <span class="text-dark">${data.service_name}</span></p>
+                    <div class="border-t border-gold pt-3 mt-3">
+                        <div class="flex justify-between mb-2">
+                            <span class="font-medium text-navy">Total Amount:</span>
+                            <span class="text-dark">₱${parseFloat(data.selling_price).toFixed(2)}</span>
+                        </div>
+                        <div class="flex justify-between mb-2">
+                            <span class="font-medium text-navy">Amount Paid:</span>
+                            <span class="text-success">₱${parseFloat(data.amount_paid || 0).toFixed(2)}</span>
+                        </div>
+                        <div class="flex justify-between font-bold">
+                            <span class="text-navy">Balance:</span>
+                            <span class="text-darkgold">₱${(parseFloat(data.selling_price) - parseFloat(data.amount_paid || 0)).toFixed(2)}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="border-t border-gold py-6 mb-6">
+                <h3 class="font-cinzel font-bold mb-3 text-navy">Deceased Information</h3>
+                <div class="bg-cream rounded-lg p-4 shadow-card">
+                    <p class="mb-2"><span class="font-medium text-navy">Name:</span> <span class="text-dark">${deceasedName ? deceasedName.toLowerCase().replace(/\b\w/g, c => c.toUpperCase()) : ''}</span></p>
+                    ${data.deceased_birth ? `<p class="mb-2"><span class="font-medium text-navy">Date of Birth:</span> <span class="text-dark">${new Date(data.deceased_birth).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span></p>` : ''}
+                    ${data.deceased_dodeath ? `<p class="mb-2"><span class="font-medium text-navy">Date of Death:</span> <span class="text-dark">${new Date(data.deceased_dodeath).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span></p>` : ''}
+                    ${data.deceased_dateOfBurial ? `<p><span class="font-medium text-navy">Date of Burial:</span> <span class="text-dark">${new Date(data.deceased_dateOfBurial).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span></p>` : ''}        
+                </div>
+            </div>
+            
+            ${accepterInfo}
+            
+            <div class="text-center mt-8 border-t border-gold pt-6">
+                <p class="font-alexbrush text-2xl text-gold mb-2">Thank you for your business</p>
+                <p class="text-navy">For inquiries, please contact our branch.</p>
+                <div class="mt-4">
+                    <img src="/api/placeholder/120/40" alt="Company Logo" class="mx-auto" />
+                </div>
+            </div>
         </div>
     `;
 }
 
-    // Print receipt
-    printReceiptBtn.addEventListener('click', () => {
-        const printContents = receiptContent.innerHTML;
-        const originalContents = document.body.innerHTML;
-        
-        document.body.innerHTML = printContents;
-        window.print();
-        document.body.innerHTML = originalContents;
-        window.location.reload();
-    });
+// Print receipt
+printReceiptBtn.addEventListener('click', () => {
+    const printContents = receiptContent.innerHTML;
+    const originalContents = document.body.innerHTML;
+    
+    document.body.innerHTML = printContents;
+    window.print();
+    document.body.innerHTML = originalContents;
+    window.location.reload();
+});
 
-    // Download as PDF
-    downloadPdfBtn.addEventListener('click', () => {
-        const { jsPDF } = window.jspdf;
+// Download as PDF
+downloadPdfBtn.addEventListener('click', () => {
+    const { jsPDF } = window.jspdf;
+    
+    html2canvas(receiptContent).then(canvas => {
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF();
+        const imgProps = pdf.getImageProperties(imgData);
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
         
-        html2canvas(receiptContent).then(canvas => {
-            const imgData = canvas.toDataURL('image/png');
-            const pdf = new jsPDF();
-            const imgProps = pdf.getImageProperties(imgData);
-            const pdfWidth = pdf.internal.pageSize.getWidth();
-            const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-            
-            pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-            pdf.save(`receipt_${new Date().getTime()}.pdf`);
-        });
-    });
-
-    // Download as Image
-    downloadImageBtn.addEventListener('click', () => {
-        html2canvas(receiptContent).then(canvas => {
-            const link = document.createElement('a');
-            link.download = `receipt_${new Date().getTime()}.png`;
-            link.href = canvas.toDataURL('image/png');
-            link.click();
-        });
+        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+        pdf.save(`receipt_${new Date().getTime()}.pdf`);
     });
 });
+
+// Download as Image
+downloadImageBtn.addEventListener('click', () => {
+    html2canvas(receiptContent).then(canvas => {
+        const link = document.createElement('a');
+        link.download = `receipt_${new Date().getTime()}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+    });
+}); 
 </script>
 
 <script>
