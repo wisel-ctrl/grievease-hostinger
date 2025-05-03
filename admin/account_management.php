@@ -629,8 +629,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <!-- Add Customer Account Modal -->
 <div id="addCustomerAccountModal" class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto">
-  <div class="modal-scroll-container overflow-y-auto max-h-[90vh]">
-
   <!-- Modal Backdrop -->
   <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
   
