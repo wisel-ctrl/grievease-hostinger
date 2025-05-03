@@ -66,7 +66,7 @@ $current_page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 if ($current_page < 1) $current_page = 1;
 
 // Count total bookings with status "Pending"
-$count_query = "SELECT COUNT(*) as total FROM booking_tb WHERE status = 'Pending'";
+$count_query = "SELECT COUNT(*) as total FROM booking_tb WHERE status = 'Pending' AND service_id IS NOT NULL";
 $count_result = $conn->query($count_query);
 $total_bookings = $count_result->fetch_assoc()['total'];
 $total_pages = ceil($total_bookings / $bookings_per_page);
@@ -667,7 +667,7 @@ $offset = ($current_page - 1) * $bookings_per_page;
                                     <div class="flex space-x-2">
                                         <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" 
                                                 title="View Details" 
-                                                onclick="openBookingDetails(<?php echo $row['booking_id']; ?>)">
+                                                onclick="openCustomDetails(<?php echo $row['booking_id']; ?>)">
                                             <i class="fas fa-eye"></i>
                                         </button>
                                     </div>
@@ -692,6 +692,7 @@ $offset = ($current_page - 1) * $bookings_per_page;
             </table>
         </div>
     </div>
+    
     
     <!-- Sticky Pagination Footer with improved spacing -->
     <div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
