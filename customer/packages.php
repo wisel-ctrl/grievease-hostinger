@@ -2834,12 +2834,12 @@ document.getElementById('lifeplanServiceBtn').addEventListener('click', function
     formSection.classList.add('hidden');
     formSection.classList.remove('force-show');
     
-    
+    initializeLifeplanAddressFields();
     
     // Show the modal
     document.getElementById('lifeplanModal').classList.remove('hidden');
-    // Initialize address fields
-    initializeLifeplanAddressFields();
+    
+    
 }
 
 // Helper functions for lifeplan file uploads
