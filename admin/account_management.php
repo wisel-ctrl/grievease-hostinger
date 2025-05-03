@@ -782,6 +782,7 @@ document.addEventListener('DOMContentLoaded', function() {
         <input type="hidden" name="is_verified" value="1">
       </form>
     </div>
+</div>
     
     <!-- Modal Footer -->
     <div class="px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row sm:justify-end gap-2 sm:gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
@@ -793,7 +794,6 @@ document.addEventListener('DOMContentLoaded', function() {
       </button>
     </div>
   </div>
-</div>
 </div>
 
 <!-- OTP Verification Modal -->
