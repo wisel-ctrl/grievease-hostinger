@@ -1012,17 +1012,17 @@ foreach ($serviceData as $service => $branches) {
     </div>
   </div>
   
-  <!-- Pagination Footer -->
-  <div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
+  <!-- Change this part in the pagination footer -->
+<div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
     <div id="paginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
-      Loading data...
+        Loading data...
     </div>
     <div class="flex space-x-2" id="paginationControls">
-      <button class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover opacity-50 cursor-not-allowed" disabled>&laquo;</button>
-      <button class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm bg-sidebar-accent text-white">1</button>
-      <button class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">&raquo;</button>
+        <button class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover opacity-50 cursor-not-allowed" disabled>&laquo;</button>
+        <button class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm bg-sidebar-accent text-white">1</button>
+        <button class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover opacity-50 cursor-not-allowed" disabled>&raquo;</button>
     </div>
-  </div>
+</div>
 
 </div>
             
@@ -1051,8 +1051,20 @@ function loadInventoryLogs(page = 1) {
     const paginationInfo = document.getElementById('paginationInfo');
     const paginationControls = document.getElementById('paginationControls');
     
+    // Show loading state
     loadingIndicator.classList.remove('hidden');
     tableBody.innerHTML = '';
+    paginationInfo.innerHTML = 'Loading data...';
+    
+    // Disable pagination controls while loading
+    paginationControls.innerHTML = `
+        <button class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm opacity-50 cursor-not-allowed" disabled>&laquo;</button>
+        <button class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm bg-sidebar-accent text-white">${page}</button>
+        <button class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm opacity-50 cursor-not-allowed" disabled>&raquo;</button>
+    `;
+
+    loadInventoryLogs();
+};
     
     fetch(`dashboard/fetch_inventory_logs.php?page=${page}`)
         .then(response => response.json())
@@ -1114,7 +1126,9 @@ function loadInventoryLogs(page = 1) {
                         <td class="px-4 py-3.5 text-sm text-sidebar-text">${branchName || 'N/A'}</td>
                     `;
                     tableBody.appendChild(row);
+                    
                 });
+                
                 
                 // Update pagination info
                 updatePaginationInfo(paginationInfo, page, data.perPage, data.total);
@@ -1163,7 +1177,51 @@ function formatQuantityChange(change, oldQty, newQty) {
 }
 
 // Helper function to update pagination info
+// Update the loadInventoryLogs function to properly initialize the pagination info
+function loadInventoryLogs(page = 1) {
+    const loadingIndicator = document.getElementById('inventoryLoadingIndicator');
+    const tableBody = document.getElementById('inventoryLogsBody');
+    const paginationInfo = document.getElementById('paginationInfo');
+    const paginationControls = document.getElementById('paginationControls');
+    
+    // Show loading state
+    loadingIndicator.classList.remove('hidden');
+    tableBody.innerHTML = '';
+    paginationInfo.innerHTML = 'Loading data...';
+    
+    // Disable pagination controls while loading
+    paginationControls.innerHTML = `
+        <button class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm opacity-50 cursor-not-allowed" disabled>&laquo;</button>
+        <button class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm bg-sidebar-accent text-white">${page}</button>
+        <button class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm opacity-50 cursor-not-allowed" disabled>&raquo;</button>
+    `;
+    
+    fetch(`dashboard/fetch_inventory_logs.php?page=${page}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // ... rest of your existing success handling code ...
+            } else {
+                showError(tableBody, data.error);
+                paginationInfo.innerHTML = 'Error loading data';
+            }
+        })
+        .catch(error => {
+            showError(tableBody, error.message);
+            paginationInfo.innerHTML = 'Error loading data';
+        })
+        .finally(() => {
+            loadingIndicator.classList.add('hidden');
+        });
+}
+
+// Update the updatePaginationInfo function to handle initial state
 function updatePaginationInfo(element, currentPage, perPage, totalItems) {
+    if (totalItems === 0) {
+        element.innerHTML = 'No activities found';
+        return;
+    }
+    
     const startItem = (currentPage - 1) * perPage + 1;
     const endItem = Math.min(currentPage * perPage, totalItems);
     element.innerHTML = `
