@@ -1623,46 +1623,60 @@ if (dodField) {
     const cityField = document.getElementById('traditionalDeceasedCity');
     const barangayField = document.getElementById('traditionalDeceasedBarangay');
     const streetField = document.getElementById('traditionalDeceasedStreet');
-    
-    if (streetField) {
-    streetField.addEventListener('input', function() {
+if (streetField) {
+    streetField.addEventListener('input', function(e) {
         let value = this.value;
+        let cursorPos = this.selectionStart;
         
-        // If the input is just a space and we don't have at least 2 characters yet, prevent it
-        if (value.endsWith(' ') && value.trim().length < 2) {
-            this.value = value.trim(); // Remove the space
+        // If trying to add space before having 2 characters
+        if (value[cursorPos - 1] === ' ' && value.replace(/\s/g, '').length < 2) {
+            // Remove the space
+            this.value = value.substring(0, cursorPos - 1) + value.substring(cursorPos);
+            // Move cursor back
+            this.selectionStart = this.selectionEnd = cursorPos - 1;
             return;
         }
         
+        // Normal formatting
         // Remove multiple spaces
-        value = value.replace(/\s{2,}/g, ' ').trim();
+        value = value.replace(/\s{2,}/g, ' ');
         
         // Capitalize first letter of each word
         this.value = value.toLowerCase().replace(/(^|\s)([a-z])/g, function(match) {
             return match.toUpperCase();
         });
+        
+        // Restore cursor position after formatting
+        this.selectionStart = this.selectionEnd = cursorPos;
     });
     
-    // Handle paste event to prevent unwanted spaces
+    // Handle paste event
     streetField.addEventListener('paste', function(e) {
         e.preventDefault();
         let pastedText = (e.clipboardData || window.clipboardData).getData('text');
         
+        // Get current text and cursor position
+        let currentValue = this.value;
+        let startPos = this.selectionStart;
+        let endPos = this.selectionEnd;
+        
         // Clean the pasted text
         pastedText = pastedText.replace(/\s{2,}/g, ' ').trim();
         
-        // If pasted text starts with space and we don't have content yet, remove it
-        if (pastedText.startsWith(' ') && this.value.length < 2) {
-            pastedText = pastedText.trim();
+        // If pasting would add space before having 2 characters
+        if ((pastedText.startsWith(' ') || 
+             (startPos > 0 && currentValue[startPos - 1] === ' ')) && 
+            currentValue.replace(/\s/g, '').length < 2) {
+            // Remove leading space from pasted text
+            pastedText = pastedText.trimStart();
         }
         
-        // Insert at cursor position
-        const startPos = this.selectionStart;
-        const endPos = this.selectionEnd;
-        this.value = this.value.substring(0, startPos) + pastedText + this.value.substring(endPos);
+        // Insert the cleaned text
+        this.value = currentValue.substring(0, startPos) + pastedText + currentValue.substring(endPos);
         
         // Move cursor to end of inserted text
-        this.selectionStart = this.selectionEnd = startPos + pastedText.length;
+        const newCursorPos = startPos + pastedText.length;
+        this.selectionStart = this.selectionEnd = newCursorPos;
         
         // Trigger input event to apply formatting
         this.dispatchEvent(new Event('input'));
