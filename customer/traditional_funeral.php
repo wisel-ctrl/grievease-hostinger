@@ -1821,76 +1821,7 @@ if (streetField) {
         });
     }
 
-    // Form submission validation
-    const bookingForm = document.getElementById('traditionalBookingForm');
-    if (bookingForm) {
-        bookingForm.addEventListener('submit', function(e) {
-            let isValid = true;
-            
-            // Validate required name fields
-            if (!document.getElementById('traditionalDeceasedFirstName').value.trim() || 
-                document.getElementById('traditionalDeceasedFirstName').value.trim().length < 2) {
-                alert('Please enter a valid first name (at least 2 characters)');
-                isValid = false;
-            }
-            
-            if (!document.getElementById('traditionalDeceasedLastName').value.trim() || 
-                document.getElementById('traditionalDeceasedLastName').value.trim().length < 2) {
-                alert('Please enter a valid last name (at least 2 characters)');
-                isValid = false;
-            }
-            
-            // Validate date of death
-            if (!document.getElementById('traditionalDateOfDeath').value) {
-                alert('Please select a date of death');
-                isValid = false;
-            }
-            
-            // Validate death certificate
-            if (!document.getElementById('traditionalDeathCertificate').files[0]) {
-                alert('Please upload a death certificate');
-                isValid = false;
-            }
-            
-            // Validate address
-            if (!document.getElementById('traditionalDeceasedRegion').value ||
-                !document.getElementById('traditionalDeceasedProvince').value ||
-                !document.getElementById('traditionalDeceasedCity').value ||
-                !document.getElementById('traditionalDeceasedBarangay').value ||
-                !document.getElementById('traditionalDeceasedStreet').value.trim()) {
-                alert('Please complete the address information');
-                isValid = false;
-            }
-            
-            // Validate payment
-            if (!document.getElementById('traditionalGcashReceipt').files[0]) {
-                alert('Please upload a GCash receipt');
-                isValid = false;
-            }
-            
-            if (!document.getElementById('traditionalReferenceNumber').value.trim()) {
-                alert('Please enter a reference number');
-                isValid = false;
-            }
-            
-            if (isValid) {
-                // Combine address components into JSON string
-                const address = {
-                    region: document.getElementById('traditionalDeceasedRegion').value,
-                    province: document.getElementById('traditionalDeceasedProvince').value,
-                    city: document.getElementById('traditionalDeceasedCity').value,
-                    barangay: document.getElementById('traditionalDeceasedBarangay').value,
-                    street: document.getElementById('traditionalDeceasedStreet').value.trim()
-                };
-                document.getElementById('deceasedAddress').value = JSON.stringify(address);
-                
-                // Show loading indicator
-                showLoader();
-            } else {
-                e.preventDefault();
-            }
-        });
-    }
+    
 
     // Placeholder functions for address data fetching
     function fetchProvinces(region) {
@@ -2605,18 +2536,10 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     document.getElementById('traditionalBookingForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    // Show loading indicator
-    showLoader();
-    
-    // Check if this is a custom package submission
-    if (document.getElementById('traditionalSelectedPackageName').value === 'Custom Memorial Package') {
-        submitCustomPackage();
-    } else {
-        submitTraditionalPackage();
-    }
-});
+        e.preventDefault();
+        // Check if this is a custom package submission
+        if (document.getElementById('traditionalSelectedPackageName').value === 'Custom Memorial Package') {
+            const totalPackagePrice = parseFloat(document.getElementById('traditionalSelectedPackagePrice').value);
             
             // Create FormData object for handling files
             const formData = new FormData();
