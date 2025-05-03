@@ -71,6 +71,25 @@ header("Pragma: no-cache");
   <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    .modal-scroll-container {
+    scrollbar-width: thin;
+    scrollbar-color: #d4a933 #f5f5f5;
+}
+
+.modal-scroll-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.modal-scroll-container::-webkit-scrollbar-track {
+    background: #f5f5f5;
+}
+
+.modal-scroll-container::-webkit-scrollbar-thumb {
+    background-color: #d4a933;
+    border-radius: 6px;
+}
+  </style>
 
 </head>
 <body class="flex bg-gray-50">
@@ -628,6 +647,7 @@ document.addEventListener('DOMContentLoaded', function() {
     </div>
     
     <!-- Modal Body -->
+    <div class="modal-scroll-container overflow-y-auto max-h-[90vh]">
     <div class="px-4 sm:px-6 py-4 sm:py-5">
       <form id="addCustomerAccountForm" method="post" action="addCustomer/add_customer.php" class="space-y-3 sm:space-y-4">
         <!-- Personal Information Section -->
@@ -760,6 +780,7 @@ document.addEventListener('DOMContentLoaded', function() {
         <input type="hidden" name="is_verified" value="1">
       </form>
     </div>
+</div>
     
     <!-- Modal Footer -->
     <div class="px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row sm:justify-end gap-2 sm:gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
