@@ -664,11 +664,6 @@ $custom_offset = ($custom_current_page - 1) * $custom_bookings_per_page;
                                 <i class="fas fa-calendar text-sidebar-accent"></i> Date Requested 
                             </div>
                         </th>
-                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortCustomTable('package')">
-                            <div class="flex items-center gap-1.5">
-                                <i class="fas fa-box text-sidebar-accent"></i> Package Price
-                            </div>
-                        </th>
                         <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortCustomTable('status')">
                             <div class="flex items-center gap-1.5">
                                 <i class="fas fa-toggle-on text-sidebar-accent"></i> Status 
@@ -979,6 +974,11 @@ $custom_offset = ($custom_current_page - 1) * $custom_bookings_per_page;
                         <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortLifeplanTable('date')">
                             <div class="flex items-center gap-1.5">
                                 <i class="fas fa-calendar text-sidebar-accent"></i> Date Requested 
+                            </div>
+                        </th>
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortCustomTable('package')">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fas fa-box text-sidebar-accent"></i> Package Price
                             </div>
                         </th>
                         <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortLifeplanTable('status')">
