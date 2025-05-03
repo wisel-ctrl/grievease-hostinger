@@ -2045,13 +2045,10 @@ function removeGcash() {
                         
                         <div class="mb-3 md:mb-4">
                             <label class="block text-sm font-medium text-navy mb-1">Payment Term:</label>
-                            <select id="lifeplanPaymentTerm" name="paymentTerm" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
-                                <option value="60">5 Years (60 Monthly Payments)</option>
-                                <option value="36">3 Years (36 Monthly Payments)</option>
-                                <option value="24">2 Years (24 Monthly Payments)</option>
-                                <option value="12">1 Year (12 Monthly Payments)</option>
-                            </select>
+                            <input type="text" id="lifeplanPaymentTerm" name="paymentTerm" value="5 Years (60 Monthly Payments)" readonly
+                                class="w-full px-3 py-2 border border-input-border rounded-lg bg-gray-100 text-gray-700 cursor-not-allowed focus:outline-none">
                         </div>
+
 
                         <!-- QR Code Button and Modal -->
                         <div class="mb-4">
