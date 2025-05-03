@@ -1680,7 +1680,6 @@ document.addEventListener('DOMContentLoaded', function() {
     class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-base shadow-sm transition-all duration-200"
     pattern="\d{4,10}" 
     title="Zip code must be 4-10 digits">
-    <div id="zip-error" class="text-red-600 text-sm mt-1 hidden"></div>
                                 </div>
                             </div>
                         </div>
@@ -2290,47 +2289,6 @@ document.addEventListener('DOMContentLoaded', function() {
       document.getElementById('modifyBookingModal').classList.add('hidden');
     });
   });
-});
-
-document.addEventListener('DOMContentLoaded', function() {
-    const zipInput = document.getElementById('zip');
-    const zipError = document.getElementById('zip-error');
-    
-    // Validate on blur (when user leaves the field)
-    zipInput.addEventListener('blur', function() {
-        validateZipCode();
-    });
-    
-    // Validate on form submission
-    document.getElementById('profile-form').addEventListener('submit', function(e) {
-        if (!validateZipCode()) {
-            e.preventDefault(); // Prevent form submission if invalid
-        }
-    });
-    
-    function validateZipCode() {
-        const zipValue = zipInput.value.trim();
-        const zipPattern = /^\d{4,10}$/;
-        
-        if (!zipPattern.test(zipValue)) {
-            zipError.textContent = 'Please enter a valid ZIP code (4-10 digits)';
-            zipError.classList.remove('hidden');
-            zipInput.classList.add('border-red-500');
-            return false;
-        } else {
-            zipError.classList.add('hidden');
-            zipInput.classList.remove('border-red-500');
-            return true;
-        }
-    }
-    
-    // Add click handler to close the error when user starts typing again
-    zipInput.addEventListener('input', function() {
-        if (!zipError.classList.contains('hidden')) {
-            zipError.classList.add('hidden');
-            zipInput.classList.remove('border-red-500');
-        }
-    });
 });
 </script>
 
@@ -2997,22 +2955,16 @@ document.getElementById('cancelBookingForm').addEventListener('submit', function
         }, 5000);
     }
 
-    // Add this to your existing JavaScript
-function showError(message) {
-    const notification = document.getElementById('errorNotification');
-    document.getElementById('errorMessage').textContent = message;
-    notification.classList.remove('hidden');
-    
-    // Add click handler to dismiss
-    notification.addEventListener('click', function() {
-        this.classList.add('hidden');
-    });
-    
-    // Auto-hide after 5 seconds
-    setTimeout(() => {
-        notification.classList.add('hidden');
-    }, 5000);
-}
+    function showError(message) {
+        const notification = document.getElementById('errorNotification');
+        document.getElementById('errorMessage').textContent = message;
+        notification.classList.remove('hidden');
+        
+        setTimeout(() => {
+            notification.classList.add('hidden');
+        }, 5000);
+    }
+});
 </script>
 
 <script>
@@ -3512,8 +3464,6 @@ document.addEventListener('DOMContentLoaded', function() {
         zipCodeInput.addEventListener('blur', function() {
             // Ensure at least 4 digits
             if (this.value.length > 0 && this.value.length < 4) {
-                alert('Zip code must be between 4-10 digits');
-                this.focus();
             }
         });
     }
