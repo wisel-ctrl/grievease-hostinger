@@ -1020,7 +1020,7 @@ require_once '../db_connect.php'; // Database connection
 
                 <!-- Package Header -->
                 <div class="flex justify-between items-center mb-6">
-                    <h2 id="traditionalPackageName" class="text-3xl font-hedvig text-navy"></h2>
+                    <h2 id="traditionalPackageName" class="text-2xl font-hedvig text-navy"></h2>
                     <div id="traditionalPackagePrice" class="text-3xl font-hedvig text-yellow-600"></div>
                 </div>
 
@@ -1452,6 +1452,8 @@ require_once '../db_connect.php'; // Database connection
         </div>
     </div>
 </div>
+
+
 
 <!-- Footer -->
 <footer class="bg-black font-playfair text-white py-12">
