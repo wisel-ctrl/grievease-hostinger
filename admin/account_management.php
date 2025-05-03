@@ -4028,19 +4028,6 @@ document.addEventListener('DOMContentLoaded', function() {
         empPaginationContainer.classList.add('flex', 'space-x-2');
     }
     
-    // Update pagination info if the container exists
-    const paginationInfo = document.getElementById('empPaginationInfo');
-    if (paginationInfo) {
-        const start = ((currentEmpPage - 1) * itemsPerPage) + 1;
-        const end = Math.min(start + itemsPerPage - 1, totalEmpItems);
-        
-        if (totalEmpItems > 0) {
-            paginationInfo.textContent = `Showing ${start} - ${end} of ${totalEmpItems} items`;
-        } else {
-            paginationInfo.textContent = "No items found";
-        }
-    }
-    
     if (totalEmpPages > 1) {
         // First page button (double arrow)
         const firstButton = document.createElement('button');
