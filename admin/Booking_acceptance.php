@@ -929,6 +929,9 @@ $offset = ($current_page - 1) * $bookings_per_page;
 <!-- Improved Booking Details Modal -->
 <div id="bookingDetailsModal" class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto">
   <!-- Modal Backdrop -->
+
+  <div class="modal-scroll-container overflow-y-auto max-h-[90vh]">
+
   <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
   
   <!-- Modal Content -->
