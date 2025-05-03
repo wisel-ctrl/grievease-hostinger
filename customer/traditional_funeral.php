@@ -1266,7 +1266,7 @@ require_once '../db_connect.php'; // Database connection
                             <input type="text" id="traditionalReferenceNumber" name="referenceNumber" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" placeholder="e.g. 1234567890">
                         </div>
                     </div>
-                    
+
 
                     <div class="bg-cream p-4 rounded-lg">
                         <div class="flex justify-between text-sm mb-2">
@@ -1282,6 +1282,7 @@ require_once '../db_connect.php'; // Database connection
                             <span id="traditionalAmountDue" class="text-yellow-600">₱0</span>
                         </div>
                     </div>
+</div>
 
                     <button type="submit" class="w-full bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg shadow-md transition-all duration-300">
                         Confirm Booking
