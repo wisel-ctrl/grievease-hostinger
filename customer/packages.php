@@ -2970,6 +2970,8 @@ function initializeLifeplanAddressFields() {
 function updateLifeplanProvinces() {
     const regionId = document.getElementById('lifeplanHolderRegion').value;
     const provinceDropdown = document.getElementById('lifeplanHolderProvince');
+    console.log('updateLifeplanProvinces called');
+    console.log('Selected region ID:', regionId)
     
     if (!regionId) {
         provinceDropdown.disabled = true;
