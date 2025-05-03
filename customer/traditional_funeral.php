@@ -1008,71 +1008,40 @@ require_once '../db_connect.php'; // Database connection
 
     <!-- Traditional Funeral Modal (Hidden by Default) -->
 <div id="traditionalModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4 hidden">
-    <div class="w-full max-w-5xl bg-white rounded-2xl shadow-xl overflow-hidden max-h-[90vh] md:max-h-[80vh]">
+    <div class="w-full max-w-5xl bg-white rounded-2xl shadow-xl overflow-hidden max-h-[80vh]">
         <!-- Scroll container for both columns -->
-        <div class="modal-scroll-container grid grid-cols-1 md:grid-cols-2 overflow-y-auto max-h-[90vh] md:max-h-[80vh]">
-            <!-- Left Side: Package Details (shown by default on mobile) -->
-            <div class="bg-cream p-4 md:p-8 details-section">
-                <!-- Header and Close Button for Mobile -->
-                <div class="flex justify-between items-center mb-4 md:hidden">
-                    <h2 class="text-xl font-hedvig text-navy">Package Details</h2>
-                    <button class="closeModalBtn text-gray-500 hover:text-navy">
-                        <i class="fas fa-times text-xl"></i>
-                    </button>
-                </div>
-                
+        <div class="modal-scroll-container grid grid-cols-1 md:grid-cols-2 overflow-y-auto max-h-[80vh]">
+            <!-- Left Side: Package Details -->
+            <div class="bg-cream p-8">
                 <!-- Package Image -->
-                <div class="mb-4 md:mb-6">
-                    <img id="traditionalPackageImage" src="" alt="" class="w-full h-48 md:h-64 object-cover rounded-lg mb-4">
+                <div class="mb-6">
+                    <img id="traditionalPackageImage" src="" alt="" class="w-full h-64 object-cover rounded-lg mb-4">
                 </div>
 
                 <!-- Package Header -->
-                <div class="flex justify-between items-center mb-4 md:mb-6">
-                    <h2 id="traditionalPackageName" class="text-2xl md:text-3xl font-hedvig text-navy"></h2>
-                    <div id="traditionalPackagePrice" class="text-2xl md:text-3xl font-hedvig text-yellow-600"></div>
+                <div class="flex justify-between items-center mb-6">
+                    <h2 id="traditionalPackageName" class="text-2xl font-hedvig text-navy"></h2>
+                    <div id="traditionalPackagePrice" class="text-3xl font-hedvig text-yellow-600"></div>
                 </div>
 
                 <!-- Package Description -->
-                <p id="traditionalPackageDesc" class="text-dark mb-4 md:mb-6 text-sm md:text-base"></p>
+                <p id="traditionalPackageDesc" class="text-dark mb-6"></p>
 
                 <!-- Main Package Details -->
                 <div class="border-t border-gray-200 pt-4">
-                    <h3 class="text-lg md:text-xl font-hedvig text-navy mb-3 md:mb-4">Package Includes:</h3>
-                    <ul id="traditionalPackageFeatures" class="space-y-1 md:space-y-2">
+                    <h3 class="text-xl font-hedvig text-navy mb-4">Package Includes:</h3>
+                    <ul id="traditionalPackageFeatures" class="space-y-2">
                         <!-- Features will be inserted here by JavaScript -->
                     </ul>
                 </div>
-
-                <!-- Mobile-only summary and navigation button -->
-                <div class="mt-6 border-t border-gray-200 pt-4 md:hidden">
-                    <div class="bg-white p-4 rounded-lg shadow-sm">
-                        <div class="flex justify-between text-sm mb-2">
-                            <span class="text-navy">Package Total</span>
-                            <span id="traditionalTotalPriceMobile" class="text-yellow-600">₱0</span>
-                        </div>
-                        <div class="flex justify-between font-bold mt-2 pt-2 border-t border-gray-300">
-                            <span class="text-navy">Amount Due Now (30%)</span>
-                            <span id="traditionalAmountDueMobile" class="text-yellow-600">₱0</span>
-                        </div>
-                    </div>
-                    <button id="continueToFormBtn" class="mt-4 w-full bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg shadow-md transition-all duration-300">
-                        Continue to Booking
-                    </button>
-                </div>
             </div>
 
-            <!-- Right Side: Booking Form (hidden by default on mobile) -->
-            <div class="bg-white p-4 md:p-8 border-t md:border-t-0 md:border-l border-gray-200 overflow-y-auto form-section hidden md:block">
+            <!-- Right Side: Traditional Booking Form -->
+            <div class="bg-white p-8 border-l border-gray-200 overflow-y-auto">
                 <div class="flex justify-between items-center mb-6">
-                    <div class="flex items-center">
-                        <button id="backToDetailsBtn" class="mr-2 text-gray-500 hover:text-navy md:hidden flex items-center">
-                            <i class="fas fa-arrow-left text-lg mr-1"></i>
-                            <span class="text-sm">Back</span>
-                        </button>
-                        <h2 class="text-xl md:text-2xl font-hedvig text-navy">Book Your Package</h2>
-                    </div>
+                    <h2 class="text-2xl font-hedvig text-navy">Book Your Package</h2>
                     <button class="closeModalBtn text-gray-500 hover:text-navy">
-                        <i class="fas fa-times text-xl md:text-2xl"></i>
+                        <i class="fas fa-times text-2xl"></i>
                     </button>
                 </div>
 
@@ -1092,9 +1061,9 @@ require_once '../db_connect.php'; // Database connection
                      
                     <div class="border-b border-gray-200 pb-4 mb-4">
                         <h3 class="text-lg font-hedvig text-navy mb-4">Deceased Information</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div class="grid grid-cols-2 gap-4 mb-4">
                             <div>
-                                <label for="traditionalDeceasedFirstName" class="block text-sm font-medium text-navy mb-2">First Name <span class="text-red-500">*</span></label>
+                                <label for="traditionalDeceasedFirstName" class="block text-sm font-medium text-navy mb-2">First Name <span class="text-red-500">*</label>
                                 <input type="text" id="traditionalDeceasedFirstName" name="deceasedFirstName" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                             </div>
                             <div>
@@ -1105,7 +1074,7 @@ require_once '../db_connect.php'; // Database connection
                         <!-- Last Name & Suffix (Side by side) -->
                         <div class="flex flex-wrap -mx-2 mb-3">
                             <div class="w-full sm:w-3/4 px-2 mb-3 sm:mb-0">
-                                <label for="traditionalDeceasedLastName" class="block text-sm font-medium text-navy mb-1">Last Name <span class="text-red-500">*</span></label>
+                                <label for="traditionalDeceasedLastName" class="block text-sm font-medium text-navy mb-1">Last Name <span class="text-red-500">*</label>
                                 <input type="text" id="traditionalDeceasedLastName" name="deceasedLastName" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" pattern="[A-Za-z'-][A-Za-z'-]*( [A-Za-z'-]+)*" title="Please enter a valid name (letters only, no leading spaces, numbers or symbols)">
                             </div>
                             <div class="w-full sm:w-1/4 px-2">
@@ -1123,13 +1092,13 @@ require_once '../db_connect.php'; // Database connection
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="grid grid-cols-3 gap-4">
                             <div>
                                 <label for="traditionalDateOfBirth" class="block text-sm font-medium text-navy mb-2">Date of Birth</label>
                                 <input type="date" id="traditionalDateOfBirth" name="dateOfBirth" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                             </div>
                             <div>
-                                <label for="traditionalDateOfDeath" class="block text-sm font-medium text-navy mb-2">Date of Death <span class="text-red-500">*</span></label>
+                                <label for="traditionalDateOfDeath" class="block text-sm font-medium text-navy mb-2">Date of Death <span class="text-red-500">*</label>
                                 <input type="date" id="traditionalDateOfDeath" name="dateOfDeath" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                             </div>
                             <div>
@@ -1174,7 +1143,7 @@ require_once '../db_connect.php'; // Database connection
                         <!-- Address (Improved UI with dropdowns in specified layout) -->
                         <div class="flex flex-wrap -mx-2 mb-3">
                             <div class="w-full sm:w-1/2 px-2 mb-3 sm:mb-0">
-                                <label for="traditionalDeceasedRegion" class="block text-sm font-medium text-navy mb-1">Region <span class="text-red-500">*</span></label>
+                                <label for="traditionalDeceasedRegion" class="block text-sm font-medium text-navy mb-1">Region <span class="text-red-500">*</label>
                                 <select id="traditionalDeceasedRegion" name="deceasedRegion" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                                     <option value="">Select Region</option>
                                     <option value="NCR">National Capital Region (NCR)</option>
@@ -1184,7 +1153,7 @@ require_once '../db_connect.php'; // Database connection
                                 </select>
                             </div>
                             <div class="w-full sm:w-1/2 px-2">
-                                <label for="traditionalDeceasedProvince" class="block text-sm font-medium text-navy mb-1">Province <span class="text-red-500">*</span></label>
+                                <label for="traditionalDeceasedProvince" class="block text-sm font-medium text-navy mb-1">Province <span class="text-red-500">*</label>
                                 <select id="traditionalDeceasedProvince" name="deceasedProvince" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                                     <option value="">Select Province</option>
                                     <!-- Provinces will be populated by JavaScript based on selected region -->
@@ -1194,14 +1163,14 @@ require_once '../db_connect.php'; // Database connection
                         
                         <div class="flex flex-wrap -mx-2 mb-3">
                             <div class="w-full sm:w-1/2 px-2 mb-3 sm:mb-0">
-                                <label for="traditionalDeceasedCity" class="block text-sm font-medium text-navy mb-1">City/Municipality <span class="text-red-500">*</span></label>
+                                <label for="traditionalDeceasedCity" class="block text-sm font-medium text-navy mb-1">City/Municipality <span class="text-red-500">*</label>
                                 <select id="traditionalDeceasedCity" name="deceasedCity" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                                     <option value="">Select City/Municipality</option>
                                     <!-- Cities will be populated by JavaScript based on selected province -->
                                 </select>
                             </div>
                             <div class="w-full sm:w-1/2 px-2">
-                                <label for="traditionalDeceasedBarangay" class="block text-sm font-medium text-navy mb-1">Barangay <span class="text-red-500">*</span></label>
+                                <label for="traditionalDeceasedBarangay" class="block text-sm font-medium text-navy mb-1">Barangay <span class="text-red-500">*</label>
                                 <select id="traditionalDeceasedBarangay" name="deceasedBarangay" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                                     <option value="">Select Barangay</option>
                                     <!-- Barangays will be populated by JavaScript based on selected city -->
@@ -1210,7 +1179,7 @@ require_once '../db_connect.php'; // Database connection
                         </div>
 
                         <div class="mt-4">
-                            <label for="traditionalDeceasedAddress" class="block text-sm font-medium text-navy mb-2">Street/Block/House Number <span class="text-red-500">*</span></label>
+                            <label for="traditionalDeceasedAddress" class="block text-sm font-medium text-navy mb-2">Street/Block/House Number <span class="text-red-500">*</label>
                             <textarea id="traditionalDeceasedAddress" name="deceasedAddress" rows="3" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600"></textarea>
                         </div>
 
@@ -1247,7 +1216,7 @@ require_once '../db_connect.php'; // Database connection
 
                         <!-- GCash Upload with Preview -->
                         <div class="mb-4">
-                            <label for="traditionalGcashReceipt" class="block text-sm font-medium text-navy mb-1">Payment Proof <span class="text-red-500">*</span></label>
+                            <label for="traditionalGcashReceipt" class="block text-sm font-medium text-navy mb-1">Payment Proof <span class="text-red-500">*</label>
                             <div class="border border-input-border bg-white rounded-lg p-3 focus-within:ring-2 focus-within:ring-yellow-600">
                                 <!-- Upload Button and File Name -->
                                 <div class="flex items-center mb-2">
@@ -1278,7 +1247,7 @@ require_once '../db_connect.php'; // Database connection
                             <p class="text-xs text-gray-500 mt-1">Accepted formats: JPG, JPEG, PNG</p>
                         </div>
                         <div class="mb-3">
-                            <label for="traditionalReferenceNumber" class="block text-sm font-medium text-navy mb-1">Reference Number <span class="text-red-500">*</span></label>
+                            <label for="traditionalReferenceNumber" class="block text-sm font-medium text-navy mb-1">Reference Number <span class="text-red-500">*</label>
                             <input type="text" id="traditionalReferenceNumber" name="referenceNumber" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" placeholder="e.g. 1234567890">
                         </div>
                     </div>
@@ -1299,7 +1268,7 @@ require_once '../db_connect.php'; // Database connection
                     </div>
 
                     <!-- Payment Summary and Confirm Booking moved here -->
-                    <div class="bg-cream p-4 rounded-lg hidden md:block">
+                    <div class="bg-cream p-4 rounded-lg">
                         <div class="flex justify-between text-sm mb-2">
                             <span class="text-navy">Package Total</span>
                             <span id="traditionalTotalPrice" class="text-yellow-600">₱0</span>
@@ -1885,104 +1854,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 })
-
-// Mobile navigation between details and form sections
-document.addEventListener('DOMContentLoaded', function() {
-    // Continue to form button (mobile)
-    const continueBtn = document.getElementById('continueToFormBtn');
-    // Back to details button (mobile)
-    const backBtn = document.getElementById('backToDetailsBtn');
-    // Details section
-    const detailsSection = document.querySelector('#traditionalModal .details-section');
-    // Form section
-    const document.querySelector('#traditionalModal .form-section');
-    
-    if (continueBtn && backBtn && detailsSection && formSection) {
-        continueBtn.addEventListener('click', function() {
-            detailsSection.classList.add('hidden');
-            formSection.classList.remove('hidden');
-            // Force show on mobile when navigating to form
-            formSection.classList.add('force-show');
-        });
-        
-        backBtn.addEventListener('click', function() {
-            formSection.classList.add('hidden');
-            formSection.classList.remove('force-show');
-            detailsSection.classList.remove('hidden');
-        });
-    }
-
-    // Handle window resize for modal sections
-    window.addEventListener('resize', function() {
-        const traditionalModal = document.getElementById('traditionalModal');
-        
-        if (!traditionalModal.classList.contains('hidden')) {
-            handleModalResize('traditionalModal');
-        }
-    });
-    
-    function handleModalResize(modalId) {
-        const detailsSection = document.querySelector(`#${modalId} .details-section`);
-        const formSection = document.querySelector(`#${modalId} .form-section`);
-        const isMobileView = window.innerWidth < 768;
-        
-        if (isMobileView) {
-            // If switching to mobile view, ensure form is hidden if we were on details
-            if (!detailsSection.classList.contains('hidden')) {
-                formSection.classList.add('hidden');
-            }
-        } else {
-            // If switching to desktop view, show both sections
-            detailsSection.classList.remove('hidden');
-            formSection.classList.remove('hidden');
-        }
-    }
-});
-
-// Mobile-specific form validation
-document.addEventListener('DOMContentLoaded', function() {
-    // Name field validation for mobile
-    const nameFields = [
-        'traditionalDeceasedFirstName',
-        'traditionalDeceasedMiddleName',
-        'traditionalDeceasedLastName'
-    ];
-
-    nameFields.forEach(fieldId => {
-        const field = document.getElementById(fieldId);
-        if (field) {
-            // Validate on input
-            field.addEventListener('input', function() {
-                validateNameInput(this);
-            });
-
-            // Validate on blur
-            field.addEventListener('blur', function() {
-                validateNameInput(this);
-            });
-        }
-    });
-
-    function validateNameInput(input) {
-        // Remove any numbers or symbols
-        let value = input.value.replace(/[^a-zA-Z\s'-]/g, '');
-        
-        // Remove leading spaces
-        value = value.replace(/^\s+/, '');
-        
-        // Capitalize first letter of each word
-        value = value.toLowerCase().replace(/\b\w/g, function(char) {
-            return char.toUpperCase();
-        });
-        
-        // Prevent multiple spaces
-        value = value.replace(/\s{2,}/g, ' ');
-        
-        // Update the input value
-        input.value = value;
-    }
-});
-
 </script>
 
 
@@ -2550,78 +2421,48 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Function to open traditional modal with package details
     function openTraditionalModal() {
-    // Get stored package details
-    const packageName = sessionStorage.getItem('selectedPackageName');
-    const packagePrice = sessionStorage.getItem('selectedPackagePrice');
-    const packageImage = sessionStorage.getItem('selectedPackageImage');
-    const packageFeatures = JSON.parse(sessionStorage.getItem('selectedPackageFeatures') || '[]');
-    const serviceId = sessionStorage.getItem('selectedServiceId');
-    
-    // Update modal title
-    document.querySelector('#traditionalModal .font-hedvig.text-2xl.text-navy').textContent = 'Book Your Package';
-    
-    // Update traditional modal with package details
-    document.getElementById('traditionalPackageName').textContent = packageName;
-    document.getElementById('traditionalPackagePrice').textContent = `₱${parseInt(packagePrice).toLocaleString()}`;
-    document.getElementById('serviceID').value = serviceId;
-    console.log('service: ', serviceId);
-    
-    // Update mobile summary
-    document.getElementById('traditionalTotalPriceMobile').textContent = `₱${parseInt(packagePrice).toLocaleString()}`;
-    document.getElementById('traditionalAmountDueMobile').textContent = `₱${Math.ceil(parseInt(packagePrice) * 0.3).toLocaleString()}`;
-    
-    // Only set image src if packageImage exists
-    if (packageImage) {
-        document.getElementById('traditionalPackageImage').src = packageImage;
-        document.getElementById('traditionalPackageImage').alt = packageName;
-    }
-    
-    // Calculate downpayment (30%)
-    const totalPrice = parseInt(packagePrice);
-    const downpayment = Math.ceil(totalPrice * 0.3);
-    
-    document.getElementById('traditionalTotalPrice').textContent = `₱${totalPrice.toLocaleString()}`;
-    document.getElementById('traditionalDownpayment').textContent = `₱${downpayment.toLocaleString()}`;
-    document.getElementById('traditionalAmountDue').textContent = `₱${downpayment.toLocaleString()}`;
+        // Get stored package details
+        const packageName = sessionStorage.getItem('selectedPackageName');
+        const packagePrice = sessionStorage.getItem('selectedPackagePrice');
+        const packageImage = sessionStorage.getItem('selectedPackageImage');
+        const packageFeatures = JSON.parse(sessionStorage.getItem('selectedPackageFeatures') || '[]');
+        const serviceId = sessionStorage.getItem('selectedServiceId');
+        
+        // Update modal title
+        document.querySelector('#traditionalModal .font-hedvig.text-2xl.text-navy').textContent = 'Book Your Package';
+        
+        // Update traditional modal with package details
+        document.getElementById('traditionalPackageName').textContent = packageName;
+        document.getElementById('traditionalPackagePrice').textContent = `₱${parseInt(packagePrice).toLocaleString()}`;
+        document.getElementById('serviceID').value = serviceId;
+        console.log('service: ', serviceId);
+        // Only set image src if packageImage exists
+        if (packageImage) {
+            document.getElementById('traditionalPackageImage').src = packageImage;
+            document.getElementById('traditionalPackageImage').alt = packageName;
+        }
+        
+        // Calculate downpayment (30%)
+        const totalPrice = parseInt(packagePrice);
+        const downpayment = Math.ceil(totalPrice * 0.3);
+        
+        document.getElementById('traditionalTotalPrice').textContent = `₱${totalPrice.toLocaleString()}`;
+        document.getElementById('traditionalDownpayment').textContent = `₱${downpayment.toLocaleString()}`;
+        document.getElementById('traditionalAmountDue').textContent = `₱${downpayment.toLocaleString()}`;
 
-    // Update features list
-    const featuresList = document.getElementById('traditionalPackageFeatures');
-    featuresList.innerHTML = '';
-    packageFeatures.forEach(feature => {
-        featuresList.innerHTML += `<li class="flex items-center text-sm text-gray-700">${feature}</li>`;
-    });
-    
-    // Update the form's hidden fields with package info
-    document.getElementById('traditionalSelectedPackageName').value = packageName;
-    document.getElementById('traditionalSelectedPackagePrice').value = packagePrice;
-    
-    // Reset form section visibility for mobile
-    const detailsSection = document.querySelector('#traditionalModal .details-section');
-    const formSection = document.querySelector('#traditionalModal .form-section');
-    
-    detailsSection.classList.remove('hidden');
-    formSection.classList.add('hidden');
-    formSection.classList.remove('force-show');
-    
-    // Show traditional modal
-    document.getElementById('traditionalModal').classList.remove('hidden');
-}
-
-        const detailsSection = document.querySelector('#traditionalModal .details-section');
-    const formSection = document.querySelector('#traditionalModal .form-section');
-    
-    detailsSection.classList.remove('hidden');
-    formSection.classList.add('hidden');
-    formSection.classList.remove('force-show');
-    
-    // Show the modal
-    document.getElementById('traditionalModal').classList.remove('hidden');
-    
-    // Update mobile-specific summary
-    const packagePrice = parseInt(document.getElementById('traditionalSelectedPackagePrice').value);
-    document.getElementById('traditionalTotalPriceMobile').textContent = `₱${packagePrice.toLocaleString()}`;
-    document.getElementById('traditionalAmountDueMobile').textContent = `₱${Math.ceil(packagePrice * 0.3).toLocaleString()}`;
-}
+        // Update features list
+        const featuresList = document.getElementById('traditionalPackageFeatures');
+        featuresList.innerHTML = '';
+        packageFeatures.forEach(feature => {
+            featuresList.innerHTML += `<li class="flex items-center text-sm text-gray-700">${feature}</li>`;
+        });
+        
+        // Update the form's hidden fields with package info
+        document.getElementById('traditionalSelectedPackageName').value = packageName;
+        document.getElementById('traditionalSelectedPackagePrice').value = packagePrice;
+        
+        // Show traditional modal
+        document.getElementById('traditionalModal').classList.remove('hidden');
     }
     
     document.querySelectorAll('.traditional-addon').forEach(checkbox => {
