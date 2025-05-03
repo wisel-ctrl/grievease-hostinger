@@ -70,7 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ");
         
         $stmt->bind_param(
-            "iiiidsssssssis", 
+            "iiiidssssssssss", 
             $service_id, $branch_id, $customer_id, $payment_duration, $package_price,
             $beneficiary_fname, $beneficiary_mname, $beneficiary_lname, $beneficiary_suffix,
             $beneficiary_birth, $beneficiary_address, $phone, $with_cremate,
