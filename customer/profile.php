@@ -1801,7 +1801,7 @@ document.addEventListener('DOMContentLoaded', function() {
         <form class="space-y-4 sm:space-y-6" id="password-form" method="POST" action="profile/update_password.php">
           <!-- Current Password -->
           <div>
-            <label for="current-password" class="block text-sm font-medium text-navy mb-1 sm:mb-2">Current Password*</label>
+            <label for="current-password" class="block text-sm font-medium text-navy mb-1 sm:mb-2">Current Password <span class="text-red-500">*</span></label>
             <div class="relative">
               <input type="password" id="current-password" name="current-password" required class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base">
               <span class="password-toggle absolute right-3 sm:right-4 top-1/2 transform -translate-y-1/2 text-gray-600 cursor-pointer" data-target="current-password">
@@ -1820,7 +1820,7 @@ document.addEventListener('DOMContentLoaded', function() {
           
           <!-- New Password -->
           <div>
-            <label for="new-password" class="block text-sm font-medium text-navy mb-1 sm:mb-2">New Password*</label>
+            <label for="new-password" class="block text-sm font-medium text-navy mb-1 sm:mb-2">New Password <span class="text-red-500">*</span></label>
             <div class="relative">
               <input type="password" id="new-password" name="new-password" required class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base">
               <span class="password-toggle absolute right-3 sm:right-4 top-1/2 transform -translate-y-1/2 text-gray-600 cursor-pointer" data-target="new-password">
