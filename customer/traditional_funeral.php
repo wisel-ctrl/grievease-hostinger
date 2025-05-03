@@ -1190,6 +1190,13 @@ require_once '../db_connect.php'; // Database connection
                         </div>
 
                         <input type="hidden" id="deceasedAddress" name="deceasedAddress">
+
+                        <div class="flex items-center mt-3 md:mt-4">
+                            <input type="checkbox" id="traditionalWithCremate" name="with_cremate" value="yes" class="h-4 w-4 text-yellow-600 focus:ring-yellow-500 border-gray-300 rounded">
+                            <label for="traditionalWithCremate" class="ml-2 block text-sm text-navy">
+                                Include cremation service
+                            </label>
+                        </div>
                     </div>
 
                     <div class="border-b border-gray-200 pb-4 mb-4">
