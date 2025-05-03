@@ -1708,7 +1708,7 @@ if ($result->num_rows > 0) {
     // Update pagination info
     $startCount = min($offset + 1, $totalRows);
     $endCount = min($offset + $perPage, $totalRows);
-    $paginationInfo = "Showing {$startCount}-{$endCount} of {$totalRows} employee accounts";
+    $empPaginationInfo = "Showing {$startCount}-{$endCount} of {$totalRows} employee accounts";
 } else {
     // If no employees found, display a message
     $tableContent = '<tr class="border-b border-sidebar-border">
