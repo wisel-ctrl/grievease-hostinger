@@ -1179,7 +1179,7 @@ require_once '../db_connect.php'; // Database connection
                         </div>
 
                         <div class="mt-4">
-                            <label for="traditionalDeceasedAddress" class="block text-sm font-medium text-navy mb-2">Address of the Deceased</label>
+                            <label for="traditionalDeceasedAddress" class="block text-sm font-medium text-navy mb-2">Street/Block/House Number</label>
                             <textarea id="traditionalDeceasedAddress" name="deceasedAddress" rows="3" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600"></textarea>
                         </div>
 
