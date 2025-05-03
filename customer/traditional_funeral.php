@@ -1108,7 +1108,7 @@ require_once '../db_connect.php'; // Database connection
                         </div>
 
                         <!-- Death Certificate Upload with Preview -->
-                        <div class="mb-4">
+                        <div class="mb-4 mt-4">
                             <label for="traditionalDeathCertificate" class="block text-sm font-medium text-navy mb-1">Death Certificate</label>
                             <div class="border border-input-border bg-white rounded-lg p-3 focus-within:ring-2 focus-within:ring-yellow-600">
                                 <!-- Upload Button and File Name -->
