@@ -1152,12 +1152,68 @@ document.addEventListener('DOMContentLoaded', function() {
               </label>
               <input type="date" id="beneficiaryDateOfBirth" name="beneficiaryDateOfBirth" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
             </div>
-            <div>
-              <label for="beneficiaryAddress" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                Address
-              </label>
-              <textarea id="beneficiaryAddress" name="beneficiaryAddress" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" rows="2"></textarea>
-            </div>
+            <!-- New Address Dropdown Hierarchy -->
+    <div class="space-y-3">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-2 sm:gap-4">
+        <div>
+          <label for="deceasedRegion" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            Region <span class="text-red-500">*</span>
+          </label>
+          <select id="deceasedRegion" name="deceasedRegion" required 
+                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+            <option value="" disabled selected>Select Region</option>
+            <?php foreach ($regions as $region): ?>
+              <option value="<?php echo $region['region_code']; ?>"><?php echo $region['region_name']; ?></option>
+            <?php endforeach; ?>
+          </select>
+        </div>
+        <div>
+          <label for="deceasedProvince" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            Province <span class="text-red-500">*</span>
+          </label>
+          <select id="deceasedProvince" name="deceasedProvince" required disabled
+                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+            <option value="" disabled selected>Select Province</option>
+          </select>
+        </div>
+        <div>
+          <label for="deceasedCity" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            City/Municipality <span class="text-red-500">*</span>
+          </label>
+          <select id="deceasedCity" name="deceasedCity" required disabled
+                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+            <option value="" disabled selected>Select City/Municipality</option>
+          </select>
+        </div>
+        <div>
+          <label for="deceasedBarangay" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            Barangay <span class="text-red-500">*</span>
+          </label>
+          <select id="deceasedBarangay" name="deceasedBarangay" required disabled
+                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+            <option value="" disabled selected>Select Barangay</option>
+          </select>
+        </div>
+      </div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-2 sm:gap-4">
+        <div class="md:col-span-2">
+          <label for="deceasedStreet" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            Street Address <span class="text-red-500">*</span>
+          </label>
+          <input type="text" id="deceasedStreet" name="deceasedStreet" required 
+                 class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+        </div>
+        <div>
+          <label for="deceasedZip" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            ZIP Code <span class="text-red-500">*</span>
+          </label>
+          <input type="text" id="deceasedZip" name="deceasedZip" required 
+                 class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+        </div>
+      </div>
+    </div>
+    
             <div>
               <label for="beneficiaryRelationship" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
                 Relationship to Client
