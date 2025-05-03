@@ -1634,67 +1634,19 @@ if (dodField) {
     const provinceField = document.getElementById('traditionalDeceasedProvince');
     const cityField = document.getElementById('traditionalDeceasedCity');
     const barangayField = document.getElementById('traditionalDeceasedBarangay');
-    // Street address validation
-const streetField = document.getElementById('traditionalDeceasedStreet');
-if (streetField) {
-    streetField.addEventListener('input', function(e) {
-        let value = this.value;
-        let cursorPos = this.selectionStart;
-        
-        // If trying to add space before having 2 characters
-        if (value[cursorPos - 1] === ' ' && value.replace(/\s/g, '').length < 2) {
-            // Remove the space
-            this.value = value.substring(0, cursorPos - 1) + value.substring(cursorPos);
-            // Move cursor back
-            this.selectionStart = this.selectionEnd = cursorPos - 1;
-            return;
-        }
-        
-        // Normal formatting
-        // Remove multiple spaces
-        value = value.replace(/\s{2,}/g, ' ');
-        
-        // Capitalize first letter of each word
-        this.value = value.toLowerCase().replace(/(^|\s)([a-z])/g, function(match) {
-            return match.toUpperCase();
-        });
-        
-        // Restore cursor position after formatting
-        this.selectionStart = this.selectionEnd = cursorPos;
-    });
+    const streetField = document.getElementById('traditionalDeceasedStreet');
     
-    // Handle paste event
-    streetField.addEventListener('paste', function(e) {
-        e.preventDefault();
-        let pastedText = (e.clipboardData || window.clipboardData).getData('text');
-        
-        // Get current text and cursor position
-        let currentValue = this.value;
-        let startPos = this.selectionStart;
-        let endPos = this.selectionEnd;
-        
-        // Clean the pasted text
-        pastedText = pastedText.replace(/\s{2,}/g, ' ').trim();
-        
-        // If pasting would add space before having 2 characters
-        if ((pastedText.startsWith(' ') || 
-             (startPos > 0 && currentValue[startPos - 1] === ' ')) && 
-            currentValue.replace(/\s/g, '').length < 2) {
-            // Remove leading space from pasted text
-            pastedText = pastedText.trimStart();
-        }
-        
-        // Insert the cleaned text
-        this.value = currentValue.substring(0, startPos) + pastedText + currentValue.substring(endPos);
-        
-        // Move cursor to end of inserted text
-        const newCursorPos = startPos + pastedText.length;
-        this.selectionStart = this.selectionEnd = newCursorPos;
-        
-        // Trigger input event to apply formatting
-        this.dispatchEvent(new Event('input'));
-    });
-}
+    if (streetField) {
+        streetField.addEventListener('input', function() {
+            // Remove multiple spaces
+            this.value = this.value.replace(/\s{2,}/g, ' ').trim();
+            
+            // Capitalize first letter of each word
+            this.value = this.value.toLowerCase().replace(/(^|\s)([a-z])/g, function(match) {
+                return match.toUpperCase();
+            });
+        });
+    }
     
     // Cascading dropdowns for address
     if (regionField) {
