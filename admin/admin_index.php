@@ -898,8 +898,12 @@ foreach ($serviceData as $service => $branches) {
             </table>
         </div>
     </div>
-    </div>
+    
 </div>
+
+
+  
+  
 
   <!-- Recent Inventory Activity -->
 <div class="bg-white rounded-lg shadow-md mb-8 border border-sidebar-border overflow-hidden">
@@ -993,7 +997,8 @@ foreach ($serviceData as $service => $branches) {
     </div>
   </div>
   
-              </div>
+  <!-- Pagination Footer -->
+  
 
 </div>
             
