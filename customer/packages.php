@@ -1454,39 +1454,93 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-function updateLifeplanProvinces() {
-    const regionId = document.getElementById('lifeplanHolderRegion').value;
-    const provinceDropdown = document.getElementById('lifeplanHolderProvince');
-    console.log('updateLifeplanProvinces called');
-    console.log('Selected region ID:', regionId)
-    
-    if (!regionId) {
-        provinceDropdown.disabled = true;
-        document.getElementById('lifeplanHolderCity').disabled = true;
-        document.getElementById('lifeplanHolderBarangay').disabled = true;
-        return;
-    }
-    
-    // Fetch provinces via AJAX
-    fetch('address/get_provinces.php?region_id=' + regionId)
-        .then(response => response.json())
-        .then(data => {
-            provinceDropdown.innerHTML = '<option value="">Select Province</option>';
-            data.forEach(province => {
-                provinceDropdown.innerHTML += `<option value="${province.province_id}">${province.province_name}</option>`;
-            });
-            provinceDropdown.disabled = false;
-            
-            // Reset dependent dropdowns
-            document.getElementById('lifeplanHolderCity').innerHTML = '<option value="">Select City/Municipality</option>';
+    function updateLifeplanProvinces() {
+        const regionId = document.getElementById('lifeplanHolderRegion').value;
+        const provinceDropdown = document.getElementById('lifeplanHolderProvince');
+        console.log('updateLifeplanProvinces called');
+        console.log('Selected region ID:', regionId)
+        
+        if (!regionId) {
+            provinceDropdown.disabled = true;
             document.getElementById('lifeplanHolderCity').disabled = true;
-            document.getElementById('lifeplanHolderBarangay').innerHTML = '<option value="">Select Barangay</option>';
             document.getElementById('lifeplanHolderBarangay').disabled = true;
-        })
-        .catch(error => {
-            console.error('Error fetching provinces:', error);
-        });
-}
+            return;
+        }
+        
+        // Fetch provinces via AJAX
+        fetch('address/get_provinces.php?region_id=' + regionId)
+            .then(response => response.json())
+            .then(data => {
+                provinceDropdown.innerHTML = '<option value="">Select Province</option>';
+                data.forEach(province => {
+                    provinceDropdown.innerHTML += `<option value="${province.province_id}">${province.province_name}</option>`;
+                });
+                provinceDropdown.disabled = false;
+                
+                // Reset dependent dropdowns
+                document.getElementById('lifeplanHolderCity').innerHTML = '<option value="">Select City/Municipality</option>';
+                document.getElementById('lifeplanHolderCity').disabled = true;
+                document.getElementById('lifeplanHolderBarangay').innerHTML = '<option value="">Select Barangay</option>';
+                document.getElementById('lifeplanHolderBarangay').disabled = true;
+            })
+            .catch(error => {
+                console.error('Error fetching provinces:', error);
+            });
+    }
+
+    function updateLifeplanCities() {
+        const provinceId = document.getElementById('lifeplanHolderProvince').value;
+        const cityDropdown = document.getElementById('lifeplanHolderCity');
+        
+        if (!provinceId) {
+            cityDropdown.disabled = true;
+            document.getElementById('lifeplanHolderBarangay').disabled = true;
+            return;
+        }
+        
+        // Fetch cities via AJAX
+        fetch('address/get_cities.php?province_id=' + provinceId)
+            .then(response => response.json())
+            .then(data => {
+                cityDropdown.innerHTML = '<option value="">Select City/Municipality</option>';
+                data.forEach(city => {
+                    cityDropdown.innerHTML += `<option value="${city.municipality_id}">${city.municipality_name}</option>`;
+                });
+                cityDropdown.disabled = false;
+                
+                // Reset dependent dropdown
+                document.getElementById('lifeplanHolderBarangay').innerHTML = '<option value="">Select Barangay</option>';
+                document.getElementById('lifeplanHolderBarangay').disabled = true;
+            })
+            .catch(error => {
+                console.error('Error fetching cities:', error);
+            });
+    }
+
+    function updateLifeplanBarangays() {
+        const cityId = document.getElementById('lifeplanHolderCity').value;
+        const barangayDropdown = document.getElementById('lifeplanHolderBarangay');
+        
+        if (!cityId) {
+            barangayDropdown.disabled = true;
+            return;
+        }
+        
+        // Fetch barangays via AJAX
+        fetch('address/get_barangays.php?city_id=' + cityId)
+            .then(response => response.json())
+            .then(data => {
+                barangayDropdown.innerHTML = '<option value="">Select Barangay</option>';
+                data.forEach(barangay => {
+                    barangayDropdown.innerHTML += `<option value="${barangay.barangay_id}">${barangay.barangay_name}</option>`;
+                });
+                barangayDropdown.disabled = false;
+            })
+            .catch(error => {
+                console.error('Error fetching barangays:', error);
+            });
+    }
+
 
     document.addEventListener('DOMContentLoaded', function() {
         console.log('DOM Content Loaded Lifeplan');
@@ -3004,58 +3058,6 @@ function initializeLifeplanAddressFields() {
 // Lifeplan address dropdown functions
 
 
-function updateLifeplanCities() {
-    const provinceId = document.getElementById('lifeplanHolderProvince').value;
-    const cityDropdown = document.getElementById('lifeplanHolderCity');
-    
-    if (!provinceId) {
-        cityDropdown.disabled = true;
-        document.getElementById('lifeplanHolderBarangay').disabled = true;
-        return;
-    }
-    
-    // Fetch cities via AJAX
-    fetch('address/get_cities.php?province_id=' + provinceId)
-        .then(response => response.json())
-        .then(data => {
-            cityDropdown.innerHTML = '<option value="">Select City/Municipality</option>';
-            data.forEach(city => {
-                cityDropdown.innerHTML += `<option value="${city.municipality_id}">${city.municipality_name}</option>`;
-            });
-            cityDropdown.disabled = false;
-            
-            // Reset dependent dropdown
-            document.getElementById('lifeplanHolderBarangay').innerHTML = '<option value="">Select Barangay</option>';
-            document.getElementById('lifeplanHolderBarangay').disabled = true;
-        })
-        .catch(error => {
-            console.error('Error fetching cities:', error);
-        });
-}
-
-function updateLifeplanBarangays() {
-    const cityId = document.getElementById('lifeplanHolderCity').value;
-    const barangayDropdown = document.getElementById('lifeplanHolderBarangay');
-    
-    if (!cityId) {
-        barangayDropdown.disabled = true;
-        return;
-    }
-    
-    // Fetch barangays via AJAX
-    fetch('address/get_barangays.php?city_id=' + cityId)
-        .then(response => response.json())
-        .then(data => {
-            barangayDropdown.innerHTML = '<option value="">Select Barangay</option>';
-            data.forEach(barangay => {
-                barangayDropdown.innerHTML += `<option value="${barangay.barangay_id}">${barangay.barangay_name}</option>`;
-            });
-            barangayDropdown.disabled = false;
-        })
-        .catch(error => {
-            console.error('Error fetching barangays:', error);
-        });
-}
 
     // Function to close all modals
     // Update your closeAllModals function
