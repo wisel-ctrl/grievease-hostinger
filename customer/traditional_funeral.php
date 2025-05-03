@@ -1108,6 +1108,9 @@ require_once '../db_connect.php'; // Database connection
         readonly
         class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600"
     >
+    <span class="absolute right-2 top-1/2 transform -translate-y-1/2 text-yellow-600 text-sm">
+                                    <i class="fas fa-calendar-alt"></i>
+                                </span>
                             </div>
                             <div>
                                 <label for="traditionalDateOfDeath" class="block text-sm font-medium text-navy mb-2">Date of Death <span class="text-red-500">*</label>
@@ -1118,15 +1121,21 @@ require_once '../db_connect.php'; // Database connection
         readonly
         required 
         class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+        <span class="absolute right-2 top-1/2 transform -translate-y-1/2 text-yellow-600 text-sm">
+                                    <i class="fas fa-calendar-alt"></i>
+                                </span>
                             </div>
                             <div>
                                 <label for="traditionalDateOfBurial" class="block text-sm font-medium text-navy mb-2">Date of Burial</label>
-                                <input 
+                                 <input 
         type="text" 
         id="traditionalDateOfBurial" 
         name="dateOfBurial" 
         readonly
         class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+        <span class="absolute right-2 top-1/2 transform -translate-y-1/2 text-yellow-600 text-sm">
+                                    <i class="fas fa-calendar-alt"></i>
+                                </span>
                             </div>
                         </div>
 
