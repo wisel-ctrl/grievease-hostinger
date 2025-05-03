@@ -1904,11 +1904,11 @@ function removeGcash() {
                 </div>
 
                 <!-- Add this simple continue button at the bottom of the details section -->
-<div class="mt-6 border-t border-gray-200 pt-4 md:hidden">
-    <button id="continueToLifeplanFormBtn" class="w-full bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg shadow-md transition-all duration-300">
-        Continue to Booking
-    </button>
-</div>
+    <div class="mt-6 border-t border-gray-200 pt-4 md:hidden">
+        <button id="continueToLifeplanFormBtn" class="w-full bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg shadow-md transition-all duration-300">
+            Continue to Booking
+        </button>
+    </div>
 
                 
             </div>
@@ -1987,11 +1987,12 @@ function removeGcash() {
                         </div>
                         
                         <div class="mb-3">
-                            <label for="lifeplanEmailAddress" class="block text-sm font-medium text-navy mb-1">Email Address *</label>
-                            <input type="email" id="lifeplanEmailAddress" name="emailAddress" required 
-       pattern="[^\s]+@[^\s]+\.[^\s]+" 
-       title="Please enter a valid email address (must contain @ and a domain)"
-       class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                            <label for="relationshipWithBeneficiary" class="block text-sm font-medium text-navy mb-1">
+                                Relationship with the Beneficiary *
+                            </label>
+                            <input type="text" id="relationshipWithBeneficiary" name="relationshipWithBeneficiary" required
+                                title="Please enter the relationship with the beneficiary"
+                                class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                         </div>
                         
                         <!-- Address (Improved UI with dropdowns in specified layout) -->
@@ -2198,49 +2199,7 @@ document.addEventListener('DOMContentLoaded', function() {
     contactNumberInput.title = "Please enter a valid Philippine mobile number starting with 09 (11 digits total)";
     }
     
-    // Email validation - prevent spaces
-    // Email validation - ensure it contains @ and prevent spaces
-    const emailInput = document.getElementById('lifeplanEmailAddress');
-    if (emailInput) {
-    emailInput.addEventListener('input', function() {
-        // Remove any spaces
-        this.value = this.value.replace(/\s/g, '');
-        
-        // Basic validation to ensure @ is present
-        if (this.value.indexOf('@') === -1) {
-            this.setCustomValidity('Email must contain @ symbol');
-        } else {
-            this.setCustomValidity('');
-        }
-    });
     
-    emailInput.addEventListener('paste', function(e) {
-        e.preventDefault();
-        const pastedText = (e.clipboardData || window.clipboardData).getData('text');
-        const cleanedText = pastedText.replace(/\s/g, ''); // Remove spaces
-        document.execCommand('insertText', false, cleanedText);
-        
-        // Validate after paste
-        if (this.value.indexOf('@') === -1) {
-            this.setCustomValidity('Email must contain @ symbol');
-        } else {
-            this.setCustomValidity('');
-        }
-    });
-    
-    // Add blur validation
-    emailInput.addEventListener('blur', function() {
-        if (this.value.indexOf('@') === -1) {
-            this.setCustomValidity('Email must contain @ symbol');
-        } else {
-            this.setCustomValidity('');
-        }
-    });
-    
-    // Set pattern attribute for HTML5 validation
-    emailInput.pattern = "[^\s]+@[^\s]+\.[^\s]+";
-    emailInput.title = "Please enter a valid email address (must contain @ and a domain)";
-    }
     
     // Add pattern validation for contact number (optional)
     if (contactNumberInput) {
