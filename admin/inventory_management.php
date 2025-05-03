@@ -1207,17 +1207,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Update the loadPage function
 function loadPage(branchId, page) {
-    // Validate page number
-    if (page < 1) page = 1;
-    
-    // Get total pages from the container's data attribute
-    const container = document.querySelector(`.branch-container[data-branch-id="${branchId}"]`);
-    const totalItems = parseInt(container.dataset.totalItems);
-    const itemsPerPage = 5;
-    const totalPages = Math.ceil(totalItems / itemsPerPage);
-    
-    if (page > totalPages) page = totalPages;
-    
     // Show loading indicator
     const loadingIndicator = document.getElementById(`loadingIndicator${branchId}`);
     const tableContainer = document.getElementById(`tableContainer${branchId}`);
@@ -1227,20 +1216,16 @@ function loadPage(branchId, page) {
     
     // Make AJAX request
     fetch(`inventory/load_inventory_table.php?branch_id=${branchId}&page=${page}`)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.text();
-        })
+        .then(response => response.text())
         .then(data => {
             // Update the table content
             document.getElementById(`inventoryTable_${branchId}`).innerHTML = data;
             
-            // Update URL without reloading
-            const url = new URL(window.location);
-            url.searchParams.set(`page_${branchId}`, page);
-            window.history.pushState({ branchId, page }, '', url);
+            // Get total items from the container's data attribute
+            const container = document.querySelector(`.branch-container[data-branch-id="${branchId}"]`);
+            const totalItems = parseInt(container.dataset.totalItems);
+            const itemsPerPage = 5;
+            const totalPages = Math.ceil(totalItems / itemsPerPage);
             
             // Update pagination info
             updatePaginationInfo(branchId, page, totalItems, itemsPerPage);
@@ -1256,11 +1241,6 @@ function loadPage(branchId, page) {
             console.error('Error:', error);
             loadingIndicator.classList.add('hidden');
             tableContainer.style.opacity = '1';
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: 'Failed to load inventory data. Please try again.'
-            });
         });
 }
 
@@ -1379,13 +1359,13 @@ document.addEventListener('DOMContentLoaded', function() {
         const urlParams = new URLSearchParams(window.location.search);
         const currentPage = urlParams.get(`page_${branchId}`) || 1;
         
-        // Store total items in the container's dataset
-        const totalItems = <?php echo $totalItems; ?>;
-        container.dataset.totalItems = totalItems;
+        // Get total items from server or container attribute
+        const totalItems = parseInt(container.dataset.totalItems);
+        const itemsPerPage = 5;
         
         // Initialize pagination
-        updatePaginationInfo(branchId, currentPage);
-        updatePaginationActiveState(branchId, currentPage);
+        updatePaginationInfo(branchId, currentPage, totalItems, itemsPerPage);
+        updatePaginationControls(branchId, currentPage, Math.ceil(totalItems / itemsPerPage));
     });
 });
 
