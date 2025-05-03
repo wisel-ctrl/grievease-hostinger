@@ -971,14 +971,14 @@ $offset = ($current_page - 1) * $bookings_per_page;
       <!-- Main Content Area -->
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
         <!-- Left Column - Essential Information -->
-        <div class="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+        <div class="lg:col-span-2 space-y-4 sm:space-y-6">
           <!-- Customer Information -->
           <div class="bg-white rounded-lg p-4 sm:p-5 border border-gray-200 shadow-sm">
             <h4 class="font-semibold text-gray-800 mb-3 sm:mb-4 flex items-center">
               <i class="fas fa-user mr-2 text-sidebar-accent"></i>
               Customer Information
             </h4>
-            <div class="space-y-2 sm:space-y-3">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
               <div class="flex flex-wrap">
                 <div class="w-1/3 text-sm text-gray-500">Name</div>
                 <div class="w-2/3 font-medium text-gray-800 break-words" id="customerName">John Doe</div>
@@ -1004,7 +1004,7 @@ $offset = ($current_page - 1) * $bookings_per_page;
               <i class="fas fa-note-sticky mr-2 text-sidebar-accent"></i>
               Deceased Information
             </h4>
-            <div class="space-y-2 sm:space-y-3">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
               <div class="flex flex-wrap">
                 <div class="w-1/3 text-sm text-gray-500">Full Name</div>
                 <div class="w-2/3 font-medium text-gray-800 break-words" id="deceasedFullName">
@@ -1033,7 +1033,7 @@ $offset = ($current_page - 1) * $bookings_per_page;
           </div>
 
           <!-- Service Details -->
-          <div class="bg-white rounded-lg p-4 sm:p-5 border border-gray-200 shadow-sm md:col-span-2">
+          <div class="bg-white rounded-lg p-4 sm:p-5 border border-gray-200 shadow-sm">
             <h4 class="font-semibold text-gray-800 mb-3 sm:mb-4 flex items-center">
               <i class="fas fa-calendar-check mr-2 text-sidebar-accent"></i>
               Service Details
