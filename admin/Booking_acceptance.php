@@ -593,7 +593,7 @@ $offset = ($current_page - 1) * $bookings_per_page;
                         </th>
                         <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortCustomTable('package')">
                             <div class="flex items-center gap-1.5">
-                                <i class="fas fa-box text-sidebar-accent"></i> Package Details
+                                <i class="fas fa-box text-sidebar-accent"></i> Package Price
                             </div>
                         </th>
                         <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortCustomTable('date')">
@@ -697,7 +697,19 @@ $offset = ($current_page - 1) * $bookings_per_page;
     <!-- Sticky Pagination Footer with improved spacing -->
     <div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
         <div id="customPaginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
-            No custom bookings found
+            <?php 
+            $total_custom_query = "SELECT COUNT(*) as total FROM booking_tb WHERE service_id IS NULL AND status = 'Pending'";
+            $total_custom_result = $conn->query($total_custom_query);
+            $total_custom_bookings = $total_custom_result->fetch_assoc()['total'];
+            
+            if ($total_custom_bookings > 0) {
+                $start = $offset + 1;
+                $end = min($offset + $bookings_per_page, $total_custom_bookings);
+                echo "Showing <span class='font-medium'>{$start}-{$end}</span> of <span class='font-medium'>{$total_custom_bookings}</span> custom " . ($total_custom_bookings != 1 ? "bookings" : "booking");
+            } else {
+                echo "No custom bookings found";
+            }
+            ?>
         </div>
         <div id="customPaginationContainer" class="flex space-x-1">
             <!-- Pagination will be added when there are records -->
