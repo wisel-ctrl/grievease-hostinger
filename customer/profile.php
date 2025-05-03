@@ -2520,13 +2520,11 @@ function populateReceipt(data) {
                            (data.accepter_middle ? ` ${data.accepter_middle}` : '') + 
                            (data.accepter_suffix ? ` ${data.accepter_suffix}` : '');
         accepterInfo = `
-            <div class="border-t border-gold py-6 mb-6">
-                <h3 class="font-cinzel font-bold mb-3 text-navy">Processed By</h3>
-                <div class="bg-cream rounded-lg p-4 shadow-card">
-                    <p class="mb-2"><span class="font-medium text-navy">Staff Name:</span> ${accepterName ? accepterName.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ') : ''}</p>
-                    ${data.accepter_email ? `<p class="mb-2"><span class="font-medium text-navy">Email:</span> ${data.accepter_email}</p>` : ''}
-                    ${data.accepter_phone ? `<p><span class="font-medium text-navy">Phone:</span> ${data.accepter_phone}</p>` : ''}
-                </div>
+            <div class="border-t border-b border-gray-200 py-4 mb-4">
+                <h3 class="font-bold mb-2">Processed By</h3>
+                <p><strong>Staff Name:</strong> ${accepterName ? accepterName.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ') : ''}</p>
+                ${data.accepter_email ? `<p><strong>Email:</strong> ${data.accepter_email}</p>` : ''}
+                ${data.accepter_phone ? `<p><strong>Phone:</strong> ${data.accepter_phone}</p>` : ''}
             </div>
         `;
     }
@@ -2600,42 +2598,43 @@ function populateReceipt(data) {
     `;
 }
 
-// Print receipt
-printReceiptBtn.addEventListener('click', () => {
-    const printContents = receiptContent.innerHTML;
-    const originalContents = document.body.innerHTML;
-    
-    document.body.innerHTML = printContents;
-    window.print();
-    document.body.innerHTML = originalContents;
-    window.location.reload();
-});
-
-// Download as PDF
-downloadPdfBtn.addEventListener('click', () => {
-    const { jsPDF } = window.jspdf;
-    
-    html2canvas(receiptContent).then(canvas => {
-        const imgData = canvas.toDataURL('image/png');
-        const pdf = new jsPDF();
-        const imgProps = pdf.getImageProperties(imgData);
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+    // Print receipt
+    printReceiptBtn.addEventListener('click', () => {
+        const printContents = receiptContent.innerHTML;
+        const originalContents = document.body.innerHTML;
         
-        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-        pdf.save(`receipt_${new Date().getTime()}.pdf`);
+        document.body.innerHTML = printContents;
+        window.print();
+        document.body.innerHTML = originalContents;
+        window.location.reload();
+    });
+
+    // Download as PDF
+    downloadPdfBtn.addEventListener('click', () => {
+        const { jsPDF } = window.jspdf;
+        
+        html2canvas(receiptContent).then(canvas => {
+            const imgData = canvas.toDataURL('image/png');
+            const pdf = new jsPDF();
+            const imgProps = pdf.getImageProperties(imgData);
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+            
+            pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+            pdf.save(`receipt_${new Date().getTime()}.pdf`);
+        });
+    });
+
+    // Download as Image
+    downloadImageBtn.addEventListener('click', () => {
+        html2canvas(receiptContent).then(canvas => {
+            const link = document.createElement('a');
+            link.download = `receipt_${new Date().getTime()}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        });
     });
 });
-
-// Download as Image
-downloadImageBtn.addEventListener('click', () => {
-    html2canvas(receiptContent).then(canvas => {
-        const link = document.createElement('a');
-        link.download = `receipt_${new Date().getTime()}.png`;
-        link.href = canvas.toDataURL('image/png');
-        link.click();
-    });
-}); 
 </script>
 
 <script>
