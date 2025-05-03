@@ -615,14 +615,79 @@ $offset = ($current_page - 1) * $bookings_per_page;
                 </thead>
                 <tbody id="customBookingTableBody">
                     <!-- This section will be populated when you add your data -->
-                    <tr>
-                        <td colspan="6" class="px-4 py-6 text-sm text-center">
-                            <div class="flex flex-col items-center">
-                                <i class="fas fa-inbox text-gray-300 text-4xl mb-3"></i>
-                                <p class="text-gray-500">No custom bookings found</p>
-                            </div>
-                        </td>
-                    </tr>
+                    <?php
+                    // Query to get custom booking data (where service_id is NULL)
+                    $custom_query = "SELECT b.booking_id, b.booking_date, b.status, b.initial_price,
+                                    CONCAT(u.first_name, ' ', COALESCE(u.middle_name, ''), ' ', u.last_name, ' ', COALESCE(u.suffix, '')) AS customer_name
+                                    FROM booking_tb b
+                                    JOIN users u ON b.customerID = u.id
+                                    WHERE b.service_id IS NULL AND b.status = 'Pending'
+                                    ORDER BY b.booking_date DESC
+                                    LIMIT ?, ?";
+
+                    $custom_stmt = $conn->prepare($custom_query);
+                    $custom_stmt->bind_param("ii", $offset, $bookings_per_page);
+                    $custom_stmt->execute();
+                    $custom_result = $custom_stmt->get_result();
+
+                    if ($custom_result->num_rows > 0) {
+                        while ($row = $custom_result->fetch_assoc()) {
+                            // Format booking ID
+                            $booking_id = "#BK-" . date('Y', strtotime($row['booking_date'])) . "-" . str_pad($row['booking_id'], 3, '0', STR_PAD_LEFT);
+
+                            // Format date
+                            $formatted_date = date('M j, Y', strtotime($row['booking_date']));
+
+                            // Status badge class
+                            $status_class = "bg-yellow-100 text-yellow-800 border border-yellow-200";
+                            $status_icon = "fa-clock";
+                            if ($row['status'] == 'Accepted') {
+                                $status_class = "bg-green-100 text-green-600 border border-green-200";
+                                $status_icon = "fa-check-circle";
+                            } elseif ($row['status'] == 'Declined') {
+                                $status_class = "bg-red-100 text-red-600 border border-red-200";
+                                $status_icon = "fa-times-circle";
+                            }
+                    ?>
+                            <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
+                                <td class="px-4 py-3.5 text-sm text-sidebar-text font-medium"><?php echo htmlspecialchars($booking_id); ?></td>
+                                <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo htmlspecialchars($row['customer_name']); ?></td>
+                                <td class="px-4 py-3.5 text-sm text-sidebar-text">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-50 text-purple-700 border border-purple-100">
+                                        ₱<?php echo number_format($row['initial_price'], 2); ?>
+                                    </span>
+                                </td>
+                                <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo htmlspecialchars($formatted_date); ?></td>
+                                <td class="px-4 py-3.5 text-sm">
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium <?php echo $status_class; ?>">
+                                        <i class="fas <?php echo $status_icon; ?> mr-1"></i> <?php echo htmlspecialchars($row['status']); ?>
+                                    </span>
+                                </td>
+                                <td class="px-4 py-3.5 text-sm">
+                                    <div class="flex space-x-2">
+                                        <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" 
+                                                title="View Details" 
+                                                onclick="openBookingDetails(<?php echo $row['booking_id']; ?>)">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                    <?php
+                        }
+                    } else {
+                    ?>
+                        <tr>
+                            <td colspan="6" class="px-4 py-6 text-sm text-center">
+                                <div class="flex flex-col items-center">
+                                    <i class="fas fa-inbox text-gray-300 text-4xl mb-3"></i>
+                                    <p class="text-gray-500">No custom bookings found</p>
+                                </div>
+                            </td>
+                        </tr>
+                    <?php
+                    }
+                    ?>
                 </tbody>
             </table>
         </div>
