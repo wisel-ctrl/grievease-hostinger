@@ -2500,6 +2500,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
     document.getElementById('traditionalBookingForm').addEventListener('submit', function(e) {
         e.preventDefault();
+
+        // Check if payment proof is uploaded
+    const paymentProof = document.getElementById('traditionalGcashReceipt').files[0];
+    if (!paymentProof) {
+        alert('Please upload your payment proof before submitting.');
+        return;
+    }
         // Check if this is a custom package submission
         if (document.getElementById('traditionalSelectedPackageName').value === 'Custom Memorial Package') {
             const totalPackagePrice = parseFloat(document.getElementById('traditionalSelectedPackagePrice').value);
