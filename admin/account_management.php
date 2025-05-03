@@ -1949,20 +1949,12 @@ if ($result->num_rows > 0) {
     
     <!-- Sticky Pagination Footer with improved spacing -->
     <div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
-        <div class="text-sm text-gray-500 text-center sm:text-left">
-            <?php echo $paginationInfo; ?>
+        <div id="empPaginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
+            Showing <span id="empShowingFrom">0</span> - <span id="empShowingTo">0</span> 
+            of <span id="empTotalCount">0</span> employees
         </div>
-        <div class="flex space-x-1">
-            <button class="px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo $page <= 1 ? 'opacity-50 cursor-not-allowed' : ''; ?>" 
-                onclick="changePage(<?php echo $page - 1; ?>)" <?php echo $page <= 1 ? 'disabled' : ''; ?>>&laquo;</button>
-            
-            <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-                <button class="px-3 py-1 border border-sidebar-border rounded text-sm <?php echo $i == $page ? 'bg-sidebar-accent text-white' : 'hover:bg-sidebar-hover'; ?> pagination-button" 
-                    onclick="changePage(<?php echo $i; ?>)"><?php echo $i; ?></button>
-            <?php endfor; ?>
-            
-            <button class="px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo $page >= $totalPages ? 'opacity-50 cursor-not-allowed' : ''; ?>" 
-                onclick="changePage(<?php echo $page + 1; ?>)" <?php echo $page >= $totalPages ? 'disabled' : ''; ?>>&raquo;</button>
+        <div id="empPaginationContainer" class="flex space-x-1">
+            <!-- Pagination buttons will be inserted here by JavaScript -->
         </div>
     </div>
 </div>
@@ -2032,8 +2024,103 @@ if ($result->num_rows > 0) {
 // Global variables for OTP verification
 let otpVerificationModal = null;
 let isVerificationInProgress = false;
+let originalFirstName = '';
+let originalLastName = '';
+let originalMiddleName = '';
+let originalBranch = '';
 let originalEmail = '';
 let originalPhone = '';
+
+
+/**
+ * Unified function to validate email/phone existence in database
+ * @param {string} fieldType - 'email' or 'phone'
+ * @param {string} fieldId - ID of the input field
+ * @param {string} errorElementId - ID of the error message element
+ * @param {number} userId - Current user ID
+ * @param {number} userType - 2 for employee, 3 for customer
+ */
+function setupEditFieldValidation(fieldType, fieldId, errorElementId, userId, userType) {
+    const field = document.getElementById(fieldId);
+    const errorElement = document.getElementById(errorElementId);
+    
+    if (!field || !errorElement) return;
+
+    let validationTimeout;
+    const fieldContainer = field.parentElement;
+    
+    // Create visual feedback element
+    const fieldFeedback = document.createElement('div');
+    fieldFeedback.className = 'absolute right-3 top-1/2 transform -translate-y-1/2';
+    fieldContainer.appendChild(fieldFeedback);
+    
+    field.addEventListener('input', function() {
+        clearTimeout(validationTimeout);
+        const value = this.value.trim();
+        
+        // Clear previous feedback
+        fieldFeedback.innerHTML = '';
+        field.classList.remove('border-green-500', 'border-red-500');
+        errorElement.classList.add('hidden');
+        
+        if (value.length === 0) return;
+        
+        // Basic format validation
+        let isValidFormat = true;
+        if (fieldType === 'email') {
+            isValidFormat = value.includes('@');
+            if (!isValidFormat) {
+                errorElement.textContent = 'Please enter a valid email address';
+            }
+        } else { // phone
+            isValidFormat = value.startsWith('09') && value.length === 11;
+            if (!isValidFormat) {
+                errorElement.textContent = 'Philippine number must start with 09 and be 11 digits';
+            }
+        }
+        
+        if (!isValidFormat) {
+            field.classList.add('border-red-500');
+            fieldFeedback.innerHTML = '<i class="fas fa-times text-red-500"></i>';
+            errorElement.classList.remove('hidden');
+            return;
+        }
+
+        validationTimeout = setTimeout(() => {
+            const endpoint = fieldType === 'email' 
+                ? 'check_edit_email.php' 
+                : 'check_edit_phone.php';
+                
+            fetch(`editAccount/${endpoint}?${fieldType}=${encodeURIComponent(value)}&current_user=${userId}&user_type=${userType}`)
+                .then(response => {
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.exists) {
+                        field.classList.add('border-red-500');
+                        fieldFeedback.innerHTML = '<i class="fas fa-times text-red-500"></i>';
+                        errorElement.textContent = data.message || 
+                            (fieldType === 'email' 
+                                ? 'Email already registered to another account' 
+                                : 'Phone number already exists in system');
+                        errorElement.classList.remove('hidden');
+                        showTooltip(fieldFeedback, fieldType === 'email' 
+                            ? 'Email already in use' 
+                            : 'Phone already in use');
+                    } else {
+                        field.classList.add('border-green-500');
+                        fieldFeedback.innerHTML = '<i class="fas fa-check text-green-500"></i>';
+                        errorElement.classList.add('hidden');
+                    }
+                })
+                .catch(error => {
+                    console.error(`Error checking ${fieldType}:`, error);
+                    // Don't show error to user for failed validation checks
+                });
+        }, 500);
+    });
+}
 
 function openEditCustomerAccountModal(userId) {
     // Fetch user details
@@ -2042,6 +2129,10 @@ function openEditCustomerAccountModal(userId) {
         .then(data => {
             if (data.success) {
                 // Store original email and phone for comparison
+                originalFirstName = data.user.first_name || '';
+                originalLastName = data.user.last_name || '';
+                originalMiddleName = data.user.middle_name || '';
+                originalBranch = data.user.branch_loc || '';
                 originalEmail = data.user.email || '';
                 originalPhone = data.user.phone_number || '';
                 
@@ -2098,7 +2189,7 @@ function openEditCustomerAccountModal(userId) {
                                     <div class="relative">
                                         <input type="text" id="editFirstName" name="first_name" value="${data.user.first_name ? data.user.first_name[0].toUpperCase() + data.user.first_name.slice(1) : ''}" 
                                                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
-                                               pattern="[A-Za-z'-]{2,}" 
+                                               pattern="[-A-Za-z']{2,}" 
                                                title="Only letters, apostrophes and hyphens allowed (minimum 2 characters)"
                                                required>
                                     </div>
@@ -2112,7 +2203,7 @@ function openEditCustomerAccountModal(userId) {
                                     <div class="relative">
                                         <input type="text" id="editLastName" name="last_name" value="${data.user.last_name ? data.user.last_name[0].toUpperCase() + data.user.last_name.slice(1) : ''}" 
                                                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
-                                               pattern="[A-Za-z'-]{2,}" 
+                                               pattern="[-A-Za-z']{2,}" 
                                                title="Only letters, apostrophes and hyphens allowed (minimum 2 characters)"
                                                required>
                                     </div>
@@ -2209,6 +2300,9 @@ function openEditCustomerAccountModal(userId) {
             console.error('Error:', error);
             alert('An error occurred while fetching customer details');
         });
+        
+    setupEditFieldValidation('email', 'editEmail', 'emailExistsError', userId, 3);
+    setupEditFieldValidation('phone', 'editPhone', 'phoneExistsError', userId, 3);
 }
 
 function setupRealTimeValidation() {
@@ -2301,6 +2395,69 @@ function setupRealTimeValidation() {
     }
 }
 
+// Add this function to your script
+function setupEditEmailValidation(emailFieldId, errorElementId, userId, userType) {
+    const emailField = document.getElementById(emailFieldId);
+    const errorElement = document.getElementById(errorElementId);
+    
+    if (!emailField || !errorElement) return;
+
+    let validationTimeout;
+    const emailContainer = emailField.parentElement;
+    
+    // Create visual feedback element
+    const emailFeedback = document.createElement('div');
+    emailFeedback.className = 'absolute right-3 top-1/2 transform -translate-y-1/2';
+    emailContainer.appendChild(emailFeedback);
+    
+    emailField.addEventListener('input', function() {
+        clearTimeout(validationTimeout);
+        const email = this.value.trim();
+        
+        // Clear previous feedback
+        emailFeedback.innerHTML = '';
+        emailField.classList.remove('border-green-500', 'border-red-500');
+        errorElement.classList.add('hidden');
+        
+        if (email.length === 0) return;
+        
+        // Basic format validation
+        if (!email.includes('@')) {
+            emailField.classList.add('border-red-500');
+            emailFeedback.innerHTML = '<i class="fas fa-times text-red-500"></i>';
+            errorElement.textContent = 'Please enter a valid email address';
+            errorElement.classList.remove('hidden');
+            return;
+        }
+
+        validationTimeout = setTimeout(() => {
+            fetch(`editAccount/check_edit_email.php?email=${encodeURIComponent(email)}&current_user=${userId}&user_type=${userType}`)
+                .then(response => {
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.exists) {
+                        emailField.classList.add('border-red-500');
+                        emailFeedback.innerHTML = '<i class="fas fa-times text-red-500"></i>';
+                        errorElement.textContent = data.message || 'Email already registered to another account';
+                        errorElement.classList.remove('hidden');
+                        showTooltip(emailFeedback, 'Email already in use by another user');
+                    } else {
+                        emailField.classList.add('border-green-500');
+                        emailFeedback.innerHTML = '<i class="fas fa-check text-green-500"></i>';
+                        errorElement.classList.add('hidden');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error checking email:', error);
+                    // Don't show error to user for failed validation checks
+                });
+        }, 500);
+    });
+}
+
+
 // Helper function to show tooltips
 function showTooltip(element, message) {
     const tooltip = document.createElement('div');
@@ -2324,61 +2481,181 @@ function showTooltip(element, message) {
     }, 3000);
 }
 
-function setupEmployeeRealTimeValidation() {
-    const emailField = document.getElementById('editEmpEmail');
-    const phoneField = document.getElementById('editEmpPhone');
+function setupEditPhoneValidation(phoneFieldId, errorElementId, userId, userType) {
+    const phoneField = document.getElementById(phoneFieldId);
+    const errorElement = document.getElementById(errorElementId);
     
-    // Email validation
+    if (!phoneField || !errorElement) return;
+
+    let validationTimeout;
+    const phoneContainer = phoneField.parentElement;
+    
+    // Create visual feedback element
+    const phoneFeedback = document.createElement('div');
+    phoneFeedback.className = 'absolute right-3 top-1/2 transform -translate-y-1/2';
+    phoneContainer.appendChild(phoneFeedback);
+    
+    phoneField.addEventListener('input', function() {
+        clearTimeout(validationTimeout);
+        const phone = this.value.trim();
+        
+        // Clear previous feedback
+        phoneFeedback.innerHTML = '';
+        phoneField.classList.remove('border-green-500', 'border-red-500');
+        errorElement.classList.add('hidden');
+        
+        if (phone.length === 0) return;
+        
+        // Basic format validation
+        if (!phone.startsWith('09') || phone.length !== 11) {
+            phoneField.classList.add('border-red-500');
+            phoneFeedback.innerHTML = '<i class="fas fa-times text-red-500"></i>';
+            errorElement.textContent = 'Philippine number must start with 09 and be 11 digits';
+            errorElement.classList.remove('hidden');
+            return;
+        }
+
+        validationTimeout = setTimeout(() => {
+            fetch(`editAccount/check_edit_phone.php?phone=${encodeURIComponent(phone)}&current_user=${userId}&user_type=${userType}`)
+                .then(response => {
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.exists) {
+                        phoneField.classList.add('border-red-500');
+                        phoneFeedback.innerHTML = '<i class="fas fa-times text-red-500"></i>';
+                        errorElement.textContent = data.message || 'Phone number already exists in system';
+                        errorElement.classList.remove('hidden');
+                        showTooltip(phoneFeedback, 'Phone already in use');
+                    } else {
+                        phoneField.classList.add('border-green-500');
+                        phoneFeedback.innerHTML = '<i class="fas fa-check text-green-500"></i>';
+                        errorElement.classList.add('hidden');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error checking phone:', error);
+                    // Don't show error to user for failed validation checks
+                });
+        }, 500);
+    });
+}
+
+function setupEmployeeRealTimeValidation(userId) {
+    // Email Validation
+    const emailField = document.getElementById('editEmpEmail');
     if (emailField) {
+        const emailContainer = emailField.parentElement;
+        const emailFeedback = document.createElement('div');
+        emailFeedback.className = 'absolute right-3 top-1/2 transform -translate-y-1/2';
+        emailContainer.appendChild(emailFeedback);
+
         let emailTimeout;
         emailField.addEventListener('input', function() {
             clearTimeout(emailTimeout);
             const email = this.value.trim();
             
+            // Clear previous feedback
+            emailFeedback.innerHTML = '';
+            emailField.classList.remove('border-green-500', 'border-red-500');
+            document.getElementById('empEmailExistsError').classList.add('hidden');
+            
+            if (email.length === 0) {
+                document.getElementById('empEmailError').classList.add('hidden');
+                return;
+            }
+            
             // Basic format validation
             if (!email.includes('@')) {
+                emailField.classList.add('border-red-500');
+                emailFeedback.innerHTML = '<i class="fas fa-times text-red-500"></i>';
                 document.getElementById('empEmailError').textContent = 'Please enter a valid email address';
                 document.getElementById('empEmailError').classList.remove('hidden');
                 return;
             } else {
                 document.getElementById('empEmailError').classList.add('hidden');
             }
-            
-            // Check if email changed from original
-            if (email && email !== originalEmail) {
-                emailTimeout = setTimeout(() => {
-                    checkEmailExists(email, 'empEmailExistsError');
-                }, 500); // Debounce 500ms
-            } else {
-                document.getElementById('empEmailExistsError').classList.add('hidden');
-            }
+
+            emailTimeout = setTimeout(() => {
+                fetch(`editAccount/check_edit_email.php?email=${encodeURIComponent(email)}&current_user=${userId}&user_type=2`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.exists) {
+                            emailField.classList.add('border-red-500');
+                            emailFeedback.innerHTML = '<i class="fas fa-times text-red-500"></i>';
+                            document.getElementById('empEmailExistsError').textContent = data.message || 'Email already registered to another account';
+                            document.getElementById('empEmailExistsError').classList.remove('hidden');
+                            showTooltip(emailFeedback, 'Email already in use');
+                        } else {
+                            emailField.classList.add('border-green-500');
+                            emailFeedback.innerHTML = '<i class="fas fa-check text-green-500"></i>';
+                            document.getElementById('empEmailExistsError').classList.add('hidden');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error checking email:', error);
+                        // Don't show error to user for failed validation checks
+                    });
+            }, 500);
         });
     }
-    
-    // Phone validation
+
+    // Phone Validation
+    const phoneField = document.getElementById('editEmpPhone');
     if (phoneField) {
+        const phoneContainer = phoneField.parentElement;
+        const phoneFeedback = document.createElement('div');
+        phoneFeedback.className = 'absolute right-3 top-1/2 transform -translate-y-1/2';
+        phoneContainer.appendChild(phoneFeedback);
+
         let phoneTimeout;
         phoneField.addEventListener('input', function() {
             clearTimeout(phoneTimeout);
             const phone = this.value.trim();
             
+            // Clear previous feedback
+            phoneFeedback.innerHTML = '';
+            phoneField.classList.remove('border-green-500', 'border-red-500');
+            document.getElementById('empPhoneExistsError').classList.add('hidden');
+            
+            if (phone.length === 0) {
+                document.getElementById('empPhoneError').classList.add('hidden');
+                return;
+            }
+            
             // Basic format validation
             if (!phone.startsWith('09') || phone.length !== 11) {
+                phoneField.classList.add('border-red-500');
+                phoneFeedback.innerHTML = '<i class="fas fa-times text-red-500"></i>';
                 document.getElementById('empPhoneError').textContent = 'Philippine number must start with 09 and be 11 digits';
                 document.getElementById('empPhoneError').classList.remove('hidden');
                 return;
             } else {
                 document.getElementById('empPhoneError').classList.add('hidden');
             }
-            
-            // Check if phone changed from original
-            if (phone && phone !== originalPhone) {
-                phoneTimeout = setTimeout(() => {
-                    checkPhoneExists(phone, 'empPhoneExistsError');
-                }, 500); // Debounce 500ms
-            } else {
-                document.getElementById('empPhoneExistsError').classList.add('hidden');
-            }
+
+            phoneTimeout = setTimeout(() => {
+                fetch(`editAccount/check_edit_phone.php?phone=${encodeURIComponent(phone)}&current_user=${userId}&user_type=2`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.exists) {
+                            phoneField.classList.add('border-red-500');
+                            phoneFeedback.innerHTML = '<i class="fas fa-times text-red-500"></i>';
+                            document.getElementById('empPhoneExistsError').textContent = data.message || 'Phone number already exists in system';
+                            document.getElementById('empPhoneExistsError').classList.remove('hidden');
+                            showTooltip(phoneFeedback, 'Phone already in use');
+                        } else {
+                            phoneField.classList.add('border-green-500');
+                            phoneFeedback.innerHTML = '<i class="fas fa-check text-green-500"></i>';
+                            document.getElementById('empPhoneExistsError').classList.add('hidden');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error checking phone:', error);
+                        // Don't show error to user for failed validation checks
+                    });
+            }, 500);
         });
     }
 }
@@ -2496,13 +2773,58 @@ function setupEditFormValidations() {
 }
 
 function validateAndSaveCustomerChanges() {
+    const form = document.getElementById('editCustomerForm');
+    const formData = new FormData(form);
+    const currentData = Object.fromEntries(formData.entries());
+    
+    // Check if no changes were made
+     let hasChanges = false;
+    if (currentData.first_name !== originalFirstName || 
+        currentData.last_name !== originalLastName || 
+        currentData.middle_name !== originalMiddleName || 
+        currentData.email !== originalEmail || 
+        currentData.phone_number !== originalPhone || 
+        currentData.branch_loc !== originalBranch) {
+        hasChanges = true;
+    }
+    
+    if (!hasChanges) {
+        Swal.fire({
+            title: 'No Changes',
+            text: 'You haven\'t made any changes to save.',
+            icon: 'info'
+        });
+        return;
+    }
     // Validate all fields before submission
     const firstName = document.getElementById('editFirstName');
     const lastName = document.getElementById('editLastName');
     const email = document.getElementById('editEmail');
     const phone = document.getElementById('editPhone');
+     const emailError = document.getElementById('emailExistsError');
+    const phoneError = document.getElementById('phoneExistsError');
     
     let isValid = true;
+    
+    // If email already exists for another user, block the save
+    if (!emailExistsError.classList.contains('hidden')) {
+        Swal.fire({
+            title: 'Email Already Exists',
+            text: 'This email is already registered to another account. Please use a different email.',
+            icon: 'error'
+        });
+        return;
+    }
+    
+    // If phone already exists for another user, block the save
+    if (!phoneExistsError.classList.contains('hidden')) {
+        Swal.fire({
+            title: 'Phone Already Exists',
+            text: 'This phone number is already registered to another account. Please use a different number.',
+            icon: 'error'
+        });
+        return;
+    }
     
     // Validate required fields
     if (!firstName.value || firstName.value.length < 2) {
@@ -2640,6 +2962,10 @@ function openEditEmployeeAccountModal(userId) {
         .then(data => {
             if (data.success) {
                 // Store original email and phone for comparison
+                originalFirstName = data.user.first_name || '';
+                originalLastName = data.user.last_name || '';
+                originalMiddleName = data.user.middle_name || '';
+                originalBranch = data.user.branch_loc || '';
                 originalEmail = data.user.email || '';
                 originalPhone = data.user.phone_number || '';
                 
@@ -2697,7 +3023,7 @@ function openEditEmployeeAccountModal(userId) {
                                     <div class="relative">
                                         <input type="text" id="editEmpFirstName" name="first_name" value="${data.user.first_name ? data.user.first_name[0].toUpperCase() + data.user.first_name.slice(1) : ''}" 
                                                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                                               pattern="[A-Za-z'-]{2,}"
+                                               pattern="[-A-Za-z']{2,}"
                                                title="Only letters, apostrophes and hyphens allowed (minimum 2 characters)"
                                                required>
                                     </div>
@@ -2711,7 +3037,7 @@ function openEditEmployeeAccountModal(userId) {
                                     <div class="relative">
                                         <input type="text" id="editEmpLastName" name="last_name" value="${data.user.last_name ? data.user.last_name[0].toUpperCase() + data.user.last_name.slice(1) : ''}" 
                                                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                                               pattern="[A-Za-z'-]{2,}"
+                                               pattern="[-A-Za-z']{2,}"
                                                title="Only letters, apostrophes and hyphens allowed (minimum 2 characters)"
                                                required>
                                     </div>
@@ -2788,11 +3114,8 @@ function openEditEmployeeAccountModal(userId) {
                 
                 document.body.appendChild(modal);
                 
-                // Setup validation event listeners
-                setupEditEmployeeValidations();
-                
-                // Add real-time validation for email and phone
-                setupEmployeeRealTimeValidation();
+                setupEditFieldValidation('email', 'editEmpEmail', 'empEmailExistsError', userId, 2);
+                setupEditFieldValidation('phone', 'editEmpPhone', 'empPhoneExistsError', userId, 2);
                 
                 // Add event listener for Escape key
                 document.addEventListener('keydown', function(e) {
@@ -2808,31 +3131,97 @@ function openEditEmployeeAccountModal(userId) {
             console.error('Error:', error);
             alert('An error occurred while fetching employee details');
         });
+        
+        
+        
+
 }
 
-function setupEmployeeRealTimeValidation() {
+function setupEmployeeRealTimeValidation(userId) {
     const emailField = document.getElementById('editEmpEmail');
     const phoneField = document.getElementById('editEmpPhone');
     
+    // Email validation with visual feedback
     if (emailField) {
-        emailField.addEventListener('blur', function() {
+        const emailContainer = emailField.parentElement;
+        const emailFeedback = document.createElement('div');
+        emailFeedback.className = 'absolute right-3 top-1/2 transform -translate-y-1/2';
+        emailContainer.appendChild(emailFeedback);
+
+        let emailTimeout;
+        emailField.addEventListener('input', function() {
+            clearTimeout(emailTimeout);
             const email = this.value.trim();
-            if (email && email !== originalEmail) {
-                checkEmailExists(email, 'empEmailExistsError');
-            } else {
-                document.getElementById('empEmailExistsError').classList.add('hidden');
+            
+            // Clear previous feedback
+            emailFeedback.innerHTML = '';
+            emailField.classList.remove('border-green-500', 'border-red-500');
+            
+            if (email.length === 0) return;
+            
+            if (!email.includes('@')) {
+                emailField.classList.add('border-red-500');
+                emailFeedback.innerHTML = '<i class="fas fa-times text-red-500"></i>';
+                return;
             }
+
+            emailTimeout = setTimeout(() => {
+                fetch(`editAccount/check_edit_email.php?email=${encodeURIComponent(email)}&current_user=${userId}&user_type=2`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.available) {
+                            emailField.classList.add('border-green-500');
+                            emailFeedback.innerHTML = '<i class="fas fa-check text-green-500"></i>';
+                        } else {
+                            emailField.classList.add('border-red-500');
+                            emailFeedback.innerHTML = '<i class="fas fa-times text-red-500"></i>';
+                            showTooltip(emailFeedback, 'Email already in use');
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+            }, 500);
         });
     }
-    
+
+    // Phone validation with visual feedback
     if (phoneField) {
-        phoneField.addEventListener('blur', function() {
+        const phoneContainer = phoneField.parentElement;
+        const phoneFeedback = document.createElement('div');
+        phoneFeedback.className = 'absolute right-3 top-1/2 transform -translate-y-1/2';
+        phoneContainer.appendChild(phoneFeedback);
+
+        let phoneTimeout;
+        phoneField.addEventListener('input', function() {
+            clearTimeout(phoneTimeout);
             const phone = this.value.trim();
-            if (phone && phone !== originalPhone) {
-                checkPhoneExists(phone, 'empPhoneExistsError');
-            } else {
-                document.getElementById('empPhoneExistsError').classList.add('hidden');
+            
+            // Clear previous feedback
+            phoneFeedback.innerHTML = '';
+            phoneField.classList.remove('border-green-500', 'border-red-500');
+            
+            if (phone.length === 0) return;
+            
+            if (!phone.startsWith('09') || phone.length !== 11) {
+                phoneField.classList.add('border-red-500');
+                phoneFeedback.innerHTML = '<i class="fas fa-times text-red-500"></i>';
+                return;
             }
+
+            phoneTimeout = setTimeout(() => {
+                fetch(`editAccount/check_edit_phone.php?phone=${encodeURIComponent(phone)}&current_user=${userId}&user_type=2`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.available) {
+                            phoneField.classList.add('border-green-500');
+                            phoneFeedback.innerHTML = '<i class="fas fa-check text-green-500"></i>';
+                        } else {
+                            phoneField.classList.add('border-red-500');
+                            phoneFeedback.innerHTML = '<i class="fas fa-times text-red-500"></i>';
+                            showTooltip(phoneFeedback, 'Phone number already in use');
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+            }, 500);
         });
     }
 }
@@ -2910,15 +3299,42 @@ function setupEditEmployeeValidations() {
 }
 
 function validateAndSaveEmployeeChanges() {
+    const form = document.getElementById('editEmployeeForm');
+    const formData = new FormData(form);
+    const currentData = Object.fromEntries(formData.entries());
+    
+    // Check if no changes were made
+    let hasChanges = false;
+    if (currentData.first_name !== originalFirstName || 
+        currentData.last_name !== originalLastName || 
+        currentData.middle_name !== originalMiddleName || 
+        currentData.email !== originalEmail || 
+        currentData.phone_number !== originalPhone || 
+        currentData.branch_loc !== originalBranch) {
+        hasChanges = true;
+    }
+    
+    if (!hasChanges) {
+        Swal.fire({
+            title: 'No Changes',
+            text: 'You haven\'t made any changes to save.',
+            icon: 'info'
+        });
+        return;
+    }
+
     // Validate all fields before submission
     const firstName = document.getElementById('editEmpFirstName');
     const lastName = document.getElementById('editEmpLastName');
     const email = document.getElementById('editEmpEmail');
     const phone = document.getElementById('editEmpPhone');
     
+    const emailExistsError = document.getElementById('empEmailExistsError');
+    const phoneExistsError = document.getElementById('empPhoneExistsError');
+    
     let isValid = true;
     
-    // Validate required fields
+    // First check basic validation
     if (!firstName.value || firstName.value.length < 2) {
         document.getElementById('empFirstNameError').textContent = 'Please enter at least 2 characters';
         document.getElementById('empFirstNameError').classList.remove('hidden');
@@ -2939,8 +3355,6 @@ function validateAndSaveEmployeeChanges() {
         document.getElementById('empEmailError').textContent = 'Please enter a valid email address';
         document.getElementById('empEmailError').classList.remove('hidden');
         isValid = false;
-    } else if (document.getElementById('empEmailExistsError') && !document.getElementById('empEmailExistsError').classList.contains('hidden')) {
-        isValid = false;
     } else {
         document.getElementById('empEmailError').classList.add('hidden');
     }
@@ -2949,10 +3363,27 @@ function validateAndSaveEmployeeChanges() {
         document.getElementById('empPhoneError').textContent = 'Philippine number must start with 09 and be 11 digits';
         document.getElementById('empPhoneError').classList.remove('hidden');
         isValid = false;
-    } else if (document.getElementById('empPhoneExistsError') && !document.getElementById('empPhoneExistsError').classList.contains('hidden')) {
-        isValid = false;
     } else {
         document.getElementById('empPhoneError').classList.add('hidden');
+    }
+    
+    // Then check if there are any existing email/phone errors
+    if (!emailExistsError.classList.contains('hidden')) {
+        isValid = false;
+        Swal.fire({
+            title: 'Email Already Exists',
+            text: emailExistsError.textContent,
+            icon: 'error'
+        });
+    }
+    
+    if (!phoneExistsError.classList.contains('hidden')) {
+        isValid = false;
+        Swal.fire({
+            title: 'Phone Already Exists',
+            text: phoneExistsError.textContent,
+            icon: 'error'
+        });
     }
     
     if (isValid) {
@@ -3431,46 +3862,138 @@ function updateUserStatus(userId, userType, status) {
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Elements for employee table
     const searchInput = document.getElementById('searchInput');
+    const searchInputMobile = document.getElementById('searchInputMobile');
     const filterToggle = document.getElementById('filterToggle');
+    const filterToggleMobile = document.getElementById('filterToggleMobile');
     const filterDropdown = document.getElementById('filterDropdown');
-    const filterOptions = document.querySelectorAll('.filter-option');
+    const filterDropdownMobile = document.getElementById('filterDropdownMobile');
+    const filterOptions = document.querySelectorAll('#filterDropdown .filter-option');
+    const filterOptionsMobile = document.querySelectorAll('#filterDropdownMobile .filter-option-mobile');
+    const filterIndicator = document.getElementById('filterIndicator');
+    const filterIndicatorMobile = document.getElementById('filterIndicatorMobile');
+    
     const employeeTableBody = document.getElementById('employeeTableBody');
-    const paginationInfoElement = document.querySelector('.text-sm.text-gray-500');
+    const empPaginationInfoElement = document.getElementById('empPaginationInfo');
+    const empPaginationContainer = document.getElementById('empPaginationContainer');
+    const empShowingFrom = document.getElementById('empShowingFrom');
+    const empShowingTo = document.getElementById('empShowingTo');
+    const empTotalCount = document.getElementById('empTotalCount');
+    
+    let currentEmpSearch = '';
+    let currentEmpSort = 'id_asc';
+    let currentEmpPage = 1;
+    let totalEmpPages = 1;
+
+    // Function to create pagination buttons for employees
+    function createEmpPaginationButtons() {
+        empPaginationContainer.innerHTML = ''; // Clear existing buttons
+        
+        // Previous button
+        const prevButton = document.createElement('button');
+        prevButton.innerHTML = '&laquo;';
+        prevButton.className = 'px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover' + 
+            (currentEmpPage === 1 ? ' opacity-50 cursor-not-allowed' : '');
+        prevButton.disabled = currentEmpPage === 1;
+        prevButton.addEventListener('click', () => {
+            if (currentEmpPage > 1) {
+                currentEmpPage--;
+                fetchEmployeeAccounts();
+            }
+        });
+        empPaginationContainer.appendChild(prevButton);
+        
+        // Page number buttons - show up to 5 pages around current page
+        const startPage = Math.max(1, currentEmpPage - 2);
+        const endPage = Math.min(totalEmpPages, currentEmpPage + 2);
+        
+        for (let i = startPage; i <= endPage; i++) {
+            const pageButton = document.createElement('button');
+            pageButton.textContent = i;
+            pageButton.className = 'px-3.5 py-1.5 border border-sidebar-border rounded text-sm ' + 
+                (i === currentEmpPage 
+                    ? 'bg-sidebar-accent text-white' 
+                    : 'hover:bg-sidebar-hover');
+            pageButton.addEventListener('click', () => {
+                currentEmpPage = i;
+                fetchEmployeeAccounts();
+            });
+            empPaginationContainer.appendChild(pageButton);
+        }
+        
+        // Next button
+        const nextButton = document.createElement('button');
+        nextButton.innerHTML = '&raquo;';
+        nextButton.className = 'px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover' + 
+            (currentEmpPage === totalEmpPages ? ' opacity-50 cursor-not-allowed' : '');
+        nextButton.disabled = currentEmpPage === totalEmpPages;
+        nextButton.addEventListener('click', () => {
+            if (currentEmpPage < totalEmpPages) {
+                currentEmpPage++;
+                fetchEmployeeAccounts();
+            }
+        });
+        empPaginationContainer.appendChild(nextButton);
+    }
 
     // Function to fetch employee accounts via AJAX
-    function fetchEmployeeAccounts(search = '', sort = 'id_asc', page = 1) {
+    function fetchEmployeeAccounts() {
         // Create a new XMLHttpRequest
         const xhr = new XMLHttpRequest();
         
         // Prepare the URL with search, sort, and page parameters
-        const url = `addEmployee/fetch_employee_accounts.php?search=${encodeURIComponent(search)}&sort=${encodeURIComponent(sort)}&page=${page}`;
+        const url = `addEmployee/fetch_employee_accounts.php?search=${encodeURIComponent(currentEmpSearch)}&sort=${encodeURIComponent(currentEmpSort)}&page=${currentEmpPage}`;
         
         xhr.open('GET', url, true);
         
         xhr.onload = function() {
-        if (xhr.status === 200) {
-            // Parse the JSON response
-            const response = JSON.parse(xhr.responseText);
-            
-            // Update table body
-            employeeTableBody.innerHTML = response.tableContent;
+            if (xhr.status === 200) {
+                try {
+                    // Parse the JSON response
+                    const response = JSON.parse(xhr.responseText);
+                    
+                    // Update table body
+                    employeeTableBody.innerHTML = response.tableContent || `
+                        <tr>
+                            <td colspan="6" class="text-center p-4 text-gray-500">
+                                No employee accounts found.
+                            </td>
+                        </tr>
+                    `;
+                    
+                    // Update pagination info
+                    empShowingFrom.textContent = response.showingFrom || '0';
+                    empShowingTo.textContent = response.showingTo || '0';
+                    empTotalCount.textContent = response.totalCount || '0';
 
-            // Update total employees count
-            document.getElementById('totalEmployees').textContent = response.totalCount;
-
-                
-                
-                // Update pagination info
-                paginationInfoElement.textContent = response.paginationInfo;
-                
-                // Update pagination buttons
-                document.querySelectorAll('.pagination-button').forEach(btn => {
-                    btn.classList.remove('bg-sidebar-accent', 'text-white');
-                    if (parseInt(btn.textContent) === page) {
-                        btn.classList.add('bg-sidebar-accent', 'text-white');
+                    document.getElementById('totalEmployees').textContent = response.totalCount;
+                    
+                    // Update total pages and current page
+                    totalEmpPages = response.totalPages || 1;
+                    currentEmpPage = response.currentPage || 1;
+                    
+                    // Create pagination buttons
+                    createEmpPaginationButtons();
+                    
+                    // Update filter indicators if a sort is applied
+                    if (currentEmpSort !== 'id_asc') {
+                        filterIndicator.classList.remove('hidden');
+                        filterIndicatorMobile.classList.remove('hidden');
+                    } else {
+                        filterIndicator.classList.add('hidden');
+                        filterIndicatorMobile.classList.add('hidden');
                     }
-                });
+                } catch (e) {
+                    console.error('Error parsing response:', e);
+                    employeeTableBody.innerHTML = `
+                        <tr>
+                            <td colspan="6" class="text-center p-4 text-red-500">
+                                Error loading data. Please try again.
+                            </td>
+                        </tr>
+                    `;
+                }
             } else {
                 console.error('Error fetching employee accounts:', xhr.statusText);
                 employeeTableBody.innerHTML = `
@@ -3497,54 +4020,77 @@ document.addEventListener('DOMContentLoaded', function() {
         xhr.send();
     }
 
-    // Function to change page
-    window.changePage = function(page) {
-        const searchTerm = searchInput.value;
-        const urlParams = new URLSearchParams(window.location.search);
-        const sortValue = urlParams.get('sort') || 'id_asc';
-        
-        fetchEmployeeAccounts(searchTerm, sortValue, page);
-    };
+    // Initial load of employee accounts
+    fetchEmployeeAccounts();
 
-    // Filter dropdown toggle
-    filterToggle.addEventListener('click', function() {
+    // Filter dropdown toggle for desktop
+    filterToggle.addEventListener('click', function(e) {
+        e.stopPropagation();
         filterDropdown.classList.toggle('hidden');
+        filterDropdownMobile.classList.add('hidden');
     });
 
-    // Close dropdown when clicking outside
-    document.addEventListener('click', function(event) {
-        if (!filterToggle.contains(event.target) && !filterDropdown.contains(event.target)) {
-            filterDropdown.classList.add('hidden');
-        }
+    // Filter dropdown toggle for mobile
+    filterToggleMobile.addEventListener('click', function(e) {
+        e.stopPropagation();
+        filterDropdownMobile.classList.toggle('hidden');
+        filterDropdown.classList.add('hidden');
     });
 
-    // Search functionality with debounce
-    let searchTimeout;
-    searchInput.addEventListener('input', function() {
-        const searchTerm = this.value;
-        
-        // Clear previous timeout
-        clearTimeout(searchTimeout);
-        
-        // Set new timeout to reduce unnecessary API calls
-        searchTimeout = setTimeout(() => {
-            fetchEmployeeAccounts(searchTerm, 'id_asc', 1);
-        }, 300); // 300ms delay
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', function() {
+        filterDropdown.classList.add('hidden');
+        filterDropdownMobile.classList.add('hidden');
     });
 
-    // Filter option selection
-    filterOptions.forEach(option => {
-        option.addEventListener('click', function(e) {
-            e.preventDefault();
-            const sortValue = this.getAttribute('data-sort');
+    // Prevent dropdown from closing when clicking inside
+    filterDropdown.addEventListener('click', function(e) {
+        e.stopPropagation();
+    });
+    
+    filterDropdownMobile.addEventListener('click', function(e) {
+        e.stopPropagation();
+    });
+
+    // Search functionality with debounce for both desktop and mobile
+    function setupSearchInput(inputElement) {
+        let searchTimeout;
+        inputElement.addEventListener('input', function() {
+            currentEmpSearch = this.value;
+            currentEmpPage = 1; // Reset to first page when searching
             
-            // Close dropdown
-            filterDropdown.classList.add('hidden');
+            // Clear previous timeout
+            clearTimeout(searchTimeout);
             
-            // Fetch employee accounts with selected sort
-            fetchEmployeeAccounts(searchInput.value, sortValue, 1);
+            // Set new timeout to reduce unnecessary API calls
+            searchTimeout = setTimeout(() => {
+                fetchEmployeeAccounts();
+            }, 300); // 300ms delay
         });
-    });
+    }
+    
+    setupSearchInput(searchInput);
+    setupSearchInput(searchInputMobile);
+
+    // Filter option selection for both desktop and mobile
+    function setupFilterOptions(options, dropdown) {
+        options.forEach(option => {
+            option.addEventListener('click', function(e) {
+                e.preventDefault();
+                currentEmpSort = this.getAttribute('data-sort');
+                currentEmpPage = 1; // Reset to first page when changing sort
+                
+                // Close dropdown
+                dropdown.classList.add('hidden');
+                
+                // Fetch employee accounts with selected sort
+                fetchEmployeeAccounts();
+            });
+        });
+    }
+    
+    setupFilterOptions(filterOptions, filterDropdown);
+    setupFilterOptions(filterOptionsMobile, filterDropdownMobile);
 });
 // Function to open the add employee account modal
 function openAddEmployeeAccountModal() {
