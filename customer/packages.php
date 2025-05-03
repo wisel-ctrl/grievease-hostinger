@@ -1454,6 +1454,25 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+    function combineLifeplanAddress() {
+        const region = document.getElementById('lifeplanHolderRegion');
+        const province = document.getElementById('lifeplanHolderProvince');
+        const city = document.getElementById('lifeplanHolderCity');
+        const barangay = document.getElementById('lifeplanHolderBarangay');
+        const street = document.getElementById('lifeplanHolderStreet');
+        
+        // Create an address object
+        const address = {
+            region: region.options[region.selectedIndex]?.text || '',
+            province: province.options[province.selectedIndex]?.text || '',
+            city: city.options[city.selectedIndex]?.text || '',
+            barangay: barangay.options[barangay.selectedIndex]?.text || '',
+            street: street.value || ''
+        };
+        
+        // Convert to JSON string and store in the hidden input
+        document.getElementById('holderAddress').value = JSON.stringify(address);
+    }
     function updateLifeplanProvinces() {
         const regionId = document.getElementById('lifeplanHolderRegion').value;
         const provinceDropdown = document.getElementById('lifeplanHolderProvince');
@@ -1579,19 +1598,28 @@ document.addEventListener('DOMContentLoaded', function() {
 
         
         if (regionElement) {
-            regionElement.addEventListener('change', updateLifeplanProvinces);
+            regionElement.addEventListener('change', (event) => {
+                updateLifeplanProvinces(event);
+                combineLifeplanAddress(event);
+            });
         } else {
             console.error('lifeplanHolderRegion element not found for event listener');
         }
-        
+
         if (provinceElement) {
-            provinceElement.addEventListener('change', updateLifeplanCities);
+            provinceElement.addEventListener('change', (event) => {
+                updateLifeplanCities(event);
+                combineLifeplanAddress(event);
+            });
         } else {
             console.error('lifeplanHolderProvince element not found for event listener');
         }
-        
+
         if (cityElement) {
-            cityElement.addEventListener('change', updateLifeplanBarangays);
+            cityElement.addEventListener('change', (event) => {
+                updateLifeplanBarangays(event);
+                combineLifeplanAddress(event);
+            });
         } else {
             console.error('lifeplanHolderCity element not found for event listener');
         }
@@ -3097,25 +3125,7 @@ function closeAllModals() {
         document.getElementById('lifeplanMonthlyPayment').textContent = `₱${monthlyPayment.toLocaleString()}`;
     }
 
-    function combineLifeplanAddress() {
-        const region = document.getElementById('lifeplanHolderRegion');
-        const province = document.getElementById('lifeplanHolderProvince');
-        const city = document.getElementById('lifeplanHolderCity');
-        const barangay = document.getElementById('lifeplanHolderBarangay');
-        const street = document.getElementById('lifeplanHolderStreet');
-        
-        // Create an address object
-        const address = {
-            region: region.options[region.selectedIndex]?.text || '',
-            province: province.options[province.selectedIndex]?.text || '',
-            city: city.options[city.selectedIndex]?.text || '',
-            barangay: barangay.options[barangay.selectedIndex]?.text || '',
-            street: street.value || ''
-        };
-        
-        // Convert to JSON string and store in the hidden input
-        document.getElementById('holderAddress').value = JSON.stringify(address);
-    }
+    
 
     // Lifeplan Form submission
     document.getElementById('lifeplanBookingForm').addEventListener('submit', function(e) {
