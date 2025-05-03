@@ -1240,6 +1240,7 @@ require_once '../db_connect.php'; // Database connection
         </div>
     </div>
 </div>
+</div>
 
 <!-- Custom Package Selection Modal (Hidden by Default) -->
 <div id="customPackageModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4 hidden">
