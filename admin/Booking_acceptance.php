@@ -847,7 +847,7 @@ $custom_offset = ($custom_current_page - 1) * $custom_bookings_per_page;
                         <div class="space-y-1">
                             <div class="flex items-center cursor-pointer lifeplan-filter-option" data-sort="id_asc">
                                 <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                                    ID: Ascending
+                                     Default
                                 </span>
                             </div>
                             <div class="flex items-center cursor-pointer lifeplan-filter-option" data-sort="id_desc">
