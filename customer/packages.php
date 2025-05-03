@@ -1467,7 +1467,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 return response.json();
             })
             .then(data => {
-                console.log('Regions data:', data);
+                console.log('Regions data lp:', data);
                 const regionDropdown = document.getElementById('lifeplanHolderRegion');
                 
                 // Check if dropdown exists
@@ -1488,6 +1488,10 @@ document.addEventListener('DOMContentLoaded', function() {
         const regionElement = document.getElementById('lifeplanHolderRegion');
         const provinceElement = document.getElementById('lifeplanHolderProvince');
         const cityElement = document.getElementById('lifeplanHolderCity');
+
+        console.log(regionElement);
+        console.log(provinceElement);
+        console.log(cityElement);
         
         if (regionElement) {
             regionElement.addEventListener('change', updateLifeplanProvinces);
