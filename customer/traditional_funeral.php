@@ -1325,20 +1325,14 @@ require_once '../db_connect.php'; // Database connection
                             <h4 class="text-lg font-hedvig text-navy mb-4">Flower Arrangements</h4>
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div class="border rounded-lg p-4 cursor-pointer flower-option" data-price="15000" data-name="Standard Floral Package">
-                                    <img src="/api/placeholder/300/200" alt="Standard Floral Package" class="w-full h-32 object-cover rounded-lg mb-2">
-                                    <h5 class="font-medium mb-1">Standard Floral Package</h5>
                                     <p class="text-sm text-gray-600 mb-2">Initial Flower Arrangement</p>
                                     <p class="text-yellow-600">₱15,000</p>
                                 </div>
                                 <div class="border rounded-lg p-4 cursor-pointer flower-option" data-price="25000" data-name="Premium Floral Package">
-                                    <img src="/api/placeholder/300/200" alt="Premium Floral Package" class="w-full h-32 object-cover rounded-lg mb-2">
-                                    <h5 class="font-medium mb-1">Premium Floral Package</h5>
                                     <p class="text-sm text-gray-600 mb-2">1 Flower Replacement</p>
                                     <p class="text-yellow-600">₱25,000</p>
                                 </div>
                                 <div class="border rounded-lg p-4 cursor-pointer flower-option" data-price="40000" data-name="Luxury Floral Package">
-                                    <img src="/api/placeholder/300/200" alt="Luxury Floral Package" class="w-full h-32 object-cover rounded-lg mb-2">
-                                    <h5 class="font-medium mb-1">Luxury Floral Package</h5>
                                     <p class="text-sm text-gray-600 mb-2">2 Flower Replacement</p>
                                     <p class="text-yellow-600">₱40,000</p>
                                 </div>
