@@ -409,15 +409,52 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Function to create pagination buttons
     function createPaginationButtons() {
-        paginationContainer.innerHTML = ''; // Clear existing buttons
+    paginationContainer.innerHTML = ''; // Clear existing buttons
+    
+    // Add pagination info div if it doesn't exist
+    let paginationInfo = document.getElementById('paginationInfo');
+    if (!paginationInfo) {
+        paginationInfo = document.createElement('div');
+        paginationInfo.id = 'paginationInfo';
+        paginationInfo.className = 'text-sm text-gray-500 text-center sm:text-left';
         
-        // Previous button
-        const prevButton = document.createElement('button');
-        prevButton.innerHTML = '&laquo;';
-        prevButton.className = 'px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover' + 
-            (currentPage === 1 ? ' opacity-50 cursor-not-allowed' : '');
-        prevButton.disabled = currentPage === 1;
-        prevButton.addEventListener('click', () => {
+        // Insert before pagination container
+        paginationContainer.parentNode.insertBefore(paginationInfo, paginationContainer);
+    }
+    
+    // Update pagination info text
+    if (totalItems > 0) {
+        const start = (currentPage - 1) * itemsPerPage + 1;
+        const end = Math.min(totalItems, currentPage * itemsPerPage);
+        paginationInfo.textContent = `Showing ${start} - ${end} of ${totalItems} accounts`;
+    } else {
+        paginationInfo.textContent = "No accounts found";
+    }
+    
+    if (totalPages > 1) {
+        // First page button (double arrow)
+        const firstButton = document.createElement('a');
+        firstButton.href = '#';
+        firstButton.innerHTML = '&laquo;';
+        firstButton.className = 'px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover' +
+            (currentPage === 1 ? ' opacity-50 pointer-events-none' : '');
+        firstButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (currentPage !== 1) {
+                currentPage = 1;
+                fetchCustomerAccounts();
+            }
+        });
+        paginationContainer.appendChild(firstButton);
+        
+        // Previous page button (single arrow)
+        const prevButton = document.createElement('a');
+        prevButton.href = '#';
+        prevButton.innerHTML = '&lsaquo;';
+        prevButton.className = 'px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover' +
+            (currentPage === 1 ? ' opacity-50 pointer-events-none' : '');
+        prevButton.addEventListener('click', (e) => {
+            e.preventDefault();
             if (currentPage > 1) {
                 currentPage--;
                 fetchCustomerAccounts();
@@ -425,38 +462,88 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         paginationContainer.appendChild(prevButton);
         
-        // Page number buttons - show up to 5 pages around current page
-        const startPage = Math.max(1, currentPage - 2);
-        const endPage = Math.min(totalPages, currentPage + 2);
+        // Show exactly 3 page numbers as in the original code
+        let startPage, endPage;
         
+        if (totalPages <= 3) {
+            // If total pages is 3 or less, show all pages
+            startPage = 1;
+            endPage = totalPages;
+        } else {
+            // With more than 3 pages, determine which 3 to show
+            if (currentPage === 1) {
+                // At beginning, show first 3 pages
+                startPage = 1;
+                endPage = 3;
+            } else if (currentPage === totalPages) {
+                // At end, show last 3 pages
+                startPage = totalPages - 2;
+                endPage = totalPages;
+            } else {
+                // In middle, show current page with one before and after
+                startPage = currentPage - 1;
+                endPage = currentPage + 1;
+                
+                // Handle edge cases
+                if (startPage < 1) {
+                    startPage = 1;
+                    endPage = 3;
+                }
+                if (endPage > totalPages) {
+                    endPage = totalPages;
+                    startPage = totalPages - 2;
+                }
+            }
+        }
+        
+        // Generate page buttons
         for (let i = startPage; i <= endPage; i++) {
-            const pageButton = document.createElement('button');
+            const pageButton = document.createElement('a');
+            pageButton.href = '#';
             pageButton.textContent = i;
-            pageButton.className = 'px-3.5 py-1.5 border border-sidebar-border rounded text-sm ' + 
+            pageButton.className = 'px-3.5 py-1.5 rounded text-sm ' + 
                 (i === currentPage 
                     ? 'bg-sidebar-accent text-white' 
-                    : 'hover:bg-sidebar-hover');
-            pageButton.addEventListener('click', () => {
+                    : 'border border-sidebar-border hover:bg-sidebar-hover');
+            pageButton.addEventListener('click', (e) => {
+                e.preventDefault();
                 currentPage = i;
                 fetchCustomerAccounts();
             });
             paginationContainer.appendChild(pageButton);
         }
         
-        // Next button
-        const nextButton = document.createElement('button');
-        nextButton.innerHTML = '&raquo;';
-        nextButton.className = 'px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover' + 
-            (currentPage === totalPages ? ' opacity-50 cursor-not-allowed' : '');
-        nextButton.disabled = currentPage === totalPages;
-        nextButton.addEventListener('click', () => {
+        // Next page button (single arrow)
+        const nextButton = document.createElement('a');
+        nextButton.href = '#';
+        nextButton.innerHTML = '&rsaquo;';
+        nextButton.className = 'px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover' +
+            (currentPage === totalPages ? ' opacity-50 pointer-events-none' : '');
+        nextButton.addEventListener('click', (e) => {
+            e.preventDefault();
             if (currentPage < totalPages) {
                 currentPage++;
                 fetchCustomerAccounts();
             }
         });
         paginationContainer.appendChild(nextButton);
+        
+        // Last page button (double arrow)
+        const lastButton = document.createElement('a');
+        lastButton.href = '#';
+        lastButton.innerHTML = '&raquo;';
+        lastButton.className = 'px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover' +
+            (currentPage === totalPages ? ' opacity-50 pointer-events-none' : '');
+        lastButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (currentPage !== totalPages) {
+                currentPage = totalPages;
+                fetchCustomerAccounts();
+            }
+        });
+        paginationContainer.appendChild(lastButton);
     }
+}
 
     // Function to fetch customer accounts via AJAX
     function fetchCustomerAccounts() {
