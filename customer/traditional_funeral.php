@@ -1622,7 +1622,8 @@ if (dodField) {
     const provinceField = document.getElementById('traditionalDeceasedProvince');
     const cityField = document.getElementById('traditionalDeceasedCity');
     const barangayField = document.getElementById('traditionalDeceasedBarangay');
-    const streetField = document.getElementById('traditionalDeceasedStreet');
+    // Street address validation
+const streetField = document.getElementById('traditionalDeceasedStreet');
 if (streetField) {
     streetField.addEventListener('input', function(e) {
         let value = this.value;
