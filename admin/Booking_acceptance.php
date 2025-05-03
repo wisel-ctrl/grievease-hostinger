@@ -429,8 +429,6 @@ $custom_offset = ($custom_current_page - 1) * $custom_bookings_per_page;
             echo "No bookings found";
         }
         ?>
-
-        Showing <?php echo ($current_page - 1) * $per_page + 1; ?> - <?php echo min($current_page * $per_page, $total_items); ?> of <?php echo $total_items; ?> items
     </div>
     <div id="paginationContainer"class="flex space-x-2">
         <?php if ($total_pages > 1): ?>
