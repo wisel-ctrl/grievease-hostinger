@@ -162,11 +162,7 @@ $customersResult = mysqli_query($conn, $customersQuery);
                                             Default
                                         </span>
                                     </div>
-                                    <div class="flex items-center cursor-pointer filter-option" data-sort="id_desc">
-                                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                                            ID: Descending
-                                        </span>
-                                    </div>
+                                    
                                     <div class="flex items-center cursor-pointer filter-option" data-sort="name_asc">
                                         <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
                                             Name: A-Z
