@@ -436,13 +436,6 @@ $offset = ($current_page - 1) * $bookings_per_page;
             </a>
             
             <?php
-            // Always show first page if not in current range
-            if ($current_page > 2) {
-                echo '<a href="?page=1" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">1</a>';
-                if ($current_page > 3) {
-                    echo '<span class="px-3.5 py-1.5 text-gray-500">...</span>';
-                }
-            }
             
             // Show current page and adjacent pages (total 3 pages)
             $start_page = max(1, $current_page - 1);
