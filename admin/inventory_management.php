@@ -657,44 +657,78 @@ if ($branchResult->num_rows > 0) {
             of <?php echo $totalItems; ?> items
         </div>
         <div class="flex space-x-2" id="paginationControls_<?php echo $branchId; ?>">
-            <!-- Previous Button -->
-            <button onclick="loadPage(<?php echo $branchId; ?>, <?php echo $currentPage - 1; ?>)" 
-                    class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($currentPage <= 1) ? 'opacity-50 cursor-not-allowed' : ''; ?>"
-                    <?php echo ($currentPage <= 1) ? 'disabled' : ''; ?>>
+        <?php if ($totalPages > 1): ?>
+            <!-- First page button (double arrow) -->
+            <button onclick="loadPage(<?php echo $branchId; ?>, 1)" 
+                    class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($currentPage == 1) ? 'opacity-50 cursor-not-allowed' : ''; ?>"
+                    <?php echo ($currentPage == 1) ? 'disabled' : ''; ?>>
                 &laquo;
             </button>
             
-            <!-- Page Numbers -->
-            <?php 
-            // Calculate page range to display (max 5 pages)
-            $startPage = max(1, $currentPage - 2);
-            $endPage = min($totalPages, $currentPage + 2);
+            <!-- Previous page button (single arrow) -->
+            <button onclick="loadPage(<?php echo $branchId; ?>, <?php echo max(1, $currentPage - 1); ?>)" 
+                    class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($currentPage == 1) ? 'opacity-50 cursor-not-allowed' : ''; ?>"
+                    <?php echo ($currentPage == 1) ? 'disabled' : ''; ?>>
+                &lsaquo;
+            </button>
             
-            // Adjust if we're at the beginning
-            if ($currentPage <= 3) {
-                $endPage = min(5, $totalPages);
+            <?php
+            // Show exactly 3 page numbers
+            if ($totalPages <= 3) {
+                // If total pages is 3 or less, show all pages
+                $startPage = 1;
+                $endPage = $totalPages;
+            } else {
+                // With more than 3 pages, determine which 3 to show
+                if ($currentPage == 1) {
+                    // At the beginning, show first 3 pages
+                    $startPage = 1;
+                    $endPage = 3;
+                } elseif ($currentPage == $totalPages) {
+                    // At the end, show last 3 pages
+                    $startPage = $totalPages - 2;
+                    $endPage = $totalPages;
+                } else {
+                    // In the middle, show current page with one before and after
+                    $startPage = $currentPage - 1;
+                    $endPage = $currentPage + 1;
+                    
+                    // Handle edge cases
+                    if ($startPage < 1) {
+                        $startPage = 1;
+                        $endPage = 3;
+                    }
+                    if ($endPage > $totalPages) {
+                        $endPage = $totalPages;
+                        $startPage = $totalPages - 2;
+                    }
+                }
             }
-            // Adjust if we're at the end
-            if ($currentPage >= $totalPages - 2) {
-                $startPage = max(1, $totalPages - 4);
+            
+            // Generate the page buttons
+            for ($i = $startPage; $i <= $endPage; $i++) {
+                $active_class = ($i == $currentPage) ? 'bg-sidebar-accent text-white' : 'border border-sidebar-border hover:bg-sidebar-hover';
+                echo '<button onclick="loadPage(' . $branchId . ', ' . $i . ')" class="px-3.5 py-1.5 rounded text-sm ' . $active_class . '">' . $i . '</button>';
             }
+            ?>
             
-            for ($i = $startPage; $i <= $endPage; $i++): ?>
-                <button onclick="loadPage(<?php echo $branchId; ?>, <?php echo $i; ?>)" 
-                        class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($i == $currentPage) ? 'bg-sidebar-accent text-white' : ''; ?>">
-                    <?php echo $i; ?>
-                </button>
-            <?php endfor; ?>
+            <!-- Next page button (single arrow) -->
+            <button onclick="loadPage(<?php echo $branchId; ?>, <?php echo min($totalPages, $currentPage + 1); ?>)" 
+                    class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($currentPage == $totalPages) ? 'opacity-50 cursor-not-allowed' : ''; ?>"
+                    <?php echo ($currentPage == $totalPages) ? 'disabled' : ''; ?>>
+                &rsaquo;
+            </button>
             
-            <!-- Next Button -->
-            <button onclick="loadPage(<?php echo $branchId; ?>, <?php echo $currentPage + 1; ?>)" 
-                    class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($currentPage >= $totalPages) ? 'opacity-50 cursor-not-allowed' : ''; ?>"
-                    <?php echo ($currentPage >= $totalPages) ? 'disabled' : ''; ?>>
+            <!-- Last page button (double arrow) -->
+            <button onclick="loadPage(<?php echo $branchId; ?>, <?php echo $totalPages; ?>)" 
+                    class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($currentPage == $totalPages) ? 'opacity-50 cursor-not-allowed' : ''; ?>"
+                    <?php echo ($currentPage == $totalPages) ? 'disabled' : ''; ?>>
                 &raquo;
             </button>
-        </div>
+        <?php endif; ?>
     </div>
-</div> 
+</div>
+</div>
  
     
     <?php
