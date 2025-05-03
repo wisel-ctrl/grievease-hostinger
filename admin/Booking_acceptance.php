@@ -430,7 +430,12 @@ $offset = ($current_page - 1) * $bookings_per_page;
     </div>
     <div id="paginationContainer" class="flex space-x-1">
         <?php if ($total_pages > 1): ?>
-            <!-- First page and Previous page -->
+            <!-- First page button (double arrow) -->
+            <a href="?page=1" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($current_page == 1) ? 'opacity-50 pointer-events-none' : ''; ?>">
+                <i class="fas fa-angle-double-left"></i>
+            </a>
+            
+            <!-- Previous page button (single arrow) -->
             <a href="<?php echo '?page=' . max(1, $current_page - 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($current_page == 1) ? 'opacity-50 pointer-events-none' : ''; ?>">
                 <i class="fas fa-chevron-left"></i>
             </a>
@@ -475,9 +480,14 @@ $offset = ($current_page - 1) * $bookings_per_page;
             }
             ?>
             
-            <!-- Next page -->
+            <!-- Next page button (single arrow) -->
             <a href="<?php echo '?page=' . min($total_pages, $current_page + 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($current_page == $total_pages) ? 'opacity-50 pointer-events-none' : ''; ?>">
                 <i class="fas fa-chevron-right"></i>
+            </a>
+            
+            <!-- Last page button (double arrow) -->
+            <a href="<?php echo '?page=' . $total_pages; ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($current_page == $total_pages) ? 'opacity-50 pointer-events-none' : ''; ?>">
+                <i class="fas fa-angle-double-right"></i>
             </a>
         <?php endif; ?>
     </div>
