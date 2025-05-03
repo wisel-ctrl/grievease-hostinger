@@ -1666,8 +1666,8 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <!-- Street Address (taking 3/4 of the width) -->
                                 <div class="sm:col-span-3">
                                     <label for="street_address" class="block text-sm font-medium text-gray-700 mb-2">Street Address <span class="text-red-500">*</span></label>
-                                    <input type="text" id="street_address" name="street_address" placeholder="House/Lot/Unit No., Building, Street Name" 
-                                        value="<?php echo htmlspecialchars($street_address); ?>" 
+                                    <input type="text" id="street_address" name="street_address" minlenth="5" placeholder="House/Lot/Unit No., Building, Street Name" 
+                                        value="<?php echo htmlspecialchars($street_address); ?>" required
                                         class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-base shadow-sm transition-all duration-200">
                                 </div>
                                 
