@@ -40,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ]));
         
         $phone = $_POST['contactNumber'];
-        $with_cremate = isset($_POST['with_cremate']) ? 'yes' : 'no';
+        $with_cremate = isset($_POST['cremationOption']) ? 'yes' : 'no';
         $reference_code = $_POST['referenceNumber'];
         
         // Process payment receipt
@@ -70,7 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ");
         
         $stmt->bind_param(
-            "iiiidsssssssis", 
+            "iiiidssssssssss", 
             $service_id, $branch_id, $customer_id, $payment_duration, $package_price,
             $beneficiary_fname, $beneficiary_mname, $beneficiary_lname, $beneficiary_suffix,
             $beneficiary_birth, $beneficiary_address, $phone, $with_cremate,
