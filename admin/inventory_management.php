@@ -1192,7 +1192,7 @@ function loadPage(branchId, page) {
     // Validate page number
     if (page < 1) page = 1;
     
-    // Get total pages from the container's data attribute
+    // Get total items from the container's data attribute
     const container = document.querySelector(`.branch-container[data-branch-id="${branchId}"]`);
     const totalItems = parseInt(container.dataset.totalItems);
     const itemsPerPage = 5;
@@ -1224,7 +1224,7 @@ function loadPage(branchId, page) {
             url.searchParams.set(`page_${branchId}`, page);
             window.history.pushState({ branchId, page }, '', url);
             
-            // Update pagination info
+            // Update pagination info with correct total items
             updatePaginationInfo(branchId, page, totalItems, itemsPerPage);
             
             // Update pagination controls
@@ -1355,18 +1355,16 @@ window.addEventListener('popstate', function(event) {
 });
 
 // Initialize pagination on page load
+// Initialize pagination on page load
 document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('.branch-container').forEach(container => {
         const branchId = container.dataset.branchId;
         const urlParams = new URLSearchParams(window.location.search);
         const currentPage = urlParams.get(`page_${branchId}`) || 1;
-        
-        // Store total items in the container's dataset
-        const totalItems = <?php echo $totalItems; ?>;
-        container.dataset.totalItems = totalItems;
+        const totalItems = parseInt(container.dataset.totalItems);
         
         // Initialize pagination
-        updatePaginationInfo(branchId, currentPage);
+        updatePaginationInfo(branchId, currentPage, totalItems, 5);
         updatePaginationActiveState(branchId, currentPage);
     });
 });
