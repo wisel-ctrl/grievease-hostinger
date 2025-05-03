@@ -1615,7 +1615,7 @@ $page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
 $perPage = 5;
 $offset = ($page - 1) * $perPage;
 
-// Construct the SQL query with search and sorting
+// Base SQL query
 $sql = "SELECT id, first_name, last_name, email, is_verified, created_at FROM users WHERE user_type = 2 AND is_verified = 1";
 
 // Add search condition if search term is provided
@@ -1654,9 +1654,8 @@ switch ($sort) {
 }
 
 // Add pagination to the query
-$sql .= " LIMIT $perPage OFFSET $offset";
-
-$result = $conn->query($sql);
+$sqlWithLimit = $sql . " LIMIT $perPage OFFSET $offset";
+$result = $conn->query($sqlWithLimit);
 
 // Get total count for pagination
 $countSql = "SELECT COUNT(*) as total FROM users WHERE user_type = 2 AND is_verified = 1";
@@ -1667,12 +1666,15 @@ $countResult = $conn->query($countSql);
 $totalRows = $countResult->fetch_assoc()['total'];
 $totalPages = ceil($totalRows / $perPage);
 
+// Calculate showing from/to
+$showingFrom = $offset + 1;
+$showingTo = min($offset + $perPage, $totalRows);
+
 // Initialize empty table content
 $tableContent = '';
 
 // Check if there are results
 if ($result->num_rows > 0) {
-    // Create table rows with actual data
     while($row = $result->fetch_assoc()) {
        // Determine status based on is_verified
         $status = $row['is_verified'] == 1 ? 
@@ -1708,7 +1710,7 @@ if ($result->num_rows > 0) {
     // Update pagination info
     $startCount = min($offset + 1, $totalRows);
     $endCount = min($offset + $perPage, $totalRows);
-    $empPaginationInfo = "Showing {$startCount}-{$endCount} of {$totalRows} employee accounts";
+    $paginationInfo = "Showing {$startCount}-{$endCount} of {$totalRows} employee accounts";
 } else {
     // If no employees found, display a message
     $tableContent = '<tr class="border-b border-sidebar-border">
@@ -1951,17 +1953,55 @@ if ($result->num_rows > 0) {
     </div>
     
     <!-- Sticky Pagination Footer with improved spacing -->
-    <div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
-        <div id="empPaginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
-            Showing <span id="empShowingFrom">0</span> - <span id="empShowingTo">0</span> 
-            of <span id="empTotalCount">0</span> employees
-        </div>
-        <div id="empPaginationContainer" class="flex space-x-1">
-            <!-- Pagination buttons will be inserted here by JavaScript -->
-        </div>
+<div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
+    <div id="empPaginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
+        Showing <span id="empShowingFrom"><?php echo $showingFrom; ?></span> - <span id="empShowingTo"><?php echo $showingTo; ?></span> 
+        of <span id="empTotalCount"><?php echo $totalRows; ?></span> employees
+    </div>
+    <div id="empPaginationContainer" class="flex space-x-1">
+        <!-- Previous Button -->
+        <?php if ($page > 1): ?>
+            <button onclick="changeEmpPage(<?php echo $page - 1; ?>)" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">
+                &laquo;
+            </button>
+        <?php else: ?>
+            <button disabled class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm opacity-50 cursor-not-allowed">
+                &laquo;
+            </button>
+        <?php endif; ?>
+
+        <!-- Page Numbers -->
+        <?php 
+        $startPage = max(1, $page - 2);
+        $endPage = min($totalPages, $page + 2);
+        
+        for ($i = $startPage; $i <= $endPage; $i++): ?>
+            <button onclick="changeEmpPage(<?php echo $i; ?>)" 
+                    class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm <?php echo $i == $page ? 'bg-sidebar-accent text-white' : 'hover:bg-sidebar-hover'; ?>">
+                <?php echo $i; ?>
+            </button>
+        <?php endfor; ?>
+
+        <!-- Next Button -->
+        <?php if ($page < $totalPages): ?>
+            <button onclick="changeEmpPage(<?php echo $page + 1; ?>)" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">
+                &raquo;
+            </button>
+        <?php else: ?>
+            <button disabled class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm opacity-50 cursor-not-allowed">
+                &raquo;
+            </button>
+        <?php endif; ?>
     </div>
 </div>
 
+<script>
+    function changeEmpPage(newPage) {
+    const url = new URL(window.location.href);
+    url.searchParams.set('empPage', newPage);
+    window.location.href = url.toString();
+}
+</script>
 <!-- Archived Accounts Modal -->
 <div class="fixed inset-0 z-50 flex items-center justify-center hidden" id="archivedModal">
   <!-- Modal Backdrop -->
@@ -3987,27 +4027,27 @@ document.addEventListener('DOMContentLoaded', function() {
                         </tr>
                     `;
                     
-                    // Update pagination info
-                    empShowingFrom.textContent = response.showingFrom || '0';
-                    empShowingTo.textContent = response.showingTo || '0';
-                    empTotalCount.textContent = response.totalCount || '0';
-
-                    document.getElementById('totalEmployees').textContent = response.totalCount;
+                    if (response.showingFrom && response.showingTo && response.totalCount) {
+                empShowingFrom.textContent = response.showingFrom;
+                empShowingTo.textContent = response.showingTo;
+                empTotalCount.textContent = response.totalCount;
+                document.getElementById('totalEmployees').textContent = response.totalCount;
+            }
                     
                     // Update total pages and current page
                     totalEmpPages = response.totalPages || 1;
-                    currentEmpPage = response.currentPage || 1;
+            currentEmpPage = response.currentPage || 1;
                     
                     // Create pagination buttons
                     createEmpPaginationButtons();
                     
                     // Update filter indicators if a sort is applied
                     if (currentEmpSort !== 'id_asc') {
-                        filterIndicator.classList.remove('hidden');
-                        filterIndicatorMobile.classList.remove('hidden');
-                    } else {
-                        filterIndicator.classList.add('hidden');
-                        filterIndicatorMobile.classList.add('hidden');
+                filterIndicator.classList.remove('hidden');
+                filterIndicatorMobile.classList.remove('hidden');
+            } else {
+                filterIndicator.classList.add('hidden');
+                filterIndicatorMobile.classList.add('hidden');
                     }
                 } catch (e) {
                     console.error('Error parsing response:', e);
@@ -4019,15 +4059,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         </tr>
                     `;
                 }
-            } else {
-                console.error('Error fetching employee accounts:', xhr.statusText);
-                employeeTableBody.innerHTML = `
-                    <tr>
-                        <td colspan="6" class="text-center p-4 text-red-500">
-                            Failed to load employees. Please try again.
-                        </td>
-                    </tr>
-                `;
+            
             }
         };
         
