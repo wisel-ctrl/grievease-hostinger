@@ -647,7 +647,6 @@ document.addEventListener('DOMContentLoaded', function() {
     </div>
     
     <!-- Modal Body -->
-    <div class="modal-scroll-container overflow-y-auto max-h-[90vh]">
     <div class="px-4 sm:px-6 py-4 sm:py-5">
       <form id="addCustomerAccountForm" method="post" action="addCustomer/add_customer.php" class="space-y-3 sm:space-y-4">
         <!-- Personal Information Section -->
@@ -780,7 +779,6 @@ document.addEventListener('DOMContentLoaded', function() {
         <input type="hidden" name="is_verified" value="1">
       </form>
     </div>
-</div>
     
     <!-- Modal Footer -->
     <div class="px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row sm:justify-end gap-2 sm:gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
