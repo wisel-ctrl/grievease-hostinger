@@ -1454,6 +1454,60 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOM Content Loaded Lifeplan');
+        
+        // Load regions via AJAX
+        fetch('address/get_regions.php')
+            .then(response => {
+                console.log('Regions response status:', response.status);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Regions data:', data);
+                const regionDropdown = document.getElementById('lifeplanHolderRegion');
+                
+                // Check if dropdown exists
+                if (regionDropdown) {
+                    regionDropdown.innerHTML = '<option value="">Select Region</option>';
+                    data.forEach(region => {
+                        regionDropdown.innerHTML += `<option value="${region.region_id}">${region.region_name}</option>`;
+                    });
+                } else {
+                    console.error('lifeplanHolderRegion dropdown not found in the DOM');
+                }
+            })
+            .catch(error => {
+                console.error('Error loading regions:', error);
+            });
+        
+        // Set up event listeners
+        const regionElement = document.getElementById('lifeplanHolderRegion');
+        const provinceElement = document.getElementById('lifeplanHolderProvince');
+        const cityElement = document.getElementById('lifeplanHolderCity');
+        
+        if (regionElement) {
+            regionElement.addEventListener('change', updateLifeplanProvinces);
+        } else {
+            console.error('lifeplanHolderRegion element not found for event listener');
+        }
+        
+        if (provinceElement) {
+            provinceElement.addEventListener('change', updateLifeplanCities);
+        } else {
+            console.error('lifeplanHolderProvince element not found for event listener');
+        }
+        
+        if (cityElement) {
+            cityElement.addEventListener('change', updateLifeplanBarangays);
+        } else {
+            console.error('lifeplanHolderCity element not found for event listener');
+        }
+    });
+
 // Traditional Funeral Deceased Street Address Validation
 function validateTraditionalDeceasedStreet(input) {
     // Remove any leading spaces
@@ -2781,59 +2835,7 @@ document.getElementById('lifeplanServiceBtn').addEventListener('click', function
     formSection.classList.remove('force-show');
     
     // Initialize address fields
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log('DOM Content Loaded');
-        
-        // Load regions via AJAX
-        fetch('address/get_regions.php')
-            .then(response => {
-                console.log('Regions response status:', response.status);
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log('Regions data:', data);
-                const regionDropdown = document.getElementById('lifeplanHolderRegion');
-                
-                // Check if dropdown exists
-                if (regionDropdown) {
-                    regionDropdown.innerHTML = '<option value="">Select Region</option>';
-                    data.forEach(region => {
-                        regionDropdown.innerHTML += `<option value="${region.region_id}">${region.region_name}</option>`;
-                    });
-                } else {
-                    console.error('lifeplanHolderRegion dropdown not found in the DOM');
-                }
-            })
-            .catch(error => {
-                console.error('Error loading regions:', error);
-            });
-        
-        // Set up event listeners
-        const regionElement = document.getElementById('lifeplanHolderRegion');
-        const provinceElement = document.getElementById('lifeplanHolderProvince');
-        const cityElement = document.getElementById('lifeplanHolderCity');
-        
-        if (regionElement) {
-            regionElement.addEventListener('change', updateLifeplanProvinces);
-        } else {
-            console.error('lifeplanHolderRegion element not found for event listener');
-        }
-        
-        if (provinceElement) {
-            provinceElement.addEventListener('change', updateLifeplanCities);
-        } else {
-            console.error('lifeplanHolderProvince element not found for event listener');
-        }
-        
-        if (cityElement) {
-            cityElement.addEventListener('change', updateLifeplanBarangays);
-        } else {
-            console.error('lifeplanHolderCity element not found for event listener');
-        }
-    });
+    
     
     // Show the modal
     document.getElementById('lifeplanModal').classList.remove('hidden');
