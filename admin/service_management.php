@@ -240,7 +240,9 @@ if ($branchResult->num_rows > 0) {
 ?>
 
 <!-- Branch Card -->
-<div class="bg-white rounded-lg shadow-md mb-8 border border-sidebar-border overflow-hidden branch-container" data-branch-id="<?php echo $branchId; ?>">
+<div class="bg-white rounded-lg shadow-md mb-8 border border-sidebar-border overflow-hidden branch-container" 
+     data-branch-id="<?php echo $branchId; ?>" 
+     data-total-services="<?php echo $totalServices; ?>">
     <!-- Branch Header with Search and Filters -->
     <div class="bg-sidebar-hover p-4 border-b border-sidebar-border">
         <!-- Desktop layout for big screens - Title on left, controls on right -->
@@ -481,34 +483,51 @@ if ($branchResult->num_rows > 0) {
 
     
 <!-- Sticky Pagination Footer with improved spacing -->
+<!-- Sticky Pagination Footer with improved spacing -->
 <div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
-    <div class="text-sm text-gray-500 text-center sm:text-left">
-        Showing <?php echo ($offset + 1) . ' - ' . min($offset + $recordsPerPage, $totalServices); ?> 
+    <div id="paginationInfo_<?php echo $branchId; ?>" class="text-sm text-gray-500 text-center sm:text-left">
+        Showing <?php echo min(($page - 1) * $recordsPerPage + 1, $totalServices) . ' - ' . min($page * $recordsPerPage, $totalServices); ?> 
         of <?php echo $totalServices; ?> services
     </div>
-    <div class="flex space-x-2 pagination">
-        <a href="javascript:void(0)" onclick="changePage(<?php echo $branchId; ?>, <?php echo max(1, $page - 1); ?>)" 
-           class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo $page <= 1 ? 'opacity-50 pointer-events-none' : ''; ?>">&laquo;</a>
+    <div class="flex space-x-2" id="paginationControls_<?php echo $branchId; ?>">
+        <!-- Previous Button -->
+        <button onclick="changePage(<?php echo $branchId; ?>, <?php echo $page - 1; ?>)" 
+                class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($page <= 1) ? 'opacity-50 cursor-not-allowed' : ''; ?>"
+                <?php echo ($page <= 1) ? 'disabled' : ''; ?>>
+            &laquo;
+        </button>
         
+        <!-- Page Numbers -->
         <?php 
-        // Show limited pagination links (e.g., 5 around current page)
+        // Calculate page range to display (max 5 pages)
         $startPage = max(1, $page - 2);
         $endPage = min($totalPages, $page + 2);
         
+        // Adjust if we're at the beginning
+        if ($page <= 3) {
+            $endPage = min(5, $totalPages);
+        }
+        // Adjust if we're at the end
+        if ($page >= $totalPages - 2) {
+            $startPage = max(1, $totalPages - 4);
+        }
+        
         // Always show first page if not in range
         if ($startPage > 1) {
-            echo '<a href="javascript:void(0)" onclick="changePage('.$branchId.', 1)"
-               class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm '.($page == 1 ? 'bg-sidebar-accent text-white' : 'hover:bg-sidebar-hover').'">1</a>';
+            echo '<button onclick="changePage('.$branchId.', 1)" 
+                  class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover '.($page == 1 ? 'bg-sidebar-accent text-white' : '').'">
+                  1
+              </button>';
             if ($startPage > 2) {
                 echo '<span class="px-3.5 py-1.5">...</span>';
             }
         }
         
         for ($i = $startPage; $i <= $endPage; $i++): ?>
-            <a href="javascript:void(0)" onclick="changePage(<?php echo $branchId; ?>, <?php echo $i; ?>)"
-               class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm <?php echo $i == $page ? 'bg-sidebar-accent text-white' : 'hover:bg-sidebar-hover'; ?>">
+            <button onclick="changePage(<?php echo $branchId; ?>, <?php echo $i; ?>)" 
+                    class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($i == $page) ? 'bg-sidebar-accent text-white' : ''; ?>">
                 <?php echo $i; ?>
-            </a>
+            </button>
         <?php endfor; 
         
         // Always show last page if not in range
@@ -516,13 +535,19 @@ if ($branchResult->num_rows > 0) {
             if ($endPage < $totalPages - 1) {
                 echo '<span class="px-3.5 py-1.5">...</span>';
             }
-            echo '<a href="javascript:void(0)" onclick="changePage('.$branchId.', '.$totalPages.')"
-               class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm '.($page == $totalPages ? 'bg-sidebar-accent text-white' : 'hover:bg-sidebar-hover').'">'.$totalPages.'</a>';
+            echo '<button onclick="changePage('.$branchId.', '.$totalPages.')" 
+                  class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover '.($page == $totalPages ? 'bg-sidebar-accent text-white' : '').'">
+                  '.$totalPages.'
+              </button>';
         }
         ?>
         
-        <a href="javascript:void(0)" onclick="changePage(<?php echo $branchId; ?>, <?php echo min($totalPages, $page + 1); ?>)" 
-           class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo $page >= $totalPages ? 'opacity-50 pointer-events-none' : ''; ?>">&raquo;</a>
+        <!-- Next Button -->
+        <button onclick="changePage(<?php echo $branchId; ?>, <?php echo $page + 1; ?>)" 
+                class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($page >= $totalPages) ? 'opacity-50 cursor-not-allowed' : ''; ?>"
+                <?php echo ($page >= $totalPages) ? 'disabled' : ''; ?>>
+            &raquo;
+        </button>
     </div>
 </div>
 
@@ -679,16 +704,27 @@ const debouncedFilter = debounce(function(branchId) {
 // Change page
 function changePage(branchId, page) {
     if (!activeFilters[branchId]) {
-        activeFilters[branchId] = { search: '', category: '', status: '', page: 1 };
+        activeFilters[branchId] = { 
+            search: '', 
+            category: '', 
+            status: '', 
+            page: 1 
+        };
     }
+    
+    // Validate page number
+    const totalServices = parseInt(document.querySelector(`.branch-container[data-branch-id="${branchId}"]`).dataset.totalServices);
+    const recordsPerPage = 5;
+    const totalPages = Math.ceil(totalServices / recordsPerPage);
+    
+    if (page < 1) page = 1;
+    if (page > totalPages) page = totalPages;
+    
     activeFilters[branchId].page = page;
     loadBranchTable(branchId);
     
-    // Update the URL with the current page
+    // Update URL with the current page
     updateUrlWithFilters(branchId);
-    
-    // Update active page highlight
-    updateActivePageHighlight(branchId, page);
 }
 
 // Function to update active page highlight
@@ -726,9 +762,16 @@ function loadBranchTable(branchId) {
     const params = new URLSearchParams();
     params.append('branch_id', branchId);
     params.append('page', activeFilters[branchId]?.page || 1);
-    if (activeFilters[branchId]?.search) params.append('search', activeFilters[branchId].search);
-    if (activeFilters[branchId]?.category) params.append('category', activeFilters[branchId].category);
-    if (activeFilters[branchId]?.status) params.append('status', activeFilters[branchId].status);
+    
+    if (activeFilters[branchId]?.search) {
+        params.append('search', activeFilters[branchId].search);
+    }
+    if (activeFilters[branchId]?.category) {
+        params.append('category', activeFilters[branchId].category);
+    }
+    if (activeFilters[branchId]?.status) {
+        params.append('status', activeFilters[branchId].status);
+    }
 
     // Make AJAX request
     fetch(`loadServices/load_service_table.php?${params.toString()}`)
@@ -737,33 +780,148 @@ function loadBranchTable(branchId) {
             return response.text();
         })
         .then(html => {
+            // Update the table content
             container.innerHTML = html;
             if (loadingIndicator) loadingIndicator.classList.add('hidden');
             
-            // Update active page highlight after content loads
-            updateActivePageHighlight(branchId, activeFilters[branchId]?.page || 1);
+            // Update pagination info
+            updatePaginationInfo(branchId);
+            
+            // Update pagination controls
+            updatePaginationControls(branchId);
         })
         .catch(error => {
             console.error('Error loading table:', error);
             if (loadingIndicator) loadingIndicator.classList.add('hidden');
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Failed to load service data. Please try again.'
+            });
         });
 }
+
+// Update pagination info
+function updatePaginationInfo(branchId) {
+    if (!activeFilters[branchId]) return;
+    
+    const container = document.querySelector(`.branch-container[data-branch-id="${branchId}"]`);
+    const totalServices = parseInt(container.dataset.totalServices);
+    const recordsPerPage = 5;
+    const currentPage = activeFilters[branchId].page;
+    
+    const startItem = (currentPage - 1) * recordsPerPage + 1;
+    const endItem = Math.min(currentPage * recordsPerPage, totalServices);
+    
+    const paginationInfo = document.getElementById(`paginationInfo_${branchId}`);
+    if (paginationInfo) {
+        paginationInfo.textContent = `Showing ${startItem} - ${endItem} of ${totalServices} services`;
+    }
+}
+
+// Update pagination controls
+function updatePaginationControls(branchId) {
+    if (!activeFilters[branchId]) return;
+    
+    const container = document.querySelector(`.branch-container[data-branch-id="${branchId}"]`);
+    const totalServices = parseInt(container.dataset.totalServices);
+    const recordsPerPage = 5;
+    const totalPages = Math.ceil(totalServices / recordsPerPage);
+    const currentPage = activeFilters[branchId].page;
+    
+    const paginationContainer = document.getElementById(`paginationControls_${branchId}`);
+    if (!paginationContainer) return;
+    
+    // Update previous button
+    const prevButton = paginationContainer.querySelector('button:first-child');
+    if (prevButton) {
+        prevButton.disabled = currentPage <= 1;
+        prevButton.classList.toggle('opacity-50', currentPage <= 1);
+        prevButton.classList.toggle('cursor-not-allowed', currentPage <= 1);
+        prevButton.onclick = function() { changePage(branchId, currentPage - 1); };
+    }
+    
+    // Update next button
+    const nextButton = paginationContainer.querySelector('button:last-child');
+    if (nextButton) {
+        nextButton.disabled = currentPage >= totalPages;
+        nextButton.classList.toggle('opacity-50', currentPage >= totalPages);
+        nextButton.classList.toggle('cursor-not-allowed', currentPage >= totalPages);
+        nextButton.onclick = function() { changePage(branchId, currentPage + 1); };
+    }
+    
+    // Update page number buttons
+    const pageButtons = paginationContainer.querySelectorAll('button:not(:first-child):not(:last-child)');
+    pageButtons.forEach(button => {
+        const pageNum = parseInt(button.textContent);
+        if (!isNaN(pageNum)) {
+            button.classList.toggle('bg-sidebar-accent', pageNum === currentPage);
+            button.classList.toggle('text-white', pageNum === currentPage);
+            button.onclick = function() { changePage(branchId, pageNum); };
+        }
+    });
+}
+
+// Update URL with current filters
+function updateUrlWithFilters(branchId) {
+    if (!activeFilters[branchId]) return;
+    
+    const url = new URL(window.location);
+    url.searchParams.set(`page_${branchId}`, activeFilters[branchId].page);
+    
+    if (activeFilters[branchId].search) {
+        url.searchParams.set(`search_${branchId}`, activeFilters[branchId].search);
+    } else {
+        url.searchParams.delete(`search_${branchId}`);
+    }
+    
+    if (activeFilters[branchId].category) {
+        url.searchParams.set(`category_${branchId}`, activeFilters[branchId].category);
+    } else {
+        url.searchParams.delete(`category_${branchId}`);
+    }
+    
+    if (activeFilters[branchId].status) {
+        url.searchParams.set(`status_${branchId}`, activeFilters[branchId].status);
+    } else {
+        url.searchParams.delete(`status_${branchId}`);
+    }
+    
+    window.history.pushState({ branchId, filters: activeFilters[branchId] }, '', url);
+}
+
 
 // Initialize active filters when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     // Initialize active filters from current values for each branch
     document.querySelectorAll('.branch-container').forEach(container => {
         const branchId = container.dataset.branchId;
+        const urlParams = new URLSearchParams(window.location.search);
+        
         activeFilters[branchId] = {
-            search: document.getElementById(`searchInput${branchId}`)?.value || '',
-            category: '<?php echo $categoryFilter; ?>',
-            status: '<?php echo $statusFilter; ?>',
-            page: <?php echo $page; ?>
+            search: urlParams.get(`search_${branchId}`) || '',
+            category: urlParams.get(`category_${branchId}`) || '',
+            status: urlParams.get(`status_${branchId}`) || '',
+            page: parseInt(urlParams.get(`page_${branchId}`)) || 1
         };
         
+        // Set total services count
+        container.dataset.totalServices = <?php echo $totalServices; ?>;
+        
         // Set initial active page highlight
-        updateActivePageHighlight(branchId, activeFilters[branchId].page);
+        updatePaginationControls(branchId);
     });
+});
+
+// Handle browser back/forward navigation
+window.addEventListener('popstate', function(event) {
+    if (event.state) {
+        const { branchId, filters } = event.state;
+        if (branchId && filters) {
+            activeFilters[branchId] = filters;
+            loadBranchTable(branchId);
+        }
+    }
 });
 </script>
 
