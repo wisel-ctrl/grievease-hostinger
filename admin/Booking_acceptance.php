@@ -1915,22 +1915,39 @@ document.addEventListener('DOMContentLoaded', function() {
   const desktopSearchInput = document.getElementById('bookingSearchInput');
   const mobileSearchInput = document.getElementById('bookingSearchInputMobile');
   
+  // Debounce function to limit how often the search runs
+  function debounce(func, timeout = 300) {
+    let timer;
+    return (...args) => {
+      clearTimeout(timer);
+      timer = setTimeout(() => { func.apply(this, args); }, timeout);
+    };
+  }
+  
   if (desktopSearchInput && mobileSearchInput) {
-    desktopSearchInput.addEventListener('input', function() {
-      mobileSearchInput.value = this.value;
-      filterBookings();
+    const handleSearchInput = debounce(function() {
+      const searchValue = desktopSearchInput.value || mobileSearchInput.value;
+      // Update both inputs to stay in sync
+      desktopSearchInput.value = searchValue;
+      mobileSearchInput.value = searchValue;
+      
+      // Get current sort value
+      const activeFilter = document.querySelector('.filter-option.bg-sidebar-hover, .filter-option-mobile.bg-sidebar-hover');
+      const sortValue = activeFilter ? activeFilter.getAttribute('data-sort') : 'newest';
+      
+      // Reload table with search and sort parameters
+      reloadBookingsTable(searchValue, sortValue);
     });
     
-    mobileSearchInput.addEventListener('input', function() {
-      desktopSearchInput.value = this.value;
-      filterBookings();
-    });
+    desktopSearchInput.addEventListener('input', handleSearchInput);
+    mobileSearchInput.addEventListener('input', handleSearchInput);
   }
   
   // Handle filter options (both mobile and desktop)
   document.querySelectorAll('.filter-option, .filter-option-mobile').forEach(option => {
     option.addEventListener('click', function() {
       const sortValue = this.getAttribute('data-sort');
+      
       // Update UI to show active filter
       document.querySelectorAll('.filter-option, .filter-option-mobile').forEach(opt => {
         opt.classList.remove('bg-sidebar-hover');
@@ -1941,84 +1958,150 @@ document.addEventListener('DOMContentLoaded', function() {
       document.getElementById('filterIndicator').classList.remove('hidden');
       document.getElementById('filterIndicatorMobile').classList.remove('hidden');
       
-      // Apply sorting
-      sortBookings(sortValue);
+      // Get current search value
+      const searchValue = document.getElementById('bookingSearchInput').value || '';
+      
+      // Reload table with search and sort parameters
+      reloadBookingsTable(searchValue, sortValue);
       
       // Close dropdowns
-      mobileFilterDropdown.classList.add('hidden');
-      desktopFilterDropdown.classList.add('hidden');
+      if (mobileFilterDropdown) mobileFilterDropdown.classList.add('hidden');
+      if (desktopFilterDropdown) desktopFilterDropdown.classList.add('hidden');
+      
+      // Update URL without reloading page
+      const url = new URL(window.location);
+      url.searchParams.set('sort', sortValue);
+      window.history.pushState({}, '', url);
     });
   });
   
-  // Function to filter bookings based on search input
-  function filterBookings() {
-    const searchValue = (desktopSearchInput.value || '').toLowerCase();
-    const rows = document.querySelectorAll('#bookingTableBody tr');
+  // Function to reload the bookings table with filters and sorting
+  function reloadBookingsTable(searchValue = '', sortValue = 'newest') {
+    const loadingIndicator = document.getElementById('loadingIndicator');
+    const tableBody = document.getElementById('bookingTableBody');
     
-    rows.forEach(row => {
-      const customerCell = row.cells[1]?.textContent?.toLowerCase() || '';
-      const serviceCell = row.cells[2]?.textContent?.toLowerCase() || '';
-      const statusCell = row.cells[4]?.textContent?.toLowerCase() || '';
-      
-      const matchesSearch = customerCell.includes(searchValue) || 
-                          serviceCell.includes(searchValue) || 
-                          statusCell.includes(searchValue);
-      
-      row.style.display = matchesSearch ? '' : 'none';
-    });
+    // Show loading indicator
+    loadingIndicator.classList.remove('hidden');
+    tableBody.style.opacity = '0.5';
     
-    // Update pagination info
-    updatePaginationInfo();
-  }
-  
-  // Function to sort bookings
-  function sortBookings(sortValue) {
-    const rows = Array.from(document.querySelectorAll('#bookingTableBody tr:not([style*="display: none"])'));
-    const tbody = document.getElementById('bookingTableBody');
+    // Get current page
+    const currentPage = <?php echo $current_page; ?>;
     
-    // Clear the table
-    tbody.innerHTML = '';
-    
-    // Sort the rows based on the selected option
-    rows.sort((a, b) => {
-      const aId = parseInt(a.cells[0].textContent.split('-')[2]);
-      const bId = parseInt(b.cells[0].textContent.split('-')[2]);
-      
-      const aCustomer = a.cells[1].textContent.toLowerCase();
-      const bCustomer = b.cells[1].textContent.toLowerCase();
-      
-      const aDate = new Date(a.cells[3].textContent);
-      const bDate = new Date(b.cells[3].textContent);
-      
-      switch(sortValue) {
-        case 'id_asc':
-          return aId - bId;
-        case 'id_desc':
-          return bId - aId;
-        case 'customer_asc':
-          return aCustomer.localeCompare(bCustomer);
-        case 'customer_desc':
-          return bCustomer.localeCompare(aCustomer);
-        case 'newest':
-          return bDate - aDate;
-        case 'oldest':
-          return aDate - bDate;
-        default:
-          return 0;
-      }
-    });
-    
-    // Re-append the sorted rows
-    rows.forEach(row => tbody.appendChild(row));
+    // Send AJAX request to get filtered and sorted data
+    fetch(`bookingpage/get_filtered_bookings.php?search=${encodeURIComponent(searchValue)}&sort=${sortValue}&page=${currentPage}`)
+      .then(response => response.text())
+      .then(html => {
+        tableBody.innerHTML = html;
+        loadingIndicator.classList.add('hidden');
+        tableBody.style.opacity = '1';
+        
+        // Update pagination info if needed
+        updatePaginationInfo(searchValue);
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        loadingIndicator.classList.add('hidden');
+        tableBody.style.opacity = '1';
+      });
   }
   
   // Function to update pagination info after filtering
-  function updatePaginationInfo() {
-    const visibleRows = document.querySelectorAll('#bookingTableBody tr:not([style*="display: none"])').length;
-    const totalRows = document.querySelectorAll('#bookingTableBody tr').length;
+  function updatePaginationInfo(searchValue = '') {
+    // You would need to implement an AJAX call to get the total count of filtered records
+    fetch(`bookingpage/get_filtered_count.php?search=${encodeURIComponent(searchValue)}`)
+      .then(response => response.json())
+      .then(data => {
+        if (data.total) {
+          const totalPages = Math.ceil(data.total / <?php echo $bookings_per_page; ?>);
+          updatePaginationUI(totalPages);
+        }
+      })
+      .catch(error => console.error('Error:', error));
+  }
+  
+  // Function to update pagination UI
+  function updatePaginationUI(totalPages) {
+    const paginationContainer = document.getElementById('paginationContainer');
+    const currentPage = <?php echo $current_page; ?>;
     
-    document.getElementById('paginationInfo').textContent = 
-      `Showing ${visibleRows} of ${totalRows} bookings`;
+    // Clear existing pagination
+    paginationContainer.innerHTML = '';
+    
+    if (totalPages > 1) {
+      // First page button
+      paginationContainer.appendChild(createPageButton('first', currentPage, totalPages));
+      
+      // Previous page button
+      paginationContainer.appendChild(createPageButton('prev', currentPage, totalPages));
+      
+      // Page numbers
+      const startPage = Math.max(1, currentPage - 1);
+      const endPage = Math.min(totalPages, currentPage + 1);
+      
+      for (let i = startPage; i <= endPage; i++) {
+        paginationContainer.appendChild(createPageButton(i, currentPage, totalPages));
+      }
+      
+      // Next page button
+      paginationContainer.appendChild(createPageButton('next', currentPage, totalPages));
+      
+      // Last page button
+      paginationContainer.appendChild(createPageButton('last', currentPage, totalPages));
+    }
+  }
+  
+  // Helper function to create pagination buttons
+  function createPageButton(type, currentPage, totalPages) {
+    const button = document.createElement('a');
+    button.className = 'flex items-center justify-center w-9 h-9 rounded text-sm';
+    
+    let pageNum, disabled = false;
+    
+    switch(type) {
+      case 'first':
+        pageNum = 1;
+        disabled = currentPage === 1;
+        button.innerHTML = '<i class="fas fa-angle-double-left"></i>';
+        break;
+      case 'prev':
+        pageNum = Math.max(1, currentPage - 1);
+        disabled = currentPage === 1;
+        button.innerHTML = '<i class="fas fa-chevron-left"></i>';
+        break;
+      case 'next':
+        pageNum = Math.min(totalPages, currentPage + 1);
+        disabled = currentPage === totalPages;
+        button.innerHTML = '<i class="fas fa-chevron-right"></i>';
+        break;
+      case 'last':
+        pageNum = totalPages;
+        disabled = currentPage === totalPages;
+        button.innerHTML = '<i class="fas fa-angle-double-right"></i>';
+        break;
+      default:
+        pageNum = type;
+        disabled = false;
+        button.textContent = type;
+    }
+    
+    if (pageNum === currentPage && typeof type === 'number') {
+      button.className += ' bg-sidebar-accent text-white';
+    } else {
+      button.className += ' border border-sidebar-border hover:bg-sidebar-hover';
+    }
+    
+    if (disabled) {
+      button.className += ' opacity-50 pointer-events-none';
+    } else {
+      // Get current search and sort values
+      const searchValue = document.getElementById('bookingSearchInput').value || '';
+      const activeFilter = document.querySelector('.filter-option.bg-sidebar-hover, .filter-option-mobile.bg-sidebar-hover');
+      const sortValue = activeFilter ? activeFilter.getAttribute('data-sort') : 'newest';
+      
+      button.href = `?page=${pageNum}&search=${encodeURIComponent(searchValue)}&sort=${sortValue}`;
+    }
+    
+    return button;
   }
   
   // Initialize the filter indicators based on URL params

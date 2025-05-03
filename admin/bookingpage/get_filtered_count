@@ -1,0 +1,31 @@
+<?php
+require_once '../db_connect.php';
+
+// Get parameters
+$search = isset($_GET['search']) ? trim($_GET['search']) : '';
+
+// Build base query
+$query = "SELECT COUNT(*) as total FROM booking_tb b
+          JOIN users u ON b.customerID = u.id
+          LEFT JOIN services_tb s ON b.service_id = s.service_id
+          WHERE b.status = 'Pending'";
+
+// Add search conditions if provided
+if (!empty($search)) {
+    $query .= " AND (CONCAT(u.first_name, ' ', u.last_name) LIKE ? OR s.service_name LIKE ?)";
+    $searchParam = "%$search%";
+}
+
+// Prepare and execute query
+$stmt = $conn->prepare($query);
+
+if (!empty($search)) {
+    $stmt->bind_param("ss", $searchParam, $searchParam);
+}
+
+$stmt->execute();
+$result = $stmt->get_result();
+$row = $result->fetch_assoc();
+
+header('Content-Type: application/json');
+echo json_encode(['total' => $row['total']]);
