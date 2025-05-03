@@ -794,6 +794,7 @@ document.addEventListener('DOMContentLoaded', function() {
     </div>
   </div>
 </div>
+</div>
 
 <!-- OTP Verification Modal -->
 <div id="otpVerificationModal" class="fixed inset-0 bg-black bg-opacity-60 z-50 hidden overflow-y-auto flex items-center justify-center p-4 w-full h-full">
