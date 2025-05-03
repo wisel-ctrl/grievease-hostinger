@@ -2203,6 +2203,7 @@ document.getElementById('lifeplanHolderRegion').addEventListener('change', funct
     
     // Add logic to populate provinces based on selected region
     // This would typically involve an API call or using predefined data
+    updateLifeplanProvinces();
 });
 
 document.getElementById('lifeplanHolderProvince').addEventListener('change', function() {
@@ -2214,6 +2215,7 @@ document.getElementById('lifeplanHolderProvince').addEventListener('change', fun
     cityDropdown.innerHTML = '<option value="">Select City/Municipality</option>';
     
     // Add logic to populate cities based on selected province
+    updateLifeplanCities();
 });
 
 document.getElementById('lifeplanHolderCity').addEventListener('change', function() {
@@ -2225,6 +2227,7 @@ document.getElementById('lifeplanHolderCity').addEventListener('change', functio
     barangayDropdown.innerHTML = '<option value="">Select Barangay</option>';
     
     // Add logic to populate barangays based on selected city
+    updateLifeplanBarangays();
 });
 
 // Mobile view navigation
