@@ -647,8 +647,6 @@ document.addEventListener('DOMContentLoaded', function() {
     </div>
     
     <!-- Modal Body -->
-         <div class="modal-scroll-container overflow-y-auto max-h-[90vh]">
-
     <div class="px-4 sm:px-6 py-4 sm:py-5">
       <form id="addCustomerAccountForm" method="post" action="addCustomer/add_customer.php" class="space-y-3 sm:space-y-4">
         <!-- Personal Information Section -->
