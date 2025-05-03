@@ -2048,7 +2048,7 @@ function removeGcash() {
                             <input type="text" value="5 Years (60 Monthly Payments)" readonly
                                 class="w-full px-3 py-2 border border-input-border rounded-lg bg-gray-100 text-gray-700 cursor-not-allowed focus:outline-none">
 
-                            <!-- Hidden input to submit the actual value -->
+                            
                             <input type="hidden" id="lifeplanPaymentTerm" name="paymentTerm" value="5">
                         </div>
 
@@ -2824,71 +2824,78 @@ document.getElementById('lifeplanServiceBtn').addEventListener('click', function
     });
 
     function openLifeplanModal() {
-    const packageName = sessionStorage.getItem('selectedPackageName');
-    const packagePrice = sessionStorage.getItem('selectedPackagePrice');
-    const packageImage = sessionStorage.getItem('selectedPackageImage');
-    const packageFeatures = JSON.parse(sessionStorage.getItem('selectedPackageFeatures') || '[]');
-    
-    document.getElementById('lifeplanPackageName').textContent = packageName;
-    document.getElementById('lifeplanPackagePrice').textContent = `₱${parseInt(packagePrice).toLocaleString()}`;
-    
-    if (packageImage) {
-        document.getElementById('lifeplanPackageImage').src = packageImage;
-        document.getElementById('lifeplanPackageImage').alt = packageName;
+        const packageName = sessionStorage.getItem('selectedPackageName');
+        const packagePrice = sessionStorage.getItem('selectedPackagePrice');
+        const packageImage = sessionStorage.getItem('selectedPackageImage');
+        const packageFeatures = JSON.parse(sessionStorage.getItem('selectedPackageFeatures') || '[]');
+        
+        // Find the selected package from the database packages
+        const selectedPackage = packagesFromDB.find(pkg => pkg.name === packageName);
+        
+        document.getElementById('lifeplanPackageName').textContent = packageName;
+        document.getElementById('lifeplanPackagePrice').textContent = `₱${parseInt(packagePrice).toLocaleString()}`;
+        
+        if (packageImage) {
+            document.getElementById('lifeplanPackageImage').src = packageImage;
+            document.getElementById('lifeplanPackageImage').alt = packageName;
+        }
+        
+        const totalPrice = parseInt(packagePrice);
+        
+        document.getElementById('lifeplanTotalPrice').textContent = `₱${totalPrice.toLocaleString()}`;
+        document.getElementById('lifeplanSelectedPackageName').value = packageName;
+        document.getElementById('lifeplanSelectedPackagePrice').value = packagePrice;
+        
+        // Set the service_id and branch_id hidden inputs
+        if (selectedPackage) {
+            document.getElementById('lifeplanServiceId').value = selectedPackage.id;
+        }
+        document.getElementById('lifeplanBranchId').value = <?php echo $branch_id; ?>;
+        
+        const featuresList = document.getElementById('lifeplanPackageFeatures');
+        featuresList.innerHTML = '';
+        packageFeatures.forEach(feature => {
+            featuresList.innerHTML += `<li class="flex items-center text-sm text-gray-700">${feature}</li>`;
+        });
+        
+        // Reset file upload preview
+        hideLifeplanGcashPreview();
+        
+        // Reset form fields
+        document.getElementById('lifeplanBookingForm').reset();
+        
+        // Re-attach event listeners for file uploads
+        const gcashInput = document.getElementById('lifeplanGcashReceipt');
+        
+        if (gcashInput) {
+            gcashInput.removeEventListener('change', handleLifeplanGcashUpload);
+            gcashInput.addEventListener('change', handleLifeplanGcashUpload);
+        }
+        
+        // Re-attach remove button listener
+        const removeGcashBtn = document.getElementById('removeLifeplanGcash');
+        
+        if (removeGcashBtn) {
+            removeGcashBtn.removeEventListener('click', removeLifeplanGcash);
+            removeGcashBtn.addEventListener('click', removeLifeplanGcash);
+        }
+        
+        // Initialize payment calculation
+        updateLifeplanPayment();
+        
+        // Reset form section visibility
+        const detailsSection = document.querySelector('#lifeplanModal .details-section');
+        const formSection = document.querySelector('#lifeplanModal .form-section');
+        
+        detailsSection.classList.remove('hidden');
+        formSection.classList.add('hidden');
+        formSection.classList.remove('force-show');
+        
+        initializeLifeplanAddressFields();
+        
+        // Show the modal
+        document.getElementById('lifeplanModal').classList.remove('hidden');
     }
-    
-    const totalPrice = parseInt(packagePrice);
-    
-    document.getElementById('lifeplanTotalPrice').textContent = `₱${totalPrice.toLocaleString()}`;
-    document.getElementById('lifeplanSelectedPackageName').value = packageName;
-    document.getElementById('lifeplanSelectedPackagePrice').value = packagePrice;
-    
-    const featuresList = document.getElementById('lifeplanPackageFeatures');
-    featuresList.innerHTML = '';
-    packageFeatures.forEach(feature => {
-        featuresList.innerHTML += `<li class="flex items-center text-sm text-gray-700">${feature}</li>`;
-    });
-    
-    // Reset file upload preview
-    hideLifeplanGcashPreview();
-    
-    // Reset form fields
-    document.getElementById('lifeplanBookingForm').reset();
-    
-    // Re-attach event listeners for file uploads
-    const gcashInput = document.getElementById('lifeplanGcashReceipt');
-    
-    if (gcashInput) {
-        gcashInput.removeEventListener('change', handleLifeplanGcashUpload);
-        gcashInput.addEventListener('change', handleLifeplanGcashUpload);
-    }
-    
-    // Re-attach remove button listener
-    const removeGcashBtn = document.getElementById('removeLifeplanGcash');
-    
-    if (removeGcashBtn) {
-        removeGcashBtn.removeEventListener('click', removeLifeplanGcash);
-        removeGcashBtn.addEventListener('click', removeLifeplanGcash);
-    }
-    
-    // Initialize payment calculation
-    updateLifeplanPayment();
-    
-    // Reset form section visibility
-    const detailsSection = document.querySelector('#lifeplanModal .details-section');
-    const formSection = document.querySelector('#lifeplanModal .form-section');
-    
-    detailsSection.classList.remove('hidden');
-    formSection.classList.add('hidden');
-    formSection.classList.remove('force-show');
-    
-    initializeLifeplanAddressFields();
-    
-    // Show the modal
-    document.getElementById('lifeplanModal').classList.remove('hidden');
-    
-    
-}
 
 // Helper functions for lifeplan file uploads
 function handleLifeplanGcashUpload() {
@@ -3073,9 +3080,11 @@ function updateLifeplanPayment() {
     document.getElementById('lifeplanMonthlyPayment').textContent = `₱${monthlyPayment.toLocaleString()}`;
 }
 
-    // Form submission for Lifeplan
+    // Lifeplan Form submission
+    // Lifeplan Form submission
     document.getElementById('lifeplanBookingForm').addEventListener('submit', function(e) {
         e.preventDefault();
+        
         const formData = new FormData(this);
         const formElement = this;
 
@@ -3090,18 +3099,44 @@ function updateLifeplanPayment() {
             cancelButtonText: 'Cancel'
         }).then((result) => {
             if (result.isConfirmed) {
-                // Here you can handle the confirmation if needed
+                // Show loading indicator
                 Swal.fire({
-                    title: 'Success!',
-                    text: 'Form data logged to console!',
-                    icon: 'success',
-                    confirmButtonColor: '#d97706'
+                    title: 'Processing Lifeplan',
+                    html: 'Please wait while we process your lifeplan...',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
                 });
-                closeAllModals();
-                this.reset(); // Reset the form if needed
+
+                // Simulate processing delay
+                setTimeout(() => {
+                    Swal.close();
+
+                    // Log form data to console
+                    console.log('Submitted Lifeplan Form Data:');
+                    for (let [key, value] of formData.entries()) {
+                        console.log(`${key}: ${value}`);
+                    }
+
+                    // Close modal and reset form
+                    document.getElementById('lifeplanModal').classList.add('hidden');
+                    formElement.reset();
+
+                    // Reset to show details section for next time
+                    const detailsSection = document.querySelector('#lifeplanModal .details-section');
+                    const formSection = document.querySelector('#lifeplanModal .form-section');
+                    
+                    detailsSection.classList.remove('hidden');
+                    formSection.classList.add('hidden');
+
+                    // Show success notification
+                    showNotification('Lifeplan Created', 'Your lifeplan has been successfully created (locally). Check console for data.', '#');
+                }, 1500); // Simulated delay (1.5s)
             }
         });
     });
+
 
     // Process packages from database
     const processedPackages = packagesFromDB.map(pkg => {
