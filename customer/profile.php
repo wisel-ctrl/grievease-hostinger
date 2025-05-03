@@ -3432,40 +3432,6 @@ function validateZipCode(input) {
     input.value = value;
 }
 
-// Function to show error alert for zip code validation
-function showZipCodeError(message) {
-    Swal.fire({
-        title: 'Invalid Zip Code',
-        text: message,
-        icon: 'error',
-        confirmButtonText: 'OK',
-        allowOutsideClick: false,
-        allowEscapeKey: false
-    }).then((result) => {
-        if (result.isConfirmed) {
-            // Focus on the zip code input field after the alert is closed
-            document.getElementById('zip').focus();
-        }
-    });
-}
-
-// Event listener for the zip code input field
-document.getElementById('zip').addEventListener('blur', function() {
-    const zipCode = this.value.trim();
-    if (zipCode && !/^\d{4,10}$/.test(zipCode)) {
-        showZipCodeError('Zip code must be 4-10 digits.');
-    }
-});
-
-// Event listener for the edit profile form submission
-document.getElementById('profile-form').addEventListener('submit', function(e) {
-    const zipCode = document.getElementById('zip').value.trim();
-    if (zipCode && !/^\d{4,10}$/.test(zipCode)) {
-        e.preventDefault();
-        showZipCodeError('Zip code must be 4-10 digits.');
-    }
-});
-
 document.addEventListener('DOMContentLoaded', function() {
     // Street Address field
     const streetAddressInput = document.getElementById('street_address');
