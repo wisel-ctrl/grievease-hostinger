@@ -1675,13 +1675,11 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <div class="sm:col-span-1">
                                     <label for="zip" class="block text-sm font-medium text-gray-700 mb-2">Zip Code <span class="text-red-500">*</span></label>
                                     <!-- Change this line in the zip code input field -->
-                                    <input type="text" id="zip" name="zip" placeholder="Zip Code" 
+<input type="text" id="zip" name="zip" placeholder="Zip Code" 
     value="<?php echo htmlspecialchars($zip_code); ?>" 
     class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-base shadow-sm transition-all duration-200"
-    pattern="[0-9]{4,10}" 
-    title="Zip code must be 4-10 digits"
-    oninvalid="this.setCustomValidity('Please enter a valid zip code (4-10 digits)')"
-    oninput="this.setCustomValidity('')">
+    pattern="\d{4,10}" 
+    title="Zip code must be 4-10 digits">
                                 </div>
                             </div>
                         </div>
@@ -2291,32 +2289,6 @@ document.addEventListener('DOMContentLoaded', function() {
       document.getElementById('modifyBookingModal').classList.add('hidden');
     });
   });
-});
-
-document.addEventListener('DOMContentLoaded', function() {
-    const profileForm = document.getElementById('profile-form');
-    if (profileForm) {
-        profileForm.addEventListener('submit', function(e) {
-            // Validate zip code
-            const zipInput = document.getElementById('zip');
-            if (zipInput && !/^\d{4,10}$/.test(zipInput.value)) {
-                e.preventDefault();
-                Swal.fire({
-                    title: 'Invalid Zip Code',
-                    text: 'Please enter a valid zip code (4-10 digits)',
-                    icon: 'error',
-                    confirmButtonText: 'OK'
-                }).then(() => {
-                    zipInput.focus();
-                });
-                return false;
-            }
-            
-            // Add any other form validations here
-            
-            return true;
-        });
-    }
 });
 </script>
 
@@ -3459,6 +3431,40 @@ function validateZipCode(input) {
     // Update the input value
     input.value = value;
 }
+
+// Function to show error alert for zip code validation
+function showZipCodeError(message) {
+    Swal.fire({
+        title: 'Invalid Zip Code',
+        text: message,
+        icon: 'error',
+        confirmButtonText: 'OK',
+        allowOutsideClick: false,
+        allowEscapeKey: false
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Focus on the zip code input field after the alert is closed
+            document.getElementById('zip').focus();
+        }
+    });
+}
+
+// Event listener for the zip code input field
+document.getElementById('zip').addEventListener('blur', function() {
+    const zipCode = this.value.trim();
+    if (zipCode && !/^\d{4,10}$/.test(zipCode)) {
+        showZipCodeError('Zip code must be 4-10 digits.');
+    }
+});
+
+// Event listener for the edit profile form submission
+document.getElementById('profile-form').addEventListener('submit', function(e) {
+    const zipCode = document.getElementById('zip').value.trim();
+    if (zipCode && !/^\d{4,10}$/.test(zipCode)) {
+        e.preventDefault();
+        showZipCodeError('Zip code must be 4-10 digits.');
+    }
+});
 
 document.addEventListener('DOMContentLoaded', function() {
     // Street Address field
