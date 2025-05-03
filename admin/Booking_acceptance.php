@@ -969,110 +969,107 @@ $offset = ($current_page - 1) * $bookings_per_page;
       </div>
       
       <!-- Main Content Area -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
-        <!-- Left Column - Essential Information -->
-        <div class="lg:col-span-2 space-y-4 sm:space-y-6">
-          <!-- Customer Information -->
-          <div class="bg-white rounded-lg p-4 sm:p-5 border border-gray-200 shadow-sm">
-            <h4 class="font-semibold text-gray-800 mb-3 sm:mb-4 flex items-center">
-              <i class="fas fa-user mr-2 text-sidebar-accent"></i>
-              Customer Information
-            </h4>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-              <div class="flex flex-wrap">
-                <div class="w-1/3 text-sm text-gray-500">Name</div>
-                <div class="w-2/3 font-medium text-gray-800 break-words" id="customerName">John Doe</div>
+      <div class="space-y-4 sm:space-y-6">
+        <!-- Customer Information -->
+        <div class="bg-white rounded-lg p-4 sm:p-5 border border-gray-200 shadow-sm">
+          <h4 class="font-semibold text-gray-800 mb-3 sm:mb-4 flex items-center">
+            <i class="fas fa-user mr-2 text-sidebar-accent"></i>
+            Customer Information
+          </h4>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div class="flex flex-wrap">
+              <div class="w-1/3 text-sm text-gray-500">Name</div>
+              <div class="w-2/3 font-medium text-gray-800 break-words" id="customerName">John Doe</div>
+            </div>
+            <div class="flex flex-wrap">
+              <div class="w-1/3 text-sm text-gray-500">Contact</div>
+              <div class="w-2/3 font-medium text-gray-800 break-words" id="contactNumber">(555) 123-4567</div>
+            </div>
+            <div class="flex flex-wrap">
+              <div class="w-1/3 text-sm text-gray-500">Email</div>
+              <div class="w-2/3 font-medium text-gray-800 break-words" id="emailAddress">john.doe@example.com</div>
+            </div>
+            <div class="flex flex-wrap">
+              <div class="w-1/3 text-sm text-gray-500">Address</div>
+              <div class="w-2/3 font-medium text-gray-800 break-words" id="address">123 Main St, Anytown, CA 12345</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Deceased Information -->
+        <div class="bg-white rounded-lg p-4 sm:p-5 border border-gray-200 shadow-sm">
+          <h4 class="font-semibold text-gray-800 mb-3 sm:mb-4 flex items-center">
+            <i class="fas fa-angel mr-2 text-sidebar-accent"></i>
+            Deceased Information
+          </h4>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div class="flex flex-wrap">
+              <div class="w-1/3 text-sm text-gray-500">Full Name</div>
+              <div class="w-2/3 font-medium text-gray-800 break-words" id="deceasedFullName">
+                <!-- Will be populated by JavaScript -->
               </div>
-              <div class="flex flex-wrap">
-                <div class="w-1/3 text-sm text-gray-500">Contact</div>
-                <div class="w-2/3 font-medium text-gray-800 break-words" id="contactNumber">(555) 123-4567</div>
+            </div>
+            <div class="flex flex-wrap">
+              <div class="w-1/3 text-sm text-gray-500">Date of Birth</div>
+              <div class="w-2/3 font-medium text-gray-800 break-words" id="deceasedBirth">
+                <!-- Will be populated by JavaScript -->
               </div>
-              <div class="flex flex-wrap">
-                <div class="w-1/3 text-sm text-gray-500">Email</div>
-                <div class="w-2/3 font-medium text-gray-800 break-words" id="emailAddress">john.doe@example.com</div>
+            </div>
+            <div class="flex flex-wrap">
+              <div class="w-1/3 text-sm text-gray-500">Date of Death</div>
+              <div class="w-2/3 font-medium text-gray-800 break-words" id="deceasedDeath">
+                <!-- Will be populated by JavaScript -->
               </div>
-              <div class="flex flex-wrap">
-                <div class="w-1/3 text-sm text-gray-500">Address</div>
-                <div class="w-2/3 font-medium text-gray-800 break-words" id="address">123 Main St, Anytown, CA 12345</div>
+            </div>
+            <div class="flex flex-wrap">
+              <div class="w-1/3 text-sm text-gray-500">Address</div>
+              <div class="w-2/3 font-medium text-gray-800 break-words" id="deceasedAddress">
+                <!-- Will be populated by JavaScript -->
               </div>
             </div>
           </div>
+        </div>
 
-          <!-- Deceased Information -->
-          <div class="bg-white rounded-lg p-4 sm:p-5 border border-gray-200 shadow-sm">
-            <h4 class="font-semibold text-gray-800 mb-3 sm:mb-4 flex items-center">
-              <i class="fas fa-note-sticky mr-2 text-sidebar-accent"></i>
-              Deceased Information
-            </h4>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <!-- Service Details -->
+        <div class="bg-white rounded-lg p-4 sm:p-5 border border-gray-200 shadow-sm">
+          <h4 class="font-semibold text-gray-800 mb-3 sm:mb-4 flex items-center">
+            <i class="fas fa-calendar-check mr-2 text-sidebar-accent"></i>
+            Service Details
+          </h4>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="space-y-2 sm:space-y-3">
               <div class="flex flex-wrap">
-                <div class="w-1/3 text-sm text-gray-500">Full Name</div>
-                <div class="w-2/3 font-medium text-gray-800 break-words" id="deceasedFullName">
-                  <!-- Will be populated by JavaScript -->
-                </div>
+                <div class="w-1/3 text-sm text-gray-500">Service Type</div>
+                <div class="w-2/3 font-medium text-gray-800 break-words" id="serviceType">Funeral Service Package A</div>
               </div>
               <div class="flex flex-wrap">
-                <div class="w-1/3 text-sm text-gray-500">Date of Birth</div>
-                <div class="w-2/3 font-medium text-gray-800 break-words" id="deceasedBirth">
-                  <!-- Will be populated by JavaScript -->
-                </div>
-              </div>
-              <div class="flex flex-wrap">
-                <div class="w-1/3 text-sm text-gray-500">Date of Death</div>
-                <div class="w-2/3 font-medium text-gray-800 break-words" id="deceasedDeath">
-                  <!-- Will be populated by JavaScript -->
-                </div>
-              </div>
-              <div class="flex flex-wrap">
-                <div class="w-1/3 text-sm text-gray-500">Address</div>
-                <div class="w-2/3 font-medium text-gray-800 break-words" id="deceasedAddress">
-                  <!-- Will be populated by JavaScript -->
-                </div>
+                <div class="w-1/3 text-sm text-gray-500">Date Requested</div>
+                <div class="w-2/3 font-medium text-gray-800 break-words" id="dateRequested">Mar 15, 2025</div>
               </div>
             </div>
-          </div>
-
-          <!-- Service Details -->
-          <div class="bg-white rounded-lg p-4 sm:p-5 border border-gray-200 shadow-sm">
-            <h4 class="font-semibold text-gray-800 mb-3 sm:mb-4 flex items-center">
-              <i class="fas fa-calendar-check mr-2 text-sidebar-accent"></i>
-              Service Details
-            </h4>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div class="space-y-2 sm:space-y-3">
-                <div class="flex flex-wrap">
-                  <div class="w-1/3 text-sm text-gray-500">Service Type</div>
-                  <div class="w-2/3 font-medium text-gray-800 break-words" id="serviceType">Funeral Service Package A</div>
-                </div>
-                <div class="flex flex-wrap">
-                  <div class="w-1/3 text-sm text-gray-500">Date Requested</div>
-                  <div class="w-2/3 font-medium text-gray-800 break-words" id="dateRequested">Mar 15, 2025</div>
-                </div>
+            <div class="space-y-2 sm:space-y-3">
+              <div class="flex flex-wrap">
+                <div class="w-1/3 text-sm text-gray-500">Service Date</div>
+                <div class="w-2/3 font-medium text-gray-800 break-words" id="serviceDate">Mar 20, 2025</div>
               </div>
-              <div class="space-y-2 sm:space-y-3">
-                <div class="flex flex-wrap">
-                  <div class="w-1/3 text-sm text-gray-500">Service Date</div>
-                  <div class="w-2/3 font-medium text-gray-800 break-words" id="serviceDate">Mar 20, 2025</div>
-                </div>
-                <div class="flex flex-wrap">
-                  <div class="w-1/3 text-sm text-gray-500">Price</div>
-                  <div class="w-2/3 font-medium text-gray-800 break-words" id="amountPaid">$3,500.00</div>
-                </div>
+              <div class="flex flex-wrap">
+                <div class="w-1/3 text-sm text-gray-500">Price</div>
+                <div class="w-2/3 font-medium text-gray-800 break-words" id="amountPaid">$3,500.00</div>
               </div>
             </div>
           </div>
         </div>
         
-        <!-- Right Column - Documents -->
-        <div class="lg:col-span-1">
-          <div class="bg-white rounded-lg p-4 sm:p-5 border border-gray-200 shadow-sm h-full">
-            <h4 class="font-semibold text-gray-800 mb-3 sm:mb-4 flex items-center">
-              <i class="fas fa-file-alt mr-2 text-sidebar-accent"></i>
-              Documents
-            </h4>
-            
+        <!-- Documents -->
+        <div class="bg-white rounded-lg p-4 sm:p-5 border border-gray-200 shadow-sm">
+          <h4 class="font-semibold text-gray-800 mb-3 sm:mb-4 flex items-center">
+            <i class="fas fa-file-alt mr-2 text-sidebar-accent"></i>
+            Documents
+          </h4>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <!-- Death Certificate -->
-            <div id="deathCertificateSection" class="mb-4 sm:mb-5">
+            <div id="deathCertificateSection">
               <h5 class="font-medium text-gray-700 mb-2 flex items-center">
                 <i class="fas fa-certificate text-sm mr-2 text-gray-500"></i>
                 Death Certificate
