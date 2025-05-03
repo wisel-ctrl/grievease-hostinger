@@ -474,7 +474,7 @@ header("Pragma: no-cache");
                                     text: `You have successfully logged in as ${response.role}.`,
                                     icon: "success",
                                     button: "Continue",
-                                    buttoncolor: "#4CAF50",
+                                    confirmbuttoncolor: "#4CAF50",
                                 }).then(() => {
                                     // Redirect based on user type
                                     window.location.href = response.redirect;
