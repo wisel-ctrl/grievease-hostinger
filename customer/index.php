@@ -738,11 +738,17 @@ $show_id_card = !$has_id || strtolower($id_data['is_validated']) != 'valid';
                 <?php endif; ?>
                 
                 <?php if (!in_array('Branch Selected', array_column($check_icons, 'text'))): ?>
-                    <div class="flex items-center text-sm text-gray-400">
-                        <i class="far fa-circle mr-2"></i>
-                        <span>Select Branch</span>
-                    </div>
-                <?php endif; ?>
+                <div class="flex items-center text-sm text-gray-400">
+                    <i class="far fa-circle mr-2"></i>
+                    <span>
+                        <?php if (in_array('Account Verified', array_column($check_icons, 'text'))): ?>
+                            <a href="packages.php" class="text-yellow-600 hover:underline">Select Branch</a>
+                        <?php else: ?>
+                            Select Branch
+                        <?php endif; ?>
+                    </span>
+                </div>
+            <?php endif; ?>
                 
                 <?php if (!in_array('ID Uploaded', array_column($check_icons, 'text')) && !in_array('ID Verified', array_column($check_icons, 'text'))): ?>
                     <div class="flex items-center text-sm text-gray-400">
