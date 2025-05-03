@@ -976,6 +976,11 @@ $custom_offset = ($custom_current_page - 1) * $custom_bookings_per_page;
                                 <i class="fas fa-calendar text-sidebar-accent"></i> Date Requested 
                             </div>
                         </th>
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortCustomTable('package')">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fas fa-box text-sidebar-accent"></i> Package Price
+                            </div>
+                        </th>
                         <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortLifeplanTable('status')">
                             <div class="flex items-center gap-1.5">
                                 <i class="fas fa-toggle-on text-sidebar-accent"></i> Status 
@@ -997,7 +1002,7 @@ $custom_offset = ($custom_current_page - 1) * $custom_bookings_per_page;
                                     FROM lifeplan_booking_tb lb
                                     JOIN users u ON lb.customer_id = u.id
                                     LEFT JOIN services_tb s ON lb.service_id = s.service_id
-                                    ORDER BY lb.id DESC
+                                    ORDER BY lb.lpbooking_id DESC
                                     LIMIT 10";
                     
                     $lifeplanResult = $conn->query($lifeplanQuery);
@@ -1026,7 +1031,7 @@ $custom_offset = ($custom_current_page - 1) * $custom_bookings_per_page;
                                         <?php echo htmlspecialchars($row['service_name'] ?: 'Custom LifePlan'); ?>
                                     </span>
                                 </td>
-                                <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo htmlspecialchars($row['payment_duration']); ?></td>
+                                <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo htmlspecialchars($row['initial_date']); ?></td>
                                 <td class="px-4 py-3.5 text-sm text-sidebar-text">₱<?php echo number_format($row['package_price'], 2); ?></td>
                                 <td class="px-4 py-3.5 text-sm">
                                     <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium <?php echo $statusClass; ?>">
