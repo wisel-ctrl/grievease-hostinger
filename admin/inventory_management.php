@@ -104,7 +104,25 @@ function generateInventoryRow($row) {
   <!-- Include SweetAlert2 CSS and JS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+  <style>
+    .modal-scroll-container {
+    scrollbar-width: thin;
+    scrollbar-color: #d4a933 #f5f5f5;
+}
 
+.modal-scroll-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.modal-scroll-container::-webkit-scrollbar-track {
+    background: #f5f5f5;
+}
+
+.modal-scroll-container::-webkit-scrollbar-thumb {
+    background-color: #d4a933;
+    border-radius: 6px;
+}
+  </style>
 
   
 </head>
