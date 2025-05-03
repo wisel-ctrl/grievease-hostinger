@@ -2886,24 +2886,33 @@ document.addEventListener('DOMContentLoaded', function() {
     ];
 
     dateInputs.forEach(inputConfig => {
-        const input = document.getElementById(inputConfig.id);
-        if (input) {
-            const picker = new Pikaday({
-                field: input,
-                format: 'YYYY-MM-DD',
-                maxDate: inputConfig.maxDate || null,
-                minDate: inputConfig.minDate || null,
-                yearRange: [1900, new Date().getFullYear()],
-                theme: 'custom-theme',
-                bound: true
-            });
+    const input = document.getElementById(inputConfig.id);
+    if (input) {
+        const picker = new Pikaday({
+            field: input,
+            format: 'YYYY-MM-DD',
+            maxDate: inputConfig.maxDate || null,
+            minDate: inputConfig.minDate || null,
+            yearRange: [1900, new Date().getFullYear()],
+            theme: 'custom-theme',
+            bound: true
+        });
 
-            // Add calendar icon
-            const icon = document.createElement('span');
-            icon.className = 'absolute right-2 top-1/2 transform -translate-y-1/2 text-yellow-600 text-sm';
-            icon.innerHTML = '<i class="fas fa-calendar-alt"></i>';
-            input.parentNode.appendChild(icon);
-        }
+        // Style the input to make room for the icon
+        input.style.paddingRight = '2rem';
+        
+        // Add calendar icon
+        const icon = document.createElement('span');
+        icon.className = 'absolute right-3 top-1/2 transform -translate-y-1/2 text-yellow-600 cursor-pointer';
+        icon.innerHTML = '<i class="fas fa-calendar-alt"></i>';
+        
+        // Insert the icon after the input
+        input.parentNode.insertBefore(icon, input.nextSibling);
+        
+        // Make the icon clickable
+        icon.addEventListener('click', function() {
+            picker.show();
+        })
     });
 });
 </script>
