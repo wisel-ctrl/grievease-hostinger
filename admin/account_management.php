@@ -71,25 +71,6 @@ header("Pragma: no-cache");
   <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <style>
-    .modal-scroll-container {
-    scrollbar-width: thin;
-    scrollbar-color: #d4a933 #f5f5f5;
-}
-
-.modal-scroll-container::-webkit-scrollbar {
-    width: 8px;
-}
-
-.modal-scroll-container::-webkit-scrollbar-track {
-    background: #f5f5f5;
-}
-
-.modal-scroll-container::-webkit-scrollbar-thumb {
-    background-color: #d4a933;
-    border-radius: 6px;
-}
-  </style>
 
 </head>
 <body class="flex bg-gray-50">
@@ -178,10 +159,14 @@ $customersResult = mysqli_query($conn, $customersQuery);
                                 <div class="space-y-1">
                                     <div class="flex items-center cursor-pointer filter-option" data-sort="id_asc">
                                         <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                                            Default
+                                            ID: Ascending
                                         </span>
                                     </div>
-                                    
+                                    <div class="flex items-center cursor-pointer filter-option" data-sort="id_desc">
+                                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                                            ID: Descending
+                                        </span>
+                                    </div>
                                     <div class="flex items-center cursor-pointer filter-option" data-sort="name_asc">
                                         <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
                                             Name: A-Z
@@ -625,19 +610,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <!-- Add Customer Account Modal -->
 <div id="addCustomerAccountModal" class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto">
-
   <!-- Modal Backdrop -->
   <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+  
   <!-- Modal Content -->
   <div class="relative bg-white rounded-xl shadow-card w-full max-w-xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
     <!-- Close Button -->
     <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeAddCustomerAccountModal()">
       <i class="fas fa-times"></i>
     </button>
-
-    
-
-  <div class="modal-scroll-container overflow-y-auto max-h-[90vh]">
     
     <!-- Modal Header -->
     <div class="px-4 sm:px-6 py-4 sm:py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
