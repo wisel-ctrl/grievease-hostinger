@@ -2551,18 +2551,14 @@ function populateReceipt(data) {
             </div>
         </div>
        
-        <!-- Service details with enhanced visual separation -->
+        <!-- Service details with enhanced visual separation - all aligned to left -->
         <div class="border border-border rounded-lg p-4 mb-4 bg-secondary bg-opacity-30">
             <h3 class="font-bold mb-2 text-primary font-inter">Service Details</h3>
-            <div class="grid grid-cols-2 gap-2">
+            <div class="space-y-1">
                 <p class="text-sm"><span class="text-darkgold font-medium">Service:</span> ${data.service_name}</p>
-                <p class="text-sm text-right font-medium">${data.service_name}</p>
-                <p class="text-sm"><span class="text-darkgold font-medium">Total Amount:</span></p>
-                <p class="text-sm text-right font-medium">₱${parseFloat(data.selling_price).toFixed(2)}</p>
-                <p class="text-sm"><span class="text-darkgold font-medium">Amount Paid:</span></p>
-                <p class="text-sm text-right font-medium">₱${parseFloat(data.amount_paid || 0).toFixed(2)}</p>
-                <p class="text-sm"><span class="text-darkgold font-medium">Balance:</span></p>
-                <p class="text-sm text-right font-medium text-primary">₱${(parseFloat(data.selling_price) - parseFloat(data.amount_paid || 0)).toFixed(2)}</p>
+                <p class="text-sm"><span class="text-darkgold font-medium">Total Amount:</span> ₱${parseFloat(data.selling_price).toFixed(2)}</p>
+                <p class="text-sm"><span class="text-darkgold font-medium">Amount Paid:</span> ₱${parseFloat(data.amount_paid || 0).toFixed(2)}</p>
+                <p class="text-sm"><span class="text-darkgold font-medium">Balance:</span> ₱${(parseFloat(data.selling_price) - parseFloat(data.amount_paid || 0)).toFixed(2)}</p>
             </div>
         </div>
        
