@@ -2831,6 +2831,7 @@ document.getElementById('lifeplanServiceBtn').addEventListener('click', function
         
         // Find the selected package from the database packages
         const selectedPackage = packagesFromDB.find(pkg => pkg.name === packageName);
+        console.log(selectedPackage);
         
         document.getElementById('lifeplanPackageName').textContent = packageName;
         document.getElementById('lifeplanPackagePrice').textContent = `₱${parseInt(packagePrice).toLocaleString()}`;
