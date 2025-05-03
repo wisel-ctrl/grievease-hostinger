@@ -78,6 +78,24 @@ if ($current_page > $total_pages && $total_pages > 0) {
 
 // Calculate offset for SQL LIMIT clause
 $offset = ($current_page - 1) * $bookings_per_page;
+
+
+// Custom bookings pagination
+$custom_bookings_per_page = 5;
+$custom_current_page = isset($_GET['custom_page']) ? (int)$_GET['custom_page'] : 1;
+if ($custom_current_page < 1) $custom_current_page = 1;
+
+// Count total custom bookings
+$custom_count_query = "SELECT COUNT(*) as total FROM booking_tb WHERE status = 'Pending' AND service_id IS NULL";
+$custom_count_result = $conn->query($custom_count_query);
+$total_custom_bookings = $custom_count_result->fetch_assoc()['total'];
+$total_custom_pages = ceil($total_custom_bookings / $custom_bookings_per_page);
+
+if ($custom_current_page > $total_custom_pages && $total_custom_pages > 0) {
+    $custom_current_page = $total_custom_pages;
+}
+
+$custom_offset = ($custom_current_page - 1) * $custom_bookings_per_page;
 ?>
 
 <!DOCTYPE html>
@@ -670,7 +688,7 @@ $offset = ($current_page - 1) * $bookings_per_page;
                                     LIMIT ?, ?";
 
                     $custom_stmt = $conn->prepare($custom_query);
-                    $custom_stmt->bind_param("ii", $offset, $bookings_per_page);
+                    $custom_stmt->bind_param("ii", $custom_offset, $custom_bookings_per_page);
                     $custom_stmt->execute();
                     $custom_result = $custom_stmt->get_result();
 
@@ -759,6 +777,42 @@ $offset = ($current_page - 1) * $bookings_per_page;
             <!-- Pagination will be added when there are records -->
         </div>
     </div>
+</div>
+
+
+<div id="customPaginationContainer" class="flex items-center justify-center space-x-2">
+<?php if ($total_custom_pages > 1): ?>
+    <!-- First page button -->
+    <a href="?custom_page=1" class="flex items-center justify-center w-9 h-9 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($custom_current_page == 1) ? 'opacity-50 pointer-events-none' : ''; ?>">
+        <i class="fas fa-angle-double-left"></i>
+    </a>
+    
+    <!-- Previous page button -->
+    <a href="<?php echo '?custom_page=' . max(1, $custom_current_page - 1); ?>" class="flex items-center justify-center w-9 h-9 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($custom_current_page == 1) ? 'opacity-50 pointer-events-none' : ''; ?>">
+        <i class="fas fa-chevron-left"></i>
+    </a>
+    
+    <?php
+    // Show exactly 3 page numbers
+    $custom_start_page = max(1, min($custom_current_page - 1, $total_custom_pages - 2));
+    $custom_end_page = min($custom_start_page + 2, $total_custom_pages);
+    
+    for ($i = $custom_start_page; $i <= $custom_end_page; $i++) {
+        $active_class = ($i == $custom_current_page) ? 'bg-sidebar-accent text-white' : 'border border-sidebar-border hover:bg-sidebar-hover';
+        echo '<a href="?custom_page=' . $i . '" class="flex items-center justify-center w-9 h-9 rounded text-sm ' . $active_class . '">' . $i . '</a>';
+    }
+    ?>
+    
+    <!-- Next page button -->
+    <a href="<?php echo '?custom_page=' . min($total_custom_pages, $custom_current_page + 1); ?>" class="flex items-center justify-center w-9 h-9 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($custom_current_page == $total_custom_pages) ? 'opacity-50 pointer-events-none' : ''; ?>">
+        <i class="fas fa-chevron-right"></i>
+    </a>
+    
+    <!-- Last page button -->
+    <a href="<?php echo '?custom_page=' . $total_custom_pages; ?>" class="flex items-center justify-center w-9 h-9 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($custom_current_page == $total_custom_pages) ? 'opacity-50 pointer-events-none' : ''; ?>">
+        <i class="fas fa-angle-double-right"></i>
+    </a>
+<?php endif; ?>
 </div>
 
 <!-- LifePlan Bookings List -->
