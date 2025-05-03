@@ -436,22 +436,42 @@ $offset = ($current_page - 1) * $bookings_per_page;
             </a>
             
             <?php
+            // Show exactly 3 page numbers
+            if ($total_pages <= 3) {
+                // If total pages is 3 or less, show all pages
+                $start_page = 1;
+                $end_page = $total_pages;
+            } else {
+                // With more than 3 pages, determine which 3 to show
+                if ($current_page == 1) {
+                    // At the beginning, show first 3 pages
+                    $start_page = 1;
+                    $end_page = 3;
+                } elseif ($current_page == $total_pages) {
+                    // At the end, show last 3 pages
+                    $start_page = $total_pages - 2;
+                    $end_page = $total_pages;
+                } else {
+                    // In the middle, show current page with one before and after
+                    $start_page = $current_page - 1;
+                    $end_page = $current_page + 1;
+                    
+                    // Handle edge cases
+                    if ($start_page < 1) {
+                        $start_page = 1;
+                        $end_page = 3;
+                    }
+                    if ($end_page > $total_pages) {
+                        $end_page = $total_pages;
+                        $start_page = $total_pages - 2;
+                    }
+                }
+            }
             
-            // Show current page and adjacent pages (total 3 pages)
-            $start_page = max(1, $current_page - 1);
-            $end_page = min($total_pages, $current_page + 1);
-            
+            // Generate the page buttons
             for ($i = $start_page; $i <= $end_page; $i++) {
                 $active_class = ($i == $current_page) ? 'bg-sidebar-accent text-white' : 'border border-sidebar-border hover:bg-sidebar-hover';
                 echo '<a href="?page=' . $i . '" class="px-3.5 py-1.5 rounded text-sm ' . $active_class . '">' . $i . '</a>';
-            }
-            
-            // Always show last page if not in current range
-            if ($current_page < $total_pages - 1) {
-                if ($current_page < $total_pages - 2) {
-                    echo '<span class="px-3.5 py-1.5 text-gray-500">...</span>';
-                }
-                echo '<a href="?page=' . $total_pages . '" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">' . $total_pages . '</a>';
             }
             ?>
             
