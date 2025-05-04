@@ -889,7 +889,22 @@ $conn->close();
             Expense Name
           </label>
           <div class="relative">
-            <input type="text" id="expenseDescription" name="expenseDescription" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
+            <select id="expenseNameDropdown" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" onchange="handleExpenseNameChange()">
+              <option value="" disabled selected>Select common expense</option>
+              <option value="Rent">Rent</option>
+              <option value="Electricity">Electricity</option>
+              <option value="Water">Water</option>
+              <option value="Internet">Internet</option>
+              <option value="Salaries">Salaries</option>
+              <option value="Office Supplies">Office Supplies</option>
+              <option value="Maintenance">Maintenance</option>
+              <option value="Advertising">Advertising</option>
+              <option value="Insurance">Insurance</option>
+              <option value="Taxes">Taxes</option>
+              <option value="Other">Other (specify)</option>
+            </select>
+            <input type="text" id="expenseDescription" name="expenseDescription" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200 mt-2 hidden" required
+                   oninput="formatExpenseName(this)">
           </div>
         </div>
         
@@ -928,7 +943,7 @@ $conn->close();
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <span class="text-gray-500">₱</span>
             </div>
-            <input type="number" id="expenseAmount" name="expenseAmount" class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
+            <input type="number" id="expenseAmount" name="expenseAmount" min="0" step="0.01" class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
           </div>
         </div>
         
@@ -939,11 +954,11 @@ $conn->close();
           </label>
           <div class="grid grid-cols-2 gap-2">
             <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
-              <input type="radio" id="statusPaid" name="expenseStatus" value="paid" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent" checked>
+              <input type="radio" id="statusPaid" name="expenseStatus" value="paid" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent" checked onchange="updateDateLimits()">
               Paid
             </label>
             <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
-              <input type="radio" id="statusToBePaid" name="expenseStatus" value="to be paid" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
+              <input type="radio" id="statusToBePaid" name="expenseStatus" value="to be paid" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent" onchange="updateDateLimits()">
               To Be Paid
             </label>
           </div>
@@ -1018,7 +1033,8 @@ $conn->close();
             Note
           </label>
           <div class="relative">
-            <textarea id="expenseNote" name="expenseNote" rows="3" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"></textarea>
+            <textarea id="expenseNote" name="expenseNote" rows="3" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                      oninput="formatNote(this)"></textarea>
           </div>
         </div>
         
@@ -1028,7 +1044,14 @@ $conn->close();
             Upload Receipt
           </label>
           <div class="relative flex items-center border border-gray-300 rounded-lg px-3 py-2 focus-within:ring-1 focus-within:ring-sidebar-accent focus-within:border-sidebar-accent transition-all duration-200">
-            <input type="file" id="expenseReceipt" name="expenseReceipt" class="w-full focus:outline-none">
+            <input type="file" id="expenseReceipt" name="expenseReceipt" accept="image/*" class="w-full focus:outline-none" onchange="previewReceipt(event)">
+          </div>
+          <div id="receiptPreviewContainer" class="mt-2 hidden">
+            <p class="text-xs text-gray-500 mb-1">Receipt Preview:</p>
+            <img id="receiptPreview" src="#" alt="Receipt preview" class="max-h-40 rounded border border-gray-200">
+            <button type="button" onclick="clearReceiptPreview()" class="mt-1 text-xs text-red-500 hover:text-red-700 flex items-center">
+              <i class="fas fa-times mr-1"></i> Remove preview
+            </button>
           </div>
         </div>
       </form>
@@ -1036,10 +1059,10 @@ $conn->close();
     
     <!-- Modal Footer -->
     <div class="px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row sm:justify-end gap-2 sm:gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
-      <button class="w-full sm:w-auto px-4 sm:px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center" onclick="closeAddExpenseModal()">
+      <button type="button" class="w-full sm:w-auto px-4 sm:px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center" onclick="closeAddExpenseModal()">
         Cancel
       </button>
-      <button class="w-full sm:w-auto px-5 sm:px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="addExpense()">
+      <button type="button" class="w-full sm:w-auto px-5 sm:px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="addExpense()">
         Add Expense
       </button>
     </div>
@@ -1186,15 +1209,124 @@ $conn->close();
 </div>
 
   <script>
-    // Function to open the Add Expense Modal
-    function openAddExpenseModal() {
-      document.getElementById('addExpenseModal').style.display = 'flex';
-    }
 
-    // Function to close the Add Expense Modal
-    function closeAddExpenseModal() {
-      document.getElementById('addExpenseModal').style.display = 'none';
+    // Function to handle expense name dropdown change
+function handleExpenseNameChange() {
+    const dropdown = document.getElementById('expenseNameDropdown');
+    const inputField = document.getElementById('expenseDescription');
+    
+    if (dropdown.value === 'Other') {
+        // Show the input field for custom expense name
+        inputField.classList.remove('hidden');
+        inputField.value = '';
+        inputField.focus();
+    } else {
+        // Hide the input field and set the selected value
+        inputField.classList.add('hidden');
+        inputField.value = dropdown.value;
     }
+}
+
+// Function to format expense name (capitalize first letter, prevent multiple spaces)
+function formatExpenseName(input) {
+    // Remove multiple consecutive spaces
+    let value = input.value.replace(/\s{2,}/g, ' ');
+    
+    // Don't allow space as first character or if length is less than 2
+    if (value.length < 2 && value.endsWith(' ')) {
+        value = value.trim();
+    }
+    
+    // Capitalize first letter of each word
+    if (value.length > 0) {
+        value = value.toLowerCase().split(' ').map(word => 
+            word.charAt(0).toUpperCase() + word.slice(1)
+        .join(' ');
+    }
+    
+    input.value = value;
+}
+
+// Function to format note (prevent multiple spaces, capitalize first letter)
+function formatNote(textarea) {
+    // Remove multiple consecutive spaces
+    let value = textarea.value.replace(/\s{2,}/g, ' ');
+    
+    // Don't allow space as first character or if length is less than 2
+    if (value.length < 2 && value.endsWith(' ')) {
+        value = value.trim();
+    }
+    
+    // Capitalize first letter of each sentence
+    if (value.length > 0) {
+        value = value.toLowerCase().split('. ').map(sentence => 
+            sentence.charAt(0).toUpperCase() + sentence.slice(1))
+        .join('. ');
+    }
+    
+    textarea.value = value;
+}
+
+// Function to update date limits based on status
+function updateDateLimits() {
+    const dateInput = document.getElementById('expenseDate');
+    const today = new Date().toISOString().split('T')[0];
+    const paidStatus = document.getElementById('statusPaid').checked;
+    
+    if (paidStatus) {
+        // Paid expenses can only be dated today or earlier
+        dateInput.max = today;
+        if (dateInput.value > today) {
+            dateInput.value = today;
+        }
+    } else {
+        // To be paid expenses can be future dated
+        dateInput.removeAttribute('max');
+    }
+}
+
+// Function to preview receipt image
+function previewReceipt(event) {
+    const input = event.target;
+    const previewContainer = document.getElementById('receiptPreviewContainer');
+    const preview = document.getElementById('receiptPreview');
+    
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+            preview.src = e.target.result;
+            previewContainer.classList.remove('hidden');
+        }
+        
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+// Function to clear receipt preview
+function clearReceiptPreview() {
+    const input = document.getElementById('expenseReceipt');
+    const previewContainer = document.getElementById('receiptPreviewContainer');
+    const preview = document.getElementById('receiptPreview');
+    
+    input.value = '';
+    preview.src = '#';
+    previewContainer.classList.add('hidden');
+}
+    // Initialize date limits when modal opens
+function openAddExpenseModal() {
+    document.getElementById('addExpenseModal').style.display = 'flex';
+    updateDateLimits(); // Set initial date limits
+    document.getElementById('expenseNameDropdown').value = '';
+    document.getElementById('expenseDescription').value = '';
+    document.getElementById('expenseDescription').classList.add('hidden');
+    clearReceiptPreview();
+}
+
+// Close modal function remains the same
+function closeAddExpenseModal() {
+    document.getElementById('addExpenseModal').style.display = 'none';
+}
 
     // Function to add an expense
     // Function to add an expense
