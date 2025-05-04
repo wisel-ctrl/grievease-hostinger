@@ -104,6 +104,24 @@ $offsetOutstanding = ($outstandingPage - 1) * $recordsPerPage;
       max-height: 80vh;
       overflow-y: auto;
     }
+
+    .modal-scroll-container {
+    scrollbar-width: thin;
+    scrollbar-color: #d4a933 #f5f5f5;
+}
+
+.modal-scroll-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.modal-scroll-container::-webkit-scrollbar-track {
+    background: #f5f5f5;
+}
+
+.modal-scroll-container::-webkit-scrollbar-thumb {
+    background-color: #d4a933;
+    border-radius: 6px;
+}
   </style>
 </head>
 <body class="flex bg-gray-50">
@@ -1143,7 +1161,7 @@ $totalOutstanding = $countResult->fetch_assoc()['total'];
   <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
   
   <!-- Modal Content -->
-  <div class="relative bg-white rounded-xl shadow-card w-full max-w-xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] flex flex-col">
     <!-- Close Button -->
     <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeEditServiceModal()">
       <i class="fas fa-times"></i>
@@ -1157,7 +1175,7 @@ $totalOutstanding = $countResult->fetch_assoc()['total'];
     </div>
     
     <!-- Modal Body - Single Column Layout -->
-    <div class="px-4 sm:px-6 py-4 sm:py-5">
+    <div class="px-4 sm:px-6 py-4 sm:py-5 overflow-y-auto modal-scroll-container">
       <form id="serviceForm" class="space-y-3 sm:space-y-6">
         <input type="hidden" id="salesId" name="sales_id">
         
@@ -1529,7 +1547,7 @@ $totalOutstanding = $countResult->fetch_assoc()['total'];
   <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
   
   <!-- Modal Content -->
-  <div class="relative bg-white rounded-xl shadow-card w-full max-w-xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] flex flex-col">
     <!-- Close Button -->
     <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeAssignStaffModal()">
       <i class="fas fa-times"></i>
@@ -1543,7 +1561,7 @@ $totalOutstanding = $countResult->fetch_assoc()['total'];
     </div>
     
     <!-- Modal Body -->
-    <div class="px-4 sm:px-6 py-4 sm:py-5">
+    <div class="px-4 sm:px-6 py-4 sm:py-5 overflow-y-auto modal-scroll-container">
       <form id="assignStaffForm" class="space-y-3 sm:space-y-4">
         <input type="hidden" id="assignServiceId">
         
@@ -1638,7 +1656,7 @@ $totalOutstanding = $countResult->fetch_assoc()['total'];
   <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
   
   <!-- Modal Content -->
-  <div class="relative bg-white rounded-xl shadow-card w-full max-w-xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] flex flex-col">
     <!-- Close Button -->
     <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeCompleteModal()">
       <i class="fas fa-times"></i>
@@ -1652,7 +1670,7 @@ $totalOutstanding = $countResult->fetch_assoc()['total'];
     </div>
     
     <!-- Modal Body -->
-    <div class="px-4 sm:px-6 py-4 sm:py-5">
+    <div class="px-4 sm:px-6 py-4 sm:py-5 overflow-y-auto modal-scroll-container">
       <form id="completeServiceForm" class="space-y-3 sm:space-y-4">
         <input type="hidden" id="completeServiceId">
         
@@ -1720,7 +1738,7 @@ $totalOutstanding = $countResult->fetch_assoc()['total'];
   <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
   
   <!-- Modal Content -->
-  <div class="relative bg-white rounded-xl shadow-card w-full max-w-xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] flex flex-col">
     <!-- Close Button -->
     <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeViewServiceModal()">
       <i class="fas fa-times"></i>
@@ -1734,7 +1752,7 @@ $totalOutstanding = $countResult->fetch_assoc()['total'];
     </div>
     
     <!-- Modal Body -->
-    <div class="px-5 sm:px-6 py-4 sm:py-5">
+    <div class="px-5 sm:px-6 py-4 sm:py-5 overflow-y-auto modal-scroll-container">
       <!-- Service Information -->
       <div class="rounded-lg border border-gray-200 overflow-hidden mb-5">
         <div class="bg-gray-50 px-4 py-2 border-b border-gray-200">
@@ -1861,7 +1879,7 @@ $totalOutstanding = $countResult->fetch_assoc()['total'];
   <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
   
   <!-- Modal Content -->
-  <div class="relative bg-white rounded-xl shadow-card w-full max-w-xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] flex flex-col">
     <!-- Close Button -->
     <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeRecordPaymentModal()">
       <i class="fas fa-times"></i>
@@ -1875,7 +1893,7 @@ $totalOutstanding = $countResult->fetch_assoc()['total'];
     </div>
     
     <!-- Modal Body -->
-    <div class="px-4 sm:px-6 py-4 sm:py-5">
+    <div class="px-4 sm:px-6 py-4 sm:py-5 overflow-y-auto modal-scroll-container">
       <form id="recordPaymentForm" class="space-y-3 sm:space-y-4">
         <input type="hidden" id="customerID" name="customerID">
         <input type="hidden" id="branchID" name="branchID">
