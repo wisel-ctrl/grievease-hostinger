@@ -34,10 +34,12 @@ try {
         ) AS beneficiary_name,
         lb.relationship_to_client,
         lb.phone,
-        lb.benefeciary_address
+        lb.benefeciary_address,
+        v.image_path
     FROM lifeplan_booking_tb lb
     JOIN users u ON lb.customer_id = u.id
     LEFT JOIN services_tb s ON lb.service_id = s.service_id
+    LEFT JOIN valid_id_tb v ON v.id = u.id
     WHERE lb.lpbooking_id = ?
     ";
     
