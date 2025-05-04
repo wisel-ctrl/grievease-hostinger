@@ -2625,13 +2625,13 @@ function confirmLifeplanAccept() {
             document.getElementById('lifeplanCustomerPhone').value = data.phone_number || '';
             
             // Beneficiary information
-            document.getElementById('beneficiaryFirstName').value = data.beneficiary_fname || '';
-            document.getElementById('beneficiaryMiddleName').value = data.beneficiary_mname || '';
-            document.getElementById('beneficiaryLastName').value = data.beneficiary_lname || '';
-            document.getElementById('beneficiarySuffix').value = data.beneficiary_suffix || '';
-            document.getElementById('beneficiaryBirthdate').value = data.beneficiary_birth || '';
-            document.getElementById('beneficiaryAddress').value = data.beneficiary_address || '';
-            document.getElementById('relationshipWithClient').value = data.relationship_with_client || '';
+            document.getElementById('beneficiaryFirstName').value = data.benefeciary_fname || '';
+            document.getElementById('beneficiaryMiddleName').value = data.benefeciary_mname || '';
+            document.getElementById('beneficiaryLastName').value = data.benefeciary_lname || '';
+            document.getElementById('beneficiarySuffix').value = data.benefeciary_suffix || '';
+            document.getElementById('beneficiaryBirthdate').value = data.benefeciary_birth || '';
+            document.getElementById('beneficiaryAddress').value = data.benefeciary_address || '';
+            document.getElementById('relationshipWithClient').value = data.relationship_to_client || '';
             
             // Plan information
             document.getElementById('lifeplanServiceId').value = data.service_id || '';
