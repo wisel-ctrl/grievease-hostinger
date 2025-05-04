@@ -72,7 +72,7 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
 // Pagination variables
 $recordsPerPage = 5; // Number of records per page
 
-$totalPagesOngoing = ceil($totalOngoing / $recordsPerPage);s
+$totalPagesOngoing = ceil($totalOngoing / $recordsPerPage);
 
 // Ongoing Services Pagination
 $page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
