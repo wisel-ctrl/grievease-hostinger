@@ -2717,6 +2717,95 @@ function closeLifeplanPaymentModal() {
     document.body.classList.remove("overflow-hidden");
 }
 
+// document.getElementById('lifeplanPaymentForm').addEventListener('submit', function(e) {
+//     e.preventDefault();
+    
+//     const amountPaid = document.getElementById('lifeplanAmountPaidInput').value;
+//     const paymentMethod = document.getElementById('lifeplanPaymentMethod').value;
+    
+//     if (!amountPaid || !paymentMethod) {
+//         Swal.fire({
+//             icon: 'error',
+//             title: 'Error',
+//             text: 'Please fill in all payment details',
+//         });
+//         return;
+//     }
+    
+//     // Prepare the data to send - include all hidden fields
+//     const formData = new FormData(this);
+    
+//     // Add additional data that might not be in the form
+//     formData.append('action', 'acceptLifeplan');
+    
+//     // Calculate balance for display in confirmation
+//     const packagePrice = parseFloat(document.getElementById('lifeplanPackagePrice').value) || 0;
+//     const balance = packagePrice - parseFloat(amountPaid);
+//     const paymentStatus = balance <= 0 ? 'Fully Paid' : 'With Balance';
+    
+//     // Show confirmation dialog with payment summary
+//     Swal.fire({
+//         title: 'Confirm Payment Details',
+//         html: `<div class="text-left">
+//             <p><strong>Amount Paid:</strong> ₱${parseFloat(amountPaid).toFixed(2)}</p>
+//             <p><strong>Payment Method:</strong> ${paymentMethod}</p>
+//             <p><strong>Plan Price:</strong> ₱${packagePrice.toFixed(2)}</p>
+//             <p><strong>Balance:</strong> ₱${balance.toFixed(2)}</p>
+//             <p><strong>Payment Status:</strong> ${paymentStatus}</p>
+//         </div>`,
+//         icon: 'question',
+//         showCancelButton: true,
+//         confirmButtonText: 'Confirm Payment',
+//         cancelButtonText: 'Cancel',
+//         confirmButtonColor: '#3085d6',
+//         cancelButtonColor: '#d33',
+//     }).then((result) => {
+//         if (result.isConfirmed) {
+//             // Show loading indicator
+//             Swal.fire({
+//                 title: 'Processing...',
+//                 html: 'Please wait while we process your payment',
+//                 allowOutsideClick: false,
+//                 didOpen: () => {
+//                     Swal.showLoading();
+//                 }
+//             });
+            
+//             // Send the data via AJAX
+//             fetch('bookingpage/process_lifeplan.php', {
+//                 method: 'POST',
+//                 body: formData
+//             })
+//             .then(response => response.json())
+//             .then(data => {
+//                 if (data.success) {
+//                     Swal.fire({
+//                         icon: 'success',
+//                         title: 'Success!',
+//                         text: 'LifePlan accepted and payment recorded successfully!',
+//                         showConfirmButton: false,
+//                         timer: 2000
+//                     }).then(() => {
+//                         closeLifeplanPaymentModal();
+//                         closeLifeplanModal();
+//                         // Refresh the page to update the table
+//                         window.location.reload();
+//                     });
+//                 } else {
+//                     throw new Error(data.message || 'Failed to process lifeplan');
+//                 }
+//             })
+//             .catch(error => {
+//                 Swal.fire({
+//                     icon: 'error',
+//                     title: 'Error',
+//                     text: error.message || 'An error occurred while processing your request',
+//                 });
+//             });
+//         }
+//     });
+// });
+
 document.getElementById('lifeplanPaymentForm').addEventListener('submit', function(e) {
     e.preventDefault();
     
@@ -2743,6 +2832,12 @@ document.getElementById('lifeplanPaymentForm').addEventListener('submit', functi
     const balance = packagePrice - parseFloat(amountPaid);
     const paymentStatus = balance <= 0 ? 'Fully Paid' : 'With Balance';
     
+    // Log FormData to console
+    console.log("FormData contents:");
+    for (let [key, value] of formData.entries()) {
+        console.log(key + ": " + value);
+    }
+    
     // Show confirmation dialog with payment summary
     Swal.fire({
         title: 'Confirm Payment Details',
@@ -2761,47 +2856,21 @@ document.getElementById('lifeplanPaymentForm').addEventListener('submit', functi
         cancelButtonColor: '#d33',
     }).then((result) => {
         if (result.isConfirmed) {
-            // Show loading indicator
+            console.log("Payment confirmed (would normally process payment here)");
             Swal.fire({
-                title: 'Processing...',
-                html: 'Please wait while we process your payment',
-                allowOutsideClick: false,
-                didOpen: () => {
-                    Swal.showLoading();
-                }
+                icon: 'success',
+                title: 'Success!',
+                text: 'LifePlan accepted and payment recorded successfully!',
+                showConfirmButton: false,
+                timer: 2000
+            }).then(() => {
+                closeLifeplanPaymentModal();
+                closeLifeplanModal();
+                // Refresh the page to update the table
+                window.location.reload();
             });
-            
-            // Send the data via AJAX
-            fetch('bookingpage/process_lifeplan.php', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Success!',
-                        text: 'LifePlan accepted and payment recorded successfully!',
-                        showConfirmButton: false,
-                        timer: 2000
-                    }).then(() => {
-                        closeLifeplanPaymentModal();
-                        closeLifeplanModal();
-                        // Refresh the page to update the table
-                        window.location.reload();
-                    });
-                } else {
-                    throw new Error(data.message || 'Failed to process lifeplan');
-                }
-            })
-            .catch(error => {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: error.message || 'An error occurred while processing your request',
-                });
-            });
+        } else {
+            console.log("Payment cancelled");
         }
     });
 });
