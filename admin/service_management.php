@@ -74,6 +74,25 @@ header("Pragma: no-cache");
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+      #imagePreviewContainer, #currentImagePreview {
+    height: 100px;
+    border: 1px dashed #d1d5db;
+    border-radius: 0.375rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 0.5rem;
+    overflow: hidden;
+}
+
+#imagePreviewContainer img, #currentImagePreview img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+    </style>
   
 </head>
 <body class="flex bg-gray-50">
@@ -2036,6 +2055,119 @@ function fetchItemsByBranch(branchId) {
       }
     }
 
+</script>
+
+<script>
+  // Add Service Modal Validation Logic
+document.getElementById('serviceName').addEventListener('input', function(e) {
+    // Auto-capitalize first character
+    if (this.value.length === 1) {
+        this.value = this.value.toUpperCase();
+    }
+    
+    // Prevent multiple consecutive spaces
+    this.value = this.value.replace(/\s{2,}/g, ' ');
+    
+    // Don't allow space as first character
+    if (this.value.startsWith(' ')) {
+        this.value = this.value.trim();
+    }
+    
+    // Require at least 2 characters before allowing space
+    if (this.value.length < 2 && this.value.includes(' ')) {
+        this.value = this.value.replace(/\s/g, '');
+    }
+});
+
+// Prevent numbers-only service names
+document.getElementById('serviceName').addEventListener('blur', function() {
+    if (/^\d+$/.test(this.value.trim())) {
+        alert('Service name cannot be numbers only');
+        this.value = '';
+        this.focus();
+    }
+});
+
+// Description auto-capitalize first character
+document.getElementById('serviceDescription').addEventListener('input', function(e) {
+    if (this.value.length === 1) {
+        this.value = this.value.toUpperCase();
+    }
+});
+
+// Image preview functionality
+document.getElementById('serviceImage').addEventListener('change', function(e) {
+    const file = this.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            // Create preview container if it doesn't exist
+            let previewContainer = document.getElementById('imagePreviewContainer');
+            if (!previewContainer) {
+                previewContainer = document.createElement('div');
+                previewContainer.id = 'imagePreviewContainer';
+                previewContainer.className = 'mt-2 h-24 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center';
+                previewContainer.innerHTML = '<img id="imagePreview" src="" alt="Image preview" class="h-full object-cover">';
+                document.getElementById('serviceImage').parentNode.parentNode.appendChild(previewContainer);
+            }
+            
+            const preview = document.getElementById('imagePreview');
+            preview.src = e.target.result;
+        }
+        reader.readAsDataURL(file);
+    }
+});
+
+// Edit Service Modal Validation Logic (same as add service)
+document.getElementById('editServiceName').addEventListener('input', function(e) {
+    // Auto-capitalize first character
+    if (this.value.length === 1) {
+        this.value = this.value.toUpperCase();
+    }
+    
+    // Prevent multiple consecutive spaces
+    this.value = this.value.replace(/\s{2,}/g, ' ');
+    
+    // Don't allow space as first character
+    if (this.value.startsWith(' ')) {
+        this.value = this.value.trim();
+    }
+    
+    // Require at least 2 characters before allowing space
+    if (this.value.length < 2 && this.value.includes(' ')) {
+        this.value = this.value.replace(/\s/g, '');
+    }
+});
+
+// Prevent numbers-only service names
+document.getElementById('editServiceName').addEventListener('blur', function() {
+    if (/^\d+$/.test(this.value.trim())) {
+        alert('Service name cannot be numbers only');
+        this.focus();
+    }
+});
+
+// Description auto-capitalize first character
+document.getElementById('editServiceDescription').addEventListener('input', function(e) {
+    if (this.value.length === 1) {
+        this.value = this.value.toUpperCase();
+    }
+});
+
+// Image preview functionality for edit modal
+document.getElementById('editServiceImage').addEventListener('change', function(e) {
+    const file = this.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const preview = document.getElementById('currentServiceImage');
+            preview.src = e.target.result;
+            preview.classList.remove('hidden');
+            document.getElementById('noImageText').classList.add('hidden');
+        }
+        reader.readAsDataURL(file);
+    }
+});
 </script>
   
 
