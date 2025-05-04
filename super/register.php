@@ -220,7 +220,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
         // Prepare and execute the SQL query - now using the names instead of IDs
-        $stmt = $conn->prepare("INSERT INTO users (first_name, last_name, middle_name, suffix, birthdate, phone_number, email, password, user_type, region, province, city, barangay, street_address, zip_code) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt = $conn->prepare("INSERT INTO users (first_name, last_name, middle_name, suffix, birthdate, phone_number, email, password, user_type, region, province, city, barangay, street_address, zip_code, is_verified) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)");
         
         $stmt->bind_param("sssssssisssssss", 
             $first_name, 
@@ -239,6 +239,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $street_address, 
             $zip_code
         );
+    
         
         if ($stmt->execute()) {
             // Return success response as JSON
