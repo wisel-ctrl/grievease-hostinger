@@ -1042,7 +1042,7 @@ $custom_offset = ($custom_current_page - 1) * $custom_bookings_per_page;
                                     <div class="flex space-x-2">
                                         <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" 
                                                 title="View Details" 
-                                                onclick="openLifeplanDetails(<?php echo $row['id']; ?>)">
+                                                onclick="openLifeplanDetails(<?php echo $row['lpbooking_id']; ?>)">
                                             <i class="fas fa-eye"></i>
                                         </button>
                                     </div>
