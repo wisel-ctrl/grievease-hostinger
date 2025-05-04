@@ -716,7 +716,7 @@ require_once '../db_connect.php'; // Database connection
     </footer>
 
     <!-- Traditional Packages Selection Modal (Hidden by Default) -->
-<div id="traditionalPackagesModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4 hidden">
+    <div id="traditionalPackagesModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4 hidden">
     <div class="w-full max-w-6xl bg-white rounded-2xl shadow-xl overflow-hidden max-h-[90vh]">
         <div class="modal-scroll-container overflow-y-auto max-h-[90vh]">
             <!-- Header with close button -->
@@ -730,7 +730,134 @@ require_once '../db_connect.php'; // Database connection
             <!-- Packages grid -->
             <div class="p-6 bg-cream">
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="traditionalPackagesGrid">
-                    <!-- Packages will be dynamically inserted here -->
+                    <?php 
+                    // Fetch packages from database
+                    require_once '../db_connect.php';
+                    
+                    $packages = [];
+                    $branch_id = $_SESSION['branch_loc'] ?? null;
+                    
+                    if ($branch_id && $branch_id !== 'unknown' && $branch_id !== '') {
+                        $query = "SELECT s.service_id, s.service_name, s.description, s.selling_price, s.image_url, 
+                                         i.item_name AS casket_name, s.flower_design, s.inclusions
+                                  FROM services_tb s
+                                  LEFT JOIN inventory_tb i ON s.casket_id = i.inventory_id
+                                  WHERE s.status = 'active' AND s.branch_id = ? AND s.service_type = 'traditional'";
+                        
+                        $stmt = $conn->prepare($query);
+                        $stmt->bind_param("i", $branch_id);
+                        $stmt->execute();
+                        $result = $stmt->get_result();
+                        
+                        if ($result) {
+                            while ($row = $result->fetch_assoc()) {
+                                // Parse inclusions
+                                $inclusions = [];
+                                if (!empty($row['inclusions'])) {
+                                    $decoded = json_decode($row['inclusions'], true);
+                                    $inclusions = is_array($decoded) ? $decoded : explode(',', $row['inclusions']);
+                                }
+                                
+                                // Add casket name first (if it exists)
+                                if (!empty($row['casket_name'])) {
+                                    array_unshift($inclusions, $row['casket_name'] . " casket");
+                                }
+                                
+                                // Add flower design second (if it exists)
+                                if (!empty($row['flower_design'])) {
+                                    array_splice($inclusions, 1, 0, $row['flower_design']);
+                                }
+                                
+                                $packages[] = [
+                                    'id' => $row['service_id'],
+                                    'name' => $row['service_name'],
+                                    'description' => $row['description'],
+                                    'price' => $row['selling_price'],
+                                    'image' => getImageUrl($row['image_url']),
+                                    'features' => $inclusions,
+                                    'service' => 'traditional'
+                                ];
+                            }
+                            $result->free();
+                        }
+                        $stmt->close();
+                    }
+                    $conn->close();
+                    
+                    // Function to get image URL
+                    function getImageUrl($image_path) {
+                        if (empty($image_path)) {
+                            return '../assets/images/placeholder.jpg';
+                        }
+                        
+                        if (!preg_match('/^(http|\/)/i', $image_path)) {
+                            return '../../admin/servicesManagement/' . $image_path;
+                        }
+                        
+                        return $image_path;
+                    }
+                    
+                    // Function to determine icon based on package price
+                    function getIconForPackage($price) {
+                        if ($price > 500000) return 'star';
+                        else if ($price > 200000) return 'crown';
+                        else if ($price > 100000) return 'heart';
+                        else if ($price > 50000) return 'dove';
+                        else return 'leaf';
+                    }
+                    
+                    // Display packages
+                    if (count($packages) > 0): 
+                        foreach ($packages as $pkg): 
+                            $icon = getIconForPackage($pkg['price']);
+                    ?>
+                        <div class="package-card bg-white rounded-[20px] shadow-lg overflow-hidden relative group hover:shadow-xl transition-all duration-300 flex flex-col"
+                             data-price="<?= $pkg['price'] ?>"
+                             data-service="<?= $pkg['service'] ?>"
+                             data-name="<?= htmlspecialchars($pkg['name']) ?>"
+                             data-image="<?= htmlspecialchars($pkg['image']) ?>"
+                             data-description="<?= htmlspecialchars($pkg['description']) ?>">
+                            <div class="h-12 bg-navy flex items-center justify-center">
+                                <h4 class="text-white font-hedvig text-xl"><?= htmlspecialchars($pkg['name']) ?></h4>
+                                <div class="absolute top-0 right-0 w-16 h-16 flex items-center justify-center">
+                                    <div class="w-16 h-16 bg-yellow-600/90 rotate-45 transform origin-bottom-left"></div>
+                                </div>
+                            </div>
+                            <div class="py-7 px-5 flex flex-col">
+                                <div class="mb-4">
+                                    <img src="<?= htmlspecialchars($pkg['image']) ?>" alt="<?= htmlspecialchars($pkg['name']) ?>" class="w-full h-40 object-cover rounded-lg">
+                                </div>
+                                <div class="text-center mb-4">
+                                    <span class="text-2xl font-hedvig text-navy">₱<?= number_format($pkg['price']) ?></span>
+                                    <p class="text-dark mt-1 text-sm">Monthly: <?= '₱' . number_format($pkg['price'] / 60, 2) ?></p>
+                                </div>
+                                <p class="text-dark mb-4 text-sm"><?= htmlspecialchars($pkg['description']) ?></p>
+                                <div class="flex-grow">
+                                    <h5 class="font-medium text-navy mb-2">Includes:</h5>
+                                    <ul class="space-y-1 mb-4">
+                                        <?php foreach ($pkg['features'] as $feature): ?>
+                                            <li class="flex items-start">
+                                                <i class="fas fa-check-circle mr-2 text-yellow-600 mt-1 text-sm"></i>
+                                                <span class="text-dark text-sm"><?= htmlspecialchars($feature) ?></span>
+                                            </li>
+                                        <?php endforeach; ?>
+                                    </ul>
+                                </div>
+                                <button class="select-package-btn block w-full mt-4 bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-lg shadow-md transition-all duration-300 text-center text-sm">
+                                    Select Package
+                                </button>
+                            </div>
+                        </div>
+                    <?php 
+                        endforeach;
+                    else: 
+                    ?>
+                        <div class="col-span-3 text-center py-12">
+                            <i class="fas fa-search text-5xl text-gray-300 mb-4"></i>
+                            <h3 class="text-2xl font-hedvig text-navy mb-2">No Packages Available</h3>
+                            <p class="text-gray-600 max-w-md mx-auto">There are currently no traditional packages available for your location.</p>
+                        </div>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
