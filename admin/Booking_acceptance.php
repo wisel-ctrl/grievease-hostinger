@@ -2874,7 +2874,7 @@ document.getElementById('lifeplanDeclineReasonForm').addEventListener('submit', 
             });
             
             // Send the data via AJAX
-            fetch('bookingpage/process_lifeplan.php', {
+            fetch('bookingpage/decline_lifeplan.php', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
