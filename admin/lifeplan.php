@@ -2068,6 +2068,71 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+
+// Add this to your existing JavaScript for the edit modal
+document.addEventListener('DOMContentLoaded', function() {
+    // Payment duration validation
+    const paymentDuration = document.getElementById('payment_duration');
+    if (paymentDuration) {
+        paymentDuration.addEventListener('input', function() {
+            // Remove any non-digit characters
+            this.value = this.value.replace(/\D/g, '');
+            
+            // Ensure minimum value is 1 (can't be 0 or negative)
+            if (this.value < 1) {
+                this.value = 1;
+            }
+            
+            // Optional: Set a maximum value if needed (e.g., 30 years)
+            const maxYears = 30;
+            if (this.value > maxYears) {
+                this.value = maxYears;
+            }
+        });
+        
+        // Also validate on blur in case someone pastes a negative value
+        paymentDuration.addEventListener('blur', function() {
+            if (this.value < 1) {
+                this.value = 1;
+            }
+        });
+    }
+
+    // Price validation
+    const customPrice = document.getElementById('custom_price');
+    if (customPrice) {
+        customPrice.addEventListener('input', function() {
+            // Remove any characters that aren't digits or decimal point
+            this.value = this.value.replace(/[^0-9.]/g, '');
+            
+            // Remove extra decimal points
+            if ((this.value.match(/\./g) || []).length > 1) {
+                this.value = this.value.substring(0, this.value.lastIndexOf('.'));
+            }
+            
+            // Ensure minimum value is 0.01
+            if (parseFloat(this.value) <= 0) {
+                this.value = '0.01';
+            }
+        });
+        
+        // Also validate on blur
+        customPrice.addEventListener('blur', function() {
+            if (!this.value || parseFloat(this.value) <= 0) {
+                this.value = '0.01';
+            }
+            
+            // Format to 2 decimal places
+            if (this.value && this.value.includes('.')) {
+                const parts = this.value.split('.');
+                if (parts[1].length > 2) {
+                    this.value = parseFloat(this.value).toFixed(2);
+                }
+            }
+        });
+    }
+});
+
 // Add this to your existing JavaScript for the edit modal
 document.addEventListener('DOMContentLoaded', function() {
     // Customer search validation
