@@ -2841,26 +2841,40 @@ function validatePrice(price) {
     return true;
 }
 
-// Function to validate dates
+// Function to validate dates in the edit service modal
 function validateDates() {
-    const birthDate = document.getElementById('birthDate');
-    const deathDate = document.getElementById('deathDate');
-    const burialDate = document.getElementById('burialDate');
+    const birthDateInput = document.getElementById('birthDate');
+    const deathDateInput = document.getElementById('deathDate');
+    const burialDateInput = document.getElementById('burialDate');
     
-    // Set max date for birth date to today
-    birthDate.max = new Date().toISOString().split('T')[0];
+    // Get today's date in YYYY-MM-DD format
+    const today = new Date();
+    const todayFormatted = today.toISOString().split('T')[0];
     
-    // Set min/max for death date based on birth date
-    if (birthDate.value) {
-        deathDate.min = birthDate.value;
-        deathDate.max = new Date().toISOString().split('T')[0];
+    // 1. Set Date of Birth constraints (past dates only, up to today)
+    birthDateInput.max = todayFormatted;
+    
+    // 2. Set Date of Death constraints (from Date of Birth to today)
+    if (birthDateInput.value) {
+        deathDateInput.min = birthDateInput.value;
+        deathDateInput.max = todayFormatted;
+        deathDateInput.disabled = false;
+    } else {
+        deathDateInput.disabled = true;
+        deathDateInput.value = '';
     }
     
-    // Set min for burial date based on death date
-    if (deathDate.value) {
-        const minBurialDate = new Date(deathDate.value);
-        minBurialDate.setDate(minBurialDate.getDate() + 1);
-        burialDate.min = minBurialDate.toISOString().split('T')[0];
+    // 3. Set Date of Burial constraints (from day after Date of Death to future)
+    if (deathDateInput.value) {
+        const deathDate = new Date(deathDateInput.value);
+        const minBurialDate = new Date(deathDate);
+        minBurialDate.setDate(deathDate.getDate() + 1);
+        
+        burialDateInput.min = minBurialDate.toISOString().split('T')[0];
+        burialDateInput.disabled = false;
+    } else {
+        burialDateInput.disabled = true;
+        burialDateInput.value = '';
     }
 }
 
@@ -2924,8 +2938,23 @@ function initEditModalValidations() {
     const deathDate = document.getElementById('deathDate');
     const burialDate = document.getElementById('burialDate');
     
-    birthDate.addEventListener('change', validateDates);
-    deathDate.addEventListener('change', validateDates);
+    // Set initial constraints
+    validateDates();
+    
+    // Add event listeners
+    birthDate.addEventListener('change', function() {
+        validateDates();
+        // If birth date changes, clear death and burial dates
+        deathDate.value = '';
+        burialDate.value = '';
+    });
+    
+    deathDate.addEventListener('change', function() {
+        validateDates();
+        // If death date changes, clear burial date
+        burialDate.value = '';
+    });
+    
     burialDate.addEventListener('change', validateDates);
     
     // Death certificate validation
