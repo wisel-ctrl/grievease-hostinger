@@ -72,6 +72,8 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
 // Pagination variables
 $recordsPerPage = 5; // Number of records per page
 
+$totalPagesOngoing = ceil($totalOngoing / $recordsPerPage);s
+
 // Ongoing Services Pagination
 $page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
 $offsetOngoing = ($page - 1) * $recordsPerPage;
@@ -417,7 +419,7 @@ $totalOngoing = $countResult->fetch_assoc()['total'];
     <div id="paginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
         Showing <?php echo ($offsetOngoing + 1) . ' - ' . min($offsetOngoing + $recordsPerPage, $totalOngoing); ?> of <?php echo $totalOngoing; ?> services
     </div>
-    <div id="paginationContainer" class="flex space-x-2">
+    <div class="flex space-x-2">
         <?php if ($totalPagesOngoing > 1): ?>
             <!-- First page button (double arrow) -->
             <a href="?page=1" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($page == 1) ? 'opacity-50 pointer-events-none' : ''; ?>">
