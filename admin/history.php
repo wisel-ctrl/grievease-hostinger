@@ -1746,7 +1746,16 @@ $totalOutstanding = $countResult->fetch_assoc()['total'];
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <span class="text-gray-500">₱</span>
             </div>
-            <input type="number" id="paymentAmount" name="paymentAmount" required class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+            <input 
+      type="number" 
+      id="paymentAmount" 
+      name="paymentAmount" 
+      required 
+      min="0" 
+      step="0.01" 
+      class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+      oninput="validatePaymentAmount(this)"
+    >
           </div>
         </div>
         
