@@ -3001,8 +3001,33 @@ if (zipCodeInput) {
 
 // Add this to your existing JavaScript code
 
-// Function to validate notes input
+// Add this to your existing JavaScript code
+
+// Update the DOMContentLoaded event listener to include both notes fields
+document.addEventListener('DOMContentLoaded', function() {
+    // Assign staff modal notes
+    const assignmentNotes = document.getElementById('assignmentNotes');
+    if (assignmentNotes) {
+        assignmentNotes.addEventListener('input', function() {
+            validateNotesInput(this);
+        });
+    }
+    
+    // Complete service modal notes
+    const completionNotes = document.getElementById('completionNotes');
+    if (completionNotes) {
+        completionNotes.addEventListener('input', function() {
+            validateNotesInput(this);
+        });
+    }
+});
+
+// Enhanced validateNotesInput function (same as before but with better handling)
 function validateNotesInput(input) {
+    // Get current cursor position
+    const startPos = input.selectionStart;
+    const endPos = input.selectionEnd;
+    
     let value = input.value;
     
     // Remove multiple consecutive spaces
@@ -3018,18 +3043,13 @@ function validateNotesInput(input) {
         value = value.charAt(0).toUpperCase() + value.slice(1);
     }
     
-    input.value = value;
-}
-
-// Add event listener to the notes field in the assign staff modal
-document.addEventListener('DOMContentLoaded', function() {
-    const assignmentNotes = document.getElementById('assignmentNotes');
-    if (assignmentNotes) {
-        assignmentNotes.addEventListener('input', function() {
-            validateNotesInput(this);
-        });
+    // Only update if value changed to prevent cursor jumping
+    if (value !== input.value) {
+        input.value = value;
+        // Restore cursor position
+        input.setSelectionRange(startPos, endPos);
     }
-});
+}
 
 </script>
 
