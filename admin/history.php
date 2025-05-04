@@ -2015,8 +2015,6 @@ function toggleBodyScroll(isOpen) {
 // Function to open the Edit Service Modal
 function openEditServiceModal(serviceId) {
   
-  setTimeout(initEditModalValidations, 100);
-  
   // Fetch service details via AJAX
   fetch(`get_service_details.php?sales_id=${serviceId}`)
     .then(response => response.json())
@@ -2074,6 +2072,8 @@ function openEditServiceModal(serviceId) {
         // Show the modal
         document.getElementById('editServiceModal').style.display = 'flex';
         toggleBodyScroll(true);
+        
+        setTimeout(initEditModalValidations, 100);
       } else {
         alert('Failed to fetch service details: ' + data.message);
       }
