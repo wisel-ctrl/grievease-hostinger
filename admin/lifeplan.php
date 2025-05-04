@@ -1041,6 +1041,7 @@ document.addEventListener('DOMContentLoaded', function() {
     <input type="hidden" id="benefeciary_address" name="benefeciary_address">
 </div>
 </div>
+</div>
           </div>
         </div>
         
