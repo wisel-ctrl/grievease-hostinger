@@ -2602,48 +2602,88 @@ let currentLifeplanIdForPayment = null;
 function confirmLifeplanAccept() {
     // Get the lifeplan ID from the modal
     const lifeplanId = document.getElementById('lifeplanIdForDecline').value;
-    currentLifeplanIdForPayment = lifeplanId;
-    
+    let currentLifeplanIdForPayment = lifeplanId;
+
     // Fetch lifeplan details to get all the required fields
-    fetch('bookingpage/get_lifeplan_for_accept.php?id=' + lifeplanId)
+    fetch('bookingpage/get_lifeplan_for_accept.php?id=' + encodeURIComponent(lifeplanId))
         .then(response => response.json())
         .then(data => {
-            console.log('Recieved data: ',data);
+            console.log('Received data:', data);
             if (!data.success) {
                 throw new Error(data.error || 'Failed to load lifeplan details');
-                console.log("ay malii");
             }
-            
-            // Set all the hidden fields
-            console.log("na fetch");
+
+            console.log("Fetched successfully");
+
             // Customer information
+            console.log("Customer ID:", data.customer_id);
             document.getElementById('lifeplanCustomerID').value = data.customer_id || '';
+
+            console.log("Branch ID:", data.branch_id);
             document.getElementById('lifeplanCustomerBranch').value = data.branch_id || '';
+
+            console.log("First Name:", data.first_name);
             document.getElementById('lifeplanCustomerFirstName').value = data.first_name || '';
+
+            console.log("Middle Name:", data.middle_name);
             document.getElementById('lifeplanCustomerMiddleName').value = data.middle_name || '';
+
+            console.log("Last Name:", data.last_name);
             document.getElementById('lifeplanCustomerLastName').value = data.last_name || '';
+
+            console.log("Suffix:", data.suffix);
             document.getElementById('lifeplanCustomerSuffix').value = data.suffix || '';
+
+            console.log("Email:", data.email);
             document.getElementById('lifeplanCustomerEmail').value = data.email || '';
+
+            console.log("Phone Number:", data.phone_number);
             document.getElementById('lifeplanCustomerPhone').value = data.phone_number || '';
-            
-            // Beneficiary information
+
+            // Beneficiary information (note: check for spelling errors in keys)
+            console.log("Beneficiary First Name:", data.benefeciary_fname);
             document.getElementById('beneficiaryFirstName').value = data.benefeciary_fname || '';
+
+            console.log("Beneficiary Middle Name:", data.benefeciary_mname);
             document.getElementById('beneficiaryMiddleName').value = data.benefeciary_mname || '';
+
+            console.log("Beneficiary Last Name:", data.benefeciary_lname);
             document.getElementById('beneficiaryLastName').value = data.benefeciary_lname || '';
+
+            console.log("Beneficiary Suffix:", data.benefeciary_suffix);
             document.getElementById('beneficiarySuffix').value = data.benefeciary_suffix || '';
+
+            console.log("Beneficiary Birthdate:", data.benefeciary_birth);
             document.getElementById('beneficiaryBirthdate').value = data.benefeciary_birth || '';
+
+            console.log("Beneficiary Address:", data.benefeciary_address);
             document.getElementById('beneficiaryAddress').value = data.benefeciary_address || '';
+
+            console.log("Relationship to Client:", data.relationship_to_client);
             document.getElementById('relationshipWithClient').value = data.relationship_to_client || '';
-            
+
             // Plan information
+            console.log("Service ID:", data.service_id);
             document.getElementById('lifeplanServiceId').value = data.service_id || '';
-            document.getElementById('lifeplanPackagePrice').value = data.package_price;
+
+            console.log("Package Price:", data.package_price);
+            document.getElementById('lifeplanPackagePrice').value = data.package_price || '';
+
+            console.log("Payment Duration:", data.payment_duration);
             document.getElementById('lifeplanPaymentDuration').value = data.payment_duration || '';
+
+            console.log("Valid ID URL:", data.image_path);
             document.getElementById('lifeplanValidIdUrl').value = data.image_path || '';
+
+            console.log("Initial Date:", data.initial_date);
             document.getElementById('lifeplanInitialDate').value = data.initial_date || '';
+
+            console.log("End Date:", data.end_date);
             document.getElementById('lifeplanEndDate').value = data.end_date || '';
+
+            console.log("With Cremate:", data.with_cremate);
             document.getElementById('withCremate').value = data.with_cremate || 'no';
-            
+
             // Show the payment modal
             openLifeplanPaymentModal();
         })
@@ -2656,6 +2696,7 @@ function confirmLifeplanAccept() {
             });
         });
 }
+
 
 function openLifeplanPaymentModal() {
     const modal = document.getElementById("lifeplanPaymentModal");
