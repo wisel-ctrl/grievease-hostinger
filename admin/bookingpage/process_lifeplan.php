@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once '../db_connect.php';
+require_once '../../db_connect.php';
 
 // Check if user is logged in and is an admin
 if (!isset($_SESSION['user_id'])) {
@@ -102,14 +102,14 @@ function acceptLifeplan($conn) {
         $stmt = $conn->prepare($insertQuery);
         
         // Set up variables from form fields directly
-        $initialDate = isset($_POST['initial_date']) ? $_POST['initial_date'] : date('Y-m-d');
-        $endDate = isset($_POST['end_date']) ? $_POST['end_date'] : date('Y-m-d', strtotime("+$paymentDuration years"));
+        $initialDate = isset($_POST['initial_date']) ? date('Y-m-d', strtotime($_POST['initial_date'])) : date('Y-m-d');
+        $endDate = isset($_POST['end_date']) ? date('Y-m-d', strtotime($_POST['end_date'])) : date('Y-m-d', strtotime("+$paymentDuration years"));
         $withCremate = $_POST['with_cremate'] ?? 'no';
         $middleName = $_POST['middle_name'] ?? '';
         $suffix = $_POST['suffix'] ?? '';
         $beneficiaryMname = $_POST['beneficiary_mname'] ?? '';
         $beneficiarySuffix = $_POST['beneficiary_suffix'] ?? '';
-        $beneficiaryBirth = !empty($_POST['beneficiary_birth']) ? $_POST['beneficiary_birth'] : null;
+        $beneficiaryBirth = !empty($_POST['beneficiary_birth']) ? date('Y-m-d', strtotime($_POST['beneficiary_birth'])) : null;
         $beneficiaryAddress = $_POST['beneficiary_address'] ?? '';
         
         $stmt->bind_param(
