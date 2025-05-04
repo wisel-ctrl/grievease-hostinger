@@ -12,6 +12,10 @@ $lifeplanId = $_GET['id'];
 // Query to get lifeplan details with all necessary information
 $query = "SELECT 
             lb.*,
+            u.first_name,
+            u.middle_name,
+            u.last_name,
+            u.suffix,
             CONCAT(u.first_name, ' ', COALESCE(u.middle_name, ''), ' ', u.last_name, ' ', COALESCE(u.suffix, '')) AS customer_name,
             u.email,
             u.phone_number AS contact_number,
