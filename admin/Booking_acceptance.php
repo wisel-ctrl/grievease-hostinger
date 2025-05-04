@@ -2607,9 +2607,10 @@ function confirmLifeplanAccept() {
     // Fetch lifeplan details to get all the required fields
     fetch('bookingpage/get_lifeplan_for_accept.php?id=' + encodeURIComponent(lifeplanId))
         .then(response => response.json())
-        .then(data => {
+        .then(responseData => {
             console.log('Received data:', data);
-            if (!data.success) {
+            const data = responseData.data;
+            if (!responseData.success) {
                 throw new Error(data.error || 'Failed to load lifeplan details');
             }
 
