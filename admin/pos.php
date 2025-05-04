@@ -253,34 +253,34 @@ function validateSearchInput(input) {
 
 
 // Helper function to validate name fields
+// Updated name validation function
 function validateNameInput(input, isRequired = true) {
   let value = input.value;
   
-  // Remove any numbers or special characters (except spaces and apostrophes)
-  value = value.replace(/[^a-zA-Z\s']/g, '');
+  // Backup the cursor position
+  const cursorPosition = input.selectionStart;
+  
+  // Remove any numbers or special characters (except spaces, hyphens, and apostrophes)
+  value = value.replace(/[^a-zA-Z\s\-']/g, '');
   
   // Replace multiple spaces with single space
   value = value.replace(/\s+/g, ' ');
+  
+  // Remove space at the beginning
+  if (value.startsWith(' ')) {
+    value = value.substring(1);
+  }
   
   // Capitalize first letter of each word
   value = value.toLowerCase().replace(/(?:^|\s)\S/g, function(char) {
     return char.toUpperCase();
   });
   
-  // Prevent space as first character or consecutive spaces
-  if (value.length === 1 && value === ' ') {
-    value = '';
-  }
-  
-  // If required, ensure minimum length of 2 characters
-  if (isRequired && value.length === 1) {
-    // Don't allow single character (unless it's the last character)
-    if (input.selectionStart === 1) {
-      value = '';
-    }
-  }
-  
+  // Update the input value
   input.value = value;
+  
+  // Restore the cursor position
+  input.setSelectionRange(cursorPosition, cursorPosition);
   
   // Validate minimum length for required fields
   if (isRequired && value.trim().length < 2) {
@@ -288,6 +288,8 @@ function validateNameInput(input, isRequired = true) {
   } else {
     input.setCustomValidity('');
   }
+  
+  return true;
 }
 
 // Helper function to validate address fields
