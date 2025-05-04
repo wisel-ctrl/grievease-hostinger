@@ -1402,7 +1402,7 @@ document.addEventListener('DOMContentLoaded', function() {
 </div>
 
   <script>
-      // Address handling functions
+      // TRADITIONAL_FUNERAL Address handling functions
 function fetchRegions() {
     console.log('Fetching regions...'); // Add this
     fetch('../customer/address/get_regions.php')
@@ -1620,6 +1620,157 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
       
+      
+      
+      // LIFE-PLAN 
+      // Address handling functions for beneficiary
+function fetchBeneficiaryRegions() {
+    fetch('../customer/address/get_regions.php')
+        .then(response => response.json())
+        .then(data => {
+            const regionSelect = document.getElementById('beneficiaryRegion');
+            regionSelect.innerHTML = '<option value="" disabled selected>Select Region</option>';
+            
+            data.forEach(region => {
+                const option = document.createElement('option');
+                option.value = region.region_id;  // Changed to match PHP response
+                option.textContent = region.region_name;
+                regionSelect.appendChild(option);
+            });
+        })
+        .catch(error => console.error('Error fetching regions:', error));
+}
+
+function fetchBeneficiaryProvinces(regionId) {
+    const provinceSelect = document.getElementById('beneficiaryProvince');
+    provinceSelect.innerHTML = '<option value="" disabled selected>Select Province</option>';
+    provinceSelect.disabled = true;
+    
+    if (!regionId) return;
+    
+    fetch(`../customer/address/get_provinces.php?region_id=${regionId}`)
+        .then(response => response.json())
+        .then(data => {
+            provinceSelect.innerHTML = '<option value="" disabled selected>Select Province</option>';
+            
+            data.forEach(province => {
+                const option = document.createElement('option');
+                option.value = province.province_id;  // Changed to match PHP response
+                option.textContent = province.province_name;
+                provinceSelect.appendChild(option);
+            });
+            
+            provinceSelect.disabled = false;
+        })
+        .catch(error => console.error('Error fetching provinces:', error));
+}
+
+function fetchBeneficiaryCities(provinceId) {
+    const citySelect = document.getElementById('beneficiaryCity');
+    citySelect.innerHTML = '<option value="" disabled selected>Select City/Municipality</option>';
+    citySelect.disabled = true;
+    
+    if (!provinceId) return;
+    
+    fetch(`../customer/address/get_cities.php?province_id=${provinceId}`)
+        .then(response => response.json())
+        .then(data => {
+            citySelect.innerHTML = '<option value="" disabled selected>Select City/Municipality</option>';
+            
+            data.forEach(city => {
+                const option = document.createElement('option');
+                option.value = city.municipality_id;  // Changed to match PHP response
+                option.textContent = city.municipality_name;
+                citySelect.appendChild(option);
+            });
+            
+            citySelect.disabled = false;
+        })
+        .catch(error => console.error('Error fetching cities:', error));
+}
+
+function fetchBeneficiaryBarangays(cityId) {
+    const barangaySelect = document.getElementById('beneficiaryBarangay');
+    barangaySelect.innerHTML = '<option value="" disabled selected>Select Barangay</option>';
+    barangaySelect.disabled = true;
+    
+    if (!cityId) return;
+    
+    fetch(`../customer/address/get_barangays.php?city_id=${cityId}`)
+        .then(response => response.json())
+        .then(data => {
+            barangaySelect.innerHTML = '<option value="" disabled selected>Select Barangay</option>';
+            
+            data.forEach(barangay => {
+                const option = document.createElement('option');
+                option.value = barangay.barangay_id;  // Changed to match PHP response
+                option.textContent = barangay.barangay_name;
+                barangaySelect.appendChild(option);
+            });
+            
+            barangaySelect.disabled = false;
+        })
+        .catch(error => console.error('Error fetching barangays:', error));
+}
+
+function updateBeneficiaryCombinedAddress() {
+    const regionSelect = document.getElementById('beneficiaryRegion');
+    const provinceSelect = document.getElementById('beneficiaryProvince');
+    const citySelect = document.getElementById('beneficiaryCity');
+    const barangaySelect = document.getElementById('beneficiaryBarangay');
+    const streetAddress = document.getElementById('beneficiaryStreet').value;
+    const zipCode = document.getElementById('beneficiaryZip').value;
+    
+    const region = regionSelect.options[regionSelect.selectedIndex]?.text || '';
+    const province = provinceSelect.options[provinceSelect.selectedIndex]?.text || '';
+    const city = citySelect.options[citySelect.selectedIndex]?.text || '';
+    const barangay = barangaySelect.options[barangaySelect.selectedIndex]?.text || '';
+    
+    const addressParts = [];
+    if (streetAddress) addressParts.push(streetAddress);
+    if (barangay) addressParts.push(barangay);
+    if (city) addressParts.push(city);
+    if (province) addressParts.push(province);
+    if (region) addressParts.push(region);
+    if (zipCode) addressParts.push(zipCode);
+    
+    const combinedAddress = addressParts.join(', ');
+    document.getElementById('beneficiaryAddress').value = combinedAddress;
+}
+
+// Initialize beneficiary address dropdowns
+document.addEventListener('DOMContentLoaded', function() {
+    fetchBeneficiaryRegions();
+    
+    // Set up event listeners for beneficiary cascading dropdowns
+    document.getElementById('beneficiaryRegion').addEventListener('change', function() {
+        fetchBeneficiaryProvinces(this.value);
+        document.getElementById('beneficiaryProvince').value = '';
+        document.getElementById('beneficiaryCity').value = '';
+        document.getElementById('beneficiaryBarangay').value = '';
+        document.getElementById('beneficiaryCity').disabled = true;
+        document.getElementById('beneficiaryBarangay').disabled = true;
+        updateBeneficiaryCombinedAddress();
+    });
+    
+    document.getElementById('beneficiaryProvince').addEventListener('change', function() {
+        fetchBeneficiaryCities(this.value);
+        document.getElementById('beneficiaryCity').value = '';
+        document.getElementById('beneficiaryBarangay').value = '';
+        document.getElementById('beneficiaryBarangay').disabled = true;
+        updateBeneficiaryCombinedAddress();
+    });
+    
+    document.getElementById('beneficiaryCity').addEventListener('change', function() {
+        fetchBeneficiaryBarangays(this.value);
+        document.getElementById('beneficiaryBarangay').value = '';
+        updateBeneficiaryCombinedAddress();
+    });
+    
+    document.getElementById('beneficiaryBarangay').addEventListener('change', updateBeneficiaryCombinedAddress);
+    document.getElementById('beneficiaryStreet').addEventListener('input', updateBeneficiaryCombinedAddress);
+    document.getElementById('beneficiaryZip').addEventListener('input', updateBeneficiaryCombinedAddress);
+});
       
    // Initialize data from PHP
 let allServices = <?php echo $servicesJson; ?>;
