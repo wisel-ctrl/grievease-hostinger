@@ -107,7 +107,7 @@ if ($result) {
 }
 
 // Pagination settings
-$recordsPerPage = 1; // Number of records per page
+$recordsPerPage = 10; // Number of records per page
 $page = isset($_GET['page']) && is_numeric($_GET['page']) ? (int)$_GET['page'] : 1;
 $offset = ($page - 1) * $recordsPerPage;
 $totalPages = ceil($totalBeneficiaries / $recordsPerPage);
