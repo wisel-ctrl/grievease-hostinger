@@ -99,46 +99,6 @@ if ($lastMonth > 0) {
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-  /* Upload preview styling */
-  .receipt-preview {
-    display: none;
-    max-width: 100%;
-    max-height: 200px;
-    margin-top: 10px;
-    border: 1px dashed #ccc;
-    padding: 5px;
-    border-radius: 4px;
-  }
-  .remove-receipt {
-    display: none;
-    margin-top: 5px;
-    color: #f44336;
-    cursor: pointer;
-    font-size: 12px;
-  }
-  .remove-receipt:hover {
-    text-decoration: underline;
-  }
-
-  .modal-scroll-container {
-    scrollbar-width: thin;
-    scrollbar-color: #d4a933 #f5f5f5;
-}
-
-.modal-scroll-container::-webkit-scrollbar {
-    width: 8px;
-}
-
-.modal-scroll-container::-webkit-scrollbar-track {
-    background: #f5f5f5;
-}
-
-.modal-scroll-container::-webkit-scrollbar-thumb {
-    background-color: #d4a933;
-    border-radius: 6px;
-}
-</style>
  
 </head>
 <body class="flex bg-gray-50">
@@ -968,7 +928,7 @@ $conn->close();
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <span class="text-gray-500">₱</span>
             </div>
-            <input type="number" id="expenseAmount" name="expenseAmount" class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required min="0" step="0.01">
+            <input type="number" id="expenseAmount" name="expenseAmount" class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
           </div>
         </div>
         
@@ -1071,13 +1031,6 @@ $conn->close();
             <input type="file" id="expenseReceipt" name="expenseReceipt" class="w-full focus:outline-none">
           </div>
         </div>
-        <!-- Add this after the file input in both modals -->
-<div id="receiptPreviewContainer" class="text-center">
-  <img id="receiptPreview" src="#" alt="Receipt preview" class="receipt-preview"/>
-  <div id="removeReceipt" class="remove-receipt" onclick="removeReceiptPreview()">
-    <i class="fas fa-times mr-1"></i> Remove receipt
-  </div>
-</div>
       </form>
     </div>
     
@@ -1155,7 +1108,7 @@ $conn->close();
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <span class="text-gray-500">₱</span>
             </div>
-            <input type="number" id="editExpenseAmount" name="editExpenseAmount" class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required min="0" step="0.01">
+            <input type="number" id="editExpenseAmount" name="editExpenseAmount" class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
           </div>
         </div>
         
@@ -1293,126 +1246,6 @@ function addExpense() {
     }
 }
 
-// Receipt preview functionality
-function handleReceiptPreview(event) {
-  const input = event.target;
-  const preview = document.getElementById('receiptPreview');
-  const previewContainer = document.getElementById('receiptPreviewContainer');
-  const removeBtn = document.getElementById('removeReceipt');
-
-  if (input.files && input.files[0]) {
-    const reader = new FileReader();
-    
-    reader.onload = function(e) {
-      preview.src = e.target.result;
-      preview.style.display = 'block';
-      removeBtn.style.display = 'block';
-    }
-    
-    reader.readAsDataURL(input.files[0]);
-  }
-}
-
-function removeReceiptPreview() {
-  const preview = document.getElementById('receiptPreview');
-  const input = document.getElementById('expenseReceipt');
-  const removeBtn = document.getElementById('removeReceipt');
-  
-  preview.src = '#';
-  preview.style.display = 'none';
-  removeBtn.style.display = 'none';
-  input.value = '';
-}
-
-// Input validation functions
-function validateExpenseName(input) {
-  // Remove multiple consecutive spaces
-  input.value = input.value.replace(/\s{2,}/g, ' ');
-  
-  // Allow letters, numbers, and basic punctuation
-  input.value = input.value.replace(/[^a-zA-Z0-9\s.,'-]/g, '');
-  
-  // Don't allow space as first character or if less than 2 characters
-  if ((input.value.length < 2 && input.value.endsWith(' ')) {
-    input.value = input.value.trim();
-  }
-}
-
-function validateAmount(input) {
-  // Ensure positive numbers only
-  if (parseFloat(input.value) < 0) {
-    input.value = '';
-  }
-  
-  // Limit to 2 decimal places
-  if (input.value.includes('.')) {
-    const parts = input.value.split('.');
-    if (parts[1].length > 2) {
-      input.value = parseFloat(input.value).toFixed(2);
-    }
-  }
-}
-
-function validateNote(input) {
-  // Remove multiple consecutive spaces
-  input.value = input.value.replace(/\s{2,}/g, ' ');
-  
-  // Don't allow space as first character or if less than 2 characters
-  if ((input.value.length < 2 && input.value.endsWith(' ')) {
-    input.value = input.value.trim();
-  }
-}
-
-// Initialize event listeners when modals open
-function initModalValidation() {
-  // For Add Expense Modal
-  const addNameInput = document.getElementById('expenseDescription');
-  const addAmountInput = document.getElementById('expenseAmount');
-  const addNoteInput = document.getElementById('expenseNote');
-  const addReceiptInput = document.getElementById('expenseReceipt');
-  
-  if (addNameInput) {
-    addNameInput.addEventListener('input', () => validateExpenseName(addNameInput));
-  }
-  if (addAmountInput) {
-    addAmountInput.addEventListener('input', () => validateAmount(addAmountInput));
-  }
-  if (addNoteInput) {
-    addNoteInput.addEventListener('input', () => validateNote(addNoteInput));
-  }
-  if (addReceiptInput) {
-    addReceiptInput.addEventListener('change', handleReceiptPreview);
-  }
-  
-  // For Edit Expense Modal
-  const editNameInput = document.getElementById('editExpenseDescription');
-  const editAmountInput = document.getElementById('editExpenseAmount');
-  const editNoteInput = document.getElementById('editExpenseNote');
-  
-  if (editNameInput) {
-    editNameInput.addEventListener('input', () => validateExpenseName(editNameInput));
-  }
-  if (editAmountInput) {
-    editAmountInput.addEventListener('input', () => validateAmount(editAmountInput));
-  }
-  if (editNoteInput) {
-    editNoteInput.addEventListener('input', () => validateNote(editNoteInput));
-  }
-}
-
-// Update modal open functions to include validation init
-function openAddExpenseModal(branchId) {
-  document.getElementById('addExpenseModal').style.display = 'flex';
-  initModalValidation();
-  // Set the branch if provided
-  if (branchId) {
-    const branchRadio = document.querySelector(`input[name="expenseBranch"][value="${branchId}"]`);
-    if (branchRadio) {
-      branchRadio.checked = true;
-    }
-  }
-}
-
     // Function to open the Edit Expense Modal
     // Updated openEditExpenseModal function
 function openEditExpenseModal(expenseId, expenseName, category, amount, date, branchId, status, notes) {
@@ -1439,7 +1272,6 @@ function openEditExpenseModal(expenseId, expenseName, category, amount, date, br
     console.log(status);
     
     document.getElementById('editExpenseModal').style.display = 'flex';
-    initModalValidation();
 }
 
 // Updated saveExpenseChanges function
