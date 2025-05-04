@@ -2999,6 +2999,38 @@ if (zipCodeInput) {
     });
 }
 
+// Add this to your existing JavaScript code
+
+// Function to validate notes input
+function validateNotesInput(input) {
+    let value = input.value;
+    
+    // Remove multiple consecutive spaces
+    value = value.replace(/\s+/g, ' ');
+    
+    // Don't allow space unless there are at least 2 characters
+    if (value.endsWith(' ') && value.trim().length < 2) {
+        value = value.trim();
+    }
+    
+    // Capitalize first letter if input starts with a letter
+    if (value.length > 0 && /[a-z]/.test(value[0])) {
+        value = value.charAt(0).toUpperCase() + value.slice(1);
+    }
+    
+    input.value = value;
+}
+
+// Add event listener to the notes field in the assign staff modal
+document.addEventListener('DOMContentLoaded', function() {
+    const assignmentNotes = document.getElementById('assignmentNotes');
+    if (assignmentNotes) {
+        assignmentNotes.addEventListener('input', function() {
+            validateNotesInput(this);
+        });
+    }
+});
+
 </script>
 
 </body> 
