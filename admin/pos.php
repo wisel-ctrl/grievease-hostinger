@@ -170,9 +170,7 @@ $servicesJson = json_encode($allServices);
     <div id="branch-selection" class="mb-8">
   <div class="flex justify-between items-center mb-5">
     <h2 class="text-gray-600 text-lg">Select a Branch Location</h2>
-    <button id="add-branch-btn" class="flex items-center bg-sidebar-accent hover:bg-sidebar-accent/90 text-white py-2 px-4 rounded-lg transition-colors duration-300">
-      Add New Branch
-    </button>
+  
   </div>
   <div id="branches-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
     <!-- Branches will be dynamically added here based on database data -->
