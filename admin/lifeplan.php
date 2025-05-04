@@ -58,17 +58,14 @@ $stats = [
 ];
 
 if ($conn) {
-  
-    // Get total beneficiaries count
-$query = "SELECT COUNT(*) as total FROM lifeplan_tb WHERE archived = 'show'";
-$result = $conn->query($query);
-if ($result) {
-    $row = $result->fetch_assoc();
-    $totalBeneficiaries = $row['total'];
-    $result->free();
-} else {
-    $totalBeneficiaries = 0;
-}
+    // Total Plans
+    $query = "SELECT COUNT(*) as total FROM lifeplan_tb WHERE archived = 'show'";
+    $result = $conn->query($query);
+    if ($result) {
+        $row = $result->fetch_assoc();
+        $stats['total_plans'] = $row['total'];
+        $result->free();
+    }
 
     // Active Plans (status = 'paid' or 'ongoing')
     $query = "SELECT COUNT(*) as total FROM lifeplan_tb WHERE archived = 'show' AND payment_status IN ('paid', 'ongoing')";
@@ -218,6 +215,7 @@ if ($result) {
         <h4 class="text-lg font-bold text-sidebar-text whitespace-nowrap">Beneficiaries</h4>
         
         <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
+          <i class="fas fa-clipboard-list"></i>
           <?php echo isset($totalBeneficiaries) ? $totalBeneficiaries . ($totalBeneficiaries != 1 ? "" : "") : ""; ?>
         </span>
       </div>
@@ -366,7 +364,8 @@ if ($result) {
                     JOIN 
                         services_tb s ON lp.service_id = s.service_id
                     WHERE
-                        lp.archived = 'show'";
+                        lp.archived = 'show'
+                    LIMIT 6"; // Limit to 6 records for pagination
               
               $result = $conn->query($query);
               
