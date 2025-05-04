@@ -58,6 +58,7 @@ $stats = [
 ];
 
 if ($conn) {
+  
     // Get total beneficiaries count
 $query = "SELECT COUNT(*) as total FROM lifeplan_tb WHERE archived = 'show'";
 $result = $conn->query($query);
@@ -366,7 +367,7 @@ if ($result) {
                     JOIN 
                         services_tb s ON lp.service_id = s.service_id
                     WHERE
-                        lp.archived = 'show'
+                        lp.archived = 'show'";
               
               $result = $conn->query($query);
               
