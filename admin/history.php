@@ -1189,17 +1189,87 @@ $totalOutstanding = $countResult->fetch_assoc()['total'];
             </div>
           </div>
 
-          <!-- Deceased Address -->
+          <!-- Deceased Address - Dropdown System -->
           <div class="form-group mb-4">
             <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
               Deceased Address
             </label>
-            <input 
-              type="text" 
-              id="deceasedAddress" 
-              class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-              placeholder="Enter Deceased Address"
-            >
+            
+            <!-- Region Dropdown -->
+            <div class="mb-3">
+              <label class="block text-xs font-medium text-gray-500 mb-1">Region</label>
+              <select 
+                id="regionSelect" 
+                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                onchange="loadProvinces()"
+              >
+                <option value="">Select Region</option>
+                <!-- Regions will be loaded dynamically -->
+              </select>
+            </div>
+            
+            <!-- Province Dropdown -->
+            <div class="mb-3">
+              <label class="block text-xs font-medium text-gray-500 mb-1">Province</label>
+              <select 
+                id="provinceSelect" 
+                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                disabled
+                onchange="loadCities()"
+              >
+                <option value="">Select Province</option>
+                <!-- Provinces will be loaded dynamically -->
+              </select>
+            </div>
+            
+            <!-- City/Municipality Dropdown -->
+            <div class="mb-3">
+              <label class="block text-xs font-medium text-gray-500 mb-1">City/Municipality</label>
+              <select 
+                id="citySelect" 
+                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                disabled
+                onchange="loadBarangays()"
+              >
+                <option value="">Select City/Municipality</option>
+                <!-- Cities will be loaded dynamically -->
+              </select>
+            </div>
+            
+            <!-- Barangay Dropdown -->
+            <div class="mb-3">
+              <label class="block text-xs font-medium text-gray-500 mb-1">Barangay</label>
+              <select 
+                id="barangaySelect" 
+                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                disabled
+              >
+                <option value="">Select Barangay</option>
+                <!-- Barangays will be loaded dynamically -->
+              </select>
+            </div>
+            
+            <!-- Street and Zip Code -->
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-medium text-gray-500 mb-1">Street</label>
+                <input 
+                  type="text" 
+                  id="streetInput" 
+                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                  placeholder="Street name, building, etc."
+                >
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-gray-500 mb-1">Zip Code</label>
+                <input 
+                  type="text" 
+                  id="zipCodeInput" 
+                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                  placeholder="Zip Code"
+                >
+              </div>
+            </div>
           </div>
 
           <!-- Deceased Dates - 3 columns for dates -->
@@ -1991,7 +2061,24 @@ function openEditServiceModal(serviceId) {
     .then(response => response.json())
     .then(data => {
       if (data.success) {
-        setTimeout(initEditModalValidations, 100);
+        // Check if elements exist before manipulating them
+        const customerSearch = document.getElementById('customerSearch');
+        const selectedCustomerId = document.getElementById('selectedCustomerId');
+
+        if (customerSearch && selectedCustomerId) {
+          if (data.customerID) {
+            const customer = customers.find(c => c.id == data.customerID);
+            if (customer) {
+              customerSearch.value = customer.full_name;
+              selectedCustomerId.value = customer.id;
+            }
+          } else {
+            // Explicitly clear if customerID is null or undefined
+            customerSearch.value = '';
+            selectedCustomerId.value = '';
+          }
+        }
+
         // Populate the form fields with the service details
         if (data.customerID) {
           const customer = customers.find(c => c.id == data.customerID);
@@ -2016,7 +2103,7 @@ function openEditServiceModal(serviceId) {
         document.getElementById('birthDate').value = data.date_of_birth || '';
         document.getElementById('deathDate').value = data.date_of_death || '';
         document.getElementById('burialDate').value = data.date_of_burial || '';
-        document.getElementById('deceasedAddress').value = data.deceased_address || '';
+        document.getElementById('streetInput').value = data.deceased_address || '';
         document.getElementById('email').value = data.email || '';
         document.getElementById('phone').value = data.phone || '';
         
@@ -2043,6 +2130,8 @@ function openEditServiceModal(serviceId) {
         
         // Show the modal
         document.getElementById('editServiceModal').style.display = 'flex';
+        
+        setTimeout(initEditModalValidations, 100);
         toggleBodyScroll(true);
       } else {
         alert('Failed to fetch service details: ' + data.message);
@@ -2109,7 +2198,7 @@ function saveServiceChanges() {
     birthDate: document.getElementById('birthDate').value,
     deathDate: document.getElementById('deathDate').value,
     burialDate: document.getElementById('burialDate').value,
-    deceasedAddress: document.getElementById('deceasedAddress').value,
+    streetInput: document.getElementById('streetInput').value,
     branch: document.querySelector('input[name="branch"]:checked')?.value,
     deathCertificate: document.getElementById('deathCertificate').files[0]?.name || 'No file selected'
   };
@@ -2752,26 +2841,40 @@ function validatePrice(price) {
     return true;
 }
 
-// Function to validate dates
+// Function to validate dates in the edit service modal
 function validateDates() {
-    const birthDate = document.getElementById('birthDate');
-    const deathDate = document.getElementById('deathDate');
-    const burialDate = document.getElementById('burialDate');
+    const birthDateInput = document.getElementById('birthDate');
+    const deathDateInput = document.getElementById('deathDate');
+    const burialDateInput = document.getElementById('burialDate');
     
-    // Set max date for birth date to today
-    birthDate.max = new Date().toISOString().split('T')[0];
+    // Get today's date in YYYY-MM-DD format
+    const today = new Date();
+    const todayFormatted = today.toISOString().split('T')[0];
     
-    // Set min/max for death date based on birth date
-    if (birthDate.value) {
-        deathDate.min = birthDate.value;
-        deathDate.max = new Date().toISOString().split('T')[0];
+    // 1. Set Date of Birth constraints (past dates only, up to today)
+    birthDateInput.max = todayFormatted;
+    
+    // 2. Set Date of Death constraints (from Date of Birth to today)
+    if (birthDateInput.value) {
+        deathDateInput.min = birthDateInput.value;
+        deathDateInput.max = todayFormatted;
+        deathDateInput.disabled = false;
+    } else {
+        deathDateInput.disabled = true;
+        deathDateInput.value = '';
     }
     
-    // Set min for burial date based on death date
-    if (deathDate.value) {
-        const minBurialDate = new Date(deathDate.value);
-        minBurialDate.setDate(minBurialDate.getDate() + 1);
-        burialDate.min = minBurialDate.toISOString().split('T')[0];
+    // 3. Set Date of Burial constraints (from day after Date of Death to future)
+    if (deathDateInput.value) {
+        const deathDate = new Date(deathDateInput.value);
+        const minBurialDate = new Date(deathDate);
+        minBurialDate.setDate(deathDate.getDate() + 1);
+        
+        burialDateInput.min = minBurialDate.toISOString().split('T')[0];
+        burialDateInput.disabled = false;
+    } else {
+        burialDateInput.disabled = true;
+        burialDateInput.value = '';
     }
 }
 
@@ -2835,8 +2938,23 @@ function initEditModalValidations() {
     const deathDate = document.getElementById('deathDate');
     const burialDate = document.getElementById('burialDate');
     
-    birthDate.addEventListener('change', validateDates);
-    deathDate.addEventListener('change', validateDates);
+    // Set initial constraints
+    validateDates();
+    
+    // Add event listeners
+    birthDate.addEventListener('change', function() {
+        validateDates();
+        // If birth date changes, clear death and burial dates
+        deathDate.value = '';
+        burialDate.value = '';
+    });
+    
+    deathDate.addEventListener('change', function() {
+        validateDates();
+        // If death date changes, clear burial date
+        burialDate.value = '';
+    });
+    
     burialDate.addEventListener('change', validateDates);
     
     // Death certificate validation
@@ -2847,8 +2965,8 @@ function initEditModalValidations() {
     
     // Deceased address - this would need to be implemented with a proper API for Philippine addresses
     // For now, we'll just add basic validation
-    const deceasedAddress = document.getElementById('deceasedAddress');
-    deceasedAddress.addEventListener('input', function() {
+    const streetInput = document.getElementById('streetInput');
+    streetInput.addEventListener('input', function() {
         // Remove multiple consecutive spaces
         this.value = this.value.replace(/\s+/g, ' ');
         
@@ -2856,6 +2974,62 @@ function initEditModalValidations() {
         this.value = this.value.replace(/\b\w/g, char => char.toUpperCase());
     });
 }
+
+// Add this to the initEditModalValidations() function
+const zipCodeInput = document.getElementById('zipCodeInput');
+if (zipCodeInput) {
+    zipCodeInput.addEventListener('input', function() {
+        // Remove any non-digit characters
+        this.value = this.value.replace(/\D/g, '');
+        
+        // Limit to 10 characters
+        if (this.value.length > 10) {
+            this.value = this.value.slice(0, 10);
+        }
+    });
+    
+    zipCodeInput.addEventListener('blur', function() {
+        // Validate length (4-10 digits)
+        if (this.value.length < 4 || this.value.length > 10) {
+            this.setCustomValidity('Zip code must be between 4-10 digits');
+            this.reportValidity();
+        } else {
+            this.setCustomValidity('');
+        }
+    });
+}
+
+// Add this to your existing JavaScript code
+
+// Function to validate notes input
+function validateNotesInput(input) {
+    let value = input.value;
+    
+    // Remove multiple consecutive spaces
+    value = value.replace(/\s+/g, ' ');
+    
+    // Don't allow space unless there are at least 2 characters
+    if (value.endsWith(' ') && value.trim().length < 2) {
+        value = value.trim();
+    }
+    
+    // Capitalize first letter if input starts with a letter
+    if (value.length > 0 && /[a-z]/.test(value[0])) {
+        value = value.charAt(0).toUpperCase() + value.slice(1);
+    }
+    
+    input.value = value;
+}
+
+// Add event listener to the notes field in the assign staff modal
+document.addEventListener('DOMContentLoaded', function() {
+    const assignmentNotes = document.getElementById('assignmentNotes');
+    if (assignmentNotes) {
+        assignmentNotes.addEventListener('input', function() {
+            validateNotesInput(this);
+        });
+    }
+});
 
 </script>
 
