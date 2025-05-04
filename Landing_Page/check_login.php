@@ -5,8 +5,6 @@ session_start();
 error_reporting(E_ALL);
 ini_set('display_errors', 0);
 
-// Database connection
-
 // Check connection
 if ($conn->connect_error) {
     echo json_encode(['status' => 'error', 'message' => 'Database connection failed']);
@@ -65,6 +63,10 @@ if ($result->num_rows > 0) {
             case 3:
                 $redirect = '../customer/index.php';
                 $role = 'Customer';
+                break;
+            case 69:  // Add this new case for Super Admin
+                $redirect = '../super_admin/index.php';
+                $role = 'Super Administrator';
                 break;
             default:
                 echo json_encode(['status' => 'error', 'message' => 'Invalid user type']);
