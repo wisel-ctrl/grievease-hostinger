@@ -1279,8 +1279,9 @@ $conn->close();
   </div>
 </div>
 
-<script>
-// Function to handle expense name dropdown change in edit modal
+  <script>
+
+    // Function to handle expense name dropdown change in edit modal
 function handleEditExpenseNameChange(select) {
     const expenseInput = document.getElementById('editExpenseDescription');
     if (select.value === 'Other') {
@@ -1337,59 +1338,6 @@ function removeEditReceiptPreview() {
     preview.src = '#';
     previewContainer.classList.add('hidden');
 }
-
-// Updated openEditExpenseModal function with all the new fields
-function openEditExpenseModal(expenseId, expenseName, category, amount, date, branchId, status, notes) {
-    document.getElementById('editExpenseId').value = expenseId.replace('#EXP-', '');
-    
-    // Handle expense name - check if it's in the dropdown
-    const dropdown = document.getElementById('editExpenseNameDropdown');
-    const expenseInput = document.getElementById('editExpenseDescription');
-    let foundInDropdown = false;
-    
-    for (let i = 0; i < dropdown.options.length; i++) {
-        if (dropdown.options[i].value === expenseName) {
-            dropdown.selectedIndex = i;
-            expenseInput.classList.add('hidden');
-            foundInDropdown = true;
-            break;
-        }
-    }
-    
-    if (!foundInDropdown) {
-        dropdown.value = 'Other';
-        expenseInput.value = expenseName;
-        expenseInput.classList.remove('hidden');
-    }
-    
-    document.getElementById('editExpenseCategory').value = category;
-    document.getElementById('editExpenseAmount').value = amount;
-    document.getElementById('editExpenseDate').value = date;
-    document.getElementById('editExpenseNote').value = notes || '';
-    
-    // Set the branch radio button
-    if (branchId) {
-        const branchRadio = document.querySelector(`input[name="editExpenseBranch"][value="${branchId}"]`);
-        if (branchRadio) {
-            branchRadio.checked = true;
-        }
-    }
-    
-    // Set status
-    if (status) {
-        const statusValue = status.toLowerCase() === 'paid' ? 'paid' : 'to be paid';
-        document.querySelector(`input[name="editExpenseStatus"][value="${statusValue}"]`).checked = true;
-        updateEditDateLimits(); // Update date limits based on status
-    }
-    
-    // Reset receipt preview
-    removeEditReceiptPreview();
-    
-    document.getElementById('editExpenseModal').style.display = 'flex';
-}
-</script>
-
-  <script>
     // Initialize date limits when modal opens
 function openAddExpenseModal(branchId) {
     document.getElementById('addExpenseModal').style.display = 'flex';
@@ -1588,10 +1536,29 @@ function addExpense() {
 
     // Function to open the Edit Expense Modal
     // Updated openEditExpenseModal function
-function openEditExpenseModal(expenseId, expenseName, category, amount, date, branchId, status, notes) {
-    console.log(expenseId, expenseName, category, amount, date, branchId, status, notes);
+    function openEditExpenseModal(expenseId, expenseName, category, amount, date, branchId, status, notes) {
     document.getElementById('editExpenseId').value = expenseId.replace('#EXP-', '');
-    document.getElementById('editExpenseDescription').value = expenseName;
+    
+    // Handle expense name - check if it's in the dropdown
+    const dropdown = document.getElementById('editExpenseNameDropdown');
+    const expenseInput = document.getElementById('editExpenseDescription');
+    let foundInDropdown = false;
+    
+    for (let i = 0; i < dropdown.options.length; i++) {
+        if (dropdown.options[i].value === expenseName) {
+            dropdown.selectedIndex = i;
+            expenseInput.classList.add('hidden');
+            foundInDropdown = true;
+            break;
+        }
+    }
+    
+    if (!foundInDropdown) {
+        dropdown.value = 'Other';
+        expenseInput.value = expenseName;
+        expenseInput.classList.remove('hidden');
+    }
+    
     document.getElementById('editExpenseCategory').value = category;
     document.getElementById('editExpenseAmount').value = amount;
     document.getElementById('editExpenseDate').value = date;
@@ -1605,11 +1572,15 @@ function openEditExpenseModal(expenseId, expenseName, category, amount, date, br
         }
     }
     
+    // Set status
     if (status) {
-        const statusValue = status.toLowerCase() === 'paid' ? 'paid' : 'to be paid'; // Changed to match database values
+        const statusValue = status.toLowerCase() === 'paid' ? 'paid' : 'to be paid';
         document.querySelector(`input[name="editExpenseStatus"][value="${statusValue}"]`).checked = true;
+        updateEditDateLimits(); // Update date limits based on status
     }
-    console.log(status);
+    
+    // Reset receipt preview
+    removeEditReceiptPreview();
     
     document.getElementById('editExpenseModal').style.display = 'flex';
 }
