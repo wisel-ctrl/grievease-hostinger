@@ -1968,7 +1968,6 @@ function confirmLifeplanCheckout() {
 
   // Validate required fields
   const requiredFields = [
-    'lp-clientFirstName', 'lp-clientLastName', 'lp-clientPhone',
     'beneficiaryFirstName', 'beneficiaryLastName', 'beneficiaryRelationship'
   ];
 
