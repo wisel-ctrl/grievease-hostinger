@@ -742,7 +742,7 @@ require_once '../db_connect.php'; // Database connection
                                          i.item_name AS casket_name, s.flower_design, s.inclusions
                                   FROM services_tb s
                                   LEFT JOIN inventory_tb i ON s.casket_id = i.inventory_id
-                                  WHERE s.status = 'active' AND s.branch_id = ? AND s.service_type = 'traditional'";
+                                  WHERE s.status = 'active' AND s.branch_id = ?";
                         
                         $stmt = $conn->prepare($query);
                         $stmt->bind_param("i", $branch_id);
