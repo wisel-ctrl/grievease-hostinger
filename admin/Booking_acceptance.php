@@ -2662,6 +2662,7 @@ function openLifeplanPaymentModal() {
     modal.classList.remove("hidden");
     modal.classList.add("flex");
     document.body.classList.add("overflow-hidden");
+    console.log(currentLifeplanIdForPayment);
 }
 
 function closeLifeplanPaymentModal() {
@@ -2688,7 +2689,7 @@ document.getElementById('lifeplanPaymentForm').addEventListener('submit', functi
     
     // Prepare the data to send - include all hidden fields
     const formData = new FormData(this);
-    console.log(formData);
+    
     // Add additional data that might not be in the form
     formData.append('lifeplanId', currentLifeplanIdForPayment);
     formData.append('action', 'acceptLifeplan');
