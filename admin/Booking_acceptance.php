@@ -1441,6 +1441,277 @@ $custom_offset = ($custom_current_page - 1) * $custom_bookings_per_page;
   </div>
 </div>
 
+<!-- LifePlan Details Modal -->
+<div id="lifeplanDetailsModal" class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto">
+  <!-- Modal Backdrop -->
+  <div class="modal-scroll-container overflow-y-auto max-h-[90vh]">
+    <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+    
+    <!-- Modal Content -->
+    <div class="relative bg-white rounded-xl shadow-card w-full max-w-4xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+      <!-- Close Button -->
+      <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeLifeplanModal()">
+        <i class="fas fa-times"></i>
+      </button>
+      
+      <!-- Modal Header -->
+      <div class="px-4 sm:px-6 py-4 sm:py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
+        <h3 class="text-lg sm:text-xl font-bold text-white flex items-center">
+          LifePlan Booking Details
+        </h3>
+      </div>
+      
+      <!-- Modal Body -->
+      <div class="px-4 sm:px-6 py-4 sm:py-5">
+        <!-- Top Info Bar - Booking ID and Status -->
+        <div class="flex justify-between items-center mb-6 bg-gray-50 p-3 sm:p-4 rounded-lg">
+          <div class="flex items-center">
+            <div class="bg-navy rounded-full p-2 mr-3">
+              <i class="fas fa-hashtag text-sidebar-accent"></i>
+            </div>
+            <div>
+              <p class="text-sm text-gray-500">Booking ID</p>
+              <p class="font-semibold text-gray-800" id="lifeplanBookingId">#LP-2025-001</p>
+            </div>
+          </div>
+          <div>
+            <p class="text-sm text-gray-500 mb-1">Status</p>
+            <div id="lifeplanBookingStatus">
+              <span class="px-3 py-1.5 text-sm font-medium rounded-full bg-yellow-100 text-sidebar-accent flex items-center">
+                Pending
+              </span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Main Content Area -->
+        <div class="space-y-4 sm:space-y-6">
+          <!-- Plan Details -->
+          <div class="bg-white rounded-lg p-4 sm:p-5 border border-gray-200 shadow-sm">
+            <h4 class="font-semibold text-gray-800 mb-3 sm:mb-4 flex items-center">
+              <i class="fas fa-heart mr-2 text-sidebar-accent"></i>
+              Plan Details
+            </h4>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div class="space-y-2 sm:space-y-3">
+                <div class="flex flex-wrap">
+                  <div class="w-1/3 text-sm text-gray-500">Plan Type</div>
+                  <div class="w-2/3 font-medium text-gray-800 break-words" id="lifeplanType">Premium LifePlan</div>
+                </div>
+                <div class="flex flex-wrap">
+                  <div class="w-1/3 text-sm text-gray-500">Date Requested</div>
+                  <div class="w-2/3 font-medium text-gray-800 break-words" id="lifeplanDateRequested">Mar 15, 2025</div>
+                </div>
+              </div>
+              <div class="space-y-2 sm:space-y-3">
+                <div class="flex flex-wrap">
+                  <div class="w-1/3 text-sm text-gray-500">Plan Price</div>
+                  <div class="w-2/3 font-medium text-gray-800 break-words" id="lifeplanPrice">₱50,000.00</div>
+                </div>
+                <div class="flex flex-wrap">
+                  <div class="w-1/3 text-sm text-gray-500">Payment Terms</div>
+                  <div class="w-2/3 font-medium text-gray-800 break-words" id="lifeplanTerms">Monthly (12 months)</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Customer Information -->
+          <div class="bg-white rounded-lg p-4 sm:p-5 border border-gray-200 shadow-sm">
+            <h4 class="font-semibold text-gray-800 mb-3 sm:mb-4 flex items-center">
+              <i class="fas fa-user mr-2 text-sidebar-accent"></i>
+              Customer Information
+            </h4>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div class="flex flex-wrap">
+                <div class="w-1/3 text-sm text-gray-500">Name</div>
+                <div class="w-2/3 font-medium text-gray-800 break-words" id="lifeplanCustomerName">John Doe</div>
+              </div>
+              <div class="flex flex-wrap">
+                <div class="w-1/3 text-sm text-gray-500">Contact</div>
+                <div class="w-2/3 font-medium text-gray-800 break-words" id="lifeplanContactNumber">(555) 123-4567</div>
+              </div>
+              <div class="flex flex-wrap">
+                <div class="w-1/3 text-sm text-gray-500">Email</div>
+                <div class="w-2/3 font-medium text-gray-800 break-words" id="lifeplanEmailAddress">john.doe@example.com</div>
+              </div>
+              <div class="flex flex-wrap">
+                <div class="w-1/3 text-sm text-gray-500">Address</div>
+                <div class="w-2/3 font-medium text-gray-800 break-words" id="lifeplanAddress">123 Main St, Anytown, CA 12345</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Beneficiary Information -->
+          <div class="bg-white rounded-lg p-4 sm:p-5 border border-gray-200 shadow-sm">
+            <h4 class="font-semibold text-gray-800 mb-3 sm:mb-4 flex items-center">
+              <i class="fas fa-users mr-2 text-sidebar-accent"></i>
+              Beneficiary Information
+            </h4>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div class="flex flex-wrap">
+                <div class="w-1/3 text-sm text-gray-500">Full Name</div>
+                <div class="w-2/3 font-medium text-gray-800 break-words" id="beneficiaryFullName">
+                  Jane Doe
+                </div>
+              </div>
+              <div class="flex flex-wrap">
+                <div class="w-1/3 text-sm text-gray-500">Relationship</div>
+                <div class="w-2/3 font-medium text-gray-800 break-words" id="beneficiaryRelationship">
+                  Spouse
+                </div>
+              </div>
+              <div class="flex flex-wrap">
+                <div class="w-1/3 text-sm text-gray-500">Contact</div>
+                <div class="w-2/3 font-medium text-gray-800 break-words" id="beneficiaryContact">
+                  (555) 987-6543
+                </div>
+              </div>
+              <div class="flex flex-wrap">
+                <div class="w-1/3 text-sm text-gray-500">Address</div>
+                <div class="w-2/3 font-medium text-gray-800 break-words" id="beneficiaryAddress">
+                  Same as customer
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Documents -->
+          <div class="bg-white rounded-lg p-4 sm:p-5 border border-gray-200 shadow-sm">
+            <h4 class="font-semibold text-gray-800 mb-3 sm:mb-4 flex items-center">
+              <i class="fas fa-file-alt mr-2 text-sidebar-accent"></i>
+              Documents
+            </h4>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <!-- Valid ID -->
+              <div id="validIdSection">
+                <h5 class="font-medium text-gray-700 mb-2 flex items-center">
+                  <i class="fas fa-id-card text-sm mr-2 text-gray-500"></i>
+                  Valid ID
+                </h5>
+                <div class="border border-gray-200 rounded-lg overflow-hidden">
+                  <div id="validIdAvailable" class="text-center">
+                    <div class="relative bg-gray-100 p-1">
+                      <img id="validIdImage" alt="Valid ID" class="mx-auto rounded-md max-h-48 object-contain" />
+                      <div class="absolute top-2 right-2">
+                        <button class="bg-white rounded-full p-1 shadow-md hover:bg-gray-100 transition-colors duration-200" title="View Full Size">
+                          <i class="fas fa-search-plus text-blue-600"></i>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  <div id="validIdNotAvailable" class="hidden">
+                    <div class="flex flex-col items-center justify-center py-8 px-4 bg-gray-50">
+                      <i class="fas fa-exclamation-circle text-gray-400 text-3xl mb-2"></i>
+                      <p class="text-gray-500 text-center">No valid ID has been uploaded yet.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Payment Proof -->
+              <div>
+                <h5 class="font-medium text-gray-700 mb-2 flex items-center">
+                  <i class="fas fa-receipt text-sm mr-2 text-gray-500"></i>
+                  Initial Payment Proof
+                </h5>
+                <div class="border border-gray-200 rounded-lg overflow-hidden">
+                  <div class="relative bg-gray-100 p-1">
+                    <img id="lifeplanPaymentProofImage" alt="Payment Proof" class="mx-auto rounded-md max-h-48 object-contain" />
+                    <div class="absolute top-2 right-2">
+                      <button class="bg-white rounded-full p-1 shadow-md hover:bg-gray-100 transition-colors duration-200" title="View Full Size">
+                        <i class="fas fa-search-plus text-blue-600"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Modal Footer --> 
+      <div class="px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row sm:justify-end gap-2 sm:gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
+        <button class="w-full sm:w-auto px-4 sm:px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center" onclick="confirmLifeplanDecline()">
+          <i class="fas fa-times-circle mr-2"></i>
+          Decline Plan
+        </button>
+        <button class="w-full sm:w-auto px-5 sm:px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="confirmLifeplanAccept()">
+          <i class="fas fa-check-circle mr-2"></i>
+          Accept Plan
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- LifePlan Decline Reason Modal -->
+<div id="lifeplanDeclineReasonModal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
+  <!-- Modal Backdrop -->
+  <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+  
+  <!-- Modal Content -->
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-md mx-4 z-10 transform transition-all duration-300">
+    <!-- Close Button -->
+    <button type="button" class="absolute top-4 right-4 text-gray-500 hover:text-sidebar-accent transition-colors" onclick="closeLifeplanDeclineReasonModal()">
+      <i class="fas fa-times"></i>
+    </button>
+    
+    <!-- Modal Header -->
+    <div class="px-6 py-5 border-b bg-gradient-to-r from-red-600 to-red-800 border-gray-200">
+      <h3 class="text-xl font-bold text-white flex items-center">
+        Decline LifePlan
+      </h3>
+    </div>
+    
+    <!-- Modal Body -->
+    <div class="px-6 py-5">
+      <form id="lifeplanDeclineReasonForm">
+        <input type="hidden" id="lifeplanIdForDecline" name="lifeplanId">
+        
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Reason for Declining</label>
+          
+          <!-- Suggested Reasons -->
+          <div class="grid grid-cols-2 gap-2 mb-4">
+            <button type="button" onclick="selectLifeplanDeclineReason('Invalid documents')" 
+                    class="text-left p-2 border border-gray-300 rounded hover:bg-gray-100 text-sm"> Invalid documents
+            </button>
+            <button type="button" onclick="selectLifeplanDeclineReason('Incomplete information')" 
+                    class="text-left p-2 border border-gray-300 rounded hover:bg-gray-100 text-sm">Incomplete information
+            </button>
+            <button type="button" onclick="selectLifeplanDeclineReason('Payment issues')" 
+                    class="text-left p-2 border border-gray-300 rounded hover:bg-gray-100 text-sm">Payment issues
+            </button>
+            <button type="button" onclick="selectLifeplanDeclineReason('Plan not available')" 
+                    class="text-left p-2 border border-gray-300 rounded hover:bg-gray-100 text-sm">Plan not available
+            </button>
+          </div>
+          
+          <!-- Custom Reason -->
+          <div>
+            <label for="lifeplanCustomReason" class="block text-sm font-medium text-gray-700 mb-1">Or specify your own reason:</label>
+            <textarea id="lifeplanCustomReason" name="customReason" rows="3" 
+                      class="block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring focus:ring-red-200 focus:ring-opacity-50 py-2 px-3 border"
+                      placeholder="Enter your reason for declining this lifeplan..."></textarea>
+          </div>
+        </div>
+        
+        <div class="flex justify-end gap-3 mt-6">
+          <button type="button" onclick="closeLifeplanDeclineReasonModal()" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors">
+            Cancel
+          </button>
+          <button type="submit" class="px-4 py-2 bg-gradient-to-r from-red-600 to-red-800 text-white rounded-lg hover:shadow-md transition-all">
+            Submit Decline
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
 </div>
 
 
@@ -2100,5 +2371,321 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 </script>
+
+<script>
+// Function to open LifePlan details modal
+function openLifeplanDetails(lifeplanId) {
+  // Fetch lifeplan details via AJAX
+  fetch('bookingpage/get_lifeplan_details.php?id=' + lifeplanId)
+    .then(response => response.json())
+    .then(data => {
+      // Populate modal with the basic details
+      document.getElementById('lifeplanBookingId').textContent = '#LP-' + 
+        new Date(data.initial_date).getFullYear() + '-' + 
+        String(data.lpbooking_id).padStart(3, '0');
+      document.getElementById('lifeplanCustomerName').textContent = data.customer_name;
+      document.getElementById('lifeplanContactNumber').textContent = data.contact_number || "Not provided";
+      document.getElementById('lifeplanEmailAddress').textContent = data.email;
+      document.getElementById('lifeplanAddress').textContent = data.address || "Not provided";
+      document.getElementById('lifeplanType').textContent = data.service_name || "Custom LifePlan";
+      document.getElementById('lifeplanDateRequested').textContent = 
+        new Date(data.initial_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+      document.getElementById('lifeplanPrice').textContent = "₱" + (parseFloat(data.package_price) || 0).toFixed(2);
+      document.getElementById('lifeplanTerms').textContent = data.payment_terms || "Not specified";
+
+      // Beneficiary information
+      document.getElementById('beneficiaryFullName').textContent = data.beneficiary_name || "Not provided";
+      document.getElementById('beneficiaryRelationship').textContent = data.beneficiary_relationship || "Not provided";
+      document.getElementById('beneficiaryContact').textContent = data.beneficiary_contact || "Not provided";
+      document.getElementById('beneficiaryAddress').textContent = data.beneficiary_address || "Same as customer";
+      
+      // Update lifeplan status
+      const statusElement = document.getElementById('lifeplanBookingStatus');
+      if (data.booking_status === 'Confirmed') {
+        statusElement.innerHTML = `
+          <span class="px-3 py-1.5 text-sm font-medium rounded-full bg-green-100 text-green-800 flex items-center">
+            <i class="fas fa-check-circle mr-1.5"></i>
+            Confirmed
+          </span>`;
+      } else if (data.booking_status === 'Cancelled') {
+        statusElement.innerHTML = `
+          <span class="px-3 py-1.5 text-sm font-medium rounded-full bg-red-100 text-red-800 flex items-center">
+            <i class="fas fa-times-circle mr-1.5"></i>
+            Cancelled
+          </span>`;
+      } else {
+        statusElement.innerHTML = `
+          <span class="px-3 py-1.5 text-sm font-medium rounded-full bg-yellow-100 text-sidebar-accent flex items-center">
+            <i class="fas fa-clock mr-1.5"></i>
+            Pending
+          </span>`;
+      }
+      
+      // Handle Valid ID Image
+      const validIdAvailable = document.getElementById('validIdAvailable');
+      const validIdNotAvailable = document.getElementById('validIdNotAvailable');
+      const validIdImage = document.getElementById('validIdImage');
+
+      if (data.valid_id_url && data.valid_id_url !== '') {
+        const validIdPath = '../customer/lifeplan/uploads/' + data.valid_id_url.replace(/^uploads\//, '');
+        
+        validIdImage.onerror = function() {
+          console.error("Failed to load valid ID image:", validIdPath);
+          validIdAvailable.classList.add('hidden');
+          validIdNotAvailable.classList.remove('hidden');
+        };
+        
+        validIdImage.src = validIdPath;
+        validIdAvailable.classList.remove('hidden');
+        validIdNotAvailable.classList.add('hidden');
+      } else {
+        validIdAvailable.classList.add('hidden');
+        validIdNotAvailable.classList.remove('hidden');
+      }
+
+      // Handle Payment Proof Image
+      const paymentProofImage = document.getElementById('lifeplanPaymentProofImage');
+      const paymentProofContainer = paymentProofImage.parentElement;
+
+      if (data.payment_proof_url && data.payment_proof_url !== '') {
+        const paymentProofPath = '../customer/lifeplan/uploads/' + data.payment_proof_url.replace(/^uploads\//, '');
+        
+        paymentProofImage.onerror = function() {
+          console.error("Failed to load payment proof image:", paymentProofPath);
+          const placeholderHTML = `
+            <div class="flex flex-col items-center justify-center py-8 px-4 bg-gray-50">
+              <i class="fas fa-exclamation-circle text-gray-400 text-3xl mb-2"></i>
+              <p class="text-gray-500 text-center">Image could not be loaded</p>
+            </div>`;
+          paymentProofContainer.innerHTML = placeholderHTML;
+        };
+        
+        paymentProofImage.src = paymentProofPath;
+      } else {
+        const placeholderHTML = `
+          <div class="flex flex-col items-center justify-center py-8 px-4 bg-gray-50">
+            <i class="fas fa-exclamation-circle text-gray-400 text-3xl mb-2"></i>
+            <p class="text-gray-500 text-center">No payment proof provided</p>
+          </div>`;
+        paymentProofContainer.innerHTML = placeholderHTML;
+      }
+            
+      // Show the modal
+      const modal = document.getElementById("lifeplanDetailsModal");
+      modal.classList.remove("hidden");
+      modal.classList.add("flex");
+      document.body.classList.add("overflow-hidden");
+      
+      // Set the lifeplan ID for decline/accept actions
+      document.getElementById('lifeplanIdForDecline').value = data.lpbooking_id;
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Failed to load lifeplan details. Please try again.',
+      });
+    });
+}
+
+function closeLifeplanModal() {
+    const modal = document.getElementById("lifeplanDetailsModal");
+    if (modal) {
+        modal.classList.add("hidden");
+        modal.classList.remove("flex");
+        document.body.classList.remove("overflow-hidden");
+    }
+}
+
+function confirmLifeplanAccept() {
+    const lifeplanId = document.getElementById('lifeplanIdForDecline').value;
+    
+    Swal.fire({
+        title: 'Confirm Acceptance',
+        html: `<div class="text-left">
+            <p>Are you sure you want to accept this LifePlan booking?</p>
+            <p>This will confirm the plan and notify the customer.</p>
+        </div>`,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, Accept Plan',
+        cancelButtonText: 'Cancel',
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Show loading indicator
+            Swal.fire({
+                title: 'Processing...',
+                html: 'Please wait while we process your request',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+            
+            // Send the data via AJAX
+            fetch('bookingpage/process_lifeplan.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `action=acceptLifeplan&lifeplanId=${lifeplanId}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success!',
+                        text: 'LifePlan has been accepted',
+                        showConfirmButton: false,
+                        timer: 2000
+                    }).then(() => {
+                        closeLifeplanModal();
+                        // Refresh the page to update the table
+                        window.location.reload();
+                    });
+                } else {
+                    throw new Error(data.message || 'Failed to accept lifeplan');
+                }
+            })
+            .catch(error => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: error.message || 'An error occurred while processing your request',
+                });
+            });
+        }
+    });
+}
+
+function confirmLifeplanDecline() {
+    const lifeplanId = document.getElementById('lifeplanIdForDecline').value;
+    
+    // Open the decline reason modal
+    openLifeplanDeclineReasonModal();
+}
+
+function openLifeplanDeclineReasonModal() {
+    const modal = document.getElementById("lifeplanDeclineReasonModal");
+    modal.classList.remove("hidden");
+    modal.classList.add("flex");
+    document.body.classList.add("overflow-hidden");
+}
+
+function closeLifeplanDeclineReasonModal() {
+    const modal = document.getElementById("lifeplanDeclineReasonModal");
+    modal.classList.add("hidden");
+    modal.classList.remove("flex");
+    document.body.classList.remove("overflow-hidden");
+}
+
+function selectLifeplanDeclineReason(reason) {
+    document.getElementById('lifeplanCustomReason').value = reason;
+}
+
+// Handle lifeplan decline form submission
+document.getElementById('lifeplanDeclineReasonForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const lifeplanId = document.getElementById('lifeplanIdForDecline').value;
+    const customReason = document.getElementById('lifeplanCustomReason').value;
+    
+    if (!customReason) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Please provide a reason for declining this lifeplan',
+        });
+        return;
+    }
+    
+    Swal.fire({
+        title: 'Confirm Decline',
+        html: `<div class="text-left">
+            <p>Are you sure you want to decline this LifePlan?</p>
+            <p><strong>Reason:</strong> ${customReason}</p>
+        </div>`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, Decline LifePlan',
+        cancelButtonText: 'Cancel',
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Show loading indicator
+            Swal.fire({
+                title: 'Processing...',
+                html: 'Please wait while we process your request',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+            
+            // Send the data via AJAX
+            fetch('bookingpage/process_lifeplan.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `action=declineLifeplan&lifeplanId=${lifeplanId}&reason=${encodeURIComponent(customReason)}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success!',
+                        text: 'LifePlan has been declined',
+                        showConfirmButton: false,
+                        timer: 2000
+                    }).then(() => {
+                        closeLifeplanDeclineReasonModal();
+                        closeLifeplanModal();
+                        // Refresh the page to update the table
+                        window.location.reload();
+                    });
+                } else {
+                    throw new Error(data.message || 'Failed to decline lifeplan');
+                }
+            })
+            .catch(error => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: error.message || 'An error occurred while processing your request',
+                });
+            });
+        }
+    });
+});
+
+// Close modals when clicking outside content
+window.addEventListener("click", function (event) {
+    const lifeplanModal = document.getElementById("lifeplanDetailsModal");
+    if (lifeplanModal && event.target === lifeplanModal) {
+        closeLifeplanModal();
+    }
+    
+    const declineModal = document.getElementById("lifeplanDeclineReasonModal");
+    if (declineModal && event.target === declineModal) {
+        closeLifeplanDeclineReasonModal();
+    }
+});
+
+// Close modals on 'Escape' key press
+window.addEventListener("keydown", function (event) {
+    if (event.key === "Escape") {
+        closeLifeplanModal();
+        closeLifeplanDeclineReasonModal();
+    }
+});
+</script>
+
 </body>
 </html>
