@@ -2637,7 +2637,7 @@ function confirmLifeplanAccept() {
             
             // Plan information
             document.getElementById('lifeplanServiceId').value = data.service_id || '';
-            document.getElementById('lifeplanPackagePrice').value = data.package_price || '';
+            document.getElementById('lifeplanPackagePrice').value = 500 ||'500';
             document.getElementById('lifeplanPaymentDuration').value = data.payment_duration || '';
             document.getElementById('lifeplanValidIdUrl').value = data.image_path || '';
             document.getElementById('lifeplanInitialDate').value = data.initial_date || '';
