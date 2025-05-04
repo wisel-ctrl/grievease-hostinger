@@ -1215,10 +1215,34 @@ $conn->close();
 </div>
 
   <script>
-    // Function to open the Add Expense Modal
-    function openAddExpenseModal() {
-      document.getElementById('addExpenseModal').style.display = 'flex';
+    // Initialize date limits when modal opens
+function openAddExpenseModal(branchId) {
+    document.getElementById('addExpenseModal').style.display = 'flex';
+    updateDateLimits();
+    
+    // Set today's date as default
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('expenseDate').value = today;
+    
+    // Set branch if provided
+    if (branchId) {
+        const branchRadio = document.querySelector(`input[name="expenseBranch"][value="${branchId}"]`);
+        if (branchRadio) {
+            branchRadio.checked = true;
+        }
     }
+    
+    // Reset form
+    document.getElementById('expenseNameDropdown').selectedIndex = 0;
+    document.getElementById('expenseDescription').value = '';
+    document.getElementById('expenseDescription').classList.add('hidden');
+    document.getElementById('expenseCategory').selectedIndex = 0;
+    document.getElementById('expenseAmount').value = '';
+    document.getElementById('statusPaid').checked = true;
+    document.getElementById('methodCash').checked = true;
+    document.getElementById('expenseNote').value = '';
+    removeReceiptPreview();
+}
 
     // Function to close the Add Expense Modal
     function closeAddExpenseModal() {
