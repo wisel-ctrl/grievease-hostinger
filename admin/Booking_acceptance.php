@@ -2400,7 +2400,8 @@ function openLifeplanDetails(lifeplanId) {
       document.getElementById('lifeplanType').textContent = data.service_name || "Custom LifePlan";
       document.getElementById('lifeplanDateRequested').textContent = data.initial_date_formatted;
       document.getElementById('lifeplanPrice').textContent = "₱" + data.package_price_formatted;
-      document.getElementById('lifeplanTerms').textContent = data.payment_terms || "Not specified";
+      document.getElementById('lifeplanTerms').textContent = data.payment_duration ? data.payment_duration + " years" : "Not specified";
+
 
       // Beneficiary information
       document.getElementById('beneficiaryFullName').textContent = data.beneficiary_name || "Not provided";
@@ -2457,7 +2458,7 @@ function openLifeplanDetails(lifeplanId) {
       const paymentProofContainer = paymentProofImage.parentElement;
 
       if (data.payment_proof_url && data.payment_proof_url !== '') {
-        const paymentProofPath = '../customer/lifeplan/uploads/' + data.payment_proof_url.replace(/^uploads\//, '');
+        const paymentProofPath = '../customer/booking/uploads/' + data.payment_proof_url.replace(/^uploads\//, '');
         
         paymentProofImage.onerror = function() {
           console.error("Failed to load payment proof image:", paymentProofPath);
