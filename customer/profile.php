@@ -2195,7 +2195,7 @@ document.addEventListener('DOMContentLoaded', function() {
         <button type="button" class="close-modal w-full sm:w-auto px-6 py-3 bg-white border border-yellow-600 text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center">
           Cancel
         </button>
-        <button type="submit" form="modifyBookingForm" class="w-full sm:w-auto px-6 py-3 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg shadow-md transition-all duration-300 flex items-center justify-center">
+        <button type="submit" form="modifyBookingForm" id="modifyBookingSubmit" class="w-full sm:w-auto px-6 py-3 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg shadow-md transition-all duration-300 flex items-center justify-center">
           <i class="fas fa-save mr-2"></i>
           Save Changes
         </button>
@@ -2395,7 +2395,7 @@ document.addEventListener('DOMContentLoaded', function() {
     <div class="bg-white rounded-lg w-full max-w-4xl max-h-[90vh] overflow-hidden">
         <div class="p-6 border-b border-gray-200 flex justify-between items-center">
             <h3 class="font-hedvig text-xl text-navy" id="document-modal-title">Document</h3>
-            <button class="close-modal text-gray-500 hover:text-gray-700">
+            <button class="close-document-modal text-gray-500 hover:text-gray-700">
                 <i class="fas fa-times"></i>
             </button>
         </div>
@@ -2404,7 +2404,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <iframe id="document-pdf" src="" class="hidden w-full h-[70vh]"></iframe>
         </div>
         <div class="p-4 border-t border-gray-200 flex justify-end">
-            <button class="close-modal bg-navy text-white px-4 py-2 rounded hover:bg-navy/90 transition">
+            <button class="close-document-modal bg-navy text-white px-4 py-2 rounded hover:bg-navy/90 transition">
                 Close
             </button>
         </div>
@@ -2678,26 +2678,53 @@ document.addEventListener('DOMContentLoaded', function() {
     let currentDocumentType = '';
     let currentDocumentUrl = '';
     
-    viewDeathCertBtn.addEventListener('click', function() {
-        currentDocumentType = 'death_cert';
-        showDocument('Death Certificate', currentDocumentUrl);
-    });
-    
-    viewPaymentBtn.addEventListener('click', function() {
-        currentDocumentType = 'payment_proof';
-        showDocument('Payment Proof', currentDocumentUrl);
-    });
+    // Update your document viewing functions
+viewDeathCertBtn.addEventListener('click', function() {
+    if (!currentDeathCertUrl) {
+        showError('No death certificate available');
+        return;
+    }
+    showDocument('Death Certificate', currentDeathCertUrl);
+});
 
-    // Close Modal Buttons
-    const closeModalButtons = document.querySelectorAll('.close-modal');
-    closeModalButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            viewDetailsModal.classList.add('hidden');
-            modifyModal.classList.add('hidden');
-            cancelModal.classList.add('hidden');
-            viewDocumentModal.classList.add('hidden');
-        });
+viewPaymentBtn.addEventListener('click', function() {
+    if (!currentPaymentUrl) {
+        showError('No payment proof available');
+        return;
+    }
+    showDocument('Payment Proof', currentPaymentUrl);
+});
+    // Close document modal
+document.querySelectorAll('.close-document-modal').forEach(button => {
+    button.addEventListener('click', function() {
+        document.getElementById('viewDocumentModal').classList.add('hidden');
     });
+});
+
+// Close details modal (keep existing functionality)
+document.querySelectorAll('.close-modal').forEach(button => {
+    button.addEventListener('click', function() {
+        document.getElementById('viewDetailsModal').classList.add('hidden');
+        document.getElementById('modifyBookingModal').classList.add('hidden');
+        document.getElementById('cancelBookingModal').classList.add('hidden');
+    });
+});
+
+// Click outside modal to close
+window.addEventListener('click', function(e) {
+    if (e.target === document.getElementById('viewDetailsModal')) {
+        document.getElementById('viewDetailsModal').classList.add('hidden');
+    }
+    if (e.target === document.getElementById('modifyBookingModal')) {
+        document.getElementById('modifyBookingModal').classList.add('hidden');
+    }
+    if (e.target === document.getElementById('cancelBookingModal')) {
+        document.getElementById('cancelBookingModal').classList.add('hidden');
+    }
+    if (e.target === document.getElementById('viewDocumentModal')) {
+        document.getElementById('viewDocumentModal').classList.add('hidden');
+    }
+});
 
     // Form Submissions
     document.getElementById('modifyBookingForm').addEventListener('submit', function(e) {
@@ -2719,48 +2746,41 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Functions
-function fetchBookingDetails(bookingId) {
+    function fetchBookingDetails(bookingId) {
     fetch(`profile/fetch_booking_details.php?booking_id=${bookingId}`)
         .then(response => response.json())
         .then(data => {
             if (data.success) {
+                // First clear any existing date info paragraphs
+                const statusContainer = document.getElementById('detail-status').parentNode;
+                const nextElement = statusContainer.nextElementSibling;
+                
+                // Remove any existing date paragraphs
+                if (nextElement && (nextElement.textContent.includes('Accepted Date:') || 
+                                   nextElement.textContent.includes('Declined Date:'))) {
+                    nextElement.remove();
+                }
+
                 // Populate the view details modal
                 document.getElementById('detail-service').textContent = data.service_name;
                 document.getElementById('detail-branch').textContent = data.branch_name 
-                ? data.branch_name.toLowerCase().replace(/\b\w/g, c => c.toUpperCase())
-                : '';
+                    ? data.branch_name.toLowerCase().replace(/\b\w/g, c => c.toUpperCase())
+                    : '';
                 document.getElementById('detail-status').textContent = data.status;
                 document.getElementById('detail-booking-date').textContent = formatDate(data.booking_date);
                 document.getElementById('detail-total').textContent = `₱${parseFloat(data.selling_price).toFixed(2)}`;
-                
-                const container = document.querySelector('.space-y-2');
 
-                // Check if status is Accepted or Declined
-                // Remove any existing date paragraphs first
-const existingDatePs = document.querySelectorAll('#detail-status').parentNode.nextElementSibling);
-existingDatePs.forEach(p => {
-    if (p.textContent.includes('Date:')) {
-        p.remove();
-    }
-});
-
-// Then add the appropriate date based on status
-if (data.status === 'Accepted' && data.accepted_date) {
-    // Create new paragraph for Accepted Date
-    const acceptedDateP = document.createElement('p');
-    acceptedDateP.innerHTML = `<span class="text-gray-500">Accepted Date:</span> <span class="text-navy">${formatDate(data.accepted_date)}</span>`;
-    
-    // Insert after the status paragraph
-    document.getElementById('detail-status').parentNode.insertAdjacentElement('afterend', acceptedDateP);
-} 
-else if (data.status === 'Declined' && data.decline_date) {
-    // Create new paragraph for Declined Date
-    const declinedDateP = document.createElement('p');
-    declinedDateP.innerHTML = `<span class="text-gray-500"> Declined Date:</span> <span class="text-navy">${formatDate(data.decline_date)}</span>`;
-    
-    // Insert after the status paragraph
-    document.getElementById('detail-status').parentNode.insertAdjacentElement('afterend', declinedDateP);
-}
+                // Only show dates if status matches
+                if (data.status === 'Accepted' && data.accepted_date) {
+                    const acceptedDateP = document.createElement('p');
+                    acceptedDateP.innerHTML = `<span class="text-gray-500">Accepted Date:</span> <span class="text-navy">${formatDate(data.accepted_date)}</span>`;
+                    document.getElementById('detail-status').parentNode.insertAdjacentElement('afterend', acceptedDateP);
+                } 
+                else if (data.status === 'Declined' && data.decline_date) {
+                    const declinedDateP = document.createElement('p');
+                    declinedDateP.innerHTML = `<span class="text-gray-500">Declined Date:</span> <span class="text-navy">${formatDate(data.decline_date)}</span>`;
+                    document.getElementById('detail-status').parentNode.insertAdjacentElement('afterend', declinedDateP);
+                }
                 
                 // Deceased info
                 let deceasedName = `${data.deceased_lname}, ${data.deceased_fname}`;
@@ -2768,8 +2788,6 @@ else if (data.status === 'Declined' && data.decline_date) {
                 if (data.deceased_suffix) deceasedName += ` ${data.deceased_suffix}`;
                 
                 document.getElementById('detail-deceased-name').textContent = deceasedName 
-                ? deceasedName.toLowerCase().replace(/\b\w/g, c => c.toUpperCase())
-                : '';
                     ? deceasedName.toLowerCase().replace(/\b\w/g, c => c.toUpperCase())
                     : '';
                 document.getElementById('detail-birth').textContent = data.deceased_birth ? formatDate(data.deceased_birth) : 'Not provided';
@@ -2787,9 +2805,9 @@ else if (data.status === 'Declined' && data.decline_date) {
                 currentDeathCertUrl = data.death_certificate || '';
                 currentPaymentUrl = data.payment_proof || '';
                 
-                // ALWAYS show buttons (regardless of status or URL existence)
-                document.getElementById('viewDeathCertBtn').style.display = 'block';
-                document.getElementById('viewPaymentBtn').style.display = 'block';
+                // Show/hide document buttons based on availability
+                document.getElementById('viewDeathCertBtn').style.display = currentDeathCertUrl ? 'block' : 'none';
+                document.getElementById('viewPaymentBtn').style.display = currentPaymentUrl ? 'block' : 'none';
                 
                 // Show the modal
                 viewDetailsModal.classList.remove('hidden');
@@ -2802,7 +2820,6 @@ else if (data.status === 'Declined' && data.decline_date) {
             showError('An error occurred while fetching booking details');
         });
 }
-
 // Update your document viewing functions
 viewDeathCertBtn.addEventListener('click', function() {
     showDocument('Death Certificate', currentDeathCertUrl);
@@ -2813,7 +2830,10 @@ viewPaymentBtn.addEventListener('click', function() {
 });
 
 function showDocument(title, url) {
-    
+    if (!url) {
+        showError('No document available');
+        return;
+    }
     
     document.getElementById('document-modal-title').textContent = title;
     const imgElement = document.getElementById('document-image');
@@ -2831,7 +2851,7 @@ function showDocument(title, url) {
         imgElement.src = url;
     }
     
-    viewDocumentModal.classList.remove('hidden');
+    document.getElementById('viewDocumentModal').classList.remove('hidden');
 }
 
 function fetchBookingForModification(bookingId) {
@@ -2881,7 +2901,7 @@ function fetchBookingForModification(bookingId) {
 function submitBookingModification() {
     const form = document.getElementById('modifyBookingForm');
     const formData = new FormData(form);
-    const submitBtn = form.querySelector('button[type="submit"]');
+    const submitBtn = document.getElementById('modifyBookingSubmit'); // Target by ID
     
     // Disable submit button during processing
     submitBtn.disabled = true;
@@ -2889,7 +2909,7 @@ function submitBookingModification() {
     
     fetch('booking/update_booking.php', {
         method: 'POST',
-        body: formData // FormData will automatically handle file uploads
+        body: formData
     })
     .then(response => response.json())
     .then(data => {
