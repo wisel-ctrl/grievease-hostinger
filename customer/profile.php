@@ -2726,11 +2726,16 @@ window.addEventListener('click', function(e) {
     }
 });
 
-    // Form Submissions
-    document.getElementById('modifyBookingForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        submitBookingModification();
-    });
+document.getElementById('modifyBookingForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    // Validate form first
+    if (!validateModifyForm()) {
+        return;
+    }
+    
+    submitBookingModification();
+});
     
     document.getElementById('cancelBookingForm').addEventListener('submit', function(e) {
         e.preventDefault();
@@ -2903,21 +2908,27 @@ function submitBookingModification() {
     const formData = new FormData(form);
     const submitBtn = form.querySelector('button[type="submit"]');
     
-    // Disable submit button during processing
+    // Add loading state
     submitBtn.disabled = true;
     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Saving...';
     
-    fetch('booking/update_booking.php', {
+    // Make sure the endpoint URL is correct
+    fetch('profile/update_booking.php', {  // Changed from booking/update_booking.php
         method: 'POST',
-        body: formData // FormData will automatically handle file uploads
+        body: formData
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
     .then(data => {
         if (data.success) {
             showSuccess(data.message || 'Booking updated successfully!');
             document.getElementById('modifyBookingModal').classList.add('hidden');
             
-            // Refresh the bookings list after a short delay
+            // Refresh the page after 1.5 seconds
             setTimeout(() => {
                 location.reload();
             }, 1500);
@@ -2927,7 +2938,7 @@ function submitBookingModification() {
     })
     .catch(error => {
         console.error('Error:', error);
-        showError('An error occurred while updating booking');
+        showError('An error occurred while updating booking: ' + error.message);
     })
     .finally(() => {
         submitBtn.disabled = false;
