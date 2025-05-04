@@ -62,6 +62,25 @@ $stmt->close();
 $conn->close();
 
 function generateInventoryRow($row) {
+    // Determine quantity cell class based on stock level
+    $quantity = $row["quantity"];
+    $quantityClass = 'quantity-cell ';
+    $quantityText = $quantity;
+
+    if ($quantity <= 2) { // Critical stock
+        $quantityClass .= 'quantity-critical';
+        $quantityText .= ' (Critical)';
+    } elseif ($quantity <= 5) { // Low stock
+        $quantityClass .= 'quantity-critical';
+        $quantityText .= ' (Low)';
+    } elseif ($quantity <= 10) { // Warning level
+        $quantityClass .= 'quantity-warning';
+    } elseif ($quantity <= 20) { // Normal stock
+        $quantityClass .= 'quantity-normal';
+    } else { // High stock
+        $quantityClass .= 'quantity-high';
+    }
+
     $html = '<tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">';
     $html .= '<td class="p-4 text-sm text-sidebar-text font-medium">#INV-' . str_pad($row["inventory_id"], 3, '0', STR_PAD_LEFT) . '</td>';
     $html .= '<td class="p-4 text-sm text-sidebar-text">' . htmlspecialchars($row["item_name"]) . '</td>';
@@ -69,7 +88,7 @@ function generateInventoryRow($row) {
     $html .= '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">';
     $html .= htmlspecialchars($row["category_name"]) . '</span>';
     $html .= '</td>';
-    $html .= '<td class="p-4 text-sm text-sidebar-text" data-sort-value="' . $row["quantity"] . '">' . $row["quantity"] . '</td>';
+    $html .= '<td class="p-4 text-sm ' . $quantityClass . ' rounded-lg" data-sort-value="' . $row["quantity"] . '">' . $quantityText . '</td>';
     $html .= '<td class="p-4 text-sm font-medium text-sidebar-text" data-sort-value="' . $row["price"] . '">₱' . number_format($row["price"], 2) . '</td>';
     $html .= '<td class="p-4 text-sm font-medium text-sidebar-text" data-sort-value="' . $row["total_value"] . '">₱' . number_format($row["total_value"], 2) . '</td>';
     $html .= '<td class="p-4 text-sm">';

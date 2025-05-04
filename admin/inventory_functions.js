@@ -698,3 +698,30 @@ e.preventDefault();
 closeEditInventoryModal();
 });
 
+
+function applyQuantityHeatmap() {
+  document.querySelectorAll('td[data-sort-value]').forEach(cell => {
+      const quantity = parseFloat(cell.getAttribute('data-sort-value'));
+      if (isNaN(quantity)) return;
+      
+      // Reset classes
+      cell.className = 'p-4 text-sm quantity-cell';
+      
+      if (quantity <= 2) {
+          cell.classList.add('quantity-critical');
+          cell.textContent = quantity + ' (Critical)';
+      } else if (quantity <= 5) {
+          cell.classList.add('quantity-critical');
+          cell.textContent = quantity + ' (Low)';
+      } else if (quantity <= 10) {
+          cell.classList.add('quantity-warning');
+      } else if (quantity <= 20) {
+          cell.classList.add('quantity-normal');
+      } else {
+          cell.classList.add('quantity-high');
+      }
+  });
+}
+
+// Call this function after loading table data
+document.addEventListener('DOMContentLoaded', applyQuantityHeatmap);

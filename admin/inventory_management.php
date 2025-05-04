@@ -60,34 +60,52 @@ header("Cache-Control: post-check=0, pre-check=0", false);
 header("Pragma: no-cache");
 
 function generateInventoryRow($row) {
-    $html = '<tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">';
-    $html .= '<td class="p-4 text-sm text-sidebar-text font-medium">#INV-' . str_pad($row["inventory_id"], 3, '0', STR_PAD_LEFT) . '</td>';
-    $html .= '<td class="p-4 text-sm text-sidebar-text">' . htmlspecialchars($row["item_name"]) . '</td>';
-    $html .= '<td class="p-4 text-sm text-sidebar-text">';
-    $html .= '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">';
-    $html .= htmlspecialchars($row["category_name"]) . '</span>';
-    $html .= '</td>';
-    $html .= '<td class="p-4 text-sm text-sidebar-text" data-sort-value="' . $row["quantity"] . '">' . $row["quantity"] . '</td>';
-    $html .= '<td class="p-4 text-sm font-medium text-sidebar-text" data-sort-value="' . $row["price"] . '">₱' . number_format($row["price"], 2) . '</td>';
-    $html .= '<td class="p-4 text-sm font-medium text-sidebar-text" data-sort-value="' . $row["total_value"] . '">₱' . number_format($row["total_value"], 2) . '</td>';
-    $html .= '<td class="p-4 text-sm">';
-    $html .= '<div class="flex space-x-2">';
-    $html .= '<button class="p-2 bg-yellow-100 text-yellow-600 rounded-lg hover:bg-yellow-200 transition-all tooltip" title="Edit Item" onclick="openViewItemModal(' . $row["inventory_id"] . ')">';
-    $html .= '<i class="fas fa-edit"></i>';
-    $html .= '</button>';
-    $html .= '<form method="POST" action="inventory/delete_inventory_item.php" onsubmit="return false;" style="display:inline;" class="delete-form">';
-    $html .= '<input type="hidden" name="inventory_id" value="' . $row["inventory_id"] . '">';
-    $html .= '<button type="submit" class="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-all tooltip" title="Archive Item">';
-    $html .= '<i class="fas fa-archive"></i>';
-    $html .= '</button>';
-    $html .= '</form>';
-    $html .= '</div>';
-    $html .= '</td>';
-    $html .= '</tr>';
-    
-    return $html;
-}
+  // Determine quantity cell class based on stock level
+  $quantity = $row["quantity"];
+  $quantityClass = 'quantity-cell ';
+  $quantityText = $quantity;
 
+  if ($quantity <= 2) { // Critical stock
+      $quantityClass .= 'quantity-critical';
+      $quantityText .= ' (Critical)';
+  } elseif ($quantity <= 5) { // Low stock
+      $quantityClass .= 'quantity-critical';
+      $quantityText .= ' (Low)';
+  } elseif ($quantity <= 10) { // Warning level
+      $quantityClass .= 'quantity-warning';
+  } elseif ($quantity <= 20) { // Normal stock
+      $quantityClass .= 'quantity-normal';
+  } else { // High stock
+      $quantityClass .= 'quantity-high';
+  }
+
+  $html = '<tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">';
+  $html .= '<td class="p-4 text-sm text-sidebar-text font-medium">#INV-' . str_pad($row["inventory_id"], 3, '0', STR_PAD_LEFT) . '</td>';
+  $html .= '<td class="p-4 text-sm text-sidebar-text">' . htmlspecialchars($row["item_name"]) . '</td>';
+  $html .= '<td class="p-4 text-sm text-sidebar-text">';
+  $html .= '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">';
+  $html .= htmlspecialchars($row["category_name"]) . '</span>';
+  $html .= '</td>';
+  $html .= '<td class="p-4 text-sm ' . $quantityClass . ' rounded-lg" data-sort-value="' . $row["quantity"] . '">' . $quantityText . '</td>';
+  $html .= '<td class="p-4 text-sm font-medium text-sidebar-text" data-sort-value="' . $row["price"] . '">₱' . number_format($row["price"], 2) . '</td>';
+  $html .= '<td class="p-4 text-sm font-medium text-sidebar-text" data-sort-value="' . $row["total_value"] . '">₱' . number_format($row["total_value"], 2) . '</td>';
+  $html .= '<td class="p-4 text-sm">';
+  $html .= '<div class="flex space-x-2">';
+  $html .= '<button class="p-2 bg-yellow-100 text-yellow-600 rounded-lg hover:bg-yellow-200 transition-all tooltip" title="Edit Item" onclick="openViewItemModal(' . $row["inventory_id"] . ')">';
+  $html .= '<i class="fas fa-edit"></i>';
+  $html .= '</button>';
+  $html .= '<form method="POST" action="inventory/delete_inventory_item.php" onsubmit="return false;" style="display:inline;" class="delete-form">';
+  $html .= '<input type="hidden" name="inventory_id" value="' . $row["inventory_id"] . '">';
+  $html .= '<button type="submit" class="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-all tooltip" title="Archive Item">';
+  $html .= '<i class="fas fa-archive"></i>';
+  $html .= '</button>';
+  $html .= '</form>';
+  $html .= '</div>';
+  $html .= '</td>';
+  $html .= '</tr>';
+  
+  return $html;
+}
 ?>
 
 <!DOCTYPE html>
@@ -104,6 +122,41 @@ function generateInventoryRow($row) {
   <!-- Include SweetAlert2 CSS and JS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+  <style>
+  .border-gold { border-color: #d4af37; } /* Gold Border */
+  .focus\:ring-gold:focus { box-shadow: 0 0 0 2px #d4af37; }
+  .bg-gold { background-color: #d4af37; }
+  .hover\:bg-darkgold:hover { background-color: #b8860b; }
+
+  /* Heatmap color scale */
+  .quantity-cell {
+    border-radius: 0.5rem;
+    padding: 0.5rem 1rem;
+    text-align: center;
+  }
+  
+  .quantity-critical {
+    background-color: #fee2e2; /* red-100 */
+    color: #b91c1c; /* red-800 */
+    font-weight: 600;
+  }
+  
+  .quantity-warning {
+    background-color: #fef3c7; /* amber-100 */
+    color: #92400e; /* amber-800 */
+    font-weight: 500;
+  }
+  
+  .quantity-normal {
+    background-color: #dcfce7; /* green-100 */
+    color: #166534; /* green-800 */
+  }
+  
+  .quantity-high {
+    background-color: #f0fdf4; /* emerald-50 */
+    color: #064e3b; /* emerald-900 */
+  }
+</style>
 
 
   
@@ -1171,12 +1224,7 @@ document.getElementById('addInventoryForm').addEventListener('submit', function(
   </div>
 </div>
 
-<style>
-  .border-gold { border-color: #d4af37; } /* Gold Border */
-  .focus\:ring-gold:focus { box-shadow: 0 0 0 2px #d4af37; }
-  .bg-gold { background-color: #d4af37; }
-  .hover\:bg-darkgold:hover { background-color: #b8860b; }
-</style>
+
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
