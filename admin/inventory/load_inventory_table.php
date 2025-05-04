@@ -62,23 +62,23 @@ $stmt->close();
 $conn->close();
 
 function generateInventoryRow($row) {
-    // Determine quantity cell class based on stock level
+    // Determine quantity text color based on stock level
     $quantity = $row["quantity"];
-    $quantityClass = 'quantity-cell ';
+    $quantityColorClass = '';
     $quantityText = $quantity;
 
     if ($quantity <= 2) { // Critical stock
-        $quantityClass .= 'quantity-critical';
+        $quantityColorClass = 'text-red-600 font-bold';
         $quantityText .= ' (Critical)';
     } elseif ($quantity <= 5) { // Low stock
-        $quantityClass .= 'quantity-critical';
+        $quantityColorClass = 'text-red-500 font-semibold';
         $quantityText .= ' (Low)';
     } elseif ($quantity <= 10) { // Warning level
-        $quantityClass .= 'quantity-warning';
+        $quantityColorClass = 'text-yellow-600';
     } elseif ($quantity <= 20) { // Normal stock
-        $quantityClass .= 'quantity-normal';
+        $quantityColorClass = 'text-green-600';
     } else { // High stock
-        $quantityClass .= 'quantity-high';
+        $quantityColorClass = 'text-green-500';
     }
 
     $html = '<tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">';
@@ -88,7 +88,7 @@ function generateInventoryRow($row) {
     $html .= '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">';
     $html .= htmlspecialchars($row["category_name"]) . '</span>';
     $html .= '</td>';
-    $html .= '<td class="p-4 text-sm ' . $quantityClass . ' rounded-lg" data-sort-value="' . $row["quantity"] . '">' . $quantityText . '</td>';
+    $html .= '<td class="p-4 text-sm ' . $quantityColorClass . '" data-sort-value="' . $row["quantity"] . '">' . $quantityText . '</td>';
     $html .= '<td class="p-4 text-sm font-medium text-sidebar-text" data-sort-value="' . $row["price"] . '">₱' . number_format($row["price"], 2) . '</td>';
     $html .= '<td class="p-4 text-sm font-medium text-sidebar-text" data-sort-value="' . $row["total_value"] . '">₱' . number_format($row["total_value"], 2) . '</td>';
     $html .= '<td class="p-4 text-sm">';
