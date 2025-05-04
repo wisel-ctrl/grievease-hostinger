@@ -250,6 +250,400 @@ function validateSearchInput(input) {
   // You can add debounce functionality here if needed
   // performSearch(input.value);
 }
+
+
+// Helper function to validate name fields
+function validateNameInput(input, isRequired = true) {
+  let value = input.value;
+  
+  // Remove any numbers or special characters (except spaces and apostrophes)
+  value = value.replace(/[^a-zA-Z\s']/g, '');
+  
+  // Replace multiple spaces with single space
+  value = value.replace(/\s+/g, ' ');
+  
+  // Capitalize first letter of each word
+  value = value.toLowerCase().replace(/(?:^|\s)\S/g, function(char) {
+    return char.toUpperCase();
+  });
+  
+  // Prevent space as first character or consecutive spaces
+  if (value.length === 1 && value === ' ') {
+    value = '';
+  }
+  
+  // If required, ensure minimum length of 2 characters
+  if (isRequired && value.length === 1) {
+    // Don't allow single character (unless it's the last character)
+    if (input.selectionStart === 1) {
+      value = '';
+    }
+  }
+  
+  input.value = value;
+  
+  // Validate minimum length for required fields
+  if (isRequired && value.trim().length < 2) {
+    input.setCustomValidity('Minimum 2 characters required');
+  } else {
+    input.setCustomValidity('');
+  }
+}
+
+// Helper function to validate address fields
+function validateAddressInput(input) {
+  let value = input.value;
+  
+  // Remove special characters (except spaces, commas, periods)
+  value = value.replace(/[^a-zA-Z0-9\s,.]/g, '');
+  
+  // Replace multiple spaces with single space
+  value = value.replace(/\s+/g, ' ');
+  
+  // Capitalize first letter of each word
+  value = value.toLowerCase().replace(/(?:^|\s)\S/g, function(char) {
+    return char.toUpperCase();
+  });
+  
+  // Prevent space as first character
+  if (value.length === 1 && value === ' ') {
+    value = '';
+  }
+  
+  input.value = value;
+}
+
+// Helper function to validate zip code
+function validateZipCode(input) {
+  let value = input.value;
+  
+  // Remove non-digit characters
+  value = value.replace(/\D/g, '');
+  
+  // Limit to 10 characters
+  if (value.length > 10) {
+    value = value.substring(0, 10);
+  }
+  
+  input.value = value;
+  
+  // Validate length
+  if (value.length < 4) {
+    input.setCustomValidity('ZIP code must be 4-10 digits');
+  } else {
+    input.setCustomValidity('');
+  }
+}
+
+// Helper function to validate phone number
+function validatePhoneNumber(input) {
+  let value = input.value;
+  
+  // Remove non-digit characters
+  value = value.replace(/\D/g, '');
+  
+  // Ensure it starts with 09
+  if (value.length > 0 && !value.startsWith('09')) {
+    value = '09' + value.substring(2);
+  }
+  
+  // Limit to 11 characters
+  if (value.length > 11) {
+    value = value.substring(0, 11);
+  }
+  
+  input.value = value;
+  
+  // Validate length and format
+  if (value.length !== 11) {
+    input.setCustomValidity('Philippine phone number must be 11 digits starting with 09');
+  } else {
+    input.setCustomValidity('');
+  }
+}
+
+// Helper function to validate email
+function validateEmail(input) {
+  let value = input.value.trim();
+  
+  // Remove spaces
+  value = value.replace(/\s/g, '');
+  
+  input.value = value;
+  
+  // Basic email validation
+  if (value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+    input.setCustomValidity('Please enter a valid email address');
+  } else {
+    input.setCustomValidity('');
+  }
+}
+
+// Helper function to validate relationship
+function validateRelationship(input) {
+  let value = input.value;
+  
+  // Remove numbers and special characters
+  value = value.replace(/[^a-zA-Z\s]/g, '');
+  
+  // Replace multiple spaces with single space
+  value = value.replace(/\s+/g, ' ');
+  
+  // Capitalize first letter
+  if (value.length > 0) {
+    value = value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
+  }
+  
+  // Prevent space as first character
+  if (value.length === 1 && value === ' ') {
+    value = '';
+  }
+  
+  input.value = value;
+}
+
+// Helper function to validate date fields
+function setupDateValidations() {
+  const today = new Date().toISOString().split('T')[0];
+  const hundredYearsAgo = new Date();
+  hundredYearsAgo.setFullYear(hundredYearsAgo.getFullYear() - 100);
+  const minDate = hundredYearsAgo.toISOString().split('T')[0];
+  
+  // Traditional modal dates
+  const dobInput = document.getElementById('dateOfBirth');
+  const dodInput = document.getElementById('dateOfDeath');
+  const dobInputLP = document.getElementById('beneficiaryDateOfBirth');
+  
+  if (dobInput) {
+    dobInput.max = today;
+    dobInput.min = minDate;
+    
+    dobInput.addEventListener('change', function() {
+      if (dodInput.value && this.value > dodInput.value) {
+        alert('Date of birth cannot be after date of death');
+        this.value = '';
+      }
+      dodInput.min = this.value || minDate;
+    });
+  }
+  
+  if (dodInput) {
+    dodInput.max = today;
+    dodInput.min = minDate;
+    
+    dodInput.addEventListener('change', function() {
+      if (dobInput.value && dobInput.value > this.value) {
+        alert('Date of death cannot be before date of birth');
+        this.value = '';
+      }
+      
+      const burialInput = document.getElementById('dateOfBurial');
+      if (burialInput) {
+        burialInput.min = this.value || today;
+      }
+    });
+  }
+  
+  if (dobInputLP) {
+    dobInputLP.max = today;
+    dobInputLP.min = minDate;
+  }
+  
+  // Burial date validation
+  const burialInput = document.getElementById('dateOfBurial');
+  if (burialInput) {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    burialInput.min = tomorrow.toISOString().split('T')[0];
+    
+    burialInput.addEventListener('change', function() {
+      if (dodInput.value && this.value < dodInput.value) {
+        alert('Date of burial cannot be before date of death');
+        this.value = '';
+      }
+    });
+  }
+}
+
+// Helper function to validate file uploads
+function validateFileUpload(input) {
+  const file = input.files[0];
+  if (!file) return;
+  
+  const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+  const maxSize = 5 * 1024 * 1024; // 5MB
+  
+  if (!validTypes.includes(file.type)) {
+    alert('Please upload a valid image file (JPG, JPEG, or PNG)');
+    input.value = '';
+    return;
+  }
+  
+  if (file.size > maxSize) {
+    alert('File size must be less than 5MB');
+    input.value = '';
+    return;
+  }
+  
+  // Show preview if it's an image
+  if (file.type.startsWith('image/')) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const preview = document.getElementById('deathCertificatePreview');
+      const previewImage = document.getElementById('previewImage');
+      if (preview && previewImage) {
+        previewImage.src = e.target.result;
+        preview.classList.remove('hidden');
+      }
+    };
+    reader.readAsDataURL(file);
+  }
+}
+
+// Helper function to validate payment amounts
+function validatePaymentAmounts() {
+  const totalPriceInput = document.getElementById('totalPrice');
+  const amountPaidInput = document.getElementById('amountPaid');
+  const totalPriceInputLP = document.getElementById('lp-totalPrice');
+  const amountPaidInputLP = document.getElementById('lp-amountPaid');
+  
+  function validateAmount(input, minValue = 0) {
+    let value = parseFloat(input.value) || 0;
+    if (value < minValue) {
+      input.value = minValue;
+      value = minValue;
+    }
+    return value;
+  }
+  
+  if (totalPriceInput && amountPaidInput) {
+    totalPriceInput.addEventListener('change', function() {
+      validateAmount(this);
+      amountPaidInput.max = this.value;
+    });
+    
+    amountPaidInput.addEventListener('change', function() {
+      validateAmount(this);
+      if (parseFloat(this.value) > parseFloat(totalPriceInput.value)) {
+        this.value = totalPriceInput.value;
+      }
+    });
+  }
+  
+  if (totalPriceInputLP && amountPaidInputLP) {
+    totalPriceInputLP.addEventListener('change', function() {
+      validateAmount(this);
+      amountPaidInputLP.max = this.value;
+    });
+    
+    amountPaidInputLP.addEventListener('change', function() {
+      validateAmount(this);
+      if (parseFloat(this.value) > parseFloat(totalPriceInputLP.value)) {
+        this.value = totalPriceInputLP.value;
+      }
+    });
+  }
+}
+
+// Initialize all validations
+function initializeAllValidations() {
+  // Name fields validation (Traditional)
+  document.getElementById('clientFirstName')?.addEventListener('input', function() {
+    validateNameInput(this, true);
+  });
+  document.getElementById('clientMiddleName')?.addEventListener('input', function() {
+    validateNameInput(this, false);
+  });
+  document.getElementById('clientLastName')?.addEventListener('input', function() {
+    validateNameInput(this, true);
+  });
+  document.getElementById('deceasedFirstName')?.addEventListener('input', function() {
+    validateNameInput(this, true);
+  });
+  document.getElementById('deceasedMiddleName')?.addEventListener('input', function() {
+    validateNameInput(this, false);
+  });
+  document.getElementById('deceasedLastName')?.addEventListener('input', function() {
+    validateNameInput(this, true);
+  });
+  
+  // Name fields validation (Lifeplan)
+  document.getElementById('lp-clientFirstName')?.addEventListener('input', function() {
+    validateNameInput(this, true);
+  });
+  document.getElementById('lp-clientMiddleName')?.addEventListener('input', function() {
+    validateNameInput(this, false);
+  });
+  document.getElementById('lp-clientLastName')?.addEventListener('input', function() {
+    validateNameInput(this, true);
+  });
+  document.getElementById('beneficiaryFirstName')?.addEventListener('input', function() {
+    validateNameInput(this, true);
+  });
+  document.getElementById('beneficiaryMiddleName')?.addEventListener('input', function() {
+    validateNameInput(this, false);
+  });
+  document.getElementById('beneficiaryLastName')?.addEventListener('input', function() {
+    validateNameInput(this, true);
+  });
+  
+  // Address fields validation
+  document.getElementById('deceasedStreet')?.addEventListener('input', function() {
+    validateAddressInput(this);
+  });
+  
+  // ZIP code validation
+  document.getElementById('deceasedZip')?.addEventListener('input', function() {
+    validateZipCode(this);
+  });
+  
+  // Phone number validation
+  document.getElementById('clientPhone')?.addEventListener('input', function() {
+    validatePhoneNumber(this);
+  });
+  document.getElementById('lp-clientPhone')?.addEventListener('input', function() {
+    validatePhoneNumber(this);
+  });
+  
+  // Email validation
+  document.getElementById('clientEmail')?.addEventListener('input', function() {
+    validateEmail(this);
+  });
+  document.getElementById('lp-clientEmail')?.addEventListener('input', function() {
+    validateEmail(this);
+  });
+  
+  // Relationship validation
+  document.getElementById('beneficiaryRelationship')?.addEventListener('input', function() {
+    validateRelationship(this);
+  });
+  
+  // Date validations
+  setupDateValidations();
+  
+  // File upload validation
+  document.getElementById('deathCertificate')?.addEventListener('change', function() {
+    validateFileUpload(this);
+  });
+  
+  // Payment amount validations
+  validatePaymentAmounts();
+  
+  // Remove image button
+  document.getElementById('removeImageBtn')?.addEventListener('click', function() {
+    document.getElementById('deathCertificate').value = '';
+    document.getElementById('deathCertificatePreview').classList.add('hidden');
+  });
+}
+
+// Call this function when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+  initializeAllValidations();
+  
+  // Also initialize when modals are shown
+  document.getElementById('checkoutModal')?.addEventListener('shown.bs.modal', initializeAllValidations);
+  document.getElementById('lifeplanCheckoutModal')?.addEventListener('shown.bs.modal', initializeAllValidations);
+});
 </script>
 
     <!-- Package Modal -->
