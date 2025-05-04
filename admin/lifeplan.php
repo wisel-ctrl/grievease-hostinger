@@ -58,6 +58,17 @@ $stats = [
 ];
 
 if ($conn) {
+
+  // Get total beneficiaries count
+$query = "SELECT COUNT(*) as total FROM lifeplan_tb WHERE archived = 'show'";
+$result = $conn->query($query);
+if ($result) {
+    $row = $result->fetch_assoc();
+    $totalBeneficiaries = $row['total'];
+    $result->free();
+} else {
+    $totalBeneficiaries = 0;
+}
     // Total Plans
     $query = "SELECT COUNT(*) as total FROM lifeplan_tb WHERE archived = 'show'";
     $result = $conn->query($query);
@@ -364,8 +375,7 @@ if ($conn) {
                     JOIN 
                         services_tb s ON lp.service_id = s.service_id
                     WHERE
-                        lp.archived = 'show'
-                    LIMIT 6"; // Limit to 6 records for pagination
+                        lp.archived = 'show'";
               
               $result = $conn->query($query);
               
