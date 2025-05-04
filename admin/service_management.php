@@ -2089,9 +2089,33 @@ document.getElementById('serviceName').addEventListener('blur', function() {
 });
 
 // Description auto-capitalize first character
+// Update the description validation to match service name
 document.getElementById('serviceDescription').addEventListener('input', function(e) {
+    // Auto-capitalize first character
     if (this.value.length === 1) {
         this.value = this.value.toUpperCase();
+    }
+    
+    // Prevent multiple consecutive spaces
+    this.value = this.value.replace(/\s{2,}/g, ' ');
+    
+    // Don't allow space as first character
+    if (this.value.startsWith(' ')) {
+        this.value = this.value.trim();
+    }
+    
+    // Require at least 2 characters before allowing space
+    if (this.value.length < 2 && this.value.includes(' ')) {
+        this.value = this.value.replace(/\s/g, '');
+    }
+});
+
+// Prevent numbers-only descriptions
+document.getElementById('serviceDescription').addEventListener('blur', function() {
+    if (/^\d+$/.test(this.value.trim())) {
+        alert('Description cannot be numbers only');
+        this.value = '';
+        this.focus();
     }
 });
 
@@ -2147,10 +2171,32 @@ document.getElementById('editServiceName').addEventListener('blur', function() {
     }
 });
 
-// Description auto-capitalize first character
+// Update the description validation to match service name
 document.getElementById('editServiceDescription').addEventListener('input', function(e) {
+    // Auto-capitalize first character
     if (this.value.length === 1) {
         this.value = this.value.toUpperCase();
+    }
+    
+    // Prevent multiple consecutive spaces
+    this.value = this.value.replace(/\s{2,}/g, ' ');
+    
+    // Don't allow space as first character
+    if (this.value.startsWith(' ')) {
+        this.value = this.value.trim();
+    }
+    
+    // Require at least 2 characters before allowing space
+    if (this.value.length < 2 && this.value.includes(' ')) {
+        this.value = this.value.replace(/\s/g, '');
+    }
+});
+
+// Prevent numbers-only descriptions
+document.getElementById('editServiceDescription').addEventListener('blur', function() {
+    if (/^\d+$/.test(this.value.trim())) {
+        alert('Description cannot be numbers only');
+        this.focus();
     }
 });
 
