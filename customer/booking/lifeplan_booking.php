@@ -28,6 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $beneficiary_lname = $_POST['holderLastName'];
         $beneficiary_suffix = $_POST['holderSuffix'] ?? '';
         $beneficiary_birth = $_POST['dateOfBirth'];
+        $relationship_with_beneficiary = $_POST['relationshipWithBeneficiary'] ?? ''; // Added this line
         
         // Process address (concatenate into one string)
         $address = json_decode($_POST['holderAddress'], true);
@@ -65,16 +66,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 service_id, branch_id, customer_id, payment_duration, package_price,
                 benefeciary_fname, benefeciary_mname, benefeciary_lname, benefeciary_suffix,
                 benefeciary_birth, benefeciary_address, phone, with_cremate, 
-                booking_status, reference_code, payment_url
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?, ?)
+                booking_status, reference_code, payment_url, relationship_to_client
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?, ?, ?)
         ");
         
         $stmt->bind_param(
-            "iiiidssssssssss", 
+            "iiiidsssssssssss", 
             $service_id, $branch_id, $customer_id, $payment_duration, $package_price,
             $beneficiary_fname, $beneficiary_mname, $beneficiary_lname, $beneficiary_suffix,
             $beneficiary_birth, $beneficiary_address, $phone, $with_cremate,
-            $reference_code, $paymentPath
+            $reference_code, $paymentPath, $relationship_with_beneficiary
         );
         
         if ($stmt->execute()) {
