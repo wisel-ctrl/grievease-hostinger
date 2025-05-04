@@ -1189,18 +1189,47 @@ $totalOutstanding = $countResult->fetch_assoc()['total'];
             </div>
           </div>
 
-          <!-- Deceased Address -->
-          <div class="form-group mb-4">
-            <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-              Deceased Address
-            </label>
-            <input 
-              type="text" 
-              id="deceasedAddress" 
-              class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-              placeholder="Enter Deceased Address"
-            >
-          </div>
+          <!-- Replace the deceasedAddress input with this -->
+<div class="grid grid-cols-2 gap-4 mb-4">
+    <div class="form-group">
+        <label class="block text-xs font-medium text-gray-700 mb-1">Region</label>
+        <select id="regionSelect" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg">
+            <option value="">Select Region</option>
+            <!-- Will be populated by JavaScript -->
+        </select>
+    </div>
+    <div class="form-group">
+        <label class="block text-xs font-medium text-gray-700 mb-1">Province</label>
+        <select id="provinceSelect" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg" disabled>
+            <option value="">Select Province</option>
+            <!-- Will be populated by JavaScript -->
+        </select>
+    </div>
+    <div class="form-group">
+        <label class="block text-xs font-medium text-gray-700 mb-1">City/Municipality</label>
+        <select id="citySelect" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg" disabled>
+            <option value="">Select City/Municipality</option>
+            <!-- Will be populated by JavaScript -->
+        </select>
+    </div>
+    <div class="form-group">
+        <label class="block text-xs font-medium text-gray-700 mb-1">Barangay</label>
+        <select id="barangaySelect" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg" disabled>
+            <option value="">Select Barangay</option>
+            <!-- Will be populated by JavaScript -->
+        </select>
+    </div>
+</div>
+<div class="grid grid-cols-3 gap-4 mb-4">
+    <div class="form-group col-span-2">
+        <label class="block text-xs font-medium text-gray-700 mb-1">Street</label>
+        <input type="text" id="street" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg">
+    </div>
+    <div class="form-group">
+        <label class="block text-xs font-medium text-gray-700 mb-1">Zip Code</label>
+        <input type="text" id="zipCode" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg" maxlength="4">
+    </div>
+</div>
 
           <!-- Deceased Dates - 3 columns for dates -->
           <div class="grid grid-cols-3 gap-4 mb-4">
@@ -1985,11 +2014,13 @@ function toggleBodyScroll(isOpen) {
 // Function to open the Edit Service Modal
 // Function to open the Edit Service Modal
 function openEditServiceModal(serviceId) {
+  
   // Fetch service details via AJAX
   fetch(`get_service_details.php?sales_id=${serviceId}`)
     .then(response => response.json())
     .then(data => {
       if (data.success) {
+        setTimeout(initEditModalValidations, 100);
         // Populate the form fields with the service details
         if (data.customerID) {
           const customer = customers.find(c => c.id == data.customerID);
@@ -2692,191 +2723,170 @@ document.head.appendChild(style);
 <script src="tailwind.js"></script>
 
 <script>
-// Validation functions for Edit Service Modal
-document.addEventListener('DOMContentLoaded', function() {
-  // Customer Search validation
-  const customerSearch = document.getElementById('customerSearch');
-  if (customerSearch) {
-    customerSearch.addEventListener('input', function(e) {
-      // Only allow letters and single spaces
-      this.value = this.value.replace(/[^a-zA-Z\s]/g, '');
-      
-      // Prevent multiple consecutive spaces
-      this.value = this.value.replace(/\s{2,}/g, ' ');
-      
-      // Only allow space after at least 2 characters
-      if (this.value.length < 2 && this.value.endsWith(' ')) {
-        this.value = this.value.trim();
-      }
-      
-      // Auto-capitalize first letter
-      if (this.value.length === 1) {
-        this.value = this.value.toUpperCase();
-      }
-    });
-  }
-
-  // Name fields validation (first, middle, last)
-  const nameFields = ['firstName', 'middleName', 'lastName'];
-  nameFields.forEach(fieldId => {
-    const field = document.getElementById(fieldId);
-    if (field) {
-      field.addEventListener('input', function(e) {
-        // Only allow letters and single spaces
-        this.value = this.value.replace(/[^a-zA-Z\s]/g, '');
-        
-        // Prevent multiple consecutive spaces
-        this.value = this.value.replace(/\s{2,}/g, ' ');
-        
-        // Only allow space after at least 2 characters
-        if (this.value.length < 2 && this.value.endsWith(' ')) {
-          this.value = this.value.trim();
-        }
-        
-        // Auto-capitalize first letter
-        if (this.value.length === 1) {
-          this.value = this.value.toUpperCase();
-        }
-      });
+// Function to validate inputs with specific patterns
+function validateInput(input, pattern, errorMessage = 'Invalid input') {
+    const value = input.value;
+    if (!pattern.test(value)) {
+        input.value = value.slice(0, -1); // Remove last character if invalid
+        return false;
     }
-  });
+    return true;
+}
 
-  // Email validation
-  const emailField = document.getElementById('email');
-  if (emailField) {
-    emailField.addEventListener('input', function(e) {
-      // Remove spaces
-      this.value = this.value.replace(/\s/g, '');
-    });
+// Function to auto-capitalize first letter and handle spaces
+function formatNameInput(input) {
+    let value = input.value;
     
-    emailField.addEventListener('blur', function(e) {
-      // Check for @ symbol
-      if (this.value && !this.value.includes('@')) {
-        alert('Please enter a valid email address with @ symbol');
-        this.focus();
-      }
-    });
-  }
-
-  // Phone validation
-  const phoneField = document.getElementById('phone');
-  if (phoneField) {
-    phoneField.addEventListener('input', function(e) {
-      // Only allow numbers
-      this.value = this.value.replace(/\D/g, '');
-      
-      // Ensure starts with 09
-      if (this.value.length >= 1 && !this.value.startsWith('0')) {
-        this.value = '0';
-      }
-      if (this.value.length >= 2 && !this.value.startsWith('09')) {
-        this.value = '09';
-      }
-      
-      // Limit to 11 digits
-      if (this.value.length > 11) {
-        this.value = this.value.substring(0, 11);
-      }
-    });
-  }
-
-  // Service price validation
-  const servicePrice = document.getElementById('servicePrice');
-  if (servicePrice) {
-    servicePrice.addEventListener('input', function(e) {
-      // Ensure not negative
-      if (parseFloat(this.value) < 0) {
-        this.value = '';
-      }
-    });
-  }
-
-  // Deceased name fields validation
-  const deceasedNameFields = ['deceasedFirstName', 'deceasedMiddleName', 'deceasedLastName'];
-  deceasedNameFields.forEach(fieldId => {
-    const field = document.getElementById(fieldId);
-    if (field) {
-      field.addEventListener('input', function(e) {
-        // Only allow letters and single spaces
-        this.value = this.value.replace(/[^a-zA-Z\s]/g, '');
-        
-        // Prevent multiple consecutive spaces
-        this.value = this.value.replace(/\s{2,}/g, ' ');
-        
-        // Only allow space after at least 2 characters
-        if (this.value.length < 2 && this.value.endsWith(' ')) {
-          this.value = this.value.trim();
-        }
-        
-        // Auto-capitalize first letter
-        if (this.value.length === 1) {
-          this.value = this.value.toUpperCase();
-        }
-      });
+    // Remove multiple consecutive spaces
+    value = value.replace(/\s+/g, ' ');
+    
+    // Capitalize first letter of each word
+    value = value.replace(/\b\w/g, char => char.toUpperCase());
+    
+    // Don't allow space unless there are at least 2 characters
+    if (value.endsWith(' ') && value.trim().length < 2) {
+        value = value.trim();
     }
-  });
-
-  // Date validations
-  const birthDate = document.getElementById('birthDate');
-  const deathDate = document.getElementById('deathDate');
-  const burialDate = document.getElementById('burialDate');
-  
-  if (birthDate && deathDate && burialDate) {
-    // Set max date for birth date (today)
-    const today = new Date().toISOString().split('T')[0];
-    birthDate.setAttribute('max', today);
     
-    birthDate.addEventListener('change', function() {
-      // When birth date changes, update death date min/max
-      if (this.value) {
-        deathDate.setAttribute('min', this.value);
-        deathDate.setAttribute('max', today);
-        deathDate.disabled = false;
-      } else {
-        deathDate.removeAttribute('min');
-        deathDate.removeAttribute('max');
-        deathDate.disabled = true;
-      }
-    });
-    
-    deathDate.addEventListener('change', function() {
-      // When death date changes, update burial date min
-      if (this.value) {
-        // Set burial date to at least tomorrow
-        const deathDateObj = new Date(this.value);
-        deathDateObj.setDate(deathDateObj.getDate() + 1);
-        const minBurialDate = deathDateObj.toISOString().split('T')[0];
-        burialDate.setAttribute('min', minBurialDate);
-        burialDate.disabled = false;
-      } else {
-        burialDate.removeAttribute('min');
-        burialDate.disabled = true;
-      }
-    });
-  }
+    input.value = value;
+}
 
-  // Death certificate file validation
-  const deathCertificate = document.getElementById('deathCertificate');
-  if (deathCertificate) {
-    deathCertificate.addEventListener('change', function(e) {
-      const file = this.files[0];
-      if (file) {
+// Function to validate email
+function validateEmail(email) {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!re.test(email.value)) {
+        email.setCustomValidity('Please enter a valid email address');
+        return false;
+    }
+    email.setCustomValidity('');
+    return true;
+}
+
+// Function to validate phone number
+function validatePhone(phone) {
+    const re = /^09\d{9}$/;
+    if (!re.test(phone.value)) {
+        phone.setCustomValidity('Philippine mobile number must start with 09 and be 11 digits');
+        return false;
+    }
+    phone.setCustomValidity('');
+    return true;
+}
+
+// Function to validate service price
+function validatePrice(price) {
+    if (parseFloat(price.value) < 0) {
+        price.value = '0';
+    }
+    return true;
+}
+
+// Function to validate dates
+function validateDates() {
+    const birthDate = document.getElementById('birthDate');
+    const deathDate = document.getElementById('deathDate');
+    const burialDate = document.getElementById('burialDate');
+    
+    // Set max date for birth date to today
+    birthDate.max = new Date().toISOString().split('T')[0];
+    
+    // Set min/max for death date based on birth date
+    if (birthDate.value) {
+        deathDate.min = birthDate.value;
+        deathDate.max = new Date().toISOString().split('T')[0];
+    }
+    
+    // Set min for burial date based on death date
+    if (deathDate.value) {
+        const minBurialDate = new Date(deathDate.value);
+        minBurialDate.setDate(minBurialDate.getDate() + 1);
+        burialDate.min = minBurialDate.toISOString().split('T')[0];
+    }
+}
+
+// Function to validate death certificate file
+function validateDeathCertificate(input) {
+    const file = input.files[0];
+    if (file) {
         const validTypes = ['image/jpeg', 'image/png'];
         if (!validTypes.includes(file.type)) {
-          alert('Only JPG and PNG files are allowed for death certificate');
-          this.value = '';
+            alert('Only JPG and PNG files are allowed');
+            input.value = '';
+            return false;
         }
-      }
-    });
-  }
-});
-
-// Helper function to format names with proper capitalization
-function formatName(name) {
-  return name.toLowerCase().split(' ').map(word => 
-    word.charAt(0).toUpperCase() + word.slice(1)
-  ).join(' ');
+    }
+    return true;
 }
+
+// Initialize all validations when modal opens
+function initEditModalValidations() {
+    // Customer search (letters only)
+    const customerSearch = document.getElementById('customerSearch');
+    customerSearch.addEventListener('input', function() {
+        this.value = this.value.replace(/[^a-zA-Z\s]/g, '');
+        formatNameInput(this);
+    });
+    
+    // Name fields (first, middle, last)
+    const nameFields = ['firstName', 'middleName', 'lastName', 'deceasedFirstName', 'deceasedMiddleName', 'deceasedLastName'];
+    nameFields.forEach(field => {
+        const input = document.getElementById(field);
+        if (input) {
+            input.addEventListener('input', function() {
+                this.value = this.value.replace(/[^a-zA-Z\s]/g, '');
+                formatNameInput(this);
+            });
+        }
+    });
+    
+    // Email validation
+    const email = document.getElementById('email');
+    email.addEventListener('input', function() {
+        this.value = this.value.replace(/\s/g, '');
+        validateEmail(this);
+    });
+    
+    // Phone validation
+    const phone = document.getElementById('phone');
+    phone.addEventListener('input', function() {
+        this.value = this.value.replace(/\D/g, '').substring(0, 11);
+        validatePhone(this);
+    });
+    
+    // Service price validation
+    const servicePrice = document.getElementById('servicePrice');
+    servicePrice.addEventListener('input', function() {
+        validatePrice(this);
+    });
+    
+    // Date validations
+    const birthDate = document.getElementById('birthDate');
+    const deathDate = document.getElementById('deathDate');
+    const burialDate = document.getElementById('burialDate');
+    
+    birthDate.addEventListener('change', validateDates);
+    deathDate.addEventListener('change', validateDates);
+    burialDate.addEventListener('change', validateDates);
+    
+    // Death certificate validation
+    const deathCertificate = document.getElementById('deathCertificate');
+    deathCertificate.addEventListener('change', function() {
+        validateDeathCertificate(this);
+    });
+    
+    // Deceased address - this would need to be implemented with a proper API for Philippine addresses
+    // For now, we'll just add basic validation
+    const deceasedAddress = document.getElementById('deceasedAddress');
+    deceasedAddress.addEventListener('input', function() {
+        // Remove multiple consecutive spaces
+        this.value = this.value.replace(/\s+/g, ' ');
+        
+        // Capitalize first letter of each word
+        this.value = this.value.replace(/\b\w/g, char => char.toUpperCase());
+    });
+}
+
 </script>
+
 </body> 
 </html>
