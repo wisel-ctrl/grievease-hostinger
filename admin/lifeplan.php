@@ -2071,63 +2071,97 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Add this to your existing JavaScript for the edit modal
 document.addEventListener('DOMContentLoaded', function() {
-    // Payment duration validation
+    // Payment duration validation - strictly positive integers only
     const paymentDuration = document.getElementById('payment_duration');
     if (paymentDuration) {
         paymentDuration.addEventListener('input', function() {
             // Remove any non-digit characters
-            this.value = this.value.replace(/\D/g, '');
+            let value = this.value.replace(/[^0-9]/g, '');
             
             // Ensure minimum value is 1 (can't be 0 or negative)
-            if (this.value < 1) {
-                this.value = 1;
-            }
+            value = value === '' ? '1' : value;
+            value = parseInt(value) < 1 ? '1' : value;
             
-            // Optional: Set a maximum value if needed (e.g., 30 years)
-            const maxYears = 30;
-            if (this.value > maxYears) {
-                this.value = maxYears;
+            this.value = value;
+        });
+        
+        // Validate on blur in case of paste or other input methods
+        paymentDuration.addEventListener('blur', function() {
+            if (!this.value || parseInt(this.value) < 1) {
+                this.value = '1';
             }
         });
         
-        // Also validate on blur in case someone pastes a negative value
-        paymentDuration.addEventListener('blur', function() {
-            if (this.value < 1) {
-                this.value = 1;
+        // Prevent minus key press
+        paymentDuration.addEventListener('keydown', function(e) {
+            if (e.key === '-' || e.key === 'e' || e.key === 'E') {
+                e.preventDefault();
             }
         });
     }
 
-    // Price validation
+    // Price validation - strictly positive numbers only
     const customPrice = document.getElementById('custom_price');
     if (customPrice) {
         customPrice.addEventListener('input', function() {
-            // Remove any characters that aren't digits or decimal point
-            this.value = this.value.replace(/[^0-9.]/g, '');
+            // Get current cursor position
+            const cursorPos = this.selectionStart;
+            
+            // Remove any unwanted characters but keep numbers and single decimal
+            let value = this.value.replace(/[^0-9.]/g, '');
             
             // Remove extra decimal points
-            if ((this.value.match(/\./g) || []).length > 1) {
-                this.value = this.value.substring(0, this.value.lastIndexOf('.'));
+            const decimalCount = (value.match(/\./g) || []).length;
+            if (decimalCount > 1) {
+                value = value.substring(0, value.indexOf('.')) + 
+                        value.substring(value.indexOf('.')).replace(/\./g, '');
             }
             
-            // Ensure minimum value is 0.01
-            if (parseFloat(this.value) <= 0) {
-                this.value = '0.01';
+            // Ensure value is positive and has minimum 0.01
+            if (value.startsWith('0') && !value.startsWith('0.')) {
+                value = '0' + value.substring(1).replace(/^0+/, '');
             }
+            if (value === '.' || value === '') {
+                value = '0.00';
+            }
+            if (parseFloat(value) <= 0) {
+                value = '0.01';
+            }
+            
+            // Format to 2 decimal places if it has decimal
+            if (value.includes('.')) {
+                const parts = value.split('.');
+                if (parts[1].length > 2) {
+                    value = parseFloat(value).toFixed(2);
+                }
+            }
+            
+            this.value = value;
+            
+            // Restore cursor position
+            this.setSelectionRange(cursorPos, cursorPos);
         });
         
-        // Also validate on blur
+        // Validate on blur
         customPrice.addEventListener('blur', function() {
             if (!this.value || parseFloat(this.value) <= 0) {
                 this.value = '0.01';
             }
-            
-            // Format to 2 decimal places
-            if (this.value && this.value.includes('.')) {
+            // Ensure proper decimal format
+            if (!this.value.includes('.')) {
+                this.value = parseFloat(this.value).toFixed(2);
+            } else {
                 const parts = this.value.split('.');
-                if (parts[1].length > 2) {
+                if (parts[1].length < 2) {
                     this.value = parseFloat(this.value).toFixed(2);
                 }
+            }
+        });
+        
+        // Prevent minus key press
+        customPrice.addEventListener('keydown', function(e) {
+            if (e.key === '-' || (e.key === 'e' && !e.ctrlKey && !e.metaKey)) {
+                e.preventDefault();
             }
         });
     }
