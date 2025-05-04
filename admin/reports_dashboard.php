@@ -1092,7 +1092,7 @@ document.addEventListener('DOMContentLoaded', function() {
         },
         labels: {
           formatter: function(value) {
-            return '₱' + value.toLocaleString('en-US', {
+            return '$' + value.toLocaleString('en-US', {
               minimumFractionDigits: 0,
               maximumFractionDigits: 0
             });
@@ -1106,7 +1106,7 @@ document.addEventListener('DOMContentLoaded', function() {
         },
         y: {
           formatter: function(value) {
-            return '₱' + value.toLocaleString('en-US', {
+            return '$' + value.toLocaleString('en-US', {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2
             });
