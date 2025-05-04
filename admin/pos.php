@@ -614,61 +614,65 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Function to validate name input
     function validateNameInput(field) {
-        // First, remove any invalid characters
-        let newValue = field.value.replace(/[^a-zA-Z\s'-]/g, '');
-        
-        // Don't allow space as first character
-        if (newValue.startsWith(' ')) {
-            newValue = newValue.substring(1);
-        }
-        
-        // Don't allow consecutive spaces
-        newValue = newValue.replace(/\s{2,}/g, ' ');
-        
-        // Only allow space after at least 2 characters
-        if (newValue.length < 2 && newValue.includes(' ')) {
-            newValue = newValue.replace(/\s/g, '');
-        }
-        
-        // Update the field value
-        field.value = newValue;
-        
-        // Capitalize first letter of each word
-        if (field.value.length > 0) {
-            field.value = field.value.toLowerCase().replace(/(^|\s)\S/g, function(firstLetter) {
-                return firstLetter.toUpperCase();
-            });
-        }
-    }
-
-    // Function to apply validation to a field
-    function applyNameValidation(field) {
-        if (field) {
-            // Validate on input
-            field.addEventListener('input', function() {
-                validateNameInput(this);
-            });
-
-            // Validate on blur (when field loses focus)
-            field.addEventListener('blur', function() {
-                validateNameInput(this);
-            });
-
-            // Prevent paste of invalid content
-            field.addEventListener('paste', function(e) {
-                e.preventDefault();
-                const pastedText = (e.clipboardData || window.clipboardData).getData('text');
-                const cleanedText = pastedText.replace(/[^a-zA-Z\s'-]/g, '');
-                document.execCommand('insertText', false, cleanedText);
-            });
-        }
-    }
-
-    // Apply validation to modal fields
-    modalNameFields.forEach(fieldId => {
-        const field = document.getElementById(fieldId);
-        applyNameValidation(field);
+  // First, remove any invalid characters
+  let newValue = field.value.replace(/[^a-zA-Z\s'-]/g, '');
+  
+  // Don't allow space as first character
+  if (newValue.startsWith(' ')) {
+    newValue = newValue.substring(1);
+  }
+  
+  // Don't allow consecutive spaces
+  newValue = newValue.replace(/\s{2,}/g, ' ');
+  
+  // Only allow space after at least 2 characters
+  if (newValue.length < 2 && newValue.includes(' ')) {
+    newValue = newValue.replace(/\s/g, '');
+  }
+  
+  // Update the field value
+  field.value = newValue;
+  
+  // Capitalize first letter of each word
+  if (field.value.length > 0) {
+    field.value = field.value.toLowerCase().replace(/(^|\s)\S/g, function(firstLetter) {
+      return firstLetter.toUpperCase();
     });
+  }
+}
+
+function applyNameValidation(field) {
+  if (field) {
+    // Validate on input
+    field.addEventListener('input', function() {
+      validateNameInput(this);
+    });
+
+    // Validate on blur (when field loses focus)
+    field.addEventListener('blur', function() {
+      validateNameInput(this);
+    });
+
+    // Prevent paste of invalid content
+    field.addEventListener('paste', function(e) {
+      e.preventDefault();
+      const pastedText = (e.clipboardData || window.clipboardData).getData('text');
+      const cleanedText = pastedText.replace(/[^a-zA-Z\s'-]/g, '');
+      document.execCommand('insertText', false, cleanedText);
+    });
+  }
+}
+
+// Apply to all name fields in traditional checkout
+const traditionalNameFields = [
+  'clientFirstName', 'clientMiddleName', 'clientLastName',
+  'deceasedFirstName', 'deceasedMiddleName', 'deceasedLastName'
+];
+
+traditionalNameFields.forEach(fieldId => {
+  const field = document.getElementById(fieldId);
+  applyNameValidation(field);
+});
 
     // Required fields in the modal
     const requiredModalFields = [
@@ -698,59 +702,56 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     function validatePhoneNumber() {
-    const phoneField = document.getElementById('clientPhone');
-    if (phoneField) {
-        phoneField.addEventListener('input', function() {
-            // Remove all non-digit characters
-            this.value = this.value.replace(/\D/g, '');
-            
-            // Ensure it starts with '09' and is exactly 11 digits long
-            if (this.value.length > 11) {
-                this.value = this.value.substring(0, 11);
-            }
-        });
-        
-        // Add validation on blur (when field loses focus)
-        phoneField.addEventListener('blur', function() {
-            if (this.value.length !== 11 || !this.value.startsWith('09')) {
-                this.setCustomValidity('Phone number must start with 09 and be exactly 11 digits long.');
-                // Show error to user
-                this.classList.add('border-red-500');
-                const errorMsg = this.nextElementSibling;
-                if (!errorMsg || !errorMsg.classList.contains('error-message')) {
-                    const errorElement = document.createElement('p');
-                    errorElement.className = 'error-message text-red-500 text-xs mt-1';
-                    errorElement.textContent = 'Phone number must start with 09 and be exactly 11 digits long.';
-                    this.parentNode.insertBefore(errorElement, this.nextSibling);
-                }
-            } else {
-                this.setCustomValidity('');
-                this.classList.remove('border-red-500');
-                const errorMsg = this.nextElementSibling;
-                if (errorMsg && errorMsg.classList.contains('error-message')) {
-                    errorMsg.remove();
-                }
-            }
-        });
-    }
+  const phoneField = document.getElementById('clientPhone');
+  if (phoneField) {
+    phoneField.addEventListener('input', function() {
+      // Remove all non-digit characters
+      this.value = this.value.replace(/\D/g, '');
+      
+      // Ensure it starts with '09' and is exactly 11 digits long
+      if (this.value.length > 11) {
+        this.value = this.value.substring(0, 11);
+      }
+    });
+    
+    // Add validation on blur
+    phoneField.addEventListener('blur', function() {
+      if (this.value.length !== 11 || !this.value.startsWith('09')) {
+        this.setCustomValidity('Phone number must start with 09 and be exactly 11 digits long.');
+        this.classList.add('border-red-500');
+        // Show error message
+        const errorElement = document.createElement('p');
+        errorElement.className = 'error-message text-red-500 text-xs mt-1';
+        errorElement.textContent = 'Phone number must start with 09 and be exactly 11 digits long.';
+        this.parentNode.insertBefore(errorElement, this.nextSibling);
+      } else {
+        this.setCustomValidity('');
+        this.classList.remove('border-red-500');
+        const errorMsg = this.nextElementSibling;
+        if (errorMsg && errorMsg.classList.contains('error-message')) {
+          errorMsg.remove();
+        }
+      }
+    });
+  }
 }
     // Validate email
     function validateEmail() {
-        const emailField = document.getElementById('clientEmail');
-        if (emailField) {
-            emailField.addEventListener('input', function() {
-                // Remove spaces
-                this.value = this.value.replace(/\s/g, '');
-                
-                // Check if email contains @ symbol if there's a value
-                if (this.value && !this.value.includes('@')) {
-                    this.setCustomValidity('Email must contain @ symbol');
-                } else {
-                    this.setCustomValidity('');
-                }
-            });
-        }
-    }
+  const emailField = document.getElementById('clientEmail');
+  if (emailField) {
+    emailField.addEventListener('input', function() {
+      // Remove spaces
+      this.value = this.value.replace(/\s/g, '');
+      
+      // Check if email contains @ symbol if there's a value
+      if (this.value && !this.value.includes('@')) {
+        this.setCustomValidity('Email must contain @ symbol');
+      } else {
+        this.setCustomValidity('');
+      }
+    });
+  }
+}
 
     // Validate address
     function validateAddress() {
@@ -771,48 +772,45 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Validate dates
     function validateDates() {
-        const dobField = document.getElementById('dateOfBirth');
-        const dodField = document.getElementById('dateOfDeath');
-        const burialField = document.getElementById('dateOfBurial');
-        const today = new Date();
-        const tomorrow = new Date(today);
-        tomorrow.setDate(today.getDate() + 1);
-        
-        // Set max dates to today for DOB and DOD
-        if (dobField) dobField.max = today.toISOString().split('T')[0];
-        if (dodField) dodField.max = today.toISOString().split('T')[0];
-        if (burialField) burialField.min = tomorrow.toISOString().split('T')[0]; // Set min date for burial to tomorrow
-        
-        // Validate date of death
-        if (dodField) {
-            dodField.addEventListener('change', function() {
-                if (dobField && dobField.value) {
-                    const dob = new Date(dobField.value);
-                    const dod = new Date(this.value);
-                    if (dod < dob) {
-                        this.setCustomValidity('Date of death cannot be before date of birth');
-                    } else {
-                        this.setCustomValidity('');
-                    }
-                }
-            });
+  const dobField = document.getElementById('dateOfBirth');
+  const dodField = document.getElementById('dateOfDeath');
+  const burialField = document.getElementById('dateOfBurial');
+  const today = new Date();
+  
+  // Set max dates to today for DOB and DOD
+  if (dobField) dobField.max = today.toISOString().split('T')[0];
+  if (dodField) dodField.max = today.toISOString().split('T')[0];
+  
+  // Validate date of death
+  if (dodField) {
+    dodField.addEventListener('change', function() {
+      if (dobField && dobField.value) {
+        const dob = new Date(dobField.value);
+        const dod = new Date(this.value);
+        if (dod < dob) {
+          this.setCustomValidity('Date of death cannot be before date of birth');
+        } else {
+          this.setCustomValidity('');
         }
-        
-        // Validate date of burial
-        if (burialField) {
-            burialField.addEventListener('change', function() {
-                if (dodField && dodField.value) {
-                    const dod = new Date(dodField.value);
-                    const burial = new Date(this.value);
-                    if (burial < dod) {
-                        this.setCustomValidity('Date of burial cannot be before date of death');
-                    } else {
-                        this.setCustomValidity('');
-                    }
-                }
-            });
+      }
+    });
+  }
+  
+  // Validate date of burial
+  if (burialField) {
+    burialField.addEventListener('change', function() {
+      if (dodField && dodField.value) {
+        const dod = new Date(dodField.value);
+        const burial = new Date(this.value);
+        if (burial < dod) {
+          this.setCustomValidity('Date of burial cannot be before date of death');
+        } else {
+          this.setCustomValidity('');
         }
-    }
+      }
+    });
+  }
+}
 
     // Validate prices
     function validatePrices() {
@@ -998,13 +996,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Initialize all validations
-    validatePhoneNumber();
-    validateEmail();
-    validateAddress();
-    validateDates();
-    validatePrices();
-    setupImagePreview();
+    
 });
 </script>
 
@@ -1363,15 +1355,9 @@ document.addEventListener('DOMContentLoaded', function() {
     ];
 
     // Name fields in the lifeplan checkout modal
-    const modalNameFields = [
-        'lp-clientFirstName',
-        'lp-clientMiddleName',
-        'lp-clientLastName',
-        'lp-clientSuffix',
-        'beneficiaryFirstName',
-        'beneficiaryMiddleName',
-        'beneficiaryLastName',
-        'beneficiarySuffix'
+    const lifeplanNameFields  = [
+        'lp-clientFirstName', 'lp-clientMiddleName', 'lp-clientLastName',
+  'beneficiaryFirstName', 'beneficiaryMiddleName', 'beneficiaryLastName'
     ];
 
     // Function to validate name input
@@ -1432,11 +1418,10 @@ document.addEventListener('DOMContentLoaded', function() {
         applyNameValidation(field);
     });
 
-    // Apply validation to modal fields
-    modalNameFields.forEach(fieldId => {
-        const field = document.getElementById(fieldId);
-        applyNameValidation(field);
-    });
+    lifeplanNameFields.forEach(fieldId => {
+  const field = document.getElementById(fieldId);
+  applyNameValidation(field); // Reuse the same function from traditional checkout
+});
 
     // Additional validation for required fields
     const requiredCustomerFields = ['firstName', 'lastName'];
@@ -1488,20 +1473,23 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Validate beneficiary birthdate (no age restriction)
     function validateBeneficiaryBirthdate() {
-        const birthdateField = document.getElementById('beneficiaryDateOfBirth');
-        if (birthdateField) {
-            const selectedDate = new Date(birthdateField.value);
-            const today = new Date();
-            
-            if (selectedDate > today) {
-                birthdateField.setCustomValidity('Beneficiary birthdate cannot be in the future');
-            } else {
-                birthdateField.setCustomValidity('');
-            }
-        }
-    }
+  const birthdateField = document.getElementById('beneficiaryDateOfBirth');
+  if (birthdateField) {
+    const today = new Date();
+    birthdateField.max = today.toISOString().split('T')[0];
+    
+    birthdateField.addEventListener('change', function() {
+      const selectedDate = new Date(this.value);
+      
+      if (selectedDate > today) {
+        this.setCustomValidity('Birthdate cannot be in the future');
+      } else {
+        this.setCustomValidity('');
+      }
+    });
+  }
+}
 
     // Set max date for birthdate field to 18 years ago
     function setMaxBirthdate() {
@@ -1574,22 +1562,41 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('lp-clientEmail')?.addEventListener('input', validateModalEmail);
 });
 
-function validatePhoneNumber() {
+function validateLifeplanPhoneNumber() {
   const phoneField = document.getElementById('lp-clientPhone');
-  phoneField.addEventListener('input', function() {
-    // Remove all non-digit characters
-    this.value = this.value.replace(/\D/g, '');
+  if (phoneField) {
+    phoneField.addEventListener('input', function() {
+      // Remove all non-digit characters
+      this.value = this.value.replace(/\D/g, '');
+      
+      // Ensure it starts with '09' and is exactly 11 digits long
+      if (this.value.length > 11) {
+        this.value = this.value.substring(0, 11);
+      }
+    });
     
-    // Ensure it starts with '09' and is 11 digits long
-    if (this.value.length > 11) {
-      this.value = this.value.substring(0, 11);
-    }
-    if (this.value && !this.value.startsWith('09')) {
-      this.value = '';
-      alert('Phone number must start with 09 and be 11 digits long.');
-    }
-  });
+    // Add validation on blur
+    phoneField.addEventListener('blur', function() {
+      if (this.value.length !== 11 || !this.value.startsWith('09')) {
+        this.setCustomValidity('Phone number must start with 09 and be exactly 11 digits long.');
+        this.classList.add('border-red-500');
+        // Show error message
+        const errorElement = document.createElement('p');
+        errorElement.className = 'error-message text-red-500 text-xs mt-1';
+        errorElement.textContent = 'Phone number must start with 09 and be exactly 11 digits long.';
+        this.parentNode.insertBefore(errorElement, this.nextSibling);
+      } else {
+        this.setCustomValidity('');
+        this.classList.remove('border-red-500');
+        const errorMsg = this.nextElementSibling;
+        if (errorMsg && errorMsg.classList.contains('error-message')) {
+          errorMsg.remove();
+        }
+      }
+    });
+  }
 }
+
 function validateEmail() {
   const emailField = document.getElementById('lp-clientEmail');
   emailField.addEventListener('input', function() {
@@ -1612,43 +1619,85 @@ function validateAddress() {
 }
 function validateRelationship() {
   const relationshipField = document.getElementById('beneficiaryRelationship');
-  relationshipField.addEventListener('input', function() {
-    // Remove spaces at the start
-    if (this.value.startsWith(' ')) {
-      this.value = this.value.trimStart();
-    }
-    // Remove invalid characters (numbers and symbols)
-    this.value = this.value.replace(/[^a-zA-Z\s]/g, '');
-    // Capitalize the first character
-    if (this.value.length > 0) {
-      this.value = this.value.charAt(0).toUpperCase() + this.value.slice(1);
-    }
-  });
+  if (relationshipField) {
+    relationshipField.addEventListener('input', function() {
+      // Remove spaces at the start
+      if (this.value.startsWith(' ')) {
+        this.value = this.value.trimStart();
+      }
+      // Remove invalid characters (numbers and symbols)
+      this.value = this.value.replace(/[^a-zA-Z\s]/g, '');
+      // Capitalize the first character
+      if (this.value.length > 0) {
+        this.value = this.value.charAt(0).toUpperCase() + this.value.slice(1);
+      }
+    });
+  }
 }
-function validatePrices() {
+function validateLifeplanPrices() {
   const totalPriceInput = document.getElementById('lp-totalPrice');
   const amountPaidInput = document.getElementById('lp-amountPaid');
 
-  totalPriceInput.addEventListener('input', function() {
-    if (parseFloat(this.value) < 0) {
-      this.value = 0;
-      alert('Total Price cannot be negative.');
-    }
-  });
+  if (totalPriceInput) {
+    totalPriceInput.addEventListener('input', function() {
+      if (parseFloat(this.value) < 0) {
+        this.value = 0;
+        this.setCustomValidity('Total Price cannot be negative');
+      } else {
+        this.setCustomValidity('');
+      }
+    });
+  }
 
-  amountPaidInput.addEventListener('input', function() {
-    if (parseFloat(this.value) < 0) {
-      this.value = 0;
-      alert('Amount Paid cannot be negative.');
-    }
-  });
+  if (amountPaidInput) {
+    amountPaidInput.addEventListener('input', function() {
+      if (parseFloat(this.value) < 0) {
+        this.value = 0;
+        this.setCustomValidity('Amount Paid cannot be negative');
+      } else {
+        this.setCustomValidity('');
+      }
+      
+      // Validate if amount paid is less than total price
+      if (totalPriceInput && totalPriceInput.value) {
+        if (parseFloat(this.value) < parseFloat(totalPriceInput.value)) {
+          this.setCustomValidity('Amount paid cannot be less than total price');
+        } else {
+          this.setCustomValidity('');
+        }
+      }
+    });
+  }
 }
 document.addEventListener('DOMContentLoaded', function() {
+  // Traditional checkout validations
   validatePhoneNumber();
   validateEmail();
+  validateDates();
   validateAddress();
+    validatePrices();
+    setupImagePreview();
+  
+  // Lifeplan checkout validations
+  validateLifeplanPhoneNumber();
+  validateBeneficiaryBirthdate();
   validateRelationship();
-  validatePrices();
+  validateLifeplanPrices();
+  
+  // Name validations for both modals
+  const allNameFields = [
+    // Traditional checkout
+    'clientFirstName', 'clientMiddleName', 'clientLastName',
+    'deceasedFirstName', 'deceasedMiddleName', 'deceasedLastName',
+    // Lifeplan checkout
+    'lp-clientFirstName', 'lp-clientMiddleName', 'lp-clientLastName',
+    'beneficiaryFirstName', 'beneficiaryMiddleName', 'beneficiaryLastName'
+  ];
+  
+  allNameFields.forEach(fieldId => {
+    const field = document.getElementById(fieldId);
+    if (field) applyNameValidation(field);
+  });
 });
 
 
