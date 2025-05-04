@@ -2862,7 +2862,7 @@ document.getElementById('lifeplanPaymentForm').addEventListener('submit', functi
                 title: 'Success!',
                 text: 'LifePlan accepted and payment recorded successfully!',
                 showConfirmButton: false,
-                timer: 2000
+                timer: 20000
             }).then(() => {
                 closeLifeplanPaymentModal();
                 closeLifeplanModal();
