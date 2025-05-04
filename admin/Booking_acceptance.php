@@ -2436,8 +2436,8 @@ function openLifeplanDetails(lifeplanId) {
       const validIdNotAvailable = document.getElementById('validIdNotAvailable');
       const validIdImage = document.getElementById('validIdImage');
 
-      if (data.valid_id_url && data.valid_id_url !== '') {
-        const validIdPath = '../customer/lifeplan/uploads/' + data.valid_id_url.replace(/^uploads\//, '');
+      if (data.image_path && data.image_path !== '') {
+        const validIdPath = '../admin/uploads/valid_ids/' + data.image_path.replace(/^uploads\//, '');
         
         validIdImage.onerror = function() {
           console.error("Failed to load valid ID image:", validIdPath);
