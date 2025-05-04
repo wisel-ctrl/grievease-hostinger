@@ -1766,7 +1766,7 @@ $custom_offset = ($custom_current_page - 1) * $custom_bookings_per_page;
           <input type="hidden" id="lifeplanValidIdUrl" name="valid_id_url">
           <input type="hidden" id="lifeplanInitialDate" name="initial_date">
           <input type="hidden" id="lifeplanEndDate" name="end_date">
-          <input type="hidden" id="withCremate" name="with_cremate">
+          <input type="hidden" id="withCremateInput" name="with_cremate">
           
           <div class="mb-4">
               <label for="lifeplanAmountPaidInput" class="block text-sm font-medium text-gray-700 mb-1">Amount Paid</label>
@@ -2686,7 +2686,7 @@ function confirmLifeplanAccept() {
             document.getElementById('lifeplanEndDate').value = data.end_date || '';
 
             console.log("With Cremate:", data.with_cremate);
-            document.getElementById('withCremate').value = data.with_cremate ? 'yes' : 'no';
+            document.getElementById('withCremateInput').value = data.with_cremate ? 'yes' : 'no';
 
             // Show the payment modal
             openLifeplanPaymentModal();
