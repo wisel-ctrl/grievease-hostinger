@@ -1966,14 +1966,12 @@ function confirmLifeplanCheckout() {
   submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
   submitBtn.disabled = true;
 
-  // Validate required fields - use the correct lifeplan field IDs
+  // Validate required fields - USE THE CORRECT LP- PREFIXED IDs
   const requiredFields = [
-    'lp-clientFirstName', 
-    'lp-clientLastName', 
-    'lp-clientPhone',
-    'beneficiaryFirstName', 
-    'beneficiaryLastName', 
-    'beneficiaryRelationship'
+    'lp-clientFirstName', 'lp-clientLastName', 'lp-clientPhone',
+    'beneficiaryFirstName', 'beneficiaryLastName', 'beneficiaryRelationship',
+    'beneficiaryStreet', 'beneficiaryRegion', 'beneficiaryProvince',
+    'beneficiaryCity', 'beneficiaryBarangay', 'beneficiaryZip'
   ];
 
   for (const fieldId of requiredFields) {
@@ -1981,7 +1979,7 @@ function confirmLifeplanCheckout() {
     if (!field || !field.value.trim()) {
       submitBtn.innerHTML = originalBtnText;
       submitBtn.disabled = false;
-      alert(`Please fill in ${fieldId.includes('lp-') ? fieldId.substring(3) : fieldId}`);
+      alert(`Please fill in ${field.labels[0]?.textContent || fieldId}`);
       if (field) field.focus();
       return;
     }
@@ -2038,7 +2036,6 @@ function confirmLifeplanCheckout() {
     submitBtn.disabled = false;
   });
 }
-
 
 function closeCheckoutModal() {
   document.getElementById('checkoutModal').classList.add('hidden');
