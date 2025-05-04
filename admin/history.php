@@ -2690,5 +2690,193 @@ document.head.appendChild(style);
 
 </script>
 <script src="tailwind.js"></script>
+
+<script>
+// Validation functions for Edit Service Modal
+document.addEventListener('DOMContentLoaded', function() {
+  // Customer Search validation
+  const customerSearch = document.getElementById('customerSearch');
+  if (customerSearch) {
+    customerSearch.addEventListener('input', function(e) {
+      // Only allow letters and single spaces
+      this.value = this.value.replace(/[^a-zA-Z\s]/g, '');
+      
+      // Prevent multiple consecutive spaces
+      this.value = this.value.replace(/\s{2,}/g, ' ');
+      
+      // Only allow space after at least 2 characters
+      if (this.value.length < 2 && this.value.endsWith(' ')) {
+        this.value = this.value.trim();
+      }
+      
+      // Auto-capitalize first letter
+      if (this.value.length === 1) {
+        this.value = this.value.toUpperCase();
+      }
+    });
+  }
+
+  // Name fields validation (first, middle, last)
+  const nameFields = ['firstName', 'middleName', 'lastName'];
+  nameFields.forEach(fieldId => {
+    const field = document.getElementById(fieldId);
+    if (field) {
+      field.addEventListener('input', function(e) {
+        // Only allow letters and single spaces
+        this.value = this.value.replace(/[^a-zA-Z\s]/g, '');
+        
+        // Prevent multiple consecutive spaces
+        this.value = this.value.replace(/\s{2,}/g, ' ');
+        
+        // Only allow space after at least 2 characters
+        if (this.value.length < 2 && this.value.endsWith(' ')) {
+          this.value = this.value.trim();
+        }
+        
+        // Auto-capitalize first letter
+        if (this.value.length === 1) {
+          this.value = this.value.toUpperCase();
+        }
+      });
+    }
+  });
+
+  // Email validation
+  const emailField = document.getElementById('email');
+  if (emailField) {
+    emailField.addEventListener('input', function(e) {
+      // Remove spaces
+      this.value = this.value.replace(/\s/g, '');
+    });
+    
+    emailField.addEventListener('blur', function(e) {
+      // Check for @ symbol
+      if (this.value && !this.value.includes('@')) {
+        alert('Please enter a valid email address with @ symbol');
+        this.focus();
+      }
+    });
+  }
+
+  // Phone validation
+  const phoneField = document.getElementById('phone');
+  if (phoneField) {
+    phoneField.addEventListener('input', function(e) {
+      // Only allow numbers
+      this.value = this.value.replace(/\D/g, '');
+      
+      // Ensure starts with 09
+      if (this.value.length >= 1 && !this.value.startsWith('0')) {
+        this.value = '0';
+      }
+      if (this.value.length >= 2 && !this.value.startsWith('09')) {
+        this.value = '09';
+      }
+      
+      // Limit to 11 digits
+      if (this.value.length > 11) {
+        this.value = this.value.substring(0, 11);
+      }
+    });
+  }
+
+  // Service price validation
+  const servicePrice = document.getElementById('servicePrice');
+  if (servicePrice) {
+    servicePrice.addEventListener('input', function(e) {
+      // Ensure not negative
+      if (parseFloat(this.value) < 0) {
+        this.value = '';
+      }
+    });
+  }
+
+  // Deceased name fields validation
+  const deceasedNameFields = ['deceasedFirstName', 'deceasedMiddleName', 'deceasedLastName'];
+  deceasedNameFields.forEach(fieldId => {
+    const field = document.getElementById(fieldId);
+    if (field) {
+      field.addEventListener('input', function(e) {
+        // Only allow letters and single spaces
+        this.value = this.value.replace(/[^a-zA-Z\s]/g, '');
+        
+        // Prevent multiple consecutive spaces
+        this.value = this.value.replace(/\s{2,}/g, ' ');
+        
+        // Only allow space after at least 2 characters
+        if (this.value.length < 2 && this.value.endsWith(' ')) {
+          this.value = this.value.trim();
+        }
+        
+        // Auto-capitalize first letter
+        if (this.value.length === 1) {
+          this.value = this.value.toUpperCase();
+        }
+      });
+    }
+  });
+
+  // Date validations
+  const birthDate = document.getElementById('birthDate');
+  const deathDate = document.getElementById('deathDate');
+  const burialDate = document.getElementById('burialDate');
+  
+  if (birthDate && deathDate && burialDate) {
+    // Set max date for birth date (today)
+    const today = new Date().toISOString().split('T')[0];
+    birthDate.setAttribute('max', today);
+    
+    birthDate.addEventListener('change', function() {
+      // When birth date changes, update death date min/max
+      if (this.value) {
+        deathDate.setAttribute('min', this.value);
+        deathDate.setAttribute('max', today);
+        deathDate.disabled = false;
+      } else {
+        deathDate.removeAttribute('min');
+        deathDate.removeAttribute('max');
+        deathDate.disabled = true;
+      }
+    });
+    
+    deathDate.addEventListener('change', function() {
+      // When death date changes, update burial date min
+      if (this.value) {
+        // Set burial date to at least tomorrow
+        const deathDateObj = new Date(this.value);
+        deathDateObj.setDate(deathDateObj.getDate() + 1);
+        const minBurialDate = deathDateObj.toISOString().split('T')[0];
+        burialDate.setAttribute('min', minBurialDate);
+        burialDate.disabled = false;
+      } else {
+        burialDate.removeAttribute('min');
+        burialDate.disabled = true;
+      }
+    });
+  }
+
+  // Death certificate file validation
+  const deathCertificate = document.getElementById('deathCertificate');
+  if (deathCertificate) {
+    deathCertificate.addEventListener('change', function(e) {
+      const file = this.files[0];
+      if (file) {
+        const validTypes = ['image/jpeg', 'image/png'];
+        if (!validTypes.includes(file.type)) {
+          alert('Only JPG and PNG files are allowed for death certificate');
+          this.value = '';
+        }
+      }
+    });
+  }
+});
+
+// Helper function to format names with proper capitalization
+function formatName(name) {
+  return name.toLowerCase().split(' ').map(word => 
+    word.charAt(0).toUpperCase() + word.slice(1)
+  ).join(' ');
+}
+</script>
 </body> 
 </html>
