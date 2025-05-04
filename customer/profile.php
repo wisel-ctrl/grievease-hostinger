@@ -2719,41 +2719,48 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Functions
-    function fetchBookingDetails(bookingId) {
+function fetchBookingDetails(bookingId) {
     fetch(`profile/fetch_booking_details.php?booking_id=${bookingId}`)
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                // First clear any existing date info paragraphs
-                const statusContainer = document.getElementById('detail-status').parentNode;
-                const nextElement = statusContainer.nextElementSibling;
-                
-                // Remove any existing date paragraphs
-                if (nextElement && (nextElement.textContent.includes('Accepted Date:') || 
-                                   nextElement.textContent.includes('Declined Date:'))) {
-                    nextElement.remove();
-                }
-
                 // Populate the view details modal
                 document.getElementById('detail-service').textContent = data.service_name;
                 document.getElementById('detail-branch').textContent = data.branch_name 
-                    ? data.branch_name.toLowerCase().replace(/\b\w/g, c => c.toUpperCase())
-                    : '';
+                ? data.branch_name.toLowerCase().replace(/\b\w/g, c => c.toUpperCase())
+                : '';
                 document.getElementById('detail-status').textContent = data.status;
                 document.getElementById('detail-booking-date').textContent = formatDate(data.booking_date);
                 document.getElementById('detail-total').textContent = `₱${parseFloat(data.selling_price).toFixed(2)}`;
+                
+                const container = document.querySelector('.space-y-2');
 
-                // Only show dates if status matches
-                if (data.status === 'Accepted' && data.accepted_date) {
-                    const acceptedDateP = document.createElement('p');
-                    acceptedDateP.innerHTML = `<span class="text-gray-500">Accepted Date:</span> <span class="text-navy">${formatDate(data.accepted_date)}</span>`;
-                    document.getElementById('detail-status').parentNode.insertAdjacentElement('afterend', acceptedDateP);
-                } 
-                else if (data.status === 'Declined' && data.decline_date) {
-                    const declinedDateP = document.createElement('p');
-                    declinedDateP.innerHTML = `<span class="text-gray-500">Declined Date:</span> <span class="text-navy">${formatDate(data.decline_date)}</span>`;
-                    document.getElementById('detail-status').parentNode.insertAdjacentElement('afterend', declinedDateP);
-                }
+                // Check if status is Accepted or Declined
+                // Remove any existing date paragraphs first
+const existingDatePs = document.querySelectorAll('#detail-status').parentNode.nextElementSibling);
+existingDatePs.forEach(p => {
+    if (p.textContent.includes('Date:')) {
+        p.remove();
+    }
+});
+
+// Then add the appropriate date based on status
+if (data.status === 'Accepted' && data.accepted_date) {
+    // Create new paragraph for Accepted Date
+    const acceptedDateP = document.createElement('p');
+    acceptedDateP.innerHTML = `<span class="text-gray-500">Accepted Date:</span> <span class="text-navy">${formatDate(data.accepted_date)}</span>`;
+    
+    // Insert after the status paragraph
+    document.getElementById('detail-status').parentNode.insertAdjacentElement('afterend', acceptedDateP);
+} 
+else if (data.status === 'Declined' && data.decline_date) {
+    // Create new paragraph for Declined Date
+    const declinedDateP = document.createElement('p');
+    declinedDateP.innerHTML = `<span class="text-gray-500"> Declined Date:</span> <span class="text-navy">${formatDate(data.decline_date)}</span>`;
+    
+    // Insert after the status paragraph
+    document.getElementById('detail-status').parentNode.insertAdjacentElement('afterend', declinedDateP);
+}
                 
                 // Deceased info
                 let deceasedName = `${data.deceased_lname}, ${data.deceased_fname}`;
@@ -2761,6 +2768,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (data.deceased_suffix) deceasedName += ` ${data.deceased_suffix}`;
                 
                 document.getElementById('detail-deceased-name').textContent = deceasedName 
+                ? deceasedName.toLowerCase().replace(/\b\w/g, c => c.toUpperCase())
+                : '';
                     ? deceasedName.toLowerCase().replace(/\b\w/g, c => c.toUpperCase())
                     : '';
                 document.getElementById('detail-birth').textContent = data.deceased_birth ? formatDate(data.deceased_birth) : 'Not provided';
@@ -2778,9 +2787,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 currentDeathCertUrl = data.death_certificate || '';
                 currentPaymentUrl = data.payment_proof || '';
                 
-                // Show/hide document buttons based on availability
-                document.getElementById('viewDeathCertBtn').style.display = currentDeathCertUrl ? 'block' : 'none';
-                document.getElementById('viewPaymentBtn').style.display = currentPaymentUrl ? 'block' : 'none';
+                // ALWAYS show buttons (regardless of status or URL existence)
+                document.getElementById('viewDeathCertBtn').style.display = 'block';
+                document.getElementById('viewPaymentBtn').style.display = 'block';
                 
                 // Show the modal
                 viewDetailsModal.classList.remove('hidden');
@@ -2793,6 +2802,7 @@ document.addEventListener('DOMContentLoaded', function() {
             showError('An error occurred while fetching booking details');
         });
 }
+
 // Update your document viewing functions
 viewDeathCertBtn.addEventListener('click', function() {
     showDocument('Death Certificate', currentDeathCertUrl);
