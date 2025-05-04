@@ -2616,7 +2616,7 @@ function confirmLifeplanAccept() {
             console.log("Fetched successfully");
 
             // Customer information
-            console.log("Customer ID:", lifeplan.customer_id);
+            console.log("Customer ID:", data.customer_id);
             document.getElementById('lifeplanCustomerID').value = data.customer_id || '';
 
             console.log("Branch ID:", data.branch_id);
