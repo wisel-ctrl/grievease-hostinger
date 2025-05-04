@@ -2605,15 +2605,16 @@ function confirmLifeplanAccept() {
     currentLifeplanIdForPayment = lifeplanId;
     
     // Fetch lifeplan details to get all the required fields
-    fetch('bookingpage/get_lifeplan_details.php?id=' + lifeplanId)
+    fetch('bookingpage/get_lifeplan_for_accept.php?id=' + lifeplanId)
         .then(response => response.json())
         .then(data => {
             if (!data.success) {
                 throw new Error(data.error || 'Failed to load lifeplan details');
+                console.log("ay malii");
             }
             
             // Set all the hidden fields
-            
+            console.log("na fetch");
             // Customer information
             document.getElementById('lifeplanCustomerID').value = data.customer_id || '';
             document.getElementById('lifeplanCustomerBranch').value = data.branch_id || '';
