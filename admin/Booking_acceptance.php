@@ -1714,6 +1714,78 @@ $custom_offset = ($custom_current_page - 1) * $custom_bookings_per_page;
   </div>
 </div>
 
+<!-- LifePlan Payment Modal -->
+<div id="lifeplanPaymentModal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
+  <!-- Modal Backdrop -->
+  <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+  
+  <!-- Modal Content -->
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-md mx-4 z-10 transform transition-all duration-300">
+    <!-- Close Button -->
+    <button type="button" class="absolute top-4 right-4 text-gray-500 hover:text-sidebar-accent transition-colors" onclick="closeLifeplanPaymentModal()">
+      <i class="fas fa-times"></i>
+    </button>
+    
+    <!-- Modal Header -->
+    <div class="px-6 py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
+      <h3 class="text-xl font-bold text-white flex items-center">
+        LifePlan Payment Details
+      </h3>
+    </div>
+    
+    <!-- Modal Body -->
+    <div class="px-6 py-5">
+      <form id="lifeplanPaymentForm">
+        <!-- LifePlan Information -->
+        <input type="hidden" id="lifeplanIdForPayment" name="lifeplanId">
+        
+        <!-- Customer Information -->
+        <input type="hidden" id="lifeplanCustomerFirstName" name="first_name">
+        <input type="hidden" id="lifeplanCustomerLastName" name="last_name">
+        <input type="hidden" id="lifeplanCustomerEmail" name="email">
+        <input type="hidden" id="lifeplanCustomerPhone" name="phone_number">
+        
+        <!-- Plan Information -->
+        <input type="hidden" id="lifeplanServiceId" name="service_id">
+        <input type="hidden" id="lifeplanPackagePrice" name="package_price">
+        <input type="hidden" id="lifeplanPaymentDuration" name="payment_duration">
+        <input type="hidden" id="lifeplanValidIdUrl" name="valid_id_url">
+        
+        <div class="mb-4">
+          <label for="lifeplanAmountPaidInput" class="block text-sm font-medium text-gray-700 mb-1">Amount Paid</label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <span class="text-gray-500">₱</span>
+            </div>
+            <input type="number" step="0.01" id="lifeplanAmountPaidInput" name="amountPaid" 
+                   class="pl-8 block w-full rounded-md border-gray-300 shadow-sm focus:border-sidebar-accent focus:ring focus:ring-sidebar-accent focus:ring-opacity-50 py-2 px-3 border" 
+                   placeholder="0.00" required>
+          </div>
+        </div>
+        
+        <div class="mb-4">
+          <label for="lifeplanPaymentMethod" class="block text-sm font-medium text-gray-700 mb-1">Payment Method</label>
+          <select id="lifeplanPaymentMethod" name="paymentMethod" 
+                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-sidebar-accent focus:ring focus:ring-sidebar-accent focus:ring-opacity-50 py-2 px-3 border" required>
+            <option value="">Select payment method</option>
+            <option value="Bank">Bank Transfer</option>
+            <option value="GCash">GCash</option>
+            <option value="Cash">Cash</option>
+          </select>
+        </div>
+        
+        <div class="flex justify-end gap-3 mt-6">
+          <button type="button" onclick="closeLifeplanPaymentModal()" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors">
+            Cancel
+          </button>
+          <button type="submit" class="px-4 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg hover:shadow-md transition-all">
+            Confirm Payment
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 
 
 
@@ -2509,18 +2581,103 @@ function closeLifeplanModal() {
     }
 }
 
+let currentLifeplanIdForPayment = null;
+
 function confirmLifeplanAccept() {
+    // Get the lifeplan ID from the modal
     const lifeplanId = document.getElementById('lifeplanIdForDecline').value;
+    currentLifeplanIdForPayment = lifeplanId;
     
+    // Fetch lifeplan details to get all the required fields
+    fetch('bookingpage/get_lifeplan_details_for_accept.php?id=' + lifeplanId)
+        .then(response => response.json())
+        .then(data => {
+            if (!data.success) {
+                throw new Error(data.error || 'Failed to load lifeplan details');
+            }
+            
+            // Set all the hidden fields
+            document.getElementById('lifeplanIdForPayment').value = lifeplanId;
+            
+            // Customer information
+            document.getElementById('lifeplanCustomerFirstName').value = data.first_name || '';
+            document.getElementById('lifeplanCustomerLastName').value = data.last_name || '';
+            document.getElementById('lifeplanCustomerEmail').value = data.email || '';
+            document.getElementById('lifeplanCustomerPhone').value = data.phone_number || '';
+            
+            // Plan information
+            document.getElementById('lifeplanServiceId').value = data.service_id || '';
+            document.getElementById('lifeplanPackagePrice').value = data.package_price || '';
+            document.getElementById('lifeplanPaymentDuration').value = data.payment_duration || '';
+            document.getElementById('lifeplanValidIdUrl').value = data.image_path || '';
+            
+            // Show the payment modal
+            openLifeplanPaymentModal();
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Failed to load lifeplan details',
+            });
+        });
+}
+
+function openLifeplanPaymentModal() {
+    const modal = document.getElementById("lifeplanPaymentModal");
+    modal.classList.remove("hidden");
+    modal.classList.add("flex");
+    document.body.classList.add("overflow-hidden");
+}
+
+function closeLifeplanPaymentModal() {
+    const modal = document.getElementById("lifeplanPaymentModal");
+    modal.classList.add("hidden");
+    modal.classList.remove("flex");
+    document.body.classList.remove("overflow-hidden");
+}
+
+document.getElementById('lifeplanPaymentForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const amountPaid = document.getElementById('lifeplanAmountPaidInput').value;
+    const paymentMethod = document.getElementById('lifeplanPaymentMethod').value;
+    
+    if (!amountPaid || !paymentMethod) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Please fill in all payment details',
+        });
+        return;
+    }
+    
+    // Prepare the data to send - include all hidden fields
+    const formData = new FormData(this);
+    
+    // Add additional data that might not be in the form
+    formData.append('lifeplanId', currentLifeplanIdForPayment);
+    formData.append('action', 'acceptLifeplan');
+    
+    // Calculate balance for display in confirmation
+    const packagePrice = parseFloat(document.getElementById('lifeplanPackagePrice').value) || 0;
+    const balance = packagePrice - parseFloat(amountPaid);
+    const paymentStatus = balance <= 0 ? 'Fully Paid' : 'With Balance';
+    
+    // Show confirmation dialog with payment summary
     Swal.fire({
-        title: 'Confirm Acceptance',
+        title: 'Confirm Payment Details',
         html: `<div class="text-left">
-            <p>Are you sure you want to accept this LifePlan booking?</p>
-            <p>This will confirm the plan and notify the customer.</p>
+            <p><strong>Amount Paid:</strong> ₱${parseFloat(amountPaid).toFixed(2)}</p>
+            <p><strong>Payment Method:</strong> ${paymentMethod}</p>
+            <p><strong>Plan Price:</strong> ₱${packagePrice.toFixed(2)}</p>
+            <p><strong>Balance:</strong> ₱${balance.toFixed(2)}</p>
+            <p><strong>Payment Status:</strong> ${paymentStatus}</p>
         </div>`,
         icon: 'question',
         showCancelButton: true,
-        confirmButtonText: 'Yes, Accept Plan',
+        confirmButtonText: 'Confirm Payment',
         cancelButtonText: 'Cancel',
         confirmButtonColor: '#3085d6',
         cancelButtonColor: '#d33',
@@ -2529,7 +2686,7 @@ function confirmLifeplanAccept() {
             // Show loading indicator
             Swal.fire({
                 title: 'Processing...',
-                html: 'Please wait while we process your request',
+                html: 'Please wait while we process your payment',
                 allowOutsideClick: false,
                 didOpen: () => {
                     Swal.showLoading();
@@ -2539,10 +2696,7 @@ function confirmLifeplanAccept() {
             // Send the data via AJAX
             fetch('bookingpage/process_lifeplan.php', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: `action=acceptLifeplan&lifeplanId=${lifeplanId}`
+                body: formData
             })
             .then(response => response.json())
             .then(data => {
@@ -2550,16 +2704,17 @@ function confirmLifeplanAccept() {
                     Swal.fire({
                         icon: 'success',
                         title: 'Success!',
-                        text: 'LifePlan has been accepted',
+                        text: 'LifePlan accepted and payment recorded successfully!',
                         showConfirmButton: false,
                         timer: 2000
                     }).then(() => {
+                        closeLifeplanPaymentModal();
                         closeLifeplanModal();
                         // Refresh the page to update the table
                         window.location.reload();
                     });
                 } else {
-                    throw new Error(data.message || 'Failed to accept lifeplan');
+                    throw new Error(data.message || 'Failed to process lifeplan');
                 }
             })
             .catch(error => {
@@ -2571,7 +2726,7 @@ function confirmLifeplanAccept() {
             });
         }
     });
-}
+});
 
 function confirmLifeplanDecline() {
     const lifeplanId = document.getElementById('lifeplanIdForDecline').value;
