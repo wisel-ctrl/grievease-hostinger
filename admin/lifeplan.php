@@ -991,7 +991,7 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
           </div>
           <!-- Replace the existing beneficiary_address textarea with this: -->
-<div class="grid grid-cols-1 gap-3 sm:gap-4">
+<div class="grid grid-cols-1 gap-3 sm:gap-4 mt-4">
     <!-- Region Dropdown -->
     <div>
         <label for="region" class="block text-xs font-medium text-gray-700 mb-1">Region</label>
