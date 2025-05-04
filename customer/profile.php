@@ -2411,7 +2411,7 @@ document.addEventListener('DOMContentLoaded', function() {
     </div>
 </div>
 
-<!-- Receipt Modal -->
+<!-- Receipt Modal -->     
 <div id="receiptModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4 hidden">
   <!-- Modal Content -->
   <div class="w-full max-w-md bg-white rounded-2xl shadow-xl overflow-hidden max-h-[90vh]">
@@ -2447,6 +2447,7 @@ document.addEventListener('DOMContentLoaded', function() {
     </div>
   </div>
 </div>
+
 <!-- Include html2canvas and jsPDF for export functionality -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -2736,31 +2737,22 @@ function fetchBookingDetails(bookingId) {
                 const container = document.querySelector('.space-y-2');
 
                 // Check if status is Accepted or Declined
-                // Remove any existing date paragraphs first
-const existingDatePs = document.querySelectorAll('#detail-status').parentNode.nextElementSibling);
-existingDatePs.forEach(p => {
-    if (p.textContent.includes('Date:')) {
-        p.remove();
-    }
-});
-
-// Then add the appropriate date based on status
-if (data.status === 'Accepted' && data.accepted_date) {
-    // Create new paragraph for Accepted Date
-    const acceptedDateP = document.createElement('p');
-    acceptedDateP.innerHTML = `<span class="text-gray-500">Accepted Date:</span> <span class="text-navy">${formatDate(data.accepted_date)}</span>`;
-    
-    // Insert after the status paragraph
-    document.getElementById('detail-status').parentNode.insertAdjacentElement('afterend', acceptedDateP);
-} 
-else if (data.status === 'Declined' && data.decline_date) {
-    // Create new paragraph for Declined Date
-    const declinedDateP = document.createElement('p');
-    declinedDateP.innerHTML = `<span class="text-gray-500"> Declined Date:</span> <span class="text-navy">${formatDate(data.decline_date)}</span>`;
-    
-    // Insert after the status paragraph
-    document.getElementById('detail-status').parentNode.insertAdjacentElement('afterend', declinedDateP);
-}
+                if (data.status === 'Accepted' && data.accepted_date) {
+                    // Create new paragraph for Accepted Date
+                    const acceptedDateP = document.createElement('p');
+                    acceptedDateP.innerHTML = `<span class="text-gray-500">Accepted Date:</span> <span class="text-navy">${formatDate(data.accepted_date)}</span>`;
+                    
+                    // Insert after the status paragraph
+                    document.getElementById('detail-status').parentNode.insertAdjacentElement('afterend', acceptedDateP);
+                } 
+                else if (data.status === 'Declined' && data.decline_date) {
+                    // Create new paragraph for Declined Date
+                    const declinedDateP = document.createElement('p');
+                    declinedDateP.innerHTML = `<span class="text-gray-500"> Declined Date:</span> <span class="text-navy">${formatDate(data.decline_date)}</span>`;
+                    
+                    // Insert after the status paragraph
+                    document.getElementById('detail-status').parentNode.insertAdjacentElement('afterend', declinedDateP);
+                }
                 
                 // Deceased info
                 let deceasedName = `${data.deceased_lname}, ${data.deceased_fname}`;
@@ -2770,8 +2762,6 @@ else if (data.status === 'Declined' && data.decline_date) {
                 document.getElementById('detail-deceased-name').textContent = deceasedName 
                 ? deceasedName.toLowerCase().replace(/\b\w/g, c => c.toUpperCase())
                 : '';
-                    ? deceasedName.toLowerCase().replace(/\b\w/g, c => c.toUpperCase())
-                    : '';
                 document.getElementById('detail-birth').textContent = data.deceased_birth ? formatDate(data.deceased_birth) : 'Not provided';
                 document.getElementById('detail-dod').textContent = data.deceased_dodeath ? formatDate(data.deceased_dodeath) : 'Not provided';
                 document.getElementById('detail-burial').textContent = data.deceased_dateOfBurial ? formatDate(data.deceased_dateOfBurial) : 'Not set';
@@ -3055,9 +3045,6 @@ function showError(message) {
         notification.classList.add('hidden');
     }, 5000);
 }
-
-
-
 </script>
 
 <script>
