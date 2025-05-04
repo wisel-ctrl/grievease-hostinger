@@ -2400,7 +2400,8 @@ function openLifeplanDetails(lifeplanId) {
       document.getElementById('lifeplanType').textContent = data.service_name || "Custom LifePlan";
       document.getElementById('lifeplanDateRequested').textContent = data.initial_date_formatted;
       document.getElementById('lifeplanPrice').textContent = "₱" + data.package_price_formatted;
-      document.getElementById('lifeplanTerms').textContent = data.payment_terms || "Not specified";
+      document.getElementById('lifeplanTerms').textContent = data.payment_duration ? data.payment_duration + " years" : "Not specified";
+
 
       // Beneficiary information
       document.getElementById('beneficiaryFullName').textContent = data.beneficiary_name || "Not provided";
@@ -2435,8 +2436,8 @@ function openLifeplanDetails(lifeplanId) {
       const validIdNotAvailable = document.getElementById('validIdNotAvailable');
       const validIdImage = document.getElementById('validIdImage');
 
-      if (data.valid_id_url && data.valid_id_url !== '') {
-        const validIdPath = '../customer/lifeplan/uploads/' + data.valid_id_url.replace(/^uploads\//, '');
+      if (data.image_path && data.image_path !== '') {
+        const validIdPath = '../admin/uploads/valid_ids/' + data.image_path.replace(/^uploads\//, '');
         
         validIdImage.onerror = function() {
           console.error("Failed to load valid ID image:", validIdPath);
@@ -2456,8 +2457,8 @@ function openLifeplanDetails(lifeplanId) {
       const paymentProofImage = document.getElementById('lifeplanPaymentProofImage');
       const paymentProofContainer = paymentProofImage.parentElement;
 
-      if (data.payment_proof_url && data.payment_proof_url !== '') {
-        const paymentProofPath = '../customer/lifeplan/uploads/' + data.payment_proof_url.replace(/^uploads\//, '');
+      if (data.payment_url && data.payment_url !== '') {
+        const paymentProofPath = '../customer/booking/uploads/' + data.payment_url.replace(/^uploads\//, '');
         
         paymentProofImage.onerror = function() {
           console.error("Failed to load payment proof image:", paymentProofPath);
