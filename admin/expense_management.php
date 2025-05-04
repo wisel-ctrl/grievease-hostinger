@@ -843,7 +843,7 @@ if ($branchResult->num_rows > 0) {
         </div>
     </div>
     
-    <!-- Sticky Pagination Footer with button elements -->
+    <!-- Sticky Pagination Footer with improved spacing -->
 <div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
     <div id="paginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
     <?php 
@@ -860,20 +860,16 @@ if ($branchResult->num_rows > 0) {
     <div id="paginationContainer" class="flex space-x-2">
         <?php if ($totalBranchPages > 1): ?>
             <!-- First page button (double arrow) -->
-            <button type="button" 
-                   onclick="changeBranchPage(<?php echo $branchId; ?>, 1);" 
-                   class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover focus:outline-none focus:ring-2 focus:ring-sidebar-accent <?php echo ($branchPage == 1) ? 'opacity-50 cursor-not-allowed' : ''; ?>"
-                   <?php echo ($branchPage == 1) ? 'disabled' : ''; ?>>
+            <a href="#" onclick="changeBranchPage(<?php echo $branchId; ?>, 1); return false;" 
+               class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($branchPage == 1) ? 'opacity-50 pointer-events-none' : ''; ?>">
                 &laquo;
-            </button>
+            </a>
             
             <!-- Previous page button (single arrow) -->
-            <button type="button"
-                   onclick="changeBranchPage(<?php echo $branchId; ?>, <?php echo max(1, $branchPage - 1); ?>);" 
-                   class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover focus:outline-none focus:ring-2 focus:ring-sidebar-accent <?php echo ($branchPage == 1) ? 'opacity-50 cursor-not-allowed' : ''; ?>"
-                   <?php echo ($branchPage == 1) ? 'disabled' : ''; ?>>
+            <a href="#" onclick="changeBranchPage(<?php echo $branchId; ?>, <?php echo max(1, $branchPage - 1); ?>); return false;" 
+               class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($branchPage == 1) ? 'opacity-50 pointer-events-none' : ''; ?>">
                 &lsaquo;
-            </button>
+            </a>
             
             <?php
             // Show exactly 3 page numbers
@@ -911,25 +907,21 @@ if ($branchResult->num_rows > 0) {
             // Generate the page buttons
             for ($i = $start_page; $i <= $end_page; $i++) {
                 $active_class = ($i == $branchPage) ? 'bg-sidebar-accent text-white' : 'border border-sidebar-border hover:bg-sidebar-hover';
-                echo '<button type="button" onclick="changeBranchPage(' . $branchId . ', ' . $i . ');" class="px-3.5 py-1.5 rounded text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent ' . $active_class . '">' . $i . '</button>';
+                echo '<a href="#" onclick="changeBranchPage(' . $branchId . ', ' . $i . '); return false;" class="px-3.5 py-1.5 rounded text-sm ' . $active_class . '">' . $i . '</a>';
             }
             ?>
             
             <!-- Next page button (single arrow) -->
-            <button type="button"
-                   onclick="changeBranchPage(<?php echo $branchId; ?>, <?php echo min($totalBranchPages, $branchPage + 1); ?>);" 
-                   class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover focus:outline-none focus:ring-2 focus:ring-sidebar-accent <?php echo ($branchPage == $totalBranchPages) ? 'opacity-50 cursor-not-allowed' : ''; ?>"
-                   <?php echo ($branchPage == $totalBranchPages) ? 'disabled' : ''; ?>>
+            <a href="#" onclick="changeBranchPage(<?php echo $branchId; ?>, <?php echo min($totalBranchPages, $branchPage + 1); ?>); return false;" 
+               class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($branchPage == $totalBranchPages) ? 'opacity-50 pointer-events-none' : ''; ?>">
                 &rsaquo;
-            </button>
+            </a>
             
             <!-- Last page button (double arrow) -->
-            <button type="button"
-                   onclick="changeBranchPage(<?php echo $branchId; ?>, <?php echo $totalBranchPages; ?>);" 
-                   class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover focus:outline-none focus:ring-2 focus:ring-sidebar-accent <?php echo ($branchPage == $totalBranchPages) ? 'opacity-50 cursor-not-allowed' : ''; ?>"
-                   <?php echo ($branchPage == $totalBranchPages) ? 'disabled' : ''; ?>>
+            <a href="#" onclick="changeBranchPage(<?php echo $branchId; ?>, <?php echo $totalBranchPages; ?>); return false;" 
+               class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($branchPage == $totalBranchPages) ? 'opacity-50 pointer-events-none' : ''; ?>">
                 &raquo;
-            </button>
+            </a>
         <?php endif; ?>
     </div>
 </div>
