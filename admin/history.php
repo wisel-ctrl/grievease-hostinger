@@ -2061,7 +2061,6 @@ function openEditServiceModal(serviceId) {
     .then(response => response.json())
     .then(data => {
       if (data.success) {
-        setTimeout(initEditModalValidations, 100);
         // Populate the form fields with the service details
         if (data.customerID) {
           const customer = customers.find(c => c.id == data.customerID);
@@ -2113,6 +2112,8 @@ function openEditServiceModal(serviceId) {
         
         // Show the modal
         document.getElementById('editServiceModal').style.display = 'flex';
+        
+        setTimeout(initEditModalValidations, 100);
         toggleBodyScroll(true);
       } else {
         alert('Failed to fetch service details: ' + data.message);
