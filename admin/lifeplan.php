@@ -1040,9 +1040,6 @@ document.addEventListener('DOMContentLoaded', function() {
     <!-- Hidden field to store the full formatted address -->
     <input type="hidden" id="benefeciary_address" name="benefeciary_address">
 </div>
-</div>
-</div>
-          </div>
         </div>
         
         <!-- Plan Details -->
