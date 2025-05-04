@@ -1736,52 +1736,68 @@ $custom_offset = ($custom_current_page - 1) * $custom_bookings_per_page;
     <!-- Modal Body -->
     <div class="px-6 py-5">
       <form id="lifeplanPaymentForm">
-        <!-- LifePlan Information -->
-        <input type="hidden" id="lifeplanIdForPayment" name="lifeplanId">
-        
-        <!-- Customer Information -->
-        <input type="hidden" id="lifeplanCustomerFirstName" name="first_name">
-        <input type="hidden" id="lifeplanCustomerLastName" name="last_name">
-        <input type="hidden" id="lifeplanCustomerEmail" name="email">
-        <input type="hidden" id="lifeplanCustomerPhone" name="phone_number">
-        
-        <!-- Plan Information -->
-        <input type="hidden" id="lifeplanServiceId" name="service_id">
-        <input type="hidden" id="lifeplanPackagePrice" name="package_price">
-        <input type="hidden" id="lifeplanPaymentDuration" name="payment_duration">
-        <input type="hidden" id="lifeplanValidIdUrl" name="valid_id_url">
-        
-        <div class="mb-4">
-          <label for="lifeplanAmountPaidInput" class="block text-sm font-medium text-gray-700 mb-1">Amount Paid</label>
-          <div class="relative">
-            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <span class="text-gray-500">₱</span>
-            </div>
-            <input type="number" step="0.01" id="lifeplanAmountPaidInput" name="amountPaid" 
-                   class="pl-8 block w-full rounded-md border-gray-300 shadow-sm focus:border-sidebar-accent focus:ring focus:ring-sidebar-accent focus:ring-opacity-50 py-2 px-3 border" 
-                   placeholder="0.00" required>
+          <!-- LifePlan Information -->
+          <input type="hidden" id="lifeplanIdForPayment" name="lifeplanId">
+          
+          <!-- Customer Information -->
+          <input type="hidden" id="lifeplanCustomerID" name="customerId">
+          <input type="hidden" id="lifeplanCustomerBranch" name="branchId">
+          <input type="hidden" id="lifeplanCustomerFirstName" name="first_name">
+          <input type="hidden" id="lifeplanCustomerMiddleName" name="middle_name">
+          <input type="hidden" id="lifeplanCustomerLastName" name="last_name">
+          <input type="hidden" id="lifeplanCustomerSuffix" name="suffix">
+          <input type="hidden" id="lifeplanCustomerEmail" name="email">
+          <input type="hidden" id="lifeplanCustomerPhone" name="phone_number">
+          
+          <!-- Beneficiary Information -->
+          <input type="hidden" id="beneficiaryFirstName" name="beneficiary_fname">
+          <input type="hidden" id="beneficiaryMiddleName" name="beneficiary_mname">
+          <input type="hidden" id="beneficiaryLastName" name="beneficiary_lname">
+          <input type="hidden" id="beneficiarySuffix" name="beneficiary_suffix">
+          <input type="hidden" id="beneficiaryBirthdate" name="beneficiary_birth">
+          <input type="hidden" id="beneficiaryAddress" name="beneficiary_address">
+          <input type="hidden" id="relationshipWithClient" name="relationship_with_client">
+          
+          <!-- Plan Information -->
+          <input type="hidden" id="lifeplanServiceId" name="service_id">
+          <input type="hidden" id="lifeplanPackagePrice" name="package_price">
+          <input type="hidden" id="lifeplanPaymentDuration" name="payment_duration">
+          <input type="hidden" id="lifeplanValidIdUrl" name="valid_id_url">
+          <input type="hidden" id="lifeplanInitialDate" name="initial_date">
+          <input type="hidden" id="lifeplanEndDate" name="end_date">
+          <input type="hidden" id="withCremate" name="with_cremate">
+          
+          <div class="mb-4">
+              <label for="lifeplanAmountPaidInput" class="block text-sm font-medium text-gray-700 mb-1">Amount Paid</label>
+              <div class="relative">
+                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <span class="text-gray-500">₱</span>
+                  </div>
+                  <input type="number" step="0.01" id="lifeplanAmountPaidInput" name="amountPaid" 
+                        class="pl-8 block w-full rounded-md border-gray-300 shadow-sm focus:border-sidebar-accent focus:ring focus:ring-sidebar-accent focus:ring-opacity-50 py-2 px-3 border" 
+                        placeholder="0.00" required>
+              </div>
           </div>
-        </div>
-        
-        <div class="mb-4">
-          <label for="lifeplanPaymentMethod" class="block text-sm font-medium text-gray-700 mb-1">Payment Method</label>
-          <select id="lifeplanPaymentMethod" name="paymentMethod" 
-                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-sidebar-accent focus:ring focus:ring-sidebar-accent focus:ring-opacity-50 py-2 px-3 border" required>
-            <option value="">Select payment method</option>
-            <option value="Bank">Bank Transfer</option>
-            <option value="GCash">GCash</option>
-            <option value="Cash">Cash</option>
-          </select>
-        </div>
-        
-        <div class="flex justify-end gap-3 mt-6">
-          <button type="button" onclick="closeLifeplanPaymentModal()" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors">
-            Cancel
-          </button>
-          <button type="submit" class="px-4 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg hover:shadow-md transition-all">
-            Confirm Payment
-          </button>
-        </div>
+          
+          <div class="mb-4">
+              <label for="lifeplanPaymentMethod" class="block text-sm font-medium text-gray-700 mb-1">Payment Method</label>
+              <select id="lifeplanPaymentMethod" name="paymentMethod" 
+                      class="block w-full rounded-md border-gray-300 shadow-sm focus:border-sidebar-accent focus:ring focus:ring-sidebar-accent focus:ring-opacity-50 py-2 px-3 border" required>
+                  <option value="">Select payment method</option>
+                  <option value="Bank">Bank Transfer</option>
+                  <option value="GCash">GCash</option>
+                  <option value="Cash">Cash</option>
+              </select>
+          </div>
+          
+          <div class="flex justify-end gap-3 mt-6">
+              <button type="button" onclick="closeLifeplanPaymentModal()" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors">
+                  Cancel
+              </button>
+              <button type="submit" class="px-4 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg hover:shadow-md transition-all">
+                  Confirm Payment
+              </button>
+          </div>
       </form>
     </div>
   </div>
@@ -2589,7 +2605,7 @@ function confirmLifeplanAccept() {
     currentLifeplanIdForPayment = lifeplanId;
     
     // Fetch lifeplan details to get all the required fields
-    fetch('bookingpage/get_lifeplan_details_for_accept.php?id=' + lifeplanId)
+    fetch('bookingpage/get_lifeplan_details.php?id=' + lifeplanId)
         .then(response => response.json())
         .then(data => {
             if (!data.success) {
@@ -2597,19 +2613,34 @@ function confirmLifeplanAccept() {
             }
             
             // Set all the hidden fields
-            document.getElementById('lifeplanIdForPayment').value = lifeplanId;
             
             // Customer information
+            document.getElementById('lifeplanCustomerID').value = data.customer_id || '';
+            document.getElementById('lifeplanCustomerBranch').value = data.branch_id || '';
             document.getElementById('lifeplanCustomerFirstName').value = data.first_name || '';
+            document.getElementById('lifeplanCustomerMiddleName').value = data.middle_name || '';
             document.getElementById('lifeplanCustomerLastName').value = data.last_name || '';
+            document.getElementById('lifeplanCustomerSuffix').value = data.suffix || '';
             document.getElementById('lifeplanCustomerEmail').value = data.email || '';
             document.getElementById('lifeplanCustomerPhone').value = data.phone_number || '';
+            
+            // Beneficiary information
+            document.getElementById('beneficiaryFirstName').value = data.beneficiary_fname || '';
+            document.getElementById('beneficiaryMiddleName').value = data.beneficiary_mname || '';
+            document.getElementById('beneficiaryLastName').value = data.beneficiary_lname || '';
+            document.getElementById('beneficiarySuffix').value = data.beneficiary_suffix || '';
+            document.getElementById('beneficiaryBirthdate').value = data.beneficiary_birth || '';
+            document.getElementById('beneficiaryAddress').value = data.beneficiary_address || '';
+            document.getElementById('relationshipWithClient').value = data.relationship_with_client || '';
             
             // Plan information
             document.getElementById('lifeplanServiceId').value = data.service_id || '';
             document.getElementById('lifeplanPackagePrice').value = data.package_price || '';
             document.getElementById('lifeplanPaymentDuration').value = data.payment_duration || '';
             document.getElementById('lifeplanValidIdUrl').value = data.image_path || '';
+            document.getElementById('lifeplanInitialDate').value = data.initial_date || '';
+            document.getElementById('lifeplanEndDate').value = data.end_date || '';
+            document.getElementById('withCremate').value = data.with_cremate || 'no';
             
             // Show the payment modal
             openLifeplanPaymentModal();
