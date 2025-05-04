@@ -568,6 +568,8 @@ function initializeAllValidations() {
   document.getElementById('deceasedLastName')?.addEventListener('input', function() {
     validateNameInput(this, true);
   });
+
+
   
   // Name fields validation (Lifeplan)
   document.getElementById('lp-clientFirstName')?.addEventListener('input', function() {
@@ -594,8 +596,16 @@ function initializeAllValidations() {
     validateAddressInput(this);
   });
 
+  document.getElementById('deceasedStreet')?.addEventListener('input', function() {
+    validateAddressInput(this);
+  });
+
+
   // ZIP code validation (Lifeplan)
   document.getElementById('beneficiaryZip')?.addEventListener('input', function() {
+    validateZipCode(this);
+  });
+  document.getElementById('deceasedZip')?.addEventListener('input', function() {
     validateZipCode(this);
   });
   
