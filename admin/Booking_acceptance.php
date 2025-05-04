@@ -1010,7 +1010,7 @@ $custom_offset = ($custom_current_page - 1) * $custom_bookings_per_page;
                     if ($lifeplanResult->num_rows > 0) {
                         while ($row = $lifeplanResult->fetch_assoc()) {
                             // Format booking ID
-                            $bookingId = "#LP-" . date('Y') . "-" . str_pad($row['id'], 3, '0', STR_PAD_LEFT);
+                            $bookingId = "#LP-" . date('Y') . "-" . str_pad($row['lpbooking_id'], 3, '0', STR_PAD_LEFT);
                             
                             // Status badge class
                             $statusClass = "bg-yellow-100 text-yellow-800 border border-yellow-200";
