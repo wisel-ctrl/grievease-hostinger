@@ -1189,17 +1189,87 @@ $totalOutstanding = $countResult->fetch_assoc()['total'];
             </div>
           </div>
 
-          <!-- Deceased Address -->
+          <!-- Deceased Address - Dropdown System -->
           <div class="form-group mb-4">
             <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
               Deceased Address
             </label>
-            <input 
-              type="text" 
-              id="deceasedAddress" 
-              class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-              placeholder="Enter Deceased Address"
-            >
+            
+            <!-- Region Dropdown -->
+            <div class="mb-3">
+              <label class="block text-xs font-medium text-gray-500 mb-1">Region</label>
+              <select 
+                id="regionSelect" 
+                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                onchange="loadProvinces()"
+              >
+                <option value="">Select Region</option>
+                <!-- Regions will be loaded dynamically -->
+              </select>
+            </div>
+            
+            <!-- Province Dropdown -->
+            <div class="mb-3">
+              <label class="block text-xs font-medium text-gray-500 mb-1">Province</label>
+              <select 
+                id="provinceSelect" 
+                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                disabled
+                onchange="loadCities()"
+              >
+                <option value="">Select Province</option>
+                <!-- Provinces will be loaded dynamically -->
+              </select>
+            </div>
+            
+            <!-- City/Municipality Dropdown -->
+            <div class="mb-3">
+              <label class="block text-xs font-medium text-gray-500 mb-1">City/Municipality</label>
+              <select 
+                id="citySelect" 
+                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                disabled
+                onchange="loadBarangays()"
+              >
+                <option value="">Select City/Municipality</option>
+                <!-- Cities will be loaded dynamically -->
+              </select>
+            </div>
+            
+            <!-- Barangay Dropdown -->
+            <div class="mb-3">
+              <label class="block text-xs font-medium text-gray-500 mb-1">Barangay</label>
+              <select 
+                id="barangaySelect" 
+                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                disabled
+              >
+                <option value="">Select Barangay</option>
+                <!-- Barangays will be loaded dynamically -->
+              </select>
+            </div>
+            
+            <!-- Street and Zip Code -->
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-medium text-gray-500 mb-1">Street</label>
+                <input 
+                  type="text" 
+                  id="streetInput" 
+                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                  placeholder="Street name, building, etc."
+                >
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-gray-500 mb-1">Zip Code</label>
+                <input 
+                  type="text" 
+                  id="zipCodeInput" 
+                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                  placeholder="Zip Code"
+                >
+              </div>
+            </div>
           </div>
 
           <!-- Deceased Dates - 3 columns for dates -->
