@@ -2024,6 +2024,61 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+
+document.addEventListener('DOMContentLoaded', function() {
+    const convertModal = document.getElementById('convertToSaleModal');
+    const dateOfDeathInput = document.getElementById('dateOfDeath');
+    const burialDateInput = document.getElementById('burialDate');
+    
+    // Set max date for date of death (today)
+    const today = new Date().toISOString().split('T')[0];
+    dateOfDeathInput.max = today;
+    
+    // Set min date for burial date (tomorrow)
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    burialDateInput.min = tomorrow.toISOString().split('T')[0];
+    
+    // Validate date of death on input
+    dateOfDeathInput.addEventListener('input', function() {
+        if (this.value > today) {
+            this.value = today;
+        }
+        
+        // Ensure burial date is after date of death
+        if (burialDateInput.value && burialDateInput.value <= this.value) {
+            const minBurialDate = new Date(this.value);
+            minBurialDate.setDate(minBurialDate.getDate() + 1);
+            burialDateInput.min = minBurialDate.toISOString().split('T')[0];
+            burialDateInput.value = burialDateInput.min;
+        }
+    });
+    
+    // Validate burial date on input
+    burialDateInput.addEventListener('input', function() {
+        if (dateOfDeathInput.value && this.value <= dateOfDeathInput.value) {
+            const minBurialDate = new Date(dateOfDeathInput.value);
+            minBurialDate.setDate(minBurialDate.getDate() + 1);
+            this.value = minBurialDate.toISOString().split('T')[0];
+        }
+        
+        // Ensure burial date is not before tomorrow
+        if (this.value < tomorrow.toISOString().split('T')[0]) {
+            this.value = tomorrow.toISOString().split('T')[0];
+        }
+    });
+    
+    // When modal opens, set default dates
+    document.querySelectorAll('.convert-to-sale-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            // Set date of death to today by default
+            dateOfDeathInput.value = today;
+            
+            // Set burial date to tomorrow by default
+            burialDateInput.value = tomorrow.toISOString().split('T')[0];
+        });
+    });
+});
 </script>
 
 <script>
