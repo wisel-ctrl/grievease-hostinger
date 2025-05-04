@@ -1102,19 +1102,19 @@ document.addEventListener('DOMContentLoaded', function() {
                 <label for="lp-clientFirstName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
                   First Name
                 </label>
-                <input type="text" id="lp-clientFirstName" name="clientFirstName" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+                <input type="text" id="lp-clientFirstName" name="lp-clientFirstName" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
               </div>
               <div>
                 <label for="lp-clientMiddleName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
                   Middle Name <span class="text-xs text-gray-500">(Optional)</span>
                 </label>
-                <input type="text" id="lp-clientMiddleName" name="clientMiddleName" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+                <input type="text" id="lp-clientMiddleName" name="lp-clientMiddleName" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
               </div>
               <div>
                 <label for="lp-clientLastName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
                   Last Name
                 </label>
-                <input type="text" id="lp-clientLastName" name="clientLastName" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+                <input type="text" id="lp-clientLastName" name="lp-clientLastName" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
               </div>
               <div>
                 <label for="lp-clientSuffix" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
@@ -1137,13 +1137,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 <label for="lp-clientPhone" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
                   Phone Number
                 </label>
-                <input type="tel" id="lp-clientPhone" name="clientPhone" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" minlength="11" maxlength="11">
+                <input type="tel" id="lp-clientPhone" name="lp-clientPhone" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" minlength="11" maxlength="11">
               </div>
               <div>
                 <label for="lp-clientEmail" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
                   Email Address <span class="text-xs text-gray-500">(Optional)</span>
                 </label>
-                <input type="email" id="lp-clientEmail" name="clientEmail" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+                <input type="email" id="lp-clientEmail" name="lp-clientEmail" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
               </div>
             </div>
           </div>
@@ -1969,8 +1969,7 @@ function confirmLifeplanCheckout() {
   // Validate required fields
   const requiredFields = [
     'lp-clientFirstName', 'lp-clientLastName', 'lp-clientPhone',
-    'beneficiaryFirstName', 'beneficiaryLastName', 'beneficiaryRelationship',
-    'beneficiaryAddress'
+    'beneficiaryFirstName', 'beneficiaryLastName', 'beneficiaryRelationship'
   ];
 
   for (const fieldId of requiredFields) {
