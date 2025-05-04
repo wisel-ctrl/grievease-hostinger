@@ -1969,9 +1969,7 @@ function confirmLifeplanCheckout() {
   // Validate required fields - USE THE CORRECT LP- PREFIXED IDs
   const requiredFields = [
     'lp-clientFirstName', 'lp-clientLastName', 'lp-clientPhone',
-    'beneficiaryFirstName', 'beneficiaryLastName', 'beneficiaryRelationship',
-    'beneficiaryStreet', 'beneficiaryRegion', 'beneficiaryProvince',
-    'beneficiaryCity', 'beneficiaryBarangay', 'beneficiaryZip'
+    'beneficiaryFirstName', 'beneficiaryLastName', 'beneficiaryRelationship'
   ];
 
   for (const fieldId of requiredFields) {
