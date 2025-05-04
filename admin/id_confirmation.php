@@ -391,93 +391,98 @@ $denied = $result->fetch_assoc()['count'];
             </div>
         </div>
         
-        <!-- Sticky Pagination Footer with improved spacing -->
-<div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
     <div id="paginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
     <?php 
-        // Get the number of records on the current page
-        $current_page_items = min($recordsPerPage, $totalOutstanding - $offsetOutstanding);
+        // Get the number of verifications on the current page
+        $current_page_items = min(10, $total_pending - $offset);
 
-        if ($totalOutstanding > 0) {
-            $start = $offsetOutstanding + 1;
-            $end = $offsetOutstanding + $current_page_items;
+        if ($total_pending > 0) {
+            $start = $offset + 1;
+            $end = $offset + $current_page_items;
         
-            echo "Showing {$start} - {$end} of {$totalOutstanding} records";
+            echo "Showing {$start} - {$end} of {$total_pending} verifications";
         } else {
-            echo "No records found";
+            echo "No verifications found";
         }
-    ?>
+        ?>
     </div>
     <div id="paginationContainer" class="flex space-x-2">
-        <?php 
-        $totalPagesOutstanding = ceil($totalOutstanding / $recordsPerPage);
-        
-        if ($totalPagesOutstanding > 1): 
-        ?>
+        <?php if ($total_pages > 1): ?>
             <!-- First page button (double arrow) -->
-            <a href="?outstandingPage=1" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($outstandingPage == 1) ? 'opacity-50 pointer-events-none' : ''; ?>">
+            <a href="?page=1" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($current_page == 1) ? 'opacity-50 pointer-events-none' : ''; ?>">
                 &laquo;
             </a>
             
             <!-- Previous page button (single arrow) -->
-            <a href="<?php echo '?outstandingPage=' . max(1, $outstandingPage - 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($outstandingPage == 1) ? 'opacity-50 pointer-events-none' : ''; ?>">
+            <a href="<?php echo '?page=' . max(1, $current_page - 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($current_page == 1) ? 'opacity-50 pointer-events-none' : ''; ?>">
                 &lsaquo;
             </a>
             
             <?php
             // Show exactly 3 page numbers
-            if ($totalPagesOutstanding <= 3) {
+            if ($total_pages <= 3) {
                 // If total pages is 3 or less, show all pages
-                $startPage = 1;
-                $endPage = $totalPagesOutstanding;
+                $start_page = 1;
+                $end_page = $total_pages;
             } else {
                 // With more than 3 pages, determine which 3 to show
-                if ($outstandingPage == 1) {
+                if ($current_page == 1) {
                     // At the beginning, show first 3 pages
-                    $startPage = 1;
-                    $endPage = 3;
-                } elseif ($outstandingPage == $totalPagesOutstanding) {
+                    $start_page = 1;
+                    $end_page = 3;
+                } elseif ($current_page == $total_pages) {
                     // At the end, show last 3 pages
-                    $startPage = $totalPagesOutstanding - 2;
-                    $endPage = $totalPagesOutstanding;
+                    $start_page = $total_pages - 2;
+                    $end_page = $total_pages;
                 } else {
                     // In the middle, show current page with one before and after
-                    $startPage = $outstandingPage - 1;
-                    $endPage = $outstandingPage + 1;
+                    $start_page = $current_page - 1;
+                    $end_page = $current_page + 1;
                     
                     // Handle edge cases
-                    if ($startPage < 1) {
-                        $startPage = 1;
-                        $endPage = 3;
+                    if ($start_page < 1) {
+                        $start_page = 1;
+                        $end_page = 3;
                     }
-                    if ($endPage > $totalPagesOutstanding) {
-                        $endPage = $totalPagesOutstanding;
-                        $startPage = $totalPagesOutstanding - 2;
+                    if ($end_page > $total_pages) {
+                        $end_page = $total_pages;
+                        $start_page = $total_pages - 2;
                     }
                 }
             }
             
             // Generate the page buttons
-            for ($i = $startPage; $i <= $endPage; $i++) {
-                $active_class = ($i == $outstandingPage) ? 'bg-sidebar-accent text-white' : 'border border-sidebar-border hover:bg-sidebar-hover';
-                echo '<a href="?outstandingPage=' . $i . '" class="px-3.5 py-1.5 rounded text-sm ' . $active_class . '">' . $i . '</a>';
+            for ($i = $start_page; $i <= $end_page; $i++) {
+                $active_class = ($i == $current_page) ? 'bg-sidebar-accent text-white' : 'border border-sidebar-border hover:bg-sidebar-hover';
+                echo '<a href="?page=' . $i . '" class="px-3.5 py-1.5 rounded text-sm ' . $active_class . '">' . $i . '</a>';
             }
             ?>
             
             <!-- Next page button (single arrow) -->
-            <a href="<?php echo '?outstandingPage=' . min($totalPagesOutstanding, $outstandingPage + 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($outstandingPage == $totalPagesOutstanding) ? 'opacity-50 pointer-events-none' : ''; ?>">
+            <a href="<?php echo '?page=' . min($total_pages, $current_page + 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($current_page == $total_pages) ? 'opacity-50 pointer-events-none' : ''; ?>">
                 &rsaquo;
             </a>
             
             <!-- Last page button (double arrow) -->
-            <a href="<?php echo '?outstandingPage=' . $totalPagesOutstanding; ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($outstandingPage == $totalPagesOutstanding) ? 'opacity-50 pointer-events-none' : ''; ?>">
+            <a href="<?php echo '?page=' . $total_pages; ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($current_page == $total_pages) ? 'opacity-50 pointer-events-none' : ''; ?>">
                 &raquo;
             </a>
-        <?php elseif ($totalOutstanding > 0): ?>
-            <!-- If only one page but we have records, show disabled navigation buttons -->
-            <button class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover opacity-50 pointer-events-none">&laquo;</button>
-            <button class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm bg-sidebar-accent text-white">1</button>
-            <button class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover opacity-50 pointer-events-none">&raquo;</button>
+        <?php else: ?>
+            <!-- If only one page, show disabled navigation buttons -->
+            <a href="?page=1" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover opacity-50 pointer-events-none">
+                &laquo;
+            </a>
+            <a href="<?php echo '?page=' . max(1, $current_page - 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover opacity-50 pointer-events-none">
+                &lsaquo;
+            </a>
+            <a href="?page=1" class="px-3.5 py-1.5 rounded text-sm bg-sidebar-accent text-white">1</a>
+            <a href="<?php echo '?page=' . min($total_pages, $current_page + 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover opacity-50 pointer-events-none">
+                &rsaquo;
+            </a>
+            <a href="<?php echo '?page=' . $total_pages; ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover opacity-50 pointer-events-none">
+                &raquo;
+            </a>
         <?php endif; ?>
     </div>
 </div>
