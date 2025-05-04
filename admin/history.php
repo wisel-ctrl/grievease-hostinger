@@ -2061,6 +2061,24 @@ function openEditServiceModal(serviceId) {
     .then(response => response.json())
     .then(data => {
       if (data.success) {
+        // Check if elements exist before manipulating them
+        const customerSearch = document.getElementById('customerSearch');
+        const selectedCustomerId = document.getElementById('selectedCustomerId');
+
+        if (customerSearch && selectedCustomerId) {
+          if (data.customerID) {
+            const customer = customers.find(c => c.id == data.customerID);
+            if (customer) {
+              customerSearch.value = customer.full_name;
+              selectedCustomerId.value = customer.id;
+            }
+          } else {
+            // Explicitly clear if customerID is null or undefined
+            customerSearch.value = '';
+            selectedCustomerId.value = '';
+          }
+        }
+
         // Populate the form fields with the service details
         if (data.customerID) {
           const customer = customers.find(c => c.id == data.customerID);
@@ -2085,7 +2103,7 @@ function openEditServiceModal(serviceId) {
         document.getElementById('birthDate').value = data.date_of_birth || '';
         document.getElementById('deathDate').value = data.date_of_death || '';
         document.getElementById('burialDate').value = data.date_of_burial || '';
-        document.getElementById('deceasedAddress').value = data.deceased_address || '';
+        document.getElementById('streetInput').value = data.deceased_address || '';
         document.getElementById('email').value = data.email || '';
         document.getElementById('phone').value = data.phone || '';
         
@@ -2180,7 +2198,7 @@ function saveServiceChanges() {
     birthDate: document.getElementById('birthDate').value,
     deathDate: document.getElementById('deathDate').value,
     burialDate: document.getElementById('burialDate').value,
-    deceasedAddress: document.getElementById('deceasedAddress').value,
+    deceasedAddress: document.getElementById('streetInput').value,
     branch: document.querySelector('input[name="branch"]:checked')?.value,
     deathCertificate: document.getElementById('deathCertificate').files[0]?.name || 'No file selected'
   };
@@ -2918,7 +2936,7 @@ function initEditModalValidations() {
     
     // Deceased address - this would need to be implemented with a proper API for Philippine addresses
     // For now, we'll just add basic validation
-    const deceasedAddress = document.getElementById('deceasedAddress');
+    const deceasedAddress = document.getElementById('streetInput');
     deceasedAddress.addEventListener('input', function() {
         // Remove multiple consecutive spaces
         this.value = this.value.replace(/\s+/g, ' ');
