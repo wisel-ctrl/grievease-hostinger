@@ -2015,12 +2015,13 @@ function toggleBodyScroll(isOpen) {
 // Function to open the Edit Service Modal
 function openEditServiceModal(serviceId) {
   
+  setTimeout(initEditModalValidations, 100);
+  
   // Fetch service details via AJAX
   fetch(`get_service_details.php?sales_id=${serviceId}`)
     .then(response => response.json())
     .then(data => {
       if (data.success) {
-        setTimeout(initEditModalValidations, 100);
         // Populate the form fields with the service details
         if (data.customerID) {
           const customer = customers.find(c => c.id == data.customerID);
