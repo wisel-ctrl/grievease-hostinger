@@ -4,6 +4,8 @@ require_once '../../db_connect.php'; // Database connection
 // Set the timezone to Asia/Manila
 date_default_timezone_set('Asia/Manila');
 
+$conn->query("SET time_zone = '+08:00'");
+
 // Get the POST data
 $lifeplanId = isset($_POST['lifeplanId']) ? $_POST['lifeplanId'] : null;
 $reason = isset($_POST['reason']) ? $_POST['reason'] : null;
@@ -22,7 +24,7 @@ if (!$lifeplanId || !$reason) {
 try {
     // Prepare the update query
     $query = "UPDATE lifeplan_booking_tb 
-              SET booking_status = 'declined', 
+              SET booking_status = 'decline', 
                   decline_reason = ?, 
                   acceptdecline_date = NOW()
               WHERE lpbooking_id = ?";
