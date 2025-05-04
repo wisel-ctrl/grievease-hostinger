@@ -1952,9 +1952,8 @@ function savePayment() {
   const notes = document.getElementById('paymentNotes').value;
   
   // Validate all fields
-  if (!serviceId || !customerID || !branchID || !clientName || 
-        isNaN(paymentAmount) || paymentAmount <= 0 || paymentAmount > currentBalance || 
-        !paymentMethod || !paymentDate) {
+  if (!serviceId || !customerID || !branchID || !clientName || isNaN(paymentAmount) || 
+      paymentAmount <= 0 || paymentAmount > currentBalance || !paymentMethod || !paymentDate) {
     alert('Please fill all fields with valid values.');
     return;
   }
@@ -3021,6 +3020,13 @@ document.addEventListener('DOMContentLoaded', function() {
             validateNotesInput(this);
         });
     }
+
+    const paymentNotes = document.getElementById('paymentNotes');
+    if (paymentNotes) {
+      paymentNotes.addEventListener('input', function() {
+            validateNotesInput(this);
+        });
+    }
 });
 
 // Enhanced validateNotesInput function (same as before but with better handling)
@@ -3051,91 +3057,6 @@ function validateNotesInput(input) {
         input.setSelectionRange(startPos, endPos);
     }
 }
-
-function validatePaymentAmount(input) {
-    // Remove any non-digit characters except decimal point
-    input.value = input.value.replace(/[^0-9.]/g, '');
-    
-    // Ensure only one decimal point
-    if ((input.value.match(/\./g) || []).length > 1) {
-        input.value = input.value.substring(0, input.value.lastIndexOf('.'));
-    }
-    
-    // Ensure two decimal places
-    if (input.value.indexOf('.') >= 0) {
-        const decimalPart = input.value.split('.')[1];
-        if (decimalPart.length > 2) {
-            input.value = input.value.substring(0, input.value.indexOf('.') + 3);
-        }
-    }
-    
-    // Convert to number and ensure positive
-    const numValue = parseFloat(input.value || 0);
-    if (numValue < 0) {
-        input.value = '0';
-    }
-    
-    // Update the payment summary
-    updatePaymentSummary();
-}
-
-// Function to validate payment notes
-function validatePaymentNotes(input) {
-    // Get current cursor position
-    const startPos = input.selectionStart;
-    const endPos = input.selectionEnd;
-    
-    let value = input.value;
-    
-    // Remove multiple consecutive spaces
-    value = value.replace(/\s+/g, ' ');
-    
-    // Don't allow space unless there are at least 2 characters
-    if (value.endsWith(' ') && value.trim().length < 2) {
-        value = value.trim();
-    }
-    
-    // Capitalize first letter if input starts with a letter
-    if (value.length > 0 && /[a-z]/.test(value[0])) {
-        value = value.charAt(0).toUpperCase() + value.slice(1);
-    }
-    
-    // Only update if value changed to prevent cursor jumping
-    if (value !== input.value) {
-        input.value = value;
-        // Restore cursor position
-        input.setSelectionRange(startPos, endPos);
-    }
-}
-
-// Function to set max date to today for payment date
-function setMaxPaymentDate() {
-    const today = new Date().toISOString().split('T')[0];
-    document.getElementById('paymentDate').max = today;
-}
-
-// Add event listeners when the modal opens
-document.getElementById('recordPaymentModal').addEventListener('shown', function() {
-    // Payment amount validation
-    const paymentAmount = document.getElementById('paymentAmount');
-    paymentAmount.addEventListener('input', function() {
-        validatePaymentAmount(this);
-    });
-    
-    // Payment notes validation
-    const paymentNotes = document.getElementById('paymentNotes');
-    paymentNotes.addEventListener('input', function() {
-        validatePaymentNotes(this);
-    });
-    
-    // Set max payment date to today
-    setMaxPaymentDate();
-    
-    // Also set the default date to today if not already set
-    if (!document.getElementById('paymentDate').value) {
-        document.getElementById('paymentDate').value = new Date().toISOString().split('T')[0];
-    }
-});
 
 </script>
 
