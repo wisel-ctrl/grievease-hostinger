@@ -106,6 +106,12 @@ if ($result) {
     }
 }
 
+// Pagination settings
+$recordsPerPage = 10; // Number of records per page
+$page = isset($_GET['page']) && is_numeric($_GET['page']) ? (int)$_GET['page'] : 1;
+$offset = ($page - 1) * $recordsPerPage;
+$totalPages = ceil($totalBeneficiaries / $recordsPerPage);
+
 ?>
 
 <!DOCTYPE html>
@@ -354,27 +360,28 @@ if ($result) {
           } else {
               // Prepare and execute the query using MySQLi
               $query = "SELECT 
-                        lp.lifeplan_id,
-                        lp.service_id,
-                        lp.customerID,
-                        lp.amount_paid,
-                        lp.balance,
-                        CONCAT_WS(' ',
-                            lp.benefeciary_fname,
-                            NULLIF(lp.benefeciary_mname, ''),
-                            lp.benefeciary_lname,
-                            NULLIF(lp.benefeciary_suffix, '')
-                        ) AS benefeciary_fullname,
-                        lp.payment_duration,
-                        lp.custom_price,
-                        lp.payment_status,
-                        s.service_name
-                    FROM 
-                        lifeplan_tb lp
-                    JOIN 
-                        services_tb s ON lp.service_id = s.service_id
-                    WHERE
-                        lp.archived = 'show'";
+    lp.lifeplan_id,
+    lp.service_id,
+    lp.customerID,
+    lp.amount_paid,
+    lp.balance,
+    CONCAT_WS(' ',
+        lp.benefeciary_fname,
+        NULLIF(lp.benefeciary_mname, ''),
+        lp.benefeciary_lname,
+        NULLIF(lp.benefeciary_suffix, '')
+    ) AS benefeciary_fullname,
+    lp.payment_duration,
+    lp.custom_price,
+    lp.payment_status,
+    s.service_name
+FROM 
+    lifeplan_tb lp
+JOIN 
+    services_tb s ON lp.service_id = s.service_id
+WHERE
+    lp.archived = 'show'
+LIMIT $offset, $recordsPerPage";
               
               $result = $conn->query($query);
               
@@ -475,10 +482,10 @@ if ($result) {
   
   <!-- Sticky Pagination Footer with improved spacing -->
   <div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
-    <div id="paginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
-      Showing <?php echo isset($offset) ? ($offset + 1) : '1'; ?> - <?php echo isset($offset) && isset($recordsPerPage) ? min($offset + $recordsPerPage, isset($totalBeneficiaries) ? $totalBeneficiaries : 6) : '6'; ?> 
-      of <?php echo isset($totalBeneficiaries) ? $totalBeneficiaries : '6'; ?> beneficiaries
-    </div>
+  <div id="paginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
+  Showing <?php echo ($offset + 1); ?> - <?php echo min($offset + $recordsPerPage, $totalBeneficiaries); ?> 
+  of <?php echo $totalBeneficiaries; ?> beneficiaries
+</div>
     <div class="flex space-x-2">
       <a href="<?php echo '?page=' . (isset($page) ? max(1, $page - 1) : '1'); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo (!isset($page) || $page <= 1) ? 'opacity-50 pointer-events-none' : ''; ?>">&laquo;</a>
       
