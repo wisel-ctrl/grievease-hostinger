@@ -345,7 +345,7 @@ function validateSearchInput(input) {
                 <label for="clientSuffix" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
                   Suffix <span class="text-xs text-gray-500">(Optional)</span>
                 </label>
-                <select id="clientSuffix" name="clientSuffix" class="w-full px-3 py-2 px-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                <select id="clientSuffix" name="clientSuffix" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                                     <option value="">None</option>
                                     <option value="Jr.">Jr.</option>
                                     <option value="Sr.">Sr.</option>
