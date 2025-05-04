@@ -108,9 +108,9 @@ if ($branch_result->num_rows > 0) {
         <h3 class="text-lg font-bold text-sidebar-text">Employee Details</h3>
         
         <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
-          <i class="fas fa-users"></i>
-          <?php echo $totalEmployees . ($totalEmployees != 1 ? "" : ""); ?>
-        </span>
+    <i class="fas fa-users"></i>
+    <?php echo $totalEmployees; ?>
+</span>
       </div>
       
       <!-- Controls for big screens - aligned right -->
@@ -296,6 +296,16 @@ if ($branch_result->num_rows > 0) {
           } else {
               $result = $conn->query($sql);
           }
+
+          $totalEmployees = $result->num_rows;
+
+// If using branch filter, we need to get the total across all branches for the counter
+if ($branch_filter !== null) {
+    $countSql = "SELECT COUNT(*) as total FROM employee_tb";
+    $countResult = $conn->query($countSql);
+    $countRow = $countResult->fetch_assoc();
+    $totalEmployees = $countRow['total'];
+}
 
           // Check if there are results
           if ($result->num_rows > 0) {
