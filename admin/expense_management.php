@@ -1099,11 +1099,31 @@ $conn->close();
       <form id="editExpenseForm" class="space-y-3 sm:space-y-4">
         <input type="hidden" id="editExpenseId" name="editExpenseId">
         
+        <!-- Expense Name -->
         <div>
           <label for="editExpenseDescription" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
             Expense Name
           </label>
-          <input type="text" id="editExpenseDescription" name="editExpenseDescription" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
+          <div class="relative">
+            <select id="editExpenseNameDropdown" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" onchange="handleEditExpenseNameChange(this)">
+              <option value="" disabled selected>Select common expense</option>
+              <option value="Rent">Rent</option>
+              <option value="Electricity">Electricity</option>
+              <option value="Water">Water</option>
+              <option value="Internet">Internet</option>
+              <option value="Salaries">Salaries</option>
+              <option value="Office Supplies">Office Supplies</option>
+              <option value="Maintenance">Maintenance</option>
+              <option value="Marketing">Marketing</option>
+              <option value="Insurance">Insurance</option>
+              <option value="Taxes">Taxes</option>
+              <option value="Other">Other (specify)</option>
+            </select>
+            <input type="text" id="editExpenseDescription" name="editExpenseDescription" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200 mt-2 hidden" 
+                   oninput="formatExpenseName(this)" 
+                   onkeydown="preventDoubleSpace(event)" 
+                   required>
+          </div>
         </div>
         
         <div class="flex flex-col sm:flex-row gap-2 sm:gap-4">
@@ -1137,67 +1157,112 @@ $conn->close();
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <span class="text-gray-500">₱</span>
             </div>
-            <input type="number" id="editExpenseAmount" name="editExpenseAmount" class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
+            <input type="number" id="editExpenseAmount" name="editExpenseAmount" min="0.01" step="0.01" class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
           </div>
         </div>
         
-        <div class="bg-gray-50 p-3 rounded-lg border border-gray-200">
+        <!-- Status -->
+        <div class="bg-gray-50 p-3 sm:p-4 rounded-lg border border-gray-200">
           <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
             Status
           </label>
           <div class="grid grid-cols-2 gap-2">
             <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
-              <input type="radio" id="editStatusPaid" name="editExpenseStatus" value="paid" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
+              <input type="radio" id="editStatusPaid" name="editExpenseStatus" value="paid" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent" onchange="updateEditDateLimits()">
               Paid
             </label>
             <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
-              <input type="radio" id="editStatusToBePaid" name="editExpenseStatus" value="to be paid" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
+              <input type="radio" id="editStatusToBePaid" name="editExpenseStatus" value="to be paid" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent" onchange="updateEditDateLimits()">
               To Be Paid
             </label>
           </div>
         </div>
         
-        <div class="bg-gray-50 p-3 rounded-lg border-l-4 border-gold">
-          <label class="block text-xs font-medium text-gray-700 mb-1">Branch</label>
+        <!-- Payment Method -->
+        <div class="bg-gray-50 p-3 sm:p-4 rounded-lg border border-gray-200">
+          <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            Payment Method
+          </label>
           <div class="grid grid-cols-2 gap-2">
-          <?php
-          // Include database connection
-          require_once '../db_connect.php';
-          
-          // Create connection
-          $conn = new mysqli($servername, $username, $password, $dbname);
-          
-          // Check connection
-          if ($conn->connect_error) {
-              die("Connection failed: " . $conn->connect_error);
-          }
-          
-          $sql = "SELECT branch_id, branch_name FROM branch_tb";
-          $result = $conn->query($sql);
-          
-          if ($result->num_rows > 0) {
-              while($row = $result->fetch_assoc()) {
-                  echo '<label class="flex items-center space-x-2 cursor-pointer">';
-                  echo '<input type="radio" id="editBranch_' . htmlspecialchars($row['branch_id']) . '" 
-                        name="editExpenseBranch" value="' . htmlspecialchars($row['branch_id']) . '" 
-                        class="hidden peer">';
-                  echo '<div class="w-4 h-4 rounded-full border-2 border-gold flex items-center justify-center peer-checked:bg-gold peer-checked:border-darkgold transition-colors"></div>';
-                  echo '<span class="text-sm text-gray-700">' . htmlspecialchars($row['branch_name']) . '</span>';
-                  echo '</label>';
-              }
-          } else {
-              echo '<p class="text-gray-500">No branches available.</p>';
-          }
-          $conn->close();
-          ?>
+            <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
+              <input type="radio" id="editMethodCash" name="editPaymentMethod" value="cash" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent" checked>
+              Cash
+            </label>
+            <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
+              <input type="radio" id="editMethodCredit" name="editPaymentMethod" value="credit" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
+              Credit Card
+            </label>
+            <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
+              <input type="radio" id="editMethodTransfer" name="editPaymentMethod" value="transfer" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
+              Bank Transfer
+            </label>
+            <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
+              <input type="radio" id="editMethodOther" name="editPaymentMethod" value="other" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
+              Other
+            </label>
           </div>
         </div>
         
+        <!-- Branch -->
+        <div class="bg-gray-50 p-3 sm:p-4 rounded-lg border-l-4 border-gold">
+          <label class="block text-xs font-medium text-gray-700 mb-1">Branch</label>
+          <div class="grid grid-cols-2 gap-2">
+            <?php
+            require_once '../db_connect.php';
+            $conn = new mysqli($servername, $username, $password, $dbname);
+            if ($conn->connect_error) {
+                die("Connection failed: " . $conn->connect_error);
+            }
+            
+            $sql = "SELECT branch_id, branch_name FROM branch_tb";
+            $result = $conn->query($sql);
+            
+            if ($result->num_rows > 0) {
+                while($row = $result->fetch_assoc()) {
+                    echo '<label class="flex items-center space-x-2 cursor-pointer">';
+                    echo '<input type="radio" id="editBranch_' . htmlspecialchars($row['branch_id']) . '" 
+                          name="editExpenseBranch" value="' . htmlspecialchars($row['branch_id']) . '" 
+                          class="hidden peer">';
+                    echo '<div class="w-4 h-4 rounded-full border-2 border-gold flex items-center justify-center peer-checked:bg-gold peer-checked:border-darkgold transition-colors"></div>';
+                    echo '<span class="text-sm text-gray-700">' . htmlspecialchars($row['branch_name']) . '</span>';
+                    echo '</label>';
+                }
+            } else {
+                echo '<p class="text-gray-500">No branches available.</p>';
+            }
+            $conn->close();
+            ?>
+          </div>
+        </div>
+        
+        <!-- Note -->
         <div>
           <label for="editExpenseNote" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
             Note
           </label>
-          <textarea id="editExpenseNote" name="editExpenseNote" rows="3" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"></textarea>
+          <textarea id="editExpenseNote" name="editExpenseNote" rows="3" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                    oninput="formatNote(this)" 
+                    onkeydown="preventDoubleSpace(event)"></textarea>
+        </div>
+        
+        <!-- Receipt Upload -->
+        <div>
+          <label for="editExpenseReceipt" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            Upload Receipt
+          </label>
+          <div class="relative flex flex-col gap-2">
+            <div class="flex items-center border border-gray-300 rounded-lg px-3 py-2 focus-within:ring-1 focus-within:ring-sidebar-accent focus-within:border-sidebar-accent transition-all duration-200">
+              <input type="file" id="editExpenseReceipt" name="editExpenseReceipt" accept="image/*" class="w-full focus:outline-none" onchange="previewEditReceipt(event)">
+            </div>
+            <div id="editReceiptPreviewContainer" class="hidden mt-2">
+              <div class="border border-gray-200 rounded-lg p-2">
+                <img id="editReceiptPreview" src="#" alt="Receipt preview" class="max-h-40 mx-auto">
+                <button type="button" onclick="removeEditReceiptPreview()" class="mt-2 text-xs text-red-600 hover:text-red-800 flex items-center justify-center">
+                  <i class="fas fa-times mr-1"></i> Remove
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       </form>
     </div>
@@ -1213,6 +1278,116 @@ $conn->close();
     </div>
   </div>
 </div>
+
+<script>
+// Function to handle expense name dropdown change in edit modal
+function handleEditExpenseNameChange(select) {
+    const expenseInput = document.getElementById('editExpenseDescription');
+    if (select.value === 'Other') {
+        expenseInput.classList.remove('hidden');
+        expenseInput.value = '';
+        expenseInput.focus();
+    } else {
+        expenseInput.classList.add('hidden');
+        expenseInput.value = select.value;
+    }
+}
+
+// Function to update date limits based on status in edit modal
+function updateEditDateLimits() {
+    const dateInput = document.getElementById('editExpenseDate');
+    const today = new Date().toISOString().split('T')[0];
+    const isPaid = document.getElementById('editStatusPaid').checked;
+    
+    if (isPaid) {
+        dateInput.max = today;
+        if (dateInput.value > today) {
+            dateInput.value = today;
+        }
+    } else {
+        dateInput.removeAttribute('max');
+    }
+}
+
+// Function to preview receipt image in edit modal
+function previewEditReceipt(event) {
+    const input = event.target;
+    const previewContainer = document.getElementById('editReceiptPreviewContainer');
+    const preview = document.getElementById('editReceiptPreview');
+    
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+            preview.src = e.target.result;
+            previewContainer.classList.remove('hidden');
+        }
+        
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+// Function to remove receipt preview in edit modal
+function removeEditReceiptPreview() {
+    const input = document.getElementById('editExpenseReceipt');
+    const previewContainer = document.getElementById('editReceiptPreviewContainer');
+    const preview = document.getElementById('editReceiptPreview');
+    
+    input.value = '';
+    preview.src = '#';
+    previewContainer.classList.add('hidden');
+}
+
+// Updated openEditExpenseModal function with all the new fields
+function openEditExpenseModal(expenseId, expenseName, category, amount, date, branchId, status, notes) {
+    document.getElementById('editExpenseId').value = expenseId.replace('#EXP-', '');
+    
+    // Handle expense name - check if it's in the dropdown
+    const dropdown = document.getElementById('editExpenseNameDropdown');
+    const expenseInput = document.getElementById('editExpenseDescription');
+    let foundInDropdown = false;
+    
+    for (let i = 0; i < dropdown.options.length; i++) {
+        if (dropdown.options[i].value === expenseName) {
+            dropdown.selectedIndex = i;
+            expenseInput.classList.add('hidden');
+            foundInDropdown = true;
+            break;
+        }
+    }
+    
+    if (!foundInDropdown) {
+        dropdown.value = 'Other';
+        expenseInput.value = expenseName;
+        expenseInput.classList.remove('hidden');
+    }
+    
+    document.getElementById('editExpenseCategory').value = category;
+    document.getElementById('editExpenseAmount').value = amount;
+    document.getElementById('editExpenseDate').value = date;
+    document.getElementById('editExpenseNote').value = notes || '';
+    
+    // Set the branch radio button
+    if (branchId) {
+        const branchRadio = document.querySelector(`input[name="editExpenseBranch"][value="${branchId}"]`);
+        if (branchRadio) {
+            branchRadio.checked = true;
+        }
+    }
+    
+    // Set status
+    if (status) {
+        const statusValue = status.toLowerCase() === 'paid' ? 'paid' : 'to be paid';
+        document.querySelector(`input[name="editExpenseStatus"][value="${statusValue}"]`).checked = true;
+        updateEditDateLimits(); // Update date limits based on status
+    }
+    
+    // Reset receipt preview
+    removeEditReceiptPreview();
+    
+    document.getElementById('editExpenseModal').style.display = 'flex';
+}
+</script>
 
   <script>
     // Initialize date limits when modal opens
