@@ -29,7 +29,8 @@ function acceptLifeplan($conn) {
         'lifeplanId', 'customerId', 'branchId', 'first_name', 'last_name', 
         'email', 'phone_number', 'beneficiary_fname', 'beneficiary_lname',
         'relationship_with_client', 'service_id', 'package_price', 
-        'payment_duration', 'amountPaid', 'paymentMethod'
+        'payment_duration', 'amountPaid', 'paymentMethod', 'with_cremate',
+        'beneficiary_address'
     ];
     
     foreach ($requiredFields as $field) {
@@ -49,7 +50,7 @@ function acceptLifeplan($conn) {
     
     // Calculate balance
     $balance = $packagePrice - $amountPaid;
-    $paymentStatus = $balance <= 0 ? 'Fully Paid' : 'With Balance';
+    $paymentStatus = $balance <= 0 ? 'paid' : 'ongoing';
     
     // Begin transaction
     $conn->begin_transaction();

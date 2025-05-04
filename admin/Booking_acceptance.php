@@ -1756,7 +1756,7 @@ $custom_offset = ($custom_current_page - 1) * $custom_bookings_per_page;
           <input type="hidden" id="beneficiaryLastName" name="beneficiary_lname">
           <input type="hidden" id="beneficiarySuffix" name="beneficiary_suffix">
           <input type="hidden" id="beneficiaryBirthdate" name="beneficiary_birth">
-          <input type="hidden" id="beneficiaryAddress" name="beneficiary_address">
+          <input type="hidden" id="beneficiaryAddressInput" name="beneficiary_address">
           <input type="hidden" id="relationshipWithClient" name="relationship_with_client">
           
           <!-- Plan Information -->
@@ -2661,7 +2661,7 @@ function confirmLifeplanAccept() {
             document.getElementById('beneficiaryBirthdate').value = data.benefeciary_birth || '';
 
             console.log("Beneficiary Address:", data.benefeciary_address);
-            document.getElementById('beneficiaryAddress').value = data.benefeciary_address || '';
+            document.getElementById('beneficiaryAddressInput').value = data.benefeciary_address || '';
 
             console.log("Relationship to Client:", data.relationship_to_client);
             document.getElementById('relationshipWithClient').value = data.relationship_to_client || '';
