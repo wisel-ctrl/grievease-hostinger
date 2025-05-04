@@ -58,14 +58,16 @@ $stats = [
 ];
 
 if ($conn) {
-    // Total Plans
-    $query = "SELECT COUNT(*) as total FROM lifeplan_tb WHERE archived = 'show'";
-    $result = $conn->query($query);
-    if ($result) {
-        $row = $result->fetch_assoc();
-        $stats['total_plans'] = $row['total'];
-        $result->free();
-    }
+    // Get total beneficiaries count
+$query = "SELECT COUNT(*) as total FROM lifeplan_tb WHERE archived = 'show'";
+$result = $conn->query($query);
+if ($result) {
+    $row = $result->fetch_assoc();
+    $totalBeneficiaries = $row['total'];
+    $result->free();
+} else {
+    $totalBeneficiaries = 0;
+}
 
     // Active Plans (status = 'paid' or 'ongoing')
     $query = "SELECT COUNT(*) as total FROM lifeplan_tb WHERE archived = 'show' AND payment_status IN ('paid', 'ongoing')";
@@ -365,7 +367,6 @@ if ($conn) {
                         services_tb s ON lp.service_id = s.service_id
                     WHERE
                         lp.archived = 'show'
-                    LIMIT 6"; // Limit to 6 records for pagination
               
               $result = $conn->query($query);
               
