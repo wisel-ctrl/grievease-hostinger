@@ -2686,7 +2686,7 @@ function confirmLifeplanAccept() {
             document.getElementById('lifeplanEndDate').value = data.end_date || '';
 
             console.log("With Cremate:", data.with_cremate);
-            document.getElementById('withCremate').value = data.with_cremate || 'no';
+            document.getElementById('withCremate').value = data.with_cremate ? 'yes' : 'no';
 
             // Show the payment modal
             openLifeplanPaymentModal();
