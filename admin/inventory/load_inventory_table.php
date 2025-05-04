@@ -65,26 +65,26 @@ function generateInventoryRow($row) {
     // Determine quantity cell class based on stock level
     $quantity = $row["quantity"];
     
-    // Enhanced heatmap visualization system
-    // This creates a more granular color scale that shows stock levels more clearly
+    // Enhanced stock level visualization system
+    // This provides clear visual indicators without background colors
     if ($quantity <= 2) { // Critical stock
-        $quantityClass = 'quantity-cell bg-red-600 text-white font-bold';
+        $quantityClass = 'quantity-cell text-red-600 font-bold border-2 border-red-600';
         $quantityText = $quantity . ' <span class="text-xs ml-1">(Critical)</span>';
         $stockIcon = '<i class="fas fa-exclamation-triangle mr-1"></i>';
     } elseif ($quantity <= 5) { // Low stock
-        $quantityClass = 'quantity-cell bg-red-400 text-white font-medium';
+        $quantityClass = 'quantity-cell text-red-500 font-medium border border-red-400';
         $quantityText = $quantity . ' <span class="text-xs ml-1">(Low)</span>';
         $stockIcon = '<i class="fas fa-arrow-down mr-1"></i>';
     } elseif ($quantity <= 10) { // Warning level
-        $quantityClass = 'quantity-cell bg-yellow-400 text-yellow-800';
+        $quantityClass = 'quantity-cell text-yellow-600 border border-yellow-400';
         $quantityText = $quantity;
         $stockIcon = '<i class="fas fa-exclamation-circle mr-1"></i>';
     } elseif ($quantity <= 20) { // Normal stock
-        $quantityClass = 'quantity-cell bg-green-400 text-green-800';
+        $quantityClass = 'quantity-cell text-green-600 border border-green-400';
         $quantityText = $quantity;
         $stockIcon = '<i class="fas fa-check-circle mr-1"></i>';
     } else { // High stock
-        $quantityClass = 'quantity-cell bg-blue-400 text-blue-800';
+        $quantityClass = 'quantity-cell text-blue-600 border border-blue-400';
         $quantityText = $quantity;
         $stockIcon = '<i class="fas fa-arrow-up mr-1"></i>';
     }
@@ -99,7 +99,7 @@ function generateInventoryRow($row) {
     
     // Enhanced quantity cell with visual indicators and proper padding
     $html .= '<td class="p-0 text-sm">';
-    $html .= '<div class="' . $quantityClass . ' px-3 py-2 rounded-lg flex items-center justify-center shadow-sm">';
+    $html .= '<div class="' . $quantityClass . ' px-3 py-2 rounded-lg flex items-center justify-center">';
     $html .= $stockIcon . $quantityText;
     $html .= '</div>';
     $html .= '</td>';
