@@ -63,27 +63,19 @@ function generateInventoryRow($row) {
   // Determine quantity cell class based on stock level
   $quantity = $row["quantity"];
   
-  // Stock level visualization using only text color
+  // Simplified stock level visualization with just three levels using text color
   if ($quantity <= 2) { // Critical stock
       $quantityClass = 'quantity-cell text-red-600 font-bold';
       $quantityText = $quantity . ' <span class="text-xs ml-1">(Critical)</span>';
       $stockIcon = '<i class="fas fa-exclamation-triangle mr-1"></i>';
   } elseif ($quantity <= 5) { // Low stock
-      $quantityClass = 'quantity-cell text-red-500 font-medium';
+      $quantityClass = 'quantity-cell text-yellow-600 font-medium';
       $quantityText = $quantity . ' <span class="text-xs ml-1">(Low)</span>';
       $stockIcon = '<i class="fas fa-arrow-down mr-1"></i>';
-  } elseif ($quantity <= 10) { // Warning level
-      $quantityClass = 'quantity-cell text-yellow-600';
-      $quantityText = $quantity;
-      $stockIcon = '<i class="fas fa-exclamation-circle mr-1"></i>';
-  } elseif ($quantity <= 20) { // Normal stock
+  } else { // Normal stock
       $quantityClass = 'quantity-cell text-green-600';
       $quantityText = $quantity;
       $stockIcon = '<i class="fas fa-check-circle mr-1"></i>';
-  } else { // High stock
-      $quantityClass = 'quantity-cell text-blue-600';
-      $quantityText = $quantity;
-      $stockIcon = '<i class="fas fa-arrow-up mr-1"></i>';
   }
 
   $html = '<tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">';
