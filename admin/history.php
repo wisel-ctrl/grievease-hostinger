@@ -1772,7 +1772,7 @@ $totalOutstanding = $countResult->fetch_assoc()['total'];
             Payment Date
           </label>
           <div class="relative">
-            <input type="date" id="paymentDate" name="paymentDate" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+            <input type="date" id="paymentDate" name="paymentDate" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" max="<?php echo date('Y-m-d'); ?>">
           </div>
         </div>
         
@@ -1875,6 +1875,11 @@ document.addEventListener('click', function(e) {
     function openRecordPaymentModal(serviceId, clientName, balance) {
   // Get the modal element
   const modal = document.getElementById('recordPaymentModal');
+
+  const today = new Date().toISOString().split('T')[0];
+  const paymentDateInput = document.getElementById('paymentDate');
+  paymentDateInput.value = today;
+  paymentDateInput.max = today;
   
   // Fetch additional details (customerID, branch_id, and amount_paid) via AJAX
   fetch(`history/get_payment_details.php?sales_id=${serviceId}`)
