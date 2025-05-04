@@ -2378,7 +2378,15 @@ function openLifeplanDetails(lifeplanId) {
   // Fetch lifeplan details via AJAX
   fetch('bookingpage/get_lifeplan_details.php?id=' + lifeplanId)
     .then(response => response.json())
-    .then(data => {
+    .then(response => {
+      // Check if the response is successful
+      if (!response.success) {
+        throw new Error(response.error || 'Failed to load lifeplan details');
+      }
+      
+      // Get the data from the response
+      const data = response.data;
+      
       // Populate modal with the basic details
       document.getElementById('lifeplanBookingId').textContent = '#LP-' + 
         new Date(data.initial_date).getFullYear() + '-' + 
@@ -2388,16 +2396,15 @@ function openLifeplanDetails(lifeplanId) {
       document.getElementById('lifeplanEmailAddress').textContent = data.email;
       document.getElementById('lifeplanAddress').textContent = data.address || "Not provided";
       document.getElementById('lifeplanType').textContent = data.service_name || "Custom LifePlan";
-      document.getElementById('lifeplanDateRequested').textContent = 
-        new Date(data.initial_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-      document.getElementById('lifeplanPrice').textContent = "₱" + (parseFloat(data.package_price) || 0).toFixed(2);
+      document.getElementById('lifeplanDateRequested').textContent = data.initial_date_formatted;
+      document.getElementById('lifeplanPrice').textContent = "₱" + data.package_price_formatted;
       document.getElementById('lifeplanTerms').textContent = data.payment_terms || "Not specified";
 
       // Beneficiary information
       document.getElementById('beneficiaryFullName').textContent = data.beneficiary_name || "Not provided";
-      document.getElementById('beneficiaryRelationship').textContent = data.beneficiary_relationship || "Not provided";
-      document.getElementById('beneficiaryContact').textContent = data.beneficiary_contact || "Not provided";
-      document.getElementById('beneficiaryAddress').textContent = data.beneficiary_address || "Same as customer";
+      document.getElementById('beneficiaryRelationship').textContent = data.relationship_to_client || "Not provided";
+      document.getElementById('beneficiaryContact').textContent = data.phone || "Not provided";
+      document.getElementById('beneficiaryAddress').textContent = data.benefeciary_address || "Same as customer";
       
       // Update lifeplan status
       const statusElement = document.getElementById('lifeplanBookingStatus');
