@@ -1985,6 +1985,88 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 }); 
 
+// Add this to your existing JavaScript for the receipt modal
+document.addEventListener('DOMContentLoaded', function() {
+    // Beneficiary name fields validation (first, middle, last names, suffix)
+    const beneficiaryNameFields = ['benefeciary_fname', 'benefeciary_mname', 'benefeciary_lname', 'benefeciary_suffix'];
+    beneficiaryNameFields.forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        if (field) {
+            field.addEventListener('input', function() {
+                // Allow only letters and single spaces
+                this.value = this.value.replace(/[^a-zA-Z\s]/g, '');
+                
+                // Remove multiple consecutive spaces
+                this.value = this.value.replace(/\s{2,}/g, ' ');
+                
+                // Auto capitalize first letter
+                if (this.value.length === 1) {
+                    this.value = this.value.toUpperCase();
+                }
+                
+                // Don't allow space unless there are already 2 characters
+                if (this.value.length < 2 && this.value.includes(' ')) {
+                    this.value = this.value.trim();
+                }
+            });
+        }
+    });
+
+    // Beneficiary date of birth validation
+    const beneficiaryDobField = document.getElementById('benefeciary_dob');
+    if (beneficiaryDobField) {
+        beneficiaryDobField.addEventListener('input', function() {
+            const today = new Date().toISOString().split('T')[0];
+            const selectedDate = this.value;
+            
+            if (selectedDate > today) {
+                this.value = today;
+            }
+        });
+        beneficiaryDobField.max = new Date().toISOString().split('T')[0]; // Set max date to today
+    }
+
+    // Relationship validation
+    const relationshipField = document.getElementById('relationship_to_client');
+    if (relationshipField) {
+        relationshipField.addEventListener('input', function() {
+            // Allow only letters and single spaces
+            this.value = this.value.replace(/[^a-zA-Z\s]/g, '');
+            
+            // Remove multiple consecutive spaces
+            this.value = this.value.replace(/\s{2,}/g, ' ');
+            
+            // Auto capitalize first letter
+            if (this.value.length === 1) {
+                this.value = this.value.toUpperCase();
+            }
+            
+            // Don't allow space unless there are already 2 characters
+            if (this.value.length < 2 && this.value.includes(' ')) {
+                this.value = this.value.trim();
+            }
+        });
+    }
+
+    // Beneficiary address validation
+    const beneficiaryAddressField = document.getElementById('benefeciary_address');
+    if (beneficiaryAddressField) {
+        beneficiaryAddressField.addEventListener('input', function() {
+            // Remove multiple consecutive spaces
+            this.value = this.value.replace(/\s{2,}/g, ' ');
+            
+            // Auto capitalize first letter of each sentence
+            this.value = this.value.replace(/(^\s*\w|[.!?]\s*\w)/g, function(c) {
+                return c.toUpperCase();
+            });
+            
+            // Don't allow space unless there are already 2 characters
+            if (this.value.length < 2 && this.value.includes(' ')) {
+                this.value = this.value.trim();
+            }
+        });
+    }
+});
 
 // Add this to your existing JavaScript for the edit modal
 document.addEventListener('DOMContentLoaded', function() {
@@ -2085,6 +2167,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
+
 </script>
 
 
