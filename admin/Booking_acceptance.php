@@ -2608,6 +2608,7 @@ function confirmLifeplanAccept() {
     fetch('bookingpage/get_lifeplan_for_accept.php?id=' + lifeplanId)
         .then(response => response.json())
         .then(data => {
+            console.log('Recieved data: ',data);
             if (!data.success) {
                 throw new Error(data.error || 'Failed to load lifeplan details');
                 console.log("ay malii");
