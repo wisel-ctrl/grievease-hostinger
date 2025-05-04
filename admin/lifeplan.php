@@ -499,8 +499,32 @@ LIMIT $offset, $recordsPerPage";
 
   
   
-  <!-- Sticky Pagination Footer with improved spacing -->
-<div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
+  <?php
+// Debug values - add these at the top of your page to check variables
+$debugMode = true; // Set to true to see variable values
+
+// Default values if variables aren't set (for testing)
+if (!isset($page)) $page = 1;
+if (!isset($totalPages)) $totalPages = 0;
+if (!isset($totalBeneficiaries)) $totalBeneficiaries = 0;
+if (!isset($offset)) $offset = 0;
+if (!isset($recordsPerPage)) $recordsPerPage = 10;
+
+// Debug output
+if ($debugMode) {
+    echo "<div style='background: #f8f9fa; padding: 10px; margin-bottom: 15px; border: 1px solid #ddd;'>";
+    echo "<strong>Debug Info:</strong><br>";
+    echo "page: $page<br>";
+    echo "totalPages: $totalPages<br>";
+    echo "totalBeneficiaries: $totalBeneficiaries<br>";
+    echo "offset: $offset<br>";
+    echo "recordsPerPage: $recordsPerPage<br>";
+    echo "</div>";
+}
+?>
+
+<!-- Sticky Pagination Footer with improved spacing and visibility -->
+<div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4" style="z-index: 10; display: block !important;">
     <div id="paginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
     <?php 
         if ($totalBeneficiaries > 0) {
@@ -574,6 +598,9 @@ LIMIT $offset, $recordsPerPage";
             <a href="<?php echo '?page=' . $totalPages; ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($page == $totalPages) ? 'opacity-50 pointer-events-none' : ''; ?>">
                 &raquo;
             </a>
+        <?php else: ?>
+            <!-- Show a message when no pagination is needed -->
+            <span class="text-sm text-gray-400">No pagination needed</span>
         <?php endif; ?>
     </div>
 </div>
