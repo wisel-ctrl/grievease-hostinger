@@ -1061,72 +1061,78 @@ $totalOutstanding = $countResult->fetch_assoc()['total'];
         } else {
             echo "No records found";
         }
-        ?>
+    ?>
     </div>
+    
     <div id="paginationContainerPastWithBal" class="flex space-x-2">
-        <?php 
+    <?php
         $totalPagesOutstanding = ceil($totalOutstanding / $recordsPerPage);
-        if ($totalPagesOutstanding > 1): ?>
-            <!-- First page button (double arrow) -->
-            <a href="?outstandingPage=1" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($outstandingPage == 1) ? 'opacity-50 pointer-events-none' : ''; ?>">
-                &laquo;
-            </a>
-            
-            <!-- Previous page button (single arrow) -->
-            <a href="<?php echo '?outstandingPage=' . max(1, $outstandingPage - 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($outstandingPage == 1) ? 'opacity-50 pointer-events-none' : ''; ?>">
-                &lsaquo;
-            </a>
-            
-            <?php
-            // Show exactly 3 page numbers
-            if ($totalPagesOutstanding <= 3) {
-                // If total pages is 3 or less, show all pages
+        
+        // Make sure we have something to paginate
+        if ($totalOutstanding > 0):
+    ?>
+        <!-- First page button -->
+        <a href="?outstandingPage=1" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($outstandingPage <= 1) ? 'opacity-50 pointer-events-none' : ''; ?>">
+            &laquo;
+        </a>
+        
+        <!-- Previous page button -->
+        <a href="?outstandingPage=<?php echo max(1, $outstandingPage - 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($outstandingPage <= 1) ? 'opacity-50 pointer-events-none' : ''; ?>">
+            &lsaquo;
+        </a>
+        
+        <?php
+        // Show exactly 3 page numbers
+        if ($totalPagesOutstanding <= 3) {
+            // If total pages is 3 or less, show all pages
+            $startPage = 1;
+            $endPage = $totalPagesOutstanding;
+        } else {
+            // With more than 3 pages, determine which 3 to show
+            if ($outstandingPage == 1) {
+                // At the beginning, show first 3 pages
                 $startPage = 1;
+                $endPage = 3;
+            } elseif ($outstandingPage == $totalPagesOutstanding) {
+                // At the end, show last 3 pages
+                $startPage = $totalPagesOutstanding - 2;
                 $endPage = $totalPagesOutstanding;
             } else {
-                // With more than 3 pages, determine which 3 to show
-                if ($outstandingPage == 1) {
-                    // At the beginning, show first 3 pages
+                // In the middle, show current page with one before and after
+                $startPage = $outstandingPage - 1;
+                $endPage = $outstandingPage + 1;
+                
+                // Handle edge cases
+                if ($startPage < 1) {
                     $startPage = 1;
                     $endPage = 3;
-                } elseif ($outstandingPage == $totalPagesOutstanding) {
-                    // At the end, show last 3 pages
-                    $startPage = $totalPagesOutstanding - 2;
+                }
+                if ($endPage > $totalPagesOutstanding) {
                     $endPage = $totalPagesOutstanding;
-                } else {
-                    // In the middle, show current page with one before and after
-                    $startPage = $outstandingPage - 1;
-                    $endPage = $outstandingPage + 1;
-                    
-                    // Handle edge cases
-                    if ($startPage < 1) {
-                        $startPage = 1;
-                        $endPage = 3;
-                    }
-                    if ($endPage > $totalPagesOutstanding) {
-                        $endPage = $totalPagesOutstanding;
-                        $startPage = $totalPagesOutstanding - 2;
-                    }
+                    $startPage = $totalPagesOutstanding - 2;
                 }
             }
-            
-            // Generate the page buttons
-            for ($i = $startPage; $i <= $endPage; $i++) {
-                $active_class = ($i == $outstandingPage) ? 'bg-sidebar-accent text-white' : 'border border-sidebar-border hover:bg-sidebar-hover';
-                echo '<a href="?outstandingPage=' . $i . '" class="px-3.5 py-1.5 rounded text-sm ' . $active_class . '">' . $i . '</a>';
-            }
-            ?>
-            
-            <!-- Next page button (single arrow) -->
-            <a href="<?php echo '?outstandingPage=' . min($totalPagesOutstanding, $outstandingPage + 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($outstandingPage == $totalPagesOutstanding) ? 'opacity-50 pointer-events-none' : ''; ?>">
-                &rsaquo;
+        }
+        
+        // Generate the page buttons
+        for ($i = $startPage; $i <= $endPage; $i++):
+            $active_class = ($i == $outstandingPage) ? 'bg-sidebar-accent text-white' : 'border border-sidebar-border hover:bg-sidebar-hover';
+        ?>
+            <a href="?outstandingPage=<?php echo $i; ?>" class="px-3.5 py-1.5 rounded text-sm <?php echo $active_class; ?>">
+                <?php echo $i; ?>
             </a>
-            
-            <!-- Last page button (double arrow) -->
-            <a href="<?php echo '?outstandingPage=' . $totalPagesOutstanding; ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($outstandingPage == $totalPagesOutstanding) ? 'opacity-50 pointer-events-none' : ''; ?>">
-                &raquo;
-            </a>
-        <?php endif; ?>
+        <?php endfor; ?>
+        
+        <!-- Next page button -->
+        <a href="?outstandingPage=<?php echo min($totalPagesOutstanding, $outstandingPage + 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($outstandingPage >= $totalPagesOutstanding) ? 'opacity-50 pointer-events-none' : ''; ?>">
+            &rsaquo;
+        </a>
+        
+        <!-- Last page button -->
+        <a href="?outstandingPage=<?php echo $totalPagesOutstanding; ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($outstandingPage >= $totalPagesOutstanding) ? 'opacity-50 pointer-events-none' : ''; ?>">
+            &raquo;
+        </a>
+    <?php endif; ?>
     </div>
 </div>
 </div>
