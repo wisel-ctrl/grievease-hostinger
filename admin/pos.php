@@ -590,13 +590,13 @@ function initializeAllValidations() {
 
   
   // Name fields validation (Lifeplan)
-  document.getElementById('lifeplanClientFirstName')?.addEventListener('input', function() {
+  document.getElementById('lp-clientFirstName')?.addEventListener('input', function() {
     validateNameInput(this, true);
   });
-  document.getElementById('lifeplanClientMiddleName')?.addEventListener('input', function() {
+  document.getElementById('lp-clientMiddleName')?.addEventListener('input', function() {
     validateNameInput(this, false);
   });
-  document.getElementById('lifeplanClientLastName')?.addEventListener('input', function() {
+  document.getElementById('lp-clientLastName')?.addEventListener('input', function() {
     validateNameInput(this, true);
   });
   document.getElementById('beneficiaryFirstName')?.addEventListener('input', function() {
@@ -631,7 +631,7 @@ function initializeAllValidations() {
   document.getElementById('clientPhone')?.addEventListener('input', function() {
     validatePhoneNumber(this);
   });
-  document.getElementById('lifeplanClientPhone')?.addEventListener('input', function() {
+  document.getElementById('lp-clientPhone')?.addEventListener('input', function() {
     validatePhoneNumber(this);
   });
   
@@ -639,7 +639,7 @@ function initializeAllValidations() {
   document.getElementById('clientEmail')?.addEventListener('input', function() {
     validateEmail(this);
   });
-  document.getElementById('lifeplanClientEmail')?.addEventListener('input', function() {
+  document.getElementById('lp-clientEmail')?.addEventListener('input', function() {
     validateEmail(this);
   });
   
@@ -1099,28 +1099,28 @@ document.addEventListener('DOMContentLoaded', function() {
           <div class="space-y-3 sm:space-y-4">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-2 sm:gap-4">
               <div>
-                <label for="lifeplanClientFirstName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                <label for="lp-clientFirstName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
                   First Name
                 </label>
-                <input type="text" id="lifeplanClientFirstName" name="lifeplanClientFirstName" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+                <input type="text" id="lp-clientFirstName" name="lp-clientFirstName" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
               </div>
               <div>
-                <label for="lifeplanClientMiddleName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                <label for="lp-clientMiddleName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
                   Middle Name <span class="text-xs text-gray-500">(Optional)</span>
                 </label>
-                <input type="text" id="lifeplanClientMiddleName" name="lifeplanClientMiddleName" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+                <input type="text" id="lp-clientMiddleName" name="lp-clientMiddleName" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
               </div>
               <div>
-                <label for="lifeplanClientLastName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                <label for="lp-clientLastName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
                   Last Name
                 </label>
-                <input type="text" id="lifeplanClientLastName" name="lifeplanClientLastName" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+                <input type="text" id="lp-clientLastName" name="lp-clientLastName" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
               </div>
               <div>
-                <label for="lifeplanClientSuffix" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                <label for="lp-clientSuffix" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
                   Suffix <span class="text-xs text-gray-500">(Optional)</span>
                 </label>
-                <select id="lifeplanClientSuffix" name="lifeplanClientSuffix" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                <select id="lp-clientSuffix" name="lp-clientSuffix" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                                     <option value="">None</option>
                                     <option value="Jr.">Jr.</option>
                                     <option value="Sr.">Sr.</option>
@@ -1134,16 +1134,16 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-4">
               <div>
-                <label for="lifeplanClientPhone" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                <label for="lp-clientPhone" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
                   Phone Number
                 </label>
-                <input type="tel" id="lifeplanClientPhone" name="lifeplanClientPhone" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" minlength="11" maxlength="11">
+                <input type="tel" id="lp-clientPhone" name="lp-clientPhone" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" minlength="11" maxlength="11">
               </div>
               <div>
-                <label for="lifeplanClientEmail" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                <label for="lp-clientEmail" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
                   Email Address <span class="text-xs text-gray-500">(Optional)</span>
                 </label>
-                <input type="email" id="lifeplanClientEmail" name="lifeplanClientEmail" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+                <input type="email" id="lp-clientEmail" name="lp-clientEmail" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
               </div>
             </div>
           </div>
@@ -1966,24 +1966,28 @@ function confirmLifeplanCheckout() {
   submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
   submitBtn.disabled = true;
 
-  // Validate required fields
+  // Validate required fields - use the correct lifeplan field IDs
   const requiredFields = [
-    'lifeplanClientFirstName', 'lifeplanClientLastName', 'lifeplanClientPhone',
-    'beneficiaryFirstName', 'beneficiaryLastName', 'beneficiaryRelationship',
-    'beneficiaryStreet'
+    'lp-clientFirstName', 
+    'lp-clientLastName', 
+    'lp-clientPhone',
+    'beneficiaryFirstName', 
+    'beneficiaryLastName', 
+    'beneficiaryRelationship'
   ];
 
   for (const fieldId of requiredFields) {
     const field = document.getElementById(fieldId);
-    if (!field.value.trim()) {
+    if (!field || !field.value.trim()) {
       submitBtn.innerHTML = originalBtnText;
       submitBtn.disabled = false;
-      alert(`Please fill in ${field.labels[0].textContent}`);
-      field.focus();
+      alert(`Please fill in ${fieldId.includes('lp-') ? fieldId.substring(3) : fieldId}`);
+      if (field) field.focus();
       return;
     }
   }
 
+  // Rest of your function remains the same...
   // Prepare data for submission
   const formData = new FormData(form);
   
@@ -2014,7 +2018,7 @@ function confirmLifeplanCheckout() {
     if (!response.ok) {
       throw new Error('Network response was not ok');
     }
-    return response.json(); // Parse the JSON response
+    return response.json();
   })
   .then(data => {
     if (data.success) {
