@@ -2620,6 +2620,8 @@ function confirmLifeplanAccept() {
             console.log("Customer ID:", data.customer_id);
             document.getElementById('lifeplanCustomerID').value = data.customer_id || '';
 
+            document.getElementById('lifeplanIdForPayment').value = data.lpbooking_id || '';
+
             console.log("Branch ID:", data.branch_id);
             document.getElementById('lifeplanCustomerBranch').value = data.branch_id || '';
 
@@ -2638,8 +2640,8 @@ function confirmLifeplanAccept() {
             console.log("Email:", data.email);
             document.getElementById('lifeplanCustomerEmail').value = data.email || '';
 
-            console.log("Phone Number:", data.phone_number);
-            document.getElementById('lifeplanCustomerPhone').value = data.phone_number || '';
+            console.log("Phone Number:", data.contact_number);
+            document.getElementById('lifeplanCustomerPhone').value = data.contact_number || '';
 
             // Beneficiary information (note: check for spelling errors in keys)
             console.log("Beneficiary First Name:", data.benefeciary_fname);
@@ -2733,7 +2735,6 @@ document.getElementById('lifeplanPaymentForm').addEventListener('submit', functi
     const formData = new FormData(this);
     
     // Add additional data that might not be in the form
-    formData.append('lifeplanId', currentLifeplanIdForPayment);
     formData.append('action', 'acceptLifeplan');
     
     // Calculate balance for display in confirmation
