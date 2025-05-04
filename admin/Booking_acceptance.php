@@ -2457,8 +2457,8 @@ function openLifeplanDetails(lifeplanId) {
       const paymentProofImage = document.getElementById('lifeplanPaymentProofImage');
       const paymentProofContainer = paymentProofImage.parentElement;
 
-      if (data.payment_proof_url && data.payment_proof_url !== '') {
-        const paymentProofPath = '../customer/booking/uploads/' + data.payment_proof_url.replace(/^uploads\//, '');
+      if (data.payment_url && data.payment_url !== '') {
+        const paymentProofPath = '../customer/booking/uploads/' + data.payment_url.replace(/^uploads\//, '');
         
         paymentProofImage.onerror = function() {
           console.error("Failed to load payment proof image:", paymentProofPath);
