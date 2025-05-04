@@ -216,7 +216,7 @@ if ($conn) {
         
         <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
           <i class="fas fa-clipboard-list"></i>
-          <?php echo isset($totalBeneficiaries) ? $totalBeneficiaries . " Beneficiar" . ($totalBeneficiaries != 1 ? "ies" : "y") : "Beneficiaries"; ?>
+          <?php echo isset($totalBeneficiaries) ? $totalBeneficiaries . ($totalBeneficiaries != 1 ? "" : "") : ""; ?>
         </span>
       </div>
       
