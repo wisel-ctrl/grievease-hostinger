@@ -990,11 +990,56 @@ document.addEventListener('DOMContentLoaded', function() {
               </div>
             </div>
           </div>
-          <div class="mt-3 sm:mt-4">
-            <label for="benefeciary_address" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">Address</label>
-            <div class="relative">
-              <textarea id="benefeciary_address" rows="2" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"></textarea>
-            </div>
+          <!-- Replace the existing beneficiary_address textarea with this: -->
+<div class="grid grid-cols-1 gap-3 sm:gap-4">
+    <!-- Region Dropdown -->
+    <div>
+        <label for="region" class="block text-xs font-medium text-gray-700 mb-1">Region</label>
+        <select id="region" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
+            <option value="">Select Region</option>
+            <!-- Regions will be populated via JavaScript -->
+        </select>
+    </div>
+    
+    <!-- Province Dropdown -->
+    <div>
+        <label for="province" class="block text-xs font-medium text-gray-700 mb-1">Province</label>
+        <select id="province" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" disabled required>
+            <option value="">Select Province</option>
+        </select>
+    </div>
+    
+    <!-- City/Municipality Dropdown -->
+    <div>
+        <label for="city" class="block text-xs font-medium text-gray-700 mb-1">City/Municipality</label>
+        <select id="city" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" disabled required>
+            <option value="">Select City/Municipality</option>
+        </select>
+    </div>
+    
+    <!-- Barangay Dropdown -->
+    <div>
+        <label for="barangay" class="block text-xs font-medium text-gray-700 mb-1">Barangay</label>
+        <select id="barangay" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" disabled required>
+            <option value="">Select Barangay</option>
+        </select>
+    </div>
+    
+    <!-- Street (Manual Input) -->
+    <div>
+        <label for="street" class="block text-xs font-medium text-gray-700 mb-1">Street/Building</label>
+        <input type="text" id="street" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
+    </div>
+    
+    <!-- Zip Code (Manual Input) -->
+    <div>
+        <label for="zip_code" class="block text-xs font-medium text-gray-700 mb-1">Zip Code</label>
+        <input type="text" id="zip_code" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" maxlength="4" required>
+    </div>
+    
+    <!-- Hidden field to store the full formatted address -->
+    <input type="hidden" id="benefeciary_address" name="benefeciary_address">
+</div>
           </div>
         </div>
         
