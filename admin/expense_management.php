@@ -542,7 +542,7 @@ $statusFilter = isset($_GET['status']) ? $_GET['status'] : '';
 $searchQuery = isset($_GET['search']) ? $_GET['search'] : '';
 
 // Pagination setup
-$recordsPerPage = 10;
+$recordsPerPage = 5;
 $page = isset($_GET['page']) ? intval($_GET['page']) : 1;
 
 // Fetch all branches first
