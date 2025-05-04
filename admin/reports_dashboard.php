@@ -354,7 +354,7 @@ $ratioChange = number_format($changes['ratio_change'] ?? 0, 1);
   </div>
 </div>
 
-<div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 mb-8">
+<div class="bg-green rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 mb-8">
   <div class="flex justify-between items-center p-5 border-b border-sidebar-border">
     <h3 class="font-medium text-sidebar-text">Sales & Payment Trends</h3>
     
