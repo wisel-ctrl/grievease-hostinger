@@ -1955,5 +1955,139 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
+<script>
+  // Add this to your existing JavaScript for the receipt modal
+document.addEventListener('DOMContentLoaded', function() {
+    const paymentAmount = document.getElementById('paymentAmount');
+    const paymentNotes = document.getElementById('paymentNotes');
+
+    // Payment amount validation - no negative numbers
+    paymentAmount.addEventListener('input', function() {
+        if (this.value < 0) {
+            this.value = '';
+        }
+    });
+
+    // Payment notes validation
+    paymentNotes.addEventListener('input', function() {
+        // Remove multiple consecutive spaces
+        this.value = this.value.replace(/\s{2,}/g, ' ');
+        
+        // Auto capitalize first letter of each sentence
+        this.value = this.value.replace(/(^\s*\w|[.!?]\s*\w)/g, function(c) {
+            return c.toUpperCase();
+        });
+        
+        // Don't allow space unless there are already 2 characters
+        if (this.value.length < 2 && this.value.includes(' ')) {
+            this.value = this.value.trim();
+        }
+    });
+}); 
+
+
+// Add this to your existing JavaScript for the edit modal
+document.addEventListener('DOMContentLoaded', function() {
+    // Customer search validation
+    const customerSearch = document.getElementById('customerSearch');
+    customerSearch.addEventListener('input', function() {
+        // Remove numbers
+        this.value = this.value.replace(/[0-9]/g, '');
+        
+        // Remove multiple consecutive spaces
+        this.value = this.value.replace(/\s{2,}/g, ' ');
+        
+        // Don't allow space unless there are already 2 characters
+        if (this.value.length < 2 && this.value.includes(' ')) {
+            this.value = this.value.trim();
+        }
+    });
+
+    // Name fields validation (first, middle, last names)
+    const nameFields = ['fname', 'mname', 'lname'];
+    nameFields.forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        field.addEventListener('input', function() {
+            // Allow only letters and single spaces
+            this.value = this.value.replace(/[^a-zA-Z\s]/g, '');
+            
+            // Remove multiple consecutive spaces
+            this.value = this.value.replace(/\s{2,}/g, ' ');
+            
+            // Auto capitalize first letter
+            if (this.value.length === 1) {
+                this.value = this.value.toUpperCase();
+            }
+            
+            // Don't allow space unless there are already 2 characters
+            if (this.value.length < 2 && this.value.includes(' ')) {
+                this.value = this.value.trim();
+            }
+        });
+    });
+
+    // Email validation
+    const emailField = document.getElementById('email');
+    emailField.addEventListener('input', function() {
+        // Remove spaces
+        this.value = this.value.replace(/\s/g, '');
+    });
+
+    // Phone validation (Philippine number)
+    const phoneField = document.getElementById('phone');
+    phoneField.addEventListener('input', function() {
+        // Remove non-numeric characters
+        this.value = this.value.replace(/\D/g, '');
+        
+        // Limit to 11 digits
+        if (this.value.length > 11) {
+            this.value = this.value.substring(0, 11);
+        }
+        
+        // Ensure it starts with 09
+        if (this.value.length >= 1 && !this.value.startsWith('0')) {
+            this.value = '';
+        }
+        if (this.value.length >= 2 && !this.value.startsWith('09')) {
+            this.value = '0' + this.value.substring(1, 1);
+        }
+    });
+
+    // Date of birth validation
+    const dobField = document.getElementById('benefeciary_dob');
+    dobField.addEventListener('input', function() {
+        const today = new Date().toISOString().split('T')[0];
+        const selectedDate = this.value;
+        
+        if (selectedDate > today) {
+            this.value = today;
+        }
+    });
+    dobField.max = new Date().toISOString().split('T')[0]; // Set max date to today
+
+    // Relationship validation
+    const relationshipField = document.getElementById('relationship_to_client');
+    relationshipField.addEventListener('input', function() {
+        // Allow only letters and single spaces
+        this.value = this.value.replace(/[^a-zA-Z\s]/g, '');
+        
+        // Remove multiple consecutive spaces
+        this.value = this.value.replace(/\s{2,}/g, ' ');
+        
+        // Auto capitalize first letter
+        if (this.value.length === 1) {
+            this.value = this.value.toUpperCase();
+        }
+        
+        // Don't allow space unless there are already 2 characters
+        if (this.value.length < 2 && this.value.includes(' ')) {
+            this.value = this.value.trim();
+        }
+    });
+});
+</script>
+
+
+
 </body>
 </html>
