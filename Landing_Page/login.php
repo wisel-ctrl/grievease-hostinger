@@ -14,6 +14,9 @@ if (isset($_SESSION['user_id'])) {
         case 3:
             header("Location: ../customer/index.php");
             break;
+        case 69:  // Add this new case for super admin
+            header("Location: ../super_admin/index.php");
+            break;
         default:
             // If somehow user_type is invalid, destroy session and reload login
             session_destroy();
