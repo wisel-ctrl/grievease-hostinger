@@ -769,26 +769,83 @@ $totalServices = $countResult->fetch_assoc()['total'];
   </div>
   
   <!-- Sticky Pagination Footer with improved spacing -->
-  <div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
+<div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
     <div id="paginationInfoFullyPaid" class="text-sm text-gray-500 text-center sm:text-left">
-        Showing <?php echo ($offsetFullyPaid + 1) . ' - ' . min($offsetFullyPaid + $recordsPerPage, $totalServices); ?> of <?php echo $totalServices; ?> services
-    </div>
-    <div class="flex space-x-2">
-        <a href="?fullyPaidPage=<?php echo max(1, $fullyPaidPage - 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo $fullyPaidPage <= 1 ? 'opacity-50 pointer-events-none' : ''; ?>">&laquo;</a>
-        
         <?php 
-        $totalPagesFullyPaid = ceil($totalServices / $recordsPerPage);
-        $maxVisiblePages = 3;
-        $startPage = max(1, min($fullyPaidPage - 1, $totalPagesFullyPaid - $maxVisiblePages + 1));
-        $endPage = min($startPage + $maxVisiblePages - 1, $totalPagesFullyPaid);
-        
-        for ($i = $startPage; $i <= $endPage; $i++): ?>
-            <a href="?fullyPaidPage=<?php echo $i; ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm <?php echo $i == $fullyPaidPage ? 'bg-sidebar-accent text-white' : 'hover:bg-sidebar-hover'; ?>">
-                <?php echo $i; ?>
+        if ($totalServices > 0) {
+            $start = $offsetFullyPaid + 1;
+            $end = min($offsetFullyPaid + $recordsPerPage, $totalServices);
+            
+            echo "Showing {$start} - {$end} of {$totalServices} services";
+        } else {
+            echo "No services found";
+        }
+        ?>
+    </div>
+    <div id="paginationContainer" class="flex space-x-2">
+        <?php if ($totalPagesFullyPaid > 1): ?>
+            <!-- First page button (double arrow) -->
+            <a href="?fullyPaidPage=1" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($fullyPaidPage == 1) ? 'opacity-50 pointer-events-none' : ''; ?>">
+                &laquo;
             </a>
-        <?php endfor; ?>
-        
-        <a href="?fullyPaidPage=<?php echo min($totalPagesFullyPaid, $fullyPaidPage + 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo $fullyPaidPage >= $totalPagesFullyPaid ? 'opacity-50 pointer-events-none' : ''; ?>">&raquo;</a>
+            
+            <!-- Previous page button (single arrow) -->
+            <a href="?fullyPaidPage=<?php echo max(1, $fullyPaidPage - 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($fullyPaidPage == 1) ? 'opacity-50 pointer-events-none' : ''; ?>">
+                &lsaquo;
+            </a>
+            
+            <?php
+            // Show exactly 3 page numbers
+            $totalPagesFullyPaid = ceil($totalServices / $recordsPerPage);
+            
+            if ($totalPagesFullyPaid <= 3) {
+                // If total pages is 3 or less, show all pages
+                $startPage = 1;
+                $endPage = $totalPagesFullyPaid;
+            } else {
+                // With more than 3 pages, determine which 3 to show
+                if ($fullyPaidPage == 1) {
+                    // At the beginning, show first 3 pages
+                    $startPage = 1;
+                    $endPage = 3;
+                } elseif ($fullyPaidPage == $totalPagesFullyPaid) {
+                    // At the end, show last 3 pages
+                    $startPage = $totalPagesFullyPaid - 2;
+                    $endPage = $totalPagesFullyPaid;
+                } else {
+                    // In the middle, show current page with one before and after
+                    $startPage = $fullyPaidPage - 1;
+                    $endPage = $fullyPaidPage + 1;
+                    
+                    // Handle edge cases
+                    if ($startPage < 1) {
+                        $startPage = 1;
+                        $endPage = 3;
+                    }
+                    if ($endPage > $totalPagesFullyPaid) {
+                        $endPage = $totalPagesFullyPaid;
+                        $startPage = $totalPagesFullyPaid - 2;
+                    }
+                }
+            }
+            
+            // Generate the page buttons
+            for ($i = $startPage; $i <= $endPage; $i++) {
+                $active_class = ($i == $fullyPaidPage) ? 'bg-sidebar-accent text-white' : 'border border-sidebar-border hover:bg-sidebar-hover';
+                echo '<a href="?fullyPaidPage=' . $i . '" class="px-3.5 py-1.5 rounded text-sm ' . $active_class . '">' . $i . '</a>';
+            }
+            ?>
+            
+            <!-- Next page button (single arrow) -->
+            <a href="?fullyPaidPage=<?php echo min($totalPagesFullyPaid, $fullyPaidPage + 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($fullyPaidPage == $totalPagesFullyPaid) ? 'opacity-50 pointer-events-none' : ''; ?>">
+                &rsaquo;
+            </a>
+            
+            <!-- Last page button (double arrow) -->
+            <a href="?fullyPaidPage=<?php echo $totalPagesFullyPaid; ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($fullyPaidPage == $totalPagesFullyPaid) ? 'opacity-50 pointer-events-none' : ''; ?>">
+                &raquo;
+            </a>
+        <?php endif; ?>
     </div>
 </div>
 </div>
