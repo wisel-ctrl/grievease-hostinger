@@ -60,23 +60,31 @@ header("Cache-Control: post-check=0, pre-check=0", false);
 header("Pragma: no-cache");
 
 function generateInventoryRow($row) {
-  // Determine quantity text color based on stock level
+  // Determine quantity cell class based on stock level
   $quantity = $row["quantity"];
-  $quantityColorClass = '';
-  $quantityText = $quantity;
-
+  
+  // Enhanced heatmap visualization system
+  // This creates a more granular color scale that shows stock levels more clearly
   if ($quantity <= 2) { // Critical stock
-      $quantityColorClass = 'text-red-600 font-bold';
-      $quantityText .= ' (Critical)';
+      $quantityClass = 'quantity-cell bg-red-600 text-white font-bold';
+      $quantityText = $quantity . ' <span class="text-xs ml-1">(Critical)</span>';
+      $stockIcon = '<i class="fas fa-exclamation-triangle mr-1"></i>';
   } elseif ($quantity <= 5) { // Low stock
-      $quantityColorClass = 'text-red-500 font-semibold';
-      $quantityText .= ' (Low)';
+      $quantityClass = 'quantity-cell bg-red-400 text-white font-medium';
+      $quantityText = $quantity . ' <span class="text-xs ml-1">(Low)</span>';
+      $stockIcon = '<i class="fas fa-arrow-down mr-1"></i>';
   } elseif ($quantity <= 10) { // Warning level
-      $quantityColorClass = 'text-yellow-600';
+      $quantityClass = 'quantity-cell bg-yellow-400 text-yellow-800';
+      $quantityText = $quantity;
+      $stockIcon = '<i class="fas fa-exclamation-circle mr-1"></i>';
   } elseif ($quantity <= 20) { // Normal stock
-      $quantityColorClass = 'text-green-600';
+      $quantityClass = 'quantity-cell bg-green-400 text-green-800';
+      $quantityText = $quantity;
+      $stockIcon = '<i class="fas fa-check-circle mr-1"></i>';
   } else { // High stock
-      $quantityColorClass = 'text-green-500';
+      $quantityClass = 'quantity-cell bg-blue-400 text-blue-800';
+      $quantityText = $quantity;
+      $stockIcon = '<i class="fas fa-arrow-up mr-1"></i>';
   }
 
   $html = '<tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">';
@@ -86,7 +94,14 @@ function generateInventoryRow($row) {
   $html .= '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">';
   $html .= htmlspecialchars($row["category_name"]) . '</span>';
   $html .= '</td>';
-  $html .= '<td class="p-4 text-sm ' . $quantityColorClass . '" data-sort-value="' . $row["quantity"] . '">' . $quantityText . '</td>';
+  
+  // Enhanced quantity cell with visual indicators and proper padding
+  $html .= '<td class="p-0 text-sm">';
+  $html .= '<div class="' . $quantityClass . ' px-3 py-2 rounded-lg flex items-center justify-center shadow-sm">';
+  $html .= $stockIcon . $quantityText;
+  $html .= '</div>';
+  $html .= '</td>';
+  
   $html .= '<td class="p-4 text-sm font-medium text-sidebar-text" data-sort-value="' . $row["price"] . '">₱' . number_format($row["price"], 2) . '</td>';
   $html .= '<td class="p-4 text-sm font-medium text-sidebar-text" data-sort-value="' . $row["total_value"] . '">₱' . number_format($row["total_value"], 2) . '</td>';
   $html .= '<td class="p-4 text-sm">';
