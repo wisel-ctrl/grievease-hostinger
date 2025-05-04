@@ -1546,7 +1546,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             </div>
 
                             <div>
-                                <label for="dob" class="block text-sm font-medium text-gray-700 mb-2">Date of Birth</label>
+                                <label for="dob" class="block text-sm font-medium text-gray-700 mb-2">Date of Birth <span class="text-red-500">*</span></label>
                                 <div class="relative">
                                     <input type="date" id="dob" name="dob" value="<?php echo htmlspecialchars($birthdate); ?>" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-base shadow-sm transition-all duration-200">
                                     <span class="absolute right-4 top-1/2 transform -translate-y-1/2 text-yellow-600">
@@ -1574,7 +1574,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <label for="phone" class="block text-sm font-medium text-gray-700 mb-2">Phone Number <span class="text-red-500">*</span></label>
                                 <div class="relative">
                                     <input type="tel" id="phone" name="phone" pattern="^(\+63\d{10}|0\d{10}|\d{10})$"
-                                    title="Phone number (09XXXXXXXXX or +639XXXXXXXXX)" value="<?php echo htmlspecialchars($phone_number); ?>" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent pr-10 text-base shadow-sm transition-all duration-200">
+                                    title="Phone number (09XXXXXXXXX or +639XXXXXXXXX)" value="<?php echo htmlspecialchars($phone_number); ?>" maxlength="11" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent pr-10 text-base shadow-sm transition-all duration-200">
                                     <span class="absolute right-4 top-1/2 transform -translate-y-1/2 text-yellow-600">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                             <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
@@ -1598,7 +1598,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6">
                             <!-- Region Dropdown -->
                             <div class="relative">
-                                <label for="region" class="block text-sm font-medium text-gray-700 mb-2">Region</label>
+                                <label for="region" class="block text-sm font-medium text-gray-700 mb-2">Region <span class="text-red-500">*</span></label>
                                 <div class="relative">
                                     <select id="region" name="region" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent appearance-none text-base shadow-sm transition-all duration-200" onchange="updateProvinces()">
                                         <option value="" selected disabled>Select Region</option>
@@ -1618,7 +1618,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             
                             <!-- Province Dropdown -->
                             <div class="relative">
-                                <label for="province" class="block text-sm font-medium text-gray-700 mb-2">Province</label>
+                                <label for="province" class="block text-sm font-medium text-gray-700 mb-2">Province <span class="text-red-500">*</span></label>
                                 <div class="relative">
                                     <select id="province" name="province" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent appearance-none text-base shadow-sm transition-all duration-200" onchange="updateCities()" disabled>
                                         <option value="" selected disabled>Select Province</option>
@@ -1633,7 +1633,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             
                             <!-- City/Municipality Dropdown -->
                             <div class="relative">
-                                <label for="city" class="block text-sm font-medium text-gray-700 mb-2">City/Municipality</label>
+                                <label for="city" class="block text-sm font-medium text-gray-700 mb-2">City/Municipality <span class="text-red-500">*</span></label>
                                 <div class="relative">
                                     <select id="city" name="city" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent appearance-none text-base shadow-sm transition-all duration-200" onchange="updateBarangays()" disabled>
                                         <option value="" selected disabled>Select City/Municipality</option>
@@ -1648,7 +1648,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             
                             <!-- Barangay Dropdown -->
                             <div class="relative">
-                                <label for="barangay" class="block text-sm font-medium text-gray-700 mb-2">Barangay</label>
+                                <label for="barangay" class="block text-sm font-medium text-gray-700 mb-2">Barangay <span class="text-red-500">*</span></label>
                                 <div class="relative">
                                     <select id="barangay" name="barangay" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent appearance-none text-base shadow-sm transition-all duration-200" disabled>
                                         <option value="" selected disabled>Select Barangay</option>
@@ -1665,21 +1665,22 @@ document.addEventListener('DOMContentLoaded', function() {
                             <div class="sm:col-span-2 grid grid-cols-1 sm:grid-cols-4 gap-5">
                                 <!-- Street Address (taking 3/4 of the width) -->
                                 <div class="sm:col-span-3">
-                                    <label for="street_address" class="block text-sm font-medium text-gray-700 mb-2">Street Address</label>
-                                    <input type="text" id="street_address" name="street_address" placeholder="House/Lot/Unit No., Building, Street Name" 
-                                        value="<?php echo htmlspecialchars($street_address); ?>" 
+                                    <label for="street_address" class="block text-sm font-medium text-gray-700 mb-2">Street Address <span class="text-red-500">*</span></label>
+                                    <input type="text" id="street_address" name="street_address" minlenth="5" placeholder="House/Lot/Unit No., Building, Street Name" 
+                                        value="<?php echo htmlspecialchars($street_address); ?>" required
                                         class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-base shadow-sm transition-all duration-200">
                                 </div>
                                 
                                 <!-- Zip/Postal Code (taking 1/4 of the width) -->
                                 <div class="sm:col-span-1">
-                                    <label for="zip" class="block text-sm font-medium text-gray-700 mb-2">Zip Code</label>
+                                    <label for="zip" class="block text-sm font-medium text-gray-700 mb-2">Zip Code <span class="text-red-500">*</span></label>
                                     <!-- Change this line in the zip code input field -->
 <input type="text" id="zip" name="zip" placeholder="Zip Code" 
     value="<?php echo htmlspecialchars($zip_code); ?>" 
     class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-base shadow-sm transition-all duration-200"
     pattern="\d{4,10}" 
     title="Zip code must be 4-10 digits">
+    <div id="zip-error" class="text-red-600 text-sm mt-1 hidden"></div>
                                 </div>
                             </div>
                         </div>
@@ -1800,7 +1801,7 @@ document.addEventListener('DOMContentLoaded', function() {
         <form class="space-y-4 sm:space-y-6" id="password-form" method="POST" action="profile/update_password.php">
           <!-- Current Password -->
           <div>
-            <label for="current-password" class="block text-sm font-medium text-navy mb-1 sm:mb-2">Current Password*</label>
+            <label for="current-password" class="block text-sm font-medium text-navy mb-1 sm:mb-2">Current Password <span class="text-red-500">*</span></label>
             <div class="relative">
               <input type="password" id="current-password" name="current-password" required class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base">
               <span class="password-toggle absolute right-3 sm:right-4 top-1/2 transform -translate-y-1/2 text-gray-600 cursor-pointer" data-target="current-password">
@@ -1819,7 +1820,7 @@ document.addEventListener('DOMContentLoaded', function() {
           
           <!-- New Password -->
           <div>
-            <label for="new-password" class="block text-sm font-medium text-navy mb-1 sm:mb-2">New Password*</label>
+            <label for="new-password" class="block text-sm font-medium text-navy mb-1 sm:mb-2">New Password <span class="text-red-500">*</span></label>
             <div class="relative">
               <input type="password" id="new-password" name="new-password" required class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base">
               <span class="password-toggle absolute right-3 sm:right-4 top-1/2 transform -translate-y-1/2 text-gray-600 cursor-pointer" data-target="new-password">
@@ -1848,7 +1849,7 @@ document.addEventListener('DOMContentLoaded', function() {
           
           <!-- Confirm Password -->
           <div>
-            <label for="confirm-password" class="block text-sm font-medium text-navy mb-1 sm:mb-2">Confirm New Password*</label>
+            <label for="confirm-password" class="block text-sm font-medium text-navy mb-1 sm:mb-2">Confirm New Password<span class="text-red-500">*</span></label>
             <div class="relative">
               <input type="password" id="confirm-password" name="confirm-password" required class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base">
               <span class="password-toggle absolute right-3 sm:right-4 top-1/2 transform -translate-y-1/2 text-gray-600 cursor-pointer" data-target="confirm-password">
@@ -2290,6 +2291,47 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
 });
+
+document.addEventListener('DOMContentLoaded', function() {
+    const zipInput = document.getElementById('zip');
+    const zipError = document.getElementById('zip-error');
+    
+    // Validate on blur (when user leaves the field)
+    zipInput.addEventListener('blur', function() {
+        validateZipCode();
+    });
+    
+    // Validate on form submission
+    document.getElementById('profile-form').addEventListener('submit', function(e) {
+        if (!validateZipCode()) {
+            e.preventDefault(); // Prevent form submission if invalid
+        }
+    });
+    
+    function validateZipCode() {
+        const zipValue = zipInput.value.trim();
+        const zipPattern = /^\d{4,10}$/;
+        
+        if (!zipPattern.test(zipValue)) {
+            zipError.textContent = 'Please enter a valid ZIP code (4-10 digits)';
+            zipError.classList.remove('hidden');
+            zipInput.classList.add('border-red-500');
+            return false;
+        } else {
+            zipError.classList.add('hidden');
+            zipInput.classList.remove('border-red-500');
+            return true;
+        }
+    }
+    
+    // Add click handler to close the error when user starts typing again
+    zipInput.addEventListener('input', function() {
+        if (!zipError.classList.contains('hidden')) {
+            zipError.classList.add('hidden');
+            zipInput.classList.remove('border-red-500');
+        }
+    });
+});
 </script>
 
 <!-- Cancel Booking Modal -->
@@ -2353,7 +2395,7 @@ document.addEventListener('DOMContentLoaded', function() {
     <div class="bg-white rounded-lg w-full max-w-4xl max-h-[90vh] overflow-hidden">
         <div class="p-6 border-b border-gray-200 flex justify-between items-center">
             <h3 class="font-hedvig text-xl text-navy" id="document-modal-title">Document</h3>
-            <button class="close-modal text-gray-500 hover:text-gray-700">
+            <button class="close-document-modal text-gray-500 hover:text-gray-700">
                 <i class="fas fa-times"></i>
             </button>
         </div>
@@ -2362,7 +2404,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <iframe id="document-pdf" src="" class="hidden w-full h-[70vh]"></iframe>
         </div>
         <div class="p-4 border-t border-gray-200 flex justify-end">
-            <button class="close-modal bg-navy text-white px-4 py-2 rounded hover:bg-navy/90 transition">
+            <button class="close-document-modal bg-navy text-white px-4 py-2 rounded hover:bg-navy/90 transition">
                 Close
             </button>
         </div>
@@ -2370,34 +2412,41 @@ document.addEventListener('DOMContentLoaded', function() {
 </div>
 
 <!-- Receipt Modal -->
-<div id="receiptModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full backdrop-blur-sm">
-    <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-2/3 lg:w-1/2 shadow-lg rounded-md bg-white">
-        <div class="flex justify-between items-center mb-4">
-            <h3 class="text-xl font-bold text-gray-800">Payment Receipt</h3>
-            <button id="closeReceiptModal" class="text-gray-500 hover:text-gray-700">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-        
+<div id="receiptModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4 hidden">
+  <!-- Modal Content -->
+  <div class="w-full max-w-md bg-white rounded-2xl shadow-xl overflow-hidden max-h-[90vh]">
+    <div class="modal-scroll-container overflow-y-auto max-h-[90vh]">
+      <!-- Header with close button -->
+      <div class="bg-navy p-6 flex justify-between items-center">
+        <h2 class="text-2xl font-hedvig text-white">Payment Receipt</h2>
+        <button id="closeReceiptModal" class="text-white hover:text-yellow-300">
+          <i class="fas fa-times text-2xl"></i>
+        </button>
+      </div>
+      
+      <!-- Modal Body -->
+      <div class="p-6 bg-cream">
         <!-- Receipt Content (will be populated by JS) -->
         <div id="receiptContent" class="bg-white p-6 border border-gray-200 rounded">
-            <!-- This will be filled dynamically -->
+          <!-- This will be filled dynamically -->
         </div>
-        
-        <div class="mt-4 flex justify-end space-x-2">
-            <button id="printReceipt" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-                <i class="fas fa-print mr-2"></i>Print
-            </button>
-            <button id="downloadPdf" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
-                <i class="fas fa-file-pdf mr-2"></i>PDF
-            </button>
-            <button id="downloadImage" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
-                <i class="fas fa-image mr-2"></i>Image
-            </button>
-        </div>
+      </div>
+      
+      <!-- Modal Footer -->
+      <div class="modal-sticky-footer px-6 py-4 flex flex-col sm:flex-row sm:justify-end gap-3 border-t border-gray-200 bg-white">
+        <button id="printReceipt" class="w-full sm:w-auto px-6 py-3 bg-white border border-yellow-600 text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center">
+          <i class="fas fa-print mr-2"></i>Print
+        </button>
+        <button id="downloadPdf" class="w-full sm:w-auto px-6 py-3 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg shadow-md transition-all duration-300 flex items-center justify-center">
+          <i class="fas fa-file-pdf mr-2"></i>PDF
+        </button>
+        <button id="downloadImage" class="w-full sm:w-auto px-6 py-3 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg shadow-md transition-all duration-300 flex items-center justify-center">
+          <i class="fas fa-image mr-2"></i>Image
+        </button>
+      </div>
     </div>
+  </div>
 </div>
-
 <!-- Include html2canvas and jsPDF for export functionality -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -2488,47 +2537,62 @@ function populateReceipt(data) {
     }
 
     receiptContent.innerHTML = `
-        <div class="text-center mb-6">
-            <h2 class="text-2xl font-bold capitalize">${data.branch_name} Branch</h2>
-            <p class="text-gray-600">Official Receipt</p>
+    <div class="bg-cream p-6 rounded-lg shadow-card max-w-lg mx-auto">
+        <!-- Header with elegant styling -->
+        <div class="text-center mb-6 border-b border-gold pb-4">
+            <h2 class="text-2xl font-bold capitalize font-cinzel text-primary">${data.branch_name} Branch</h2>
+            <p class="text-dark text-sm mt-1">Official Receipt</p>
         </div>
-        
+       
+        <!-- Receipt information with improved layout -->
         <div class="flex justify-between mb-6">
-            <div>
-                    <p class="font-semibold mb-2">Transaction Details</p>
-                    <p><strong>Receipt #:</strong> ${data.receipt_number || 'N/A'}</p>
-                    <p><strong>Reference Code:</strong> ${data.reference_code || 'N/A'}</p>
-                <p><strong>Booking Date:</strong> ${formatDate(data.booking_date)}</p>
-                <p><strong>Accepted Date:</strong> ${formatDate(data.accepted_date)}</p>
+            <div class="space-y-1">
+                <p class="font-semibold mb-2 text-primary font-inter">Transaction Details</p>
+                <p class="text-sm"><span class="text-darkgold font-medium">Receipt #:</span> ${data.receipt_number || 'N/A'}</p>
+                <p class="text-sm"><span class="text-darkgold font-medium">Reference Code:</span> ${data.reference_code || 'N/A'}</p>
+                <p class="text-sm"><span class="text-darkgold font-medium">Booking Date:</span> ${formatDate(data.booking_date)}</p>
+                <p class="text-sm"><span class="text-darkgold font-medium">Accepted Date:</span> ${formatDate(data.accepted_date)}</p>
             </div>
             <div class="text-right">
-                <p> <span class="text-green-600">${data.status}</span></p>
+                <p class="inline-block px-3 py-1 rounded-full bg-opacity-10 text-success font-medium text-sm">${data.status}</p>
             </div>
         </div>
-        
-        <div class="border-t border-b border-gray-200 py-4 mb-4">
-            <h3 class="font-bold mb-2">Service Details</h3>
-            <p><strong>Service:</strong> ${data.service_name}</p>
-            <p><strong>Total Amount:</strong> ₱${parseFloat(data.selling_price).toFixed(2)}</p>
-            <p><strong>Amount Paid:</strong> ₱${parseFloat(data.amount_paid || 0).toFixed(2)}</p>
-            <p><strong>Balance:</strong> ₱${(parseFloat(data.selling_price) - parseFloat(data.amount_paid || 0)).toFixed(2)}</p>
+       
+        <!-- Service details with enhanced visual separation - all aligned to left -->
+        <div class="border border-border rounded-lg p-4 mb-4 bg-secondary bg-opacity-30">
+            <h3 class="font-bold mb-2 text-primary font-inter">Service Details</h3>
+            <div class="space-y-1">
+                <p class="text-sm"><span class="text-darkgold font-medium">Service:</span> ${data.service_name}</p>
+                <p class="text-sm"><span class="text-darkgold font-medium">Total Amount:</span> ₱${parseFloat(data.selling_price).toFixed(2)}</p>
+                <p class="text-sm"><span class="text-darkgold font-medium">Amount Paid:</span> ₱${parseFloat(data.amount_paid || 0).toFixed(2)}</p>
+                <p class="text-sm"><span class="text-darkgold font-medium">Balance:</span> ₱${(parseFloat(data.selling_price) - parseFloat(data.amount_paid || 0)).toFixed(2)}</p>
+            </div>
         </div>
-        
-        <div class="border-t border-b border-gray-200 py-4 mb-4">
-            <h3 class="font-bold mb-2">Deceased Information</h3>
-            <p><strong>Name:</strong> ${deceasedName ? deceasedName.toLowerCase().replace(/\b\w/g, c => c.toUpperCase()) : ''}</p>
-            ${data.deceased_birth ? `<p><strong>Date of Birth:</strong> ${new Date(data.deceased_birth).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>` : ''}
-            ${data.deceased_dodeath ? `<p><strong>Date of Death:</strong> ${new Date(data.deceased_dodeath).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>` : ''}
-            ${data.deceased_dateOfBurial ? `<p><strong>Date of Burial:</strong> ${new Date(data.deceased_dateOfBurial).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>` : ''}        
+       
+        <!-- Deceased information with better typography -->
+        <div class="border border-border rounded-lg p-4 mb-4 bg-secondary bg-opacity-30">
+            <h3 class="font-bold mb-2 text-primary font-inter">Deceased Information</h3>
+            <p class="text-sm"><span class="text-darkgold font-medium">Name:</span> ${deceasedName ? deceasedName.toLowerCase().replace(/\b\w/g, c => c.toUpperCase()) : ''}</p>
+            ${data.deceased_birth ? `<p class="text-sm"><span class="text-darkgold font-medium">Date of Birth:</span> ${new Date(data.deceased_birth).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>` : ''}
+            ${data.deceased_dodeath ? `<p class="text-sm"><span class="text-darkgold font-medium">Date of Death:</span> ${new Date(data.deceased_dodeath).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>` : ''}
+            ${data.deceased_dateOfBurial ? `<p class="text-sm"><span class="text-darkgold font-medium">Date of Burial:</span> ${new Date(data.deceased_dateOfBurial).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>` : ''}        
         </div>
-        
-        ${accepterInfo}
-        
-        <div class="text-center mt-8 text-sm text-gray-500">
-            <p>Thank you for your business!</p>
-            <p>For inquiries, please contact our branch.</p>
+       
+        <!-- Accepter information with consistent styling -->
+        ${accepterInfo ? `
+        <div class="border border-border rounded-lg p-4 mb-4 bg-secondary bg-opacity-30">
+            <h3 class="font-bold mb-2 text-primary font-inter">Accepter Information</h3>
+            ${accepterInfo}
         </div>
-    `;
+        ` : ''}
+       
+        <!-- Footer with branding -->
+        <div class="text-center mt-8 pt-4 border-t border-gold">
+            <p class="text-gold font-medium mb-1">Thank you for your business!</p>
+            <p class="text-sm text-primary">For inquiries, please contact our branch.</p>
+        </div>
+    </div>
+`;
 }
 
     // Print receipt
@@ -2614,26 +2678,53 @@ document.addEventListener('DOMContentLoaded', function() {
     let currentDocumentType = '';
     let currentDocumentUrl = '';
     
-    viewDeathCertBtn.addEventListener('click', function() {
-        currentDocumentType = 'death_cert';
-        showDocument('Death Certificate', currentDocumentUrl);
-    });
-    
-    viewPaymentBtn.addEventListener('click', function() {
-        currentDocumentType = 'payment_proof';
-        showDocument('Payment Proof', currentDocumentUrl);
-    });
+    // Update your document viewing functions
+viewDeathCertBtn.addEventListener('click', function() {
+    if (!currentDeathCertUrl) {
+        showError('No death certificate available');
+        return;
+    }
+    showDocument('Death Certificate', currentDeathCertUrl);
+});
 
-    // Close Modal Buttons
-    const closeModalButtons = document.querySelectorAll('.close-modal');
-    closeModalButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            viewDetailsModal.classList.add('hidden');
-            modifyModal.classList.add('hidden');
-            cancelModal.classList.add('hidden');
-            viewDocumentModal.classList.add('hidden');
-        });
+viewPaymentBtn.addEventListener('click', function() {
+    if (!currentPaymentUrl) {
+        showError('No payment proof available');
+        return;
+    }
+    showDocument('Payment Proof', currentPaymentUrl);
+});
+    // Close document modal
+document.querySelectorAll('.close-document-modal').forEach(button => {
+    button.addEventListener('click', function() {
+        document.getElementById('viewDocumentModal').classList.add('hidden');
     });
+});
+
+// Close details modal (keep existing functionality)
+document.querySelectorAll('.close-modal').forEach(button => {
+    button.addEventListener('click', function() {
+        document.getElementById('viewDetailsModal').classList.add('hidden');
+        document.getElementById('modifyBookingModal').classList.add('hidden');
+        document.getElementById('cancelBookingModal').classList.add('hidden');
+    });
+});
+
+// Click outside modal to close
+window.addEventListener('click', function(e) {
+    if (e.target === document.getElementById('viewDetailsModal')) {
+        document.getElementById('viewDetailsModal').classList.add('hidden');
+    }
+    if (e.target === document.getElementById('modifyBookingModal')) {
+        document.getElementById('modifyBookingModal').classList.add('hidden');
+    }
+    if (e.target === document.getElementById('cancelBookingModal')) {
+        document.getElementById('cancelBookingModal').classList.add('hidden');
+    }
+    if (e.target === document.getElementById('viewDocumentModal')) {
+        document.getElementById('viewDocumentModal').classList.add('hidden');
+    }
+});
 
     // Form Submissions
     document.getElementById('modifyBookingForm').addEventListener('submit', function(e) {
@@ -2655,37 +2746,39 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Functions
-function fetchBookingDetails(bookingId) {
+    function fetchBookingDetails(bookingId) {
     fetch(`profile/fetch_booking_details.php?booking_id=${bookingId}`)
         .then(response => response.json())
         .then(data => {
             if (data.success) {
+                // First clear any existing date info paragraphs
+                const statusContainer = document.getElementById('detail-status').parentNode;
+                const nextElement = statusContainer.nextElementSibling;
+                
+                // Remove any existing date paragraphs
+                if (nextElement && (nextElement.textContent.includes('Accepted Date:') || 
+                                   nextElement.textContent.includes('Declined Date:'))) {
+                    nextElement.remove();
+                }
+
                 // Populate the view details modal
                 document.getElementById('detail-service').textContent = data.service_name;
                 document.getElementById('detail-branch').textContent = data.branch_name 
-                ? data.branch_name.toLowerCase().replace(/\b\w/g, c => c.toUpperCase())
-                : '';
+                    ? data.branch_name.toLowerCase().replace(/\b\w/g, c => c.toUpperCase())
+                    : '';
                 document.getElementById('detail-status').textContent = data.status;
                 document.getElementById('detail-booking-date').textContent = formatDate(data.booking_date);
                 document.getElementById('detail-total').textContent = `₱${parseFloat(data.selling_price).toFixed(2)}`;
-                
-                const container = document.querySelector('.space-y-2');
 
-                // Check if status is Accepted or Declined
+                // Only show dates if status matches
                 if (data.status === 'Accepted' && data.accepted_date) {
-                    // Create new paragraph for Accepted Date
                     const acceptedDateP = document.createElement('p');
                     acceptedDateP.innerHTML = `<span class="text-gray-500">Accepted Date:</span> <span class="text-navy">${formatDate(data.accepted_date)}</span>`;
-                    
-                    // Insert after the status paragraph
                     document.getElementById('detail-status').parentNode.insertAdjacentElement('afterend', acceptedDateP);
                 } 
                 else if (data.status === 'Declined' && data.decline_date) {
-                    // Create new paragraph for Declined Date
                     const declinedDateP = document.createElement('p');
-                    declinedDateP.innerHTML = `<span class="text-gray-500"> Declined Date:</span> <span class="text-navy">${formatDate(data.decline_date)}</span>`;
-                    
-                    // Insert after the status paragraph
+                    declinedDateP.innerHTML = `<span class="text-gray-500">Declined Date:</span> <span class="text-navy">${formatDate(data.decline_date)}</span>`;
                     document.getElementById('detail-status').parentNode.insertAdjacentElement('afterend', declinedDateP);
                 }
                 
@@ -2695,8 +2788,8 @@ function fetchBookingDetails(bookingId) {
                 if (data.deceased_suffix) deceasedName += ` ${data.deceased_suffix}`;
                 
                 document.getElementById('detail-deceased-name').textContent = deceasedName 
-                ? deceasedName.toLowerCase().replace(/\b\w/g, c => c.toUpperCase())
-                : '';
+                    ? deceasedName.toLowerCase().replace(/\b\w/g, c => c.toUpperCase())
+                    : '';
                 document.getElementById('detail-birth').textContent = data.deceased_birth ? formatDate(data.deceased_birth) : 'Not provided';
                 document.getElementById('detail-dod').textContent = data.deceased_dodeath ? formatDate(data.deceased_dodeath) : 'Not provided';
                 document.getElementById('detail-burial').textContent = data.deceased_dateOfBurial ? formatDate(data.deceased_dateOfBurial) : 'Not set';
@@ -2712,9 +2805,9 @@ function fetchBookingDetails(bookingId) {
                 currentDeathCertUrl = data.death_certificate || '';
                 currentPaymentUrl = data.payment_proof || '';
                 
-                // ALWAYS show buttons (regardless of status or URL existence)
-                document.getElementById('viewDeathCertBtn').style.display = 'block';
-                document.getElementById('viewPaymentBtn').style.display = 'block';
+                // Show/hide document buttons based on availability
+                document.getElementById('viewDeathCertBtn').style.display = currentDeathCertUrl ? 'block' : 'none';
+                document.getElementById('viewPaymentBtn').style.display = currentPaymentUrl ? 'block' : 'none';
                 
                 // Show the modal
                 viewDetailsModal.classList.remove('hidden');
@@ -2727,7 +2820,6 @@ function fetchBookingDetails(bookingId) {
             showError('An error occurred while fetching booking details');
         });
 }
-
 // Update your document viewing functions
 viewDeathCertBtn.addEventListener('click', function() {
     showDocument('Death Certificate', currentDeathCertUrl);
@@ -2738,7 +2830,10 @@ viewPaymentBtn.addEventListener('click', function() {
 });
 
 function showDocument(title, url) {
-    
+    if (!url) {
+        showError('No document available');
+        return;
+    }
     
     document.getElementById('document-modal-title').textContent = title;
     const imgElement = document.getElementById('document-image');
@@ -2756,7 +2851,7 @@ function showDocument(title, url) {
         imgElement.src = url;
     }
     
-    viewDocumentModal.classList.remove('hidden');
+    document.getElementById('viewDocumentModal').classList.remove('hidden');
 }
 
 function fetchBookingForModification(bookingId) {
@@ -2964,7 +3059,25 @@ document.getElementById('cancelBookingForm').addEventListener('submit', function
             notification.classList.add('hidden');
         }, 5000);
     }
-});
+});// Add this to your existing JavaScript
+function showError(message) {
+    const notification = document.getElementById('errorNotification');
+    document.getElementById('errorMessage').textContent = message;
+    notification.classList.remove('hidden');
+    
+    // Add click handler to dismiss
+    notification.addEventListener('click', function() {
+        this.classList.add('hidden');
+    });
+    
+    // Auto-hide after 5 seconds
+    setTimeout(() => {
+        notification.classList.add('hidden');
+    }, 5000);
+}
+
+
+
 </script>
 
 <script>
@@ -3464,8 +3577,6 @@ document.addEventListener('DOMContentLoaded', function() {
         zipCodeInput.addEventListener('blur', function() {
             // Ensure at least 4 digits
             if (this.value.length > 0 && this.value.length < 4) {
-                alert('Zip code must be between 4-10 digits');
-                this.focus();
             }
         });
     }
