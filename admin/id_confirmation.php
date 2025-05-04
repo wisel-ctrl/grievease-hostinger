@@ -391,12 +391,23 @@ $denied = $result->fetch_assoc()['count'];
             </div>
         </div>
         
-        <!-- Sticky Pagination Footer -->
         <div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
-            <div id="paginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
-                Showing 1 - <?php echo min(10, $total_pending); ?> of <?php echo $total_pending; ?> verifications
-            </div>
-            <div id="paginationContainer" class="flex space-x-2">
+    <div id="paginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
+    <?php 
+        // Get the number of verifications on the current page
+        $current_page_items = min(10, $total_pending - $offset);
+
+        if ($total_pending > 0) {
+            $start = $offset + 1;
+            $end = $offset + $current_page_items;
+        
+            echo "Showing {$start} - {$end} of {$total_pending} verifications";
+        } else {
+            echo "No verifications found";
+        }
+        ?>
+    </div>
+    <div id="paginationContainer" class="flex space-x-2">
         <?php if ($total_pages > 1): ?>
             <!-- First page button (double arrow) -->
             <a href="?page=1" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($current_page == 1) ? 'opacity-50 pointer-events-none' : ''; ?>">
@@ -464,7 +475,7 @@ $denied = $result->fetch_assoc()['count'];
             <button class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover opacity-50 pointer-events-none">&raquo;</button>
         <?php endif; ?>
     </div>
-        </div>
+</div>
     </div>
 </div>
 
