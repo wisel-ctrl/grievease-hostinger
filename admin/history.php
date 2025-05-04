@@ -2946,6 +2946,30 @@ function initEditModalValidations() {
     });
 }
 
+// Add this to the initEditModalValidations() function
+const zipCodeInput = document.getElementById('zipCodeInput');
+if (zipCodeInput) {
+    zipCodeInput.addEventListener('input', function() {
+        // Remove any non-digit characters
+        this.value = this.value.replace(/\D/g, '');
+        
+        // Limit to 10 characters
+        if (this.value.length > 10) {
+            this.value = this.value.slice(0, 10);
+        }
+    });
+    
+    zipCodeInput.addEventListener('blur', function() {
+        // Validate length (4-10 digits)
+        if (this.value.length < 4 || this.value.length > 10) {
+            this.setCustomValidity('Zip code must be between 4-10 digits');
+            this.reportValidity();
+        } else {
+            this.setCustomValidity('');
+        }
+    });
+}
+
 </script>
 
 </body> 
