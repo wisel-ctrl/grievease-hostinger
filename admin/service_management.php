@@ -290,7 +290,6 @@ if ($branchResult->num_rows > 0) {
                 <h4 class="text-lg font-bold text-sidebar-text whitespace-nowrap">Branch: <?php echo $branchName; ?></h4>
                 
                 <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
-                    <i class="fas fa-clipboard-list"></i>
                     <?php echo $totalServices . ($totalServices != 1 ? "" : ""); ?>
                 </span>
             </div>
