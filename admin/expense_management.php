@@ -671,8 +671,9 @@ if ($branchResult->num_rows > 0) {
 
                 <!-- Add Expense Button -->
                 <button class="px-4 py-2 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm whitespace-nowrap" 
-                        onclick="openAddExpenseModal(<?php echo $branchId; ?>)"><span>Add Expense</span>
-                </button>
+        onclick="openAddExpenseModal(<?php echo $branchId; ?>)">
+    <span>Add Expense</span>
+</button>
             </div>
         </div>
         
@@ -709,9 +710,10 @@ if ($branchResult->num_rows > 0) {
 
             <!-- Second row: Add Expense Button - Full width -->
             <div class="w-full">
-                <button class="px-4 py-2.5 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm whitespace-nowrap w-full justify-center" 
-                        onclick="openAddExpenseModal(<?php echo $branchId; ?>)"><span>Add Expense</span>
-                </button>
+            <button class="px-4 py-2 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm whitespace-nowrap" 
+        onclick="openAddExpenseModal(<?php echo $branchId; ?>)">
+    <span>Add Expense</span>
+</button>
             </div>
         </div>
     </div>
@@ -1314,13 +1316,28 @@ function clearReceiptPreview() {
     previewContainer.classList.add('hidden');
 }
     // Initialize date limits when modal opens
-function openAddExpenseModal() {
+// Function to open the Add Expense Modal
+function openAddExpenseModal(branchId) {
+    // Reset form
+    document.getElementById('expenseForm').reset();
+    
+    // Set the branch if provided
+    if (branchId) {
+        const branchRadio = document.querySelector(`input[name="expenseBranch"][value="${branchId}"]`);
+        if (branchRadio) {
+            branchRadio.checked = true;
+        }
+    }
+    
+    // Set default date to today
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('expenseDate').value = today;
+    
+    // Initialize date limits
+    updateDateLimits();
+    
+    // Show modal
     document.getElementById('addExpenseModal').style.display = 'flex';
-    updateDateLimits(); // Set initial date limits
-    document.getElementById('expenseNameDropdown').value = '';
-    document.getElementById('expenseDescription').value = '';
-    document.getElementById('expenseDescription').classList.add('hidden');
-    clearReceiptPreview();
 }
 
 // Close modal function remains the same
