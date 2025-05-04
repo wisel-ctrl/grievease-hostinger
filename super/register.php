@@ -96,7 +96,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $password = $_POST['password'];
     $confirm_password = $_POST['confirm_password'];
     $user_type = 69; // Set as Super Admin (0)
-    $branch_loc = !empty($_POST['branch_loc']) ? sanitize_input($_POST['branch_loc']) : 'unknown';
     $region = !empty($_POST['region']) ? sanitize_input($_POST['region']) : null;
     $province = !empty($_POST['province']) ? sanitize_input($_POST['province']) : null;
     $city = !empty($_POST['city']) ? sanitize_input($_POST['city']) : null;
@@ -221,9 +220,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
         // Prepare and execute the SQL query - now using the names instead of IDs
-        $stmt = $conn->prepare("INSERT INTO users (first_name, last_name, middle_name, suffix, birthdate, phone_number, email, password, user_type, branch_loc, region, province, city, barangay, street_address, zip_code) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt = $conn->prepare("INSERT INTO users (first_name, last_name, middle_name, suffix, birthdate, phone_number, email, password, user_type, region, province, city, barangay, street_address, zip_code) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
         
-        $stmt->bind_param("ssssssssisssssss", 
+        $stmt->bind_param("sssssssisssssss", 
             $first_name, 
             $last_name, 
             $middle_name, 
@@ -233,7 +232,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $email, 
             $hashed_password, 
             $user_type, 
-            $branch_loc, 
             $region_name,  // Using name instead of ID
             $province_name, // Using name instead of ID
             $city_name,    // Using name instead of ID
@@ -530,7 +528,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </div>
 
                 <!-- Street Address -->
-                <div class="mb-4 md:col-span-2">
+                <div class="mb-4">
                     <label for="street_address" class="block text-sm font-medium text-gray-700 mb-1">Street Address</label>
                     <input type="text" id="street_address" name="street_address" class="w-full p-3 border border-input-border rounded-md shadow-input focus:outline-none focus:ring-2 focus:ring-gold focus:border-transparent">
                 </div>
@@ -542,11 +540,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <p class="text-error text-xs mt-1 hidden" id="zip_code_error"></p>
                 </div>
 
-                <!-- Branch Location -->
-                <div class="mb-4">
-                    <label for="branch_loc" class="block text-sm font-medium text-gray-700 mb-1">Branch Location</label>
-                    <input type="text" id="branch_loc" name="branch_loc" class="w-full p-3 border border-input-border rounded-md shadow-input focus:outline-none focus:ring-2 focus:ring-gold focus:border-transparent" placeholder="Main Branch">
-                </div>
             </div>
 
             <div class="md:col-span-2 mt-4">
