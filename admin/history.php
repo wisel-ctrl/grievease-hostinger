@@ -1189,47 +1189,18 @@ $totalOutstanding = $countResult->fetch_assoc()['total'];
             </div>
           </div>
 
-          <!-- Replace the deceasedAddress input with this -->
-<div class="grid grid-cols-2 gap-4 mb-4">
-    <div class="form-group">
-        <label class="block text-xs font-medium text-gray-700 mb-1">Region</label>
-        <select id="regionSelect" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg">
-            <option value="">Select Region</option>
-            <!-- Will be populated by JavaScript -->
-        </select>
-    </div>
-    <div class="form-group">
-        <label class="block text-xs font-medium text-gray-700 mb-1">Province</label>
-        <select id="provinceSelect" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg" disabled>
-            <option value="">Select Province</option>
-            <!-- Will be populated by JavaScript -->
-        </select>
-    </div>
-    <div class="form-group">
-        <label class="block text-xs font-medium text-gray-700 mb-1">City/Municipality</label>
-        <select id="citySelect" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg" disabled>
-            <option value="">Select City/Municipality</option>
-            <!-- Will be populated by JavaScript -->
-        </select>
-    </div>
-    <div class="form-group">
-        <label class="block text-xs font-medium text-gray-700 mb-1">Barangay</label>
-        <select id="barangaySelect" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg" disabled>
-            <option value="">Select Barangay</option>
-            <!-- Will be populated by JavaScript -->
-        </select>
-    </div>
-</div>
-<div class="grid grid-cols-3 gap-4 mb-4">
-    <div class="form-group col-span-2">
-        <label class="block text-xs font-medium text-gray-700 mb-1">Street</label>
-        <input type="text" id="street" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg">
-    </div>
-    <div class="form-group">
-        <label class="block text-xs font-medium text-gray-700 mb-1">Zip Code</label>
-        <input type="text" id="zipCode" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg" maxlength="4">
-    </div>
-</div>
+          <!-- Deceased Address -->
+          <div class="form-group mb-4">
+            <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+              Deceased Address
+            </label>
+            <input 
+              type="text" 
+              id="deceasedAddress" 
+              class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+              placeholder="Enter Deceased Address"
+            >
+          </div>
 
           <!-- Deceased Dates - 3 columns for dates -->
           <div class="grid grid-cols-3 gap-4 mb-4">
@@ -2020,6 +1991,7 @@ function openEditServiceModal(serviceId) {
     .then(response => response.json())
     .then(data => {
       if (data.success) {
+        setTimeout(initEditModalValidations, 100);
         // Populate the form fields with the service details
         if (data.customerID) {
           const customer = customers.find(c => c.id == data.customerID);
@@ -2072,8 +2044,6 @@ function openEditServiceModal(serviceId) {
         // Show the modal
         document.getElementById('editServiceModal').style.display = 'flex';
         toggleBodyScroll(true);
-        
-        setTimeout(initEditModalValidations, 100);
       } else {
         alert('Failed to fetch service details: ' + data.message);
       }
