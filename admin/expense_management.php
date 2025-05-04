@@ -845,26 +845,87 @@ if ($branchResult->num_rows > 0) {
     </div>
     
     <!-- Sticky Pagination Footer with improved spacing -->
-    <div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
-        <div class="text-sm text-gray-500 text-center sm:text-left">
-            Showing <?php echo ($branchOffset + 1) . ' - ' . min($branchOffset + $recordsPerPage, $totalBranchExpenses); ?> 
-            of <?php echo $totalBranchExpenses; ?> expenses
-        </div>
-        <div class="flex space-x-2">
-            <a href="#" onclick="changeBranchPage(<?php echo $branchId; ?>, <?php echo $branchPage - 1; ?>); return false;" 
-               class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo $branchPage <= 1 ? 'opacity-50 pointer-events-none' : ''; ?>">&laquo;</a>
-            
-            <?php for ($i = 1; $i <= $totalBranchPages; $i++): ?>
-                <a href="#" onclick="changeBranchPage(<?php echo $branchId; ?>, <?php echo $i; ?>); return false;" 
-                   class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm <?php echo $i == $branchPage ? 'bg-sidebar-accent text-white' : 'hover:bg-sidebar-hover'; ?>">
-                    <?php echo $i; ?>
-                </a>
-            <?php endfor; ?>
-            
-            <a href="#" onclick="changeBranchPage(<?php echo $branchId; ?>, <?php echo $branchPage + 1; ?>); return false;" 
-               class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo $branchPage >= $totalBranchPages ? 'opacity-50 pointer-events-none' : ''; ?>">&raquo;</a>
-        </div>
+<div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
+    <div id="paginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
+    <?php 
+        if ($totalBranchExpenses > 0) {
+            $start = $branchOffset + 1;
+            $end = min($branchOffset + $recordsPerPage, $totalBranchExpenses);
+        
+            echo "Showing {$start} - {$end} of {$totalBranchExpenses} expenses";
+        } else {
+            echo "No expenses found";
+        }
+    ?>
     </div>
+    <div id="paginationContainer" class="flex space-x-2">
+        <?php if ($totalBranchPages > 1): ?>
+            <!-- First page button (double arrow) -->
+            <a href="#" onclick="changeBranchPage(<?php echo $branchId; ?>, 1); return false;" 
+               class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($branchPage == 1) ? 'opacity-50 pointer-events-none' : ''; ?>">
+                &laquo;
+            </a>
+            
+            <!-- Previous page button (single arrow) -->
+            <a href="#" onclick="changeBranchPage(<?php echo $branchId; ?>, <?php echo max(1, $branchPage - 1); ?>); return false;" 
+               class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($branchPage == 1) ? 'opacity-50 pointer-events-none' : ''; ?>">
+                &lsaquo;
+            </a>
+            
+            <?php
+            // Show exactly 3 page numbers
+            if ($totalBranchPages <= 3) {
+                // If total pages is 3 or less, show all pages
+                $start_page = 1;
+                $end_page = $totalBranchPages;
+            } else {
+                // With more than 3 pages, determine which 3 to show
+                if ($branchPage == 1) {
+                    // At the beginning, show first 3 pages
+                    $start_page = 1;
+                    $end_page = 3;
+                } elseif ($branchPage == $totalBranchPages) {
+                    // At the end, show last 3 pages
+                    $start_page = $totalBranchPages - 2;
+                    $end_page = $totalBranchPages;
+                } else {
+                    // In the middle, show current page with one before and after
+                    $start_page = $branchPage - 1;
+                    $end_page = $branchPage + 1;
+                    
+                    // Handle edge cases
+                    if ($start_page < 1) {
+                        $start_page = 1;
+                        $end_page = 3;
+                    }
+                    if ($end_page > $totalBranchPages) {
+                        $end_page = $totalBranchPages;
+                        $start_page = $totalBranchPages - 2;
+                    }
+                }
+            }
+            
+            // Generate the page buttons
+            for ($i = $start_page; $i <= $end_page; $i++) {
+                $active_class = ($i == $branchPage) ? 'bg-sidebar-accent text-white' : 'border border-sidebar-border hover:bg-sidebar-hover';
+                echo '<a href="#" onclick="changeBranchPage(' . $branchId . ', ' . $i . '); return false;" class="px-3.5 py-1.5 rounded text-sm ' . $active_class . '">' . $i . '</a>';
+            }
+            ?>
+            
+            <!-- Next page button (single arrow) -->
+            <a href="#" onclick="changeBranchPage(<?php echo $branchId; ?>, <?php echo min($totalBranchPages, $branchPage + 1); ?>); return false;" 
+               class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($branchPage == $totalBranchPages) ? 'opacity-50 pointer-events-none' : ''; ?>">
+                &rsaquo;
+            </a>
+            
+            <!-- Last page button (double arrow) -->
+            <a href="#" onclick="changeBranchPage(<?php echo $branchId; ?>, <?php echo $totalBranchPages; ?>); return false;" 
+               class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($branchPage == $totalBranchPages) ? 'opacity-50 pointer-events-none' : ''; ?>">
+                &raquo;
+            </a>
+        <?php endif; ?>
+    </div>
+</div>
 </div>
 
 <?php
