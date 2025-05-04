@@ -590,12 +590,12 @@ function initializeAllValidations() {
   });
   
   // Address fields validation
-  document.getElementById('deceasedStreet')?.addEventListener('input', function() {
+  document.getElementById('beneficiaryStreet')?.addEventListener('input', function() {
     validateAddressInput(this);
   });
-  
-  // ZIP code validation
-  document.getElementById('deceasedZip')?.addEventListener('input', function() {
+
+  // ZIP code validation (Lifeplan)
+  document.getElementById('beneficiaryZip')?.addEventListener('input', function() {
     validateZipCode(this);
   });
   
@@ -1173,10 +1173,10 @@ document.addEventListener('DOMContentLoaded', function() {
     <div class="space-y-3">
       <div class="grid grid-cols-1 md:grid-cols-4 gap-2 sm:gap-4">
         <div>
-          <label for="deceasedRegion" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+          <label for="beneficiaryRegion" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
             Region <span class="text-red-500">*</span>
           </label>
-          <select id="deceasedRegion" name="deceasedRegion" required 
+          <select id="beneficiaryRegion" name="beneficiaryRegion" required 
                   class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
             <option value="" disabled selected>Select Region</option>
             <?php foreach ($regions as $region): ?>
@@ -1185,28 +1185,28 @@ document.addEventListener('DOMContentLoaded', function() {
           </select>
         </div>
         <div>
-          <label for="deceasedProvince" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+          <label for="beneficiaryProvince" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
             Province <span class="text-red-500">*</span>
           </label>
-          <select id="deceasedProvince" name="deceasedProvince" required disabled
+          <select id="beneficiaryProvince" name="beneficiaryProvince" required disabled
                   class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
             <option value="" disabled selected>Select Province</option>
           </select>
         </div>
         <div>
-          <label for="deceasedCity" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+          <label for="beneficiaryCity" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
             City/Municipality <span class="text-red-500">*</span>
           </label>
-          <select id="deceasedCity" name="deceasedCity" required disabled
+          <select id="beneficiaryCity" name="beneficiaryCity" required disabled
                   class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
             <option value="" disabled selected>Select City/Municipality</option>
           </select>
         </div>
         <div>
-          <label for="deceasedBarangay" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+          <label for="beneficiaryBarangay" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
             Barangay <span class="text-red-500">*</span>
           </label>
-          <select id="deceasedBarangay" name="deceasedBarangay" required disabled
+          <select id="beneficiaryBarangay" name="beneficiaryBarangay" required disabled
                   class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
             <option value="" disabled selected>Select Barangay</option>
           </select>
@@ -1215,17 +1215,17 @@ document.addEventListener('DOMContentLoaded', function() {
       
       <div class="grid grid-cols-1 md:grid-cols-3 gap-2 sm:gap-4">
         <div class="md:col-span-2">
-          <label for="deceasedStreet" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+          <label for="beneficiaryStreet" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
             Street Address <span class="text-red-500">*</span>
           </label>
-          <input type="text" id="deceasedStreet" name="deceasedStreet" required 
+          <input type="text" id="beneficiaryStreet" name="beneficiaryStreet" required 
                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
         </div>
         <div>
-          <label for="deceasedZip" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+          <label for="beneficiaryZip" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
             ZIP Code <span class="text-red-500">*</span>
           </label>
-          <input type="text" id="deceasedZip" name="deceasedZip" required 
+          <input type="text" id="beneficiaryZip" name="beneficiaryZip" required 
                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
         </div>
       </div>
