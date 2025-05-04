@@ -77,7 +77,6 @@ function generateInventoryRow($row) {
     } else { // Normal stock
         $quantityClass = 'quantity-cell text-green-600';
         $quantityText = $quantity;
-        $stockIcon = '<i class="fas fa-check-circle mr-1"></i>';
     }
   
     $html = '<tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">';
