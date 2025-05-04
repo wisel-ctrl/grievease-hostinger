@@ -104,7 +104,7 @@ function acceptLifeplan($conn) {
         // Set up variables from form fields directly
         $initialDate = isset($_POST['initial_date']) ? date('Y-m-d', strtotime($_POST['initial_date'])) : date('Y-m-d');
         $endDate = isset($_POST['end_date']) ? date('Y-m-d', strtotime($_POST['end_date'])) : date('Y-m-d', strtotime("+$paymentDuration years"));
-        $withCremate = $_POST['with_cremate'] ?? 'no';
+        $withCremate = $_POST['with_cremate'] === 'yes' ? 'yes' : 'no';
         $middleName = $_POST['middle_name'] ?? '';
         $suffix = $_POST['suffix'] ?? '';
         $beneficiaryMname = $_POST['beneficiary_mname'] ?? '';
