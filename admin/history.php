@@ -903,17 +903,7 @@ $totalOutstanding = $countResult->fetch_assoc()['total'];
                     <i class="fas fa-search absolute left-2.5 top-3 text-gray-400"></i>
                 </div>
 
-                <!-- Archive Button -->
-                <button class="px-4 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover whitespace-nowrap">
-                    <i class="fas fa-archive text-sidebar-accent"></i>
-                    <span>Archive</span>
-                </button>
 
-                <!-- Export Button -->
-                <button class="px-4 py-2 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm whitespace-nowrap" 
-                        onclick="exportOutstandingBalances()">
-                    <i class="fas fa-file-download"></i> Export Data
-                </button>
             </div>
         </div>
     
@@ -930,18 +920,6 @@ $totalOutstanding = $countResult->fetch_assoc()['total'];
                     <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
                 </div>
 
-                <!-- Archive Icon Button -->
-                <button class="w-10 h-10 flex items-center justify-center text-sidebar-accent">
-                    <i class="fas fa-archive text-xl"></i>
-                </button>
-            </div>
-
-            <!-- Second row: Export Button - Full width -->
-            <div class="w-full">
-                <button class="px-4 py-2.5 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm whitespace-nowrap w-full justify-center" 
-                        onclick="exportOutstandingBalances()">
-                    <i class="fas fa-file-download"></i> Export Data
-                </button>
             </div>
         </div>
     </div>
