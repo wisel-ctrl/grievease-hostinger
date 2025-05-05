@@ -778,6 +778,7 @@ echo "</tr>";
                                     <option value="IV">IV</option>
                                     <option value="V">V</option>
                                 </select>
+            </div>
           </div>
         </div>
 
