@@ -127,7 +127,18 @@ require_once '../db_connect.php'; // Database connection
                 }
                 $stmt->close();
                 }
-        
+                
+                function getImageUrl($image_path) {
+                    if (empty($image_path)) {
+                        return 'assets/images/placeholder.jpg';
+                    }
+                    
+                    if (!preg_match('/^(http|\/)/i', $image_path)) {
+                        return '../../admin/servicesManagement/' . $image_path;
+                    }
+                    
+                    return $image_path;
+                }
 
                 $query = "SELECT s.service_id, s.service_name, s.description, s.selling_price, s.image_url, 
                                  i.item_name AS casket_name, s.flower_design, s.inclusions
@@ -141,9 +152,15 @@ require_once '../db_connect.php'; // Database connection
                 $packagesFromDB = $result->fetch_all(MYSQLI_ASSOC);
                 $stmt->close();
                 $conn->close();
-                
+                while ($row = $result->fetch_assoc()) {
+                    $row['image_url'] = getImageUrl($row['image_url']);
+                    $packagesFromDB[] = $row;
+                }
                 // Convert to JSON for JavaScript
                 $packagesJson = json_encode($packagesFromDB);
+
+                
+                
                 
 
 ?>
@@ -1265,7 +1282,7 @@ const packages = packagesFromDB.map(pkg => {
         service: "traditional", 
         name: pkg.service_name,
         description: pkg.description,
-        image: pkg.image_url || "../image/default-package.jpg", // Default image if none provided
+        image: "<?php echo getImageUrl('" + pkg.image_url + "'); ?>",
         icon: "star", // Default icon
         features: features
     };
