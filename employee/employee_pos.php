@@ -395,19 +395,19 @@ $servicesJson = json_encode($allServices);
       <div class="hidden md:flex">
         <div class="hidden md:flex items-center gap-4">
           <!-- Category Filter Dropdown -->
-          <div class="relative">
+          <!-- <div class="relative">
             <select id="category-filter" class="appearance-none pl-3 pr-8 py-2 border border-sidebar-border rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent cursor-pointer">
               <option value="all">All Categories</option>
-              <?php foreach ($categories as $category): ?>
-                <option value="<?php echo $category['service_categoryID']; ?>">
-                  <?php echo htmlspecialchars($category['service_category_name']); ?>
+              ?php foreach ($categories as $category): ?>
+                <option value="?php echo $category['service_categoryID']; ?>">
+                  ?php echo htmlspecialchars($category['service_category_name']); ?>
                 </option>
-              <?php endforeach; ?>
+              ?php endforeach; ?>
             </select>
             <div class="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
               <i class="fas fa-chevron-down text-gray-400"></i>
             </div>
-          </div>
+          </div> -->
           
           <!-- Price Filter Dropdown -->
           <div class="relative">
