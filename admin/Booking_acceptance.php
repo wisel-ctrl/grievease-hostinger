@@ -1697,6 +1697,10 @@ $total_lifeplan_bookings = $lifeplan_count_result->fetch_assoc()['total'];
     </div>
   </div>
 </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
       
@@ -2026,7 +2030,6 @@ function addImageViewerListeners() {
 }
 
 // Function to show full-size image
-// This function should be available in the global scope
 function viewFullSizeImage(imageSrc) {
   const fullSizeModal = document.createElement('div');
   fullSizeModal.className = 'fixed inset-0 bg-black bg-opacity-90 z-[60] flex items-center justify-center p-4';
@@ -2586,13 +2589,14 @@ function openLifeplanDetails(lifeplanId) {
           </span>`;
       }
       
-      // Handle Valid ID Image with new IDs
-      const validIdAvailable = document.getElementById('lifeplanValidIdAvailable');
-      const validIdNotAvailable = document.getElementById('lifeplanValidIdNotAvailable');
-      const validIdImage = document.getElementById('lifeplanValidIdImage');
+      // Handle Valid ID Image
+      const validIdAvailable = document.getElementById('validIdAvailable');
+      const validIdNotAvailable = document.getElementById('validIdNotAvailable');
+      const validIdImage = document.getElementById('validIdImage');
 
       if (data.image_path && data.image_path !== '') {
         const validIdPath = data.image_path;
+        document.getElementById('validIdImage').src = validIdPath;
         
         validIdImage.onerror = function() {
           console.error("Failed to load valid ID image:", validIdPath);
@@ -2608,26 +2612,31 @@ function openLifeplanDetails(lifeplanId) {
         validIdNotAvailable.classList.remove('hidden');
       }
 
-      // Handle Payment Proof Image with new IDs
-      const paymentProofAvailable = document.getElementById('lifeplanPaymentProofAvailable');
-      const paymentProofNotAvailable = document.getElementById('lifeplanPaymentProofNotAvailable');
+      // Handle Payment Proof Image
       const paymentProofImage = document.getElementById('lifeplanPaymentProofImage');
+      const paymentProofContainer = paymentProofImage.parentElement;
 
       if (data.payment_url && data.payment_url !== '') {
         const paymentProofPath = '../customer/booking/uploads/' + data.payment_url.replace(/^uploads\//, '');
         
         paymentProofImage.onerror = function() {
           console.error("Failed to load payment proof image:", paymentProofPath);
-          paymentProofAvailable.classList.add('hidden');
-          paymentProofNotAvailable.classList.remove('hidden');
+          const placeholderHTML = `
+            <div class="flex flex-col items-center justify-center py-8 px-4 bg-gray-50">
+              <i class="fas fa-exclamation-circle text-gray-400 text-3xl mb-2"></i>
+              <p class="text-gray-500 text-center">Image could not be loaded</p>
+            </div>`;
+          paymentProofContainer.innerHTML = placeholderHTML;
         };
         
         paymentProofImage.src = paymentProofPath;
-        paymentProofAvailable.classList.remove('hidden');
-        paymentProofNotAvailable.classList.add('hidden');
       } else {
-        paymentProofAvailable.classList.add('hidden');
-        paymentProofNotAvailable.classList.remove('hidden');
+        const placeholderHTML = `
+          <div class="flex flex-col items-center justify-center py-8 px-4 bg-gray-50">
+            <i class="fas fa-exclamation-circle text-gray-400 text-3xl mb-2"></i>
+            <p class="text-gray-500 text-center">No payment proof provided</p>
+          </div>`;
+        paymentProofContainer.innerHTML = placeholderHTML;
       }
             
       // Show the modal
@@ -2636,18 +2645,8 @@ function openLifeplanDetails(lifeplanId) {
       modal.classList.add("flex");
       document.body.classList.add("overflow-hidden");
       
-      // Add image viewer listeners for the lifeplan modal
-      setTimeout(() => {
-        const zoomButtons = modal.querySelectorAll('button[title="View Full Size"]');
-        zoomButtons.forEach(button => {
-          button.addEventListener('click', function() {
-            const imageElement = this.closest('.relative').querySelector('img');
-            if (imageElement && imageElement.src) {
-              viewFullSizeImage(imageElement.src);
-            }
-          });
-        });
-      }, 100);
+      // Set the lifeplan ID for decline/accept actions
+      document.getElementById('lifeplanIdForDecline').value = data.lpbooking_id;
     })
     .catch(error => {
       console.error('Error:', error);
