@@ -133,6 +133,11 @@ $total_lifeplan_bookings = $lifeplan_count_result->fetch_assoc()['total'];
     background-color: #d4a933;
     border-radius: 6px;
 }
+
+#customBookingNotes {
+  white-space: pre-wrap; /* Preserves line breaks in notes */
+  word-break: break-word; /* Prevents long words from overflowing */
+}
     </style>
 </head>
 
@@ -1696,6 +1701,33 @@ $total_lifeplan_bookings = $lifeplan_count_result->fetch_assoc()['total'];
             </div>
           </div>
         </div>
+
+        <!-- Booking Notes -->
+        <div class="bg-white rounded-lg p-4 sm:p-5 border border-gray-200 shadow-sm">
+          <h4 class="font-semibold text-gray-800 mb-3 sm:mb-4 flex items-center">
+            <i class="fas fa-sticky-note mr-2 text-sidebar-accent"></i>
+            Booking Notes
+          </h4>
+          <div class="border border-gray-200 rounded-lg p-4 bg-gray-50">
+            <p id="customBookingNotes" class="text-gray-800">
+              <!-- Will be populated by JavaScript -->
+            </p>
+          </div>
+        </div>
+
+        <!-- Cremation Information -->
+        <div class="bg-white rounded-lg p-4 sm:p-5 border border-gray-200 shadow-sm">
+          <h4 class="font-semibold text-gray-800 mb-3 sm:mb-4 flex items-center">
+            <i class="fas fa-fire mr-2 text-sidebar-accent"></i>
+            Cremation Information
+          </h4>
+          <div class="flex items-center">
+            <span class="text-sm text-gray-700 mr-2">Includes Cremation:</span>
+            <span id="customWithCremate" class="px-2 py-1 rounded-full text-xs font-medium">
+              <!-- Will be populated by JavaScript -->
+            </span>
+          </div>
+        </div>
         
         <!-- Documents -->
         <div class="bg-white rounded-lg p-4 sm:p-5 border border-gray-200 shadow-sm">
@@ -3002,6 +3034,24 @@ function openCustomDetails(bookingId) {
           <span class="px-3 py-1.5 text-sm font-medium rounded-full bg-yellow-100 text-sidebar-accent flex items-center">
             <i class="fas fa-clock mr-1.5"></i>
             Pending
+          </span>`;
+      }
+
+      // Handle Booking Notes
+      document.getElementById('customBookingNotes').textContent = 
+        data.booking_notes || "No additional notes provided for this booking.";
+
+      // Handle Cremation Information
+      const cremationElement = document.getElementById('customWithCremate');
+      if (data.with_cremate === 'yes') {
+        cremationElement.innerHTML = `
+          <span class="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 border border-green-200">
+            <i class="fas fa-check-circle mr-1"></i> Yes
+          </span>`;
+      } else {
+        cremationElement.innerHTML = `
+          <span class="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800 border border-gray-200">
+            <i class="fas fa-times-circle mr-1"></i> No
           </span>`;
       }
       
