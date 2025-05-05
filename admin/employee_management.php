@@ -71,6 +71,12 @@ if ($branch_result->num_rows > 0) {
         $branches[] = $branch_row;
     }
 }
+
+
+// Pagination settings
+$perPage = 10; // Number of items per page
+$page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1; // Current page
+$offset = ($page - 1) * $perPage; // Offset for SQL query
 ?>
 
 <!DOCTYPE html>
@@ -265,37 +271,58 @@ if ($branch_result->num_rows > 0) {
           }
                 
           // SQL query to fetch employee details with concatenated name
-          $sql = "SELECT 
-              e.EmployeeID,
-              CONCAT(
-                  COALESCE(e.fname, ''), 
-                  CASE WHEN e.mname IS NOT NULL AND e.mname != '' THEN CONCAT(' ', e.mname) ELSE '' END,
-                  CASE WHEN e.lname IS NOT NULL AND e.lname != '' THEN CONCAT(' ', e.lname) ELSE '' END,
-                  CASE WHEN e.suffix IS NOT NULL AND e.suffix != '' THEN CONCAT(' ', e.suffix) ELSE '' END
-              ) AS full_name,
-              e.position,
-              e.base_salary,
-              e.status,
-              e.branch_id,
-              b.branch_name,
-              e.gender,
-              e.bday,
-              e.phone_number,
-              e.email,
-              e.date_created
-          FROM employee_tb e
-          JOIN branch_tb b ON e.branch_id = b.branch_id";
-          
-          // Add branch filter if set
-          if ($branch_filter !== null) {
-              $sql .= " WHERE e.branch_id = ?";
-              $stmt = $conn->prepare($sql);
-              $stmt->bind_param("i", $branch_filter);
-              $stmt->execute();
-              $result = $stmt->get_result();
-          } else {
-              $result = $conn->query($sql);
-          }
+          // SQL query to fetch employee details with concatenated name
+$sql = "SELECT 
+e.EmployeeID,
+CONCAT(
+    COALESCE(e.fname, ''), 
+    CASE WHEN e.mname IS NOT NULL AND e.mname != '' THEN CONCAT(' ', e.mname) ELSE '' END,
+    CASE WHEN e.lname IS NOT NULL AND e.lname != '' THEN CONCAT(' ', e.lname) ELSE '' END,
+    CASE WHEN e.suffix IS NOT NULL AND e.suffix != '' THEN CONCAT(' ', e.suffix) ELSE '' END
+) AS full_name,
+e.position,
+e.base_salary,
+e.status,
+e.branch_id,
+b.branch_name,
+e.gender,
+e.bday,
+e.phone_number,
+e.email,
+e.date_created
+FROM employee_tb e
+JOIN branch_tb b ON e.branch_id = b.branch_id";
+
+// Add branch filter if set
+if ($branch_filter !== null) {
+$sql .= " WHERE e.branch_id = ?";
+$sql .= " LIMIT ? OFFSET ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("iii", $branch_filter, $perPage, $offset);
+$stmt->execute();
+$result = $stmt->get_result();
+} else {
+$sql .= " LIMIT ? OFFSET ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("ii", $perPage, $offset);
+$stmt->execute();
+$result = $stmt->get_result();
+}
+
+// Get total count of employees for pagination
+$countSql = "SELECT COUNT(*) as total FROM employee_tb";
+if ($branch_filter !== null) {
+$countSql .= " WHERE branch_id = ?";
+$stmtCount = $conn->prepare($countSql);
+$stmtCount->bind_param("i", $branch_filter);
+$stmtCount->execute();
+$countResult = $stmtCount->get_result();
+} else {
+$countResult = $conn->query($countSql);
+}
+$totalRow = $countResult->fetch_assoc();
+$totalEmployees = $totalRow['total'];
+$totalPages = ceil($totalEmployees / $perPage);
 
           // Check if there are results
           if ($result->num_rows > 0) {
@@ -380,7 +407,7 @@ echo "</tr>";
   <!-- Sticky Pagination Footer with improved spacing -->
 <div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
     <div id="paginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
-    <?php 
+        <?php 
         // Get the number of employees on the current page
         $current_page_employees = isset($result) ? $result->num_rows : 0;
 
@@ -398,12 +425,12 @@ echo "</tr>";
     <div class="flex space-x-2">
         <?php if (isset($totalPages) && $totalPages > 1): ?>
             <!-- First page button (double arrow) -->
-            <a href="?page=1" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($page <= 1) ? 'opacity-50 pointer-events-none' : ''; ?>">
+            <a href="?page=1<?php echo $branch_filter !== null ? '&branch_id='.$branch_filter : ''; ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($page <= 1) ? 'opacity-50 pointer-events-none' : ''; ?>">
                 &laquo;
             </a>
             
             <!-- Previous page button (single arrow) -->
-            <a href="<?php echo '?page=' . max(1, $page - 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($page <= 1) ? 'opacity-50 pointer-events-none' : ''; ?>">
+            <a href="<?php echo '?page=' . max(1, $page - 1) . ($branch_filter !== null ? '&branch_id='.$branch_filter : ''); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($page <= 1) ? 'opacity-50 pointer-events-none' : ''; ?>">
                 &lsaquo;
             </a>
             
@@ -443,17 +470,17 @@ echo "</tr>";
             // Generate the page buttons
             for ($i = $start_page; $i <= $end_page; $i++) {
                 $active_class = ($i == $page) ? 'bg-sidebar-accent text-white' : 'border border-sidebar-border hover:bg-sidebar-hover';
-                echo '<a href="?page=' . $i . '" class="px-3.5 py-1.5 rounded text-sm ' . $active_class . '">' . $i . '</a>';
+                echo '<a href="?page=' . $i . ($branch_filter !== null ? '&branch_id='.$branch_filter : '') . '" class="px-3.5 py-1.5 rounded text-sm ' . $active_class . '">' . $i . '</a>';
             }
             ?>
             
             <!-- Next page button (single arrow) -->
-            <a href="<?php echo '?page=' . min($totalPages, $page + 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($page >= $totalPages) ? 'opacity-50 pointer-events-none' : ''; ?>">
+            <a href="<?php echo '?page=' . min($totalPages, $page + 1) . ($branch_filter !== null ? '&branch_id='.$branch_filter : ''); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($page >= $totalPages) ? 'opacity-50 pointer-events-none' : ''; ?>">
                 &rsaquo;
             </a>
             
             <!-- Last page button (double arrow) -->
-            <a href="<?php echo '?page=' . $totalPages; ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($page >= $totalPages) ? 'opacity-50 pointer-events-none' : ''; ?>">
+            <a href="<?php echo '?page=' . $totalPages . ($branch_filter !== null ? '&branch_id='.$branch_filter : ''); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($page >= $totalPages) ? 'opacity-50 pointer-events-none' : ''; ?>">
                 &raquo;
             </a>
         <?php else: ?>
@@ -1390,11 +1417,11 @@ document.addEventListener('DOMContentLoaded', function() {
       
       function filterByBranch(branchId) {
     if (branchId === '') {
-      window.location.href = 'employee_management.php';
+        window.location.href = 'employee_management.php';
     } else {
-      window.location.href = 'employee_management.php?branch_id=' + branchId;
+        window.location.href = 'employee_management.php?branch_id=' + branchId + '&page=1';
     }
-  }
+}
 
     // Function to open the Add Employee Modal
     function openAddEmployeeModal() {
