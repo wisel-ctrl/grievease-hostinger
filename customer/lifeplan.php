@@ -734,17 +734,6 @@ require_once '../db_connect.php'; // Database connection
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="traditionalPackagesGrid">
                     <!-- Packages will be dynamically inserted here -->
                     
-                        </div>
-                    <?php 
-                        endforeach;
-                    else: 
-                    ?>
-                        <div class="col-span-3 text-center py-12">
-                            <i class="fas fa-search text-5xl text-gray-300 mb-4"></i>
-                            <h3 class="text-2xl font-hedvig text-navy mb-2">No Packages Available</h3>
-                            <p class="text-gray-600 max-w-md mx-auto">There are currently no traditional packages available for your location.</p>
-                        </div>
-                    <?php endif; ?>
                 </div>
             </div>
         </div>
