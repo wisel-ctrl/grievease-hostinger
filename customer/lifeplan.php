@@ -1595,97 +1595,91 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             
             if (!isValid) {
-                alert('Please fill in all required fields.');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Please fill in all required fields.',
+                    confirmButtonColor: '#3085d6',
+                });
                 return;
             }
             
-            // Get all form inputs
-            const formData = new FormData(lifeplanForm);
-            const formInputs = {};
-            
-            // Convert FormData to object
-            for (let [key, value] of formData.entries()) {
-                formInputs[key] = value;
-            }
-            
-            // Get checkbox values
-            const cremationOption = document.getElementById('cremationOption').checked;
-            formInputs.cremationOption = cremationOption;
-            
-            // Get address components
-            const region = document.getElementById('traditionalDeceasedRegion').value;
-            const province = document.getElementById('traditionalDeceasedProvince').value;
-            const city = document.getElementById('traditionalDeceasedCity').value;
-            const barangay = document.getElementById('traditionalDeceasedBarangay').value;
-            const streetAddress = document.getElementById('traditionalDeceasedAddress').value;
-            
-            // Add address to form inputs
-            formInputs.addressComponents = {
-                region,
-                province,
-                city,
-                barangay,
-                streetAddress
-            };
-            
-            // Log all form inputs to console
-            console.log('Form Inputs:', formInputs);
-            
-            // Get selected package and additional services
-            const packageName = document.getElementById('lifeplanSelectedPackageName')?.value;
-            const packagePrice = parseFloat(document.getElementById('lifeplanSelectedPackagePrice')?.value || 0);
-            const selectedAddons = [];
-            
-            const cremationCheckbox = document.getElementById('cremationOption');
-            if (cremationCheckbox && cremationCheckbox.checked) {
-                selectedAddons.push({
-                    name: 'Cremation Services',
-                    price: parseFloat(cremationCheckbox.value)
-                });
-            }
-
-            document.querySelectorAll('.traditional-addon:checked').forEach(checkbox => {
-                selectedAddons.push({
-                    name: checkbox.dataset.name,
-                    price: parseFloat(checkbox.value)
-                });
-            });
-            
-            // Get personal information
-            const firstName = document.getElementById('lifeplanHolderFirstName')?.value;
-            const lastName = document.getElementById('lifeplanHolderLastName')?.value;
-            const email = document.getElementById('lifeplanEmailAddress')?.value;
-            const phone = document.getElementById('lifeplanContactNumber')?.value;
-            
-            // Get payment information
-            const paymentTerm = document.getElementById('lifeplanPaymentTerm')?.value;
-            const refNumber = document.getElementById('lifeplanReferenceNumber')?.value;
-            
-            // Create booking data object
-            const bookingData = {
-                package: {
-                    name: packageName,
-                    price: packagePrice
-                },
-                addons: selectedAddons,
-                customer: {
-                    firstName,
-                    lastName,
-                    email,
-                    phone
-                },
-                payment: {
-                    term: paymentTerm,
-                    referenceNumber: refNumber
+            // Show confirmation dialog
+            Swal.fire({
+                title: 'Confirm Booking',
+                text: 'Are you sure you want to submit this life plan booking?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, submit it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Show loading indicator
+                    Swal.fire({
+                        title: 'Processing...',
+                        html: 'Please wait while we process your booking.',
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+                    
+                    // Prepare FormData with all form inputs
+                    const formData = new FormData(lifeplanForm);
+                    
+                    // Add checkbox values
+                    const cremationOption = document.getElementById('cremationOption').checked;
+                    formData.append('cremationOption', cremationOption ? '1' : '0');
+                    
+                    // Get address components
+                    const region = document.getElementById('traditionalDeceasedRegion').value;
+                    const province = document.getElementById('traditionalDeceasedProvince').value;
+                    const city = document.getElementById('traditionalDeceasedCity').value;
+                    const barangay = document.getElementById('traditionalDeceasedBarangay').value;
+                    const streetAddress = document.getElementById('traditionalDeceasedAddress').value;
+                    
+                    // Add address to form data
+                    formData.append('deceasedAddress', `${streetAddress}, ${barangay}, ${city}, ${province}, ${region}`);
+                    
+                    // Submit the form via AJAX
+                    fetch('lifeplan_booking_for_lifeplanpage.php', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Success!',
+                                text: data.message || 'Lifeplan booking submitted successfully!',
+                                confirmButtonColor: '#3085d6',
+                            }).then(() => {
+                                // Redirect or close modal
+                                document.getElementById('traditionalModal').classList.add('hidden');
+                                // Optionally redirect or refresh the page
+                                window.location.href = 'lifeplan.php';
+                            });
+                        } else {
+                            throw new Error(data.message || 'Unknown error occurred');
+                        }
+                    })
+                    .catch(error => {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: error.message || 'Failed to submit booking. Please try again.',
+                            confirmButtonColor: '#3085d6',
+                        });
+                    });
                 }
-            };
-            
-            console.log('Booking data:', bookingData);
-            
-            // Here you would typically send this data to your server
-            // For now, just show a success message
-            alert('Thank you for your booking! We will contact you shortly.');
-            document.getElementById('traditionalModal').classList.add('hidden');
+            });
         });
     }
     
