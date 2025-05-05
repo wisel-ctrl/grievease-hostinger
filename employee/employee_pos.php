@@ -357,11 +357,25 @@ $servicesJson = json_encode($allServices);
   </nav>
 
   <!-- Main Content -->
-<div id="main-content" class="ml-64 p-6 bg-gray-50 min-h-screen transition-all duration-300 main-content">
+  <div id="main-content" class="ml-64 p-6 bg-gray-50 min-h-screen transition-all duration-300 main-content">
   <!-- Header with breadcrumb and welcome message -->
   <div class="flex justify-between items-center mb-6 bg-white p-5 rounded-lg shadow-sidebar">
     <div>
       <h1 class="text-2xl font-bold text-sidebar-text">Point-Of-Sale (POS)</h1>
+      <p class="text-sm text-gray-600">Services available at your branch: 
+        <span class="font-semibold text-sidebar-accent">
+          <?php 
+          // Get branch name from database
+          $branch_query = "SELECT branch_name FROM branch_tb WHERE branch_id = ?";
+          $stmt = $conn->prepare($branch_query);
+          $stmt->bind_param("i", $user_branch_id);
+          $stmt->execute();
+          $branch_result = $stmt->get_result();
+          $branch_name = $branch_result->fetch_assoc()['branch_name'];
+          echo htmlspecialchars($branch_name);
+          ?>
+        </span>
+      </p>
     </div>
     <div class="flex space-x-3">
       <button class="p-2 bg-white border border-sidebar-border rounded-lg shadow-input text-sidebar-text hover:bg-sidebar-hover transition-all duration-300">
@@ -370,65 +384,66 @@ $servicesJson = json_encode($allServices);
     </div>
   </div>
 
-    <div id="branch-selection" class="mb-8">
-        <div class="flex justify-between items-center mb-5">
-          <h2 class="text-gray-600 text-lg">Select a Branch Location</h2>
-    
-        </div>
-      <div id="branches-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-      <!-- Branches will be dynamically added here based on database data -->
-    </div>
-  </div>
-
-      <!-- Services Section (Initially hidden) -->
-  <div id="services-section" class="mb-8 hidden">
+  <!-- Services Section (Now visible by default) -->
+  <div id="services-section" class="mb-8">
     <div class="flex items-center justify-between mb-6 bg-white p-4 rounded-lg shadow-sm border border-sidebar-border">
       <div class="flex items-center">
-        <button onclick="goBackToBranches()" class="mr-4 p-2 bg-white border border-sidebar-border rounded-lg shadow-input text-sidebar-text hover:bg-sidebar-hover transition-all duration-300 flex items-center justify-center">
-          <i class="fas fa-arrow-left"></i>
-        </button>
         <h2 class="text-gray-700 text-lg">
-          <span id="selected-category-name" class="font-semibold text-sidebar-accent"></span> Services at 
-          <span id="services-branch-name" class="font-semibold text-sidebar-accent"></span>
+          <span id="selected-category-name" class="font-semibold text-sidebar-accent">All</span> Services
         </h2>
       </div>
       <div class="hidden md:flex">
-  <div class="hidden md:flex items-center gap-4">
-    <!-- Price Filter Dropdown -->
-    <div class="relative">
-      <select id="price-filter" class="appearance-none pl-3 pr-8 py-2 border border-sidebar-border rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent cursor-pointer">
-        <option value="">All Prices</option>
-        <option value="1-100000">₱1 - ₱100,000</option>
-        <option value="100001-300000">₱100,001 - ₱300,000</option>
-        <option value="300001-500000">₱300,001 - ₱500,000</option>
-        <option value="500001-700000">₱500,001 - ₱700,000</option>
-        <option value="700001+">₱700,001+</option>
-      </select>
-      <div class="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
-        <i class="fas fa-chevron-down text-gray-400"></i>
+        <div class="hidden md:flex items-center gap-4">
+          <!-- Category Filter Dropdown -->
+          <div class="relative">
+            <select id="category-filter" class="appearance-none pl-3 pr-8 py-2 border border-sidebar-border rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent cursor-pointer">
+              <option value="all">All Categories</option>
+              <?php foreach ($categories as $category): ?>
+                <option value="<?php echo $category['service_categoryID']; ?>">
+                  <?php echo htmlspecialchars($category['service_category_name']); ?>
+                </option>
+              <?php endforeach; ?>
+            </select>
+            <div class="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+              <i class="fas fa-chevron-down text-gray-400"></i>
+            </div>
+          </div>
+          
+          <!-- Price Filter Dropdown -->
+          <div class="relative">
+            <select id="price-filter" class="appearance-none pl-3 pr-8 py-2 border border-sidebar-border rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent cursor-pointer">
+              <option value="">All Prices</option>
+              <option value="1-100000">₱1 - ₱100,000</option>
+              <option value="100001-300000">₱100,001 - ₱300,000</option>
+              <option value="300001-500000">₱300,001 - ₱500,000</option>
+              <option value="500001-700000">₱500,001 - ₱700,000</option>
+              <option value="700001+">₱700,001+</option>
+            </select>
+            <div class="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+              <i class="fas fa-chevron-down text-gray-400"></i>
+            </div>
+          </div>
+          
+          <!-- Price Sort Dropdown -->
+          <div class="relative">
+            <select id="price-sort" class="appearance-none pl-3 pr-8 py-2 border border-sidebar-border rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent cursor-pointer">
+              <option value="">Sort by Price</option>
+              <option value="low-high">Low to High</option>
+              <option value="high-low">High to Low</option>
+            </select>
+            <div class="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+              <i class="fas fa-chevron-down text-gray-400"></i>
+            </div>
+          </div>
+          <!-- Search Bar -->
+          <div class="relative">
+            <input type="text" id="service-search" placeholder="Search services..." 
+                  class="pl-10 pr-4 py-2 border border-sidebar-border rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
+            <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+            <div id="search-error" class="hidden text-red-500 text-xs mt-1">Please avoid leading or multiple spaces</div>
+          </div>
+        </div>
       </div>
-    </div>
-    
-    <!-- Price Sort Dropdown -->
-    <div class="relative">
-      <select id="price-sort" class="appearance-none pl-3 pr-8 py-2 border border-sidebar-border rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent cursor-pointer">
-        <option value="">Sort by Price</option>
-        <option value="low-high">Low to High</option>
-        <option value="high-low">High to Low</option>
-      </select>
-      <div class="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
-        <i class="fas fa-chevron-down text-gray-400"></i>
-      </div>
-    </div>
-    <!-- Search Bar -->
-    <div class="relative">
-      <input type="text" id="service-search" placeholder="Search services..." 
-            class="pl-10 pr-4 py-2 border border-sidebar-border rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
-      <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-      <div id="search-error" class="hidden text-red-500 text-xs mt-1">Please avoid leading or multiple spaces</div>
-    </div>
-  </div>
-  </div>
     </div>
     
     <div id="services-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -436,7 +451,7 @@ $servicesJson = json_encode($allServices);
     </div>
   </div>
 
-</div> <!-- Main Content -->
+</div> <!-- MAIN CONTENT-->
 
  
 
@@ -446,87 +461,37 @@ $servicesJson = json_encode($allServices);
   const branches = <?php echo $branchesJson; ?>;
   const categories = <?php echo $categoriesJson; ?>;
   const services = <?php echo $servicesJson; ?>;
+  const userBranchId = <?php echo $user_branch_id; ?>;
   
   // DOM elements
-  const branchesContainer = document.getElementById('branches-container');
   const servicesSection = document.getElementById('services-section');
   const servicesContainer = document.getElementById('services-container');
-  const branchSelection = document.getElementById('branch-selection');
-  const servicesBranchName = document.getElementById('services-branch-name');
   const selectedCategoryName = document.getElementById('selected-category-name');
+  const categoryFilter = document.getElementById('category-filter');
   const priceFilter = document.getElementById('price-filter');
   const priceSort = document.getElementById('price-sort');
   const serviceSearch = document.getElementById('service-search');
   
   // Variables to track selections
-  let selectedBranchId = <?php echo $user_branch_id; ?>; // Default to user's branch
-  let selectedCategoryId = null;
+  let selectedCategoryId = 'all';
   let currentFilteredServices = [];
   
-  // Populate branches
-  function populateBranches() {
-    branchesContainer.innerHTML = '';
-    
-    branches.forEach(branch => {
-      const isUserBranch = branch.branch_id == selectedBranchId;
-      const branchCard = document.createElement('div');
-      branchCard.className = `p-5 bg-white rounded-lg shadow-md border ${isUserBranch ? 'border-yellow-500' : 'border-sidebar-border'} hover:shadow-lg transition-all duration-300`;
-      branchCard.innerHTML = `
-        <div class="flex items-center justify-between mb-3">
-          <h3 class="font-semibold text-sidebar-text">${branch.branch_name}</h3>
-          ${isUserBranch ? '<span class="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full">Your Branch</span>' : ''}
-        </div>
-        <div class="grid grid-cols-2 gap-3 mt-4">
-          ${categories.map(category => `
-            <button 
-              class="p-3 bg-gray-50 hover:bg-sidebar-hover text-sm rounded-lg border border-sidebar-border transition-all duration-300 flex flex-col items-center justify-center gap-2"
-              onclick="selectCategory(${branch.branch_id}, ${category.service_categoryID}, '${branch.branch_name}', '${category.service_category_name}')"
-            >
-              <i class="fas fa-tag text-sidebar-accent"></i>
-              <span>${category.service_category_name}</span>
-            </button>
-          `).join('')}
-        </div>
-      `;
-      branchesContainer.appendChild(branchCard);
-    });
-  }
-  
-  // Select a category and show services
-  function selectCategory(branchId, categoryId, branchName, categoryName) {
-    selectedBranchId = branchId;
-    selectedCategoryId = categoryId;
-    
-    // Update UI elements
-    servicesBranchName.textContent = branchName;
-    selectedCategoryName.textContent = categoryName;
-    
-    // Hide branch selection, show services
-    branchSelection.classList.add('hidden');
-    servicesSection.classList.remove('hidden');
-    
-    // Filter services by branch and category
+  // On page load, show all services for the user's branch
+  document.addEventListener('DOMContentLoaded', function() {
     filterAndDisplayServices();
-  }
-  
-  // Go back to branch selection
-  function goBackToBranches() {
-    servicesSection.classList.add('hidden');
-    branchSelection.classList.remove('hidden');
-    
-    // Reset filters and search
-    priceFilter.value = '';
-    priceSort.value = '';
-    serviceSearch.value = '';
-  }
+  });
   
   // Filter and display services based on current selections
   function filterAndDisplayServices() {
-    // Start with branch and category filter
-    let filteredServices = services.filter(service => 
-      service.branch_id == selectedBranchId && 
-      service.service_categoryID == selectedCategoryId
-    );
+    // Start with branch filter (only show services from user's branch)
+    let filteredServices = services.filter(service => service.branch_id == userBranchId);
+    
+    // Apply category filter if not "all"
+    if (selectedCategoryId !== 'all') {
+      filteredServices = filteredServices.filter(service => 
+        service.service_categoryID == selectedCategoryId
+      );
+    }
     
     // Apply price range filter
     if (priceFilter.value) {
@@ -629,6 +594,17 @@ $servicesJson = json_encode($allServices);
   }
   
   // Event listeners for filtering and sorting
+  categoryFilter.addEventListener('change', function() {
+    selectedCategoryId = this.value;
+    if (selectedCategoryId === 'all') {
+      selectedCategoryName.textContent = 'All';
+    } else {
+      const selectedCategory = categories.find(c => c.service_categoryID == selectedCategoryId);
+      selectedCategoryName.textContent = selectedCategory ? selectedCategory.service_category_name : 'All';
+    }
+    filterAndDisplayServices();
+  });
+  
   priceFilter.addEventListener('change', filterAndDisplayServices);
   priceSort.addEventListener('change', filterAndDisplayServices);
   serviceSearch.addEventListener('input', event => {
@@ -647,6 +623,6 @@ $servicesJson = json_encode($allServices);
 
   <script src="sidebar.js"></script>
   <script src="tailwind.js"></script>
-  
+
 </body>
 </html>
