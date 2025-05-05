@@ -153,7 +153,6 @@ $custom_offset = ($custom_current_page - 1) * $custom_bookings_per_page;
                 <h3 class="text-lg font-bold text-sidebar-text whitespace-nowrap">Pending Requests</h3>
                 
                 <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
-                    <i class="fas fa-list-ul"></i>
                     <span id="totalBookings">
                         <?php 
                           if ($total_bookings > 0) {
@@ -507,7 +506,6 @@ $custom_offset = ($custom_current_page - 1) * $custom_bookings_per_page;
                 <h3 class="text-lg font-bold text-sidebar-text whitespace-nowrap">Custom Bookings</h3>
                 
                 <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
-                    <i class="fas fa-list-ul"></i>
                     <span id="totalCustomBookings">0</span>
                 </span>
             </div>
@@ -819,7 +817,6 @@ $custom_offset = ($custom_current_page - 1) * $custom_bookings_per_page;
                 <h3 class="text-lg font-bold text-sidebar-text whitespace-nowrap">LifePlan Bookings</h3>
                 
                 <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
-                    <i class="fas fa-list-ul"></i>
                     <span id="totalLifeplanBookings">0</span>
                 </span>
             </div>
