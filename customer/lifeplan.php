@@ -1791,6 +1791,115 @@ document.addEventListener('DOMContentLoaded', function() {
     mobileMenu.classList.toggle('hidden');
 }
 </script>
+<script>
+    //script for pektyur
+
+    // Function to handle QR code button click
+document.getElementById('lifeplanShowQrCodeBtn')?.addEventListener('click', function() {
+    // Get the total price from the form
+    const totalPrice = parseFloat(document.getElementById('lifeplanSelectedPackagePrice')?.value || 0);
+    
+    // Calculate monthly payment (total price / 60 months)
+    const monthlyPayment = totalPrice / 60;
+    
+    // Update the QR code modal with the amount
+    const qrAmountElement = document.getElementById('lifeplanQrCodeAmount');
+    if (qrAmountElement) {
+        qrAmountElement.textContent = `Amount: ₱${monthlyPayment.toFixed(2)}`;
+    }
+    
+    // Show the QR code modal
+    const qrModal = document.getElementById('lifeplanQrCodeModal');
+    if (qrModal) {
+        qrModal.classList.remove('hidden');
+    }
+});
+
+// Function to close QR code modal
+document.getElementById('lifeplanCloseQrModal')?.addEventListener('click', function() {
+    const qrModal = document.getElementById('lifeplanQrCodeModal');
+    if (qrModal) {
+        qrModal.classList.add('hidden');
+    }
+});
+
+// Function to handle GCash receipt upload and preview
+document.getElementById('lifeplanGcashReceipt')?.addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    const previewContainer = document.getElementById('lifeplanGcashPreviewContainer');
+    const imagePreview = document.getElementById('lifeplanGcashImagePreview');
+    const fileNameDisplay = document.getElementById('lifeplanGcashFileName');
+    const removeButton = document.getElementById('removeLifeplanGcash');
+    
+    if (file) {
+        // Update file name display
+        fileNameDisplay.textContent = file.name;
+        
+        // Check if it's an image
+        if (file.type.match('image.*')) {
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                // Set image source
+                document.getElementById('lifeplanGcashImage').src = e.target.result;
+                
+                // Show image preview
+                imagePreview.classList.remove('hidden');
+                previewContainer.classList.remove('hidden');
+            };
+            
+            reader.readAsDataURL(file);
+        } else {
+            // Hide image preview for non-image files
+            imagePreview.classList.add('hidden');
+            previewContainer.classList.remove('hidden');
+        }
+        
+        // Show remove button
+        removeButton.classList.remove('hidden');
+    }
+});
+
+// Function to handle remove file button
+document.getElementById('removeLifeplanGcash')?.addEventListener('click', function() {
+    // Clear file input
+    document.getElementById('lifeplanGcashReceipt').value = '';
+    
+    // Hide preview elements
+    document.getElementById('lifeplanGcashPreviewContainer').classList.add('hidden');
+    document.getElementById('lifeplanGcashImagePreview').classList.add('hidden');
+    
+    // Reset file name display
+    document.getElementById('lifeplanGcashFileName').textContent = 'No file chosen';
+    
+    // Hide remove button
+    this.classList.add('hidden');
+});
+
+// Function to view uploaded image in full screen
+function viewUploadedImage() {
+    const imageSrc = document.getElementById('lifeplanGcashImage').src;
+    if (imageSrc) {
+        // Create a modal for full-screen viewing
+        const imageViewer = document.createElement('div');
+        imageViewer.className = 'fixed inset-0 bg-black bg-opacity-90 z-[999] flex items-center justify-center';
+        imageViewer.innerHTML = `
+            <div class="relative max-w-full max-h-full p-4">
+                <img src="${imageSrc}" alt="Uploaded Receipt" class="max-w-full max-h-[90vh] object-contain">
+                <button class="absolute top-4 right-4 text-white text-2xl hover:text-yellow-500" onclick="this.parentElement.parentElement.remove()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        `;
+        
+        // Add to body and show
+        document.body.appendChild(imageViewer);
+    }
+}
+
+// Add click event to image preview for viewing
+document.getElementById('lifeplanGcashImagePreview')?.addEventListener('click', viewUploadedImage);
+</script>
 
     <?php include 'customService/chat_elements.html'; ?>
     
