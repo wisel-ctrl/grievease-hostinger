@@ -548,7 +548,7 @@ require_once '../db_connect.php';
                     </tbody>
                 </table>
             </div>
-            <div class="mt-5 sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="mt-5 bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
     <div id="paginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
         Loading customer accounts...
     </div>
@@ -1588,104 +1588,133 @@ function openEditCustomerAccountModal(userId) {
                 
                 // Create modal HTML with validation indicators
                 const modalHTML = `
-                <div id="editCustomerModal" class="fixed inset-0 z-50 overflow-auto bg-black bg-opacity-40 flex items-center justify-center">
-                    <div class="bg-white rounded-lg shadow-xl w-full max-w-md mx-4">
+                <div id="editCustomerModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto">
+                    <!-- Modal Backdrop -->
+                    <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+                    
+                    <!-- Modal Content -->
+                    <div class="relative bg-white rounded-xl shadow-card w-full max-w-xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] flex flex-col">
+                        <!-- Close Button -->
+                        <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeEditCustomerModal()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                        
                         <!-- Modal Header -->
-                        <div class="flex justify-between items-center p-4 border-b border-sidebar-border">
-                            <h3 class="text-lg font-semibold text-sidebar-text">Edit Customer Account</h3>
-                            <button onclick="closeEditCustomerModal()" class="text-gray-500 hover:text-gray-700">
-                                <i class="fas fa-times"></i>
-                            </button>
+                        <div class="px-4 sm:px-6 py-4 sm:py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
+                            <h3 class="text-lg sm:text-xl font-bold text-white flex items-center">
+                                Edit Customer Account
+                            </h3>
                         </div>
                         
                         <!-- Modal Body -->
-                        <div class="p-6">
-                            <form id="editCustomerForm" class="space-y-4">
+                        <div class="px-4 sm:px-6 py-4 sm:py-5 overflow-y-auto modal-scroll-container">
+                            <form id="editCustomerForm" class="space-y-3 sm:space-y-4">
                                 <input type="hidden" name="user_id" value="${data.user.id}">
                                 
                                 <div>
-                                    <label class="block text-xs font-medium text-gray-700 mb-1">Customer ID</label>
-                                    <input type="text" value="#CUST-${String(data.user.id).padStart(3, '0')}" 
-                                           class="w-full p-2 border border-gray-300 rounded bg-gray-100 text-sm" readonly>
-                                </div>
-                                
-                                <div>
-                                    <label class="block text-xs font-medium text-gray-700 mb-1">First Name <span class="text-red-500">*</span></label>
-                                    <input type="text" name="first_name" value="${data.user.first_name || ''}" 
-                                           class="w-full p-2 border border-gray-300 rounded text-sm focus:ring-sidebar-accent focus:border-sidebar-accent" required>
-                                </div>
-                                
-                                <div>
-                                    <label class="block text-xs font-medium text-gray-700 mb-1">Last Name <span class="text-red-500">*</span></label>
-                                    <input type="text" name="last_name" value="${data.user.last_name || ''}" 
-                                           class="w-full p-2 border border-gray-300 rounded text-sm focus:ring-sidebar-accent focus:border-sidebar-accent" required>
-                                </div>
-                                
-                                <div>
-                                    <label class="block text-xs font-medium text-gray-700 mb-1">Middle Name</label>
-                                    <input type="text" name="middle_name" value="${data.user.middle_name || ''}" 
-                                           class="w-full p-2 border border-gray-300 rounded text-sm focus:ring-sidebar-accent focus:border-sidebar-accent">
-                                </div>
-                                
-                                <div class="relative">
-                                    <label class="block text-xs font-medium text-gray-700 mb-1">Email <span class="text-red-500">*</span></label>
-                                    <input type="email" name="email" value="${data.user.email || ''}" 
-                                           class="w-full p-2 border border-gray-300 rounded text-sm focus:ring-sidebar-accent focus:border-sidebar-accent" 
-                                           required oninput="checkEmailAvailability(this.value)">
-                                    <div id="emailAvailability" class="absolute right-2 top-7 text-xs hidden">
-                                        <i class="fas fa-check-circle text-green-500"></i>
-                                        <span class="ml-1">Available</span>
-                                    </div>
-                                    <div id="emailUnavailable" class="absolute right-2 top-7 text-xs hidden">
-                                        <i class="fas fa-times-circle text-red-500"></i>
-                                        <span class="ml-1">In use</span>
-                                    </div>
-                                </div>
-                                
-                                <div class="relative">
-                                    <label class="block text-xs font-medium text-gray-700 mb-1">Phone Number <span class="text-red-500">*</span></label>
-                                    <input type="text" name="phone_number" value="${data.user.phone_number || ''}"
-                                       class="w-full p-2 border border-gray-300 rounded text-sm focus:ring-sidebar-accent focus:border-sidebar-accent"
-                                       inputmode="numeric" pattern="[0-9]*" maxlength="15"
-                                       required oninput="this.value = this.value.replace(/[^0-9]/g, ''); checkPhoneAvailability(this.value)">
-                                    <div id="phoneAvailability" class="absolute right-2 top-7 text-xs hidden">
-                                        <i class="fas fa-check-circle text-green-500"></i>
-                                        <span class="ml-1">Available</span>
-                                    </div>
-                                    <div id="phoneUnavailable" class="absolute right-2 top-7 text-xs hidden">
-                                        <i class="fas fa-times-circle text-red-500"></i>
-                                        <span class="ml-1">In use</span>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">Customer ID</label>
+                                    <div class="relative">
+                                        <input type="text" value="#CUST-${String(data.user.id).padStart(3, '0')}" 
+                                               class="w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" readonly>
                                     </div>
                                 </div>
                                 
                                 <div>
-                                    <label class="block text-xs font-medium text-gray-700 mb-1">Branch Location <span class="text-red-500">*</span></label>
-                                    <select name="branch_loc" class="w-full p-2 border border-gray-300 rounded text-sm focus:ring-sidebar-accent focus:border-sidebar-accent" required>
-                                        <option value="">-- Select Branch --</option>
-                                        ${data.branches.map(branch => `
-                                            <option value="${branch.branch_id}" ${data.user.branch_loc == branch.branch_id ? 'selected' : ''}>
-                                                ${branch.branch_name}
-                                            </option>
-                                        `).join('')}
-                                    </select>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                                        First Name <span class="text-red-500">*</span>
+                                    </label>
+                                    <div class="relative">
+                                        <input type="text" name="first_name" value="${data.user.first_name || ''}" 
+                                               class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                                        Last Name <span class="text-red-500">*</span>
+                                    </label>
+                                    <div class="relative">
+                                        <input type="text" name="last_name" value="${data.user.last_name || ''}" 
+                                               class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">Middle Name</label>
+                                    <div class="relative">
+                                        <input type="text" name="middle_name" value="${data.user.middle_name || ''}" 
+                                               class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                                        Email Address <span class="text-red-500">*</span>
+                                    </label>
+                                    <div class="relative">
+                                        <input type="email" name="email" value="${data.user.email || ''}" 
+                                               class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
+                                               required oninput="checkEmailAvailability(this.value)">
+                                        <div id="emailAvailability" class="absolute right-2 top-1/2 transform -translate-y-1/2 text-xs hidden">
+                                            <i class="fas fa-check-circle text-green-500"></i>
+                                            <span class="ml-1">Available</span>
+                                        </div>
+                                        <div id="emailUnavailable" class="absolute right-2 top-1/2 transform -translate-y-1/2 text-xs hidden">
+                                            <i class="fas fa-times-circle text-red-500"></i>
+                                            <span class="ml-1">In use</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                                        Phone Number <span class="text-red-500">*</span>
+                                    </label>
+                                    <div class="relative">
+                                        <input type="text" name="phone_number" value="${data.user.phone_number || ''}"
+                                               class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                                               inputmode="numeric" pattern="[0-9]*" maxlength="15"
+                                               required oninput="this.value = this.value.replace(/[^0-9]/g, ''); checkPhoneAvailability(this.value)">
+                                        <div id="phoneAvailability" class="absolute right-2 top-1/2 transform -translate-y-1/2 text-xs hidden">
+                                            <i class="fas fa-check-circle text-green-500"></i>
+                                            <span class="ml-1">Available</span>
+                                        </div>
+                                        <div id="phoneUnavailable" class="absolute right-2 top-1/2 transform -translate-y-1/2 text-xs hidden">
+                                            <i class="fas fa-times-circle text-red-500"></i>
+                                            <span class="ml-1">In use</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                                        Branch Location <span class="text-red-500">*</span>
+                                    </label>
+                                    <div class="relative">
+                                        <select name="branch_loc" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
+                                            <option value="">-- Select Branch --</option>
+                                            ${data.branches.map(branch => `
+                                                <option value="${branch.branch_id}" ${data.user.branch_loc == branch.branch_id ? 'selected' : ''}>
+                                                    ${branch.branch_name}
+                                                </option>
+                                            `).join('')}
+                                        </select>
+                                    </div>
                                 </div>
                             </form>
                         </div>
                         
                         <!-- Modal Footer -->
-                        <div class="flex justify-end p-4 border-t border-gray-200 space-x-3">
-                            <button onclick="closeEditCustomerModal()" 
-                                    class="px-4 py-2 border border-gray-300 rounded text-gray-700 hover:bg-gray-100 text-sm">
+                        <div class="px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row sm:justify-end gap-2 sm:gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
+                            <button type="button" class="w-full sm:w-auto px-4 sm:px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center" onclick="closeEditCustomerModal()">
                                 Cancel
                             </button>
-                            <button onclick="validateAndSaveCustomerChanges()" 
-                                    class="px-4 py-2 bg-sidebar-accent text-white rounded hover:bg-darkgold text-sm">
+                            <button type="button" class="w-full sm:w-auto px-5 sm:px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="validateAndSaveCustomerChanges()">
                                 Save Changes
                             </button>
                         </div>
                     </div>
                 </div>`;
-
                 // Add modal to DOM
                 document.body.insertAdjacentHTML('beforeend', modalHTML);
 
@@ -2122,34 +2151,66 @@ function viewArchivedAccounts() {
 
     // Create modal container if it doesn't exist
     if (!document.getElementById('archivedAccountsModal')) {
-        const modalHTML = `
-        <div id="archivedAccountsModal" class="hidden fixed z-50 inset-0 overflow-auto bg-black bg-opacity-40">
-            <div class="bg-white mx-auto my-[5%] p-5 border border-gray-300 w-4/5 max-w-4xl rounded-lg shadow-lg">
-                <div class="flex justify-between items-center mb-5 border-b border-gray-300 pb-3">
-                    <h3 class="m-0 text-lg font-semibold">Archived Customer Accounts</h3>
-                    <span onclick="closeArchivedAccountsModal()" class="cursor-pointer text-2xl">&times;</span>
-                </div>
-                <div class="max-h-[60vh] overflow-y-auto">
-                    <table class="w-full border-collapse">
-                        <thead>
-                            <tr class="bg-sidebar-hover text-left">
-                                <th class="p-3 border-b border-sidebar-border text-sm font-medium text-sidebar-text">Customer ID</th>
-                                <th class="p-3 border-b border-sidebar-border text-sm font-medium text-sidebar-text">Name</th>
-                                <th class="p-3 border-b border-sidebar-border text-sm font-medium text-sidebar-text">Email</th>
-                                <th class="p-3 border-b border-sidebar-border text-sm font-medium text-sidebar-text">Type</th>
-                                <th class="p-3 border-b border-sidebar-border text-sm font-medium text-sidebar-text">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="archivedAccountsTableBody">
-                            <!-- Content will be loaded here -->
-                        </tbody>
-                    </table>
-                </div>
-                <div class="mt-5 text-right border-t border-gray-300 pt-4">
-                    <button onclick="closeArchivedAccountsModal()" class="bg-gray-600 text-white border-none py-2 px-4 rounded-md cursor-pointer">Close</button>
-                </div>
-            </div>
-        </div>`;
+      const modalHTML = `
+<!-- Archived Accounts Modal -->
+<div class="fixed inset-0 z-50 flex items-center justify-center hidden" id="archivedAccountsModal">
+  <!-- Modal Backdrop -->
+  <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+  
+  <!-- Modal Content -->
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-4xl mx-4 z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+    <!-- Close Button -->
+    <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeArchivedAccountsModal()">
+      <i class="fas fa-times"></i>
+    </button>
+    
+    <!-- Modal Header -->
+    <div class="px-6 py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
+      <h3 class="text-xl font-bold text-white flex items-center">
+        <span id="modalTitle">Archived Customer Accounts</span>
+      </h3>
+    </div>
+    
+    <!-- Search Bar -->
+    <div class="px-6 py-4 border-b border-gray-200">
+      <div class="relative">
+        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <i class="fas fa-search text-gray-400"></i>
+        </div>
+        <input type="text" id="archivedAccountsSearch" placeholder="Search archived accounts..." 
+          class="w-full pl-10 pr-4 py-3 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+      </div>
+    </div>
+    
+    <!-- Modal Body -->
+    <div class="px-6 py-5 max-h-[70vh] overflow-y-auto w-full">
+      <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+        <table class="w-full text-sm text-left text-gray-500">
+          <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+            <tr>
+              <th scope="col" class="px-6 py-3">Customer ID</th>
+              <th scope="col" class="px-6 py-3">Name</th>
+              <th scope="col" class="px-6 py-3">Email</th>
+              <th scope="col" class="px-6 py-3">Type</th>
+              <th scope="col" class="px-6 py-3">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="archivedAccountsTableBody">
+            <!-- Archived accounts will be loaded here -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+    
+    <!-- Modal Footer --> 
+    <div class="px-6 py-4 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
+      <button class="px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center" onclick="closeArchivedAccountsModal()">
+        Close
+      </button>
+    </div>
+  </div>
+</div>
+`;
         document.body.insertAdjacentHTML('beforeend', modalHTML);
     }
 
