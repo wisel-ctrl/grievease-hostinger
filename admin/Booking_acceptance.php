@@ -3096,10 +3096,7 @@ function openCustomDetails(bookingId) {
             <span class="flex-shrink-0 mt-1 mr-2">
               <i class="fas fa-check-circle text-green-500"></i>
             </span>
-            <span class="text-gray-800">
-              <strong>${inclusion.name}</strong> - ₱${parseFloat(inclusion.price).toFixed(2)}
-              ${inclusion.description ? `<br><span class="text-gray-500 text-sm">${inclusion.description}</span>` : ''}
-            </span>
+            
           `;
           inclusionsList.appendChild(li);
         });
