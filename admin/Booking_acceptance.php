@@ -3061,7 +3061,7 @@ function openCustomDetails(bookingId) {
         
         const casketImage = document.getElementById('casketImage');
         if (data.casket_image) {
-          casketImage.src = '../admin/caskets/uploads/' + data.casket_image;
+          casketImage.src = data.casket_image;
           casketImage.onerror = function() {
             this.src = '../admin/caskets/default_casket.jpg';
           };
