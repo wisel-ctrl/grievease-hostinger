@@ -1504,6 +1504,433 @@ $total_lifeplan_bookings = $lifeplan_count_result->fetch_assoc()['total'];
 
 </div>
 
+<!-- Custom Booking Details Modal -->
+<div id="customDetailsModal" class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto">
+  <!-- Modal Backdrop -->
+  <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+  
+  <!-- Modal Content -->
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-4xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] flex flex-col">
+    <!-- Close Button -->
+    <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeCustomModal()">
+      <i class="fas fa-times"></i>
+    </button>
+    
+    <!-- Modal Header -->
+    <div class="px-4 sm:px-6 py-4 sm:py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
+      <h3 class="text-lg sm:text-xl font-bold text-white flex items-center">
+        Custom Package Details
+      </h3>
+    </div>
+    
+    <!-- Modal Body -->
+    <div class="px-4 sm:px-6 py-4 sm:py-5 overflow-y-auto modal-scroll-container">
+      <!-- Top Info Bar - Booking ID and Status -->
+      <div class="flex justify-between items-center mb-6 bg-gray-50 p-3 sm:p-4 rounded-lg">
+        <div class="flex items-center">
+          <div class="bg-navy rounded-full p-2 mr-3">
+            <i class="fas fa-hashtag text-sidebar-accent"></i>
+          </div>
+          <div>
+            <p class="text-sm text-gray-500">Booking ID</p>
+            <p class="font-semibold text-gray-800" id="customBookingId">#BK-2025-001</p>
+          </div>
+        </div>
+        <div>
+          <p class="text-sm text-gray-500 mb-1">Status</p>
+          <div id="customBookingStatus">
+            <span class="px-3 py-1.5 text-sm font-medium rounded-full bg-yellow-100 text-sidebar-accent flex items-center">
+              Pending
+            </span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Main Content Area -->
+      <div class="space-y-4 sm:space-y-6">
+        <!-- Package Details -->
+        <div class="bg-white rounded-lg p-4 sm:p-5 border border-gray-200 shadow-sm">
+          <h4 class="font-semibold text-gray-800 mb-3 sm:mb-4 flex items-center">
+            <i class="fas fa-box mr-2 text-sidebar-accent"></i>
+            Package Details
+          </h4>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="space-y-2 sm:space-y-3">
+              <div class="flex flex-wrap">
+                <div class="w-1/3 text-sm text-gray-500">Package Type</div>
+                <div class="w-2/3 font-medium text-gray-800 break-words" id="customPackageType">Custom Package</div>
+              </div>
+              <div class="flex flex-wrap">
+                <div class="w-1/3 text-sm text-gray-500">Date Requested</div>
+                <div class="w-2/3 font-medium text-gray-800 break-words" id="customDateRequested">Mar 15, 2025</div>
+              </div>
+            </div>
+            <div class="space-y-2 sm:space-y-3">
+              <div class="flex flex-wrap">
+                <div class="w-1/3 text-sm text-gray-500">Service Date</div>
+                <div class="w-2/3 font-medium text-gray-800 break-words" id="customServiceDate">Mar 20, 2025</div>
+              </div>
+              <div class="flex flex-wrap">
+                <div class="w-1/3 text-sm text-gray-500">Price</div>
+                <div class="w-2/3 font-medium text-gray-800 break-words" id="customAmountPaid">$3,500.00</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Customer Information -->
+        <div class="bg-white rounded-lg p-4 sm:p-5 border border-gray-200 shadow-sm">
+          <h4 class="font-semibold text-gray-800 mb-3 sm:mb-4 flex items-center">
+            <i class="fas fa-user mr-2 text-sidebar-accent"></i>
+            Customer Information
+          </h4>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div class="flex flex-wrap">
+              <div class="w-1/3 text-sm text-gray-500">Name</div>
+              <div class="w-2/3 font-medium text-gray-800 break-words" id="customCustomerName">John Doe</div>
+            </div>
+            <div class="flex flex-wrap">
+              <div class="w-1/3 text-sm text-gray-500">Contact</div>
+              <div class="w-2/3 font-medium text-gray-800 break-words" id="customContactNumber">(555) 123-4567</div>
+            </div>
+            <div class="flex flex-wrap">
+              <div class="w-1/3 text-sm text-gray-500">Email</div>
+              <div class="w-2/3 font-medium text-gray-800 break-words" id="customEmailAddress">john.doe@example.com</div>
+            </div>
+            <div class="flex flex-wrap">
+              <div class="w-1/3 text-sm text-gray-500">Address</div>
+              <div class="w-2/3 font-medium text-gray-800 break-words" id="customAddress">123 Main St, Anytown, CA 12345</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Deceased Information -->
+        <div class="bg-white rounded-lg p-4 sm:p-5 border border-gray-200 shadow-sm">
+          <h4 class="font-semibold text-gray-800 mb-3 sm:mb-4 flex items-center">
+            <i class="fas fa-sticky-note mr-2 text-sidebar-accent"></i>
+            Deceased Information
+          </h4>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div class="flex flex-wrap">
+              <div class="w-1/3 text-sm text-gray-500">Full Name</div>
+              <div class="w-2/3 font-medium text-gray-800 break-words" id="customDeceasedFullName">
+                <!-- Will be populated by JavaScript -->
+              </div>
+            </div>
+            <div class="flex flex-wrap">
+              <div class="w-1/3 text-sm text-gray-500">Date of Birth</div>
+              <div class="w-2/3 font-medium text-gray-800 break-words" id="customDeceasedBirth">
+                <!-- Will be populated by JavaScript -->
+              </div>
+            </div>
+            <div class="flex flex-wrap">
+              <div class="w-1/3 text-sm text-gray-500">Date of Death</div>
+              <div class="w-2/3 font-medium text-gray-800 break-words" id="customDeceasedDeath">
+                <!-- Will be populated by JavaScript -->
+              </div>
+            </div>
+            <div class="flex flex-wrap">
+              <div class="w-1/3 text-sm text-gray-500">Address</div>
+              <div class="w-2/3 font-medium text-gray-800 break-words" id="customDeceasedAddress">
+                <!-- Will be populated by JavaScript -->
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Custom Package Components -->
+        <div class="bg-white rounded-lg p-4 sm:p-5 border border-gray-200 shadow-sm">
+          <h4 class="font-semibold text-gray-800 mb-3 sm:mb-4 flex items-center">
+            <i class="fas fa-cubes mr-2 text-sidebar-accent"></i>
+            Package Components
+          </h4>
+          
+          <!-- Casket Selection -->
+          <div class="mb-6">
+            <h5 class="font-medium text-gray-700 mb-2 flex items-center">
+              <i class="fas fa-bed text-sm mr-2 text-gray-500"></i>
+              Selected Casket
+            </h5>
+            <div class="border border-gray-200 rounded-lg p-4" id="casketDetails">
+              <div class="flex flex-col sm:flex-row gap-4">
+                <div class="sm:w-1/3">
+                  <img id="casketImage" src="" alt="Selected Casket" class="w-full h-auto rounded-md object-cover">
+                </div>
+                <div class="sm:w-2/3">
+                  <h6 class="font-semibold text-lg" id="casketName">No casket selected</h6>
+                  <p class="text-gray-600 mb-2" id="casketDescription"></p>
+                  <div class="flex justify-between items-center">
+                    <span class="font-bold text-sidebar-accent" id="casketPrice">₱0.00</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Flower Design -->
+          <div class="mb-6">
+            <h5 class="font-medium text-gray-700 mb-2 flex items-center">
+              <i class="fas fa-spa text-sm mr-2 text-gray-500"></i>
+              Flower Design
+            </h5>
+            <div class="border border-gray-200 rounded-lg p-4" id="flowerDesignDetails">
+              <div class="flex flex-col sm:flex-row gap-4">
+                <div class="sm:w-1/3">
+                  <img id="flowerDesignImage" src="" alt="Flower Design" class="w-full h-auto rounded-md object-cover">
+                </div>
+                <div class="sm:w-2/3">
+                  <h6 class="font-semibold text-lg" id="flowerDesignName">No flower design selected</h6>
+                  <p class="text-gray-600 mb-2" id="flowerDesignDescription"></p>
+                  <div class="flex justify-between items-center">
+                    <span class="font-bold text-sidebar-accent" id="flowerDesignPrice">₱0.00</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Inclusions -->
+          <div>
+            <h5 class="font-medium text-gray-700 mb-2 flex items-center">
+              <i class="fas fa-list-check text-sm mr-2 text-gray-500"></i>
+              Package Inclusions
+            </h5>
+            <div class="border border-gray-200 rounded-lg p-4">
+              <ul class="space-y-2" id="inclusionsList">
+                <!-- Will be populated by JavaScript -->
+                <li class="text-gray-600">No inclusions selected</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Documents -->
+        <div class="bg-white rounded-lg p-4 sm:p-5 border border-gray-200 shadow-sm">
+          <h4 class="font-semibold text-gray-800 mb-3 sm:mb-4 flex items-center">
+            <i class="fas fa-file-alt mr-2 text-sidebar-accent"></i>
+            Documents
+          </h4>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Death Certificate -->
+            <div id="customDeathCertificateSection">
+              <h5 class="font-medium text-gray-700 mb-2 flex items-center">
+                <i class="fas fa-certificate text-sm mr-2 text-gray-500"></i>
+                Death Certificate
+              </h5>
+              <div class="border border-gray-200 rounded-lg overflow-hidden">
+                <div id="customDeathCertificateAvailable" class="text-center">
+                  <div class="relative bg-gray-100 p-1">
+                    <img id="customDeathCertificateImage" alt="Death Certificate" class="mx-auto rounded-md max-h-48 object-contain" />
+                    <div class="absolute top-2 right-2">
+                      <button class="bg-white rounded-full p-1 shadow-md hover:bg-gray-100 transition-colors duration-200" title="View Full Size">
+                        <i class="fas fa-search-plus text-blue-600"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <div id="customDeathCertificateNotAvailable" class="hidden">
+                  <div class="flex flex-col items-center justify-center py-8 px-4 bg-gray-50">
+                    <i class="fas fa-exclamation-circle text-gray-400 text-3xl mb-2"></i>
+                    <p class="text-gray-500 text-center">No death certificate has been uploaded yet.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Payment Proof -->
+            <div>
+              <h5 class="font-medium text-gray-700 mb-2 flex items-center">
+                <i class="fas fa-receipt text-sm mr-2 text-gray-500"></i>
+                Payment Proof
+              </h5>
+              <div class="border border-gray-200 rounded-lg overflow-hidden">
+                <div class="relative bg-gray-100 p-1">
+                  <img id="customPaymentProofImage" alt="Payment Proof" class="mx-auto rounded-md max-h-48 object-contain" />
+                  <div class="absolute top-2 right-2">
+                    <button class="bg-white rounded-full p-1 shadow-md hover:bg-gray-100 transition-colors duration-200" title="View Full Size">
+                      <i class="fas fa-search-plus text-blue-600"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Modal Footer --> 
+    <div class="px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row sm:justify-end gap-2 sm:gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
+      <button class="w-full sm:w-auto px-4 sm:px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center" onclick="confirmCustomDecline()">
+        <i class="fas fa-times-circle mr-2"></i>
+        Decline Booking
+      </button>
+      <button class="w-full sm:w-auto px-5 sm:px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="confirmCustomAccept()">
+        <i class="fas fa-check-circle mr-2"></i>
+        Accept Booking
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Custom Decline Reason Modal -->
+<div id="customDeclineReasonModal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
+  <!-- Modal Backdrop -->
+  <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+  
+  <!-- Modal Content -->
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-md mx-4 z-10 transform transition-all duration-300">
+    <!-- Close Button -->
+    <button type="button" class="absolute top-4 right-4 text-gray-500 hover:text-sidebar-accent transition-colors" onclick="closeCustomDeclineReasonModal()">
+      <i class="fas fa-times"></i>
+    </button>
+    
+    <!-- Modal Header -->
+    <div class="px-6 py-5 border-b bg-gradient-to-r from-red-600 to-red-800 border-gray-200">
+      <h3 class="text-xl font-bold text-white flex items-center">
+        Decline Custom Booking
+      </h3>
+    </div>
+    
+    <!-- Modal Body -->
+    <div class="px-6 py-5">
+      <form id="customDeclineReasonForm">
+        <input type="hidden" id="customBookingIdForDecline" name="bookingId">
+        
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Reason for Declining</label>
+          
+          <!-- Suggested Reasons -->
+          <div class="grid grid-cols-2 gap-2 mb-4">
+            <button type="button" onclick="selectCustomDeclineReason('Invalid payment certificate')" 
+                    class="text-left p-2 border border-gray-300 rounded hover:bg-gray-100 text-sm"> Invalid payment certificate
+            </button>
+            <button type="button" onclick="selectCustomDeclineReason('Incomplete documents')" 
+                    class="text-left p-2 border border-gray-300 rounded hover:bg-gray-100 text-sm">Incomplete documents
+            </button>
+            <button type="button" onclick="selectCustomDeclineReason('Unavailable service date')" 
+                    class="text-left p-2 border border-gray-300 rounded hover:bg-gray-100 text-sm">Unavailable service date
+            </button>
+            <button type="button" onclick="selectCustomDeclineReason('Selected items not available')" 
+                    class="text-left p-2 border border-gray-300 rounded hover:bg-gray-100 text-sm">Selected items not available
+            </button>
+          </div>
+          
+          <!-- Custom Reason -->
+          <div>
+            <label for="customDeclineReason" class="block text-sm font-medium text-gray-700 mb-1">Or specify your own reason:</label>
+            <textarea id="customDeclineReason" name="customReason" rows="3" 
+                      class="block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring focus:ring-red-200 focus:ring-opacity-50 py-2 px-3 border"
+                      placeholder="Enter your reason for declining this booking..."></textarea>
+          </div>
+        </div>
+        
+        <div class="flex justify-end gap-3 mt-6">
+          <button type="button" onclick="closeCustomDeclineReasonModal()" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors">
+            Cancel
+          </button>
+          <button type="submit" class="px-4 py-2 bg-gradient-to-r from-red-600 to-red-800 text-white rounded-lg hover:shadow-md transition-all">
+            Submit Decline
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Custom Payment Modal -->
+<div id="customPaymentModal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
+  <!-- Modal Backdrop -->
+  <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+  
+  <!-- Modal Content -->
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-md mx-4 z-10 transform transition-all duration-300">
+    <!-- Close Button -->
+    <button type="button" class="absolute top-4 right-4 text-gray-500 hover:text-sidebar-accent transition-colors" onclick="closeCustomPaymentModal()">
+      <i class="fas fa-times"></i>
+    </button>
+    
+    <!-- Modal Header -->
+    <div class="px-6 py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
+      <h3 class="text-xl font-bold text-white flex items-center">
+        Payment Details
+      </h3>
+    </div>
+    
+    <!-- Modal Body -->
+    <div class="px-6 py-5">
+      <form id="customPaymentForm">
+        <!-- Booking Information -->
+        <input type="hidden" id="customBookingIdForPayment" name="bookingId">
+        
+        <!-- Customer Information -->
+        <input type="hidden" id="customCustomerFirstName" name="first_name">
+        <input type="hidden" id="customCustomerMiddleName" name="middle_name">
+        <input type="hidden" id="customCustomerLastName" name="last_name">
+        <input type="hidden" id="customCustomerSuffix" name="suffix">
+        <input type="hidden" id="customCustomerEmail" name="email">
+        <input type="hidden" id="customCustomerPhone" name="phone_number">
+        
+        <!-- Deceased Information -->
+        <input type="hidden" id="customDeceasedFname" name="deceased_fname">
+        <input type="hidden" id="customDeceasedMname" name="deceased_mname">
+        <input type="hidden" id="customDeceasedLname" name="deceased_lname">
+        <input type="hidden" id="customDeceasedSuffix" name="deceased_suffix">
+        <input type="hidden" id="customDeceasedAddress" name="deceased_address">
+        
+        <!-- Deceased Dates -->
+        <input type="hidden" id="customDeceasedBirth" name="deceased_birth">
+        <input type="hidden" id="customDeceasedDeath" name="deceased_dodeath">
+        <input type="hidden" id="customDeceasedBurial" name="deceased_dateOfBurial">
+        
+        <!-- Package Components -->
+        <input type="hidden" id="customCasketId" name="casket_id">
+        <input type="hidden" id="customFlowerId" name="flower_id">
+        <input type="hidden" id="customInclusions" name="inclusions">
+        
+        <!-- Other Information -->
+        <input type="hidden" id="customBranchId" name="branch_id">
+        <input type="hidden" id="customInitialPrice" name="initial_price">
+        <input type="hidden" id="customDeathCertUrl" name="deathcert_url">
+        <input type="hidden" id="customWithCremate" name="with_cremate">
+        
+        <div class="mb-4">
+          <label for="customAmountPaidInput" class="block text-sm font-medium text-gray-700 mb-1">Amount Paid</label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <span class="text-gray-500">₱</span>
+            </div>
+            <input type="number" step="0.01" id="customAmountPaidInput" name="amountPaid" 
+                   class="pl-8 block w-full rounded-md border-gray-300 shadow-sm focus:border-sidebar-accent focus:ring focus:ring-sidebar-accent focus:ring-opacity-50 py-2 px-3 border" 
+                   placeholder="0.00" required>
+          </div>
+        </div>
+        
+        <div class="mb-4">
+          <label for="customPaymentMethod" class="block text-sm font-medium text-gray-700 mb-1">Payment Method</label>
+          <select id="customPaymentMethod" name="paymentMethod" 
+                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-sidebar-accent focus:ring focus:ring-sidebar-accent focus:ring-opacity-50 py-2 px-3 border" required>
+            <option value="">Select payment method</option>
+            <option value="Bank">Bank Transfer</option>
+            <option value="GCash">GCash</option>
+            <option value="Cash">Cash</option>
+          </select>
+        </div>
+        
+        <div class="flex justify-end gap-3 mt-6">
+          <button type="button" onclick="closeCustomPaymentModal()" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors">
+            Cancel
+          </button>
+          <button type="submit" class="px-4 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg hover:shadow-md transition-all">
+            Confirm Payment
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
 <!-- LifePlan Details Modal -->
 <div id="lifeplanDetailsModal" class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto">
   <!-- Modal Backdrop -->
@@ -2521,6 +2948,469 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 </script>
+
+<script>
+  //functions for custom bookings 
+  let currentCustomBookingIdForPayment = null;
+
+function openCustomDetails(bookingId) {
+  // First, fetch custom booking details via AJAX
+  fetch('bookingpage/get_custom_booking_details.php?id=' + bookingId)
+    .then(response => response.json())
+    .then(data => {
+      // Populate modal with the basic details
+      document.getElementById('customBookingId').textContent = '#BK-' + 
+        new Date(data.booking_date).getFullYear() + '-' + 
+        String(data.booking_id).padStart(3, '0');
+      document.getElementById('customCustomerName').textContent = data.customer_name;
+      document.getElementById('customContactNumber').textContent = data.contact_number || "Not provided";
+      document.getElementById('customEmailAddress').textContent = data.email;
+      document.getElementById('customAddress').textContent = data.address || "Not provided";
+      document.getElementById('customPackageType').textContent = "Custom Package";
+      document.getElementById('customDateRequested').textContent = 
+        new Date(data.booking_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+      document.getElementById('customServiceDate').textContent = 
+        data.deceased_dateOfBurial ? new Date(data.deceased_dateOfBurial).toLocaleDateString('en-US', 
+        { month: 'short', day: 'numeric', year: 'numeric' }) : "Not scheduled";
+      document.getElementById('customAmountPaid').textContent = "₱" + (parseFloat(data.initial_price) || 0).toFixed(2);
+
+      const deceasedFullName = [
+        data.deceased_fname || '',
+        data.deceased_midname || '',
+        data.deceased_lname || '',
+        data.deceased_suffix || ''
+      ].filter(Boolean).join(' ');
+
+      document.getElementById('customDeceasedFullName').textContent = deceasedFullName || "Not provided";
+      document.getElementById('customDeceasedBirth').textContent = data.deceased_birth ? 
+        new Date(data.deceased_birth).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 
+        "Not provided";
+      document.getElementById('customDeceasedDeath').textContent = data.deceased_dodeath ? 
+        new Date(data.deceased_dodeath).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 
+        "Not provided";
+      document.getElementById('customDeceasedAddress').textContent = data.deceased_address || "Not provided";
+      
+      // Update booking status
+      const statusElement = document.getElementById('customBookingStatus');
+      if (data.status === 'Accepted') {
+        statusElement.innerHTML = `
+          <span class="px-3 py-1.5 text-sm font-medium rounded-full bg-green-100 text-green-800 flex items-center">
+            <i class="fas fa-check-circle mr-1.5"></i>
+            Accepted
+          </span>`;
+      } else if (data.status === 'Declined') {
+        statusElement.innerHTML = `
+          <span class="px-3 py-1.5 text-sm font-medium rounded-full bg-red-100 text-red-800 flex items-center">
+            <i class="fas fa-times-circle mr-1.5"></i>
+            Declined
+          </span>`;
+      } else {
+        statusElement.innerHTML = `
+          <span class="px-3 py-1.5 text-sm font-medium rounded-full bg-yellow-100 text-sidebar-accent flex items-center">
+            <i class="fas fa-clock mr-1.5"></i>
+            Pending
+          </span>`;
+      }
+      
+      // Handle Death Certificate Image
+      const deathCertAvailable = document.getElementById('customDeathCertificateAvailable');
+      const deathCertNotAvailable = document.getElementById('customDeathCertificateNotAvailable');
+      const deathCertImage = document.getElementById('customDeathCertificateImage');
+
+      if (data.deathcert_url && data.deathcert_url !== '') {
+        const deathCertPath = '../customer/booking/uploads/' + data.deathcert_url.replace(/^uploads\//, '');
+        
+        deathCertImage.onerror = function() {
+          console.error("Failed to load death certificate image:", deathCertPath);
+          deathCertAvailable.classList.add('hidden');
+          deathCertNotAvailable.classList.remove('hidden');
+        };
+        
+        deathCertImage.src = deathCertPath;
+        deathCertAvailable.classList.remove('hidden');
+        deathCertNotAvailable.classList.add('hidden');
+      } else {
+        deathCertAvailable.classList.add('hidden');
+        deathCertNotAvailable.classList.remove('hidden');
+      }
+
+      // Handle Payment Proof Image
+      const paymentProofImage = document.getElementById('customPaymentProofImage');
+      const paymentProofContainer = paymentProofImage.parentElement;
+
+      if (data.payment_url && data.payment_url !== '') {
+        const paymentProofPath = '../customer/booking/uploads/' + data.payment_url.replace(/^uploads\//, '');
+        
+        paymentProofImage.onerror = function() {
+          console.error("Failed to load payment proof image:", paymentProofPath);
+          const placeholderHTML = `
+            <div class="flex flex-col items-center justify-center py-8 px-4 bg-gray-50">
+              <i class="fas fa-exclamation-circle text-gray-400 text-3xl mb-2"></i>
+              <p class="text-gray-500 text-center">Image could not be loaded</p>
+            </div>`;
+          paymentProofContainer.innerHTML = placeholderHTML;
+        };
+        
+        paymentProofImage.src = paymentProofPath;
+      } else {
+        const placeholderHTML = `
+          <div class="flex flex-col items-center justify-center py-8 px-4 bg-gray-50">
+            <i class="fas fa-exclamation-circle text-gray-400 text-3xl mb-2"></i>
+            <p class="text-gray-500 text-center">No payment proof provided</p>
+          </div>`;
+        paymentProofContainer.innerHTML = placeholderHTML;
+      }
+      
+      // Handle Casket Details
+      if (data.casket_id && data.casket_name) {
+        document.getElementById('casketName').textContent = data.casket_name;
+        document.getElementById('casketDescription').textContent = data.casket_description || "No description available";
+        document.getElementById('casketPrice').textContent = "₱" + (parseFloat(data.casket_price) || 0).toFixed(2);
+        
+        const casketImage = document.getElementById('casketImage');
+        if (data.casket_image) {
+          casketImage.src = '../admin/caskets/uploads/' + data.casket_image;
+          casketImage.onerror = function() {
+            this.src = '../admin/caskets/default_casket.jpg';
+          };
+        } else {
+          casketImage.src = '../admin/caskets/default_casket.jpg';
+        }
+      } else {
+        document.getElementById('casketName').textContent = "No casket selected";
+        document.getElementById('casketDescription').textContent = "";
+        document.getElementById('casketPrice').textContent = "₱0.00";
+        document.getElementById('casketImage').src = '../admin/caskets/default_casket.jpg';
+      }
+      
+      // Handle Flower Design Details
+      if (data.flower_id && data.flower_name) {
+        document.getElementById('flowerDesignName').textContent = data.flower_name;
+        document.getElementById('flowerDesignDescription').textContent = data.flower_description || "No description available";
+        document.getElementById('flowerDesignPrice').textContent = "₱" + (parseFloat(data.flower_price) || 0).toFixed(2);
+        
+        const flowerImage = document.getElementById('flowerDesignImage');
+        if (data.flower_image) {
+          flowerImage.src = '../admin/flowers/uploads/' + data.flower_image;
+          flowerImage.onerror = function() {
+            this.src = '../admin/flowers/default_flower.jpg';
+          };
+        } else {
+          flowerImage.src = '../admin/flowers/default_flower.jpg';
+        }
+      } else {
+        document.getElementById('flowerDesignName').textContent = "No flower design selected";
+        document.getElementById('flowerDesignDescription').textContent = "";
+        document.getElementById('flowerDesignPrice').textContent = "₱0.00";
+        document.getElementById('flowerDesignImage').src = '../admin/flowers/default_flower.jpg';
+      }
+      
+      // Handle Inclusions
+      const inclusionsList = document.getElementById('inclusionsList');
+      inclusionsList.innerHTML = '';
+      
+      if (data.inclusions && data.inclusions.length > 0) {
+        data.inclusions.forEach(inclusion => {
+          const li = document.createElement('li');
+          li.className = 'flex items-start';
+          li.innerHTML = `
+            <span class="flex-shrink-0 mt-1 mr-2">
+              <i class="fas fa-check-circle text-green-500"></i>
+            </span>
+            <span class="text-gray-800">
+              <strong>${inclusion.name}</strong> - ₱${parseFloat(inclusion.price).toFixed(2)}
+              ${inclusion.description ? `<br><span class="text-gray-500 text-sm">${inclusion.description}</span>` : ''}
+            </span>
+          `;
+          inclusionsList.appendChild(li);
+        });
+      } else {
+        const li = document.createElement('li');
+        li.className = 'text-gray-600';
+        li.textContent = 'No inclusions selected';
+        inclusionsList.appendChild(li);
+      }
+      
+      // Show the modal
+      const modal = document.getElementById("customDetailsModal");
+      modal.classList.remove("hidden");
+      modal.classList.add("flex");
+      document.body.classList.add("overflow-hidden");
+      
+      // Set the current booking ID for payment
+      currentCustomBookingIdForPayment = data.booking_id;
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Failed to load custom booking details. Please try again.',
+      });
+    });
+}
+
+function closeCustomModal() {
+    const modal = document.getElementById("customDetailsModal");
+    if (modal) {
+        modal.classList.add("hidden");
+        modal.classList.remove("flex");
+        document.body.classList.remove("overflow-hidden");
+    }
+}
+
+function confirmCustomAccept() {
+    // Get the booking ID from the modal
+    const bookingId = currentCustomBookingIdForPayment;
+    
+    // Fetch booking details again to get all the required fields
+    fetch('bookingpage/get_custom_details_for_accept.php?id=' + bookingId)
+        .then(response => response.json())
+        .then(data => {
+            // Set all the hidden fields
+            document.getElementById('customBookingIdForPayment').value = bookingId;
+            
+            // Customer information
+            document.getElementById('customCustomerFirstName').value = data.first_name || '';
+            document.getElementById('customCustomerMiddleName').value = data.middle_name || '';
+            document.getElementById('customCustomerLastName').value = data.last_name || '';
+            document.getElementById('customCustomerSuffix').value = data.suffix || '';
+            document.getElementById('customCustomerEmail').value = data.email || '';
+            document.getElementById('customCustomerPhone').value = data.phone_number || '';
+            
+            // Deceased information
+            document.getElementById('customDeceasedFname').value = data.deceased_fname || '';
+            document.getElementById('customDeceasedMname').value = data.deceased_midname || '';
+            document.getElementById('customDeceasedLname').value = data.deceased_lname || '';
+            document.getElementById('customDeceasedSuffix').value = data.deceased_suffix || '';
+            document.getElementById('customDeceasedAddress').value = data.deceased_address || '';
+
+            // Dates information
+            document.getElementById('customDeceasedBirth').value = data.deceased_birth || '';
+            document.getElementById('customDeceasedDeath').value = data.deceased_dodeath || '';
+            document.getElementById('customDeceasedBurial').value = data.deceased_dateOfBurial || '';            
+            
+            // Package components
+            document.getElementById('customCasketId').value = data.casket_id || '';
+            document.getElementById('customFlowerId').value = data.flower_id || '';
+            document.getElementById('customInclusions').value = JSON.stringify(data.inclusions) || '[]';
+            
+            // Other information
+            document.getElementById('customBranchId').value = data.branch_id || '';
+            document.getElementById('customInitialPrice').value = data.initial_price || '';
+            document.getElementById('customDeathCertUrl').value = data.deathcert_url || '';
+            document.getElementById('customWithCremate').value = data.with_cremate || 'no';
+            
+            // Show the payment modal
+            openCustomPaymentModal();
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Failed to load booking details for acceptance. Please try again.',
+            });
+        });
+}
+
+function openCustomPaymentModal() {
+    const modal = document.getElementById("customPaymentModal");
+    modal.classList.remove("hidden");
+    document.body.classList.add("overflow-hidden");
+}
+
+function closeCustomPaymentModal() {
+    const modal = document.getElementById("customPaymentModal");
+    modal.classList.add("hidden");
+    document.body.classList.remove("overflow-hidden");
+}
+
+function confirmCustomDecline() {
+    const bookingId = currentCustomBookingIdForPayment;
+    document.getElementById('customBookingIdForDecline').value = bookingId;
+    
+    const modal = document.getElementById("customDeclineReasonModal");
+    modal.classList.remove("hidden");
+    document.body.classList.add("overflow-hidden");
+}
+
+function closeCustomDeclineReasonModal() {
+    const modal = document.getElementById("customDeclineReasonModal");
+    modal.classList.add("hidden");
+    document.body.classList.remove("overflow-hidden");
+    
+    // Clear the form
+    document.getElementById('customDeclineReason').value = '';
+}
+
+function selectCustomDeclineReason(reason) {
+    document.getElementById('customDeclineReason').value = reason;
+}
+
+// Handle form submission for declining booking
+document.getElementById('customDeclineReasonForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const bookingId = document.getElementById('customBookingIdForDecline').value;
+    const reason = document.getElementById('customDeclineReason').value;
+    
+    if (!reason.trim()) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Please provide a reason for declining this booking.',
+        });
+        return;
+    }
+    
+    Swal.fire({
+        title: 'Confirm Decline',
+        text: 'Are you sure you want to decline this booking?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Yes, decline it'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Submit the decline via AJAX
+            fetch('bookingpage/decline_custom_booking.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `bookingId=${bookingId}&reason=${encodeURIComponent(reason)}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Booking Declined',
+                        text: 'The booking has been successfully declined.',
+                    }).then(() => {
+                        // Close all modals and refresh the page
+                        closeCustomDeclineReasonModal();
+                        closeCustomModal();
+                        window.location.reload();
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: data.message || 'Failed to decline booking. Please try again.',
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'An error occurred while processing your request.',
+                });
+            });
+        }
+    });
+});
+
+// Handle form submission for accepting booking with payment
+document.getElementById('customPaymentForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const bookingId = document.getElementById('customBookingIdForPayment').value;
+    const amountPaid = document.getElementById('customAmountPaidInput').value;
+    const paymentMethod = document.getElementById('customPaymentMethod').value;
+    
+    if (!amountPaid || parseFloat(amountPaid) <= 0) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Invalid Amount',
+            text: 'Please enter a valid payment amount.',
+        });
+        return;
+    }
+    
+    if (!paymentMethod) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Payment Method Required',
+            text: 'Please select a payment method.',
+        });
+        return;
+    }
+    
+    Swal.fire({
+        title: 'Confirm Acceptance',
+        text: 'Are you sure you want to accept this booking with the provided payment details?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#28a745',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Yes, accept booking'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Submit the form data via AJAX
+            const formData = new FormData(document.getElementById('customPaymentForm'));
+            
+            fetch('bookingpage/accept_custom_booking.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Booking Accepted',
+                        text: 'The booking has been successfully accepted and payment recorded.',
+                    }).then(() => {
+                        // Close all modals and refresh the page
+                        closeCustomPaymentModal();
+                        closeCustomModal();
+                        window.location.reload();
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: data.message || 'Failed to accept booking. Please try again.',
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'An error occurred while processing your request.',
+                });
+            });
+        }
+    });
+});
+
+// Close modal when clicking outside of it
+window.addEventListener('click', function(event) {
+    const customDetailsModal = document.getElementById('customDetailsModal');
+    const customDeclineReasonModal = document.getElementById('customDeclineReasonModal');
+    const customPaymentModal = document.getElementById('customPaymentModal');
+    
+    if (event.target === customDetailsModal) {
+        closeCustomModal();
+    }
+    
+    if (event.target === customDeclineReasonModal) {
+        closeCustomDeclineReasonModal();
+    }
+    
+    if (event.target === customPaymentModal) {
+        closeCustomPaymentModal();
+    }
+});
+</script>
+
 
 <script>
 // Function to open LifePlan details modal
