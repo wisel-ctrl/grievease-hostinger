@@ -114,7 +114,7 @@ $offset = ($page - 1) * $perPage; // Offset for SQL query
         <h3 class="text-lg font-bold text-sidebar-text">Employee Details</h3>
         
         <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
-    <?php echo $totalEmployees . ($totalEmployees != 1 ? " Employees" : " Employee"); ?>
+    <?php echo $totalEmployees . ($totalEmployees != 1 ? " " : " "); ?>
 </span>
       </div>
       
