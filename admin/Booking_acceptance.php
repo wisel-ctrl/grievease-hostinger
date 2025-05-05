@@ -3087,25 +3087,38 @@ function openCustomDetails(bookingId) {
       // Handle Inclusions
       const inclusionsList = document.getElementById('inclusionsList');
       inclusionsList.innerHTML = '';
-      
-      if (data.inclusions && data.inclusions.length > 0) {
-        data.inclusions.forEach(inclusion => {
+
+      try {
+        const inclusions = JSON.parse(data.inclusions); // data.inclusions is a JSON string
+
+        if (Array.isArray(inclusions) && inclusions.length > 0) {
+          inclusions.forEach(item => {
+            const li = document.createElement('li');
+            li.className = 'flex items-start mb-2';
+            li.innerHTML = `
+              <span class="flex-shrink-0 mt-1 mr-2">
+                <i class="fas fa-check-circle text-green-500"></i>
+              </span>
+              <span class="text-gray-800">
+                ${item}
+              </span>
+            `;
+            inclusionsList.appendChild(li);
+          });
+        } else {
           const li = document.createElement('li');
-          li.className = 'flex items-start';
-          li.innerHTML = `
-            <span class="flex-shrink-0 mt-1 mr-2">
-              <i class="fas fa-check-circle text-green-500"></i>
-            </span>
-            
-          `;
+          li.className = 'text-gray-600';
+          li.textContent = 'No inclusions selected';
           inclusionsList.appendChild(li);
-        });
-      } else {
+        }
+      } catch (error) {
+        console.error('Error parsing inclusions:', error);
         const li = document.createElement('li');
-        li.className = 'text-gray-600';
-        li.textContent = 'No inclusions selected';
+        li.className = 'text-red-500';
+        li.textContent = 'Failed to load inclusions.';
         inclusionsList.appendChild(li);
       }
+
       
       // Show the modal
       const modal = document.getElementById("customDetailsModal");
