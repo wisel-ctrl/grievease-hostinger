@@ -521,9 +521,6 @@ $categoriesDataJson = json_encode([
     <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300">
         <div class="flex justify-between items-center p-5 border-b border-sidebar-border">
             <h3 class="font-medium text-sidebar-text">Expense Categories</h3>
-            <button class="flex items-center px-3 py-1 text-sm border border-sidebar-border rounded-md text-sidebar-text hover:bg-sidebar-hover transition-all duration-300" onclick="exportChartData()">
-                <i class="fas fa-download mr-1"></i> Export
-            </button>
         </div>
         <div class="p-5">
             <canvas id="expenseCategoriesChart" class="h-64"></canvas>
