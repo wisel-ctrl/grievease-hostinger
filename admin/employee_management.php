@@ -885,6 +885,319 @@ echo "</tr>";
   </div>
 </div>
 
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Common validation functions
+    function validateNameInput(input) {
+        // Remove any numbers or symbols (except spaces and apostrophes)
+        let value = input.value.replace(/[^a-zA-Z\s']/g, '');
+        
+        // Remove multiple consecutive spaces
+        value = value.replace(/\s{2,}/g, ' ');
+        
+        // Capitalize first letter of each word
+        value = value.toLowerCase().replace(/(?:^|\s)\S/g, function(char) {
+            return char.toUpperCase();
+        });
+        
+        // Update the input value
+        input.value = value;
+        
+        // Validate minimum length (only for required fields)
+        if (input.required && value.trim().length < 2) {
+            input.setCustomValidity('Minimum 2 characters required');
+            return false;
+        } else {
+            input.setCustomValidity('');
+            return true;
+        }
+    }
+
+    function handleNamePaste(e) {
+        e.preventDefault();
+        const text = (e.clipboardData || window.clipboardData).getData('text');
+        
+        // Clean the pasted text
+        let cleaned = text.replace(/[^a-zA-Z\s']/g, '')
+                         .replace(/\s{2,}/g, ' ')
+                         .toLowerCase()
+                         .replace(/(?:^|\s)\S/g, function(char) {
+                             return char.toUpperCase();
+                         });
+        
+        // Insert the cleaned text
+        document.execCommand('insertText', false, cleaned);
+    }
+
+    function validateEmail(emailInput) {
+        const email = emailInput.value.trim();
+        
+        // Remove any spaces
+        emailInput.value = email.replace(/\s/g, '');
+        
+        // Basic email validation
+        if (!email.includes('@')) {
+            emailInput.setCustomValidity('Email must contain @ symbol');
+            return false;
+        } else {
+            emailInput.setCustomValidity('');
+            return true;
+        }
+    }
+
+    function validatePhoneNumber(phoneInput) {
+        let phone = phoneInput.value.trim();
+        
+        // Remove any non-digit characters
+        phone = phone.replace(/\D/g, '');
+        
+        // Validate Philippine phone number format
+        if (!phone.match(/^(09|\+639)\d{9}$/) && !phone.match(/^0\d{10}$/)) {
+            // If it doesn't match either format, try to correct it
+            if (phone.startsWith('9') && phone.length === 10) {
+                phone = '0' + phone;
+            } else if (phone.startsWith('639') && phone.length === 11) {
+                phone = '0' + phone.substring(3);
+            }
+        }
+        
+        // Limit to 11 digits
+        if (phone.length > 11) {
+            phone = phone.substring(0, 11);
+        }
+        
+        phoneInput.value = phone;
+        
+        if (phone.length < 11 || !phone.startsWith('09')) {
+            phoneInput.setCustomValidity('Please enter a valid Philippine phone number (09XXXXXXXXX)');
+            return false;
+        } else {
+            phoneInput.setCustomValidity('');
+            return true;
+        }
+    }
+
+    // Apply validations to add employee modal
+    const addModal = document.getElementById('addEmployeeModal');
+    if (addModal) {
+        // Name fields
+        const nameFields = ['firstName', 'middleName', 'lastName', 'suffix'];
+        nameFields.forEach(field => {
+            const input = document.getElementById(field);
+            if (input) {
+                input.addEventListener('input', () => validateNameInput(input));
+                input.addEventListener('paste', handleNamePaste);
+            }
+        });
+
+        // Email field
+        const emailInput = document.getElementById('employeeEmail');
+        if (emailInput) {
+            emailInput.addEventListener('input', () => validateEmail(emailInput));
+            emailInput.addEventListener('paste', (e) => {
+                e.preventDefault();
+                const text = (e.clipboardData || window.clipboardData).getData('text');
+                document.execCommand('insertText', false, text.replace(/\s/g, ''));
+                validateEmail(emailInput);
+            });
+        }
+
+        // Phone field
+        const phoneInput = document.getElementById('employeePhone');
+        if (phoneInput) {
+            phoneInput.addEventListener('input', () => validatePhoneNumber(phoneInput));
+            phoneInput.addEventListener('paste', (e) => {
+                e.preventDefault();
+                const text = (e.clipboardData || window.clipboardData).getData('text');
+                document.execCommand('insertText', false, text.replace(/\D/g, ''));
+                validatePhoneNumber(phoneInput);
+            });
+        }
+
+        // Date of birth field
+        const dobInput = document.getElementById('dateOfBirth');
+        if (dobInput) {
+            // Set max date (today) and min date (100 years ago)
+            const today = new Date();
+            const minDate = new Date();
+            minDate.setFullYear(today.getFullYear() - 100);
+            
+            dobInput.max = today.toISOString().split('T')[0];
+            dobInput.min = minDate.toISOString().split('T')[0];
+            
+            dobInput.addEventListener('change', function() {
+                const selectedDate = new Date(this.value);
+                const eighteenYearsAgo = new Date();
+                eighteenYearsAgo.setFullYear(eighteenYearsAgo.getFullYear() - 18);
+                
+                if (selectedDate > eighteenYearsAgo) {
+                    this.setCustomValidity('Employee must be at least 18 years old');
+                } else {
+                    this.setCustomValidity('');
+                }
+            });
+        }
+    }
+
+    // Apply validations to edit employee modal
+    const editModal = document.getElementById('editEmployeeModal');
+    if (editModal) {
+        // Name fields
+        const editNameFields = ['editFirstName', 'editMiddleName', 'editLastName', 'editSuffix'];
+        editNameFields.forEach(field => {
+            const input = document.getElementById(field);
+            if (input) {
+                input.addEventListener('input', () => validateNameInput(input));
+                input.addEventListener('paste', handleNamePaste);
+            }
+        });
+
+        // Email field
+        const editEmailInput = document.getElementById('editEmployeeEmail');
+        if (editEmailInput) {
+            editEmailInput.addEventListener('input', () => validateEmail(editEmailInput));
+            editEmailInput.addEventListener('paste', (e) => {
+                e.preventDefault();
+                const text = (e.clipboardData || window.clipboardData).getData('text');
+                document.execCommand('insertText', false, text.replace(/\s/g, ''));
+                validateEmail(editEmailInput);
+            });
+        }
+
+        // Phone field
+        const editPhoneInput = document.getElementById('editEmployeePhone');
+        if (editPhoneInput) {
+            editPhoneInput.addEventListener('input', () => validatePhoneNumber(editPhoneInput));
+            editPhoneInput.addEventListener('paste', (e) => {
+                e.preventDefault();
+                const text = (e.clipboardData || window.clipboardData).getData('text');
+                document.execCommand('insertText', false, text.replace(/\D/g, ''));
+                validatePhoneNumber(editPhoneInput);
+            });
+        }
+
+        // Date of birth field
+        const editDobInput = document.getElementById('editDateOfBirth');
+        if (editDobInput) {
+            // Set max date (today) and min date (100 years ago)
+            const today = new Date();
+            const minDate = new Date();
+            minDate.setFullYear(today.getFullYear() - 100);
+            
+            editDobInput.max = today.toISOString().split('T')[0];
+            editDobInput.min = minDate.toISOString().split('T')[0];
+            
+            editDobInput.addEventListener('change', function() {
+                const selectedDate = new Date(this.value);
+                const eighteenYearsAgo = new Date();
+                eighteenYearsAgo.setFullYear(eighteenYearsAgo.getFullYear() - 18);
+                
+                if (selectedDate > eighteenYearsAgo) {
+                    this.setCustomValidity('Employee must be at least 18 years old');
+                } else {
+                    this.setCustomValidity('');
+                }
+            });
+        }
+    }
+
+    // Form submission handlers
+    const addEmployeeForm = document.getElementById('addEmployeeAccountForm');
+    if (addEmployeeForm) {
+        addEmployeeForm.addEventListener('submit', function(event) {
+            // Validate all fields before submission
+            let isValid = true;
+            
+            // Validate required name fields
+            const firstName = document.getElementById('firstName');
+            const lastName = document.getElementById('lastName');
+            if (!validateNameInput(firstName) || !validateNameInput(lastName)) {
+                isValid = false;
+            }
+            
+            // Validate email
+            const email = document.getElementById('employeeEmail');
+            if (!validateEmail(email)) {
+                isValid = false;
+            }
+            
+            // Validate phone
+            const phone = document.getElementById('employeePhone');
+            if (!validatePhoneNumber(phone)) {
+                isValid = false;
+            }
+            
+            // Validate date of birth
+            const dob = document.getElementById('dateOfBirth');
+            if (dob.value) {
+                const selectedDate = new Date(dob.value);
+                const eighteenYearsAgo = new Date();
+                eighteenYearsAgo.setFullYear(eighteenYearsAgo.getFullYear() - 18);
+                
+                if (selectedDate > eighteenYearsAgo) {
+                    dob.setCustomValidity('Employee must be at least 18 years old');
+                    isValid = false;
+                }
+            }
+            
+            if (!isValid) {
+                event.preventDefault();
+                event.stopPropagation();
+                // Show validation messages
+                addEmployeeForm.classList.add('was-validated');
+            }
+        });
+    }
+
+    const editEmployeeForm = document.getElementById('editEmployeeAccountForm');
+    if (editEmployeeForm) {
+        editEmployeeForm.addEventListener('submit', function(event) {
+            // Validate all fields before submission
+            let isValid = true;
+            
+            // Validate required name fields
+            const firstName = document.getElementById('editFirstName');
+            const lastName = document.getElementById('editLastName');
+            if (!validateNameInput(firstName) || !validateNameInput(lastName)) {
+                isValid = false;
+            }
+            
+            // Validate email
+            const email = document.getElementById('editEmployeeEmail');
+            if (!validateEmail(email)) {
+                isValid = false;
+            }
+            
+            // Validate phone
+            const phone = document.getElementById('editEmployeePhone');
+            if (!validatePhoneNumber(phone)) {
+                isValid = false;
+            }
+            
+            // Validate date of birth
+            const dob = document.getElementById('editDateOfBirth');
+            if (dob.value) {
+                const selectedDate = new Date(dob.value);
+                const eighteenYearsAgo = new Date();
+                eighteenYearsAgo.setFullYear(eighteenYearsAgo.getFullYear() - 18);
+                
+                if (selectedDate > eighteenYearsAgo) {
+                    dob.setCustomValidity('Employee must be at least 18 years old');
+                    isValid = false;
+                }
+            }
+            
+            if (!isValid) {
+                event.preventDefault();
+                event.stopPropagation();
+                // Show validation messages
+                editEmployeeForm.classList.add('was-validated');
+            }
+        });
+    }
+});
+</script>
+
   <script src="script.js"></script>
   <script>
       document.addEventListener('DOMContentLoaded', function() {
@@ -1299,6 +1612,319 @@ function closeViewEmployeeModal() {
 </script>
   <script src="script.js"></script>
   <script src="tailwind.js"></script>
+
+  <script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Common validation functions
+    function validateNameInput(input) {
+        // Remove any numbers or symbols (except spaces and apostrophes)
+        let value = input.value.replace(/[^a-zA-Z\s']/g, '');
+        
+        // Remove multiple consecutive spaces
+        value = value.replace(/\s{2,}/g, ' ');
+        
+        // Capitalize first letter of each word
+        value = value.toLowerCase().replace(/(?:^|\s)\S/g, function(char) {
+            return char.toUpperCase();
+        });
+        
+        // Update the input value
+        input.value = value;
+        
+        // Validate minimum length (only for required fields)
+        if (input.required && value.trim().length < 2) {
+            input.setCustomValidity('Minimum 2 characters required');
+            return false;
+        } else {
+            input.setCustomValidity('');
+            return true;
+        }
+    }
+
+    function handleNamePaste(e) {
+        e.preventDefault();
+        const text = (e.clipboardData || window.clipboardData).getData('text');
+        
+        // Clean the pasted text
+        let cleaned = text.replace(/[^a-zA-Z\s']/g, '')
+                         .replace(/\s{2,}/g, ' ')
+                         .toLowerCase()
+                         .replace(/(?:^|\s)\S/g, function(char) {
+                             return char.toUpperCase();
+                         });
+        
+        // Insert the cleaned text
+        document.execCommand('insertText', false, cleaned);
+    }
+
+    function validateEmail(emailInput) {
+        const email = emailInput.value.trim();
+        
+        // Remove any spaces
+        emailInput.value = email.replace(/\s/g, '');
+        
+        // Basic email validation
+        if (!email.includes('@')) {
+            emailInput.setCustomValidity('Email must contain @ symbol');
+            return false;
+        } else {
+            emailInput.setCustomValidity('');
+            return true;
+        }
+    }
+
+    function validatePhoneNumber(phoneInput) {
+        let phone = phoneInput.value.trim();
+        
+        // Remove any non-digit characters
+        phone = phone.replace(/\D/g, '');
+        
+        // Validate Philippine phone number format
+        if (!phone.match(/^(09|\+639)\d{9}$/) && !phone.match(/^0\d{10}$/)) {
+            // If it doesn't match either format, try to correct it
+            if (phone.startsWith('9') && phone.length === 10) {
+                phone = '0' + phone;
+            } else if (phone.startsWith('639') && phone.length === 11) {
+                phone = '0' + phone.substring(3);
+            }
+        }
+        
+        // Limit to 11 digits
+        if (phone.length > 11) {
+            phone = phone.substring(0, 11);
+        }
+        
+        phoneInput.value = phone;
+        
+        if (phone.length < 11 || !phone.startsWith('09')) {
+            phoneInput.setCustomValidity('Please enter a valid Philippine phone number (09XXXXXXXXX)');
+            return false;
+        } else {
+            phoneInput.setCustomValidity('');
+            return true;
+        }
+    }
+
+    // Apply validations to add employee modal
+    const addModal = document.getElementById('addEmployeeModal');
+    if (addModal) {
+        // Name fields
+        const nameFields = ['firstName', 'middleName', 'lastName', 'suffix'];
+        nameFields.forEach(field => {
+            const input = document.getElementById(field);
+            if (input) {
+                input.addEventListener('input', () => validateNameInput(input));
+                input.addEventListener('paste', handleNamePaste);
+            }
+        });
+
+        // Email field
+        const emailInput = document.getElementById('employeeEmail');
+        if (emailInput) {
+            emailInput.addEventListener('input', () => validateEmail(emailInput));
+            emailInput.addEventListener('paste', (e) => {
+                e.preventDefault();
+                const text = (e.clipboardData || window.clipboardData).getData('text');
+                document.execCommand('insertText', false, text.replace(/\s/g, ''));
+                validateEmail(emailInput);
+            });
+        }
+
+        // Phone field
+        const phoneInput = document.getElementById('employeePhone');
+        if (phoneInput) {
+            phoneInput.addEventListener('input', () => validatePhoneNumber(phoneInput));
+            phoneInput.addEventListener('paste', (e) => {
+                e.preventDefault();
+                const text = (e.clipboardData || window.clipboardData).getData('text');
+                document.execCommand('insertText', false, text.replace(/\D/g, ''));
+                validatePhoneNumber(phoneInput);
+            });
+        }
+
+        // Date of birth field
+        const dobInput = document.getElementById('dateOfBirth');
+        if (dobInput) {
+            // Set max date (today) and min date (100 years ago)
+            const today = new Date();
+            const minDate = new Date();
+            minDate.setFullYear(today.getFullYear() - 100);
+            
+            dobInput.max = today.toISOString().split('T')[0];
+            dobInput.min = minDate.toISOString().split('T')[0];
+            
+            dobInput.addEventListener('change', function() {
+                const selectedDate = new Date(this.value);
+                const eighteenYearsAgo = new Date();
+                eighteenYearsAgo.setFullYear(eighteenYearsAgo.getFullYear() - 18);
+                
+                if (selectedDate > eighteenYearsAgo) {
+                    this.setCustomValidity('Employee must be at least 18 years old');
+                } else {
+                    this.setCustomValidity('');
+                }
+            });
+        }
+    }
+
+    // Apply validations to edit employee modal
+    const editModal = document.getElementById('editEmployeeModal');
+    if (editModal) {
+        // Name fields
+        const editNameFields = ['editFirstName', 'editMiddleName', 'editLastName', 'editSuffix'];
+        editNameFields.forEach(field => {
+            const input = document.getElementById(field);
+            if (input) {
+                input.addEventListener('input', () => validateNameInput(input));
+                input.addEventListener('paste', handleNamePaste);
+            }
+        });
+
+        // Email field
+        const editEmailInput = document.getElementById('editEmployeeEmail');
+        if (editEmailInput) {
+            editEmailInput.addEventListener('input', () => validateEmail(editEmailInput));
+            editEmailInput.addEventListener('paste', (e) => {
+                e.preventDefault();
+                const text = (e.clipboardData || window.clipboardData).getData('text');
+                document.execCommand('insertText', false, text.replace(/\s/g, ''));
+                validateEmail(editEmailInput);
+            });
+        }
+
+        // Phone field
+        const editPhoneInput = document.getElementById('editEmployeePhone');
+        if (editPhoneInput) {
+            editPhoneInput.addEventListener('input', () => validatePhoneNumber(editPhoneInput));
+            editPhoneInput.addEventListener('paste', (e) => {
+                e.preventDefault();
+                const text = (e.clipboardData || window.clipboardData).getData('text');
+                document.execCommand('insertText', false, text.replace(/\D/g, ''));
+                validatePhoneNumber(editPhoneInput);
+            });
+        }
+
+        // Date of birth field
+        const editDobInput = document.getElementById('editDateOfBirth');
+        if (editDobInput) {
+            // Set max date (today) and min date (100 years ago)
+            const today = new Date();
+            const minDate = new Date();
+            minDate.setFullYear(today.getFullYear() - 100);
+            
+            editDobInput.max = today.toISOString().split('T')[0];
+            editDobInput.min = minDate.toISOString().split('T')[0];
+            
+            editDobInput.addEventListener('change', function() {
+                const selectedDate = new Date(this.value);
+                const eighteenYearsAgo = new Date();
+                eighteenYearsAgo.setFullYear(eighteenYearsAgo.getFullYear() - 18);
+                
+                if (selectedDate > eighteenYearsAgo) {
+                    this.setCustomValidity('Employee must be at least 18 years old');
+                } else {
+                    this.setCustomValidity('');
+                }
+            });
+        }
+    }
+
+    // Form submission handlers
+    const addEmployeeForm = document.getElementById('addEmployeeAccountForm');
+    if (addEmployeeForm) {
+        addEmployeeForm.addEventListener('submit', function(event) {
+            // Validate all fields before submission
+            let isValid = true;
+            
+            // Validate required name fields
+            const firstName = document.getElementById('firstName');
+            const lastName = document.getElementById('lastName');
+            if (!validateNameInput(firstName) || !validateNameInput(lastName)) {
+                isValid = false;
+            }
+            
+            // Validate email
+            const email = document.getElementById('employeeEmail');
+            if (!validateEmail(email)) {
+                isValid = false;
+            }
+            
+            // Validate phone
+            const phone = document.getElementById('employeePhone');
+            if (!validatePhoneNumber(phone)) {
+                isValid = false;
+            }
+            
+            // Validate date of birth
+            const dob = document.getElementById('dateOfBirth');
+            if (dob.value) {
+                const selectedDate = new Date(dob.value);
+                const eighteenYearsAgo = new Date();
+                eighteenYearsAgo.setFullYear(eighteenYearsAgo.getFullYear() - 18);
+                
+                if (selectedDate > eighteenYearsAgo) {
+                    dob.setCustomValidity('Employee must be at least 18 years old');
+                    isValid = false;
+                }
+            }
+            
+            if (!isValid) {
+                event.preventDefault();
+                event.stopPropagation();
+                // Show validation messages
+                addEmployeeForm.classList.add('was-validated');
+            }
+        });
+    }
+
+    const editEmployeeForm = document.getElementById('editEmployeeAccountForm');
+    if (editEmployeeForm) {
+        editEmployeeForm.addEventListener('submit', function(event) {
+            // Validate all fields before submission
+            let isValid = true;
+            
+            // Validate required name fields
+            const firstName = document.getElementById('editFirstName');
+            const lastName = document.getElementById('editLastName');
+            if (!validateNameInput(firstName) || !validateNameInput(lastName)) {
+                isValid = false;
+            }
+            
+            // Validate email
+            const email = document.getElementById('editEmployeeEmail');
+            if (!validateEmail(email)) {
+                isValid = false;
+            }
+            
+            // Validate phone
+            const phone = document.getElementById('editEmployeePhone');
+            if (!validatePhoneNumber(phone)) {
+                isValid = false;
+            }
+            
+            // Validate date of birth
+            const dob = document.getElementById('editDateOfBirth');
+            if (dob.value) {
+                const selectedDate = new Date(dob.value);
+                const eighteenYearsAgo = new Date();
+                eighteenYearsAgo.setFullYear(eighteenYearsAgo.getFullYear() - 18);
+                
+                if (selectedDate > eighteenYearsAgo) {
+                    dob.setCustomValidity('Employee must be at least 18 years old');
+                    isValid = false;
+                }
+            }
+            
+            if (!isValid) {
+                event.preventDefault();
+                event.stopPropagation();
+                // Show validation messages
+                editEmployeeForm.classList.add('was-validated');
+            }
+        });
+    }
+});
+</script>
   
 </body>
 </html>
