@@ -9,11 +9,11 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 // Check for admin user type (user_type = 1)
-if ($_SESSION['user_type'] != 1) {
+if ($_SESSION['user_type'] != 2) {
     // Redirect to appropriate page based on user type
     switch ($_SESSION['user_type']) {
-        case 2:
-            header("Location: ../employee/index.php");
+        case 1:
+            header("Location: ../admin/index.php");
             break;
         case 3:
             header("Location: ../customer/index.php");
