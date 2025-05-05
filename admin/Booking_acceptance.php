@@ -3079,15 +3079,7 @@ function openCustomDetails(bookingId) {
         document.getElementById('flowerDesignName').textContent = data.flower_name;
         
         
-        const flowerImage = document.getElementById('flowerDesignImage');
-        if (data.flower_image) {
-          flowerImage.src = '../admin/flowers/uploads/' + data.flower_image;
-          flowerImage.onerror = function() {
-            this.src = '../admin/flowers/default_flower.jpg';
-          };
-        } else {
-          flowerImage.src = '../admin/flowers/default_flower.jpg';
-        }
+      
       } else {
         document.getElementById('flowerDesignName').textContent = "No flower design selected";
       }
