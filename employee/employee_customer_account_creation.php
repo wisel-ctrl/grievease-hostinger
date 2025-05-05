@@ -512,50 +512,119 @@ require_once '../db_connect.php';
 
 
   <!-- Manage Customer Accounts Section -->
-<div id="manageAccountSection">
-    <div class="bg-white rounded-lg shadow-sidebar p-5 mb-6 border border-sidebar-border hover:shadow-card transition-all duration-300">
-        <div class="mb-5 flex items-center">
-            <h3 class="text-lg font-semibold text-sidebar-text">Customer Accounts</h3>
-            <div class="ml-auto flex items-center space-x-3">
-                <div id="searchContainer" class="relative">
-                    <input type="text" id="searchCustomer" placeholder="Search customers..." 
-                           class="p-2 border border-sidebar-border rounded-md text-sm text-sidebar-text focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent w-full"
+<div id="manageAccountSection" class="bg-white rounded-lg shadow-md mb-8 border border-sidebar-border overflow-hidden">
+    <!-- Account Header with Search and Filters -->
+    <div class="bg-sidebar-hover p-4 border-b border-sidebar-border">
+        <!-- Desktop layout for big screens - Title on left, controls on right -->
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+            <!-- Title and Counter -->
+            <div class="flex items-center gap-3 mb-4 lg:mb-0">
+                <h3 class="text-lg font-bold text-sidebar-text whitespace-nowrap">Customer Accounts</h3>
+                <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
+                    <span id="totalCustomers">0</span>
+                </span>
+            </div>
+            
+            <!-- Controls for big screens - aligned right -->
+            <div class="hidden lg:flex items-center gap-3">
+                <!-- Search Input -->
+                <div class="relative">
+                    <input type="text" id="searchCustomer" 
+                           placeholder="Search customers..." 
+                           class="pl-8 pr-3 py-2 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent"
                            oninput="searchCustomers()">
+                    <i class="fas fa-search absolute left-2.5 top-3 text-gray-400"></i>
                     <button id="clearSearchBtn" onclick="clearSearch()" class="absolute right-2 top-2 text-gray-400 hover:text-gray-600 hidden">
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
-                <button id="viewArchivedBtn" onclick="viewArchivedAccounts()" class="bg-gray-200 text-gray-700 border-none py-2 px-4 rounded-md cursor-pointer hover:bg-gray-300 transition-all duration-300">
-                    <i class="fas fa-archive mr-2"></i>View Archived Accounts
+
+                <!-- View Archived Button -->
+                <button id="viewArchivedBtn" onclick="viewArchivedAccounts()" class="px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover">
+                    <i class="fas fa-archive text-sidebar-accent"></i>
+                    <span>View Archived Accounts</span>
                 </button>
             </div>
         </div>
-        <div class="p-5">
-            <div class="overflow-x-auto scrollbar-thin">
-                <table id="customerTable" class="w-full border-collapse min-w-[600px]">
-                    <thead>
-                        <tr class="bg-sidebar-hover text-left">
-                            <th class="p-3 border-b border-sidebar-border text-sm font-medium text-sidebar-text">Customer ID</th>
-                            <th class="p-3 border-b border-sidebar-border text-sm font-medium text-sidebar-text">Name</th>
-                            <th class="p-3 border-b border-sidebar-border text-sm font-medium text-sidebar-text">Email</th>
-                            <th class="p-3 border-b border-sidebar-border text-sm font-medium text-sidebar-text">Type</th>
-                            <th class="p-3 border-b border-sidebar-border text-sm font-medium text-sidebar-text">Status</th>
-                            <th class="p-3 border-b border-sidebar-border text-sm font-medium text-sidebar-text">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Table content will be populated by JavaScript -->
-                    </tbody>
-                </table>
-            </div>
-            <div class="mt-5 flex justify-between items-center">
-                <div>
-                    <span class="text-sm text-gray-600">Showing 0-0 of 0 entries</span>
+        
+        <!-- Mobile/Tablet Controls - Only visible on smaller screens -->
+        <div class="lg:hidden w-full mt-4">
+            <!-- First row: Search bar with filter icon on the right -->
+            <div class="flex items-center w-full gap-3 mb-4">
+                <!-- Search Input - Takes most of the space -->
+                <div class="relative flex-grow">
+                    <input type="text" id="searchCustomerMobile" 
+                           placeholder="Search customers..." 
+                           class="pl-8 pr-3 py-2.5 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent"
+                           oninput="searchCustomers()">
+                    <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                    <button id="clearSearchBtnMobile" onclick="clearSearch()" class="absolute right-2 top-2 text-gray-400 hover:text-gray-600 hidden">
+                        <i class="fas fa-times"></i>
+                    </button>
                 </div>
-                <div>
-                    <!-- Pagination buttons will be populated by JavaScript -->
-                </div>
+
+                <!-- Archive Icon Button -->
+                <button class="w-10 h-10 flex items-center justify-center text-sidebar-accent" onclick="viewArchivedAccounts()">
+                    <i class="fas fa-archive text-xl"></i>
+                </button>
             </div>
+        </div>
+    </div>
+    
+    <!-- Responsive Table Container with improved spacing -->
+    <div class="overflow-x-auto scrollbar-thin">
+        <!-- Responsive Table with improved spacing and horizontal scroll for small screens -->
+        <div class="min-w-full">
+            <table id="customerTable" class="w-full">
+                <thead>
+                    <tr class="bg-gray-50 border-b border-sidebar-border">
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fas fa-hashtag text-sidebar-accent"></i> Customer ID 
+                            </div>
+                        </th>
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fas fa-user text-sidebar-accent"></i> Name 
+                            </div>
+                        </th>
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fas fa-envelope text-sidebar-accent"></i> Email 
+                            </div>
+                        </th>
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fas fa-id-badge text-sidebar-accent"></i> Type 
+                            </div>
+                        </th>
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fas fa-toggle-on text-sidebar-accent"></i> Status 
+                            </div>
+                        </th>
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text whitespace-nowrap">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fas fa-cogs text-sidebar-accent"></i> Actions
+                            </div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Table content will be populated by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <!-- Sticky Pagination Footer with improved spacing -->
+    <div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div id="paginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
+            Showing <span id="showingFrom">0</span> - <span id="showingTo">0</span> 
+            of <span id="totalCount">0</span> customers
+        </div>
+        <div id="paginationContainer" class="flex space-x-1">
+            <!-- Pagination buttons will be inserted here by JavaScript -->
         </div>
     </div>
 </div>
