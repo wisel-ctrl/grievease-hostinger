@@ -99,12 +99,12 @@ function generateInventoryRow($row) {
   $html .= '<button class="p-2 bg-yellow-100 text-yellow-600 rounded-lg hover:bg-yellow-200 transition-all tooltip" title="Edit Item" onclick="openViewItemModal(' . $row["inventory_id"] . ')">';
   $html .= '<i class="fas fa-edit"></i>';
   $html .= '</button>';
-  $html .= '<form method="POST" action="inventory/delete_inventory_item.php" onsubmit="return false;" style="display:inline;" class="delete-form">';
-  $html .= '<input type="hidden" name="inventory_id" value="' . $row["inventory_id"] . '">';
-  $html .= '<button type="submit" class="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-all tooltip" title="Archive Item">';
-  $html .= '<i class="fas fa-archive"></i>';
-  $html .= '</button>';
-  $html .= '</form>';
+    $html .= '<form method="POST" action="delete_inventory_item.php" onsubmit="return false;" style="display:inline;" class="delete-form">';
+    $html .= '<input type="hidden" name="inventory_id" value="' . $row["inventory_id"] . '">';
+    $html .= '<button type="submit" class="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-all tooltip" title="Archive Item">';
+    $html .= '<i class="fas fa-archive"></i>';
+    $html .= '</button>';
+    $html .= '</form>';
   $html .= '</div>';
   $html .= '</td>';
   $html .= '</tr>';
@@ -1333,6 +1333,9 @@ function loadPage(branchId, page) {
             // Update pagination controls
             updatePaginationControls(branchId, page, totalPages);
             
+            // Reattach event listeners for the new content
+            reattachEventListeners(branchId);
+            
             // Hide loading indicator
             loadingIndicator.classList.add('hidden');
             tableContainer.style.opacity = '1';
@@ -1347,6 +1350,74 @@ function loadPage(branchId, page) {
                 text: 'Failed to load inventory data. Please try again.'
             });
         });
+}
+
+// Function to reattach event listeners
+function reattachEventListeners(branchId) {
+    // Reattach click handlers for archive buttons
+    document.querySelectorAll(`#inventoryTable_${branchId} .delete-form`).forEach(form => {
+        form.onsubmit = function(event) {
+            event.preventDefault();
+            const formElement = this;
+            
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, archive it!',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Submit the form via AJAX
+                    const formData = new FormData(formElement);
+                    
+                    fetch(formElement.action, {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire(
+                                'Archived!',
+                                'The item has been archived.',
+                                'success'
+                            ).then(() => {
+                                // Reload the current page to reflect changes
+                                const currentPage = new URLSearchParams(window.location.search).get(`page_${branchId}`) || 1;
+                                loadPage(branchId, currentPage);
+                            });
+                        } else {
+                            Swal.fire(
+                                'Error!',
+                                data.message || 'Failed to archive item.',
+                                'error'
+                            );
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        Swal.fire(
+                            'Error!',
+                            'An error occurred while archiving the item.',
+                            'error'
+                        );
+                    });
+                }
+            });
+        };
+    });
+    
+    // Reattach click handlers for view item buttons
+    document.querySelectorAll(`#inventoryTable_${branchId} button[onclick^="openViewItemModal"]`).forEach(button => {
+        button.onclick = function() {
+            const inventoryId = this.getAttribute('onclick').match(/openViewItemModal\((\d+)\)/)[1];
+            openViewItemModal(inventoryId);
+        };
+    });
 }
 
 
