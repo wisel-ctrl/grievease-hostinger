@@ -8,10 +8,40 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
-// Check for admin user type (user_type = 1)
-if ($_SESSION['user_type'] != 2) {
+// Database connection
+include '../db_connect.php';
+
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+// Get user information from database instead of relying on session data
+$user_id = $_SESSION['user_id'];
+$user_query = "SELECT * FROM users WHERE id = ?";
+$stmt = $conn->prepare($user_query);
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+$user_result = $stmt->get_result();
+
+// Check if user exists
+if ($user_result->num_rows === 0) {
+    // User not found in database
+    session_destroy();
+    header("Location: ../Landing_Page/login.php?error=invalid_user");
+    exit();
+}
+
+// Fetch user data
+$user_data = $user_result->fetch_assoc();
+$user_type = $user_data['user_type'];
+$user_branch_id = $user_data['branch_loc'] ?? null;
+$user_name = $user_data['first_name'] . ' ' . $user_data['last_name'];
+
+// Check for employee user type (user_type = 2)
+if ($user_type != 2) {
     // Redirect to appropriate page based on user type
-    switch ($_SESSION['user_type']) {
+    switch ($user_type) {
         case 1:
             header("Location: ../admin/index.php");
             break;
@@ -43,17 +73,6 @@ $_SESSION['last_activity'] = time();
 header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Cache-Control: post-check=0, pre-check=0", false);
 header("Pragma: no-cache");
-
-
-// Database connection
-include '../db_connect.php';
-
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-
-$user_branch_id = $_SESSION['branch_loc'] ?? null;
 
 // Check if user has a branch location assigned
 if (!$user_branch_id) {
@@ -126,8 +145,6 @@ $allServices = getServices($conn, $user_branch_id);
 $branchesJson = json_encode($branches);
 $categoriesJson = json_encode($categories);
 $servicesJson = json_encode($allServices);
-
-
 ?>
 
 <!DOCTYPE html>
@@ -181,16 +198,6 @@ $servicesJson = json_encode($allServices);
       background-color: #CA8A04;
     }
     
-    /* Animate the sidebar
-    @keyframes slideIn {
-      from { transform: translateX(-100%); opacity: 0; }
-      to { transform: translateX(0); opacity: 1; }
-    }
-    
-    .animate-sidebar {
-      animation: slideIn 0.3s ease forwards;
-    } */
-
     /* Gradient background for menu section headers */
     .menu-header {
       background: linear-gradient(to right, rgba(202, 138, 4, 0.1), transparent);
@@ -252,7 +259,7 @@ $servicesJson = json_encode($allServices);
         <i class="fas fa-user text-white"></i>
       </div>
       <div class="ml-3">
-        <div class="text-sm font-medium text-sidebar-text">John Doe</div>
+        <div class="text-sm font-medium text-sidebar-text"><?php echo htmlspecialchars($user_name); ?></div>
         <div class="text-xs text-sidebar-text opacity-70">Employee</div>
       </div>
       <div class="ml-auto">
@@ -434,9 +441,212 @@ $servicesJson = json_encode($allServices);
  
 
 
-  <script>
-  </script>
+<script>
+  // Initialize JSON data from PHP
+  const branches = <?php echo $branchesJson; ?>;
+  const categories = <?php echo $categoriesJson; ?>;
+  const services = <?php echo $servicesJson; ?>;
+  
+  // DOM elements
+  const branchesContainer = document.getElementById('branches-container');
+  const servicesSection = document.getElementById('services-section');
+  const servicesContainer = document.getElementById('services-container');
+  const branchSelection = document.getElementById('branch-selection');
+  const servicesBranchName = document.getElementById('services-branch-name');
+  const selectedCategoryName = document.getElementById('selected-category-name');
+  const priceFilter = document.getElementById('price-filter');
+  const priceSort = document.getElementById('price-sort');
+  const serviceSearch = document.getElementById('service-search');
+  
+  // Variables to track selections
+  let selectedBranchId = <?php echo $user_branch_id; ?>; // Default to user's branch
+  let selectedCategoryId = null;
+  let currentFilteredServices = [];
+  
+  // Populate branches
+  function populateBranches() {
+    branchesContainer.innerHTML = '';
+    
+    branches.forEach(branch => {
+      const isUserBranch = branch.branch_id == selectedBranchId;
+      const branchCard = document.createElement('div');
+      branchCard.className = `p-5 bg-white rounded-lg shadow-md border ${isUserBranch ? 'border-yellow-500' : 'border-sidebar-border'} hover:shadow-lg transition-all duration-300`;
+      branchCard.innerHTML = `
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="font-semibold text-sidebar-text">${branch.branch_name}</h3>
+          ${isUserBranch ? '<span class="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full">Your Branch</span>' : ''}
+        </div>
+        <div class="grid grid-cols-2 gap-3 mt-4">
+          ${categories.map(category => `
+            <button 
+              class="p-3 bg-gray-50 hover:bg-sidebar-hover text-sm rounded-lg border border-sidebar-border transition-all duration-300 flex flex-col items-center justify-center gap-2"
+              onclick="selectCategory(${branch.branch_id}, ${category.service_categoryID}, '${branch.branch_name}', '${category.service_category_name}')"
+            >
+              <i class="fas fa-tag text-sidebar-accent"></i>
+              <span>${category.service_category_name}</span>
+            </button>
+          `).join('')}
+        </div>
+      `;
+      branchesContainer.appendChild(branchCard);
+    });
+  }
+  
+  // Select a category and show services
+  function selectCategory(branchId, categoryId, branchName, categoryName) {
+    selectedBranchId = branchId;
+    selectedCategoryId = categoryId;
+    
+    // Update UI elements
+    servicesBranchName.textContent = branchName;
+    selectedCategoryName.textContent = categoryName;
+    
+    // Hide branch selection, show services
+    branchSelection.classList.add('hidden');
+    servicesSection.classList.remove('hidden');
+    
+    // Filter services by branch and category
+    filterAndDisplayServices();
+  }
+  
+  // Go back to branch selection
+  function goBackToBranches() {
+    servicesSection.classList.add('hidden');
+    branchSelection.classList.remove('hidden');
+    
+    // Reset filters and search
+    priceFilter.value = '';
+    priceSort.value = '';
+    serviceSearch.value = '';
+  }
+  
+  // Filter and display services based on current selections
+  function filterAndDisplayServices() {
+    // Start with branch and category filter
+    let filteredServices = services.filter(service => 
+      service.branch_id == selectedBranchId && 
+      service.service_categoryID == selectedCategoryId
+    );
+    
+    // Apply price range filter
+    if (priceFilter.value) {
+      const range = priceFilter.value.split('-');
+      if (range.length === 2) {
+        const min = parseInt(range[0]);
+        const max = parseInt(range[1]);
+        filteredServices = filteredServices.filter(service => {
+          const price = parseInt(service.selling_price);
+          return price >= min && price <= max;
+        });
+      } else if (priceFilter.value.endsWith('+')) {
+        const min = parseInt(priceFilter.value);
+        filteredServices = filteredServices.filter(service => 
+          parseInt(service.selling_price) >= min
+        );
+      }
+    }
+    
+    // Apply search filter
+    if (serviceSearch.value.trim()) {
+      const searchTerm = serviceSearch.value.trim().toLowerCase();
+      filteredServices = filteredServices.filter(service => 
+        service.service_name.toLowerCase().includes(searchTerm) ||
+        service.description.toLowerCase().includes(searchTerm)
+      );
+    }
+    
+    // Apply price sorting
+    if (priceSort.value) {
+      filteredServices.sort((a, b) => {
+        const priceA = parseInt(a.selling_price);
+        const priceB = parseInt(b.selling_price);
+        return priceSort.value === 'low-high' ? priceA - priceB : priceB - priceA;
+      });
+    }
+    
+    // Store current filtered services
+    currentFilteredServices = filteredServices;
+    
+    // Display services
+    displayServices(filteredServices);
+  }
+  
+  // Display services in the container
+  function displayServices(services) {
+    servicesContainer.innerHTML = '';
+    
+    if (services.length === 0) {
+      servicesContainer.innerHTML = `
+        <div class="col-span-full p-8 bg-white rounded-lg border border-sidebar-border text-center">
+          <i class="fas fa-search text-4xl text-gray-300 mb-3"></i>
+          <h3 class="text-lg font-semibold text-gray-600">No services found</h3>
+          <p class="text-gray-500">Try adjusting your filters or search criteria.</p>
+        </div>
+      `;
+      return;
+    }
+    
+    services.forEach(service => {
+      const serviceCard = document.createElement('div');
+      serviceCard.className = 'bg-white rounded-lg shadow-md overflow-hidden border border-sidebar-border hover:shadow-lg transition-all duration-300';
+      
+      const formattedPrice = new Intl.NumberFormat('en-PH', {
+        style: 'currency',
+        currency: 'PHP',
+        minimumFractionDigits: 2
+      }).format(service.selling_price);
+      
+      serviceCard.innerHTML = `
+        <div class="h-40 bg-gray-200 relative overflow-hidden">
+          <img src="${service.image_url || '/api/placeholder/400/250'}" alt="${service.service_name}" class="w-full h-full object-cover">
+          <div class="absolute top-2 right-2 bg-yellow-500 text-white px-2 py-1 rounded-md text-sm font-semibold">
+            ${formattedPrice}
+          </div>
+        </div>
+        <div class="p-4">
+          <h3 class="font-semibold text-sidebar-text mb-2">${service.service_name}</h3>
+          <p class="text-sm text-gray-600 mb-3 line-clamp-2">${service.description}</p>
+          <div class="flex justify-between items-center">
+            <span class="text-xs bg-gray-100 px-2 py-1 rounded-full">${service.service_category_name}</span>
+            <button onclick="selectService(${service.service_id})" class="px-3 py-1 bg-sidebar-accent text-white rounded-md text-sm hover:bg-yellow-600 transition-all duration-300">
+              Select
+            </button>
+          </div>
+        </div>
+      `;
+      
+      servicesContainer.appendChild(serviceCard);
+    });
+  }
+  
+  // Select a service (implement this function based on your requirements)
+  function selectService(serviceId) {
+    const selectedService = services.find(service => service.service_id == serviceId);
+    if (selectedService) {
+      alert(`Selected service: ${selectedService.service_name}\nPrice: ₱${selectedService.selling_price}\n\nImplement your POS logic here.`);
+      // Navigate to transaction page or show modal for order processing
+    }
+  }
+  
+  // Event listeners for filtering and sorting
+  priceFilter.addEventListener('change', filterAndDisplayServices);
+  priceSort.addEventListener('change', filterAndDisplayServices);
+  serviceSearch.addEventListener('input', event => {
+    // Validate search input
+    const searchValue = event.target.value;
+    const searchError = document.getElementById('search-error');
+    
+    if (searchValue.startsWith(' ') || searchValue.includes('  ')) {
+      searchError.classList.remove('hidden');
+    } else {
+      searchError.classList.add('hidden');
+      filterAndDisplayServices();
+    }
+  });
+</script>
+
   <script src="sidebar.js"></script>
   <script src="tailwind.js"></script>
+  
 </body>
 </html>
