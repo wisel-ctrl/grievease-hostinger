@@ -1647,56 +1647,46 @@ $total_lifeplan_bookings = $lifeplan_count_result->fetch_assoc()['total'];
             
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <!-- Valid ID -->
-              <!-- In the Documents section of lifeplanDetailsModal -->
-<!-- Valid ID Section -->
-<div id="lifeplanValidIdSection">
-  <h5 class="font-medium text-gray-700 mb-2 flex items-center">
-    <i class="fas fa-id-card text-sm mr-2 text-gray-500"></i>
-    Valid ID
-  </h5>
-  <div class="border border-gray-200 rounded-lg overflow-hidden">
-    <div id="lifeplanValidIdAvailable" class="text-center">
-      <div class="relative bg-gray-100 p-1">
-        <img id="lifeplanValidIdImage" alt="Valid ID" class="mx-auto rounded-md max-h-48 object-contain" />
-        <div class="absolute top-2 right-2">
-          <button class="bg-white rounded-full p-1 shadow-md hover:bg-gray-100 transition-colors duration-200" title="View Full Size">
-            <i class="fas fa-search-plus text-blue-600"></i>
-          </button>
-        </div>
-      </div>
-    </div>
-    <div id="lifeplanValidIdNotAvailable" class="hidden">
-      <div class="flex flex-col items-center justify-center py-8 px-4 bg-gray-50">
-        <i class="fas fa-exclamation-circle text-gray-400 text-3xl mb-2"></i>
-        <p class="text-gray-500 text-center">No valid ID has been uploaded yet.</p>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Payment Proof Section -->
-<div id="lifeplanPaymentProofSection">
-  <h5 class="font-medium text-gray-700 mb-2 flex items-center">
-    <i class="fas fa-receipt text-sm mr-2 text-gray-500"></i>
-    Initial Payment Proof
-  </h5>
-  <div class="border border-gray-200 rounded-lg overflow-hidden">
-    <div id="lifeplanPaymentProofAvailable" class="relative bg-gray-100 p-1">
-      <img id="lifeplanPaymentProofImage" alt="Payment Proof" class="mx-auto rounded-md max-h-48 object-contain" />
-      <div class="absolute top-2 right-2">
-        <button class="bg-white rounded-full p-1 shadow-md hover:bg-gray-100 transition-colors duration-200" title="View Full Size">
-          <i class="fas fa-search-plus text-blue-600"></i>
-        </button>
-      </div>
-    </div>
-    <div id="lifeplanPaymentProofNotAvailable" class="hidden">
-      <div class="flex flex-col items-center justify-center py-8 px-4 bg-gray-50">
-        <i class="fas fa-exclamation-circle text-gray-400 text-3xl mb-2"></i>
-        <p class="text-gray-500 text-center">No payment proof provided</p>
-      </div>
-    </div>
-  </div>
-</div>
+              <div id="validIdSection">
+                <h5 class="font-medium text-gray-700 mb-2 flex items-center">
+                  <i class="fas fa-id-card text-sm mr-2 text-gray-500"></i>
+                  Valid ID
+                </h5>
+                <div class="border border-gray-200 rounded-lg overflow-hidden">
+                  <div id="validIdAvailable" class="text-center">
+                    <div class="relative bg-gray-100 p-1">
+                      <img id="validIdImage" alt="Valid ID" class="mx-auto rounded-md max-h-48 object-contain" />
+                      <div class="absolute top-2 right-2">
+                        <button class="bg-white rounded-full p-1 shadow-md hover:bg-gray-100 transition-colors duration-200" title="View Full Size">
+                          <i class="fas fa-search-plus text-blue-600"></i>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  <div id="validIdNotAvailable" class="hidden">
+                    <div class="flex flex-col items-center justify-center py-8 px-4 bg-gray-50">
+                      <i class="fas fa-exclamation-circle text-gray-400 text-3xl mb-2"></i>
+                      <p class="text-gray-500 text-center">No valid ID has been uploaded yet.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Payment Proof -->
+              <div>
+                <h5 class="font-medium text-gray-700 mb-2 flex items-center">
+                  <i class="fas fa-receipt text-sm mr-2 text-gray-500"></i>
+                  Initial Payment Proof
+                </h5>
+                <div class="border border-gray-200 rounded-lg overflow-hidden">
+                  <div class="relative bg-gray-100 p-1">
+                    <img id="lifeplanPaymentProofImage" alt="Payment Proof" class="mx-auto rounded-md max-h-48 object-contain" />
+                    <div class="absolute top-2 right-2">
+                      <button class="bg-white rounded-full p-1 shadow-md hover:bg-gray-100 transition-colors duration-200" title="View Full Size">
+                        <i class="fas fa-search-plus text-blue-600"></i>
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
