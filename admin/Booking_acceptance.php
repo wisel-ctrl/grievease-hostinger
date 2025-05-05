@@ -506,7 +506,15 @@ $custom_offset = ($custom_current_page - 1) * $custom_bookings_per_page;
                 <h3 class="text-lg font-bold text-sidebar-text whitespace-nowrap">Custom Bookings</h3>
                 
                 <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
-                    <span id="totalCustomBookings">0</span>
+                <span id="totalCustomBookings">
+    <?php 
+    if ($total_custom_bookings > 0) {
+        echo $total_custom_bookings . ($total_custom_bookings != 1 ? "" : "");
+    } else {
+        echo "No bookings";
+    }
+    ?>
+</span>
                 </span>
             </div>
             
