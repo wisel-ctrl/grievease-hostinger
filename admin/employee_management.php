@@ -104,7 +104,7 @@ $totalPages = ceil($totalEmployees / $perPage);
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
       .modal-scroll-container {
     scrollbar-width: thin;
@@ -181,7 +181,8 @@ $totalPages = ceil($totalEmployees / $perPage);
         </div>
 
         <!-- Archive Button -->
-        <button class="px-4 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover whitespace-nowrap">
+        <button class="px-4 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover whitespace-nowrap"
+                onclick="showArchivedEmployees()">
           <i class="fas fa-archive text-sidebar-accent"></i>
           <span>Archive</span>
         </button>
@@ -1014,6 +1015,69 @@ echo "</tr>";
   </div>
 </div>
 
+<!-- Archived Employees Modal -->
+<div id="archivedEmployeesModal" class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto">
+  <!-- Modal Backdrop -->
+  <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+  
+  <!-- Modal Content -->
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-4xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] flex flex-col">
+    <!-- Close Button -->
+    <button type="button" class="absolute top-4 right-4 text-gray-500 hover:text-sidebar-accent transition-colors" onclick="closeArchivedEmployeesModal()">
+      <i class="fas fa-times text-xl"></i>
+    </button>
+    
+    <!-- Modal Header -->
+    <div class="px-6 py-4 border-b bg-gradient-to-r from-sidebar-accent to-darkgold">
+      <h3 class="text-lg sm:text-xl font-bold text-white flex items-center">
+        <i class="fas fa-archive mr-2"></i> Archived Employees
+      </h3>
+    </div>
+    
+    <!-- Modal Body -->
+    <div class="px-6 py-4 overflow-y-auto modal-scroll-container">
+      <div class="mb-4">
+        <div class="relative">
+          <input type="text" id="searchArchivedEmployees" 
+                placeholder="Search archived employees..." 
+                class="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent"
+                oninput="filterArchivedEmployees()">
+          <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+        </div>
+      </div>
+      
+      <div class="overflow-x-auto">
+        <table class="w-full table-fixed">
+          <thead>
+            <tr class="bg-gray-50 border-b border-sidebar-border">
+              <th class="w-24 px-4 py-3 text-left text-sm font-medium text-sidebar-text">ID</th>
+              <th class="w-1/4 px-4 py-3 text-left text-sm font-medium text-sidebar-text">Name</th>
+              <th class="w-1/3 px-4 py-3 text-left text-sm font-medium text-sidebar-text">Position</th>
+              <th class="w-48 px-4 py-3 text-left text-sm font-medium text-sidebar-text">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="archivedEmployeesTableBody">
+            <!-- Archived employees will be loaded here -->
+            <tr>
+              <td colspan="4" class="text-center py-4 text-gray-500">
+                Loading archived employees...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    
+    <!-- Modal Footer -->
+    <div class="px-6 py-3 flex justify-end border-t border-gray-200 sticky bottom-0 bg-white">
+      <button type="button" onclick="closeArchivedEmployeesModal()" 
+              class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition-colors">
+        Close
+      </button>
+    </div>
+  </div>
+</div>
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Common validation functions
@@ -1325,6 +1389,189 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+// Function to show archived employees modal
+function showArchivedEmployees() {
+  const modal = document.getElementById('archivedEmployeesModal');
+  modal.style.display = 'flex';
+  
+  // Load archived employees
+  fetchArchivedEmployees();
+}
+
+// Function to close archived employees modal
+function closeArchivedEmployeesModal() {
+  document.getElementById('archivedEmployeesModal').style.display = 'none';
+}
+
+// Function to fetch archived employees
+function fetchArchivedEmployees() {
+  const tbody = document.getElementById('archivedEmployeesTableBody');
+  tbody.innerHTML = `
+    <tr>
+      <td colspan="5" class="text-center py-4 text-gray-500">
+        <i class="fas fa-spinner fa-spin mr-2"></i> Loading archived employees...
+      </td>
+    </tr>
+  `;
+  
+  fetch('employeeManagement/get_archived_employees.php')
+    .then(response => response.json())
+    .then(data => {
+      if (data && data.length > 0) {
+        tbody.innerHTML = '';
+        
+        data.forEach(employee => {
+          const row = document.createElement('tr');
+          row.className = 'border-b border-gray-200 hover:bg-gray-50';
+          row.innerHTML = `
+            <td class="px-4 py-3 text-sm text-gray-700">#${employee.EmployeeID}</td>
+            <td class="px-4 py-3 text-sm text-gray-700">
+              ${employee.fname} ${employee.mname ? employee.mname + ' ' : ''}${employee.lname} ${employee.suffix || ''}
+            </td>
+            <td class="px-4 py-3 text-sm text-gray-700">${employee.position}</td>
+            <td class="px-4 py-3 text-sm">
+              <button class="px-3 py-1 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition-colors"
+                      onclick="unarchiveEmployee(${employee.EmployeeID}, '${employee.fname} ${employee.lname}')">
+                <i class="fas fa-undo mr-1"></i> Unarchive
+              </button>
+            </td>
+          `;
+          tbody.appendChild(row);
+        });
+      } else {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="5" class="text-center py-4 text-gray-500">
+              No archived employees found
+            </td>
+          </tr>
+        `;
+      }
+    })
+    .catch(error => {
+      console.error('Error fetching archived employees:', error);
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="5" class="text-center py-4 text-gray-500">
+            Error loading archived employees
+          </td>
+        </tr>
+      `;
+    });
+}
+
+// Function to filter archived employees
+function filterArchivedEmployees() {
+  const searchTerm = document.getElementById('searchArchivedEmployees').value.toLowerCase();
+  const rows = document.querySelectorAll('#archivedEmployeesTableBody tr');
+  
+  rows.forEach(row => {
+    const text = row.textContent.toLowerCase();
+    row.style.display = text.includes(searchTerm) ? '' : 'none';
+  });
+}
+
+// Function to unarchive an employee
+function unarchiveEmployee(employeeId, employeeName) {
+  Swal.fire({
+    title: 'Unarchive Employee',
+    html: `Are you sure you want to restore <b>${employeeName}</b> to active status?`,
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Yes, unarchive',
+    cancelButtonText: 'Cancel'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      fetch('employeeManagement/unarchive_employee.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `employeeId=${employeeId}`
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          Swal.fire(
+            'Success!',
+            `Employee ${employeeName} has been restored.`,
+            'success'
+          ).then(() => {
+            // Refresh the archived employees list
+            fetchArchivedEmployees();
+            // Optionally refresh the main employee table
+            location.reload();
+          });
+        } else {
+          Swal.fire(
+            'Error!',
+            data.message || 'Failed to unarchive employee.',
+            'error'
+          );
+        }
+      })
+      .catch(error => {
+        Swal.fire(
+          'Error!',
+          'An error occurred while unarchiving the employee.',
+          'error'
+        );
+      });
+    }
+  });
+}
+
+// Update the terminateEmployee function to use SweetAlert
+function terminateEmployee(employeeId) {
+  Swal.fire({
+    title: 'Archive Employee',
+    text: "Are you sure you want to archive this employee?",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Yes, archive',
+    cancelButtonText: 'Cancel'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      fetch('employeeManagement/terminate_employee.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `employeeId=${employeeId}`
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          Swal.fire(
+            'Archived!',
+            'The employee has been archived.',
+            'success'
+          ).then(() => {
+            location.reload();
+          });
+        } else {
+          Swal.fire(
+            'Error!',
+            data.message || 'Failed to archive employee.',
+            'error'
+          );
+        }
+      })
+      .catch(error => {
+        Swal.fire(
+          'Error!',
+          'An error occurred while archiving the employee.',
+          'error'
+        );
+      });
+    }
+  });
+}
 </script>
 
   <script src="script.js"></script>
@@ -1556,63 +1803,108 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Function to terminate an employee
     function terminateEmployee(employeeId) {
-    if (confirm('Are you sure you want to terminate this employee?')) {
-        // Create AJAX request
-        var xhr = new XMLHttpRequest();
-        xhr.open("POST", "employeeManagement/terminate_employee.php", true);
-        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-        
-        xhr.onreadystatechange = function() {
-            if (this.readyState === 4) {
-                if (this.status === 200) {
-                    // Success - parse the response if needed
-                    var response = JSON.parse(this.responseText);
-                    if (response.success) {
-                        alert(`Employee ${employeeId} terminated successfully!`);
-                        location.reload();
+    Swal.fire({
+        title: 'Are you sure?',
+        text: 'Are you sure you want to terminate this employee?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'No'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Create AJAX request
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "employeeManagement/terminate_employee.php", true);
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            
+            xhr.onreadystatechange = function() {
+                if (this.readyState === 4) {
+                    if (this.status === 200) {
+                        // Success - parse the response if needed
+                        var response = JSON.parse(this.responseText);
+                        if (response.success) {
+                            Swal.fire(
+                                'Success',
+                                `Employee ${employeeId} terminated successfully!`,
+                                'success'
+                            ).then(() => {
+                                location.reload();
+                            });
+                        } else {
+                            Swal.fire(
+                                'Error',
+                                'Error: ' + response.message,
+                                'error'
+                            );
+                        }
                     } else {
-                        alert('Error: ' + response.message);
+                        Swal.fire(
+                            'Error',
+                            'Error terminating employee',
+                            'error'
+                        );
                     }
-                } else {
-                    alert('Error terminating employee');
                 }
-            }
-        };
-        
-        // Send the employee ID to the PHP script
-        xhr.send("employeeId=" + encodeURIComponent(employeeId));
-    }
+            };
+            
+            // Send the employee ID to the PHP script
+            xhr.send("employeeId=" + encodeURIComponent(employeeId));
+        }
+    });
 }
 
     // Function to reinstate an employee
     function reinstateEmployee(employeeId) {
-      if (confirm('Are you sure you want to rehire this employee?')) {
-        // Create AJAX request
-        var xhr = new XMLHttpRequest();
-        xhr.open("POST", "employeeManagement/rehire_employee.php", true);
-        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-        
-        xhr.onreadystatechange = function() {
-            if (this.readyState === 4) {
-                if (this.status === 200) {
-                    // Success - parse the response if needed
-                    var response = JSON.parse(this.responseText);
-                    if (response.success) {
-                        alert(`Employee ${employeeId} reinstated successfully!`);
-                        location.reload();
+    Swal.fire({
+        title: 'Rehire Employee',
+        text: 'Are you sure you want to rehire this employee?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, rehire them!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Create AJAX request
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "employeeManagement/rehire_employee.php", true);
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            
+            xhr.onreadystatechange = function() {
+                if (this.readyState === 4) {
+                    if (this.status === 200) {
+                        // Success - parse the response if needed
+                        var response = JSON.parse(this.responseText);
+                        if (response.success) {
+                            Swal.fire(
+                                'Reinstated!',
+                                `Employee ${employeeId} reinstated successfully!`,
+                                'success'
+                            ).then(() => {
+                                location.reload();
+                            });
+                        } else {
+                            Swal.fire(
+                                'Error!',
+                                response.message,
+                                'error'
+                            );
+                        }
                     } else {
-                        alert('Error: ' + response.message);
+                        Swal.fire(
+                            'Error!',
+                            'Error rehiring employee',
+                            'error'
+                        );
                     }
-                } else {
-                    alert('Error rehiring employee');
                 }
-            }
-        };
-        
-        // Send the employee ID to the PHP script
-        xhr.send("employeeId=" + encodeURIComponent(employeeId));
-    }
-    }
+            };
+            
+            // Send the employee ID to the PHP script
+            xhr.send("employeeId=" + encodeURIComponent(employeeId));
+        }
+    });
+}
 
   </script>
 
