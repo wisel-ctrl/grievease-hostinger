@@ -548,7 +548,7 @@ require_once '../db_connect.php';
                     </tbody>
                 </table>
             </div>
-            <div class="mt-5 sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="mt-5 bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
     <div id="paginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
         Loading customer accounts...
     </div>
