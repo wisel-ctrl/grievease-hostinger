@@ -770,7 +770,10 @@ function changePage(branchId, page) {
     }
     
     // Validate page number
-    const totalServices = parseInt(document.querySelector(`.branch-container[data-branch-id="${branchId}"]`).dataset.totalServices);
+    const container = document.querySelector(`.branch-container[data-branch-id="${branchId}"]`);
+    if (!container) return;
+    
+    const totalServices = parseInt(container.dataset.totalServices);
     const recordsPerPage = 5;
     const totalPages = Math.ceil(totalServices / recordsPerPage);
     
@@ -782,6 +785,12 @@ function changePage(branchId, page) {
     
     // Update URL with the current page
     updateUrlWithFilters(branchId);
+    
+    // Scroll to the top of the table
+    const tableContainer = document.getElementById(`tableContainer${branchId}`);
+    if (tableContainer) {
+        tableContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
 }
 
 // Function to update active page highlight
@@ -841,10 +850,8 @@ function loadBranchTable(branchId) {
             container.innerHTML = html;
             if (loadingIndicator) loadingIndicator.classList.add('hidden');
             
-            // Update pagination info
+            // Update pagination info and controls
             updatePaginationInfo(branchId);
-            
-            // Update pagination controls
             updatePaginationControls(branchId);
         })
         .catch(error => {
@@ -886,37 +893,65 @@ function updatePaginationControls(branchId) {
     const totalPages = Math.ceil(totalServices / recordsPerPage);
     const currentPage = activeFilters[branchId].page;
     
-    const paginationContainer = document.getElementById(`paginationControls_${branchId}`);
+    const paginationContainer = document.getElementById(`paginationContainer_${branchId}`);
     if (!paginationContainer) return;
     
-    // Update previous button
-    const prevButton = paginationContainer.querySelector('button:first-child');
-    if (prevButton) {
-        prevButton.disabled = currentPage <= 1;
-        prevButton.classList.toggle('opacity-50', currentPage <= 1);
-        prevButton.classList.toggle('cursor-not-allowed', currentPage <= 1);
-        prevButton.onclick = function() { changePage(branchId, currentPage - 1); };
-    }
+    // Clear existing pagination controls
+    paginationContainer.innerHTML = '';
     
-    // Update next button
-    const nextButton = paginationContainer.querySelector('button:last-child');
-    if (nextButton) {
-        nextButton.disabled = currentPage >= totalPages;
-        nextButton.classList.toggle('opacity-50', currentPage >= totalPages);
-        nextButton.classList.toggle('cursor-not-allowed', currentPage >= totalPages);
-        nextButton.onclick = function() { changePage(branchId, currentPage + 1); };
-    }
-    
-    // Update page number buttons
-    const pageButtons = paginationContainer.querySelectorAll('button:not(:first-child):not(:last-child)');
-    pageButtons.forEach(button => {
-        const pageNum = parseInt(button.textContent);
-        if (!isNaN(pageNum)) {
-            button.classList.toggle('bg-sidebar-accent', pageNum === currentPage);
-            button.classList.toggle('text-white', pageNum === currentPage);
-            button.onclick = function() { changePage(branchId, pageNum); };
+    // Only show pagination if there are multiple pages
+    if (totalPages > 1) {
+        // First page button
+        const firstButton = document.createElement('button');
+        firstButton.innerHTML = '&laquo;';
+        firstButton.className = `px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover ${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : ''}`;
+        firstButton.disabled = currentPage === 1;
+        firstButton.onclick = () => changePage(branchId, 1);
+        paginationContainer.appendChild(firstButton);
+        
+        // Previous page button
+        const prevButton = document.createElement('button');
+        prevButton.innerHTML = '&lsaquo;';
+        prevButton.className = `px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover ${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : ''}`;
+        prevButton.disabled = currentPage === 1;
+        prevButton.onclick = () => changePage(branchId, Math.max(1, currentPage - 1));
+        paginationContainer.appendChild(prevButton);
+        
+        // Page number buttons
+        let startPage = Math.max(1, currentPage - 2);
+        let endPage = Math.min(totalPages, currentPage + 2);
+        
+        // Adjust if we're near the start or end
+        if (currentPage <= 3) {
+            endPage = Math.min(5, totalPages);
+        } else if (currentPage >= totalPages - 2) {
+            startPage = Math.max(totalPages - 4, 1);
         }
-    });
+        
+        for (let i = startPage; i <= endPage; i++) {
+            const pageButton = document.createElement('button');
+            pageButton.textContent = i;
+            pageButton.className = `px-3.5 py-1.5 rounded text-sm ${i === currentPage ? 'bg-sidebar-accent text-white' : 'border border-sidebar-border hover:bg-sidebar-hover'}`;
+            pageButton.onclick = () => changePage(branchId, i);
+            paginationContainer.appendChild(pageButton);
+        }
+        
+        // Next page button
+        const nextButton = document.createElement('button');
+        nextButton.innerHTML = '&rsaquo;';
+        nextButton.className = `px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover ${currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : ''}`;
+        nextButton.disabled = currentPage === totalPages;
+        nextButton.onclick = () => changePage(branchId, Math.min(totalPages, currentPage + 1));
+        paginationContainer.appendChild(nextButton);
+        
+        // Last page button
+        const lastButton = document.createElement('button');
+        lastButton.innerHTML = '&raquo;';
+        lastButton.className = `px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover ${currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : ''}`;
+        lastButton.disabled = currentPage === totalPages;
+        lastButton.onclick = () => changePage(branchId, totalPages);
+        paginationContainer.appendChild(lastButton);
+    }
 }
 
 // Update URL with current filters
@@ -962,10 +997,13 @@ document.addEventListener('DOMContentLoaded', () => {
             page: parseInt(urlParams.get(`page_${branchId}`)) || 1
         };
         
-        // Set total services count
-        container.dataset.totalServices = <?php echo $totalServices; ?>;
+        // Set total services count from the server-side value
+        const totalServicesElement = container.querySelector('.total-services-count');
+        if (totalServicesElement) {
+            container.dataset.totalServices = totalServicesElement.textContent;
+        }
         
-        // Set initial active page highlight
+        // Initialize pagination controls
         updatePaginationControls(branchId);
     });
 });
