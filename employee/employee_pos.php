@@ -388,26 +388,12 @@ $servicesJson = json_encode($allServices);
   <div id="services-section" class="mb-8">
     <div class="flex items-center justify-between mb-6 bg-white p-4 rounded-lg shadow-sm border border-sidebar-border">
       <div class="flex items-center">
-        <h2 class="text-gray-700 text-lg">
-          <span id="selected-category-name" class="font-semibold text-sidebar-accent">All</span> Services
-        </h2>
+      <h2 class="text-gray-700 text-lg font-semibold text-sidebar-accent">
+        Available Services
+      </h2>
       </div>
       <div class="hidden md:flex">
         <div class="hidden md:flex items-center gap-4">
-          <!-- Category Filter Dropdown -->
-          <!-- <div class="relative">
-            <select id="category-filter" class="appearance-none pl-3 pr-8 py-2 border border-sidebar-border rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent cursor-pointer">
-              <option value="all">All Categories</option>
-              ?php foreach ($categories as $category): ?>
-                <option value="?php echo $category['service_categoryID']; ?>">
-                  ?php echo htmlspecialchars($category['service_category_name']); ?>
-                </option>
-              ?php endforeach; ?>
-            </select>
-            <div class="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
-              <i class="fas fa-chevron-down text-gray-400"></i>
-            </div>
-          </div> -->
           
           <!-- Price Filter Dropdown -->
           <div class="relative">
@@ -466,14 +452,11 @@ $servicesJson = json_encode($allServices);
   // DOM elements
   const servicesSection = document.getElementById('services-section');
   const servicesContainer = document.getElementById('services-container');
-  const selectedCategoryName = document.getElementById('selected-category-name');
-  const categoryFilter = document.getElementById('category-filter');
   const priceFilter = document.getElementById('price-filter');
   const priceSort = document.getElementById('price-sort');
   const serviceSearch = document.getElementById('service-search');
   
   // Variables to track selections
-  let selectedCategoryId = 'all';
   let currentFilteredServices = [];
   
   // On page load, show all services for the user's branch
@@ -483,57 +466,52 @@ $servicesJson = json_encode($allServices);
   
   // Filter and display services based on current selections
   function filterAndDisplayServices() {
-    // Start with branch filter (only show services from user's branch)
-    let filteredServices = services.filter(service => service.branch_id == userBranchId);
-    
-    // Apply category filter if not "all"
-    if (selectedCategoryId !== 'all') {
-      filteredServices = filteredServices.filter(service => 
-        service.service_categoryID == selectedCategoryId
-      );
-    }
-    
-    // Apply price range filter
-    if (priceFilter.value) {
-      const range = priceFilter.value.split('-');
-      if (range.length === 2) {
-        const min = parseInt(range[0]);
-        const max = parseInt(range[1]);
-        filteredServices = filteredServices.filter(service => {
-          const price = parseInt(service.selling_price);
-          return price >= min && price <= max;
-        });
-      } else if (priceFilter.value.endsWith('+')) {
-        const min = parseInt(priceFilter.value);
+      // Start with branch filter (only show services from user's branch)
+      let filteredServices = services.filter(service => service.branch_id == userBranchId);
+      
+      // Remove the category filter section completely
+      
+      // Apply price range filter
+      if (priceFilter.value) {
+        const range = priceFilter.value.split('-');
+        if (range.length === 2) {
+          const min = parseInt(range[0]);
+          const max = parseInt(range[1]);
+          filteredServices = filteredServices.filter(service => {
+            const price = parseInt(service.selling_price);
+            return price >= min && price <= max;
+          });
+        } else if (priceFilter.value.endsWith('+')) {
+          const min = parseInt(priceFilter.value);
+          filteredServices = filteredServices.filter(service => 
+            parseInt(service.selling_price) >= min
+          );
+        }
+      }
+      
+      // Apply search filter
+      if (serviceSearch.value.trim()) {
+        const searchTerm = serviceSearch.value.trim().toLowerCase();
         filteredServices = filteredServices.filter(service => 
-          parseInt(service.selling_price) >= min
+          service.service_name.toLowerCase().includes(searchTerm) ||
+          service.description.toLowerCase().includes(searchTerm)
         );
       }
-    }
-    
-    // Apply search filter
-    if (serviceSearch.value.trim()) {
-      const searchTerm = serviceSearch.value.trim().toLowerCase();
-      filteredServices = filteredServices.filter(service => 
-        service.service_name.toLowerCase().includes(searchTerm) ||
-        service.description.toLowerCase().includes(searchTerm)
-      );
-    }
-    
-    // Apply price sorting
-    if (priceSort.value) {
-      filteredServices.sort((a, b) => {
-        const priceA = parseInt(a.selling_price);
-        const priceB = parseInt(b.selling_price);
-        return priceSort.value === 'low-high' ? priceA - priceB : priceB - priceA;
-      });
-    }
-    
-    // Store current filtered services
-    currentFilteredServices = filteredServices;
-    
-    // Display services
-    displayServices(filteredServices);
+      
+      // Apply price sorting
+      if (priceSort.value) {
+        filteredServices.sort((a, b) => {
+          const priceA = parseInt(a.selling_price);
+          const priceB = parseInt(b.selling_price);
+          return priceSort.value === 'low-high' ? priceA - priceB : priceB - priceA;
+        });
+      }
+      
+      // Store current filtered services
+      currentFilteredServices = filteredServices;
+      
+      // Display services
+      displayServices(filteredServices);
   }
   
   // Display services in the container
@@ -594,16 +572,7 @@ $servicesJson = json_encode($allServices);
   }
   
   // Event listeners for filtering and sorting
-  categoryFilter.addEventListener('change', function() {
-    selectedCategoryId = this.value;
-    if (selectedCategoryId === 'all') {
-      selectedCategoryName.textContent = 'All';
-    } else {
-      const selectedCategory = categories.find(c => c.service_categoryID == selectedCategoryId);
-      selectedCategoryName.textContent = selectedCategory ? selectedCategory.service_category_name : 'All';
-    }
-    filterAndDisplayServices();
-  });
+  
   
   priceFilter.addEventListener('change', filterAndDisplayServices);
   priceSort.addEventListener('change', filterAndDisplayServices);
