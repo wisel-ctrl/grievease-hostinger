@@ -54,38 +54,48 @@ if (!$customerId || !$branchId || !$casket || !$deceasedFirstName || !$deceasedL
 $deathCertPath = null;
 $paymentReceiptPath = null;
 
-// Handle file uploads (in a real app, you'd add more validation and security)
-if ($deathCertificateFile && $deathCertificateFile['error'] === UPLOAD_ERR_OK) {
-    $uploadDir = '../../uploads/death_certificates/';
-    $deathCertPath = $uploadDir . basename($deathCertificateFile['name']);
-    
-    // Make sure the upload directory exists
-    if (!file_exists($uploadDir)) {
-        mkdir($uploadDir, 0777, true);
-    }
-    
-    if (move_uploaded_file($deathCertificateFile['tmp_name'], $deathCertPath)) {
-        // File uploaded successfully
-        $deathCertPath = basename($deathCertificateFile['name']); // Store just the filename in DB
-    } else {
-        error_log("Failed to move death certificate upload: " . print_r($deathCertificateFile, true));
+// Define upload directory - use absolute path
+$uploadDir = __DIR__ . '/uploads/'; // Adjust path as needed based on your file structure
+
+// Make sure the upload directory exists
+if (!file_exists($uploadDir)) {
+    if (!mkdir($uploadDir, 0755, true)) {
+        error_log("Failed to create upload directory: " . $uploadDir);
+        http_response_code(500);
+        echo json_encode(['status' => 'error', 'message' => 'Failed to create upload directory']);
+        exit;
     }
 }
 
-if ($paymentReceiptFile && $paymentReceiptFile['error'] === UPLOAD_ERR_OK) {
-    $uploadDir = '../../uploads/payment_receipts/';
-    $paymentReceiptPath = $uploadDir . basename($paymentReceiptFile['name']);
+// Handle death certificate upload
+if ($deathCertificateFile && $deathCertificateFile['error'] === UPLOAD_ERR_OK) {
+    // Generate unique filename to prevent conflicts
+    $extension = pathinfo($deathCertificateFile['name'], PATHINFO_EXTENSION);
+    $filename = uniqid('deathcert_', true) . '.' . $extension;
+    $targetPath = $uploadDir . $filename;
     
-    // Make sure the upload directory exists
-    if (!file_exists($uploadDir)) {
-        mkdir($uploadDir, 0777, true);
+    if (move_uploaded_file($deathCertificateFile['tmp_name'], $targetPath)) {
+        // Store relative path in database
+        $deathCertPath = 'uploads/' . $filename;
+    } else {
+        error_log("Failed to move death certificate upload: " . print_r($deathCertificateFile, true));
+        $deathCertPath = null;
     }
+}
+
+// Handle payment receipt upload
+if ($paymentReceiptFile && $paymentReceiptFile['error'] === UPLOAD_ERR_OK) {
+    // Generate unique filename to prevent conflicts
+    $extension = pathinfo($paymentReceiptFile['name'], PATHINFO_EXTENSION);
+    $filename = uniqid('payment_', true) . '.' . $extension;
+    $targetPath = $uploadDir . $filename;
     
-    if (move_uploaded_file($paymentReceiptFile['tmp_name'], $paymentReceiptPath)) {
-        // File uploaded successfully
-        $paymentReceiptPath = basename($paymentReceiptFile['name']); // Store just the filename in DB
+    if (move_uploaded_file($paymentReceiptFile['tmp_name'], $targetPath)) {
+        // Store relative path in database
+        $paymentReceiptPath = 'uploads/' . $filename;
     } else {
         error_log("Failed to move payment receipt upload: " . print_r($paymentReceiptFile, true));
+        $paymentReceiptPath = null;
     }
 }
 
