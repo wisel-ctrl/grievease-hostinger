@@ -1,6 +1,6 @@
 <?php
 header('Content-Type: application/json');
-require_once '../includes/dbh.inc.php';
+require_once '../../db_connect.php';
 
 if (!isset($_GET['id'])) {
     echo json_encode(['error' => 'No booking ID provided']);
