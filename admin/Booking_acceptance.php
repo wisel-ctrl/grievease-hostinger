@@ -1902,7 +1902,7 @@ $total_lifeplan_bookings = $lifeplan_count_result->fetch_assoc()['total'];
         <input type="hidden" id="customDeceasedMname" name="deceased_mname">
         <input type="hidden" id="customDeceasedLname" name="deceased_lname">
         <input type="hidden" id="customDeceasedSuffix" name="deceased_suffix">
-        <input type="hidden" id="customDeceasedAddress" name="deceased_address">
+        <input type="hidden" id="customDeceasedAddressInput" name="deceased_address">
         
         <!-- Deceased Dates -->
         <input type="hidden" id="customDeceasedBirth" name="deceased_birth">
@@ -3233,7 +3233,7 @@ function confirmCustomAccept() {
             document.getElementById('customDeceasedMname').value = data.deceased_midname || '';
             document.getElementById('customDeceasedLname').value = data.deceased_lname || '';
             document.getElementById('customDeceasedSuffix').value = data.deceased_suffix || '';
-            document.getElementById('customDeceasedAddress').value = data.deceased_address || '';
+            document.getElementById('customDeceasedAddressInput').value = data.deceased_address || '';
 
             // Dates information
             document.getElementById('customDeceasedBirth').value = data.deceased_birth || '';
