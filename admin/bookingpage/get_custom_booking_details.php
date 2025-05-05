@@ -29,12 +29,13 @@ try {
                 LEFT JOIN 
                     services_tb s ON b.service_id = s.service_id 
                 WHERE 
-                    b.booking_id = ? AND b.service_id IS NULL
-                ";
+                    b.booking_id = ? AND b.service_id IS NULL";
     
-    $stmt = $pdo->prepare($query);
-    $stmt->execute([$bookingId]);
-    $booking = $stmt->fetch(PDO::FETCH_ASSOC);
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("s", $bookingId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $booking = $result->fetch_assoc();
 
     if (!$booking) {
         echo json_encode(['error' => 'Booking not found']);
@@ -47,10 +48,14 @@ try {
         $inclusionIds = json_decode($booking['inclusion'], true);
         if (is_array($inclusionIds) && !empty($inclusionIds)) {
             $placeholders = implode(',', array_fill(0, count($inclusionIds), '?'));
+            $types = str_repeat('i', count($inclusionIds));
             $inclusionQuery = "SELECT * FROM inclusions_tb WHERE inclusion_id IN ($placeholders)";
-            $inclusionStmt = $pdo->prepare($inclusionQuery);
-            $inclusionStmt->execute($inclusionIds);
-            $inclusions = $inclusionStmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            $inclusionStmt = $conn->prepare($inclusionQuery);
+            $inclusionStmt->bind_param($types, ...$inclusionIds);
+            $inclusionStmt->execute();
+            $inclusionResult = $inclusionStmt->get_result();
+            $inclusions = $inclusionResult->fetch_all(MYSQLI_ASSOC);
         }
     }
 
@@ -96,7 +101,7 @@ try {
 
     echo json_encode($response);
     
-} catch (PDOException $e) {
+} catch (Exception $e) {
     echo json_encode(['error' => 'Database error: ' . $e->getMessage()]);
 }
 ?>
