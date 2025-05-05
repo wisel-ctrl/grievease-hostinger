@@ -8,6 +8,8 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] != 1) {
     exit();
 }
 
+date_default_timezone_set('Asia/Manila');
+
 // Check if the request is a POST request
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Get all the form data
@@ -28,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     // Package components
     $casketId = isset($_POST['casket_id']) ? intval($_POST['casket_id']) : null;
-    $flowerDesign = isset($_POST['flower_design']) ? trim($_POST['flower_design']) : '';
+    $flowerDesign = isset($_POST['flower_id']) ? trim($_POST['flower_id']) : '';
     $inclusion = isset($_POST['inclusions']) ? trim($_POST['inclusions']) : '';
     $withCremate = isset($_POST['with_cremate']) && $_POST['with_cremate'] === 'yes' ? 'yes' : 'no';
     
@@ -67,17 +69,18 @@ if (!empty($errors)) {
         $insertQuery = "INSERT INTO customsales_tb (
             customer_id, fname_deceased, mname_deceased, lname_deceased, suffix_deceased,
             date_of_bearth, date_of_death, date_of_burial, sold_by, branch_id,
-            casket_id, flower_design, inclusion, payment_method, initial_price,
-            amount_paid, death_cert_image, deceased_address, with_cremate
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            casket_id, flower_design, inclusion, payment_method, initial_price, discounted_price,
+            amount_paid, death_cert_image, deceased_address, with_cremate, get_timestamp
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         
         $stmt = $conn->prepare($insertQuery);
+        $acceptDate = date('Y-m-d H:i:s');
         $stmt->bind_param(
-            "isssssssiiisssddsss",
+            "isssssssiiisssdddssss",
             $customerId, $fnameDeceased, $mnameDeceased, $lnameDeceased, $suffixDeceased,
             $dateOfBirth, $dateOfDeath, $dateOfBurial, $soldBy, $branchId,
-            $casketId, $flowerDesign, $inclusion, $paymentMethod, $initialPrice,
-            $amountPaid, $deathCertImage, $deceasedAddress, $withCremate
+            $casketId, $flowerDesign, $inclusion, $paymentMethod, $initialPrice, $initialPrice,
+            $amountPaid, $deathCertImage, $deceasedAddress, $withCremate, $acceptDate
         );
         
         if (!$stmt->execute()) {
