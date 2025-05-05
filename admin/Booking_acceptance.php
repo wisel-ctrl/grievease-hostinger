@@ -1918,7 +1918,7 @@ $total_lifeplan_bookings = $lifeplan_count_result->fetch_assoc()['total'];
         <input type="hidden" id="customBranchId" name="branch_id">
         <input type="hidden" id="customInitialPrice" name="initial_price">
         <input type="hidden" id="customDeathCertUrl" name="deathcert_url">
-        <input type="hidden" id="customWithCremate" name="with_cremate">
+        <input type="hidden" id="customWithCremateInput" name="with_cremate">
         
         <div class="mb-4">
           <label for="customAmountPaidInput" class="block text-sm font-medium text-gray-700 mb-1">Amount Paid</label>
@@ -3212,6 +3212,7 @@ function confirmCustomAccept() {
             
             // Customer information
             document.getElementById('customCustomerFirstName').value = data.first_name || '';
+            console.log('first_name: ', data.first_name);
             document.getElementById('customCustomerMiddleName').value = data.middle_name || '';
             document.getElementById('customCustomerLastName').value = data.last_name || '';
             document.getElementById('customCustomerSuffix').value = data.suffix || '';
@@ -3239,7 +3240,7 @@ function confirmCustomAccept() {
             document.getElementById('customBranchId').value = data.branch_id || '';
             document.getElementById('customInitialPrice').value = data.initial_price || '';
             document.getElementById('customDeathCertUrl').value = data.deathcert_url || '';
-            document.getElementById('customWithCremate').value = data.with_cremate || 'no';
+            document.getElementById('customWithCremateInput').value = data.with_cremate || 'no';
             
             // Show the payment modal
             openCustomPaymentModal();
