@@ -1896,9 +1896,12 @@ function loadBranches() {
     const branchCard = document.createElement('div');
     branchCard.className = 'bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 cursor-pointer overflow-hidden';
     
-branchCard.innerHTML = `
-  <div class="h-40 bg-gray-100"></div>
-   <div class="p-5">
+    // Create dynamic image path based on branch_id
+    const branchImagePath = `../branch${branch.branch_id}.png`;
+    
+    branchCard.innerHTML = `
+      <div class="h-40 bg-gray-100" style="background-image: url('${branchImagePath}'); background-size: cover; background-position: center;"></div>
+      <div class="p-5">
         <div class="text-xl font-bold mb-3 text-sidebar-text">${branch.branch_name}</div>
         <div class="flex justify-between items-center">
           <div class="text-gray-500 text-sm">
@@ -1909,7 +1912,8 @@ branchCard.innerHTML = `
           </button>
         </div>
       </div>
-`;
+    `;
+    
     const selectBtn = branchCard.querySelector('.select-branch-btn');
     if (selectBtn) {
       selectBtn.addEventListener('click', (e) => {
