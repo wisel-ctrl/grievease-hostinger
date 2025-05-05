@@ -842,7 +842,7 @@ require_once '../db_connect.php'; // Database connection
                     <input type="hidden" id="lifeplanSelectedPackageName" name="packageName">
                     <input type="hidden" id="lifeplanSelectedPackagePrice" name="packagePrice">
                     <input type="hidden" id="lifeplanServiceId" name="service_id">
-                    <input type="hidden" id="lifeplanBranchId" name="branch_id">
+                    <input type="hidden" id="lifeplanBranchId" name="branch_id" value="<?php $branch_id?>">
                     <input type="hidden" name="customerID" value="<?php echo isset($_SESSION['user_id']) ? $_SESSION['user_id'] : ''; ?>">
                     <input type="hidden" id="deceasedAddress" name="deceasedAddress">
                     
