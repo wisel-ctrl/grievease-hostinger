@@ -1916,7 +1916,7 @@ $total_lifeplan_bookings = $lifeplan_count_result->fetch_assoc()['total'];
         <input type="hidden" id="customInclusions" name="inclusions">
         
         <!-- Other Information -->
-        <input type="hidden" id="customBranchId" name="branch_id">
+        <input type="hidden" id="customBranchId" name="branchId">
         <input type="hidden" id="customInitialPrice" name="initial_price">
         <input type="hidden" id="customDeathCertUrl" name="deathcert_url">
         <input type="hidden" id="customWithCremateInput" name="with_cremate">
