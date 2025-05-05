@@ -41,11 +41,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $deathCertImage = isset($_POST['deathcert_url']) ? trim($_POST['deathcert_url']) : '';
     
     // Validate required fields
-    if ($bookingId <= 0 || $customerId <= 0 || $branchId <= 0 || empty($fnameDeceased) || empty($lnameDeceased) || 
-        empty($paymentMethod) || $initialPrice <= 0) {
-        echo json_encode(['success' => false, 'error' => 'Required fields are missing or invalid']);
-        exit();
-    }
+    $errors = [];
+
+if ($bookingId <= 0) $errors[] = 'bookingId';
+if ($customerId <= 0) $errors[] = 'customerId';
+if ($branchId <= 0) $errors[] = 'branchId';
+if (empty($fnameDeceased)) $errors[] = 'fnameDeceased';
+if (empty($lnameDeceased)) $errors[] = 'lnameDeceased';
+if (empty($paymentMethod)) $errors[] = 'paymentMethod';
+if ($initialPrice <= 0) $errors[] = 'initialPrice';
+
+if (!empty($errors)) {
+    echo json_encode([
+        'success' => false,
+        'error' => 'Missing or invalid fields: ' . implode(', ', $errors)
+    ]);
+    exit();
+}
     
     // Start transaction
     $conn->begin_transaction();
