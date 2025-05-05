@@ -1905,11 +1905,28 @@ function getStatusClass(status) {
                                 <div class="space-y-2 sm:space-y-3">
                                     <div class="flex flex-wrap">
                                         <div class="w-1/3 text-sm text-gray-500">Full Name</div>
-                                        <div class="w-2/3 font-medium text-gray-800 break-words">${data.benefeciary_lname}, ${data.benefeciary_fname} ${data.benefeciary_mname || ''} ${data.benefeciary_suffix || ''}</div>
+                                        <div class="w-2/3 font-medium text-gray-800 break-words">
+                                          ${data.benefeciary_lname ? 
+                                            data.benefeciary_lname.replace(/\b\w/g, char => char.toUpperCase()) : ''}, 
+                                          ${data.benefeciary_fname ? 
+                                            data.benefeciary_fname.replace(/\b\w/g, char => char.toUpperCase()) : ''} 
+                                          ${data.benefeciary_mname ? 
+                                            data.benefeciary_mname.replace(/\b\w/g, char => char.toUpperCase()) : ''} 
+                                          ${data.benefeciary_suffix ? 
+                                            data.benefeciary_suffix.replace(/\b\w/g, char => char.toUpperCase()) : ''}
+                                        </div>
                                     </div>
                                     <div class="flex flex-wrap">
                                         <div class="w-1/3 text-sm text-gray-500">Birth Date</div>
-                                        <div class="w-2/3 font-medium text-gray-800 break-words">${formatDate(data.benefeciary_birth)}</div>
+                                        <div class="w-2/3 font-medium text-gray-800 break-words">${
+                                          data.benefeciary_birth ? 
+                                          new Date(data.benefeciary_birth).toLocaleDateString('en-US', { 
+                                            year: 'numeric', 
+                                            month: 'long', 
+                                            day: 'numeric' 
+                                          }) : 
+                                          'Not set'
+                                        }</div>
                                     </div>
                                     <div class="flex flex-wrap">
                                         <div class="w-1/3 text-sm text-gray-500">Address</div>
@@ -1938,7 +1955,11 @@ function getStatusClass(status) {
                                     </div>
                                     <div class="flex flex-wrap">
                                         <div class="w-1/3 text-sm text-gray-500">Branch</div>
-                                        <div class="w-2/3 font-medium text-gray-800 break-words">${data.branch_name}</div>
+                                        <div class="w-2/3 font-medium text-gray-800 break-words">
+                                          ${data.branch_name ? 
+                                            data.branch_name.replace(/\b\w/g, char => char.toUpperCase()) : 
+                                            'Not provided'}
+                                        </div>
                                     </div>
                                     <div class="flex flex-wrap">
                                         <div class="w-1/3 text-sm text-gray-500">Plan Price</div>
@@ -1946,16 +1967,36 @@ function getStatusClass(status) {
                                     </div>
                                     <div class="flex flex-wrap">
                                         <div class="w-1/3 text-sm text-gray-500">Initial Payment</div>
-                                        <div class="w-2/3 font-medium text-gray-800 break-words">₱${parseFloat(data.amount_paid || 0).toFixed(2)}</div>
+                                        <div class="w-2/3 font-medium text-gray-800 break-words">
+                                            ₱${parseFloat(data.lifeplan_amount_paid || 0).toFixed(2)}
+                                        </div>
                                     </div>
                                     <div class="flex flex-wrap">
                                         <div class="w-1/3 text-sm text-gray-500">Application Date</div>
-                                        <div class="w-2/3 font-medium text-gray-800 break-words">${new Date(data.initial_date).toLocaleString()}</div>
+                                        <div class="w-2/3 font-medium text-gray-800 break-words">${
+                                          data.initial_date ? 
+                                          new Date(data.initial_date).toLocaleDateString('en-US', { 
+                                            year: 'numeric', 
+                                            month: 'long', 
+                                            day: 'numeric',
+                                            hour: '2-digit',
+                                            minute: '2-digit'
+                                          }) : 
+                                          'Not set'
+                                        }</div>
                                     </div>
-                                    ${data.acceptdecline_date ? `
+                                   ${data.acceptdecline_date ? `
                                     <div class="flex flex-wrap">
                                         <div class="w-1/3 text-sm text-gray-500">${data.booking_status.charAt(0).toUpperCase() + data.booking_status.slice(1)} Date</div>
-                                        <div class="w-2/3 font-medium text-gray-800 break-words">${new Date(data.acceptdecline_date).toLocaleString()}</div>
+                                        <div class="w-2/3 font-medium text-gray-800 break-words">${
+                                          new Date(data.acceptdecline_date).toLocaleDateString('en-US', { 
+                                            year: 'numeric', 
+                                            month: 'long', 
+                                            day: 'numeric',
+                                            hour: '2-digit',
+                                            minute: '2-digit'
+                                          })
+                                        }</div>
                                     </div>
                                     ` : ''}
                                     <div class="flex flex-wrap">
@@ -1980,14 +2021,21 @@ function getStatusClass(status) {
                                         Payment Proof
                                     </h5>
                                     <div class="border border-gray-200 rounded-lg overflow-hidden">
-                                        ${data.payment_proof ? `
-                                            <div class="relative bg-gray-100 p-1">
-                                                <img src="booking/uploads/${data.payment_proof}" alt="Payment Proof" class="mx-auto rounded-md max-h-48 object-contain" />
-                                                <div class="absolute top-2 right-2">
-                                                    <button class="bg-white rounded-full p-1 shadow-md hover:bg-gray-100 transition-colors duration-200" title="View Full Size"
-                                                    onclick="window.open('booking/uploads/${data.payment_proof}', '_blank')">
-                                                        <i class="fas fa-search-plus text-blue-600"></i>
-                                                    </button>
+                                        ${data.payment_url ? `
+                                            <div class="mt-4">
+                                                <h5 class="font-medium text-gray-700 mb-2 flex items-center">
+                                                    Plan Holder Image
+                                                </h5>
+                                                <div class="border border-gray-200 rounded-lg overflow-hidden">
+                                                    <div class="relative bg-gray-100 p-1">
+                                                        <img src="booking/${data.payment_url}" alt="Plan Holder Image" class="mx-auto rounded-md max-h-48 object-contain" />
+                                                        <div class="absolute top-2 right-2">
+                                                            <button class="bg-white rounded-full p-1 shadow-md hover:bg-gray-100 transition-colors duration-200" title="View Full Size"
+                                                            onclick="window.open('booking/${data.payment_url}', '_blank')">
+                                                                <i class="fas fa-search-plus text-blue-600"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         ` : `

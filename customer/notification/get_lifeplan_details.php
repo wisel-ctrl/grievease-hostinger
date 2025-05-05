@@ -9,10 +9,16 @@ if (!isset($_GET['lpbooking_id'])) {
 $lpbooking_id = intval($_GET['lpbooking_id']);
 
 // Get life plan booking details
-$query = "SELECT lb.*, s.service_name, b.branch_name 
+$query = "SELECT 
+            lb.*, 
+            s.service_name, 
+            b.branch_name, 
+            lb.payment_url,
+            lp.amount_paid AS lifeplan_amount_paid
           FROM lifeplan_booking_tb lb
           LEFT JOIN services_tb s ON lb.service_id = s.service_id
           LEFT JOIN branch_tb b ON lb.branch_id = b.branch_id
+          LEFT JOIN lifeplan_tb lp ON lp.service_id = lb.service_id
           WHERE lb.lpbooking_id = ?";
 $stmt = $conn->prepare($query);
 $stmt->bind_param("i", $lpbooking_id);
