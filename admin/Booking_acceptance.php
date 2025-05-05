@@ -3242,7 +3242,7 @@ function confirmCustomAccept() {
             
             // Package components
             document.getElementById('customCasketId').value = data.casket_id || '';
-            document.getElementById('customFlowerId').value = data.flower_id || '';
+            document.getElementById('customFlowerId').value = data.flower_name || '';
             document.getElementById('customInclusions').value = JSON.stringify(data.inclusions) || '[]';
             
             // Other information

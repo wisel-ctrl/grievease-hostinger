@@ -68,7 +68,7 @@ try {
     $booking['casket_price_formatted'] = $booking['casket_price'] ? '₱' . number_format($booking['casket_price'], 2) : null;
 
     // Decode inclusions JSON if exists
-    $booking['inclusions'] = $booking['inclusions'] ? json_decode($booking['inclusions'], true) : [];
+    $booking['inclusions'] = $booking['inclusion'] ? json_decode($booking['inclusion'], true) : [];
 
     header('Content-Type: application/json');
     echo json_encode([
