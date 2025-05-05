@@ -1643,14 +1643,22 @@ document.addEventListener('DOMContentLoaded', function() {
                     formData.append('cremationOption', cremationOption ? '1' : '0');
                     
                     // Get address components
-                    const region = document.getElementById('traditionalDeceasedRegion').value;
-                    const province = document.getElementById('traditionalDeceasedProvince').value;
-                    const city = document.getElementById('traditionalDeceasedCity').value;
-                    const barangay = document.getElementById('traditionalDeceasedBarangay').value;
+                    const region = document.getElementById('traditionalDeceasedRegion');
+                    const province = document.getElementById('traditionalDeceasedProvince');
+                    const city = document.getElementById('traditionalDeceasedCity');
+                    const barangay = document.getElementById('traditionalDeceasedBarangay');
+
+                    // Get the text of the selected option
+                    const regionText = region.options[region.selectedIndex].text;
+                    const provinceText = province.options[province.selectedIndex].text;
+                    const cityText = city.options[city.selectedIndex].text;
+                    const barangayText = barangay.options[barangay.selectedIndex].text;
+
                     const streetAddress = document.getElementById('traditionalDeceasedAddress').value;
-                    
+
                     // Add address to form data
-                    formData.append('deceasedAddress', `${streetAddress}, ${barangay}, ${city}, ${province}, ${region}`);
+                    formData.append('deceasedAddress', `${streetAddress}, ${barangayText}, ${cityText}, ${provinceText}, ${regionText}`);
+
                     
                     // Submit the form via AJAX
                     fetch('booking/lifeplan_booking_for_lifeplanpage.php', {
