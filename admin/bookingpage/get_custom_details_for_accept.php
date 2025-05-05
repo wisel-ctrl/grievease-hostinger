@@ -14,7 +14,7 @@ try {
     // Prepare the query
     $query = "SELECT 
                 b.*, 
-                CONCAT(u.first_name, ' ', COALESCE(u.middle_name, ''), ' ', u.last_name, ' ', COALESCE(u.suffix, '')) AS customer_name, 
+                u.first_name, u.middle_name, u.last_name, u.suffix, 
                 s.service_name, 
                 i.item_name as casket_name,
                 i.price as casket_price, 
