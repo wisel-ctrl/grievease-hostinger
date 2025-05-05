@@ -1444,7 +1444,7 @@ $custom_offset = ($custom_current_page - 1) * $custom_bookings_per_page;
 <!-- LifePlan Details Modal -->
 <div id="lifeplanDetailsModal" class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto">
   <!-- Modal Backdrop -->
-  <div class="modal-scroll-container overflow-y-auto max-h-[90vh]">
+  <div class="overflow-y-auto max-h-[90vh]">
     <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
     
     <!-- Modal Content -->
