@@ -1897,23 +1897,6 @@ function initializePaymentValidations() {
   updateMinimumPrice();
 }
 
-// Function to toggle sidebar
-function toggleSidebar() {
-  const sidebar = document.getElementById('sidebar');
-  const mainContent = document.getElementById('main-content');
-  
-  if (sidebar.classList.contains('w-64')) {
-    sidebar.classList.remove('w-64');
-    sidebar.classList.add('w-16');
-    mainContent.classList.remove('ml-64');
-    mainContent.classList.add('ml-16');
-  } else {
-    sidebar.classList.remove('w-16');
-    sidebar.classList.add('w-64');
-    mainContent.classList.remove('ml-16');
-    mainContent.classList.add('ml-64');
-  }
-}
 
 // Function to load branches
 function loadBranches() {
