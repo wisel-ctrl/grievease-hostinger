@@ -1073,7 +1073,7 @@ function fetchRegions() {
             
             data.forEach(region => {
                 const option = document.createElement('option');
-                option.value = region.region_id;
+                option.value = region.region_name;
                 option.textContent = region.region_name;
                 regionSelect.appendChild(option);
             });
@@ -1095,7 +1095,7 @@ function fetchProvinces(regionId) {
             
             data.forEach(province => {
                 const option = document.createElement('option');
-                option.value = province.province_id;
+                option.value = province.province_name;
                 option.textContent = province.province_name;
                 provinceSelect.appendChild(option);
             });
@@ -1119,7 +1119,7 @@ function fetchCities(provinceId) {
             
             data.forEach(city => {
                 const option = document.createElement('option');
-                option.value = city.municipality_id;
+                option.value = city.municipality_name;
                 option.textContent = city.municipality_name;
                 citySelect.appendChild(option);
             });
@@ -1143,7 +1143,7 @@ function fetchBarangays(cityId) {
             
             data.forEach(barangay => {
                 const option = document.createElement('option');
-                option.value = barangay.barangay_id;
+                option.value = barangay.barangay_name;
                 option.textContent = barangay.barangay_name;
                 barangaySelect.appendChild(option);
             });
