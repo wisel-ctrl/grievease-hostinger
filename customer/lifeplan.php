@@ -1367,6 +1367,8 @@ function openTraditionalModal(packageDetails) {
     const modal = document.getElementById('traditionalModal');
     if (!modal) return;
     
+
+
     // Update the details modal with the selected package information
     const packageImage = document.getElementById('traditionalPackageImage');
     if (packageImage) packageImage.src = packageDetails.image;
@@ -1383,6 +1385,12 @@ function openTraditionalModal(packageDetails) {
     // Set hidden form fields
     const hiddenNameField = document.getElementById('lifeplanSelectedPackageName');
     if (hiddenNameField) hiddenNameField.value = packageDetails.name;
+
+    const hiddenBranch = document.getElementById('lifeplanBranchId');
+    if (hiddenBranch) hiddenBranch.value = packageDetails.branch_id;
+
+    const hiddenServiceID = document.getElementById('lifeplanServiceId');
+    if (hiddenServiceID) hiddenServiceID.value = packageDetails.service_id;
     
     const hiddenPriceField = document.getElementById('lifeplanSelectedPackagePrice');
     if (hiddenPriceField) hiddenPriceField.value = packageDetails.price;
