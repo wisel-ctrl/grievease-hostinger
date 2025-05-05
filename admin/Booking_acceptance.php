@@ -98,6 +98,16 @@ if ($custom_current_page > $total_custom_pages && $total_custom_pages > 0) {
 $custom_offset = ($custom_current_page - 1) * $custom_bookings_per_page;
 
 
+$lifeplan_bookings_per_page = 5; // Or whatever number you prefer
+$lifeplan_current_page = isset($_GET['lifeplan_page']) ? (int)$_GET['lifeplan_page'] : 1;
+if ($lifeplan_current_page < 1) $lifeplan_current_page = 1;
+$total_lifeplan_pages = ceil($total_lifeplan_bookings / $lifeplan_bookings_per_page);
+if ($lifeplan_current_page > $total_lifeplan_pages && $total_lifeplan_pages > 0) {
+    $lifeplan_current_page = $total_lifeplan_pages;
+}
+$lifeplan_offset = ($lifeplan_current_page - 1) * $lifeplan_bookings_per_page;
+
+
 // Count total lifeplan bookings with status "pending"
 $lifeplan_count_query = "SELECT COUNT(*) as total FROM lifeplan_booking_tb WHERE booking_status = 'pending'";
 $lifeplan_count_result = $conn->query($lifeplan_count_query);
@@ -1010,14 +1020,14 @@ $total_lifeplan_bookings = $lifeplan_count_result->fetch_assoc()['total'];
                     <?php
                     // Query to get lifeplan bookings
                     $lifeplanQuery = "SELECT lb.*, 
-                                    CONCAT(u.first_name, ' ', COALESCE(u.middle_name, ''), ' ', u.last_name, ' ', COALESCE(u.suffix, '')) AS customer_name,
-                                    s.service_name
-                                    FROM lifeplan_booking_tb lb
-                                    JOIN users u ON lb.customer_id = u.id
-                                    LEFT JOIN services_tb s ON lb.service_id = s.service_id
-                                    WHERE lb.booking_status = 'pending'
-                                    ORDER BY lb.lpbooking_id DESC
-                                    LIMIT 10";
+                CONCAT(u.first_name, ' ', COALESCE(u.middle_name, ''), ' ', u.last_name, ' ', COALESCE(u.suffix, '')) AS customer_name,
+                s.service_name
+                FROM lifeplan_booking_tb lb
+                JOIN users u ON lb.customer_id = u.id
+                LEFT JOIN services_tb s ON lb.service_id = s.service_id
+                WHERE lb.booking_status = 'pending'
+                ORDER BY lb.lpbooking_id DESC
+                LIMIT ?, ?";
                     
                     $lifeplanResult = $conn->query($lifeplanQuery);
                     
