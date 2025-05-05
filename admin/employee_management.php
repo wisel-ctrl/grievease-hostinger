@@ -104,6 +104,26 @@ $totalPages = ceil($totalEmployees / $perPage);
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+      .modal-scroll-container {
+    scrollbar-width: thin;
+    scrollbar-color: #d4a933 #f5f5f5;
+}
+
+.modal-scroll-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.modal-scroll-container::-webkit-scrollbar-track {
+    background: #f5f5f5;
+}
+
+.modal-scroll-container::-webkit-scrollbar-thumb {
+    background-color: #d4a933;
+    border-radius: 6px;
+}
+    </style>
 </head>
 <body class="flex bg-gray-50">
 
@@ -501,7 +521,7 @@ echo "</tr>";
   <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
   
   <!-- Modal Content -->
-  <div class="relative bg-white rounded-xl shadow-card w-full max-w-lg mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-lg mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] flex flex-col">
     <!-- Close Button -->
     <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeViewEmployeeModal()">
       <i class="fas fa-times"></i>
@@ -515,7 +535,7 @@ echo "</tr>";
     </div>
     
     <!-- Modal Body -->
-    <div class="px-4 sm:px-6 py-4 sm:py-5">
+    <div class="px-4 sm:px-6 py-4 sm:py-5 overflow-y-auto modal-scroll-container">
       <!-- Employee Information -->
       <div class="mb-4 sm:mb-6">
         <div class="flex flex-row justify-between">
@@ -613,7 +633,7 @@ echo "</tr>";
   <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
   
   <!-- Modal Content -->
-  <div class="relative bg-white rounded-xl shadow-card w-full max-w-xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] flex flex-col">
     <!-- Close Button -->
     <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeAddEmployeeModal()">
       <i class="fas fa-times"></i>
@@ -627,7 +647,7 @@ echo "</tr>";
     </div>
     
     <!-- Modal Body -->
-    <div class="px-4 sm:px-6 py-4 sm:py-5">
+    <div class="px-4 sm:px-6 py-4 sm:py-5 overflow-y-auto modal-scroll-container">
       <form id="addEmployeeAccountForm" class="space-y-3 sm:space-y-4">
         <!-- Name Fields -->
         <div>
@@ -805,7 +825,7 @@ echo "</tr>";
   <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
   
   <!-- Modal Content -->
-  <div class="relative bg-white rounded-xl shadow-card w-full max-w-xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] flex flex-col">
     <!-- Close Button -->
     <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeEditEmployeeModal()">
       <i class="fas fa-times"></i>
@@ -819,7 +839,7 @@ echo "</tr>";
     </div>
     
     <!-- Modal Body -->
-    <div class="px-4 sm:px-6 py-4 sm:py-5">
+    <div class="px-4 sm:px-6 py-4 sm:py-5 overflow-y-auto modal-scroll-container">
       <form id="editEmployeeAccountForm" class="space-y-3 sm:space-y-4">
         <!-- Hidden field for employee ID -->
         <input type="hidden" id="editEmployeeId" name="employeeId">
