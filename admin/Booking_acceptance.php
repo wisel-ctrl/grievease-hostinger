@@ -772,54 +772,70 @@ $total_lifeplan_bookings = $lifeplan_count_result->fetch_assoc()['total'];
     
     
     <!-- Sticky Pagination Footer with improved spacing -->
-    <div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
+<div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
+    <!-- Pagination Info Display -->
     <div id="customPaginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
-    <?php 
-    if ($total_custom_bookings > 0) {
-        $custom_start = $custom_offset + 1;
-        $custom_end = min($custom_offset + $custom_bookings_per_page, $total_custom_bookings);
-        echo "Showing {$custom_start}-{$custom_end} of {$total_custom_bookings} custom " . ($total_custom_bookings != 1 ? "bookings" : "booking");
-    } else {
-        echo "No custom bookings found";
-    }
-    ?>
+        <?php 
+        if ($total_custom_bookings > 0) {
+            $custom_start = $custom_offset + 1;
+            $custom_end = min($custom_offset + $custom_bookings_per_page, $total_custom_bookings);
+            echo "Showing {$custom_start}-{$custom_end} of {$total_custom_bookings} custom " . 
+                 ($total_custom_bookings != 1 ? "bookings" : "booking");
+        } else {
+            echo "No custom bookings found";
+        }
+        ?>
+    </div>
+    
+    <!-- Pagination Controls -->
+    <div id="customPaginationContainer" class="flex items-center justify-center space-x-2">
+        <?php if ($total_custom_pages > 1): ?>
+            <!-- First page button -->
+            <a href="?custom_page=1" class="flex items-center justify-center w-9 h-9 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($custom_current_page == 1) ? 'opacity-50 cursor-not-allowed' : ''; ?>">
+                <i class="fas fa-angle-double-left"></i>
+            </a>
+            
+            <!-- Previous page button -->
+            <a href="?custom_page=<?php echo max(1, $custom_current_page - 1); ?>" 
+               class="flex items-center justify-center w-9 h-9 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($custom_current_page == 1) ? 'opacity-50 cursor-not-allowed' : ''; ?>">
+                <i class="fas fa-chevron-left"></i>
+            </a>
+            
+            <?php
+            // Show exactly 3 page numbers
+            $custom_start_page = max(1, min($custom_current_page - 1, $total_custom_pages - 2));
+            $custom_end_page = min($custom_start_page + 2, $total_custom_pages);
+            
+            // Ensure we always display 3 pages when possible
+            if ($custom_end_page - $custom_start_page < 2 && $total_custom_pages >= 3) {
+                if ($custom_start_page == 1) {
+                    $custom_end_page = min(3, $total_custom_pages);
+                } else {
+                    $custom_start_page = max(1, $total_custom_pages - 2);
+                    $custom_end_page = $total_custom_pages;
+                }
+            }
+            
+            for ($i = $custom_start_page; $i <= $custom_end_page; $i++) {
+                $active_class = ($i == $custom_current_page) ? 'bg-sidebar-accent text-white' : 'border border-sidebar-border hover:bg-sidebar-hover';
+                echo '<a href="?custom_page=' . $i . '" class="flex items-center justify-center w-9 h-9 rounded text-sm ' . $active_class . '">' . $i . '</a>';
+            }
+            ?>
+            
+            <!-- Next page button -->
+            <a href="?custom_page=<?php echo min($total_custom_pages, $custom_current_page + 1); ?>" 
+               class="flex items-center justify-center w-9 h-9 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($custom_current_page == $total_custom_pages) ? 'opacity-50 cursor-not-allowed' : ''; ?>">
+                <i class="fas fa-chevron-right"></i>
+            </a>
+            
+            <!-- Last page button -->
+            <a href="?custom_page=<?php echo $total_custom_pages; ?>" 
+               class="flex items-center justify-center w-9 h-9 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($custom_current_page == $total_custom_pages) ? 'opacity-50 cursor-not-allowed' : ''; ?>">
+                <i class="fas fa-angle-double-right"></i>
+            </a>
+        <?php endif; ?>
+    </div>
 </div>
-        </div>
-        <div id="customPaginationContainer" class="flex items-center justify-center space-x-2">
-<?php if ($total_custom_pages > 1): ?>
-    <!-- First page button -->
-    <a href="?custom_page=1" class="flex items-center justify-center w-9 h-9 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($custom_current_page == 1) ? 'opacity-50 pointer-events-none' : ''; ?>">
-        <i class="fas fa-angle-double-left"></i>
-    </a>
-    
-    <!-- Previous page button -->
-    <a href="<?php echo '?custom_page=' . max(1, $custom_current_page - 1); ?>" class="flex items-center justify-center w-9 h-9 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($custom_current_page == 1) ? 'opacity-50 pointer-events-none' : ''; ?>">
-        <i class="fas fa-chevron-left"></i>
-    </a>
-    
-    <?php
-    // Show exactly 3 page numbers
-    $custom_start_page = max(1, min($custom_current_page - 1, $total_custom_pages - 2));
-    $custom_end_page = min($custom_start_page + 2, $total_custom_pages);
-    
-    for ($i = $custom_start_page; $i <= $custom_end_page; $i++) {
-        $active_class = ($i == $custom_current_page) ? 'bg-sidebar-accent text-white' : 'border border-sidebar-border hover:bg-sidebar-hover';
-        echo '<a href="?custom_page=' . $i . '" class="flex items-center justify-center w-9 h-9 rounded text-sm ' . $active_class . '">' . $i . '</a>';
-    }
-    ?>
-    
-    <!-- Next page button -->
-    <a href="<?php echo '?custom_page=' . min($total_custom_pages, $custom_current_page + 1); ?>" class="flex items-center justify-center w-9 h-9 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($custom_current_page == $total_custom_pages) ? 'opacity-50 pointer-events-none' : ''; ?>">
-        <i class="fas fa-chevron-right"></i>
-    </a>
-    
-    <!-- Last page button -->
-    <a href="<?php echo '?custom_page=' . $total_custom_pages; ?>" class="flex items-center justify-center w-9 h-9 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($custom_current_page == $total_custom_pages) ? 'opacity-50 pointer-events-none' : ''; ?>">
-        <i class="fas fa-angle-double-right"></i>
-    </a>
-<?php endif; ?>
-</div>
-  </div>
 
 
 <!-- LifePlan Bookings List -->
