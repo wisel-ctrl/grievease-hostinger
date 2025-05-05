@@ -550,82 +550,10 @@ require_once '../db_connect.php';
             </div>
             <div class="mt-5 sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
     <div id="paginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
-    <?php 
-        // Get the number of bookings on the current page
-        $current_page_bookings = $result->num_rows;
-
-        if ($total_bookings > 0) {
-            $start = $offset + 1;
-            $end = $offset + $result->num_rows;
-        
-            echo "Showing {$start} - {$end} of {$total_bookings} bookings";
-        } else {
-            echo "No bookings found";
-        }
-        ?>
+        Loading customer accounts...
     </div>
     <div id="paginationContainer" class="flex space-x-2">
-        <?php if ($total_pages > 1): ?>
-            <!-- First page button (double arrow) -->
-            <a href="?page=1" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($current_page == 1) ? 'opacity-50 pointer-events-none' : ''; ?>">
-                &laquo;
-            </a>
-            
-            <!-- Previous page button (single arrow) -->
-            <a href="<?php echo '?page=' . max(1, $current_page - 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($current_page == 1) ? 'opacity-50 pointer-events-none' : ''; ?>">
-                &lsaquo;
-            </a>
-            
-            <?php
-            // Show exactly 3 page numbers
-            if ($total_pages <= 3) {
-                // If total pages is 3 or less, show all pages
-                $start_page = 1;
-                $end_page = $total_pages;
-            } else {
-                // With more than 3 pages, determine which 3 to show
-                if ($current_page == 1) {
-                    // At the beginning, show first 3 pages
-                    $start_page = 1;
-                    $end_page = 3;
-                } elseif ($current_page == $total_pages) {
-                    // At the end, show last 3 pages
-                    $start_page = $total_pages - 2;
-                    $end_page = $total_pages;
-                } else {
-                    // In the middle, show current page with one before and after
-                    $start_page = $current_page - 1;
-                    $end_page = $current_page + 1;
-                    
-                    // Handle edge cases
-                    if ($start_page < 1) {
-                        $start_page = 1;
-                        $end_page = 3;
-                    }
-                    if ($end_page > $total_pages) {
-                        $end_page = $total_pages;
-                        $start_page = $total_pages - 2;
-                    }
-                }
-            }
-            
-            // Generate the page buttons
-            for ($i = $start_page; $i <= $end_page; $i++) {
-                $active_class = ($i == $current_page) ? 'bg-sidebar-accent text-white' : 'border border-sidebar-border hover:bg-sidebar-hover';
-                echo '<a href="?page=' . $i . '" class="px-3.5 py-1.5 rounded text-sm ' . $active_class . '">' . $i . '</a>';
-            }
-            ?>
-            
-            <!-- Next page button (single arrow) -->
-            <a href="<?php echo '?page=' . min($total_pages, $current_page + 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($current_page == $total_pages) ? 'opacity-50 pointer-events-none' : ''; ?>">
-                &rsaquo;
-            </a>
-            
-            <!-- Last page button (double arrow) -->
-            <a href="<?php echo '?page=' . $total_pages; ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($current_page == $total_pages) ? 'opacity-50 pointer-events-none' : ''; ?>">
-                &raquo;
-            </a>
-        <?php endif; ?>
+        <!-- JavaScript will populate this -->
     </div>
 </div>
         </div>
@@ -1365,111 +1293,116 @@ document.addEventListener('DOMContentLoaded', function() {
   
   <script>
       // Function to fetch and display customer accounts
-    function fetchCustomerAccounts(page = 1, search = '', sort = 'id_asc') {
-        const xhr = new XMLHttpRequest();
-        xhr.open('GET', `accountManagement/fetch_customer_accounts.php?page=${page}&search=${encodeURIComponent(search)}&sort=${sort}`, true);
-        
-        xhr.onload = function() {
-            searchContainer.classList.remove('search-loading');
-            if (this.status === 200) {
-                try {
-                    const response = JSON.parse(this.responseText);
-                    
-                    // Update the table content
-                    document.querySelector('#customerTable tbody').innerHTML = response.tableContent;
-                    
-                    searchCustomers();
-                    
-                    // Update pagination info
-                    const paginationInfo = `Showing ${response.showingFrom}-${response.showingTo} of ${response.totalCount} entries`;
-                    document.querySelector('#manageAccountSection .text-sm.text-gray-600').textContent = paginationInfo;
-                    
-                    // Update pagination buttons
-                    const paginationContainer = document.querySelector('#manageAccountSection .flex.justify-between.items-center > div:last-child');
-                    
-                    // Clear existing buttons
-                    paginationContainer.innerHTML = '';
-                    
-                    // Previous button
-                    const prevButton = document.createElement('button');
-                    prevButton.className = 'p-2 border border-sidebar-border rounded-md mr-1';
-                    prevButton.textContent = 'Previous';
-                    prevButton.disabled = page === 1;
-                    prevButton.onclick = () => {
-                        if (page > 1) fetchCustomerAccounts(page - 1, search, sort);
-                    };
-                    paginationContainer.appendChild(prevButton);
-                    
-                    // Page buttons
-                    const maxPagesToShow = 5;
-                    let startPage = Math.max(1, page - Math.floor(maxPagesToShow / 2));
-                    let endPage = Math.min(response.totalPages, startPage + maxPagesToShow - 1);
-                    
-                    if (endPage - startPage + 1 < maxPagesToShow) {
-                        startPage = Math.max(1, endPage - maxPagesToShow + 1);
-                    }
-                    
-                    if (startPage > 1) {
-                        const firstPageButton = document.createElement('button');
-                        firstPageButton.className = 'p-2 border border-sidebar-border rounded-md mr-1';
-                        firstPageButton.textContent = '1';
-                        firstPageButton.onclick = () => fetchCustomerAccounts(1, search, sort);
-                        paginationContainer.appendChild(firstPageButton);
-                        
-                        if (startPage > 2) {
-                            const ellipsis = document.createElement('span');
-                            ellipsis.className = 'px-2';
-                            ellipsis.textContent = '...';
-                            paginationContainer.appendChild(ellipsis);
-                        }
-                    }
-                    
-                    for (let i = startPage; i <= endPage; i++) {
-                        const pageButton = document.createElement('button');
-                        pageButton.className = `p-2 border border-sidebar-border rounded-md mx-0.5 ${i === page ? 'bg-sidebar-accent text-white' : ''}`;
-                        pageButton.textContent = i;
-                        pageButton.onclick = () => fetchCustomerAccounts(i, search, sort);
-                        paginationContainer.appendChild(pageButton);
-                    }
-                    
-                    if (endPage < response.totalPages) {
-                        if (endPage < response.totalPages - 1) {
-                            const ellipsis = document.createElement('span');
-                            ellipsis.className = 'px-2';
-                            ellipsis.textContent = '...';
-                            paginationContainer.appendChild(ellipsis);
-                        }
-                        
-                        const lastPageButton = document.createElement('button');
-                        lastPageButton.className = 'p-2 border border-sidebar-border rounded-md ml-1';
-                        lastPageButton.textContent = response.totalPages;
-                        lastPageButton.onclick = () => fetchCustomerAccounts(response.totalPages, search, sort);
-                        paginationContainer.appendChild(lastPageButton);
-                    }
-                    
-                    // Next button
-                    const nextButton = document.createElement('button');
-                    nextButton.className = 'p-2 border border-sidebar-border rounded-md ml-1';
-                    nextButton.textContent = 'Next';
-                    nextButton.disabled = page === response.totalPages;
-                    nextButton.onclick = () => {
-                        if (page < response.totalPages) fetchCustomerAccounts(page + 1, search, sort);
-                    };
-                    paginationContainer.appendChild(nextButton);
-                    
-                } catch (e) {
-                    console.error('Error parsing response:', e);
-                }
-            }
-        };
-        
-        xhr.onerror = function() {
-        console.error('Request failed');
-        };
-        
-        xhr.send();
-    }
+      function fetchCustomerAccounts(page = 1, search = '', sort = 'id_asc') {
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', `accountManagement/fetch_customer_accounts.php?page=${page}&search=${encodeURIComponent(search)}&sort=${sort}`, true);
     
+    xhr.onload = function() {
+        searchContainer.classList.remove('search-loading');
+        if (this.status === 200) {
+            try {
+                const response = JSON.parse(this.responseText);
+                
+                // Update the table content
+                document.querySelector('#customerTable tbody').innerHTML = response.tableContent;
+                
+                // Update pagination info
+                const paginationInfo = `Showing ${response.showingFrom}-${response.showingTo} of ${response.totalCount} entries`;
+                document.getElementById('paginationInfo').textContent = paginationInfo;
+                
+                // Update pagination buttons
+                const paginationContainer = document.getElementById('paginationContainer');
+                
+                // Clear existing buttons
+                paginationContainer.innerHTML = '';
+                
+                // Previous button
+                const prevButton = document.createElement('button');
+                prevButton.className = 'px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover ' + (page === 1 ? 'opacity-50 cursor-not-allowed' : '');
+                prevButton.textContent = 'Previous';
+                prevButton.disabled = page === 1;
+                prevButton.onclick = () => {
+                    if (page > 1) fetchCustomerAccounts(page - 1, search, sort);
+                };
+                paginationContainer.appendChild(prevButton);
+                
+                // Page buttons
+                const maxPagesToShow = 5;
+                let startPage = Math.max(1, page - Math.floor(maxPagesToShow / 2));
+                let endPage = Math.min(response.totalPages, startPage + maxPagesToShow - 1);
+                
+                // Adjust if we're at the beginning or end
+                if (endPage - startPage + 1 < maxPagesToShow) {
+                    startPage = Math.max(1, endPage - maxPagesToShow + 1);
+                }
+                
+                // First page and ellipsis if needed
+                if (startPage > 1) {
+                    const firstPageButton = document.createElement('button');
+                    firstPageButton.className = 'px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover';
+                    firstPageButton.textContent = '1';
+                    firstPageButton.onclick = () => fetchCustomerAccounts(1, search, sort);
+                    paginationContainer.appendChild(firstPageButton);
+                    
+                    if (startPage > 2) {
+                        const ellipsis = document.createElement('span');
+                        ellipsis.className = 'px-2 flex items-center';
+                        ellipsis.textContent = '...';
+                        paginationContainer.appendChild(ellipsis);
+                    }
+                }
+                
+                // Page number buttons
+                for (let i = startPage; i <= endPage; i++) {
+                    const pageButton = document.createElement('button');
+                    pageButton.className = `px-3 py-1 rounded text-sm mx-0.5 ${i === page ? 'bg-sidebar-accent text-white' : 'border border-sidebar-border hover:bg-sidebar-hover'}`;
+                    pageButton.textContent = i;
+                    pageButton.onclick = () => fetchCustomerAccounts(i, search, sort);
+                    paginationContainer.appendChild(pageButton);
+                }
+                
+                // Last page and ellipsis if needed
+                if (endPage < response.totalPages) {
+                    if (endPage < response.totalPages - 1) {
+                        const ellipsis = document.createElement('span');
+                        ellipsis.className = 'px-2 flex items-center';
+                        ellipsis.textContent = '...';
+                        paginationContainer.appendChild(ellipsis);
+                    }
+                    
+                    const lastPageButton = document.createElement('button');
+                    lastPageButton.className = 'px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover';
+                    lastPageButton.textContent = response.totalPages;
+                    lastPageButton.onclick = () => fetchCustomerAccounts(response.totalPages, search, sort);
+                    paginationContainer.appendChild(lastPageButton);
+                }
+                
+                // Next button
+                const nextButton = document.createElement('button');
+                nextButton.className = 'px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover ' + (page === response.totalPages ? 'opacity-50 cursor-not-allowed' : '');
+                nextButton.textContent = 'Next';
+                nextButton.disabled = page === response.totalPages;
+                nextButton.onclick = () => {
+                    if (page < response.totalPages) fetchCustomerAccounts(page + 1, search, sort);
+                };
+                paginationContainer.appendChild(nextButton);
+                
+            } catch (e) {
+                console.error('Error parsing response:', e);
+                document.getElementById('paginationInfo').textContent = 'Error loading data';
+            }
+        } else {
+            document.getElementById('paginationInfo').textContent = 'Error loading data';
+        }
+    };
+    
+    xhr.onerror = function() {
+        document.getElementById('paginationInfo').textContent = 'Network error';
+        console.error('Request failed');
+    };
+    
+    xhr.send();
+}
 // Add a debounce function to prevent too many rapid searches
 let searchTimeout;
 const searchDebounceTime = 300; // milliseconds
