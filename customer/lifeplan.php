@@ -1260,7 +1260,7 @@ const packages = packagesFromDB.map(pkg => {
         description: pkg.description,
         image: "<?php echo getImageUrl('" + pkg.image_url + "'); ?>",
         icon: "star", // Default icon
-        features: features
+        features: features,
         branch_id: pkg.branch_id,     // Add this line
         service_id: pkg.service_id 
     };
@@ -1367,6 +1367,7 @@ function openPackagesModal() {
 
 // Function to open the traditional package details modal
 function openTraditionalModal(packageDetails) {
+    console.log('Package Details:', packageDetails)
     const modal = document.getElementById('traditionalModal');
     if (!modal) return;
     
