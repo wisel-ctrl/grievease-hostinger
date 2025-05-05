@@ -1674,9 +1674,7 @@ $total_lifeplan_bookings = $lifeplan_count_result->fetch_assoc()['total'];
             </h5>
             <div class="border border-gray-200 rounded-lg p-4" id="flowerDesignDetails">
               <div class="flex flex-col sm:flex-row gap-4">
-                <div class="sm:w-1/3">
-                  <img id="flowerDesignImage" src="" alt="Flower Design" class="w-full h-auto rounded-md object-cover">
-                </div>
+                
                 <div class="sm:w-2/3">
                   <h6 class="font-semibold text-lg" id="flowerDesignName">No flower design selected</h6>
                 </div>
@@ -3077,7 +3075,7 @@ function openCustomDetails(bookingId) {
       }
       
       // Handle Flower Design Details
-      if (data.flower_id && data.flower_name) {
+      if ( data.flower_name) {
         document.getElementById('flowerDesignName').textContent = data.flower_name;
         document.getElementById('flowerDesignPrice').textContent = "₱" + (parseFloat(data.flower_price) || 0).toFixed(2);
         
