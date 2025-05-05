@@ -3125,7 +3125,8 @@ function closeAllModals() {
 
 // Function to update lifeplan payment details
     function updateLifeplanPayment() {
-        const months = parseInt(document.getElementById('lifeplanPaymentTerm').value);
+        const years = parseInt(document.getElementById('lifeplanPaymentTerm').value);
+        const months = years * 12;
         const totalPrice = parseInt(sessionStorage.getItem('selectedPackagePrice') || '0');
         const monthlyPayment = Math.ceil(totalPrice / months);
         
