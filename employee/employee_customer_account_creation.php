@@ -353,6 +353,7 @@ require_once '../db_connect.php';
         <!-- Create Account button second -->
         <button id="createBtn" onclick="switchMode('create')" class="py-2 px-5 border-none bg-transparent text-sidebar-text cursor-pointer hover:bg-sidebar-hover transition-all duration-300">Create Account</button>
       </div>
+      
     </div>
 
 <!-- Add Customer Account Form (Non-Modal Version) -->
@@ -515,6 +516,19 @@ require_once '../db_connect.php';
         <div class="bg-white rounded-lg shadow-sidebar p-5 mb-6 border border-sidebar-border hover:shadow-card transition-all duration-300">
             <div class="mb-5">
                 <h3 class="text-lg font-semibold text-sidebar-text">Customer Accounts</h3>
+                <div class="ml-auto flex items-center space-x-3">
+          <button id="viewArchivedBtn" onclick="viewArchivedAccounts()" class="bg-gray-200 text-gray-700 border-none py-2 px-4 rounded-md cursor-pointer hover:bg-gray-300 transition-all duration-300">
+            <i class="fas fa-archive mr-2"></i>View Archived Accounts
+          </button>
+            <div id="searchContainer" class="relative">
+              <input type="text" id="searchCustomer" placeholder="Search customers..." 
+                     class="p-2 border border-sidebar-border rounded-md text-sm text-sidebar-text focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent w-full"
+                     oninput="searchCustomers()">
+              <button id="clearSearchBtn" onclick="clearSearch()" class="absolute right-2 top-2 text-gray-400 hover:text-gray-600 hidden">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+        </div>
             </div>
             <div class="p-5">
                 <div class="overflow-x-auto scrollbar-thin">
