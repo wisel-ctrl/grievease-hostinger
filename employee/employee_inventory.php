@@ -389,10 +389,13 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == 1) {
       <div class="hidden lg:flex items-center gap-3">
         <!-- Search Input -->
         <div class="relative">
-          <input type="text" id="inventorySearch" 
+          <input type="text" id="searchBox_<?php echo $branch_id; ?>" 
                 placeholder="Search items..." 
                 class="pl-8 pr-3 py-2 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
           <i class="fas fa-search absolute left-2.5 top-3 text-gray-400"></i>
+          <button id="clearSearch" class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 hidden">
+            <i class="fas fa-times"></i>
+          </button>
         </div>
 
         <!-- Filter Dropdown -->
@@ -471,10 +474,13 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == 1) {
       <div class="flex items-center w-full gap-3 mb-4">
         <!-- Search Input - Takes most of the space -->
         <div class="relative flex-grow">
-          <input type="text" id="inventorySearch" 
+          <input type="text" id="searchBox_<?php echo $branch_id; ?>" 
                   placeholder="Search items..." 
                   class="pl-8 pr-3 py-2.5 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
           <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+          <button id="clearSearch" class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 hidden">
+            <i class="fas fa-times"></i>
+          </button>
         </div>
 
         <!-- Icon-only buttons for filter and archive -->
