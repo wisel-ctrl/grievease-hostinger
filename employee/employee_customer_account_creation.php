@@ -512,7 +512,7 @@ require_once '../db_connect.php';
 
 
   <!-- Manage Customer Accounts Section -->
-<div id="customer-account-management" class="bg-white rounded-lg shadow-md mb-8 border border-sidebar-border overflow-hidden">
+<div id="manageAccountSection" class="bg-white rounded-lg shadow-md mb-8 border border-sidebar-border overflow-hidden">
     <!-- Account Header with Search and Filters -->
     <div class="bg-sidebar-hover p-4 border-b border-sidebar-border">
         <!-- Desktop layout for big screens - Title on left, controls on right -->
@@ -539,63 +539,10 @@ require_once '../db_connect.php';
                     </button>
                 </div>
 
-                <!-- Filter Dropdown -->
-                <div class="relative filter-dropdown">
-                    <button id="customerFilterToggle" class="px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover">
-                        <i class="fas fa-filter text-sidebar-accent"></i>
-                        <span>Filters</span>
-                        <span id="filterIndicator" class="hidden h-2 w-2 bg-sidebar-accent rounded-full"></span>
-                    </button>
-                    
-                    <!-- Filter Window -->
-                    <div id="customerFilterDropdown" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-4">
-                        <div class="space-y-4">
-                            <!-- Sort Options -->
-                            <div>
-                                <h5 class="text-sm font-medium text-sidebar-text mb-2">Sort By</h5>
-                                <div class="space-y-1">
-                                    <div class="flex items-center cursor-pointer filter-option" data-sort="id_asc">
-                                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                                            Default
-                                        </span>
-                                    </div>
-                                    <div class="flex items-center cursor-pointer filter-option" data-sort="name_asc">
-                                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                                            Name: A-Z
-                                        </span>
-                                    </div>
-                                    <div class="flex items-center cursor-pointer filter-option" data-sort="name_desc">
-                                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                                            Name: Z-A
-                                        </span>
-                                    </div>
-                                    <div class="flex items-center cursor-pointer filter-option" data-sort="email_asc">
-                                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                                            Email: A-Z
-                                        </span>
-                                    </div>
-                                    <div class="flex items-center cursor-pointer filter-option" data-sort="email_desc">
-                                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                                            Email: Z-A
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- For Customer Archive Button -->
-                <button id="viewArchivedBtn" class="px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover" onclick="viewArchivedAccounts()">
+                <!-- View Archived Button -->
+                <button id="viewArchivedBtn" onclick="viewArchivedAccounts()" class="px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover">
                     <i class="fas fa-archive text-sidebar-accent"></i>
-                    <span>View Archived</span>
-                </button>
-                
-                <!-- Add Customer Account Button -->
-                <button class="px-4 py-2 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm whitespace-nowrap" 
-                        onclick="openAddCustomerAccountModal()">
-                    <i class="fas fa-plus"></i>
-                    <span>Add Customer Account</span>
+                    <span>View Archived Accounts</span>
                 </button>
             </div>
         </div>
@@ -607,106 +554,51 @@ require_once '../db_connect.php';
                 <!-- Search Input - Takes most of the space -->
                 <div class="relative flex-grow">
                     <input type="text" id="searchCustomerMobile" 
-                            placeholder="Search customers..." 
-                            class="pl-8 pr-3 py-2.5 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent"
-                            oninput="searchCustomers()">
+                           placeholder="Search customers..." 
+                           class="pl-8 pr-3 py-2.5 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent"
+                           oninput="searchCustomers()">
                     <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
                     <button id="clearSearchBtnMobile" onclick="clearSearch()" class="absolute right-2 top-2 text-gray-400 hover:text-gray-600 hidden">
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
 
-                <!-- Icon-only button for filter -->
-                <div class="flex items-center gap-2">
-                    <!-- Filter Icon Button -->
-                    <div class="relative filter-dropdown">
-                        <button id="customerFilterToggleMobile" class="w-10 h-10 flex items-center justify-center text-sidebar-accent">
-                            <i class="fas fa-filter text-xl"></i>
-                            <span id="filterIndicatorMobile" class="hidden absolute top-1 right-1 h-2 w-2 bg-sidebar-accent rounded-full"></span>
-                        </button>
-                        
-                        <!-- Mobile Filter Dropdown -->
-                        <div id="customerFilterDropdownMobile" class="hidden absolute right-0 mt-2 w-56 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-4">
-                            <div class="space-y-2">
-                                <h5 class="text-sm font-medium text-sidebar-text mb-2">Sort By</h5>
-                                <div class="space-y-1">
-                                    <div class="flex items-center cursor-pointer filter-option-mobile" data-sort="id_asc">
-                                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                                            Default
-                                        </span>
-                                    </div>
-                                    <div class="flex items-center cursor-pointer filter-option-mobile" data-sort="name_asc">
-                                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                                            Name: A-Z
-                                        </span>
-                                    </div>
-                                    <div class="flex items-center cursor-pointer filter-option-mobile" data-sort="name_desc">
-                                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                                            Name: Z-A
-                                        </span>
-                                    </div>
-                                    <div class="flex items-center cursor-pointer filter-option-mobile" data-sort="email_asc">
-                                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                                            Email: A-Z
-                                        </span>
-                                    </div>
-                                    <div class="flex items-center cursor-pointer filter-option-mobile" data-sort="email_desc">
-                                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                                            Email: Z-A
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Archive Icon Button -->
-                    <button class="w-10 h-10 flex items-center justify-center text-sidebar-accent" onclick="viewArchivedAccounts()">
-                        <i class="fas fa-archive text-xl"></i>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Second row: Add Customer Account Button - Full width -->
-            <div class="w-full">
-                <button class="px-4 py-2.5 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm whitespace-nowrap w-full justify-center" 
-                        onclick="openAddCustomerAccountModal()">
-                    <i class="fas fa-plus mr-2"></i>
-                    <span>Add Customer Account</span>
+                <!-- Archive Icon Button -->
+                <button class="w-10 h-10 flex items-center justify-center text-sidebar-accent" onclick="viewArchivedAccounts()">
+                    <i class="fas fa-archive text-xl"></i>
                 </button>
             </div>
         </div>
     </div>
     
     <!-- Responsive Table Container with improved spacing -->
-    <div class="overflow-x-auto scrollbar-thin" id="customerTableContainer">
-        
+    <div class="overflow-x-auto scrollbar-thin">
         <!-- Responsive Table with improved spacing and horizontal scroll for small screens -->
         <div class="min-w-full">
             <table id="customerTable" class="w-full">
                 <thead>
                     <tr class="bg-gray-50 border-b border-sidebar-border">
-                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable('id')">
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap">
                             <div class="flex items-center gap-1.5">
                                 <i class="fas fa-hashtag text-sidebar-accent"></i> Customer ID 
                             </div>
                         </th>
-                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable('name')">
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap">
                             <div class="flex items-center gap-1.5">
                                 <i class="fas fa-user text-sidebar-accent"></i> Name 
                             </div>
                         </th>
-                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable('email')">
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap">
                             <div class="flex items-center gap-1.5">
                                 <i class="fas fa-envelope text-sidebar-accent"></i> Email 
                             </div>
                         </th>
-                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable('type')">
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap">
                             <div class="flex items-center gap-1.5">
                                 <i class="fas fa-id-badge text-sidebar-accent"></i> Type 
                             </div>
                         </th>
-                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable('status')">
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap">
                             <div class="flex items-center gap-1.5">
                                 <i class="fas fa-toggle-on text-sidebar-accent"></i> Status 
                             </div>
@@ -718,7 +610,7 @@ require_once '../db_connect.php';
                         </th>
                     </tr>
                 </thead>
-                <tbody id="customerTableBody">
+                <tbody>
                     <!-- Table content will be populated by JavaScript -->
                 </tbody>
             </table>
