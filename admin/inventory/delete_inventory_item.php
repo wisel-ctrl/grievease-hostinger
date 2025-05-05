@@ -1,32 +1,23 @@
 <?php
-require_once '../../db_connect.php';
+include '../../db_connect.php'; // Ensure this connects to your database
 
-header('Content-Type: application/json');
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['inventory_id'])) {
+    $inventory_id = $_POST['inventory_id'];
 
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    echo json_encode(['success' => false, 'message' => 'Invalid request method']);
-    exit;
-}
+    // Update status to 0
+    $query = "UPDATE inventory_tb SET status = 0 WHERE inventory_id = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("i", $inventory_id);
 
-if (!isset($_POST['inventory_id'])) {
-    echo json_encode(['success' => false, 'message' => 'Inventory ID is required']);
-    exit;
-}
-
-$inventoryId = $_POST['inventory_id'];
-
-try {
-    $stmt = $conn->prepare("UPDATE inventory_tb SET status = 0 WHERE inventory_id = ?");
-    $stmt->bind_param("i", $inventoryId);
-    
     if ($stmt->execute()) {
-        echo json_encode(['success' => true]);
+        // Redirect back to inventory page
+        header("Location: ../inventory_management.php");
+        exit();
     } else {
-        echo json_encode(['success' => false, 'message' => 'Failed to archive item']);
+        echo "Error updating status.";
     }
-} catch (Exception $e) {
-    echo json_encode(['success' => false, 'message' => 'Database error: ' . $e->getMessage()]);
-}
 
-$conn->close();
+    $stmt->close();
+    $conn->close();
+}
 ?>
