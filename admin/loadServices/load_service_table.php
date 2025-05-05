@@ -155,7 +155,7 @@ $result = $conn->query($sql);
                                     <button class="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-all tooltip" 
                                             title="Archive Service" 
                                             onclick="archiveService('<?php echo htmlspecialchars($row['service_id'], ENT_QUOTES); ?>', '<?php echo htmlspecialchars($branchId, ENT_QUOTES); ?>')">
-                                        <i class="fas fa-trash-alt"></i>
+                                        <i class="fas fa-archive-alt"></i>
                                     </button>
                                 </div>
                             </td>

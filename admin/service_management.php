@@ -1592,47 +1592,76 @@ window.addEventListener('popstate', function(event) {
   </div>
 </div>
 
-<div id="archiveModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center">
-    <div class="bg-white rounded-lg p-6 w-3/4 max-w-4xl">
-        <div class="flex justify-between items-center mb-4">
-            <h2 class="text-xl font-semibold">Archived Services</h2>
-            <button id="closeArchiveModal" class="text-gray-500 hover:text-gray-700">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-        <div class="overflow-x-auto w-full">
-            <table class="w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
-                    <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/4">
-                            <div class="flex items-center">
-                                <i class="fas fa-hashtag mr-1.5 text-blue-500"></i> ID
-                            </div>
-                        </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/2">
-                            <div class="flex items-center">
-                                <i class="fas fa-tag mr-1.5 text-blue-500"></i> Service Name
-                            </div>
-                        </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/4">
-                            <div class="flex items-center">
-                                <i class="fas fa-cogs mr-1.5 text-blue-500"></i> Actions
-                            </div>
-                        </th>
-                    </tr>
-                </thead>
-                <tbody id="archivedServicesTable" class="bg-white divide-y divide-gray-200">
-                    <!-- Table content will be loaded dynamically -->
-                </tbody>
-            </table>
-        </div>
-        <div id="noArchivedServices" class="hidden text-center py-4 w-full">
-            <div class="flex flex-col items-center justify-center py-6">
-                <i class="fas fa-inbox text-gray-300 text-4xl mb-3"></i>
-                <p>No archived services found</p>
-            </div>
-        </div>
+<!-- Archived Services Modal -->
+<div class="fixed inset-0 z-50 flex items-center justify-center hidden" id="archiveModal">
+  <!-- Modal Backdrop -->
+  <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+  
+  <!-- Modal Content -->
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-4xl mx-4 z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+    <!-- Close Button -->
+    <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" id="closeArchiveModal">
+      <i class="fas fa-times"></i>
+    </button>
+    
+    <!-- Modal Header -->
+    <div class="px-6 py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
+      <h3 class="text-xl font-bold text-white flex items-center">
+        <span>Archived Services</span>
+      </h3>
     </div>
+    
+    <!-- Search Bar -->
+    <div class="px-6 py-4 border-b border-gray-200">
+      <div class="relative">
+        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <i class="fas fa-search text-gray-400"></i>
+        </div>
+        <input type="text" id="archivedServicesSearch" placeholder="Search archived services..." 
+          class="w-full pl-10 pr-4 py-3 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+      </div>
+    </div>
+    
+    <!-- Modal Body -->
+    <div class="px-6 py-5 max-h-[70vh] overflow-y-auto w-full">
+      <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+        <table class="w-full text-sm text-left text-gray-500">
+          <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+            <tr>
+              <th scope="col" class="px-6 py-3">
+                <div class="flex items-center">ID
+                </div>
+              </th>
+              <th scope="col" class="px-6 py-3">
+                <div class="flex items-center">Service Name
+                </div>
+              </th>
+              <th scope="col" class="px-6 py-3">
+                <div class="flex items-center">Actions
+                </div>
+              </th>
+            </tr>
+          </thead>
+          <tbody id="archivedServicesTable">
+            <!-- Table content will be loaded dynamically -->
+          </tbody>
+        </table>
+      </div>
+      <div id="noArchivedServices" class="hidden text-center py-4 w-full">
+        <div class="flex flex-col items-center justify-center py-6">
+          <i class="fas fa-inbox text-gray-300 text-4xl mb-3"></i>
+          <p>No archived services found</p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Modal Footer --> 
+    <div class="px-6 py-4 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
+      <button class="px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center" id="closeArchiveModalBtn">
+        Close
+      </button>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -1640,6 +1669,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const archiveBtn = document.getElementById('archiveBtn');
     const archiveModal = document.getElementById('archiveModal');
     const closeArchiveModal = document.getElementById('closeArchiveModal');
+    const closeArchiveModalBtn = document.getElementById('closeArchiveModalBtn');
     const archivedServicesTable = document.getElementById('archivedServicesTable');
     const noArchivedServices = document.getElementById('noArchivedServices');
 
@@ -1651,6 +1681,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Close modal when close button is clicked
     closeArchiveModal.addEventListener('click', function() {
+        archiveModal.classList.add('hidden');
+    });
+
+    // Close modal when close button is clicked
+    closeArchiveModalBtn.addEventListener('click', function() {
         archiveModal.classList.add('hidden');
     });
 
