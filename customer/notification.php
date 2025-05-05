@@ -1617,15 +1617,15 @@ function getStatusText(status) {
                                     </div>
                                     <div class="flex flex-wrap">
                                         <div class="w-1/3 text-sm text-gray-500">Birth Date</div>
-                                        <div class="w-2/3 font-medium text-gray-800 break-words">${formatDate(data.deceased_birth)}</div>
+                                        <div class="w-2/3 font-medium text-gray-800 break-words">${new Date(data.deceased_birth).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</div>
                                     </div>
                                     <div class="flex flex-wrap">
                                         <div class="w-1/3 text-sm text-gray-500">Date of Death</div>
-                                        <div class="w-2/3 font-medium text-gray-800 break-words">${formatDate(data.deceased_dodeath)}</div>
+                                        <div class="w-2/3 font-medium text-gray-800 break-words">${new Date(data.deceased_dodeath).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</div>
                                     </div>
                                     <div class="flex flex-wrap">
                                         <div class="w-1/3 text-sm text-gray-500">Date of Burial</div>
-                                        <div class="w-2/3 font-medium text-gray-800 break-words">${formatDate(data.deceased_dateOfBurial)}</div>
+                                        <div class="w-2/3 font-medium text-gray-800 break-words">${new Date(data.deceased_dateOfBurial).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</div>
                                     </div>
                                     <div class="flex flex-wrap">
                                         <div class="w-1/3 text-sm text-gray-500">With Cremation</div>
@@ -1658,14 +1658,13 @@ function getStatusText(status) {
                                     </div>
                                     <div class="flex flex-wrap">
                                         <div class="w-1/3 text-sm text-gray-500">Booking Date</div>
-                                        <div class="w-2/3 font-medium text-gray-800 break-words">${formattedBookingDate}</div>
+                                        <div class="w-2/3 font-medium text-gray-800 break-words">${new Date(formattedBookingDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</div>
                                     </div>
                                     ${data.accepted_date ? `
                                     <div class="flex flex-wrap">
                                         <div class="w-1/3 text-sm text-gray-500">${data.status} Date</div>
-                                        <div class="w-2/3 font-medium text-gray-800 break-words">${new Date(data.accepted_date).toLocaleString()}</div>
-                                    </div>
-                                    ` : ''}
+                                        <div class="w-2/3 font-medium text-gray-800 break-words">${new Date(data.accepted_date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</div>
+                                    </div>` : ''}
                                 </div>
                             </div>
                         </div>
