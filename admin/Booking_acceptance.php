@@ -1905,7 +1905,7 @@ $total_lifeplan_bookings = $lifeplan_count_result->fetch_assoc()['total'];
         <input type="hidden" id="customDeceasedAddressInput" name="deceased_address">
         
         <!-- Deceased Dates -->
-        <input type="hidden" id="customDeceasedBirth" name="deceased_birth">
+        <input type="hidden" id="customDeceasedBirthInput" name="deceased_birth">
         <input type="hidden" id="customDeceasedDeathInput" name="deceased_dodeath">
         <input type="hidden" id="customDeceasedBurialInput" name="deceased_dateOfBurial">
         
@@ -3236,13 +3236,13 @@ function confirmCustomAccept() {
             document.getElementById('customDeceasedAddressInput').value = data.deceased_address || '';
 
             // Dates information
-            document.getElementById('customDeceasedBirth').value = data.deceased_birth || '';
+            document.getElementById('customDeceasedBirthInput').value = data.deceased_birth || '';
             document.getElementById('customDeceasedDeathInput').value = data.deceased_dodeath || '';
             document.getElementById('customDeceasedBurialInput').value = data.deceased_dateOfBurial || '';            
             
             // Package components
             document.getElementById('customCasketId').value = data.casket_id || '';
-            document.getElementById('customFlowerId').value = data.flower_name || '';
+            document.getElementById('customFlowerId').value = data.flower_design || '';
             document.getElementById('customInclusions').value = JSON.stringify(data.inclusions) || '[]';
             
             // Other information
