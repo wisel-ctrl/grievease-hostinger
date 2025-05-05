@@ -1644,7 +1644,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     formData.append('deceasedAddress', `${streetAddress}, ${barangay}, ${city}, ${province}, ${region}`);
                     
                     // Submit the form via AJAX
-                    fetch('lifeplan_booking_for_lifeplanpage.php', {
+                    fetch('booking/lifeplan_booking_for_lifeplanpage.php', {
                         method: 'POST',
                         body: formData
                     })
