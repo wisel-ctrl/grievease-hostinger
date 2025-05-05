@@ -1293,7 +1293,7 @@ document.addEventListener('DOMContentLoaded', function() {
 // Update the loadPage function
 function loadPage(branchId, page) {
     // Validate page number
-    if (page < 1) page = 1;
+    if (page < 1) return;
     
     // Get total items from the container's data attribute
     const container = document.querySelector(`.branch-container[data-branch-id="${branchId}"]`);
@@ -1301,7 +1301,7 @@ function loadPage(branchId, page) {
     const itemsPerPage = 5;
     const totalPages = Math.ceil(totalItems / itemsPerPage);
     
-    if (page > totalPages) page = totalPages;
+    if (page > totalPages) return;
     
     // Show loading indicator
     const loadingIndicator = document.getElementById(`loadingIndicator${branchId}`);
@@ -1351,6 +1351,7 @@ function loadPage(branchId, page) {
             });
         });
 }
+
 
 // Function to reattach event listeners
 function reattachEventListeners(branchId) {
@@ -1434,33 +1435,103 @@ function updatePaginationControls(branchId, currentPage, totalPages) {
     const paginationContainer = document.getElementById(`paginationControls_${branchId}`);
     if (!paginationContainer) return;
     
-    // Update previous button
-    const prevButton = paginationContainer.querySelector('button:first-child');
-    if (prevButton) {
-        prevButton.disabled = currentPage <= 1;
-        prevButton.classList.toggle('opacity-50', currentPage <= 1);
-        prevButton.classList.toggle('cursor-not-allowed', currentPage <= 1);
-        prevButton.onclick = function() { loadPage(branchId, currentPage - 1); };
+    // Clear existing buttons
+    paginationContainer.innerHTML = '';
+    
+    // Create first page button (<<)
+    const firstButton = document.createElement('button');
+    firstButton.innerHTML = '&laquo;';
+    firstButton.className = `px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover ${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : ''}`;
+    firstButton.disabled = currentPage === 1;
+    firstButton.onclick = () => loadPage(branchId, 1);
+    paginationContainer.appendChild(firstButton);
+    
+    // Create previous page button (<)
+    const prevButton = document.createElement('button');
+    prevButton.innerHTML = '&lsaquo;';
+    prevButton.className = `px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover ${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : ''}`;
+    prevButton.disabled = currentPage === 1;
+    prevButton.onclick = () => loadPage(branchId, currentPage - 1);
+    paginationContainer.appendChild(prevButton);
+    
+    // Create page number buttons
+    let startPage = Math.max(1, currentPage - 1);
+    let endPage = Math.min(totalPages, currentPage + 1);
+    
+    // Adjust if we're at the beginning or end
+    if (currentPage === 1) {
+        endPage = Math.min(totalPages, 3);
+    } else if (currentPage === totalPages) {
+        startPage = Math.max(1, totalPages - 2);
     }
     
-    // Update next button
-    const nextButton = paginationContainer.querySelector('button:last-child');
-    if (nextButton) {
-        nextButton.disabled = currentPage >= totalPages;
-        nextButton.classList.toggle('opacity-50', currentPage >= totalPages);
-        nextButton.classList.toggle('cursor-not-allowed', currentPage >= totalPages);
-        nextButton.onclick = function() { loadPage(branchId, currentPage + 1); };
+    // Always show first page if not already shown
+    if (startPage > 1) {
+        const firstNumButton = document.createElement('button');
+        firstNumButton.textContent = '1';
+        firstNumButton.className = `px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover ${1 === currentPage ? 'bg-sidebar-accent text-white' : ''}`;
+        firstNumButton.onclick = () => loadPage(branchId, 1);
+        paginationContainer.appendChild(firstNumButton);
+        
+        if (startPage > 2) {
+            const ellipsis = document.createElement('span');
+            ellipsis.textContent = '...';
+            ellipsis.className = 'px-2 py-1.5';
+            paginationContainer.appendChild(ellipsis);
+        }
     }
     
-    // Update page number buttons
-    const pageButtons = paginationContainer.querySelectorAll('button:not(:first-child):not(:last-child)');
-    pageButtons.forEach(button => {
-        const pageNum = parseInt(button.textContent);
-        button.classList.toggle('bg-sidebar-accent', pageNum === currentPage);
-        button.classList.toggle('text-white', pageNum === currentPage);
-        button.onclick = function() { loadPage(branchId, pageNum); };
-    });
+    // Create middle page buttons
+    for (let i = startPage; i <= endPage; i++) {
+        const pageButton = document.createElement('button');
+        pageButton.textContent = i;
+        pageButton.className = `px-3.5 py-1.5 rounded text-sm ${i === currentPage ? 'bg-sidebar-accent text-white' : 'border border-sidebar-border hover:bg-sidebar-hover'}`;
+        pageButton.onclick = () => loadPage(branchId, i);
+        paginationContainer.appendChild(pageButton);
+    }
+    
+    // Always show last page if not already shown
+    if (endPage < totalPages) {
+        if (endPage < totalPages - 1) {
+            const ellipsis = document.createElement('span');
+            ellipsis.textContent = '...';
+            ellipsis.className = 'px-2 py-1.5';
+            paginationContainer.appendChild(ellipsis);
+        }
+        
+        const lastNumButton = document.createElement('button');
+        lastNumButton.textContent = totalPages;
+        lastNumButton.className = `px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover ${totalPages === currentPage ? 'bg-sidebar-accent text-white' : ''}`;
+        lastNumButton.onclick = () => loadPage(branchId, totalPages);
+        paginationContainer.appendChild(lastNumButton);
+    }
+    
+    // Create next page button (>)
+    const nextButton = document.createElement('button');
+    nextButton.innerHTML = '&rsaquo;';
+    nextButton.className = `px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover ${currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : ''}`;
+    nextButton.disabled = currentPage === totalPages;
+    nextButton.onclick = () => loadPage(branchId, currentPage + 1);
+    paginationContainer.appendChild(nextButton);
+    
+    // Create last page button (>>)
+    const lastButton = document.createElement('button');
+    lastButton.innerHTML = '&raquo;';
+    lastButton.className = `px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover ${currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : ''}`;
+    lastButton.disabled = currentPage === totalPages;
+    lastButton.onclick = () => loadPage(branchId, totalPages);
+    paginationContainer.appendChild(lastButton);
 }
+
+// Function to update pagination info text
+function updatePaginationInfo(branchId, currentPage, totalItems, itemsPerPage) {
+    const startItem = (currentPage - 1) * itemsPerPage + 1;
+    const endItem = Math.min(currentPage * itemsPerPage, totalItems);
+    
+    document.getElementById(`paginationInfo_${branchId}`).textContent = 
+        `Showing ${startItem} - ${endItem} of ${totalItems} items`;
+}
+
 
 // Update the updatePaginationActiveState function
 function updatePaginationActiveState(branchId, currentPage) {
@@ -1534,12 +1605,13 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('.branch-container').forEach(container => {
         const branchId = container.dataset.branchId;
         const urlParams = new URLSearchParams(window.location.search);
-        const currentPage = urlParams.get(`page_${branchId}`) || 1;
+        const currentPage = parseInt(urlParams.get(`page_${branchId}`)) || 1;
         const totalItems = parseInt(container.dataset.totalItems);
+        const totalPages = Math.ceil(totalItems / 5);
         
         // Initialize pagination
         updatePaginationInfo(branchId, currentPage, totalItems, 5);
-        updatePaginationActiveState(branchId, currentPage);
+        updatePaginationControls(branchId, currentPage, totalPages);
     });
 });
 
