@@ -1020,14 +1020,14 @@ $total_lifeplan_bookings = $lifeplan_count_result->fetch_assoc()['total'];
                     <?php
                     // Query to get lifeplan bookings
                     $lifeplanQuery = "SELECT lb.*, 
-                CONCAT(u.first_name, ' ', COALESCE(u.middle_name, ''), ' ', u.last_name, ' ', COALESCE(u.suffix, '')) AS customer_name,
-                s.service_name
-                FROM lifeplan_booking_tb lb
-                JOIN users u ON lb.customer_id = u.id
-                LEFT JOIN services_tb s ON lb.service_id = s.service_id
-                WHERE lb.booking_status = 'pending'
-                ORDER BY lb.lpbooking_id DESC
-                LIMIT ?, ?";
+                                    CONCAT(u.first_name, ' ', COALESCE(u.middle_name, ''), ' ', u.last_name, ' ', COALESCE(u.suffix, '')) AS customer_name,
+                                    s.service_name
+                                    FROM lifeplan_booking_tb lb
+                                    JOIN users u ON lb.customer_id = u.id
+                                    LEFT JOIN services_tb s ON lb.service_id = s.service_id
+                                    WHERE lb.booking_status = 'pending'
+                                    ORDER BY lb.lpbooking_id DESC
+                                    LIMIT 10";
                     
                     $lifeplanResult = $conn->query($lifeplanQuery);
                     
