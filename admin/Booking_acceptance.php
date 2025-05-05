@@ -1906,8 +1906,8 @@ $total_lifeplan_bookings = $lifeplan_count_result->fetch_assoc()['total'];
         
         <!-- Deceased Dates -->
         <input type="hidden" id="customDeceasedBirth" name="deceased_birth">
-        <input type="hidden" id="customDeceasedDeath" name="deceased_dodeath">
-        <input type="hidden" id="customDeceasedBurial" name="deceased_dateOfBurial">
+        <input type="hidden" id="customDeceasedDeathInput" name="deceased_dodeath">
+        <input type="hidden" id="customDeceasedBurialInput" name="deceased_dateOfBurial">
         
         <!-- Package Components -->
         <input type="hidden" id="customCasketId" name="casket_id">
@@ -3237,8 +3237,8 @@ function confirmCustomAccept() {
 
             // Dates information
             document.getElementById('customDeceasedBirth').value = data.deceased_birth || '';
-            document.getElementById('customDeceasedDeath').value = data.deceased_dodeath || '';
-            document.getElementById('customDeceasedBurial').value = data.deceased_dateOfBurial || '';            
+            document.getElementById('customDeceasedDeathInput').value = data.deceased_dodeath || '';
+            document.getElementById('customDeceasedBurialInput').value = data.deceased_dateOfBurial || '';            
             
             // Package components
             document.getElementById('customCasketId').value = data.casket_id || '';
