@@ -1507,11 +1507,10 @@ $total_lifeplan_bookings = $lifeplan_count_result->fetch_assoc()['total'];
 <!-- LifePlan Details Modal -->
 <div id="lifeplanDetailsModal" class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto">
   <!-- Modal Backdrop -->
-  <div class="modal-scroll-container overflow-y-auto max-h-[90vh]">
     <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
     
     <!-- Modal Content -->
-    <div class="relative bg-white rounded-xl shadow-card w-full max-w-4xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+    <div class="relative bg-white rounded-xl shadow-card w-full max-w-4xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] flex flex-col">
       <!-- Close Button -->
       <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeLifeplanModal()">
         <i class="fas fa-times"></i>
@@ -1525,7 +1524,7 @@ $total_lifeplan_bookings = $lifeplan_count_result->fetch_assoc()['total'];
       </div>
       
       <!-- Modal Body -->
-      <div class="px-4 sm:px-6 py-4 sm:py-5">
+      <div class="px-4 sm:px-6 py-4 sm:py-5 overflow-y-auto modal-scroll-container">
         <!-- Top Info Bar - Booking ID and Status -->
         <div class="flex justify-between items-center mb-6 bg-gray-50 p-3 sm:p-4 rounded-lg">
           <div class="flex items-center">
