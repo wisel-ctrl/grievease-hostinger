@@ -955,7 +955,6 @@ $totalOutstanding = $countResult->fetch_assoc()['total'];
             </div>
           </div>
         </div>
-      </div>
 
 
             </div>
