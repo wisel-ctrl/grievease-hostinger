@@ -72,6 +72,21 @@ if ($branch_result->num_rows > 0) {
     }
 }
 
+// Get total count of employees for pagination
+$countSql = "SELECT COUNT(*) as total FROM employee_tb";
+if ($branch_filter !== null) {
+$countSql .= " WHERE branch_id = ?";
+$stmtCount = $conn->prepare($countSql);
+$stmtCount->bind_param("i", $branch_filter);
+$stmtCount->execute();
+$countResult = $stmtCount->get_result();
+} else {
+$countResult = $conn->query($countSql);
+}
+$totalRow = $countResult->fetch_assoc();
+$totalEmployees = $totalRow['total'];
+$totalPages = ceil($totalEmployees / $perPage);
+
 
 // Pagination settings
 $perPage = 10; // Number of items per page
@@ -307,21 +322,6 @@ $stmt->bind_param("ii", $perPage, $offset);
 $stmt->execute();
 $result = $stmt->get_result();
 }
-
-// Get total count of employees for pagination
-$countSql = "SELECT COUNT(*) as total FROM employee_tb";
-if ($branch_filter !== null) {
-$countSql .= " WHERE branch_id = ?";
-$stmtCount = $conn->prepare($countSql);
-$stmtCount->bind_param("i", $branch_filter);
-$stmtCount->execute();
-$countResult = $stmtCount->get_result();
-} else {
-$countResult = $conn->query($countSql);
-}
-$totalRow = $countResult->fetch_assoc();
-$totalEmployees = $totalRow['total'];
-$totalPages = ceil($totalEmployees / $perPage);
 
           // Check if there are results
           if ($result->num_rows > 0) {
