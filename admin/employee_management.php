@@ -1601,6 +1601,7 @@ document.addEventListener('DOMContentLoaded', function() {
 let currentEmployeeId = null;
 
 // Function to view employee salary details
+// Function to view employee salary details
 function viewEmployeeDetails(employeeId) {
   currentEmployeeId = employeeId;
   
@@ -1623,12 +1624,44 @@ function viewEmployeeDetails(employeeId) {
         document.getElementById('modalBaseSalary').textContent = '₱' + baseSalary.toFixed(2);
         
         // Set default date range (last 30 days)
-        const endDate = new Date();
-        const startDate = new Date();
-        startDate.setDate(endDate.getDate() - 30);
+        const today = new Date();
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(today.getDate() - 30);
         
-        document.getElementById('startDate').valueAsDate = startDate;
-        document.getElementById('endDate').valueAsDate = endDate;
+        // Set max date for both inputs to today
+        const startDateInput = document.getElementById('startDate');
+        const endDateInput = document.getElementById('endDate');
+        
+        startDateInput.max = today.toISOString().split('T')[0];
+        endDateInput.max = today.toISOString().split('T')[0];
+        
+        // Set default values
+        startDateInput.valueAsDate = thirtyDaysAgo;
+        endDateInput.valueAsDate = today;
+        
+        // Add event listeners for date validation
+        startDateInput.addEventListener('change', function() {
+          const selectedStartDate = new Date(this.value);
+          const endDate = new Date(endDateInput.value);
+          
+          // Ensure end date is not before start date
+          if (endDate < selectedStartDate) {
+            endDateInput.value = this.value;
+          }
+          
+          // Set min date for end date
+          endDateInput.min = this.value;
+        });
+        
+        endDateInput.addEventListener('change', function() {
+          const selectedEndDate = new Date(this.value);
+          const startDate = new Date(startDateInput.value);
+          
+          // Ensure end date is not before start date
+          if (selectedEndDate < startDate) {
+            this.value = startDateInput.value;
+          }
+        });
         
         // Show the modal
         document.getElementById('viewEmployeeModal').style.display = 'flex';
