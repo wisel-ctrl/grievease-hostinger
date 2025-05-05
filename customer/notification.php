@@ -136,6 +136,35 @@ while ($booking = $bookings_result->fetch_assoc()) {
     }
 }
 
+// Get user's life plan bookings from database (notifications)
+$lifeplan_query = "SELECT * FROM lifeplan_booking_tb WHERE customer_id = ? ORDER BY initial_date DESC";
+$lifeplan_stmt = $conn->prepare($lifeplan_query);
+$lifeplan_stmt->bind_param("i", $user_id);
+$lifeplan_stmt->execute();
+$lifeplan_result = $lifeplan_stmt->get_result();
+$lifeplan_bookings = [];
+
+while ($lifeplan_booking = $lifeplan_result->fetch_assoc()) {
+    $lifeplan_bookings[] = $lifeplan_booking;
+    
+    switch ($lifeplan_booking['booking_status']) {
+        case 'pending':
+            $notifications_count['total']++;
+            $notifications_count['pending']++;
+            break;
+        case 'accepted':
+            $notifications_count['total']++;
+            $notifications_count['accepted']++;
+            break;
+        case 'decline':
+            $notifications_count['total']++;
+            $notifications_count['declined']++;
+            break;
+    }
+}
+
+$lifeplan_stmt->close();
+
 // Update ID validation counts
 if ($id_validation) {
     $notifications_count['total']++;
@@ -175,6 +204,41 @@ foreach ($bookings as $key => $booking) {
         $stmt->close();
     }
 }
+
+// Get service names for each life plan booking
+foreach ($lifeplan_bookings as $key => $lifeplan_booking) {
+    if ($lifeplan_booking['service_id'] === NULL) {
+        $lifeplan_bookings[$key]['service_name'] = 'Customize Package';
+    } else {
+        $service_query = "SELECT service_name FROM services_tb WHERE service_id = ?";
+        $stmt = $conn->prepare($service_query);
+        $stmt->bind_param("i", $lifeplan_booking['service_id']);
+        $stmt->execute();
+        $service_result = $stmt->get_result();
+        if ($service_row = $service_result->fetch_assoc()) {
+            $lifeplan_bookings[$key]['service_name'] = $service_row['service_name'];
+        } else {
+            $lifeplan_bookings[$key]['service_name'] = 'Unknown Service';
+        }
+        $stmt->close();
+    }
+}
+
+// Get branch names for each life plan booking
+foreach ($lifeplan_bookings as $key => $lifeplan_booking) {
+    $branch_query = "SELECT branch_name FROM branch_tb WHERE branch_id = ?";
+    $stmt = $conn->prepare($branch_query);
+    $stmt->bind_param("i", $lifeplan_booking['branch_id']);
+    $stmt->execute();
+    $branch_result = $stmt->get_result();
+    if ($branch_row = $branch_result->fetch_assoc()) {
+        $lifeplan_bookings[$key]['branch_name'] = $branch_row['branch_name'];
+    } else {
+        $lifeplan_bookings[$key]['branch_name'] = 'Unknown Branch';
+    }
+    $stmt->close();
+}
+
 
 // Get branch names for each booking
 foreach ($bookings as $key => $booking) {
@@ -290,6 +354,21 @@ foreach ($bookings as $booking) {
         ];
     }
 }
+
+// Add Life Plan bookings to filtered items
+foreach ($lifeplan_bookings as $lifeplan_booking) {
+    if ($current_filter === 'all' || 
+        ($current_filter === 'pending' && $lifeplan_booking['booking_status'] === 'pending') ||
+        ($current_filter === 'accepted' && $lifeplan_booking['booking_status'] === 'accepted') ||
+        ($current_filter === 'declined' && $lifeplan_booking['booking_status'] === 'decline')) {
+        $filtered_items[] = [
+            'type' => 'lifeplan_booking',
+            'data' => $lifeplan_booking,
+            'timestamp' => $lifeplan_booking['initial_date']
+        ];
+    }
+}
+
 // Add ID validation if it matches the filter
 if ($id_validation) {
     $id_validation_status = $id_validation['is_validated'];
@@ -1063,7 +1142,151 @@ document.addEventListener('click', function(event) {
         </div>
     </div>
 </div>
-                    <?php endif; ?>
+                    <?php elseif ($item['type'] === 'lifeplan_booking'): ?>
+    <?php 
+        $lifeplan_booking = $item['data'];
+        
+        $border_color = '';
+        $status_bg = '';
+        $status_icon = '';
+        $status_text_color = '';
+        $status_text = '';
+        
+        switch ($lifeplan_booking['booking_status']) {
+            case 'pending':
+                $border_color = 'border-yellow-600';
+                $status_bg = 'bg-yellow-600/20';
+                $status_icon = 'fas fa-clock';
+                $status_text_color = 'text-yellow-600';
+                $status_text = 'Pending';
+                break;
+            case 'accepted':
+                $border_color = 'border-success';
+                $status_bg = 'bg-success/20';
+                $status_icon = 'fas fa-check-circle';
+                $status_text_color = 'text-success';
+                $status_text = 'Accepted';
+                break;
+            case 'decline':
+                $border_color = 'border-error';
+                $status_bg = 'bg-error/20';
+                $status_icon = 'fas fa-times-circle';
+                $status_text_color = 'text-error';
+                $status_text = 'Declined';
+                break;
+        }
+    ?>
+    
+    <!-- Life Plan Booking Notification -->
+    <div class="bg-white border-l-4 <?php echo $border_color; ?> rounded-xl shadow-md overflow-hidden notification-animate hover:shadow-lg transition-all duration-300">
+        <div class="flex flex-col">
+            <div class="flex-1 py-4 px-4 sm:py-5 sm:px-7">
+                <!-- Top Row -->
+                <div class="flex justify-between items-start mb-1">
+                    <!-- Left Column - Status -->
+                    <div class="flex flex-col items-start">
+                        <div class="flex items-center space-x-2 mb-1">
+                            <span class="<?php echo $status_bg; ?> <?php echo $status_text_color; ?> text-xs px-2 py-1 rounded-full inline-flex items-center">
+                                <i class="<?php echo $status_icon; ?> mr-1 text-xs"></i>
+                                <p>Booking: <?php echo $status_text; ?></p>
+                            </span>
+                            <!-- Life Plan badge -->
+                            <span class="bg-blue-600/20 text-blue-600 text-xs px-2 py-1 rounded-full inline-flex items-center">
+                                <i class="fas fa-calendar-alt mr-1 text-xs"></i>
+                                <p>Life Plan</p>
+                            </span>
+                        </div>
+                        
+                        <!-- Service Name -->
+                        <h3 class="text-navy text-base sm:text-lg font-hedvig mt-1">
+                            <?php echo htmlspecialchars($lifeplan_booking['service_name']); ?>
+                        </h3>
+                        
+                        <?php if ($lifeplan_booking['booking_status'] === 'decline' && !empty($lifeplan_booking['decline_reason'])): ?>
+                            <p class="text-gray-600 text-xs sm:text-sm mt-1">
+                                <i class="fas fa-comment-alt mr-1 text-gold text-xs"></i> 
+                                Reason: <?php echo htmlspecialchars($lifeplan_booking['decline_reason']); ?>
+                            </p>
+                        <?php endif; ?>
+                    </div>
+                    
+                    <!-- Right Column - Date/Time and Branch -->
+                    <div class="flex flex-col items-end">
+                        <!-- Date/Time -->
+                        <div class="bg-cream rounded-lg p-1 text-xs flex items-center space-x-1">
+                            <p class="text-gray-700 flex items-center">
+                                <i class="far fa-calendar mr-1 text-gold text-xs"></i>
+                                <?php 
+                                    $date = new DateTime($lifeplan_booking['initial_date'], new DateTimeZone('Asia/Manila'));
+                                    $date->setTimezone(new DateTimeZone('Asia/Manila'));
+                                    echo $date->format('M d');
+                                ?>
+                            </p>
+                            <p class="text-gray-700 flex items-center">
+                                <i class="far fa-clock mr-1 text-gold text-xs"></i>
+                                <?php echo $date->format('h:i A'); ?>
+                            </p>
+                        </div>
+                        
+                        <!-- Branch Name -->
+                        <p class="text-gray-600 text-xs mt-1 flex items-center">
+                            <i class="fas fa-map-marker-alt mr-1 text-gold text-xs"></i> 
+                            <?php echo htmlspecialchars($lifeplan_booking['branch_name']); ?>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Booking Details -->
+                <div class="mt-2">
+                    <p class="text-gray-700 text-xs sm:text-sm">
+                        <?php 
+                            switch($lifeplan_booking['booking_status']) {
+                                case 'pending':
+                                    echo "Your Life Plan application is being reviewed by our staff. We will update you soon.";
+                                    break;
+                                case 'accepted':
+                                    echo "Your Life Plan has been approved. Thank you for choosing our services.";
+                                    break;
+                                case 'decline':
+                                    echo "We apologize, but we were unable to approve your Life Plan application.";
+                                    if (!empty($lifeplan_booking['decline_reason'])) {
+                                        echo " Reason: " . htmlspecialchars($lifeplan_booking['decline_reason']);
+                                    }
+                                    break;
+                            }
+                        ?>
+                    </p>
+                </div>
+                
+                <div class="mt-3 flex flex-wrap gap-2 items-center justify-between">
+                    <button onclick="viewLifePlanDetails(<?php echo $lifeplan_booking['lpbooking_id']; ?>, '<?php echo $lifeplan_booking['booking_status']; ?>')" 
+                        class="<?php 
+                            if($lifeplan_booking['booking_status'] === 'pending') echo 'bg-yellow-600 hover:bg-yellow-700';
+                            elseif($lifeplan_booking['booking_status'] === 'accepted') echo 'bg-green-600 hover:bg-green-700';
+                            elseif($lifeplan_booking['booking_status'] === 'decline') echo 'bg-red-600 hover:bg-red-700';
+                            else echo 'bg-gray-600 hover:bg-gray-700';
+                        ?> text-white px-3 py-1.5 rounded-lg text-xs font-medium transition flex items-center">
+                        <i class="fas fa-eye mr-1 text-xs"></i> View Details
+                    </button>
+                    
+                    <!-- Timestamp -->
+                    <div class="text-xs text-gray-500 flex items-center">
+                        <i class="fas fa-history mr-1 text-xs"></i> 
+                        <?php 
+                            $timestamp = $lifeplan_booking['initial_date'];
+                            if ($lifeplan_booking['booking_status'] === 'accepted' && !empty($lifeplan_booking['acceptdecline_date'])) {
+                                $timestamp = $lifeplan_booking['acceptdecline_date'];
+                            } elseif ($lifeplan_booking['booking_status'] === 'decline' && !empty($lifeplan_booking['acceptdecline_date'])) {
+                                $timestamp = $lifeplan_booking['acceptdecline_date'];
+                            }
+                            echo time_elapsed_string_booking($timestamp); 
+                        ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+<?php endif; ?>
                 <?php endforeach; ?>
             </div>
             
@@ -1584,6 +1807,245 @@ function getStatusClass(status) {
             noSearchResults.style.display = 'none';
         }
     });
+    
+    
+   function viewLifePlanDetails(lpbookingId, status) {
+    // Show loading state
+    document.getElementById('bookingDetailsContent').innerHTML = '<div class="flex justify-center py-8"><i class="fas fa-spinner fa-spin text-2xl text-sidebar-accent"></i></div>';
+    
+    // Show the modal
+    document.getElementById('bookingDetailsModal').classList.remove('hidden');
+    
+    // Set modal header color based on status
+    const modalHeader = document.querySelector('#bookingDetailsModal .bg-yellow-600');
+    modalHeader.classList.remove('bg-yellow-600');
+    
+    switch(status.toLowerCase()) {
+        case 'pending':
+            modalHeader.classList.add('bg-yellow-600');
+            break;
+        case 'accepted':
+            modalHeader.classList.add('bg-green-600');
+            break;
+        case 'decline':
+            modalHeader.classList.add('bg-red-600');
+            break;
+        default:
+            modalHeader.classList.add('bg-gray-600');
+    }
+    
+    // Fetch life plan booking details via AJAX
+    fetch(`notification/get_lifeplan_details.php?lpbooking_id=${lpbookingId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                document.getElementById('bookingDetailsContent').innerHTML = `
+                    <div class="text-center py-8 text-red-500">
+                        <i class="fas fa-exclamation-circle text-2xl mb-2"></i>
+                        <p>${data.error}</p>
+                    </div>
+                `;
+            } else {
+                // Format dates (handle null values)
+                const formatDate = (dateString) => {
+                    if (!dateString) return 'Not set';
+                    const date = new Date(dateString);
+                    return date.toLocaleDateString();
+                };
+                
+                // Determine icon color based on status
+                let iconBgColor = 'bg-yellow-600';
+                switch(data.booking_status.toLowerCase()) {
+                    case 'accepted':
+                        iconBgColor = 'bg-green-600';
+                        break;
+                    case 'decline':
+                        iconBgColor = 'bg-red-600';
+                        break;
+                    case 'pending':
+                    default:
+                        iconBgColor = 'bg-yellow-600';
+                }
+                
+                // Get service name - use 'Customize Package' if service_id is NULL
+                const serviceName = data.service_id ? data.service_name : 'Customize Package';
+                
+                // Create the HTML content
+                let htmlContent = `
+                    <!-- Booking ID and Status Banner -->
+                    <div class="flex justify-between items-center mb-6 bg-gray-50 p-3 sm:p-4 rounded-lg">
+                        <div class="flex items-center">
+                            <div class="${iconBgColor} rounded-full p-2 mr-3">
+                                <i class="fas fa-hashtag text-white"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500">Life Plan ID</p>
+                                <p class="text-gray-800">#LP-${data.lpbooking_id || 'N/A'}</p>
+                            </div>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500 mb-1">Status</p>
+                            <div>
+                                <span class="px-3 py-1.5 text-sm font-medium rounded-full ${getStatusColorClass(data.booking_status)} flex items-center">
+                                    ${data.booking_status.charAt(0).toUpperCase() + data.booking_status.slice(1)}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Content Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                        <!-- Left Column -->
+                        <div class="space-y-3 sm:space-y-4">
+                            <!-- Plan Holder Information -->
+                            <div class="bg-white rounded-lg p-4 sm:p-5 border border-gray-200 shadow-sm">
+                                <h4 class="text-gray-800 mb-3 sm:mb-4 flex items-center">
+                                    Plan Holder Information
+                                </h4>
+                                <div class="space-y-2 sm:space-y-3">
+                                    <div class="flex flex-wrap">
+                                        <div class="w-1/3 text-sm text-gray-500">Full Name</div>
+                                        <div class="w-2/3 font-medium text-gray-800 break-words">${data.benefeciary_lname}, ${data.benefeciary_fname} ${data.benefeciary_mname || ''} ${data.benefeciary_suffix || ''}</div>
+                                    </div>
+                                    <div class="flex flex-wrap">
+                                        <div class="w-1/3 text-sm text-gray-500">Birth Date</div>
+                                        <div class="w-2/3 font-medium text-gray-800 break-words">${formatDate(data.benefeciary_birth)}</div>
+                                    </div>
+                                    <div class="flex flex-wrap">
+                                        <div class="w-1/3 text-sm text-gray-500">Address</div>
+                                        <div class="w-2/3 font-medium text-gray-800 break-words">${data.benefeciary_address || 'Not provided'}</div>
+                                    </div>
+                                    <div class="flex flex-wrap">
+                                        <div class="w-1/3 text-sm text-gray-500">Contact Number</div>
+                                        <div class="w-2/3 font-medium text-gray-800 break-words">${data.phone || 'Not provided'}</div>
+                                    </div>
+                                    <div class="flex flex-wrap">
+                                        <div class="w-1/3 text-sm text-gray-500">Relationship to Client</div>
+                                        <div class="w-2/3 font-medium text-gray-800 break-words">${data.relationship_to_client || 'Not specified'}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        
+                            <!-- Plan Details -->
+                            <div class="bg-white rounded-lg p-4 sm:p-5 border border-gray-200 shadow-sm">
+                                <h4 class="text-gray-800 mb-3 sm:mb-4 flex items-center">
+                                    Plan Details
+                                </h4>
+                                <div class="space-y-2 sm:space-y-3">
+                                    <div class="flex flex-wrap">
+                                        <div class="w-1/3 text-sm text-gray-500">Service</div>
+                                        <div class="w-2/3 font-medium text-gray-800 break-words">${serviceName}</div>
+                                    </div>
+                                    <div class="flex flex-wrap">
+                                        <div class="w-1/3 text-sm text-gray-500">Branch</div>
+                                        <div class="w-2/3 font-medium text-gray-800 break-words">${data.branch_name}</div>
+                                    </div>
+                                    <div class="flex flex-wrap">
+                                        <div class="w-1/3 text-sm text-gray-500">Plan Price</div>
+                                        <div class="w-2/3 font-medium text-gray-800 break-words">₱${parseFloat(data.package_price).toFixed(2)}</div>
+                                    </div>
+                                    <div class="flex flex-wrap">
+                                        <div class="w-1/3 text-sm text-gray-500">Initial Payment</div>
+                                        <div class="w-2/3 font-medium text-gray-800 break-words">₱${parseFloat(data.amount_paid || 0).toFixed(2)}</div>
+                                    </div>
+                                    <div class="flex flex-wrap">
+                                        <div class="w-1/3 text-sm text-gray-500">Application Date</div>
+                                        <div class="w-2/3 font-medium text-gray-800 break-words">${new Date(data.initial_date).toLocaleString()}</div>
+                                    </div>
+                                    ${data.acceptdecline_date ? `
+                                    <div class="flex flex-wrap">
+                                        <div class="w-1/3 text-sm text-gray-500">${data.booking_status.charAt(0).toUpperCase() + data.booking_status.slice(1)} Date</div>
+                                        <div class="w-2/3 font-medium text-gray-800 break-words">${new Date(data.acceptdecline_date).toLocaleString()}</div>
+                                    </div>
+                                    ` : ''}
+                                    <div class="flex flex-wrap">
+                                        <div class="w-1/3 text-sm text-gray-500">With Cremation</div>
+                                        <div class="w-2/3 font-medium text-gray-800 break-words">${data.with_cremate === 'yes' ? 'Yes' : 'No'}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Right Column -->
+                        <div class="space-y-3 sm:space-y-4">
+                            <!-- Documents -->
+                            <div class="bg-white rounded-lg p-4 sm:p-5 border border-gray-200 shadow-sm">
+                                <h4 class="text-gray-800 mb-3 sm:mb-4 flex items-center">
+                                    Documents
+                                </h4>
+                                
+                                <!-- Payment Proof -->
+                                <div>
+                                    <h5 class="font-medium text-gray-700 mb-2 flex items-center">
+                                        Payment Proof
+                                    </h5>
+                                    <div class="border border-gray-200 rounded-lg overflow-hidden">
+                                        ${data.payment_proof ? `
+                                            <div class="relative bg-gray-100 p-1">
+                                                <img src="booking/uploads/${data.payment_proof}" alt="Payment Proof" class="mx-auto rounded-md max-h-48 object-contain" />
+                                                <div class="absolute top-2 right-2">
+                                                    <button class="bg-white rounded-full p-1 shadow-md hover:bg-gray-100 transition-colors duration-200" title="View Full Size"
+                                                    onclick="window.open('booking/uploads/${data.payment_proof}', '_blank')">
+                                                        <i class="fas fa-search-plus text-blue-600"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        ` : `
+                                            <div class="flex flex-col items-center justify-center py-8 px-4 bg-gray-50">
+                                                <i class="fas fa-exclamation-circle text-gray-400 text-3xl mb-2"></i>
+                                                <p class="text-gray-500 text-center">No payment proof has been uploaded yet.</p>
+                                            </div>
+                                        `}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Decline Reason (if declined) -->
+                    ${data.booking_status === 'decline' && data.decline_reason ? `
+                    <div class="mt-4 bg-red-50 border-l-4 border-red-500 p-4">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <i class="fas fa-exclamation-circle text-red-500"></i>
+                            </div>
+                            <div class="ml-3">
+                                <h4 class="text-sm font-medium text-red-800">Decline Reason</h4>
+                                <div class="mt-2 text-sm text-red-700">
+                                    <p>${data.decline_reason}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    ` : ''}
+                `;
+                
+                document.getElementById('bookingDetailsContent').innerHTML = htmlContent;
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            document.getElementById('bookingDetailsContent').innerHTML = `
+                <div class="text-center py-8 text-red-500">
+                    <i class="fas fa-exclamation-circle text-2xl mb-2"></i>
+                    <p>Failed to load life plan details. Please try again.</p>
+                </div>
+            `;
+        });
+}
+
+function getStatusColorClass(status) {
+    switch(status.toLowerCase()) {
+        case 'pending':
+            return 'bg-yellow-100 text-yellow-800';
+        case 'accepted':
+            return 'bg-green-100 text-green-800';
+        case 'decline':
+            return 'bg-red-100 text-red-800';
+        default:
+            return 'bg-gray-100 text-gray-800';
+    }
+}
 </script>
 
 
