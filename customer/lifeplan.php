@@ -1073,7 +1073,7 @@ function fetchRegions() {
             
             data.forEach(region => {
                 const option = document.createElement('option');
-                option.value = region.region_name;
+                option.value = region.region_id;
                 option.textContent = region.region_name;
                 regionSelect.appendChild(option);
             });
@@ -1095,7 +1095,7 @@ function fetchProvinces(regionId) {
             
             data.forEach(province => {
                 const option = document.createElement('option');
-                option.value = province.province_name;
+                option.value = province.province_id;
                 option.textContent = province.province_name;
                 provinceSelect.appendChild(option);
             });
@@ -1119,7 +1119,7 @@ function fetchCities(provinceId) {
             
             data.forEach(city => {
                 const option = document.createElement('option');
-                option.value = city.municipality_name;
+                option.value = city.municipality_id;
                 option.textContent = city.municipality_name;
                 citySelect.appendChild(option);
             });
@@ -1143,7 +1143,7 @@ function fetchBarangays(cityId) {
             
             data.forEach(barangay => {
                 const option = document.createElement('option');
-                option.value = barangay.barangay_name;
+                option.value = barangay.barangay_id;
                 option.textContent = barangay.barangay_name;
                 barangaySelect.appendChild(option);
             });
@@ -1160,13 +1160,22 @@ function updateCombinedAddress() {
     const barangaySelect = document.getElementById('traditionalDeceasedBarangay');
     const streetAddress = document.getElementById('traditionalDeceasedAddress').value;
     
+    // Get the TEXT values of the selected options, not the IDs
     const region = regionSelect.options[regionSelect.selectedIndex]?.text || '';
     const province = provinceSelect.options[provinceSelect.selectedIndex]?.text || '';
     const city = citySelect.options[citySelect.selectedIndex]?.text || '';
     const barangay = barangaySelect.options[barangaySelect.selectedIndex]?.text || '';
     
-    // Combine all address components into one string
-    const combinedAddress = `${streetAddress}, ${barangay}, ${city}, ${province}, ${region}`;
+    // Create an array of non-empty address components
+    const addressParts = [];
+    if (streetAddress) addressParts.push(streetAddress);
+    if (barangay) addressParts.push(barangay);
+    if (city) addressParts.push(city);
+    if (province) addressParts.push(province);
+    if (region) addressParts.push(region);
+    
+    // Join the parts with commas
+    const combinedAddress = addressParts.join(', ');
     document.getElementById('deceasedAddress').value = combinedAddress;
 }
 
@@ -1203,7 +1212,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('traditionalDeceasedAddress').addEventListener('input', updateCombinedAddress);
     
     // Also update combined address when form is submitted
-    document.getElementById('traditionalBookingForm').addEventListener('submit', function(e) {
+    document.getElementById('lifeplanBookingForm').addEventListener('submit', function(e) {
         updateCombinedAddress();
         // Continue with form submission
     });
