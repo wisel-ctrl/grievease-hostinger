@@ -821,32 +821,23 @@ require_once '../db_connect.php'; // Database connection
                     </div>
                 </div>
                 
-                <!-- Mobile-only summary and navigation button -->
+                <!-- Mobile-only continue button -->
                 <div class="mt-6 border-t border-gray-200 pt-4 md:hidden">
-                    <div class="bg-white p-4 rounded-lg shadow-sm">
-                        <div class="flex justify-between text-sm mb-2">
-                            <span class="text-navy">Package Total</span>
-                            <span id="traditionalTotalPriceMobile" class="text-yellow-600">₱0</span>
-                        </div>
-                        <div class="flex justify-between font-bold mt-2 pt-2 border-t border-gray-300">
-                            <span class="text-navy">Amount Due Now (30%)</span>
-                            <span id="traditionalAmountDueMobile" class="text-yellow-600">₱0</span>
-                        </div>
-                    </div>
-                    <button id="continueToFormBtn" class="mt-4 w-full bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg shadow-md transition-all duration-300">
+                    <button id="continueToFormBtn" class="w-full bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg shadow-md transition-all duration-300">
                         Continue to Booking
                     </button>
                 </div>
             </div>
 
             <!-- Right Side: Traditional Booking Form -->
-            <div class="bg-white p-4 md:p-8 border-t md:border-t-0 md:border-l border-gray-200 overflow-y-auto form-section md:block">
+            <div class="bg-white p-4 md:p-8 border-t md:border-t-0 md:border-l border-gray-200 overflow-y-auto form-section hidden md:block">
                 <!-- Header and back button for mobile -->
                 <div class="flex justify-between items-center mb-4">
                     <h2 class="text-xl md:text-2xl font-hedvig text-navy">Book Your Package</h2>
                     <div class="flex items-center">
-                        <button id="backToDetailsBtn" class="mr-2 text-gray-500 hover:text-navy md:hidden">
-                            <i class="fas fa-arrow-left text-lg"></i>
+                        <button id="backToDetailsBtn" class="mr-2 text-gray-500 hover:text-navy md:hidden flex items-center">
+                            <i class="fas fa-arrow-left text-lg mr-1"></i>
+                            <span class="text-sm">Back</span>
                         </button>
                         <button class="closeModalBtn text-gray-500 hover:text-navy">
                             <i class="fas fa-times text-xl md:text-2xl"></i>
@@ -857,55 +848,81 @@ require_once '../db_connect.php'; // Database connection
                 <form id="lifeplanBookingForm" class="space-y-4">
                     <input type="hidden" id="lifeplanSelectedPackageName" name="packageName">
                     <input type="hidden" id="lifeplanSelectedPackagePrice" name="packagePrice">
+                    <input type="hidden" id="lifeplanServiceId" name="service_id">
+                    <input type="hidden" id="lifeplanBranchId" name="branch_id">
+                    <input type="hidden" name="customerID" value="<?php echo isset($_SESSION['user_id']) ? $_SESSION['user_id'] : ''; ?>">
+                    <input type="hidden" id="deceasedAddress" name="deceasedAddress">
                     
                     <div class="border-b border-gray-200 pb-4 mb-4">
                         <h3 class="text-base md:text-lg font-hedvig text-navy mb-3 md:mb-4">Plan Holder Information</h3>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 mb-3 md:mb-4">
-                            <div>
-                                <label for="lifeplanHolderFirstName" class="block text-xs md:text-sm font-medium text-navy mb-1 md:mb-2">First Name *</label>
-                                <input type="text" id="lifeplanHolderFirstName" name="holderFirstName" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                        
+                        <!-- First Name & Middle Name (Side by side) -->
+                        <div class="flex flex-wrap -mx-2 mb-3">
+                            <div class="w-full sm:w-1/2 px-2 mb-3 sm:mb-0">
+                                <label for="lifeplanHolderFirstName" class="block text-sm font-medium text-navy mb-1">First Name *</label>
+                                <input type="text" id="lifeplanHolderFirstName" name="holderFirstName" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" pattern="[A-Za-z'-][A-Za-z'-]*( [A-Za-z'-]+)*" title="Please enter a valid name (letters only, no leading spaces, numbers or symbols)">
                             </div>
-                            <div>
-                                <label for="lifeplanHolderMiddleName" class="block text-xs md:text-sm font-medium text-navy mb-1 md:mb-2">Middle Name</label>
-                                <input type="text" id="lifeplanHolderMiddleName" name="holderMiddleName" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 mb-3 md:mb-4">
-                            <div>
-                                <label for="lifeplanHolderLastName" class="block text-xs md:text-sm font-medium text-navy mb-1 md:mb-2">Last Name *</label>
-                                <input type="text" id="lifeplanHolderLastName" name="holderLastName" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
-                            </div>
-                            <div>
-                                <label for="lifeplanHolderSuffix" class="block text-xs md:text-sm font-medium text-navy mb-1 md:mb-2">Suffix</label>
-                                <input type="text" id="lifeplanHolderSuffix" name="holderSuffix" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                            <div class="w-full sm:w-1/2 px-2">
+                                <label for="lifeplanHolderMiddleName" class="block text-sm font-medium text-navy mb-1">Middle Name</label>
+                                <input type="text" id="lifeplanHolderMiddleName" name="holderMiddleName" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" pattern="[A-Za-z'-][A-Za-z'-]*( [A-Za-z'-]+)*" title="Please enter a valid name (letters only, no leading spaces, numbers or symbols)">
                             </div>
                         </div>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 mb-3 md:mb-4">
-                            <div>
-                                <label for="lifeplanDateOfBirth" class="block text-xs md:text-sm font-medium text-navy mb-1 md:mb-2">Date of Birth *</label>
+                        
+                        <!-- Last Name & Suffix (Side by side) -->
+                        <div class="flex flex-wrap -mx-2 mb-3">
+                            <div class="w-full sm:w-3/4 px-2 mb-3 sm:mb-0">
+                                <label for="lifeplanHolderLastName" class="block text-sm font-medium text-navy mb-1">Last Name *</label>
+                                <input type="text" id="lifeplanHolderLastName" name="holderLastName" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" pattern="[A-Za-z'-][A-Za-z'-]*( [A-Za-z'-]+)*" title="Please enter a valid name (letters only, no leading spaces, numbers or symbols)">
+                            </div>
+                            <div class="w-full sm:w-1/4 px-2">
+                                <label for="lifeplanHolderSuffix" class="block text-sm font-medium text-navy mb-1">Suffix</label>
+                                <select id="lifeplanHolderSuffix" name="holderSuffix" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                                    <option value="">None</option>
+                                    <option value="Jr.">Jr.</option>
+                                    <option value="Sr.">Sr.</option>
+                                    <option value="I">I</option>
+                                    <option value="II">II</option>
+                                    <option value="III">III</option>
+                                    <option value="IV">IV</option>
+                                    <option value="V">V</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="flex flex-wrap -mx-2 mb-3">
+                            <div class="w-full sm:w-1/2 px-2 mb-3 sm:mb-0">
+                                <label for="lifeplanDateOfBirth" class="block text-sm font-medium text-navy mb-1">Date of Birth *</label>
                                 <input type="date" id="lifeplanDateOfBirth" name="dateOfBirth" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                             </div>
-                            <div>
-                                <label for="lifeplanContactNumber" class="block text-xs md:text-sm font-medium text-navy mb-1 md:mb-2">Contact Number *</label>
-                                <input type="tel" id="lifeplanContactNumber" name="contactNumber" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                            <div class="w-full sm:w-1/2 px-2">
+                                <label for="lifeplanContactNumber" class="block text-sm font-medium text-navy mb-1">Contact Number *</label>
+                                <input type="tel" id="lifeplanContactNumber" name="contactNumber" required 
+       pattern="09[0-9]{9}" 
+       title="Please enter a valid Philippine mobile number starting with 09 (11 digits total)"
+       class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                             </div>
                         </div>
-                        <div class="mt-3 mb-4 md:mt-4">
-                            <label for="lifeplanEmailAddress" class="block text-xs md:text-sm font-medium text-navy mb-1 md:mb-2">Email Address *</label>
-                            <input type="email" id="lifeplanEmailAddress" name="emailAddress" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                        
+                        <div class="mb-3">
+                            <label for="relationshipWithBeneficiary" class="block text-sm font-medium text-navy mb-1">
+                                Relationship with the Beneficiary *
+                            </label>
+                            <input type="text" id="relationshipWithBeneficiary" name="relationshipWithBeneficiary" required
+                                title="Please enter the relationship with the beneficiary"
+                                class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                         </div>
                         
                         <!-- Address (Improved UI with dropdowns in specified layout) -->
                         <div class="flex flex-wrap -mx-2 mb-3">
                             <div class="w-full sm:w-1/2 px-2 mb-3 sm:mb-0">
-                                <label for="traditionalDeceasedRegion" class="block text-sm font-medium text-navy mb-1">Region <span class="text-red-500">*</label>
+                                <label for="traditionalDeceasedRegion" class="block text-sm font-medium text-navy mb-1">Region <span class="text-red-500">*</span></label>
                                 <select id="traditionalDeceasedRegion" name="deceasedRegion" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" required>
                                     <option value="">Select Region</option>
                                     <!-- Regions will be populated by JavaScript -->
                                 </select>
                             </div>
                             <div class="w-full sm:w-1/2 px-2">
-                                <label for="traditionalDeceasedProvince" class="block text-sm font-medium text-navy mb-1">Province <span class="text-red-500">*</label>
+                                <label for="traditionalDeceasedProvince" class="block text-sm font-medium text-navy mb-1">Province <span class="text-red-500">*</span></label>
                                 <select id="traditionalDeceasedProvince" name="deceasedProvince" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" disabled required>
                                     <option value="">Select Province</option>
                                     <!-- Provinces will be populated by JavaScript based on selected region -->
@@ -915,14 +932,14 @@ require_once '../db_connect.php'; // Database connection
                         
                         <div class="flex flex-wrap -mx-2 mb-3">
                             <div class="w-full sm:w-1/2 px-2 mb-3 sm:mb-0">
-                                <label for="traditionalDeceasedCity" class="block text-sm font-medium text-navy mb-1">City/Municipality <span class="text-red-500">*</label>
+                                <label for="traditionalDeceasedCity" class="block text-sm font-medium text-navy mb-1">City/Municipality <span class="text-red-500">*</span></label>
                                 <select id="traditionalDeceasedCity" name="deceasedCity" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" disabled required>
                                     <option value="">Select City/Municipality</option>
                                     <!-- Cities will be populated by JavaScript based on selected province -->
                                 </select>
                             </div>
                             <div class="w-full sm:w-1/2 px-2">
-                                <label for="traditionalDeceasedBarangay" class="block text-sm font-medium text-navy mb-1">Barangay <span class="text-red-500">*</label>
+                                <label for="traditionalDeceasedBarangay" class="block text-sm font-medium text-navy mb-1">Barangay <span class="text-red-500">*</span></label>
                                 <select id="traditionalDeceasedBarangay" name="deceasedBarangay" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" disabled required>
                                     <option value="">Select Barangay</option>
                                     <!-- Barangays will be populated by JavaScript based on selected city -->
@@ -931,33 +948,85 @@ require_once '../db_connect.php'; // Database connection
                         </div>
                         
                         <div class="mt-4">
-                            <label for="traditionalDeceasedAddress" class="block text-sm font-medium text-navy mb-2">Street/Block/House Number <span class="text-red-500">*</label>
+                            <label for="traditionalDeceasedAddress" class="block text-sm font-medium text-navy mb-2">Street/Block/House Number <span class="text-red-500">*</span></label>
                             <input type="text" id="traditionalDeceasedAddress" name="deceasedAddress" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" placeholder="e.g. 123 Main Street">
                         </div>
-                        
-                        <input type="hidden" id="deceasedAddress" name="deceasedAddress">
                     </div>
 
                     <div class="border-b border-gray-200 pb-4 mb-4">
                         <h3 class="text-base md:text-lg font-hedvig text-navy mb-3 md:mb-4">Payment Plan</h3>
                         <div class="mb-3 md:mb-4">
-                            <label class="block text-xs md:text-sm font-medium text-navy mb-1 md:mb-2">Payment Term:</label>
-                            <select id="lifeplanPaymentTerm" name="paymentTerm" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
-                                <option value="60">5 Years (60 Monthly Payments)</option>
-                                <option value="36">3 Years (36 Monthly Payments)</option>
-                                <option value="24">2 Years (24 Monthly Payments)</option>
-                                <option value="12">1 Year (12 Monthly Payments)</option>
-                            </select>
+                            <label class="block text-sm font-medium text-navy mb-1">Payment Term:</label>
+                            <!-- Displayed read-only input -->
+                            <input type="text" value="5 Years (60 Monthly Payments)" readonly
+                                class="w-full px-3 py-2 border border-input-border rounded-lg bg-gray-100 text-gray-700 cursor-not-allowed focus:outline-none">
+
+                            
+                            <input type="hidden" id="lifeplanPaymentTerm" name="paymentTerm" value="5">
                         </div>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
-                            <div>
-                                <label for="lifeplanGcashReceipt" class="block text-xs md:text-sm font-medium text-navy mb-1 md:mb-2">First Payment Receipt *</label>
-                                <input type="file" id="lifeplanGcashReceipt" name="gcashReceipt" accept=".pdf,.jpg,.jpeg,.png" required class="w-full text-xs md:text-sm px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+
+                        <!-- QR Code Button and Modal -->
+                        <div class="mb-4">
+                            <button type="button" id="lifeplanShowQrCodeBtn" class="w-full bg-navy hover:bg-navy-600 text-white px-4 py-2 rounded-lg flex items-center justify-center transition-all duration-200">
+                                <i class="fas fa-qrcode mr-2"></i>
+                                <span>View GCash QR Code</span>
+                            </button>
+                        </div>
+                        
+                        <!-- QR Code Modal -->
+                        <div id="lifeplanQrCodeModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
+                            <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+                                <div class="flex justify-between items-center mb-4">
+                                    <h3 class="text-lg font-hedvig text-navy">Scan to Pay</h3>
+                                    <button id="lifeplanCloseQrModal" class="text-gray-500 hover:text-navy">
+                                        <i class="fas fa-times text-xl"></i>
+                                    </button>
+                                </div>
+                                <div class="flex flex-col items-center justify-center">
+                                    <img id="lifeplanQrCodeImage" src="../image\gcashqrvjay.jpg" alt="Payment QR Code" class="w-64 h-64 object-contain mb-4">
+                                    <p class="text-center text-sm text-gray-600 mb-2">Scan this QR code with your GCash app to make payment</p>
+                                    <p class="text-center font-bold text-yellow-600" id="lifeplanQrCodeAmount">Amount: ₱0</p>
+                                </div>
                             </div>
-                            <div>
-                                <label for="lifeplanReferenceNumber" class="block text-xs md:text-sm font-medium text-navy mb-1 md:mb-2">GCash Reference Number *</label>
-                                <input type="text" id="lifeplanReferenceNumber" name="referenceNumber" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                        </div>
+                        
+                        <!-- GCash Upload with Preview (Improved UI) -->
+                        <div class="mb-4">
+                            <label for="lifeplanGcashReceipt" class="block text-sm font-medium text-navy mb-1">First Payment Receipt</label>
+                            <div class="border border-input-border bg-white rounded-lg p-3 focus-within:ring-2 focus-within:ring-yellow-600">
+                                <!-- Upload Button and File Name -->
+                                <div class="flex items-center mb-2">
+                                    <label for="lifeplanGcashReceipt" class="flex-1 cursor-pointer">
+                                        <div class="flex items-center justify-center py-2 px-3 bg-gray-50 rounded hover:bg-gray-100 transition">
+                                            <i class="fas fa-receipt mr-2 text-blue-500"></i>
+                                            <span class="text-sm text-gray-600">Upload Receipt</span>
+                                        </div>
+                                    </label>
+                                    <span class="text-xs ml-2 text-gray-500" id="lifeplanGcashFileName">No file chosen</span>
+                                </div>
+                                
+                                <!-- Preview Container -->
+                                <div id="lifeplanGcashPreviewContainer" class="hidden mt-2 rounded-lg overflow-hidden border border-gray-200">
+                                    <!-- Image Preview -->
+                                    <div id="lifeplanGcashImagePreview" class="hidden">
+                                        <img id="lifeplanGcashImage" src="" alt="GCash Receipt Preview" class="w-full h-auto max-h-48 object-contain">
+                                    </div>
+                                    
+                                </div>
+                                
+                                <!-- Remove Button -->
+                                <button type="button" id="removeLifeplanGcash" class="text-xs text-red-600 hover:text-red-800 mt-2 hidden">
+                                    <i class="fas fa-trash-alt mr-1"></i> Remove file
+                                </button>
+                                
+                                <input type="file" id="lifeplanGcashReceipt" name="gcashReceipt" accept=".jpg,.jpeg,.png" class="hidden">
                             </div>
+                            <p class="text-xs text-gray-500 mt-1">Accepted formats: JPG, JPEG, PNG</p>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="lifeplanReferenceNumber" class="block text-sm font-medium text-navy mb-1">Reference Number *</label>
+                            <input type="text" id="lifeplanReferenceNumber" name="referenceNumber" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" placeholder="e.g. 1234567890">
                         </div>
                     </div>
 
