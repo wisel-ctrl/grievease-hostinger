@@ -1890,6 +1890,7 @@ $total_lifeplan_bookings = $lifeplan_count_result->fetch_assoc()['total'];
         <input type="hidden" id="customBookingIdForPayment" name="bookingId">
         
         <!-- Customer Information -->
+        <input type="hidden" id="customCustomerId" name="customerId">
         <input type="hidden" id="customCustomerFirstName" name="first_name">
         <input type="hidden" id="customCustomerMiddleName" name="middle_name">
         <input type="hidden" id="customCustomerLastName" name="last_name">
@@ -3220,6 +3221,7 @@ function confirmCustomAccept() {
             document.getElementById('customBookingIdForPayment').value = bookingId;
             
             // Customer information
+            document.getElementById('customCustomerId').value = data.customerID || '';
             document.getElementById('customCustomerFirstName').value = data.first_name || '';
             console.log('first_name: ', data.first_name);
             document.getElementById('customCustomerMiddleName').value = data.middle_name || '';

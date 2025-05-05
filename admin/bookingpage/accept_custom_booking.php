@@ -61,7 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         $stmt = $conn->prepare($insertQuery);
         $stmt->bind_param(
-            "isssssssiiisssidsss",
+            "isssssssiiisssddsss",
             $customerId, $fnameDeceased, $mnameDeceased, $lnameDeceased, $suffixDeceased,
             $dateOfBirth, $dateOfDeath, $dateOfBurial, $soldBy, $branchId,
             $casketId, $flowerDesign, $inclusion, $paymentMethod, $initialPrice,
