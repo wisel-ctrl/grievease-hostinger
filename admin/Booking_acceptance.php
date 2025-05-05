@@ -1102,7 +1102,7 @@ $custom_offset = ($custom_current_page - 1) * $custom_bookings_per_page;
     </div>
     
     <!-- Modal Body -->
-    <div class="px-4 sm:px-6 py-4 sm:py-5 overflow-y-auto modal-scroll-container">
+    <div class="px-4 sm:px-6 py-4 sm:py-5 overflow-y-auto ">
       <!-- Top Info Bar - Booking ID and Status -->
       <div class="flex justify-between items-center mb-6 bg-gray-50 p-3 sm:p-4 rounded-lg">
         <div class="flex items-center">
