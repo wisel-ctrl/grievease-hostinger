@@ -903,17 +903,60 @@ $totalOutstanding = $countResult->fetch_assoc()['total'];
                     <i class="fas fa-search absolute left-2.5 top-3 text-gray-400"></i>
                 </div>
 
-                <!-- Archive Button -->
-                <button class="px-4 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover whitespace-nowrap">
-                    <i class="fas fa-archive text-sidebar-accent"></i>
-                    <span>Archive</span>
-                </button>
+                <!-- Filter Dropdown -->
+        <div class="relative filter-dropdown">
+          <button id="filterToggle" class="px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover">
+            <i class="fas fa-filter text-sidebar-accent"></i>
+            <span>Filters</span>
+            <?php if(isset($sortFilter) && $sortFilter): ?>
+              <span class="h-2 w-2 bg-sidebar-accent rounded-full"></span>
+            <?php endif; ?>
+          </button>
+          
+          <!-- Filter Window -->
+          <div id="filterDropdown" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-4">
+            <div class="space-y-4">
+              <!-- Sort Options -->
+              <div>
+                <h5 class="text-sm font-medium text-sidebar-text mb-2">Sort By</h5>
+                <div class="space-y-1">
+                  <div class="flex items-center cursor-pointer" data-sort="id_asc">
+                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                      ID: Ascending
+                    </span>
+                  </div>
+                  <div class="flex items-center cursor-pointer" data-sort="id_desc">
+                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                      ID: Descending
+                    </span>
+                  </div>
+                  <div class="flex items-center cursor-pointer" data-sort="client_asc">
+                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                      Client: A-Z
+                    </span>
+                  </div>
+                  <div class="flex items-center cursor-pointer" data-sort="client_desc">
+                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                      Client: Z-A
+                    </span>
+                  </div>
+                  <div class="flex items-center cursor-pointer" data-sort="date_asc">
+                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                      Date: Oldest First
+                    </span>
+                  </div>
+                  <div class="flex items-center cursor-pointer" data-sort="date_desc">
+                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
+                      Date: Newest First
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
-                <!-- Export Button -->
-                <button class="px-4 py-2 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm whitespace-nowrap" 
-                        onclick="exportOutstandingBalances()">
-                    <i class="fas fa-file-download"></i> Export Data
-                </button>
+
             </div>
         </div>
     
@@ -930,18 +973,6 @@ $totalOutstanding = $countResult->fetch_assoc()['total'];
                     <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
                 </div>
 
-                <!-- Archive Icon Button -->
-                <button class="w-10 h-10 flex items-center justify-center text-sidebar-accent">
-                    <i class="fas fa-archive text-xl"></i>
-                </button>
-            </div>
-
-            <!-- Second row: Export Button - Full width -->
-            <div class="w-full">
-                <button class="px-4 py-2.5 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm whitespace-nowrap w-full justify-center" 
-                        onclick="exportOutstandingBalances()">
-                    <i class="fas fa-file-download"></i> Export Data
-                </button>
             </div>
         </div>
     </div>
