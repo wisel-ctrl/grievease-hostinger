@@ -221,13 +221,41 @@ $servicesJson = json_encode($allServices);
       </h2>
     </div>
     <div class="hidden md:flex">
+<div class="hidden md:flex items-center gap-4">
+  <!-- Price Filter Dropdown -->
+  <div class="relative">
+    <select id="price-filter" class="appearance-none pl-3 pr-8 py-2 border border-sidebar-border rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent cursor-pointer">
+      <option value="">All Prices</option>
+      <option value="1-100000">₱1 - ₱100,000</option>
+      <option value="100001-300000">₱100,001 - ₱300,000</option>
+      <option value="300001-500000">₱300,001 - ₱500,000</option>
+      <option value="500001-700000">₱500,001 - ₱700,000</option>
+      <option value="700001+">₱700,001+</option>
+    </select>
+    <div class="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+      <i class="fas fa-chevron-down text-gray-400"></i>
+    </div>
+  </div>
+  
+  <!-- Price Sort Dropdown -->
+  <div class="relative">
+    <select id="price-sort" class="appearance-none pl-3 pr-8 py-2 border border-sidebar-border rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent cursor-pointer">
+      <option value="">Sort by Price</option>
+      <option value="low-high">Low to High</option>
+      <option value="high-low">High to Low</option>
+    </select>
+    <div class="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+      <i class="fas fa-chevron-down text-gray-400"></i>
+    </div>
+  </div>
+  <!-- Search Bar -->
   <div class="relative">
     <input type="text" id="service-search" placeholder="Search services..." 
-           class="pl-10 pr-4 py-2 border border-sidebar-border rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent"
-           oninput="validateSearchInput(this)">
+           class="pl-10 pr-4 py-2 border border-sidebar-border rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
     <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-    <div id="search-error"></div>
+    <div id="search-error" class="hidden text-red-500 text-xs mt-1">Please avoid leading or multiple spaces</div>
   </div>
+</div>
 </div>
   </div>
   
@@ -2003,14 +2031,211 @@ function loadServices() {
     servicesByCategory[categoryName].push(service);
   });
 
-  // Add search functionality
-  const searchInput = document.getElementById('service-search') || document.createElement('input');
-  if (!document.getElementById('service-search')) {
-    searchInput.id = 'service-search';
-    searchInput.addEventListener('input', function() {
-      filterServices(this.value.toLowerCase());
+  // Add event listener for real-time search
+const searchInput = document.getElementById('service-search');
+searchInput.addEventListener('input', function() {
+    // Validate input
+    validateSearchInput(this);
+    
+    // Filter services in real-time
+    filterServices(this.value.toLowerCase());
+});
+
+// Function to validate search input
+function validateSearchInput(input) {
+    const errorElement = document.getElementById('search-error');
+    let value = input.value;
+    
+    // Check if first character is space
+    if (value.length > 0 && value.charAt(0) === ' ') {
+        errorElement.classList.remove('hidden');
+        input.value = value.trim();
+        return;
+    }
+    
+    // Check for consecutive spaces
+    if (value.includes('  ')) {
+        errorElement.classList.remove('hidden');
+        input.value = value.replace(/\s+/g, ' ');
+        return;
+    }
+    
+    errorElement.classList.add('hidden');
+    
+    // Auto-capitalize first letter
+    if (value.length === 1) {
+        input.value = value.charAt(0).toUpperCase() + value.slice(1);
+    }
+}
+
+function filterServices(searchText) {
+    const serviceCards = document.querySelectorAll('.service-card');
+    let visibleCount = 0;
+    
+    serviceCards.forEach(card => {
+        const serviceName = card.dataset.name;
+        const categoryName = card.dataset.category;
+        const serviceDescription = card.dataset.description || '';
+        
+        // Search in name, category, and description
+        if (serviceName.includes(searchText) || 
+            categoryName.includes(searchText) || 
+            serviceDescription.toLowerCase().includes(searchText)) {
+            card.style.display = 'flex';
+            visibleCount++;
+        } else {
+            card.style.display = 'none';
+        }
+    });
+
+    // Show or hide category headers based on visible services
+    const categoryHeaders = document.querySelectorAll('.col-span-full');
+    categoryHeaders.forEach(header => {
+        const categoryName = header.querySelector('h3')?.textContent.toLowerCase();
+        const hasVisibleServices = Array.from(serviceCards).some(card => 
+            card.dataset.category === categoryName && card.style.display !== 'none'
+        );
+        
+        header.style.display = hasVisibleServices ? 'flex' : 'none';
+    });
+
+    // Show no results message if needed
+    const noResultsMsg = document.getElementById('no-results-message');
+    if (visibleCount === 0 && searchText) {
+        if (!noResultsMsg) {
+            const message = document.createElement('div');
+            message.id = 'no-results-message';
+            message.className = 'col-span-full text-center py-12 text-gray-500';
+            message.innerHTML = `
+                <i class="fas fa-search text-4xl mb-3 text-gray-300"></i>
+                <p class="text-lg">No services found matching "${searchText}"</p>
+                <button id="clear-search" class="mt-4 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-all">
+                    Clear Search
+                </button>
+            `;
+            container.appendChild(message);
+            document.getElementById('clear-search').addEventListener('click', () => {
+                searchInput.value = '';
+                filterServices('');
+            });
+        }
+    } else if (noResultsMsg) {
+        noResultsMsg.remove();
+    }
+}
+
+// Function to filter and sort services
+function filterAndSortServices() {
+  const searchText = document.getElementById('service-search').value.toLowerCase();
+  const priceFilter = document.getElementById('price-filter').value;
+  const priceSort = document.getElementById('price-sort').value;
+  
+  const serviceCards = document.querySelectorAll('.service-card');
+  let visibleCount = 0;
+  
+  // First filter by price range
+  serviceCards.forEach(card => {
+    const price = parseFloat(card.dataset.price);
+    let priceMatch = true;
+    
+    if (priceFilter) {
+      if (priceFilter === '1-100000') {
+        priceMatch = price >= 1 && price <= 100000;
+      } else if (priceFilter === '100001-300000') {
+        priceMatch = price >= 100001 && price <= 300000;
+      } else if (priceFilter === '300001-500000') {
+        priceMatch = price >= 300001 && price <= 500000;
+      } else if (priceFilter === '500001-700000') {
+        priceMatch = price >= 500001 && price <= 700000;
+      } else if (priceFilter === '700001+') {
+        priceMatch = price >= 700001;
+      }
+    }
+    
+    // Then filter by search text if price matches
+    if (priceMatch) {
+      const serviceName = card.dataset.name;
+      const categoryName = card.dataset.category;
+      const serviceDescription = card.dataset.description || '';
+      
+      if (!searchText || 
+          serviceName.includes(searchText) || 
+          categoryName.includes(searchText) || 
+          serviceDescription.includes(searchText)) {
+        card.style.display = 'flex';
+        visibleCount++;
+      } else {
+        card.style.display = 'none';
+      }
+    } else {
+      card.style.display = 'none';
+    }
+  });
+
+  // Sort services if a sort option is selected
+  if (priceSort) {
+    const container = document.getElementById('services-container');
+    const cards = Array.from(container.querySelectorAll('.service-card[style*="flex"]'));
+    
+    cards.sort((a, b) => {
+      const priceA = parseFloat(a.dataset.price);
+      const priceB = parseFloat(b.dataset.price);
+      
+      if (priceSort === 'low-high') {
+        return priceA - priceB;
+      } else {
+        return priceB - priceA;
+      }
+    });
+    
+    // Re-append cards in sorted order
+    cards.forEach(card => {
+      container.appendChild(card);
     });
   }
+
+  // Show or hide category headers based on visible services
+  const categoryHeaders = document.querySelectorAll('.col-span-full');
+  categoryHeaders.forEach(header => {
+    const categoryName = header.querySelector('h3')?.textContent.toLowerCase();
+    const hasVisibleServices = Array.from(serviceCards).some(card => 
+      card.dataset.category === categoryName && card.style.display !== 'none'
+    );
+    
+    header.style.display = hasVisibleServices ? 'flex' : 'none';
+  });
+
+  // Show no results message if needed
+  const noResultsMsg = document.getElementById('no-results-message');
+  if (visibleCount === 0 && (searchText || priceFilter)) {
+    if (!noResultsMsg) {
+      const container = document.getElementById('services-container');
+      const message = document.createElement('div');
+      message.id = 'no-results-message';
+      message.className = 'col-span-full text-center py-12 text-gray-500';
+      message.innerHTML = `
+        <i class="fas fa-search text-4xl mb-3 text-gray-300"></i>
+        <p class="text-lg">No services found matching your criteria</p>
+        <button id="clear-filters" class="mt-4 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-all">
+          Clear Filters
+        </button>
+      `;
+      container.appendChild(message);
+      document.getElementById('clear-filters').addEventListener('click', () => {
+        document.getElementById('service-search').value = '';
+        document.getElementById('price-filter').value = '';
+        document.getElementById('price-sort').value = '';
+        filterAndSortServices();
+      });
+    }
+  } else if (noResultsMsg) {
+    noResultsMsg.remove();
+  }
+}
+
+// Add event listeners for the new filter controls
+document.getElementById('price-filter').addEventListener('change', filterAndSortServices);
+document.getElementById('price-sort').addEventListener('change', filterAndSortServices);
 
   // Create sections for each category
   for (const [categoryName, services] of Object.entries(servicesByCategory)) {
@@ -2031,6 +2256,8 @@ function loadServices() {
       serviceCard.className = 'bg-white rounded-lg overflow-hidden shadow-sidebar border border-sidebar-border hover:shadow-card hover:border-sidebar-accent transition-all duration-300 cursor-pointer service-card flex flex-col';
       serviceCard.dataset.name = service.service_name.toLowerCase();
       serviceCard.dataset.category = categoryName.toLowerCase();
+      serviceCard.dataset.description = service.description ? service.description.toLowerCase() : '';
+      serviceCard.dataset.price = service.selling_price;
       serviceCard.onclick = () => showServiceDetails(service);
 
       const imageUrl = service.image_url && service.image_url.trim() !== '' ? 
@@ -2132,8 +2359,10 @@ function loadServices() {
         `;
         container.appendChild(message);
         document.getElementById('clear-search').addEventListener('click', () => {
-          document.getElementById('service-search').value = '';
-          filterServices('');
+          document.getElementById('service-search').addEventListener('input', function() {
+              validateSearchInput(this);
+              filterAndSortServices();
+            });
         });
       }
     } else if (noResultsMsg) {
