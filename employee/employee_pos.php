@@ -1,3 +1,135 @@
+<?php
+session_start();
+
+// Check if user is logged in
+if (!isset($_SESSION['user_id'])) {
+    // Redirect to login page
+    header("Location: ../Landing_Page/login.php");
+    exit();
+}
+
+// Check for admin user type (user_type = 1)
+if ($_SESSION['user_type'] != 1) {
+    // Redirect to appropriate page based on user type
+    switch ($_SESSION['user_type']) {
+        case 2:
+            header("Location: ../employee/index.php");
+            break;
+        case 3:
+            header("Location: ../customer/index.php");
+            break;
+        default:
+            // Invalid user_type
+            session_destroy();
+            header("Location: ../Landing_Page/login.php");
+    }
+    exit();
+}
+
+// Optional: Check for session timeout (30 minutes)
+$session_timeout = 1800; // 30 minutes in seconds
+if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > $session_timeout)) {
+    // Session has expired
+    session_unset();
+    session_destroy();
+    header("Location: ../Landing_Page/login.php?timeout=1");
+    exit();
+}
+
+// Update last activity time
+$_SESSION['last_activity'] = time();
+
+// Prevent caching for authenticated pages
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Cache-Control: post-check=0, pre-check=0", false);
+header("Pragma: no-cache");
+
+
+// Database connection
+include '../db_connect.php';
+
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+$user_branch_id = $_SESSION['branch_loc'] ?? null;
+
+// Check if user has a branch location assigned
+if (!$user_branch_id) {
+    // Handle case where user doesn't have a branch assigned
+    die("Error: User branch location not assigned.");
+}
+
+// Function to get all active services for the user's branch
+function getServices($conn, $user_branch_id) {
+  $sql = "SELECT s.service_id, s.service_name, s.description, s.service_categoryID, s.branch_id, 
+                s.inclusions, s.flower_design, s.capital_price, s.selling_price, s.image_url, 
+                b.branch_name, 
+                c.service_category_name
+         FROM services_tb s
+         INNER JOIN branch_tb b ON s.branch_id = b.branch_id
+         INNER JOIN service_category c ON s.service_categoryID = c.service_categoryID
+         WHERE s.status = 'Active' AND s.branch_id = ?
+         ORDER BY s.service_categoryID, s.service_name";
+  
+  $stmt = $conn->prepare($sql);
+  $stmt->bind_param("i", $user_branch_id);
+  $stmt->execute();
+  $result = $stmt->get_result();
+  
+  $services = [];
+  
+  if ($result->num_rows > 0) {
+      while($row = $result->fetch_assoc()) {
+          $services[] = $row;
+      }
+  }
+  
+  return $services;
+}
+
+function getBranches($conn) {
+  $sql = "SELECT branch_id, branch_name FROM branch_tb";
+  $result = $conn->query($sql);
+  $branches = [];
+  
+  if ($result->num_rows > 0) {
+      while($row = $result->fetch_assoc()) {
+          $branches[] = $row;
+      }
+  }
+  
+  return $branches;
+}
+
+// Function to get all service categories
+function getServiceCategories($conn) {
+  $sql = "SELECT service_categoryID, service_category_name FROM service_category ";
+  $result = $conn->query($sql);
+  $categories = [];
+  
+  if ($result->num_rows > 0) {
+      while($row = $result->fetch_assoc()) {
+          $categories[] = $row;
+      }
+  }
+  
+  return $categories;
+}
+
+$branches = getBranches($conn);
+$categories = getServiceCategories($conn);
+$allServices = getServices($conn, $user_branch_id);
+
+// Convert to JSON for JavaScript
+$branchesJson = json_encode($branches);
+$categoriesJson = json_encode($categories);
+$servicesJson = json_encode($allServices);
+
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -218,7 +350,7 @@
   </nav>
 
   <!-- Main Content -->
-  <div id="main-content" class="ml-64 p-6 bg-gray-50 min-h-screen transition-all duration-300 main-content">
+<div id="main-content" class="ml-64 p-6 bg-gray-50 min-h-screen transition-all duration-300 main-content">
   <!-- Header with breadcrumb and welcome message -->
   <div class="flex justify-between items-center mb-6 bg-white p-5 rounded-lg shadow-sidebar">
     <div>
@@ -228,10 +360,76 @@
       <button class="p-2 bg-white border border-sidebar-border rounded-lg shadow-input text-sidebar-text hover:bg-sidebar-hover transition-all duration-300">
         <i class="fas fa-bell"></i>
       </button>
-       
-      
     </div>
   </div>
+
+    <div id="branch-selection" class="mb-8">
+        <div class="flex justify-between items-center mb-5">
+          <h2 class="text-gray-600 text-lg">Select a Branch Location</h2>
+    
+        </div>
+      <div id="branches-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+      <!-- Branches will be dynamically added here based on database data -->
+    </div>
+  </div>
+
+      <!-- Services Section (Initially hidden) -->
+  <div id="services-section" class="mb-8 hidden">
+    <div class="flex items-center justify-between mb-6 bg-white p-4 rounded-lg shadow-sm border border-sidebar-border">
+      <div class="flex items-center">
+        <button onclick="goBackToBranches()" class="mr-4 p-2 bg-white border border-sidebar-border rounded-lg shadow-input text-sidebar-text hover:bg-sidebar-hover transition-all duration-300 flex items-center justify-center">
+          <i class="fas fa-arrow-left"></i>
+        </button>
+        <h2 class="text-gray-700 text-lg">
+          <span id="selected-category-name" class="font-semibold text-sidebar-accent"></span> Services at 
+          <span id="services-branch-name" class="font-semibold text-sidebar-accent"></span>
+        </h2>
+      </div>
+      <div class="hidden md:flex">
+  <div class="hidden md:flex items-center gap-4">
+    <!-- Price Filter Dropdown -->
+    <div class="relative">
+      <select id="price-filter" class="appearance-none pl-3 pr-8 py-2 border border-sidebar-border rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent cursor-pointer">
+        <option value="">All Prices</option>
+        <option value="1-100000">₱1 - ₱100,000</option>
+        <option value="100001-300000">₱100,001 - ₱300,000</option>
+        <option value="300001-500000">₱300,001 - ₱500,000</option>
+        <option value="500001-700000">₱500,001 - ₱700,000</option>
+        <option value="700001+">₱700,001+</option>
+      </select>
+      <div class="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+        <i class="fas fa-chevron-down text-gray-400"></i>
+      </div>
+    </div>
+    
+    <!-- Price Sort Dropdown -->
+    <div class="relative">
+      <select id="price-sort" class="appearance-none pl-3 pr-8 py-2 border border-sidebar-border rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent cursor-pointer">
+        <option value="">Sort by Price</option>
+        <option value="low-high">Low to High</option>
+        <option value="high-low">High to Low</option>
+      </select>
+      <div class="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+        <i class="fas fa-chevron-down text-gray-400"></i>
+      </div>
+    </div>
+    <!-- Search Bar -->
+    <div class="relative">
+      <input type="text" id="service-search" placeholder="Search services..." 
+            class="pl-10 pr-4 py-2 border border-sidebar-border rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
+      <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+      <div id="search-error" class="hidden text-red-500 text-xs mt-1">Please avoid leading or multiple spaces</div>
+    </div>
+  </div>
+  </div>
+    </div>
+    
+    <div id="services-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <!-- Services will be dynamically added here based on branch and category selection -->
+    </div>
+  </div>
+
+</div> <!-- Main Content -->
 
  
 

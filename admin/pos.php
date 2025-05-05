@@ -186,27 +186,14 @@ $servicesJson = json_encode($allServices);
     </div>
 
     <div id="branch-selection" class="mb-8">
-  <div class="flex justify-between items-center mb-5">
-    <h2 class="text-gray-600 text-lg">Select a Branch Location</h2>
+      <div class="flex justify-between items-center mb-5">
+        <h2 class="text-gray-600 text-lg">Select a Branch Location</h2>
   
-  </div>
-  <div id="branches-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+      </div>
+    <div id="branches-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
     <!-- Branches will be dynamically added here based on database data -->
   </div>
 </div>
-
-    <!-- Category Selection Section (Initially hidden)
-    <div id="category-selection" class="mb-8 hidden">
-      <div class="flex items-center mb-5">
-        <button onclick="goBackToBranches()" class="mr-3 p-2 bg-white border border-sidebar-border rounded-lg shadow-input text-sidebar-text hover:bg-sidebar-hover transition-all duration-300">
-          <i class="fas fa-arrow-left"></i>
-        </button>
-        <h2 class="text-gray-600 text-lg">Select a Service Category for <span id="selected-branch-name" class="font-semibold text-sidebar-accent"></span></h2>
-      </div>
-      <div id="categories-container" class="grid grid-cols-1 md:grid-cols-3 gap-5">
-        Categories will be dynamically added here based on database data 
-      </div>
-    </div> -->
 
     <!-- Services Section (Initially hidden) -->
 <div id="services-section" class="mb-8 hidden">
