@@ -1487,114 +1487,133 @@ document.addEventListener('DOMContentLoaded', function() {
   
   <script>
       // Function to fetch and display customer accounts
-    function fetchCustomerAccounts(page = 1, search = '', sort = 'id_asc') {
-        const xhr = new XMLHttpRequest();
-        xhr.open('GET', `accountManagement/fetch_customer_accounts.php?page=${page}&search=${encodeURIComponent(search)}&sort=${sort}`, true);
-        
-        xhr.onload = function() {
-            searchContainer.classList.remove('search-loading');
-            if (this.status === 200) {
-                try {
-                    const response = JSON.parse(this.responseText);
-                    
-                    // Update the table content
-                    document.querySelector('#customerTable tbody').innerHTML = response.tableContent;
-                    
-                    searchCustomers();
-                    
-                    // Update pagination info
-                    const paginationInfo = `Showing ${response.showingFrom}-${response.showingTo} of ${response.totalCount} entries`;
-                    document.querySelector('#manageAccountSection .text-sm.text-gray-600').textContent = paginationInfo;
-                    
-                    // Update pagination buttons
-                    const paginationContainer = document.querySelector('#manageAccountSection .flex.justify-between.items-center > div:last-child');
-                    
-                    // Clear existing buttons
-                    paginationContainer.innerHTML = '';
-                    
-                    // Previous button
-                    const prevButton = document.createElement('button');
-                    prevButton.className = 'p-2 border border-sidebar-border rounded-md mr-1';
-                    prevButton.textContent = 'Previous';
-                    prevButton.disabled = page === 1;
-                    prevButton.onclick = () => {
-                        if (page > 1) fetchCustomerAccounts(page - 1, search, sort);
-                    };
-                    paginationContainer.appendChild(prevButton);
-                    
-                    // Page buttons
-                    const maxPagesToShow = 5;
-                    let startPage = Math.max(1, page - Math.floor(maxPagesToShow / 2));
-                    let endPage = Math.min(response.totalPages, startPage + maxPagesToShow - 1);
-                    
-                    if (endPage - startPage + 1 < maxPagesToShow) {
-                        startPage = Math.max(1, endPage - maxPagesToShow + 1);
-                    }
-                    
-                    if (startPage > 1) {
-                        const firstPageButton = document.createElement('button');
-                        firstPageButton.className = 'p-2 border border-sidebar-border rounded-md mr-1';
-                        firstPageButton.textContent = '1';
-                        firstPageButton.onclick = () => fetchCustomerAccounts(1, search, sort);
-                        paginationContainer.appendChild(firstPageButton);
-                        
-                        if (startPage > 2) {
-                            const ellipsis = document.createElement('span');
-                            ellipsis.className = 'px-2';
-                            ellipsis.textContent = '...';
-                            paginationContainer.appendChild(ellipsis);
-                        }
-                    }
-                    
-                    for (let i = startPage; i <= endPage; i++) {
-                        const pageButton = document.createElement('button');
-                        pageButton.className = `p-2 border border-sidebar-border rounded-md mx-0.5 ${i === page ? 'bg-sidebar-accent text-white' : ''}`;
-                        pageButton.textContent = i;
-                        pageButton.onclick = () => fetchCustomerAccounts(i, search, sort);
-                        paginationContainer.appendChild(pageButton);
-                    }
-                    
-                    if (endPage < response.totalPages) {
-                        if (endPage < response.totalPages - 1) {
-                            const ellipsis = document.createElement('span');
-                            ellipsis.className = 'px-2';
-                            ellipsis.textContent = '...';
-                            paginationContainer.appendChild(ellipsis);
-                        }
-                        
-                        const lastPageButton = document.createElement('button');
-                        lastPageButton.className = 'p-2 border border-sidebar-border rounded-md ml-1';
-                        lastPageButton.textContent = response.totalPages;
-                        lastPageButton.onclick = () => fetchCustomerAccounts(response.totalPages, search, sort);
-                        paginationContainer.appendChild(lastPageButton);
-                    }
-                    
-                    // Next button
-                    const nextButton = document.createElement('button');
-                    nextButton.className = 'p-2 border border-sidebar-border rounded-md ml-1';
-                    nextButton.textContent = 'Next';
-                    nextButton.disabled = page === response.totalPages;
-                    nextButton.onclick = () => {
-                        if (page < response.totalPages) fetchCustomerAccounts(page + 1, search, sort);
-                    };
-                    paginationContainer.appendChild(nextButton);
-                    
-                } catch (e) {
-                    console.error('Error parsing response:', e);
+    // Function to fetch and display customer accounts
+function fetchCustomerAccounts(page = 1, search = '', sort = 'id_asc') {
+    // Show loading indicator
+    const tableBody = document.querySelector('#customerTable tbody');
+    tableBody.innerHTML = '<tr><td colspan="6" class="text-center py-4">Loading...</td></tr>';
+    
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', `accountManagement/fetch_customer_accounts.php?page=${page}&search=${encodeURIComponent(search)}&sort=${sort}`, true);
+    
+    xhr.onload = function() {
+        if (this.status === 200) {
+            try {
+                const response = JSON.parse(this.responseText);
+                
+                if (response.error) {
+                    // Show error message
+                    tableBody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-red-500">${response.error}</td></tr>`;
+                    return;
                 }
+                
+                // Update the table content
+                tableBody.innerHTML = response.tableContent;
+                
+                // Update pagination info
+                document.getElementById('showingFrom').textContent = response.showingFrom;
+                document.getElementById('showingTo').textContent = response.showingTo;
+                document.getElementById('totalCount').textContent = response.totalCount;
+                
+                // Update pagination buttons
+                updatePaginationButtons(response.totalPages, page, search, sort);
+                
+            } catch (e) {
+                console.error('Error parsing response:', e);
+                tableBody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-red-500">Error loading data</td></tr>';
             }
-        };
-        
-        xhr.onerror = function() {
-        console.error('Request failed');
-        };
-        
-        xhr.send();
-    }
+        } else {
+            tableBody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-red-500">Failed to load data</td></tr>';
+        }
+    };
+    
+    xhr.onerror = function() {
+        tableBody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-red-500">Network error occurred</td></tr>';
+    };
+    
+    xhr.send();
+}
     
 // Add a debounce function to prevent too many rapid searches
 let searchTimeout;
 const searchDebounceTime = 300; // milliseconds
+
+
+// Helper function to update pagination buttons
+function updatePaginationButtons(totalPages, currentPage, search, sort) {
+    const paginationContainer = document.getElementById('paginationContainer');
+    paginationContainer.innerHTML = '';
+    
+    // Previous button
+    const prevButton = document.createElement('button');
+    prevButton.className = 'px-3 py-1 border rounded mr-1' + (currentPage === 1 ? ' opacity-50 cursor-not-allowed' : ' hover:bg-gray-100');
+    prevButton.textContent = 'Previous';
+    prevButton.disabled = currentPage === 1;
+    prevButton.onclick = () => {
+        if (currentPage > 1) fetchCustomerAccounts(currentPage - 1, search, sort);
+    };
+    paginationContainer.appendChild(prevButton);
+    
+    // Page buttons
+    const maxPagesToShow = 5;
+    let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
+    let endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
+    
+    if (endPage - startPage + 1 < maxPagesToShow) {
+        startPage = Math.max(1, endPage - maxPagesToShow + 1);
+    }
+    
+    // First page button
+    if (startPage > 1) {
+        const firstPageButton = document.createElement('button');
+        firstPageButton.className = 'px-3 py-1 border rounded mr-1 hover:bg-gray-100';
+        firstPageButton.textContent = '1';
+        firstPageButton.onclick = () => fetchCustomerAccounts(1, search, sort);
+        paginationContainer.appendChild(firstPageButton);
+        
+        if (startPage > 2) {
+            const ellipsis = document.createElement('span');
+            ellipsis.className = 'px-2';
+            ellipsis.textContent = '...';
+            paginationContainer.appendChild(ellipsis);
+        }
+    }
+    
+    // Page number buttons
+    for (let i = startPage; i <= endPage; i++) {
+        const pageButton = document.createElement('button');
+        pageButton.className = `px-3 py-1 border rounded mx-0.5 ${i === currentPage ? 'bg-sidebar-accent text-white' : 'hover:bg-gray-100'}`;
+        pageButton.textContent = i;
+        pageButton.onclick = () => fetchCustomerAccounts(i, search, sort);
+        paginationContainer.appendChild(pageButton);
+    }
+    
+    // Last page button
+    if (endPage < totalPages) {
+        if (endPage < totalPages - 1) {
+            const ellipsis = document.createElement('span');
+            ellipsis.className = 'px-2';
+            ellipsis.textContent = '...';
+            paginationContainer.appendChild(ellipsis);
+        }
+        
+        const lastPageButton = document.createElement('button');
+        lastPageButton.className = 'px-3 py-1 border rounded ml-1 hover:bg-gray-100';
+        lastPageButton.textContent = totalPages;
+        lastPageButton.onclick = () => fetchCustomerAccounts(totalPages, search, sort);
+        paginationContainer.appendChild(lastPageButton);
+    }
+    
+    // Next button
+    const nextButton = document.createElement('button');
+    nextButton.className = 'px-3 py-1 border rounded ml-1' + (currentPage === totalPages ? ' opacity-50 cursor-not-allowed' : ' hover:bg-gray-100');
+    nextButton.textContent = 'Next';
+    nextButton.disabled = currentPage === totalPages;
+    nextButton.onclick = () => {
+        if (currentPage < totalPages) fetchCustomerAccounts(currentPage + 1, search, sort);
+    };
+    paginationContainer.appendChild(nextButton);
+}
 
 // Client-side search function
 function searchCustomers() {
