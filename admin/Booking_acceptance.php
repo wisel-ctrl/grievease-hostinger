@@ -3206,6 +3206,7 @@ function confirmCustomAccept() {
     fetch('bookingpage/get_custom_details_for_accept.php?id=' + bookingId)
         .then(response => response.json())
         .then(data => {
+          console.log('RECIEVED DATA: ', data);
             // Set all the hidden fields
             document.getElementById('customBookingIdForPayment').value = bookingId;
             
