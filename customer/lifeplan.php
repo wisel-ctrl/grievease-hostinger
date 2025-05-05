@@ -812,31 +812,7 @@ require_once '../db_connect.php'; // Database connection
                     </ul>
                 </div>
 
-                <div class="border-t border-gray-200 pt-4 mt-4 md:mt-6">
-                    <h3 class="text-lg md:text-xl font-hedvig text-navy mb-3 md:mb-4">Additional Services:</h3>
-                    <div id="traditionalAdditionalServices" class="space-y-2 md:space-y-3">
-                        <div class="flex items-center">
-                            <input type="checkbox" id="traditionalFlowers" name="additionalServices" value="3500" class="traditional-addon h-4 md:h-5 w-4 md:w-5 text-yellow-600 rounded focus:ring-yellow-500" data-name="Floral Arrangements">
-                            <label for="traditionalFlowers" class="ml-2 md:ml-3 text-xs md:text-sm text-gray-700">Floral Arrangements (₱3,500)</label>
-                        </div>
-                        <div class="flex items-center">
-                            <input type="checkbox" id="traditionalCatering" name="additionalServices" value="15000" class="traditional-addon h-4 md:h-5 w-4 md:w-5 text-yellow-600 rounded focus:ring-yellow-500" data-name="Catering Service (50 pax)">
-                            <label for="traditionalCatering" class="ml-2 md:ml-3 text-xs md:text-sm text-gray-700">Catering Service - 50 pax (₱15,000)</label>
-                        </div>
-                        <div class="flex items-center">
-                            <input type="checkbox" id="traditionalVideography" name="additionalServices" value="7500" class="traditional-addon h-4 md:h-5 w-4 md:w-5 text-yellow-600 rounded focus:ring-yellow-500" data-name="Video Memorial Service">
-                            <label for="traditionalVideography" class="ml-2 md:ml-3 text-xs md:text-sm text-gray-700">Video Memorial Service (₱7,500)</label>
-                        </div>
-                        <div class="flex items-center">
-                            <input type="checkbox" id="traditionalTransport" name="additionalServices" value="4500" class="traditional-addon h-4 md:h-5 w-4 md:w-5 text-yellow-600 rounded focus:ring-yellow-500" data-name="Additional Transportation">
-                            <label for="traditionalTransport" class="ml-2 md:ml-3 text-xs md:text-sm text-gray-700">Additional Transportation (₱4,500)</label>
-                        </div>
-                        <div class="flex items-center">
-                            <input type="checkbox" id="traditionalUrn" name="additionalServices" value="6000" class="traditional-addon h-4 md:h-5 w-4 md:w-5 text-yellow-600 rounded focus:ring-yellow-500" data-name="Premium Urn Upgrade">
-                            <label for="traditionalUrn" class="ml-2 md:ml-3 text-xs md:text-sm text-gray-700">Premium Urn Upgrade (₱6,000)</label>
-                        </div>
-                    </div>
-                </div>
+                
                 
                 <!-- Mobile-only continue button -->
                 <div class="mt-6 border-t border-gray-200 pt-4 md:hidden">
@@ -975,9 +951,9 @@ require_once '../db_connect.php'; // Database connection
                         
                         <div class="mb-3">
                             <div class="flex items-center">
-                                <input type="checkbox" id="cremationOption" name="cremationOption" class="h-4 w-4 text-yellow-600 focus:ring-yellow-500 border-gray-300 rounded">
+                                <input type="checkbox" id="cremationOption" name="cremationOption" class="h-4 w-4 text-yellow-600 focus:ring-yellow-500 border-gray-300 rounded" value="40000">
                                 <label for="cremationOption" class="ml-2 block text-sm text-navy">
-                                    Include Cremation Services
+                                    Include Cremation Services (+₱40,000)
                                 </label>
                             </div>
                             <p class="text-xs text-gray-500 mt-1 ml-6">Select this option if you wish to include cremation services in your Lifeplan package.</p>
@@ -1482,6 +1458,13 @@ function updateLifeplanPriceCalculations(packagePrice, additionalCost = 0) {
 function updateTotalWithAddons(packagePrice) {
     let addonTotal = 0;
     
+    // Add cremation cost if checked
+    const cremationCheckbox = document.getElementById('cremationOption');
+    if (cremationCheckbox && cremationCheckbox.checked) {
+        addonTotal += parseInt(cremationCheckbox.value);
+    }
+    
+    // Add other addons if any
     document.querySelectorAll('.traditional-addon:checked').forEach(checkbox => {
         addonTotal += parseInt(checkbox.value);
     });
@@ -1557,12 +1540,13 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Add event listeners to addon checkboxes
-    document.querySelectorAll('.traditional-addon').forEach(checkbox => {
-        checkbox.addEventListener('change', function() {
+    const cremationCheckbox = document.getElementById('cremationOption');
+    if (cremationCheckbox) {
+        cremationCheckbox.addEventListener('change', function() {
             const basePrice = parseInt(document.getElementById('lifeplanSelectedPackagePrice')?.value || 0);
             updateTotalWithAddons(basePrice);
         });
-    });
+    }
     
     // Add event listener to payment term select
     const paymentTermSelect = document.getElementById('lifeplanPaymentTerm');
@@ -1608,6 +1592,14 @@ document.addEventListener('DOMContentLoaded', function() {
             const packagePrice = parseFloat(document.getElementById('lifeplanSelectedPackagePrice')?.value || 0);
             const selectedAddons = [];
             
+            const cremationCheckbox = document.getElementById('cremationOption');
+            if (cremationCheckbox && cremationCheckbox.checked) {
+                selectedAddons.push({
+                    name: 'Cremation Services',
+                    price: parseFloat(cremationCheckbox.value)
+                });
+            }
+
             document.querySelectorAll('.traditional-addon:checked').forEach(checkbox => {
                 selectedAddons.push({
                     name: checkbox.dataset.name,
