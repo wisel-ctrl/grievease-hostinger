@@ -46,12 +46,6 @@ header("Pragma: no-cache");
 
 require_once '../db_connect.php';
 
-// Count total number of customers
-$totalCustomersQuery = "SELECT COUNT(*) AS total FROM users WHERE user_type = 3";
-$totalCustomersResult = mysqli_query($conn, $totalCustomersQuery);
-$totalCustomersRow = mysqli_fetch_assoc($totalCustomersResult);
-$totalCustomers = $totalCustomersRow['total'];
-
 ?>
 
 <!DOCTYPE html>
@@ -105,543 +99,483 @@ $totalCustomers = $totalCustomersRow['total'];
       background-color: #CA8A04;
     }
     
+    /* Animate the sidebar
+    @keyframes slideIn {
+      from { transform: translateX(-100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    
+    .animate-sidebar {
+      animation: slideIn 0.3s ease forwards;
+    } */
+
     /* Gradient background for menu section headers */
     .menu-header {
       background: linear-gradient(to right, rgba(202, 138, 4, 0.1), transparent);
     }
-    
-    .main-content {
-      margin-left: 16rem;
-      width: calc(100% - 16rem);
-      z-index: 1;
-    }
-    
-    .sidebar {
-      z-index: 10;
-    }
-    
-    #sidebar {
-      transition: width 0.3s ease, opacity 0.3s ease, visibility 0.3s ease;
-    }
-    
-    #main-content {
-      transition: margin-left 0.3s ease;
-    }
-    
-    .w-0 {
-      width: 0;
-    }
-    
-    .opacity-0 {
-      opacity: 0;
-    }
-    
-    .invisible {
-      visibility: hidden;
-    }
-    
-    .w-\[calc\(100\%-16rem\)\] {
-      width: calc(100% - 16rem);
-    }
-    
-    .w-\[calc\(100\%-4rem\)\] {
-      width: calc(100% - 4rem);
-    }
-    
-    #archivedAccountsModal table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-    
-    #archivedAccountsModal th, 
-    #archivedAccountsModal td {
-      padding: 12px 15px;
-      text-align: left;
-      border-bottom: 1px solid #e2e8f0;
-    }
-    
-    #archivedAccountsModal tr:hover {
-      background-color: #f7fafc;
-    }
-    
-    #archivedAccountsModal .max-h-\[60vh\] {
-      max-height: 60vh;
-    }
-    
-    #searchContainer {
-      position: relative;
-      width: 300px;
-    }
-    
-    #searchCustomer {
-      padding-right: 30px;
-      width: 100%;
-    }
-    
-    #clearSearchBtn {
-      position: absolute;
-      right: 8px;
-      top: 50%;
-      transform: translateY(-50%);
-      background: none;
-      border: none;
-      cursor: pointer;
-      padding: 5px;
-      z-index: 10;
-    }
-    
-    /* Loading indicator for search */
-    .search-loading::after {
-      content: "";
-      position: absolute;
-      right: 8px;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 16px;
-      height: 16px;
-      border: 2px solid rgba(202, 138, 4, 0.2);
-      border-top: 2px solid #CA8A04;
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-    }
-    
-    @keyframes spin {
-      0% { transform: translateY(-50%) rotate(0deg); }
-      100% { transform: translateY(-50%) rotate(360deg); }
-    }
-    
-    /* New styles for the updated UI */
-    .filter-dropdown {
-      position: relative;
-    }
-    
-    .filter-dropdown-content {
-      display: none;
-      position: absolute;
-      right: 0;
-      background-color: white;
-      min-width: 160px;
-      box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-      z-index: 1;
-      border-radius: 0.375rem;
-      border: 1px solid #e2e8f0;
-    }
-    
-    .filter-dropdown:hover .filter-dropdown-content {
-      display: block;
-    }
-    
-    .filter-option:hover {
-      background-color: #f8fafc;
-    }
+    /* Add this to your existing styles */
+.main-content {
+  margin-left: 16rem; /* Adjust this value to match the width of your sidebar */
+  width: calc(100% - 16rem); /* Ensure the main content takes up the remaining width */
+  z-index: 1; /* Ensure the main content is above the sidebar */
+}
+
+.sidebar {
+  z-index: 10; /* Ensure the sidebar is below the main content */
+}
+/* Add this to your existing styles */
+#sidebar {
+  transition: width 0.3s ease, opacity 0.3s ease, visibility 0.3s ease;
+}
+
+#main-content {
+  transition: margin-left 0.3s ease;
+}
+
+.w-0 {
+  width: 0;
+}
+
+.opacity-0 {
+  opacity: 0;
+}
+
+.invisible {
+  visibility: hidden;
+}
+.w-\[calc\(100\%-16rem\)\] {
+  width: calc(100% - 16rem);
+}
+
+.w-\[calc\(100\%-4rem\)\] {
+  width: calc(100% - 4rem);
+}
+
+/* Add to your existing styles */
+#archivedAccountsModal table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#archivedAccountsModal th, 
+#archivedAccountsModal td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+#archivedAccountsModal tr:hover {
+    background-color: #f7fafc;
+}
+
+#archivedAccountsModal .max-h-\[60vh\] {
+    max-height: 60vh;
+}
+
+#searchContainer {
+  position: relative;
+  width: 300px;
+}
+
+#searchCustomer {
+  padding-right: 30px;
+  width: 100%;
+}
+
+#clearSearchBtn {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+  z-index: 10;
+}
+
+/* Loading indicator for search */
+.search-loading::after {
+  content: "";
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(202, 138, 4, 0.2);
+  border-top: 2px solid #CA8A04;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: translateY(-50%) rotate(0deg); }
+  100% { transform: translateY(-50%) rotate(360deg); }
+}
   </style>
 </head>
 <body class="flex bg-gray-50">
-  <!-- Sidebar (unchanged from original) -->
-  <nav id="sidebar" class="w-64 h-screen bg-sidebar-bg font-hedvig fixed transition-all duration-300 overflow-y-auto z-10 scrollbar-thin shadow-sidebar animate-sidebar sidebar">
-    <!-- Sidebar content remains exactly the same as in the original file -->
-    <!-- ... -->
+  <!-- Modify the sidebar structure to include a dedicated space for the hamburger menu -->
+<nav id="sidebar" class="w-64 h-screen bg-sidebar-bg font-hedvig fixed transition-all duration-300 overflow-y-auto z-10 scrollbar-thin shadow-sidebar animate-sidebar sidebar">
+  <!-- Logo and Header with hamburger menu -->
+  <div class="flex items-center px-5 py-6 border-b border-sidebar-border">
+    <button id="hamburger-menu" class="p-2 mr-2 bg-white rounded-lg shadow-md text-gray-600 hover:text-gray-900 transition-all duration-300">
+      <i class="fas fa-bars"></i>
+    </button>
+    <!-- <img src="../Landing_Page/Landing_images/logo.png" alt="GrievEase Logo" class="h-10 w-auto mr-3"> -->
+    <div class="text-2xl font-cinzel font-bold text-sidebar-accent">GrievEase</div>
+  </div>
+    
+    <!-- User Profile -->
+    <div class="flex items-center px-5 py-4 border-b border-sidebar-border bg-gradient-to-r from-navy to-primary">
+      <div class="w-10 h-10 rounded-full bg-yellow-600 flex items-center justify-center shadow-md">
+        <i class="fas fa-user text-white"></i>
+      </div>
+      <div class="ml-3">
+        <div class="text-sm font-medium text-sidebar-text">John Doe</div>
+        <div class="text-xs text-sidebar-text opacity-70">Employee</div>
+      </div>
+      <div class="ml-auto">
+        <span class="w-3 h-3 bg-success rounded-full block"></span>
+      </div>
+    </div>
+    
+    <!-- Menu Items -->
+    <div class="pt-4 pb-8">
+      <!-- Main Navigation -->
+      <div class="px-5 mb-2 py-2 menu-header">
+        <h5 class="text-xs font-medium text-sidebar-accent uppercase tracking-wider">Main</h5>
+      </div>
+      <ul class="list-none p-0 mb-6">
+        <li>
+          <a href="index.php" class="sidebar-link flex items-center px-5 py-3 text-sidebar-text opacity-80 hover:opacity-100 no-underline transition-all duration-300 hover:bg-sidebar-hover">
+            <i class="fas fa-tachometer-alt w-5 text-center mr-3 text-sidebar-accent"></i>
+            <span>Dashboard</span>
+          </a>
+        </li> 
+        <li>
+          <a href="employee_customer_account_creation.php" class="sidebar-link flex items-center px-5 py-3 text-sidebar-text opacity-80 hover:opacity-100 no-underline transition-all duration-300 hover:bg-sidebar-hover">
+            <i class="fas fa-user-circle w-5 text-center mr-3 text-sidebar-accent"></i>
+            <span>Customer Account Management</span>
+          </a>
+        </li>
+        <li>
+          <a href="employee_inventory.php" class="sidebar-link flex items-center px-5 py-3 text-sidebar-text opacity-80 hover:opacity-100 no-underline transition-all duration-300 hover:bg-sidebar-hover">
+            <i class="fas fa-boxes w-5 text-center mr-3 text-sidebar-accent"></i>
+            <span>View Inventory</span>
+          </a>
+        </li>
+        <li>
+          <a href="employee_pos.php" class="sidebar-link flex items-center px-5 py-3 text-sidebar-text opacity-80 hover:opacity-100 no-underline transition-all duration-300 hover:bg-sidebar-hover">
+            <i class="fas fa-cash-register w-5 text-center mr-3 text-sidebar-accent"></i>
+            <span>Point-Of-Sale (POS)</span>
+          </a>
+        </li>
+      </ul>
+        
+      <!-- Reports & Analytics -->
+      <div class="px-5 mb-2 py-2 menu-header">
+        <h5 class="text-xs font-medium text-sidebar-accent uppercase tracking-wider">Reports & Analytics</h5>
+      </div>
+      <ul class="list-none p-0 mb-6">
+        <li>
+          <a href="employee_expenses.php" class="sidebar-link flex items-center px-5 py-3 text-sidebar-text opacity-80 hover:opacity-100 no-underline transition-all duration-300 hover:bg-sidebar-hover">
+            <i class="fas fa-money-bill-wave w-5 text-center mr-3 text-sidebar-accent"></i>
+            <span>Expenses</span>
+          </a>
+        </li>
+        <li>
+          <a href="history.php" class="sidebar-link flex items-center px-5 py-3 text-sidebar-text opacity-80 hover:opacity-100 no-underline transition-all duration-300 hover:bg-sidebar-hover">
+            <i class="fas fa-history w-5 text-center mr-3 text-sidebar-accent"></i>
+            <span>Service History</span>
+          </a>
+        </li>
+      </ul>
+        
+      <!-- Services & Staff -->
+      <div class="px-5 mb-2 py-2 menu-header">
+        <h5 class="text-xs font-medium text-sidebar-accent uppercase tracking-wider">Communication</h5>
+      </div>
+      <ul class="list-none p-0 mb-6">
+          <a href="employee_chat.php" class="sidebar-link flex items-center px-5 py-3 text-sidebar-text opacity-80 hover:opacity-100 no-underline transition-all duration-300 hover:bg-sidebar-hover">
+            <i class="fas fa-comments w-5 text-center mr-3 text-sidebar-accent"></i>
+            <span>Chats</span>
+          </a>
+        </li>
+      </ul>
+        
+      <!-- Account -->
+      <div class="px-5 mb-2 py-2 menu-header">
+        <h5 class="text-xs font-medium text-sidebar-accent uppercase tracking-wider">Account</h5>
+      </div>
+      <ul class="list-none p-0">
+        <li>
+          <a href="..\logout.php" class="sidebar-link flex items-center px-5 py-3 text-sidebar-text opacity-80 hover:opacity-100 no-underline transition-all duration-300 hover:bg-sidebar-hover hover:text-error">
+            <i class="fas fa-sign-out-alt w-5 text-center mr-3 text-error"></i>
+            <span>Logout</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+    
+    <!-- Footer -->
+    <div class="relative bottom-0 left-0 right-0 px-5 py-3 border-t border-sidebar-border bg-gradient-to-r from-navy to-primary">
+      <div class="flex justify-between items-center">
+        <p class="text-xs text-sidebar-text opacity-60">© 2025 GrievEase</p>
+        <div class="text-xs text-sidebar-accent">
+          <i class="fas fa-heart"></i> With Compassion
+        </div>
+      </div>
+    </div>
   </nav>
 
-  <!-- Main Content with updated UI -->
-  <div id="main-content" class="p-6 bg-gray-50 min-h-screen transition-all duration-300 ml-64 w-[calc(100%-16rem)] main-content">
-    <!-- Header with breadcrumb and welcome message -->
-    <div class="flex justify-between items-center mb-6 bg-white p-5 rounded-lg shadow-sidebar">
+  <!-- Main Content -->
+<div id="main-content" class="ml-64 p-6 bg-gray-50 min-h-screen transition-all duration-300 main-content">
+  <!-- Header with breadcrumb and welcome message -->
+  <div class="flex justify-between items-center mb-6 bg-white p-5 rounded-lg shadow-sidebar">
+    <div>
+      <h1 class="text-2xl font-bold text-sidebar-text">Customer Account Management</h1>
+    </div>
+    <div class="flex space-x-3">
+      <button class="p-2 bg-white border border-sidebar-border rounded-lg shadow-input text-sidebar-text hover:bg-sidebar-hover transition-all duration-300">
+        <i class="fas fa-bell"></i>
+      </button>
+       
+    </div>
+  </div>
+
+  <!-- Mode Selector -->
+  <div class="flex justify-start mb-6">
+      <div class="bg-gray-100 rounded-lg overflow-hidden inline-flex">
+        <!-- Manage Accounts button first -->
+        <button id="manageBtn" onclick="switchMode('manage')" class="py-2 px-5 border-none bg-sidebar-accent text-white font-semibold cursor-pointer hover:bg-darkgold transition-all duration-300">Manage Accounts</button>
+        <!-- Create Account button second -->
+        <button id="createBtn" onclick="switchMode('create')" class="py-2 px-5 border-none bg-transparent text-sidebar-text cursor-pointer hover:bg-sidebar-hover transition-all duration-300">Create Account</button>
+      </div>
+      <div class="ml-auto flex items-center space-x-3">
+          <button id="viewArchivedBtn" onclick="viewArchivedAccounts()" class="bg-gray-200 text-gray-700 border-none py-2 px-4 rounded-md cursor-pointer hover:bg-gray-300 transition-all duration-300">
+            <i class="fas fa-archive mr-2"></i>View Archived Accounts
+          </button>
+            <div id="searchContainer" class="relative">
+              <input type="text" id="searchCustomer" placeholder="Search customers..." 
+                     class="p-2 border border-sidebar-border rounded-md text-sm text-sidebar-text focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent w-full"
+                     oninput="searchCustomers()">
+              <button id="clearSearchBtn" onclick="clearSearch()" class="absolute right-2 top-2 text-gray-400 hover:text-gray-600 hidden">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+        </div>
+    </div>
+
+<!-- Add Customer Account Form (Non-Modal Version) -->
+<div id="createAccountSection" class="hidden">
+<div class="bg-white rounded-xl shadow-card w-full mx-auto">
+  <!-- Form Header -->
+  <div class="px-4 sm:px-6 py-4 sm:py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200 rounded-t-xl">
+    <h3 class="text-lg sm:text-xl font-bold text-white flex items-center">
+      Add Customer Account
+    </h3>
+  </div>
+  
+  <!-- Form Body -->
+  <div class="px-4 sm:px-6 py-4 sm:py-5">
+    <form id="addCustomerAccountForm" method="post" action="../admin/addCustomer/add_customer.php" class="space-y-3 sm:space-y-4">
+      <!-- Personal Information Section -->
       <div>
-        <h1 class="text-2xl font-bold text-sidebar-text">Customer Account Management</h1>
+        <label for="firstName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+          First Name <span class="text-red-500">*</span>
+        </label>
+        <div class="relative">
+          <input type="text" id="firstName" name="firstName" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="First Name" required>
+        </div>
+        <p id="firstNameError" class="text-red-500 text-xs mt-1 hidden"></p>
       </div>
-    </div>
-
-    <!-- Customer Account Management Section -->
-    <div id="customer-account-management" class="bg-white rounded-lg shadow-md mb-8 border border-sidebar-border overflow-hidden">
-      <!-- Account Header with Search and Filters -->
-      <div class="bg-sidebar-hover p-4 border-b border-sidebar-border">
-        <!-- Desktop layout for big screens - Title on left, controls on right -->
-        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
-          <!-- Title and Counter -->
-          <div class="flex items-center gap-3 mb-4 lg:mb-0">
-            <h3 class="text-lg font-bold text-sidebar-text whitespace-nowrap">Customer Accounts</h3>
-            <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
-              <span id="totalCustomers"><?php echo $totalCustomers; ?></span>
-            </span>
+      
+      <div>
+        <label for="lastName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+          Last Name <span class="text-red-500">*</span>
+        </label>
+        <div class="relative">
+          <input type="text" id="lastName" name="lastName" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="Last Name" required>
+        </div>
+        <p id="lastNameError" class="text-red-500 text-xs mt-1 hidden"></p>
+      </div>
+      
+      <div class="flex flex-col sm:flex-row gap-2 sm:gap-4">
+        <div class="w-full sm:flex-1">
+          <label for="middleName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            Middle Name
+          </label>
+          <div class="relative">
+            <input type="text" id="middleName" name="middleName" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="Middle Name">
           </div>
-          
-          <!-- Controls for big screens - aligned right -->
-          <div class="hidden lg:flex items-center gap-3">
-            <!-- Search Input -->
-            <div class="relative">
-              <input type="text" id="customerSearchInput" 
-                     placeholder="Search customers..." 
-                     class="pl-8 pr-3 py-2 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
-              <i class="fas fa-search absolute left-2.5 top-3 text-gray-400"></i>
-            </div>
-
-            <!-- Filter Dropdown -->
-            <div class="relative filter-dropdown">
-              <button id="customerFilterToggle" class="px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover">
-                <i class="fas fa-filter text-sidebar-accent"></i>
-                <span>Filters</span>
-                <span id="filterIndicator" class="hidden h-2 w-2 bg-sidebar-accent rounded-full"></span>
-              </button>
-              
-              <!-- Filter Window -->
-              <div id="customerFilterDropdown" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-4">
-                <div class="space-y-4">
-                  <!-- Sort Options -->
-                  <div>
-                    <h5 class="text-sm font-medium text-sidebar-text mb-2">Sort By</h5>
-                    <div class="space-y-1">
-                      <div class="flex items-center cursor-pointer filter-option" data-sort="id_asc">
-                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                          Default
-                        </span>
-                      </div>
-                      <div class="flex items-center cursor-pointer filter-option" data-sort="name_asc">
-                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                          Name: A-Z
-                        </span>
-                      </div>
-                      <div class="flex items-center cursor-pointer filter-option" data-sort="name_desc">
-                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                          Name: Z-A
-                        </span>
-                      </div>
-                      <div class="flex items-center cursor-pointer filter-option" data-sort="email_asc">
-                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                          Email: A-Z
-                        </span>
-                      </div>
-                      <div class="flex items-center cursor-pointer filter-option" data-sort="email_desc">
-                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                          Email: Z-A
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- For Customer Archive Button -->
-            <button class="px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover" onclick="viewArchivedAccounts()">
-              <i class="fas fa-archive text-sidebar-accent"></i>
-              <span>Archive</span>
-            </button>
-            
-            <!-- Add Customer Account Button -->
-            <button class="px-4 py-2 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm whitespace-nowrap" 
-                    onclick="switchMode('create')">
-              <i class="fas fa-plus"></i>
-              <span>Add Customer Account</span>
-            </button>
-          </div>
+          <p id="middleNameError" class="text-red-500 text-xs mt-1 hidden"></p>
         </div>
         
-        <!-- Mobile/Tablet Controls - Only visible on smaller screens -->
-        <div class="lg:hidden w-full mt-4">
-          <!-- First row: Search bar with filter icon on the right -->
-          <div class="flex items-center w-full gap-3 mb-4">
-            <!-- Search Input - Takes most of the space -->
-            <div class="relative flex-grow">
-              <input type="text" id="customerSearchInputMobile" 
-                      placeholder="Search customers..." 
-                      class="pl-8 pr-3 py-2.5 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
-              <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
-            </div>
-
-            <!-- Icon-only button for filter -->
-            <div class="flex items-center">
-              <!-- Filter Icon Button -->
-              <div class="relative filter-dropdown">
-                <button id="customerFilterToggleMobile" class="w-10 h-10 flex items-center justify-center text-sidebar-accent">
-                  <i class="fas fa-filter text-xl"></i>
-                  <span id="filterIndicatorMobile" class="hidden absolute top-1 right-1 h-2 w-2 bg-sidebar-accent rounded-full"></span>
-                </button>
-                
-                <!-- Mobile Filter Dropdown -->
-                <div id="customerFilterDropdownMobile" class="hidden absolute right-0 mt-2 w-56 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-4">
-                  <div class="space-y-2">
-                    <h5 class="text-sm font-medium text-sidebar-text mb-2">Sort By</h5>
-                    <div class="space-y-1">
-                      <div class="flex items-center cursor-pointer filter-option-mobile" data-sort="id_asc">
-                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                          Default
-                        </span>
-                      </div>
-                      <div class="flex items-center cursor-pointer filter-option-mobile" data-sort="name_asc">
-                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                          Name: A-Z
-                        </span>
-                      </div>
-                      <div class="flex items-center cursor-pointer filter-option-mobile" data-sort="name_desc">
-                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                          Name: Z-A
-                        </span>
-                      </div>
-                      <div class="flex items-center cursor-pointer filter-option-mobile" data-sort="email_asc">
-                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                          Email: A-Z
-                        </span>
-                      </div>
-                      <div class="flex items-center cursor-pointer filter-option-mobile" data-sort="email_desc">
-                        <span class="hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full">
-                          Email: Z-A
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Archive Icon Button -->
-              <button class="w-10 h-10 flex items-center justify-center text-sidebar-accent" onclick="viewArchivedAccounts()">
-                <i class="fas fa-archive text-xl"></i>
-              </button>
-            </div>
-          </div>
-
-          <!-- Second row: Add Customer Account Button - Full width -->
-          <div class="w-full">
-            <button class="px-4 py-2.5 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm whitespace-nowrap w-full justify-center" 
-                    onclick="switchMode('create')">
-              <i class="fas fa-plus mr-2"></i>
-              <span>Add Customer Account</span>
-            </button>
+        <div class="w-full sm:flex-1">
+          <label for="suffix" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            Suffix
+          </label>
+          <div class="relative">
+            <select id="suffix" name="suffix" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+              <option value="">Select Suffix</option>
+              <option value="Jr">Jr</option>
+              <option value="Sr">Sr</option>
+              <option value="I">I</option>
+              <option value="II">II</option>
+              <option value="III">III</option>
+              <option value="IV">IV</option>
+              <option value="V">V</option>
+            </select>
           </div>
         </div>
       </div>
       
-      <!-- Responsive Table Container with improved spacing -->
-      <div class="overflow-x-auto scrollbar-thin" id="customerTableContainer">
-        <!-- Responsive Table with improved spacing and horizontal scroll for small screens -->
-        <div class="min-w-full">
-          <table class="w-full">
-            <thead>
-              <tr class="bg-gray-50 border-b border-sidebar-border">
-                <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable('id')">
-                  <div class="flex items-center gap-1.5">
-                    <i class="fas fa-hashtag text-sidebar-accent"></i> ID 
-                  </div>
-                </th>
-                <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable('name')">
-                  <div class="flex items-center gap-1.5">
-                    <i class="fas fa-user text-sidebar-accent"></i> Name 
-                  </div>
-                </th>
-                <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable('email')">
-                  <div class="flex items-center gap-1.5">
-                    <i class="fas fa-envelope text-sidebar-accent"></i> Email 
-                  </div>
-                </th>
-                <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable('role')">
-                  <div class="flex items-center gap-1.5">
-                    <i class="fas fa-id-badge text-sidebar-accent"></i> Role 
-                  </div>
-                </th>
-                <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable('status')">
-                  <div class="flex items-center gap-1.5">
-                    <i class="fas fa-toggle-on text-sidebar-accent"></i> Status 
-                  </div>
-                </th>
-                <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text whitespace-nowrap">
-                  <div class="flex items-center gap-1.5">
-                    <i class="fas fa-cogs text-sidebar-accent"></i> Actions
-                  </div>
-                </th>
-              </tr>
-            </thead>
-            <tbody id="customerTableBody">
-              <!-- Table content will be populated by JavaScript -->
-            </tbody>
-          </table>
+      <div>
+        <label for="birthdate" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+          Birthdate <span class="text-red-500">*</span>
+        </label>
+        <div class="relative">
+          <input type="date" id="birthdate" name="birthdate" 
+            class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
+            max="<?php echo date('Y-m-d'); ?>" required>
+        </div>
+        <p id="birthdateError" class="text-red-500 text-xs mt-1 hidden"></p>
+      </div>
+      
+      <div>
+        <label for="branchLocation" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+          Branch Location <span class="text-red-500">*</span>
+        </label>
+        <div class="relative">
+          <select id="branchLocation" name="branchLocation" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
+            <option value="">Select Branch</option>
+            <!-- Branch options will be populated by AJAX -->
+          </select>
+        </div>
+        <p id="branchError" class="text-red-500 text-xs mt-1 hidden">Please select a branch</p>
+      </div>
+      
+      <!-- Contact Information Section -->
+      <div>
+        <label for="customerEmail" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+          Email Address <span class="text-red-500">*</span>
+        </label>
+        <div class="relative">
+          <input type="email" id="customerEmail" name="customerEmail" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="example@email.com" required>
+        </div>
+        <p id="emailError" class="text-red-500 text-xs mt-1 hidden"></p>
+      </div>
+      
+      <div>
+        <label for="customerPhone" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+          Phone Number <span class="text-red-500">*</span>
+        </label>
+        <div class="relative">
+          <input type="tel" id="customerPhone" name="customerPhone" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="Phone Number" required>
+        </div>
+        <p id="phoneError" class="text-red-500 text-xs mt-1 hidden"></p>
+      </div>
+      
+      <div>
+        <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+          Generated Password
+        </label>
+        <div class="relative">
+          <input type="password" id="generatedPassword" name="password" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200 bg-gray-100" readonly>
+          <button type="button" class="absolute right-2 top-2 text-gray-500 hover:text-gray-700" onclick="togglePassword()">
+            <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 sm:w-6 sm:h-6">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 12s2.947-5.455 8.02-5.455S20.02 12 20.02 12s-2.947 5.455-8.02 5.455S3.98 12 3.98 12z" />
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 15a3 3 0 100-6 3 3 0 000 6z" />
+            </svg>
+          </button>
         </div>
       </div>
       
-      <!-- Sticky Pagination Footer with improved spacing -->
-      <div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
-        <div id="paginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
-          Showing <span id="showingFrom">0</span> - <span id="showingTo">0</span> 
-          of <span id="totalCount">0</span> customers
-        </div>
-        <div id="paginationContainer" class="flex space-x-1">
-          <!-- Pagination buttons will be inserted here by JavaScript -->
-        </div>
+      <!-- Additional Information Card -->
+      <div class="bg-gray-50 p-3 sm:p-4 rounded-lg border-l-4 border-sidebar-accent mt-3 sm:mt-4">
+        <h4 class="text-xs sm:text-sm font-medium text-gray-700 mb-2 flex items-center">
+          <i class="fas fa-info-circle mr-2 text-sidebar-accent"></i>
+          Account Information
+        </h4>
+        <p class="text-xs sm:text-sm text-gray-600">
+          An account will be created with the provided information. A temporary password will be generated automatically.
+        </p>
+        <p class="text-xs sm:text-sm text-gray-600 mt-2">
+          The customer will be able to change their password after logging in for the first time.
+        </p>
       </div>
-    </div>
-
-    <!-- Add Customer Account Form (Non-Modal Version) -->
-    <div id="createAccountSection" class="hidden">
-      <div class="bg-white rounded-xl shadow-card w-full mx-auto">
-        <!-- Form Header -->
-        <div class="px-4 sm:px-6 py-4 sm:py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200 rounded-t-xl">
-          <h3 class="text-lg sm:text-xl font-bold text-white flex items-center">
-            Add Customer Account
-          </h3>
-        </div>
-        
-        <!-- Form Body -->
-        <div class="px-4 sm:px-6 py-4 sm:py-5">
-          <form id="addCustomerAccountForm" method="post" action="../admin/addCustomer/add_customer.php" class="space-y-3 sm:space-y-4">
-            <!-- Personal Information Section -->
-            <div>
-              <label for="firstName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                First Name <span class="text-red-500">*</span>
-              </label>
-              <div class="relative">
-                <input type="text" id="firstName" name="firstName" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="First Name" required>
-              </div>
-              <p id="firstNameError" class="text-red-500 text-xs mt-1 hidden"></p>
-            </div>
-            
-            <div>
-              <label for="lastName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                Last Name <span class="text-red-500">*</span>
-              </label>
-              <div class="relative">
-                <input type="text" id="lastName" name="lastName" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="Last Name" required>
-              </div>
-              <p id="lastNameError" class="text-red-500 text-xs mt-1 hidden"></p>
-            </div>
-            
-            <div class="flex flex-col sm:flex-row gap-2 sm:gap-4">
-              <div class="w-full sm:flex-1">
-                <label for="middleName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                  Middle Name
-                </label>
-                <div class="relative">
-                  <input type="text" id="middleName" name="middleName" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="Middle Name">
-                </div>
-                <p id="middleNameError" class="text-red-500 text-xs mt-1 hidden"></p>
-              </div>
-              
-              <div class="w-full sm:flex-1">
-                <label for="suffix" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                  Suffix
-                </label>
-                <div class="relative">
-                  <select id="suffix" name="suffix" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
-                    <option value="">Select Suffix</option>
-                    <option value="Jr">Jr</option>
-                    <option value="Sr">Sr</option>
-                    <option value="I">I</option>
-                    <option value="II">II</option>
-                    <option value="III">III</option>
-                    <option value="IV">IV</option>
-                    <option value="V">V</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-            
-            <div>
-              <label for="birthdate" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                Birthdate <span class="text-red-500">*</span>
-              </label>
-              <div class="relative">
-                <input type="date" id="birthdate" name="birthdate" 
-                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
-                  max="<?php echo date('Y-m-d'); ?>" required>
-              </div>
-              <p id="birthdateError" class="text-red-500 text-xs mt-1 hidden"></p>
-            </div>
-            
-            <div>
-              <label for="branchLocation" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                Branch Location <span class="text-red-500">*</span>
-              </label>
-              <div class="relative">
-                <select id="branchLocation" name="branchLocation" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
-                  <option value="">Select Branch</option>
-                  <!-- Branch options will be populated by AJAX -->
-                </select>
-              </div>
-              <p id="branchError" class="text-red-500 text-xs mt-1 hidden">Please select a branch</p>
-            </div>
-            
-            <!-- Contact Information Section -->
-            <div>
-              <label for="customerEmail" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                Email Address <span class="text-red-500">*</span>
-              </label>
-              <div class="relative">
-                <input type="email" id="customerEmail" name="customerEmail" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="example@email.com" required>
-              </div>
-              <p id="emailError" class="text-red-500 text-xs mt-1 hidden"></p>
-            </div>
-            
-            <div>
-              <label for="customerPhone" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                Phone Number <span class="text-red-500">*</span>
-              </label>
-              <div class="relative">
-                <input type="tel" id="customerPhone" name="customerPhone" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="Phone Number" required>
-              </div>
-              <p id="phoneError" class="text-red-500 text-xs mt-1 hidden"></p>
-            </div>
-            
-            <div>
-              <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                Generated Password
-              </label>
-              <div class="relative">
-                <input type="password" id="generatedPassword" name="password" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200 bg-gray-100" readonly>
-                <button type="button" class="absolute right-2 top-2 text-gray-500 hover:text-gray-700" onclick="togglePassword()">
-                  <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 sm:w-6 sm:h-6">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 12s2.947-5.455 8.02-5.455S20.02 12 20.02 12s-2.947 5.455-8.02 5.455S3.98 12 3.98 12z" />
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 15a3 3 0 100-6 3 3 0 000 6z" />
-                  </svg>
-                </button>
-              </div>
-            </div>
-            
-            <!-- Additional Information Card -->
-            <div class="bg-gray-50 p-3 sm:p-4 rounded-lg border-l-4 border-sidebar-accent mt-3 sm:mt-4">
-              <h4 class="text-xs sm:text-sm font-medium text-gray-700 mb-2 flex items-center">
-                <i class="fas fa-info-circle mr-2 text-sidebar-accent"></i>
-                Account Information
-              </h4>
-              <p class="text-xs sm:text-sm text-gray-600">
-                An account will be created with the provided information. A temporary password will be generated automatically.
-              </p>
-              <p class="text-xs sm:text-sm text-gray-600 mt-2">
-                The customer will be able to change their password after logging in for the first time.
-              </p>
-            </div>
-            
-            <input type="hidden" name="user_type" value="3">
-            <input type="hidden" name="is_verified" value="1">
-          </form>
-        </div>
-        
-        <!-- Form Footer -->
-        <div class="px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row sm:justify-end gap-2 sm:gap-4 border-t border-gray-200 bg-white rounded-b-xl">
-          <button class="w-full sm:w-auto px-5 sm:px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="confirmSubmitCustomerForm()">
-            Create Account
-          </button>
-          <button onclick="switchMode('manage')" class="w-full sm:w-auto px-5 sm:px-6 py-2 bg-gray-200 text-gray-700 rounded-lg font-medium hover:bg-gray-300 transition-all duration-300 flex items-center justify-center">
-            Cancel
-          </button>
-        </div>
-      </div>
-    </div>
+      
+      <input type="hidden" name="user_type" value="3">
+      <input type="hidden" name="is_verified" value="1">
+    </form>
   </div>
+  
+  <!-- Form Footer -->
+  <div class="px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row sm:justify-end gap-2 sm:gap-4 border-t border-gray-200 bg-white rounded-b-xl">
+    <button class="w-full sm:w-auto px-5 sm:px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="confirmSubmitCustomerForm()">
+      Create Account
+    </button>
+  </div>
+</div>
+</div>
 
-  <!-- Customer Details Modal -->
-  <div id="customerModal" class="hidden fixed z-50 inset-0 overflow-auto bg-black bg-opacity-40">
-    <div class="bg-white mx-auto my-[10%] p-5 border border-gray-300 w-4/5 max-w-3xl rounded-lg shadow-lg">
-      <div class="flex justify-between items-center mb-5 border-b border-gray-300 pb-3">
-        <h3 id="modalTitle" class="m-0 text-lg font-semibold">Customer Details</h3>
-        <span onclick="closeModal()" class="cursor-pointer text-2xl">&times;</span>
-      </div>
-      <div id="modalContent">
-        <!-- Content will be dynamically populated -->
-      </div>
-      <div class="mt-5 text-right border-t border-gray-300 pt-4">
-        <button onclick="closeModal()" class="bg-gray-600 text-white border-none py-2 px-4 rounded-md cursor-pointer">Close</button>
-        <button id="modalActionButton" class="bg-blue-600 text-white border-none py-2 px-4 rounded-md ml-3 cursor-pointer">Save Changes</button>
+
+
+  <!-- Manage Customer Accounts Section -->
+    <div id="manageAccountSection">
+        <div class="bg-white rounded-lg shadow-sidebar p-5 mb-6 border border-sidebar-border hover:shadow-card transition-all duration-300">
+            <div class="mb-5">
+                <h3 class="text-lg font-semibold text-sidebar-text">Customer Accounts</h3>
+            </div>
+            <div class="p-5">
+                <div class="overflow-x-auto scrollbar-thin">
+                    <table id="customerTable" class="w-full border-collapse min-w-[600px]">
+                        <thead>
+                            <tr class="bg-sidebar-hover text-left">
+                                <th class="p-3 border-b border-sidebar-border text-sm font-medium text-sidebar-text">Customer ID</th>
+                                <th class="p-3 border-b border-sidebar-border text-sm font-medium text-sidebar-text">Name</th>
+                                <th class="p-3 border-b border-sidebar-border text-sm font-medium text-sidebar-text">Email</th>
+                                <th class="p-3 border-b border-sidebar-border text-sm font-medium text-sidebar-text">Type</th>
+                                <th class="p-3 border-b border-sidebar-border text-sm font-medium text-sidebar-text">Status</th>
+                                <th class="p-3 border-b border-sidebar-border text-sm font-medium text-sidebar-text">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Table content will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="mt-5 flex justify-between items-center">
+                    <div>
+                        <span class="text-sm text-gray-600">Showing 0-0 of 0 entries</span>
+                    </div>
+                    <div>
+                        <!-- Pagination buttons will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <!-- Customer Details Modal -->
+    <div id="customerModal" class="hidden fixed z-50 inset-0 overflow-auto bg-black bg-opacity-40">
+      <div class="bg-white mx-auto my-[10%] p-5 border border-gray-300 w-4/5 max-w-3xl rounded-lg shadow-lg">
+        <div class="flex justify-between items-center mb-5 border-b border-gray-300 pb-3">
+          <h3 id="modalTitle" class="m-0 text-lg font-semibold">Customer Details</h3>
+          <span onclick="closeModal()" class="cursor-pointer text-2xl">&times;</span>
+        </div>
+        <div id="modalContent">
+          <!-- Content will be dynamically populated -->
+        </div>
+        <div class="mt-5 text-right border-t border-gray-300 pt-4">
+          <button onclick="closeModal()" class="bg-gray-600 text-white border-none py-2 px-4 rounded-md cursor-pointer">Close</button>
+          <button id="modalActionButton" class="bg-blue-600 text-white border-none py-2 px-4 rounded-md ml-3 cursor-pointer">Save Changes</button>
+        </div>
       </div>
     </div>
-  </div>
 
     <!-- Delete Confirmation Modal -->
     <div id="deleteModal" class="hidden fixed z-50 inset-0 overflow-auto bg-black bg-opacity-40">
