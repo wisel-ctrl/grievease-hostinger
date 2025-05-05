@@ -3077,7 +3077,7 @@ function openCustomDetails(bookingId) {
       // Handle Flower Design Details
       if ( data.flower_name) {
         document.getElementById('flowerDesignName').textContent = data.flower_name;
-        document.getElementById('flowerDesignPrice').textContent = "₱" + (parseFloat(data.flower_price) || 0).toFixed(2);
+        
         
         const flowerImage = document.getElementById('flowerDesignImage');
         if (data.flower_image) {
