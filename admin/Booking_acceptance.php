@@ -96,6 +96,14 @@ if ($custom_current_page > $total_custom_pages && $total_custom_pages > 0) {
 }
 
 $custom_offset = ($custom_current_page - 1) * $custom_bookings_per_page;
+
+
+// Count total lifeplan bookings with status "pending"
+$lifeplan_count_query = "SELECT COUNT(*) as total FROM lifeplan_booking_tb WHERE booking_status = 'pending'";
+$lifeplan_count_result = $conn->query($lifeplan_count_query);
+$total_lifeplan_bookings = $lifeplan_count_result->fetch_assoc()['total'];
+
+
 ?>
 
 <!DOCTYPE html>
@@ -1076,9 +1084,17 @@ $custom_offset = ($custom_current_page - 1) * $custom_bookings_per_page;
     
     <!-- Sticky Pagination Footer with improved spacing -->
     <div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
-        <div id="lifeplanPaginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
-            No lifeplan bookings found
-        </div>
+    <div id="lifeplanPaginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
+    <?php 
+    if ($total_lifeplan_bookings > 0) {
+        $lifeplan_start = 1; // Adjust if you implement pagination
+        $lifeplan_end = min(10, $total_lifeplan_bookings); // You're currently showing 10 records
+        echo "Showing {$lifeplan_start}-{$lifeplan_end} of {$total_lifeplan_bookings} lifeplan " . ($total_lifeplan_bookings != 1 ? "bookings" : "booking");
+    } else {
+        echo "No lifeplan bookings found";
+    }
+    ?>
+</div>
         <div id="lifeplanPaginationContainer" class="flex space-x-1">
             <!-- Pagination will be added when there are records -->
         </div>
