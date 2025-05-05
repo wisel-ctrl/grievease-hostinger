@@ -1629,18 +1629,15 @@ window.addEventListener('popstate', function(event) {
           <thead class="text-xs text-gray-700 uppercase bg-gray-50">
             <tr>
               <th scope="col" class="px-6 py-3">
-                <div class="flex items-center">
-                  <i class="fas fa-hashtag mr-1.5 text-blue-500"></i> ID
+                <div class="flex items-center">ID
                 </div>
               </th>
               <th scope="col" class="px-6 py-3">
-                <div class="flex items-center">
-                  <i class="fas fa-tag mr-1.5 text-blue-500"></i> Service Name
+                <div class="flex items-center">Service Name
                 </div>
               </th>
               <th scope="col" class="px-6 py-3">
-                <div class="flex items-center">
-                  <i class="fas fa-cogs mr-1.5 text-blue-500"></i> Actions
+                <div class="flex items-center">Actions
                 </div>
               </th>
             </tr>
