@@ -514,12 +514,9 @@ require_once '../db_connect.php';
   <!-- Manage Customer Accounts Section -->
 <div id="manageAccountSection">
     <div class="bg-white rounded-lg shadow-sidebar p-5 mb-6 border border-sidebar-border hover:shadow-card transition-all duration-300">
-        <div class="mb-5 flex justify-between items-center">
+        <div class="mb-5 flex items-center">
             <h3 class="text-lg font-semibold text-sidebar-text">Customer Accounts</h3>
-            <div class="flex items-center space-x-3">
-                <button id="viewArchivedBtn" onclick="viewArchivedAccounts()" class="bg-gray-200 text-gray-700 border-none py-2 px-4 rounded-md cursor-pointer hover:bg-gray-300 transition-all duration-300">
-                    <i class="fas fa-archive mr-2"></i>View Archived Accounts
-                </button>
+            <div class="ml-auto flex items-center space-x-3">
                 <div id="searchContainer" class="relative">
                     <input type="text" id="searchCustomer" placeholder="Search customers..." 
                            class="p-2 border border-sidebar-border rounded-md text-sm text-sidebar-text focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent w-full"
@@ -528,6 +525,9 @@ require_once '../db_connect.php';
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
+                <button id="viewArchivedBtn" onclick="viewArchivedAccounts()" class="bg-gray-200 text-gray-700 border-none py-2 px-4 rounded-md cursor-pointer hover:bg-gray-300 transition-all duration-300">
+                    <i class="fas fa-archive mr-2"></i>View Archived Accounts
+                </button>
             </div>
         </div>
         <div class="p-5">
