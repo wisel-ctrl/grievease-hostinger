@@ -56,10 +56,19 @@ function acceptLifeplan($conn) {
     $conn->begin_transaction();
     
     try {
+        
+        $phTime = new DateTime('now', new DateTimeZone('Asia/Manila'));
+        $phTimeFormatted = $phTime->format('Y-m-d H:i:s');
+
+
         // 1. Update the lifeplan booking status to 'Confirmed'
-        $updateBookingQuery = "UPDATE lifeplan_booking_tb SET booking_status = 'accepted' WHERE lpbooking_id = ?";
+        $updateBookingQuery = "UPDATE lifeplan_booking_tb 
+                      SET booking_status = 'accepted', 
+                          acceptdecline_date = CONVERT_TZ(NOW(), 'SYSTEM', '+08:00'),
+                          amount_paid = ?
+                      WHERE lpbooking_id = ?";
         $stmt = $conn->prepare($updateBookingQuery);
-        $stmt->bind_param("i", $lifeplanId);
+        $stmt->bind_param("di", $amountPaid, $lifeplanId); // 'd' for double/float, 'i' for integer
         $stmt->execute();
         
         if ($stmt->affected_rows === 0) {
