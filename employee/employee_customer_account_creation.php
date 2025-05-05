@@ -1500,7 +1500,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Update the table content
                     document.querySelector('#customerTable tbody').innerHTML = response.tableContent;
                     
-                    searchCustomers();
                     
                     // Update pagination info
                     const paginationInfo = `Showing ${response.showingFrom}-${response.showingTo} of ${response.totalCount} entries`;
@@ -1596,47 +1595,6 @@ document.addEventListener('DOMContentLoaded', function() {
 let searchTimeout;
 const searchDebounceTime = 300; // milliseconds
 
-// Client-side search function
-function searchCustomers() {
-  const searchTerm = document.getElementById('searchCustomer').value.trim().toLowerCase();
-  const clearBtn = document.getElementById('clearSearchBtn');
-  const table = document.getElementById('customerTable');
-  const rows = table.querySelectorAll('tbody tr');
-  
-  // Show/hide clear button
-  clearBtn.classList.toggle('hidden', searchTerm.length === 0);
-  
-  // If empty search, show all rows
-  if (searchTerm === '') {
-    rows.forEach(row => row.style.display = '');
-    updatePaginationInfo(rows.length, rows.length);
-    return;
-  }
-  
-  let visibleCount = 0;
-  
-  // Search through each row
-  rows.forEach(row => {
-    const cells = row.querySelectorAll('td');
-    let rowMatches = false;
-    
-    // Check each cell (except the last one with actions)
-    for (let i = 0; i < cells.length - 1; i++) {
-      const cellText = cells[i].textContent.toLowerCase();
-      if (cellText.includes(searchTerm)) {
-        rowMatches = true;
-        break;
-      }
-    }
-    
-    // Show/hide row based on match
-    row.style.display = rowMatches ? '' : 'none';
-    if (rowMatches) visibleCount++;
-  });
-  
-  // Update the "Showing X-Y of Z" info
-  updatePaginationInfo(visibleCount, rows.length);
-}
 
 // Helper function to update pagination info
 function updatePaginationInfo(visibleCount, totalCount) {
@@ -1644,19 +1602,6 @@ function updatePaginationInfo(visibleCount, totalCount) {
   infoElement.textContent = `Showing ${visibleCount} of ${totalCount} entries`;
 }
 
-// Clear search function
-function clearSearch() {
-  document.getElementById('searchCustomer').value = '';
-  document.getElementById('clearSearchBtn').classList.add('hidden');
-  searchCustomers(); // This will show all rows again
-}
-
-// Initialize with all rows visible
-document.addEventListener('DOMContentLoaded', function() {
-  const table = document.getElementById('customerTable');
-  const rows = table.querySelectorAll('tbody tr');
-  updatePaginationInfo(rows.length, rows.length);
-});    
     
     // Function to archive a customer account
 function archiveCustomerAccount(userId) {
@@ -2443,28 +2388,25 @@ function unarchiveAccount(userId) {
     
       
     // Mode switching functionality
-    function switchMode(mode) {
-        if (mode === 'create') {
-            document.getElementById('createAccountSection').classList.remove('hidden');
-            document.getElementById('manageAccountSection').classList.add('hidden');
-            document.getElementById('createBtn').classList.add('bg-sidebar-accent', 'text-white');
-            document.getElementById('createBtn').classList.remove('bg-transparent', 'text-sidebar-text');
-            document.getElementById('manageBtn').classList.add('bg-transparent', 'text-sidebar-text');
-            document.getElementById('manageBtn').classList.remove('bg-sidebar-accent', 'text-white');
-            document.getElementById('searchContainer').classList.add('hidden');
-            document.getElementById('viewArchivedBtn').classList.add('hidden');
-        } else { // manage mode
-            document.getElementById('createAccountSection').classList.add('hidden');
-            document.getElementById('manageAccountSection').classList.remove('hidden');
-            document.getElementById('manageBtn').classList.add('bg-sidebar-accent', 'text-white');
-            document.getElementById('manageBtn').classList.remove('bg-transparent', 'text-sidebar-text');
-            document.getElementById('createBtn').classList.add('bg-transparent', 'text-sidebar-text');
-            document.getElementById('createBtn').classList.remove('bg-sidebar-accent', 'text-white');
-            document.getElementById('searchContainer').classList.remove('hidden');
-            document.getElementById('viewArchivedBtn').classList.remove('hidden');
-            fetchCustomerAccounts(); // Load data when manage section is shown
-        }
+    // Mode switching functionality
+function switchMode(mode) {
+    if (mode === 'create') {
+        document.getElementById('createAccountSection').classList.remove('hidden');
+        document.getElementById('manageAccountSection').classList.add('hidden');
+        document.getElementById('createBtn').classList.add('bg-sidebar-accent', 'text-white');
+        document.getElementById('createBtn').classList.remove('bg-transparent', 'text-sidebar-text');
+        document.getElementById('manageBtn').classList.add('bg-transparent', 'text-sidebar-text');
+        document.getElementById('manageBtn').classList.remove('bg-sidebar-accent', 'text-white');
+    } else { // manage mode
+        document.getElementById('createAccountSection').classList.add('hidden');
+        document.getElementById('manageAccountSection').classList.remove('hidden');
+        document.getElementById('manageBtn').classList.add('bg-sidebar-accent', 'text-white');
+        document.getElementById('manageBtn').classList.remove('bg-transparent', 'text-sidebar-text');
+        document.getElementById('createBtn').classList.add('bg-transparent', 'text-sidebar-text');
+        document.getElementById('createBtn').classList.remove('bg-sidebar-accent', 'text-white');
+        fetchCustomerAccounts(); // Load data when manage section is shown
     }
+}
     
     
     
