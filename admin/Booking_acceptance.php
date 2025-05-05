@@ -3393,6 +3393,10 @@ document.getElementById('customPaymentForm').addEventListener('submit', function
         if (result.isConfirmed) {
             // Submit the form data via AJAX
             const formData = new FormData(document.getElementById('customPaymentForm'));
+            console.log("FormData contents:");
+            for (let [key, value] of formData.entries()) {
+                console.log(key, value);
+            }
             
             fetch('bookingpage/accept_custom_booking.php', {
                 method: 'POST',
