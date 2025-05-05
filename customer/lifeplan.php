@@ -954,6 +954,20 @@ require_once '../db_connect.php'; // Database connection
                     </div>
 
                     <div class="border-b border-gray-200 pb-4 mb-4">
+                        <h3 class="text-base md:text-lg font-hedvig text-navy mb-3 md:mb-4">Additional Services</h3>
+                        
+                        <div class="mb-3">
+                            <div class="flex items-center">
+                                <input type="checkbox" id="cremationOption" name="cremationOption" class="h-4 w-4 text-yellow-600 focus:ring-yellow-500 border-gray-300 rounded">
+                                <label for="cremationOption" class="ml-2 block text-sm text-navy">
+                                    Include Cremation Services
+                                </label>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1 ml-6">Select this option if you wish to include cremation services in your Lifeplan package.</p>
+                        </div>
+                    </div>
+
+                    <div class="border-b border-gray-200 pb-4 mb-4">
                         <h3 class="text-base md:text-lg font-hedvig text-navy mb-3 md:mb-4">Payment Plan</h3>
                         <div class="mb-3 md:mb-4">
                             <label class="block text-sm font-medium text-navy mb-1">Payment Term:</label>
