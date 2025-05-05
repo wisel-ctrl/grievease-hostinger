@@ -3205,8 +3205,17 @@ function confirmCustomAccept() {
     // Fetch booking details again to get all the required fields
     fetch('bookingpage/get_custom_details_for_accept.php?id=' + bookingId)
         .then(response => response.json())
-        .then(data => {
-          console.log('RECIEVED DATA: ', data);
+        .then(response => {
+            console.log('RECEIVED DATA: ', response);
+            
+            // Check if the response was successful
+            if (!response.success) {
+                throw new Error(response.error || 'Failed to load booking details');
+            }
+            
+            // Access the nested data object
+            const data = response.data;
+            
             // Set all the hidden fields
             document.getElementById('customBookingIdForPayment').value = bookingId;
             
