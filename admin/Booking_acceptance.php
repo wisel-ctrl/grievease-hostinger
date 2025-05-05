@@ -2958,7 +2958,7 @@ function openCustomDetails(bookingId) {
         new Date(data.booking_date).getFullYear() + '-' + 
         String(data.booking_id).padStart(3, '0');
       document.getElementById('customCustomerName').textContent = data.customer_name;
-      document.getElementById('customContactNumber').textContent = data.phone_number || "Not provided";
+      document.getElementById('customContactNumber').textContent = data.contact_number || "Not provided";
       document.getElementById('customEmailAddress').textContent = data.email;
       document.getElementById('customAddress').textContent = data.address || "Not provided";
       document.getElementById('customPackageType').textContent = "Custom Package";
@@ -3057,8 +3057,8 @@ function openCustomDetails(bookingId) {
       }
       
       // Handle Casket Details
-      if (data.casket_id && data.item_name) {
-        document.getElementById('casketName').textContent = data.item_name;
+      if (data.casket_id && data.casket_name) {
+        document.getElementById('casketName').textContent = data.casket_name;
         document.getElementById('casketPrice').textContent = "₱" + (parseFloat(data.casket_price) || 0).toFixed(2);
         
         const casketImage = document.getElementById('casketImage');

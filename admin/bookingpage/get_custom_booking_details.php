@@ -15,10 +15,19 @@ try {
                     b.*, 
                     CONCAT(u.first_name, ' ', COALESCE(u.middle_name, ''), ' ', u.last_name, ' ', COALESCE(u.suffix, '')) AS customer_name, 
                     s.service_name, 
-                    i.item_name,
+                    i.item_name as casket_name,
                     i.price as casket_price, 
                     i.inventory_img as casket_image,
                     u.phone_number, 
+                    CONCAT(
+                    COALESCE(u.region, ''), ', ',
+                    COALESCE(u.province, ''), ', ',
+                    COALESCE(u.city, ''), ', ',
+                    COALESCE(u.zip_code, ''), ', ',
+                    COALESCE(u.barangay, ''), ', ',
+                    COALESCE(u.street_address, '')
+                    ) AS address
+                    ,
                     u.email 
                 FROM 
                     booking_tb b 
@@ -42,22 +51,7 @@ try {
         exit();
     }
 
-    // Get inclusions if they exist
-    $inclusions = [];
-    if (!empty($booking['inclusion'])) {
-        $inclusionIds = json_decode($booking['inclusion'], true);
-        if (is_array($inclusionIds) && !empty($inclusionIds)) {
-            $placeholders = implode(',', array_fill(0, count($inclusionIds), '?'));
-            $types = str_repeat('i', count($inclusionIds));
-            $inclusionQuery = "SELECT * FROM inclusions_tb WHERE inclusion_id IN ($placeholders)";
-            
-            $inclusionStmt = $conn->prepare($inclusionQuery);
-            $inclusionStmt->bind_param($types, ...$inclusionIds);
-            $inclusionStmt->execute();
-            $inclusionResult = $inclusionStmt->get_result();
-            $inclusions = $inclusionResult->fetch_all(MYSQLI_ASSOC);
-        }
-    }
+    
 
     // Prepare the response data
     $response = [
@@ -88,11 +82,7 @@ try {
         'casket_description' => $booking['casket_description'],
         'casket_price' => $booking['casket_price'],
         'casket_image' => $booking['casket_image'],
-        'flower_id' => $booking['flower_id'],
-        'flower_name' => $booking['flower_name'],
-        'flower_description' => $booking['flower_description'],
-        'flower_price' => $booking['flower_price'],
-        'flower_image' => $booking['flower_image'],
+        'flower_name' => $booking['flower_design'],
         'inclusions' => $inclusions,
         'with_cremate' => $booking['with_cremate'],
         'reason_for_decline' => $booking['reason_for_decline'],
