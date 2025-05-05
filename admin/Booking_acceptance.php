@@ -81,7 +81,7 @@ $offset = ($current_page - 1) * $bookings_per_page;
 
 
 // Custom bookings pagination
-$custom_bookings_per_page = 4;
+$custom_bookings_per_page = 5;
 $custom_current_page = isset($_GET['custom_page']) ? (int)$_GET['custom_page'] : 1;
 if ($custom_current_page < 1) $custom_current_page = 1;
 
