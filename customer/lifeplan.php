@@ -1456,7 +1456,8 @@ function updateLifeplanPriceCalculations(packagePrice, additionalCost = 0) {
     if (!totalPriceElement || !monthlyPaymentElement || !paymentTermSelect) return;
     
     const totalPrice = packagePrice + additionalCost;
-    const paymentTerm = parseInt(paymentTermSelect.value);
+    const years = parseInt(paymentTermSelect.value);
+    const paymentTerm = years * 12;
     const monthlyPayment = calculateMonthlyPayment(totalPrice, paymentTerm);
     
     totalPriceElement.textContent = formatPrice(totalPrice);
