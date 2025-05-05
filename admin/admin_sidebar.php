@@ -18,14 +18,25 @@
 <?php
 // First, get the count of pending bookings
 $pending_count = 0;
-$count_query = "SELECT COUNT(*) AS pending_count FROM booking_tb WHERE status = 'Pending'";
-$count_stmt = $conn->prepare($count_query);
-$count_stmt->execute();
-$count_result = $count_stmt->get_result();
 
-if ($count_result->num_rows > 0) {
-    $count_row = $count_result->fetch_assoc();
-    $pending_count = $count_row['pending_count'];
+// Count pending from booking_tb
+$count_query1 = "SELECT COUNT(*) AS pending_count FROM booking_tb WHERE status = 'Pending'";
+$count_stmt1 = $conn->prepare($count_query1);
+$count_stmt1->execute();
+$result1 = $count_stmt1->get_result();
+if ($result1->num_rows > 0) {
+    $row1 = $result1->fetch_assoc();
+    $pending_count += $row1['pending_count'];
+}
+
+// Count pending from lifeplan_booking_tb
+$count_query2 = "SELECT COUNT(*) AS pending_count FROM lifeplan_booking_tb WHERE booking_status = 'Pending'";
+$count_stmt2 = $conn->prepare($count_query2);
+$count_stmt2->execute();
+$result2 = $count_stmt2->get_result();
+if ($result2->num_rows > 0) {
+    $row2 = $result2->fetch_assoc();
+    $pending_count += $row2['pending_count'];
 }
 
 // Get the count of unique chatRoomIds where status is 'sent'
