@@ -1587,6 +1587,38 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
             
+            // Get all form inputs
+            const formData = new FormData(lifeplanForm);
+            const formInputs = {};
+            
+            // Convert FormData to object
+            for (let [key, value] of formData.entries()) {
+                formInputs[key] = value;
+            }
+            
+            // Get checkbox values
+            const cremationOption = document.getElementById('cremationOption').checked;
+            formInputs.cremationOption = cremationOption;
+            
+            // Get address components
+            const region = document.getElementById('traditionalDeceasedRegion').value;
+            const province = document.getElementById('traditionalDeceasedProvince').value;
+            const city = document.getElementById('traditionalDeceasedCity').value;
+            const barangay = document.getElementById('traditionalDeceasedBarangay').value;
+            const streetAddress = document.getElementById('traditionalDeceasedAddress').value;
+            
+            // Add address to form inputs
+            formInputs.addressComponents = {
+                region,
+                province,
+                city,
+                barangay,
+                streetAddress
+            };
+            
+            // Log all form inputs to console
+            console.log('Form Inputs:', formInputs);
+            
             // Get selected package and additional services
             const packageName = document.getElementById('lifeplanSelectedPackageName')?.value;
             const packagePrice = parseFloat(document.getElementById('lifeplanSelectedPackagePrice')?.value || 0);
