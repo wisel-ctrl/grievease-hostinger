@@ -67,7 +67,7 @@ require_once '../db_connect.php'; // Database connection
 
                 // Get user's first name from database
                 $user_id = $_SESSION['user_id'];
-                $query = "SELECT first_name , last_name , email , birthdate FROM users WHERE id = ?";
+                $query = "SELECT first_name , last_name , branch_loc , email , birthdate FROM users WHERE id = ?";
                 $stmt = $conn->prepare($query);
                 $stmt->bind_param("i", $user_id);
                 $stmt->execute();
@@ -76,6 +76,7 @@ require_once '../db_connect.php'; // Database connection
                 $first_name = $row['first_name']; // We're confident user_id exists
                 $last_name = $row['last_name'];
                 $email = $row['email'];
+                $branch_id = $row['branch_loc'];
                 
                 // Get notification count for the current user
                 $notifications_count = [
@@ -126,7 +127,25 @@ require_once '../db_connect.php'; // Database connection
                 }
                 $stmt->close();
                 }
+        
+
+                $query = "SELECT s.service_id, s.service_name, s.description, s.selling_price, s.image_url, 
+                                 i.item_name AS casket_name, s.flower_design, s.inclusions
+                          FROM services_tb s
+                          LEFT JOIN inventory_tb i ON s.casket_id = i.inventory_id
+                          WHERE s.status = 'active' AND s.branch_id = ?";
+                $stmt = $conn->prepare($query);
+                $stmt->bind_param("i", $branch_id);
+                $stmt->execute();
+                $result = $stmt->get_result();
+                $packagesFromDB = $result->fetch_all(MYSQLI_ASSOC);
+                $stmt->close();
                 $conn->close();
+                
+                // Convert to JSON for JavaScript
+                $packagesJson = json_encode($packagesFromDB);
+                
+
 ?>
 
 <script src="customer_support.js"></script>
@@ -718,7 +737,6 @@ require_once '../db_connect.php'; // Database connection
 
     <!-- Traditional Packages Selection Modal (Hidden by Default) -->
 <div id="traditionalPackagesModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4 hidden">
-    
     <div class="w-full max-w-6xl bg-white rounded-2xl shadow-xl overflow-hidden max-h-[90vh]">
         <div class="modal-scroll-container overflow-y-auto max-h-[90vh]">
             <!-- Header with close button -->
@@ -1142,190 +1160,34 @@ function updateCombinedAddress() {
 
     
 // Package data array
-const packages = [
-    {
-        price: 700000,
-        service: "traditional", 
-        name: "Legacy Tribute",
-        description: "Our premium package with 3 sets of flower changes and catering on the last day.",
-        image: "../image/700.jpg",
-        icon: "star",
-        features: [
-            "3 sets of flower changes",
-            "Catering on the last day", 
-            "Premium casket selection",
-            "Complete funeral arrangements"
-        ]
-    },
-    {
-        price: 300000,
-        service: "traditional", 
-        name: "Eternal Remembrance",
-        description: "A dignified package with 2 sets of flower changes and comprehensive service.",
-        image: "../image/300.jpg",
-        icon: "crown",
-        features: [
-            "2 sets of flower changes",
-            "Quality casket selection", 
-            "Complete funeral service",
-            "Professional embalming"
-        ]
-    },
-    {
-        price: 250000,
-        service: "traditional", 
-        name: "Heritage Memorial",
-        description: "A traditional package with 2 sets of flower changes and full service.",
-        image: "../image/250.jpg",
-        icon: "heart",
-        features: [
-            "2 sets of flower changes",
-            "Standard casket",
-            "Complete funeral arrangements", 
-            "Professional embalming"
-        ]
-    },
-    {
-        price: 200000,
-        service: "traditional", 
-        name: "Serene Passage",
-        description: "A peaceful package with 2 sets of flower changes and basic service.",
-        image: "../image/200.jpg",
-        icon: "dove",
-        features: [
-            "2 sets of flower changes",
-            "Basic casket",
-            "Essential funeral service",
-            "Professional embalming"
-        ]
-    },
-    {
-        price: 180000,
-        service: "traditional", 
-        name: "Dignified Farewell",
-        description: "A respectful package with 2 sets of flower changes and essential service.",
-        image: "../image/180.jpg",
-        icon: "cross",
-        features: [
-            "2 sets of flower changes",
-            "Basic casket",
-            "Essential funeral service",
-            "Professional embalming"
-        ]
-    },
-    {
-        price: 150000,
-        service: "traditional", 
-        name: "Peaceful Journey",
-        description: "A comforting package with 2 sets of flower changes and basic service.",
-        image: "../image/150.jpg",
-        icon: "peace",
-        features: [
-            "2 sets of flower changes",
-            "Basic casket",
-            "Essential funeral service",
-            "Professional embalming"
-        ]
-    },
-    {
-        price: 120000,
-        service: "traditional", 
-        name: "Cherished Memories",
-        description: "A meaningful package with 1 set of flowers and essential service.",
-        image: "../image/120.jpg",
-        icon: "memory",
-        features: [
-            "1 set of flowers",
-            "Basic casket",
-            "Essential funeral service",
-            "Professional embalming"
-        ]
-    },
-    {
-        price: 90000,
-        service: "traditional", 
-        name: "Gentle Passage",
-        description: "A simple package with 1 set of flowers and basic service.",
-        image: "../image/90.jpg",
-        icon: "cloud",
-        features: [
-            "1 set of flowers",
-            "Basic casket",
-            "Essential funeral service",
-            "Professional embalming"
-        ]
-    },
-    {
-        price: 80000,
-        service: "traditional", 
-        name: "Sincere Tribute",
-        description: "A heartfelt package with 2 sets of flowers and basic service.",
-        image: "../image/80.jpg",
-        icon: "ribbon",
-        features: [
-            "2 sets of flowers",
-            "Basic casket",
-            "Essential funeral service",
-            "Professional embalming"
-        ]
-    },
-    {
-        price: 75000,
-        service: "traditional", 
-        name: "Heartfelt Farewell",
-        description: "A compassionate package with 1 set of flowers and essential service.",
-        image: "../image/75.jpg",
-        icon: "heart-broken",
-        features: [
-            "1 set of flowers",
-            "Basic casket",
-            "Essential funeral service",
-            "Professional embalming"
-        ]
-    },
-    {
-        price: 60000,
-        service: "traditional", 
-        name: "Simple Dignity",
-        description: "A straightforward package with 2 sets of flowers and basic service.",
-        image: "../image/60.jpg",
-        icon: "leaf",
-        features: [
-            "2 sets of flowers",
-            "Basic casket",
-            "Essential funeral service",
-            "Professional embalming"
-        ]
-    },
-    {
-        price: 50000,
-        service: "traditional", 
-        name: "Essential Remembrance",
-        description: "A basic package with 1 set of flowers and essential service.",
-        image: "../image/50.jpg",
-        icon: "leaf",
-        features: [
-            "1 set of flowers",
-            "Basic casket",
-            "Essential funeral service",
-            "Professional embalming"
-        ]
-    },
-    {
-        price: 35000,
-        service: "traditional", 
-        name: "Modest Memorial",
-        description: "Our most affordable package with 1 set of flowers and basic service.",
-        image: "../image/35.jpg",
-        icon: "leaf",
-        features: [
-            "1 set of flowers",
-            "Basic casket",
-            "Essential funeral service",
-            "Professional embalming"
-        ]
+// Package data array from database
+const packagesFromDB = <?php echo $packagesJson; ?>;
+
+// Transform database data to match our frontend structure
+const packages = packagesFromDB.map(pkg => {
+    // Build features list from database fields
+    const features = [];
+    if (pkg.casket_name) features.push(pkg.casket_name);
+    if (pkg.flower_design) features.push(`Flower design: ${pkg.flower_design}`);
+    if (pkg.inclusions) {
+        // Split inclusions by comma if they're stored that way
+        const inclusionList = pkg.inclusions.split(',');
+        inclusionList.forEach(inclusion => {
+            features.push(inclusion.trim());
+        });
     }
-];
+    
+    return {
+        price: parseFloat(pkg.selling_price),
+        service: "traditional", 
+        name: pkg.service_name,
+        description: pkg.description,
+        image: pkg.image_url || "../image/default-package.jpg", // Default image if none provided
+        icon: "star", // Default icon
+        features: features
+    };
+});
+
 
 // Format price to Philippine Peso
 function formatPrice(price) {
