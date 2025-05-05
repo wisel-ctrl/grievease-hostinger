@@ -833,8 +833,16 @@ $total_lifeplan_bookings = $lifeplan_count_result->fetch_assoc()['total'];
                 <h3 class="text-lg font-bold text-sidebar-text whitespace-nowrap">LifePlan Bookings</h3>
                 
                 <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
-                    <span id="totalLifeplanBookings">0</span>
-                </span>
+    <span id="totalLifeplanBookings">
+        <?php 
+        if ($total_lifeplan_bookings > 0) {
+            echo $total_lifeplan_bookings . ($total_lifeplan_bookings != 1 ? "" : "");
+        } else {
+            echo "No bookings";
+        }
+        ?>
+    </span>
+</span>
             </div>
             
             <!-- Controls for big screens - aligned right -->
