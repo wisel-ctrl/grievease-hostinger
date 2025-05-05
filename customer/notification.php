@@ -820,13 +820,20 @@ document.addEventListener('click', function(event) {
             <div class="flex justify-between items-start mb-1">
                 <!-- Left Column - Status -->
                 <div class="flex flex-col items-start">
-                    <span class="<?php echo $status_bg; ?> <?php echo $status_text_color; ?> text-xs px-2 py-1 rounded-full inline-flex items-center">
-                        <i class="<?php echo $status_icon; ?> mr-1 text-xs"></i>
-                        <p>Booking: <?php echo htmlspecialchars($booking['status']); ?></p>
-                    </span>
+                    <div class="flex items-center space-x-2 mb-1">
+                        <span class="<?php echo $status_bg; ?> <?php echo $status_text_color; ?> text-xs px-2 py-1 rounded-full inline-flex items-center">
+                            <i class="<?php echo $status_icon; ?> mr-1 text-xs"></i>
+                            <p>Booking: <?php echo htmlspecialchars($booking['status']); ?></p>
+                        </span>
+                        <!-- Add Traditional Funeral badge -->
+                        <span class="bg-yellow-600/20 text-yellow-600 text-xs px-2 py-1 rounded-full inline-flex items-center">
+                            <i class="fas fa-cross mr-1 text-xs"></i>
+                            <p>Traditional Funeral</p>
+                        </span>
+                    </div>
                     
                     <!-- Service Name -->
-                    <h3 class="text-navy text-base sm:text-lg font-hedvig mt-2">
+                    <h3 class="text-navy text-base sm:text-lg font-hedvig mt-1">
                         <?php echo htmlspecialchars($booking['service_name']); ?>
                     </h3>
                     

@@ -100,8 +100,13 @@ if ($paymentReceiptFile && $paymentReceiptFile['error'] === UPLOAD_ERR_OK) {
 }
 
 try {
+    
+    // Set Philippine timezone and get current datetime
+    date_default_timezone_set('Asia/Manila');
+    $bookingDate = date('Y-m-d H:i:s');
+    
     // Prepare the SQL statement
-    $stmt = $conn->prepare("
+     $stmt = $conn->prepare("
         INSERT INTO booking_tb (
             customerID, 
             deceased_fname, 
@@ -121,17 +126,18 @@ try {
             payment_url, 
             reference_code, 
             flower_design, 
-            inclusion
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            inclusion,
+            booking_date
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ");
 
     if (!$stmt) {
         throw new Exception($conn->error);
     }
 
-    // Bind parameters
+    // Bind parameters - added bookingDate at the end
     $stmt->bind_param(
-        'issssssssisidssssss',
+        'issssssssisidsssssss',
         $customerId,
         $deceasedFirstName,
         $deceasedMiddleName,
@@ -150,7 +156,8 @@ try {
         $paymentReceiptPath,
         $referenceNumber,
         $flowerArrangement,
-        $additionalServices
+        $additionalServices,
+        $bookingDate
     );
 
     // Execute the statement
