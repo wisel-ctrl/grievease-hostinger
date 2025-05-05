@@ -1133,13 +1133,14 @@ function generatePassword() {
 
 // Confirmation before submitting form
 function confirmSubmitCustomerForm() {
-    const isValid = validateAddFirstName() && 
-                   validateAddLastName() && 
-                   validateAddMiddleName() && 
-                   validateAddBirthdate() && 
-                   validateAddEmail() && 
-                   validateAddPhone() && 
-                   validateAddBranch();
+  // Validate all fields
+  const isValid = validateFirstName() && 
+                  validateMiddleName() && 
+                  validateLastName() && 
+                  validateBirthdate() && 
+                  validateEmail() && 
+                  validatePhoneNumber() && 
+                  validateBranchLocation();
 
   if (isValid) {
     // Show confirmation dialog
@@ -1623,9 +1624,8 @@ function openEditCustomerAccountModal(userId) {
                                         First Name <span class="text-red-500">*</span>
                                     </label>
                                     <div class="relative">
-                                        <input type="text" id="editFirstName" name="first_name" value="${data.user.first_name || ''}" 
+                                        <input type="text" name="first_name" value="${data.user.first_name || ''}" 
                                                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
-                                               <p id="editFirstNameError" class="text-red-500 text-xs mt-1 hidden"></p>
                                     </div>
                                 </div>
                                 
@@ -1634,18 +1634,16 @@ function openEditCustomerAccountModal(userId) {
                                         Last Name <span class="text-red-500">*</span>
                                     </label>
                                     <div class="relative">
-                                        <input type="text" id="editLastName" name="last_name" value="${data.user.last_name || ''}" 
+                                        <input type="text" name="last_name" value="${data.user.last_name || ''}" 
                                                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
-                                               <p id="editLastNameError" class="text-red-500 text-xs mt-1 hidden"></p>
                                     </div>
                                 </div>
                                 
                                 <div>
                                     <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">Middle Name</label>
                                     <div class="relative">
-                                        <input type="text" id="editMiddleName" name="middle_name" value="${data.user.middle_name || ''}" 
+                                        <input type="text" name="middle_name" value="${data.user.middle_name || ''}" 
                                                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
-                                               <p id="editMiddleNameError" class="text-red-500 text-xs mt-1 hidden"></p>
                                     </div>
                                 </div>
                                 
@@ -1654,10 +1652,9 @@ function openEditCustomerAccountModal(userId) {
                                         Email Address <span class="text-red-500">*</span>
                                     </label>
                                     <div class="relative">
-                                        <input type="email" id="editEmail" name="email" value="${data.user.email || ''}" 
+                                        <input type="email" name="email" value="${data.user.email || ''}" 
                                                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
                                                required oninput="checkEmailAvailability(this.value)">
-                                               <p id="editEmailError" class="text-red-500 text-xs mt-1 hidden"></p>
                                         <div id="emailAvailability" class="absolute right-2 top-1/2 transform -translate-y-1/2 text-xs hidden">
                                             <i class="fas fa-check-circle text-green-500"></i>
                                             <span class="ml-1">Available</span>
@@ -1674,11 +1671,10 @@ function openEditCustomerAccountModal(userId) {
                                         Phone Number <span class="text-red-500">*</span>
                                     </label>
                                     <div class="relative">
-                                        <input type="text" id="editPhone" name="phone_number" value="${data.user.phone_number || ''}"
+                                        <input type="text" name="phone_number" value="${data.user.phone_number || ''}"
                                                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
                                                inputmode="numeric" pattern="[0-9]*" maxlength="15"
                                                required oninput="this.value = this.value.replace(/[^0-9]/g, ''); checkPhoneAvailability(this.value)">
-                                               <p id="editPhoneError" class="text-red-500 text-xs mt-1 hidden"></p>
                                         <div id="phoneAvailability" class="absolute right-2 top-1/2 transform -translate-y-1/2 text-xs hidden">
                                             <i class="fas fa-check-circle text-green-500"></i>
                                             <span class="ml-1">Available</span>
@@ -1695,8 +1691,7 @@ function openEditCustomerAccountModal(userId) {
                                         Branch Location <span class="text-red-500">*</span>
                                     </label>
                                     <div class="relative">
-                                        select id="editBranch" name="branch_loc" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
-                                        <p id="editBranchError" class="text-red-500 text-xs mt-1 hidden">Please select a branch</p>
+                                        <select name="branch_loc" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
                                             <option value="">-- Select Branch --</option>
                                             ${data.branches.map(branch => `
                                                 <option value="${branch.branch_id}" ${data.user.branch_loc == branch.branch_id ? 'selected' : ''}>
@@ -1757,18 +1752,6 @@ function openEditCustomerAccountModal(userId) {
         });
 }
 
-// Edit form event listeners
-document.getElementById('editFirstName').addEventListener('blur', validateEditFirstName);
-document.getElementById('editLastName').addEventListener('blur', validateEditLastName);
-document.getElementById('editMiddleName').addEventListener('blur', validateEditMiddleName);
-document.getElementById('editEmail').addEventListener('blur', validateEditEmail);
-document.getElementById('editPhone').addEventListener('blur', validateEditPhone);
-document.getElementById('editBranch').addEventListener('change', validateEditBranch);
-
-// Phone number formatting for edit form
-document.getElementById('editPhone').addEventListener('input', function(e) {
-    this.value = this.value.replace(/\D/g, '');
-});
 // Check if email is available
 function checkEmailAvailability(email) {
     const emailAvailability = document.getElementById('emailAvailability');
@@ -2362,331 +2345,6 @@ function unarchiveAccount(userId) {
         switchMode('manage'); // Set manage as default view
         fetchCustomerAccounts(); // Load initial data
     });
-
-    // Add Customer Form Validation Functions
-function validateAddFirstName() {
-    const input = document.getElementById('firstName');
-    const error = document.getElementById('firstNameError');
-    const value = input.value.trim();
-    
-    if (!value) {
-        error.textContent = 'First name is required';
-        error.classList.remove('hidden');
-        input.classList.add('border-red-500');
-        return false;
-    }
-    
-    if (!/^[A-Za-z\s-']{2,50}$/.test(value)) {
-        error.textContent = 'Must be 2-50 letters (spaces, hyphens, apostrophes allowed)';
-        error.classList.remove('hidden');
-        input.classList.add('border-red-500');
-        return false;
-    }
-    
-    error.classList.add('hidden');
-    input.classList.remove('border-red-500');
-    return true;
-}
-
-function validateAddLastName() {
-    const input = document.getElementById('lastName');
-    const error = document.getElementById('lastNameError');
-    const value = input.value.trim();
-    
-    if (!value) {
-        error.textContent = 'Last name is required';
-        error.classList.remove('hidden');
-        input.classList.add('border-red-500');
-        return false;
-    }
-    
-    if (!/^[A-Za-z\s-']{2,50}$/.test(value)) {
-        error.textContent = 'Must be 2-50 letters (spaces, hyphens, apostrophes allowed)';
-        error.classList.remove('hidden');
-        input.classList.add('border-red-500');
-        return false;
-    }
-    
-    error.classList.add('hidden');
-    input.classList.remove('border-red-500');
-    return true;
-}
-
-function validateAddMiddleName() {
-    const input = document.getElementById('middleName');
-    const error = document.getElementById('middleNameError');
-    const value = input.value.trim();
-    
-    if (value && !/^[A-Za-z\s-']{2,50}$/.test(value)) {
-        error.textContent = 'Must be 2-50 letters if provided';
-        error.classList.remove('hidden');
-        input.classList.add('border-red-500');
-        return false;
-    }
-    
-    error.classList.add('hidden');
-    input.classList.remove('border-red-500');
-    return true;
-}
-
-function validateAddBirthdate() {
-    const input = document.getElementById('birthdate');
-    const error = document.getElementById('birthdateError');
-    const value = input.value;
-    
-    if (!value) {
-        error.textContent = 'Birthdate is required';
-        error.classList.remove('hidden');
-        input.classList.add('border-red-500');
-        return false;
-    }
-    
-    const birthDate = new Date(value);
-    const today = new Date();
-    let age = today.getFullYear() - birthDate.getFullYear();
-    const monthDiff = today.getMonth() - birthDate.getMonth();
-    
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-        age--;
-    }
-    
-    if (age < 18) {
-        error.textContent = 'Must be at least 18 years old';
-        error.classList.remove('hidden');
-        input.classList.add('border-red-500');
-        return false;
-    }
-    
-    error.classList.add('hidden');
-    input.classList.remove('border-red-500');
-    return true;
-}
-
-function validateAddEmail() {
-    const input = document.getElementById('customerEmail');
-    const error = document.getElementById('emailError');
-    const value = input.value.trim();
-    
-    if (!value) {
-        error.textContent = 'Email is required';
-        error.classList.remove('hidden');
-        input.classList.add('border-red-500');
-        return false;
-    }
-    
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
-        error.textContent = 'Please enter a valid email address';
-        error.classList.remove('hidden');
-        input.classList.add('border-red-500');
-        return false;
-    }
-    
-    if (value.length > 100) {
-        error.textContent = 'Email cannot exceed 100 characters';
-        error.classList.remove('hidden');
-        input.classList.add('border-red-500');
-        return false;
-    }
-    
-    error.classList.add('hidden');
-    input.classList.remove('border-red-500');
-    return true;
-}
-
-function validateAddPhone() {
-    const input = document.getElementById('customerPhone');
-    const error = document.getElementById('phoneError');
-    const value = input.value.trim();
-    
-    if (!value) {
-        error.textContent = 'Phone number is required';
-        error.classList.remove('hidden');
-        input.classList.add('border-red-500');
-        return false;
-    }
-    
-    const cleaned = value.replace(/\D/g, '');
-    
-    if (!/^09\d{9}$/.test(cleaned)) {
-        error.textContent = 'Must be 11 digits starting with 09';
-        error.classList.remove('hidden');
-        input.classList.add('border-red-500');
-        return false;
-    }
-    
-    error.classList.add('hidden');
-    input.classList.remove('border-red-500');
-    return true;
-}
-
-function validateAddBranch() {
-    const input = document.getElementById('branchLocation');
-    const error = document.getElementById('branchError');
-    
-    if (!input.value) {
-        error.textContent = 'Please select a branch';
-        error.classList.remove('hidden');
-        input.classList.add('border-red-500');
-        return false;
-    }
-    
-    error.classList.add('hidden');
-    input.classList.remove('border-red-500');
-    return true;
-}
-
-// Add form event listeners
-document.getElementById('firstName').addEventListener('blur', validateAddFirstName);
-document.getElementById('lastName').addEventListener('blur', validateAddLastName);
-document.getElementById('middleName').addEventListener('blur', validateAddMiddleName);
-document.getElementById('birthdate').addEventListener('change', validateAddBirthdate);
-document.getElementById('customerEmail').addEventListener('blur', validateAddEmail);
-document.getElementById('customerPhone').addEventListener('blur', validateAddPhone);
-document.getElementById('branchLocation').addEventListener('change', validateAddBranch);
-
-// Phone number formatting
-document.getElementById('customerPhone').addEventListener('input', function(e) {
-    this.value = this.value.replace(/\D/g, '');
-});
-
-// Edit Customer Form Validation Functions
-function validateEditFirstName() {
-    const input = document.getElementById('editFirstName');
-    const error = document.getElementById('editFirstNameError');
-    const value = input.value.trim();
-    
-    if (!value) {
-        error.textContent = 'First name is required';
-        error.classList.remove('hidden');
-        input.classList.add('border-red-500');
-        return false;
-    }
-    
-    if (!/^[A-Za-z\s-']{2,50}$/.test(value)) {
-        error.textContent = 'Must be 2-50 letters (spaces, hyphens, apostrophes allowed)';
-        error.classList.remove('hidden');
-        input.classList.add('border-red-500');
-        return false;
-    }
-    
-    error.classList.add('hidden');
-    input.classList.remove('border-red-500');
-    return true;
-}
-
-function validateEditLastName() {
-    const input = document.getElementById('editLastName');
-    const error = document.getElementById('editLastNameError');
-    const value = input.value.trim();
-    
-    if (!value) {
-        error.textContent = 'Last name is required';
-        error.classList.remove('hidden');
-        input.classList.add('border-red-500');
-        return false;
-    }
-    
-    if (!/^[A-Za-z\s-']{2,50}$/.test(value)) {
-        error.textContent = 'Must be 2-50 letters (spaces, hyphens, apostrophes allowed)';
-        error.classList.remove('hidden');
-        input.classList.add('border-red-500');
-        return false;
-    }
-    
-    error.classList.add('hidden');
-    input.classList.remove('border-red-500');
-    return true;
-}
-
-function validateEditMiddleName() {
-    const input = document.getElementById('editMiddleName');
-    const error = document.getElementById('editMiddleNameError');
-    const value = input.value.trim();
-    
-    if (value && !/^[A-Za-z\s-']{2,50}$/.test(value)) {
-        error.textContent = 'Must be 2-50 letters if provided';
-        error.classList.remove('hidden');
-        input.classList.add('border-red-500');
-        return false;
-    }
-    
-    error.classList.add('hidden');
-    input.classList.remove('border-red-500');
-    return true;
-}
-
-function validateEditEmail() {
-    const input = document.getElementById('editEmail');
-    const error = document.getElementById('editEmailError');
-    const value = input.value.trim();
-    
-    if (!value) {
-        error.textContent = 'Email is required';
-        error.classList.remove('hidden');
-        input.classList.add('border-red-500');
-        return false;
-    }
-    
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
-        error.textContent = 'Please enter a valid email address';
-        error.classList.remove('hidden');
-        input.classList.add('border-red-500');
-        return false;
-    }
-    
-    if (value.length > 100) {
-        error.textContent = 'Email cannot exceed 100 characters';
-        error.classList.remove('hidden');
-        input.classList.add('border-red-500');
-        return false;
-    }
-    
-    error.classList.add('hidden');
-    input.classList.remove('border-red-500');
-    return true;
-}
-
-function validateEditPhone() {
-    const input = document.getElementById('editPhone');
-    const error = document.getElementById('editPhoneError');
-    const value = input.value.trim();
-    
-    if (!value) {
-        error.textContent = 'Phone number is required';
-        error.classList.remove('hidden');
-        input.classList.add('border-red-500');
-        return false;
-    }
-    
-    const cleaned = value.replace(/\D/g, '');
-    
-    if (!/^09\d{9}$/.test(cleaned)) {
-        error.textContent = 'Must be 11 digits starting with 09';
-        error.classList.remove('hidden');
-        input.classList.add('border-red-500');
-        return false;
-    }
-    
-    error.classList.add('hidden');
-    input.classList.remove('border-red-500');
-    return true;
-}
-
-function validateEditBranch() {
-    const input = document.getElementById('editBranch');
-    const error = document.getElementById('editBranchError');
-    
-    if (!input.value) {
-        error.textContent = 'Please select a branch';
-        error.classList.remove('hidden');
-        input.classList.add('border-red-500');
-        return false;
-    }
-    
-    error.classList.add('hidden');
-    input.classList.remove('border-red-500');
-    return true;
-}
 
 
   </script>
