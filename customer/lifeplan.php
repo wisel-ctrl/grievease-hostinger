@@ -842,7 +842,7 @@ require_once '../db_connect.php'; // Database connection
                     <input type="hidden" id="lifeplanSelectedPackageName" name="packageName">
                     <input type="hidden" id="lifeplanSelectedPackagePrice" name="packagePrice">
                     <input type="hidden" id="lifeplanServiceId" name="service_id">
-                    <input type="hidden" id="lifeplanBranchId" name="branch_id" value="<?php $branch_id?>">
+                    <input type="hidden" id="lifeplanBranchId" name="branch_id" value="<?php echo $row['branch_loc']?>">
                     <input type="hidden" name="customerID" value="<?php echo isset($_SESSION['user_id']) ? $_SESSION['user_id'] : ''; ?>">
                     <input type="hidden" id="deceasedAddress" name="deceasedAddress">
                     
@@ -1297,6 +1297,7 @@ function populatePackagesGrid() {
         card.dataset.image = pkg.image;
         card.dataset.description = pkg.description;
         
+        
         // Create package card HTML
         card.innerHTML = `
             <div class="h-12 bg-navy flex items-center justify-center">
@@ -1367,6 +1368,8 @@ function openTraditionalModal(packageDetails) {
     const modal = document.getElementById('traditionalModal');
     if (!modal) return;
     
+
+
     // Update the details modal with the selected package information
     const packageImage = document.getElementById('traditionalPackageImage');
     if (packageImage) packageImage.src = packageDetails.image;
@@ -1383,6 +1386,12 @@ function openTraditionalModal(packageDetails) {
     // Set hidden form fields
     const hiddenNameField = document.getElementById('lifeplanSelectedPackageName');
     if (hiddenNameField) hiddenNameField.value = packageDetails.name;
+
+    // const hiddenBranch = document.getElementById('lifeplanBranchId');
+    // if (hiddenBranch) hiddenBranch.value = packageDetails.branch_id;
+
+    const hiddenServiceID = document.getElementById('lifeplanServiceId');
+    if (hiddenServiceID) hiddenServiceID.value = packageDetails.service_id;
     
     const hiddenPriceField = document.getElementById('lifeplanSelectedPackagePrice');
     if (hiddenPriceField) hiddenPriceField.value = packageDetails.price;
