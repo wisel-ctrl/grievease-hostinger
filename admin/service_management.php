@@ -1633,11 +1633,6 @@ window.addEventListener('popstate', function(event) {
                                     </thead>
                                     <tbody id="archivedServicesTable" class="bg-white divide-y divide-gray-200">
                                         <!-- Table content will be loaded dynamically -->
-                                        <tr>
-                                            <td colspan="3" class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-500">
-                                                Loading archived services...
-                                            </td>
-                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -1658,6 +1653,7 @@ window.addEventListener('popstate', function(event) {
             </div>
         </div>
     </div>
+</div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
