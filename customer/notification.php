@@ -159,17 +159,21 @@ $stmt->close();
 
 // Get service names for each booking
 foreach ($bookings as $key => $booking) {
-    $service_query = "SELECT service_name FROM services_tb WHERE service_id = ?";
-    $stmt = $conn->prepare($service_query);
-    $stmt->bind_param("i", $booking['service_id']);
-    $stmt->execute();
-    $service_result = $stmt->get_result();
-    if ($service_row = $service_result->fetch_assoc()) {
-        $bookings[$key]['service_name'] = $service_row['service_name'];
+    if ($booking['service_id'] === NULL) {
+        $bookings[$key]['service_name'] = 'Customize Package'; // Updated placeholder text
     } else {
-        $bookings[$key]['service_name'] = 'Unknown Service';
+        $service_query = "SELECT service_name FROM services_tb WHERE service_id = ?";
+        $stmt = $conn->prepare($service_query);
+        $stmt->bind_param("i", $booking['service_id']);
+        $stmt->execute();
+        $service_result = $stmt->get_result();
+        if ($service_row = $service_result->fetch_assoc()) {
+            $bookings[$key]['service_name'] = $service_row['service_name'];
+        } else {
+            $bookings[$key]['service_name'] = 'Unknown Service';
+        }
+        $stmt->close();
     }
-    $stmt->close();
 }
 
 // Get branch names for each booking
@@ -1332,6 +1336,9 @@ function getStatusText(status) {
                         iconBgColor = 'bg-yellow-600';
                 }
                 
+                // Get service name - use 'Customize Package' if service_id is NULL
+                const serviceName = data.service_id ? data.service_name : 'Customize Package';
+                
                 // Create the HTML content
                 let htmlContent = `
                     <!-- Booking ID and Status Banner -->
@@ -1342,7 +1349,7 @@ function getStatusText(status) {
                             </div>
                             <div>
                                 <p class="text-sm text-gray-500">Booking ID</p>
-                                <p class=" text-gray-800">${data.reference_code || 'N/A'}</p>
+                                <p class="text-gray-800">#BK-${data.booking_id || 'N/A'}</p>
                             </div>
                         </div>
                         <div>
@@ -1400,7 +1407,7 @@ function getStatusText(status) {
                                 <div class="space-y-2 sm:space-y-3">
                                     <div class="flex flex-wrap">
                                         <div class="w-1/3 text-sm text-gray-500">Service</div>
-                                        <div class="w-2/3 font-medium text-gray-800 break-words">${data.service_name}</div>
+                                        <div class="w-2/3 font-medium text-gray-800 break-words">${serviceName}</div>
                                     </div>
                                     <div class="flex flex-wrap">
                                         <div class="w-1/3 text-sm text-gray-500">Branch</div>

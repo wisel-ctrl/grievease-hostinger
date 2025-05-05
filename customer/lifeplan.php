@@ -140,7 +140,7 @@ require_once '../db_connect.php'; // Database connection
                     return $image_path;
                 }
 
-                $query = "SELECT s.service_id, s.service_name, s.description, s.selling_price, s.image_url, 
+                $query = "SELECT s.service_id, s.branch_id, s.service_name, s.description, s.selling_price, s.image_url, 
                                  i.item_name AS casket_name, s.flower_design, s.inclusions
                           FROM services_tb s
                           LEFT JOIN inventory_tb i ON s.casket_id = i.inventory_id
@@ -842,7 +842,7 @@ require_once '../db_connect.php'; // Database connection
                     <input type="hidden" id="lifeplanSelectedPackageName" name="packageName">
                     <input type="hidden" id="lifeplanSelectedPackagePrice" name="packagePrice">
                     <input type="hidden" id="lifeplanServiceId" name="service_id">
-                    <input type="hidden" id="lifeplanBranchId" name="branch_id" value="<?php echo $row['branch_loc']?>">
+                    <input type="hidden" id="lifeplanBranchId" name="branch_id">
                     <input type="hidden" name="customerID" value="<?php echo isset($_SESSION['user_id']) ? $_SESSION['user_id'] : ''; ?>">
                     <input type="hidden" id="deceasedAddress" name="deceasedAddress">
                     
@@ -1261,6 +1261,8 @@ const packages = packagesFromDB.map(pkg => {
         image: "<?php echo getImageUrl('" + pkg.image_url + "'); ?>",
         icon: "star", // Default icon
         features: features
+        branch_id: pkg.branch_id,     // Add this line
+        service_id: pkg.service_id 
     };
 });
 
@@ -1387,8 +1389,8 @@ function openTraditionalModal(packageDetails) {
     const hiddenNameField = document.getElementById('lifeplanSelectedPackageName');
     if (hiddenNameField) hiddenNameField.value = packageDetails.name;
 
-    // const hiddenBranch = document.getElementById('lifeplanBranchId');
-    // if (hiddenBranch) hiddenBranch.value = packageDetails.branch_id;
+    const hiddenBranch = document.getElementById('lifeplanBranchId');
+    if (hiddenBranch) hiddenBranch.value = packageDetails.branch_id;
 
     const hiddenServiceID = document.getElementById('lifeplanServiceId');
     if (hiddenServiceID) hiddenServiceID.value = packageDetails.service_id;
