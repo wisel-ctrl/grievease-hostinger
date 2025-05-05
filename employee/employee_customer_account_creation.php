@@ -548,14 +548,14 @@ require_once '../db_connect.php';
                     </tbody>
                 </table>
             </div>
-            <div class="mt-5 flex justify-between items-center">
-                <div>
-                    <span class="text-sm text-gray-600">Showing 0-0 of 0 entries</span>
-                </div>
-                <div>
-                    <!-- Pagination buttons will be populated by JavaScript -->
-                </div>
-            </div>
+            <div class="mt-5 sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
+    <div id="paginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
+        Loading customer accounts...
+    </div>
+    <div id="paginationContainer" class="flex space-x-2">
+        <!-- JavaScript will populate this -->
+    </div>
+</div>
         </div>
     </div>
 </div>
@@ -1293,111 +1293,116 @@ document.addEventListener('DOMContentLoaded', function() {
   
   <script>
       // Function to fetch and display customer accounts
-    function fetchCustomerAccounts(page = 1, search = '', sort = 'id_asc') {
-        const xhr = new XMLHttpRequest();
-        xhr.open('GET', `accountManagement/fetch_customer_accounts.php?page=${page}&search=${encodeURIComponent(search)}&sort=${sort}`, true);
-        
-        xhr.onload = function() {
-            searchContainer.classList.remove('search-loading');
-            if (this.status === 200) {
-                try {
-                    const response = JSON.parse(this.responseText);
-                    
-                    // Update the table content
-                    document.querySelector('#customerTable tbody').innerHTML = response.tableContent;
-                    
-                    searchCustomers();
-                    
-                    // Update pagination info
-                    const paginationInfo = `Showing ${response.showingFrom}-${response.showingTo} of ${response.totalCount} entries`;
-                    document.querySelector('#manageAccountSection .text-sm.text-gray-600').textContent = paginationInfo;
-                    
-                    // Update pagination buttons
-                    const paginationContainer = document.querySelector('#manageAccountSection .flex.justify-between.items-center > div:last-child');
-                    
-                    // Clear existing buttons
-                    paginationContainer.innerHTML = '';
-                    
-                    // Previous button
-                    const prevButton = document.createElement('button');
-                    prevButton.className = 'p-2 border border-sidebar-border rounded-md mr-1';
-                    prevButton.textContent = 'Previous';
-                    prevButton.disabled = page === 1;
-                    prevButton.onclick = () => {
-                        if (page > 1) fetchCustomerAccounts(page - 1, search, sort);
-                    };
-                    paginationContainer.appendChild(prevButton);
-                    
-                    // Page buttons
-                    const maxPagesToShow = 5;
-                    let startPage = Math.max(1, page - Math.floor(maxPagesToShow / 2));
-                    let endPage = Math.min(response.totalPages, startPage + maxPagesToShow - 1);
-                    
-                    if (endPage - startPage + 1 < maxPagesToShow) {
-                        startPage = Math.max(1, endPage - maxPagesToShow + 1);
-                    }
-                    
-                    if (startPage > 1) {
-                        const firstPageButton = document.createElement('button');
-                        firstPageButton.className = 'p-2 border border-sidebar-border rounded-md mr-1';
-                        firstPageButton.textContent = '1';
-                        firstPageButton.onclick = () => fetchCustomerAccounts(1, search, sort);
-                        paginationContainer.appendChild(firstPageButton);
-                        
-                        if (startPage > 2) {
-                            const ellipsis = document.createElement('span');
-                            ellipsis.className = 'px-2';
-                            ellipsis.textContent = '...';
-                            paginationContainer.appendChild(ellipsis);
-                        }
-                    }
-                    
-                    for (let i = startPage; i <= endPage; i++) {
-                        const pageButton = document.createElement('button');
-                        pageButton.className = `p-2 border border-sidebar-border rounded-md mx-0.5 ${i === page ? 'bg-sidebar-accent text-white' : ''}`;
-                        pageButton.textContent = i;
-                        pageButton.onclick = () => fetchCustomerAccounts(i, search, sort);
-                        paginationContainer.appendChild(pageButton);
-                    }
-                    
-                    if (endPage < response.totalPages) {
-                        if (endPage < response.totalPages - 1) {
-                            const ellipsis = document.createElement('span');
-                            ellipsis.className = 'px-2';
-                            ellipsis.textContent = '...';
-                            paginationContainer.appendChild(ellipsis);
-                        }
-                        
-                        const lastPageButton = document.createElement('button');
-                        lastPageButton.className = 'p-2 border border-sidebar-border rounded-md ml-1';
-                        lastPageButton.textContent = response.totalPages;
-                        lastPageButton.onclick = () => fetchCustomerAccounts(response.totalPages, search, sort);
-                        paginationContainer.appendChild(lastPageButton);
-                    }
-                    
-                    // Next button
-                    const nextButton = document.createElement('button');
-                    nextButton.className = 'p-2 border border-sidebar-border rounded-md ml-1';
-                    nextButton.textContent = 'Next';
-                    nextButton.disabled = page === response.totalPages;
-                    nextButton.onclick = () => {
-                        if (page < response.totalPages) fetchCustomerAccounts(page + 1, search, sort);
-                    };
-                    paginationContainer.appendChild(nextButton);
-                    
-                } catch (e) {
-                    console.error('Error parsing response:', e);
-                }
-            }
-        };
-        
-        xhr.onerror = function() {
-        console.error('Request failed');
-        };
-        
-        xhr.send();
-    }
+      function fetchCustomerAccounts(page = 1, search = '', sort = 'id_asc') {
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', `accountManagement/fetch_customer_accounts.php?page=${page}&search=${encodeURIComponent(search)}&sort=${sort}`, true);
     
+    xhr.onload = function() {
+        searchContainer.classList.remove('search-loading');
+        if (this.status === 200) {
+            try {
+                const response = JSON.parse(this.responseText);
+                
+                // Update the table content
+                document.querySelector('#customerTable tbody').innerHTML = response.tableContent;
+                
+                // Update pagination info
+                const paginationInfo = `Showing ${response.showingFrom}-${response.showingTo} of ${response.totalCount} entries`;
+                document.getElementById('paginationInfo').textContent = paginationInfo;
+                
+                // Update pagination buttons
+                const paginationContainer = document.getElementById('paginationContainer');
+                
+                // Clear existing buttons
+                paginationContainer.innerHTML = '';
+                
+                // Previous button
+                const prevButton = document.createElement('button');
+                prevButton.className = 'px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover ' + (page === 1 ? 'opacity-50 cursor-not-allowed' : '');
+                prevButton.textContent = 'Previous';
+                prevButton.disabled = page === 1;
+                prevButton.onclick = () => {
+                    if (page > 1) fetchCustomerAccounts(page - 1, search, sort);
+                };
+                paginationContainer.appendChild(prevButton);
+                
+                // Page buttons
+                const maxPagesToShow = 5;
+                let startPage = Math.max(1, page - Math.floor(maxPagesToShow / 2));
+                let endPage = Math.min(response.totalPages, startPage + maxPagesToShow - 1);
+                
+                // Adjust if we're at the beginning or end
+                if (endPage - startPage + 1 < maxPagesToShow) {
+                    startPage = Math.max(1, endPage - maxPagesToShow + 1);
+                }
+                
+                // First page and ellipsis if needed
+                if (startPage > 1) {
+                    const firstPageButton = document.createElement('button');
+                    firstPageButton.className = 'px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover';
+                    firstPageButton.textContent = '1';
+                    firstPageButton.onclick = () => fetchCustomerAccounts(1, search, sort);
+                    paginationContainer.appendChild(firstPageButton);
+                    
+                    if (startPage > 2) {
+                        const ellipsis = document.createElement('span');
+                        ellipsis.className = 'px-2 flex items-center';
+                        ellipsis.textContent = '...';
+                        paginationContainer.appendChild(ellipsis);
+                    }
+                }
+                
+                // Page number buttons
+                for (let i = startPage; i <= endPage; i++) {
+                    const pageButton = document.createElement('button');
+                    pageButton.className = `px-3 py-1 rounded text-sm mx-0.5 ${i === page ? 'bg-sidebar-accent text-white' : 'border border-sidebar-border hover:bg-sidebar-hover'}`;
+                    pageButton.textContent = i;
+                    pageButton.onclick = () => fetchCustomerAccounts(i, search, sort);
+                    paginationContainer.appendChild(pageButton);
+                }
+                
+                // Last page and ellipsis if needed
+                if (endPage < response.totalPages) {
+                    if (endPage < response.totalPages - 1) {
+                        const ellipsis = document.createElement('span');
+                        ellipsis.className = 'px-2 flex items-center';
+                        ellipsis.textContent = '...';
+                        paginationContainer.appendChild(ellipsis);
+                    }
+                    
+                    const lastPageButton = document.createElement('button');
+                    lastPageButton.className = 'px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover';
+                    lastPageButton.textContent = response.totalPages;
+                    lastPageButton.onclick = () => fetchCustomerAccounts(response.totalPages, search, sort);
+                    paginationContainer.appendChild(lastPageButton);
+                }
+                
+                // Next button
+                const nextButton = document.createElement('button');
+                nextButton.className = 'px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover ' + (page === response.totalPages ? 'opacity-50 cursor-not-allowed' : '');
+                nextButton.textContent = 'Next';
+                nextButton.disabled = page === response.totalPages;
+                nextButton.onclick = () => {
+                    if (page < response.totalPages) fetchCustomerAccounts(page + 1, search, sort);
+                };
+                paginationContainer.appendChild(nextButton);
+                
+            } catch (e) {
+                console.error('Error parsing response:', e);
+                document.getElementById('paginationInfo').textContent = 'Error loading data';
+            }
+        } else {
+            document.getElementById('paginationInfo').textContent = 'Error loading data';
+        }
+    };
+    
+    xhr.onerror = function() {
+        document.getElementById('paginationInfo').textContent = 'Network error';
+        console.error('Request failed');
+    };
+    
+    xhr.send();
+}
 // Add a debounce function to prevent too many rapid searches
 let searchTimeout;
 const searchDebounceTime = 300; // milliseconds
