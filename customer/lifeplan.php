@@ -419,7 +419,7 @@ require_once '../db_connect.php'; // Database connection
                         <span class="text-dark">Flexible Payment Option</span>
                     </li>
                 </ul>
-                <button class="block w-full mt-4 bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg shadow-md transition-all duration-300 text-center" onclick="openPackagesModal()">
+                <button class="block w-full mt-4 bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg shadow-md transition-all duration-300 text-center">
                     Select Package
                 </button>
             </div>
@@ -843,7 +843,7 @@ require_once '../db_connect.php'; // Database connection
                                         <?php endforeach; ?>
                                     </ul>
                                 </div>
-                                <button class="select-package-btn block w-full mt-4 bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-lg shadow-md transition-all duration-300 text-center text-sm">
+                                <button onclick="openPackagesModal()" class="block w-full mt-4 bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg shadow-md transition-all duration-300 text-center">
                                     Select Package
                                 </button>
                             </div>
@@ -1360,7 +1360,7 @@ function openPackagesModal() {
     const modal = document.getElementById('traditionalPackagesModal');
     if (modal) {
         modal.classList.remove('hidden');
-        
+        document.body.style.overflow = 'hidden'; // Prevent scrolling when modal is open
     }
 }
 
