@@ -525,8 +525,8 @@ require_once '../db_connect.php';
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
-                <button id="viewArchivedBtn" onclick="viewArchivedAccounts()" class="bg-gray-200 text-gray-700 border-none py-2 px-4 rounded-md cursor-pointer hover:bg-gray-300 transition-all duration-300">
-                    <i class="fas fa-archive mr-2"></i>View Archived Accounts
+                <button id="viewArchivedBtn" onclick="viewArchivedAccounts()" class="bg-yellow-600 text-white border-none py-2 px-4 rounded-md cursor-pointer hover:bg-darkgold transition-all duration-300">
+                    <i class="fas fa-archive mr-2"></i>Archived
                 </button>
             </div>
         </div>
