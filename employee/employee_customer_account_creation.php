@@ -2151,34 +2151,66 @@ function viewArchivedAccounts() {
 
     // Create modal container if it doesn't exist
     if (!document.getElementById('archivedAccountsModal')) {
-        const modalHTML = `
-        <div id="archivedAccountsModal" class="hidden fixed z-50 inset-0 overflow-auto bg-black bg-opacity-40">
-            <div class="bg-white mx-auto my-[5%] p-5 border border-gray-300 w-4/5 max-w-4xl rounded-lg shadow-lg">
-                <div class="flex justify-between items-center mb-5 border-b border-gray-300 pb-3">
-                    <h3 class="m-0 text-lg font-semibold">Archived Customer Accounts</h3>
-                    <span onclick="closeArchivedAccountsModal()" class="cursor-pointer text-2xl">&times;</span>
-                </div>
-                <div class="max-h-[60vh] overflow-y-auto">
-                    <table class="w-full border-collapse">
-                        <thead>
-                            <tr class="bg-sidebar-hover text-left">
-                                <th class="p-3 border-b border-sidebar-border text-sm font-medium text-sidebar-text">Customer ID</th>
-                                <th class="p-3 border-b border-sidebar-border text-sm font-medium text-sidebar-text">Name</th>
-                                <th class="p-3 border-b border-sidebar-border text-sm font-medium text-sidebar-text">Email</th>
-                                <th class="p-3 border-b border-sidebar-border text-sm font-medium text-sidebar-text">Type</th>
-                                <th class="p-3 border-b border-sidebar-border text-sm font-medium text-sidebar-text">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="archivedAccountsTableBody">
-                            <!-- Content will be loaded here -->
-                        </tbody>
-                    </table>
-                </div>
-                <div class="mt-5 text-right border-t border-gray-300 pt-4">
-                    <button onclick="closeArchivedAccountsModal()" class="bg-gray-600 text-white border-none py-2 px-4 rounded-md cursor-pointer">Close</button>
-                </div>
-            </div>
-        </div>`;
+      const modalHTML = `
+<!-- Archived Accounts Modal -->
+<div class="fixed inset-0 z-50 flex items-center justify-center hidden" id="archivedAccountsModal">
+  <!-- Modal Backdrop -->
+  <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+  
+  <!-- Modal Content -->
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-4xl mx-4 z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+    <!-- Close Button -->
+    <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeArchivedAccountsModal()">
+      <i class="fas fa-times"></i>
+    </button>
+    
+    <!-- Modal Header -->
+    <div class="px-6 py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
+      <h3 class="text-xl font-bold text-white flex items-center">
+        <span id="modalTitle">Archived Customer Accounts</span>
+      </h3>
+    </div>
+    
+    <!-- Search Bar -->
+    <div class="px-6 py-4 border-b border-gray-200">
+      <div class="relative">
+        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <i class="fas fa-search text-gray-400"></i>
+        </div>
+        <input type="text" id="archivedAccountsSearch" placeholder="Search archived accounts..." 
+          class="w-full pl-10 pr-4 py-3 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+      </div>
+    </div>
+    
+    <!-- Modal Body -->
+    <div class="px-6 py-5 max-h-[70vh] overflow-y-auto w-full">
+      <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+        <table class="w-full text-sm text-left text-gray-500">
+          <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+            <tr>
+              <th scope="col" class="px-6 py-3">Customer ID</th>
+              <th scope="col" class="px-6 py-3">Name</th>
+              <th scope="col" class="px-6 py-3">Email</th>
+              <th scope="col" class="px-6 py-3">Type</th>
+              <th scope="col" class="px-6 py-3">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="archivedAccountsTableBody">
+            <!-- Archived accounts will be loaded here -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+    
+    <!-- Modal Footer --> 
+    <div class="px-6 py-4 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
+      <button class="px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center" onclick="closeArchivedAccountsModal()">
+        Close
+      </button>
+    </div>
+  </div>
+</div>
+`;
         document.body.insertAdjacentHTML('beforeend', modalHTML);
     }
 
