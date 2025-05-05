@@ -379,10 +379,6 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == 1) {
         <h3 class="text-lg font-bold text-sidebar-text whitespace-nowrap">
           Inventory Items
         </h3>
-        
-        <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
-          <?php echo isset($totalItems) ? $totalItems . ($totalItems != 1 ? "" : "") : '0'; ?>
-        </span>
       </div>
       
       <!-- Controls for big screens - aligned right -->
