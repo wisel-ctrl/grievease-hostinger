@@ -91,9 +91,9 @@ if (!empty($errors)) {
         $stmt->close();
         
         // Update the booking status to 'Accepted'
-        $updateBookingQuery = "UPDATE booking_tb SET status = 'Accepted' WHERE booking_id = ?";
+        $updateBookingQuery = "UPDATE booking_tb SET status = 'Accepted', accepter_decliner = ?, amount_paid = ? WHERE booking_id = ?";
         $stmt = $conn->prepare($updateBookingQuery);
-        $stmt->bind_param("i", $bookingId);
+        $stmt->bind_param("idi", $soldBy, $amountPaid, $bookingId);
         
         if (!$stmt->execute()) {
             throw new Exception("Failed to update booking status: " . $stmt->error);
