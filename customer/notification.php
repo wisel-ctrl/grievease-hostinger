@@ -1178,114 +1178,119 @@ document.addEventListener('click', function(event) {
     ?>
     
     <!-- Life Plan Booking Notification -->
-    <div class="bg-white border-l-4 <?php echo $border_color; ?> rounded-xl shadow-md overflow-hidden notification-animate hover:shadow-lg transition-all duration-300">
-        <div class="flex flex-col">
-            <div class="flex-1 py-4 px-4 sm:py-5 sm:px-7">
-                <!-- Top Row -->
-                <div class="flex justify-between items-start mb-1">
-                    <!-- Left Column - Status -->
-                    <div class="flex flex-col items-start">
-                        <div class="flex items-center space-x-2 mb-1">
-                            <span class="<?php echo $status_bg; ?> <?php echo $status_text_color; ?> text-xs px-2 py-1 rounded-full inline-flex items-center">
-                                <i class="<?php echo $status_icon; ?> mr-1 text-xs"></i>
-                                <p>Booking: <?php echo $status_text; ?></p>
-                            </span>
-                            <!-- Life Plan badge -->
-                            <span class="bg-blue-600/20 text-blue-600 text-xs px-2 py-1 rounded-full inline-flex items-center">
-                                <i class="fas fa-calendar-alt mr-1 text-xs"></i>
-                                <p>Life Plan</p>
-                            </span>
-                        </div>
-                        
-                        <!-- Service Name -->
-                        <h3 class="text-navy text-base sm:text-lg font-hedvig mt-1">
-                            <?php echo htmlspecialchars($lifeplan_booking['service_name']); ?>
-                        </h3>
-                        
-                        <?php if ($lifeplan_booking['booking_status'] === 'decline' && !empty($lifeplan_booking['decline_reason'])): ?>
-                            <p class="text-gray-600 text-xs sm:text-sm mt-1">
-                                <i class="fas fa-comment-alt mr-1 text-gold text-xs"></i> 
-                                Reason: <?php echo htmlspecialchars($lifeplan_booking['decline_reason']); ?>
-                            </p>
-                        <?php endif; ?>
+    <!-- Life Plan Booking Notification -->
+<div class="bg-white border-l-4 <?php echo $border_color; ?> rounded-xl shadow-md overflow-hidden notification-animate hover:shadow-lg transition-all duration-300">
+    <div class="flex flex-col">
+        <div class="flex-1 py-4 px-4 sm:py-5 sm:px-7">
+            <!-- Top Row -->
+            <div class="flex justify-between items-start mb-1">
+                <!-- Left Column - Status -->
+                <div class="flex flex-col items-start">
+                    <div class="flex items-center space-x-2 mb-1">
+                        <span class="<?php echo $status_bg; ?> <?php echo $status_text_color; ?> text-xs px-2 py-1 rounded-full inline-flex items-center">
+                            <i class="<?php echo $status_icon; ?> mr-1 text-xs"></i>
+                            <p>Booking: <?php echo $status_text; ?></p>
+                        </span>
+                        <!-- Life Plan badge -->
+                        <span class="bg-blue-600/20 text-blue-600 text-xs px-2 py-1 rounded-full inline-flex items-center">
+                            <i class="fas fa-calendar-alt mr-1 text-xs"></i>
+                            <p>Life Plan</p>
+                        </span>
                     </div>
                     
-                    <!-- Right Column - Date/Time and Branch -->
-                    <div class="flex flex-col items-end">
-                        <!-- Date/Time -->
-                        <div class="bg-cream rounded-lg p-1 text-xs flex items-center space-x-1">
-                            <p class="text-gray-700 flex items-center">
-                                <i class="far fa-calendar mr-1 text-gold text-xs"></i>
-                                <?php 
-                                    $date = new DateTime($lifeplan_booking['initial_date'], new DateTimeZone('Asia/Manila'));
-                                    $date->setTimezone(new DateTimeZone('Asia/Manila'));
-                                    echo $date->format('M d');
-                                ?>
-                            </p>
-                            <p class="text-gray-700 flex items-center">
-                                <i class="far fa-clock mr-1 text-gold text-xs"></i>
-                                <?php echo $date->format('h:i A'); ?>
-                            </p>
-                        </div>
-                        
-                        <!-- Branch Name -->
-                        <p class="text-gray-600 text-xs mt-1 flex items-center">
-                            <i class="fas fa-map-marker-alt mr-1 text-gold text-xs"></i> 
-                            <?php echo htmlspecialchars($lifeplan_booking['branch_name']); ?>
+                    <!-- Service Name -->
+                    <h3 class="text-navy text-base sm:text-lg font-hedvig mt-1">
+                        <?php echo htmlspecialchars($lifeplan_booking['service_name']); ?>
+                    </h3>
+                    
+                    <?php if ($lifeplan_booking['booking_status'] === 'decline' && !empty($lifeplan_booking['decline_reason'])): ?>
+                        <p class="text-gray-600 text-xs sm:text-sm mt-1">
+                            <i class="fas fa-comment-alt mr-1 text-gold text-xs"></i> 
+                            Reason: <?php echo htmlspecialchars($lifeplan_booking['decline_reason']); ?>
                         </p>
-                    </div>
-                </div>
-
-                <!-- Booking Details -->
-                <div class="mt-2">
-                    <p class="text-gray-700 text-xs sm:text-sm">
-                        <?php 
-                            switch($lifeplan_booking['booking_status']) {
-                                case 'pending':
-                                    echo "Your Life Plan application is being reviewed by our staff. We will update you soon.";
-                                    break;
-                                case 'accepted':
-                                    echo "Your Life Plan has been approved. Thank you for choosing our services.";
-                                    break;
-                                case 'decline':
-                                    echo "We apologize, but we were unable to approve your Life Plan application.";
-                                    if (!empty($lifeplan_booking['decline_reason'])) {
-                                        echo " Reason: " . htmlspecialchars($lifeplan_booking['decline_reason']);
-                                    }
-                                    break;
-                            }
-                        ?>
-                    </p>
+                    <?php endif; ?>
                 </div>
                 
-                <div class="mt-3 flex flex-wrap gap-2 items-center justify-between">
-                    <button onclick="viewLifePlanDetails(<?php echo $lifeplan_booking['lpbooking_id']; ?>, '<?php echo $lifeplan_booking['booking_status']; ?>')" 
-                        class="<?php 
-                            if($lifeplan_booking['booking_status'] === 'pending') echo 'bg-yellow-600 hover:bg-yellow-700';
-                            elseif($lifeplan_booking['booking_status'] === 'accepted') echo 'bg-green-600 hover:bg-green-700';
-                            elseif($lifeplan_booking['booking_status'] === 'decline') echo 'bg-red-600 hover:bg-red-700';
-                            else echo 'bg-gray-600 hover:bg-gray-700';
-                        ?> text-white px-3 py-1.5 rounded-lg text-xs font-medium transition flex items-center">
-                        <i class="fas fa-eye mr-1 text-xs"></i> View Details
-                    </button>
-                    
-                    <!-- Timestamp -->
-                    <div class="text-xs text-gray-500 flex items-center">
-                        <i class="fas fa-history mr-1 text-xs"></i> 
-                        <?php 
-                            $timestamp = $lifeplan_booking['initial_date'];
-                            if ($lifeplan_booking['booking_status'] === 'accepted' && !empty($lifeplan_booking['acceptdecline_date'])) {
-                                $timestamp = $lifeplan_booking['acceptdecline_date'];
-                            } elseif ($lifeplan_booking['booking_status'] === 'decline' && !empty($lifeplan_booking['acceptdecline_date'])) {
-                                $timestamp = $lifeplan_booking['acceptdecline_date'];
-                            }
-                            echo time_elapsed_string_booking($timestamp); 
-                        ?>
+                <!-- Right Column - Date/Time and Branch -->
+                <div class="flex flex-col items-end">
+                    <!-- Date/Time -->
+                    <div class="bg-cream rounded-lg p-1 text-xs flex items-center space-x-1">
+                        <p class="text-gray-700 flex items-center">
+                            <i class="far fa-calendar mr-1 text-gold text-xs"></i>
+                            <?php 
+                                // Determine which date to use based on status
+                                $dateToUse = $lifeplan_booking['booking_status'] === 'pending' 
+                                    ? $lifeplan_booking['initial_date'] 
+                                    : $lifeplan_booking['acceptdecline_date'];
+                                    
+                                $date = new DateTime($dateToUse, new DateTimeZone('Asia/Manila'));
+                                $date->setTimezone(new DateTimeZone('Asia/Manila'));
+                                echo $date->format('M d');
+                            ?>
+                        </p>
+                        <p class="text-gray-700 flex items-center">
+                            <i class="far fa-clock mr-1 text-gold text-xs"></i>
+                            <?php echo $date->format('h:i A'); ?>
+                        </p>
                     </div>
+                    
+                    <!-- Branch Name -->
+                    <p class="text-gray-600 text-xs mt-1 flex items-center">
+                        <i class="fas fa-map-marker-alt mr-1 text-gold text-xs"></i> 
+                        <?php echo htmlspecialchars($lifeplan_booking['branch_name']); ?>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Booking Details -->
+            <div class="mt-2">
+                <p class="text-gray-700 text-xs sm:text-sm">
+                    <?php 
+                        switch($lifeplan_booking['booking_status']) {
+                            case 'pending':
+                                echo "Your Life Plan application is being reviewed by our staff. We will update you soon.";
+                                break;
+                            case 'accepted':
+                                echo "Your Life Plan has been approved. Thank you for choosing our services.";
+                                break;
+                            case 'decline':
+                                echo "We apologize, but we were unable to approve your Life Plan application.";
+                                if (!empty($lifeplan_booking['decline_reason'])) {
+                                    echo " Reason: " . htmlspecialchars($lifeplan_booking['decline_reason']);
+                                }
+                                break;
+                        }
+                    ?>
+                </p>
+            </div>
+            
+            <div class="mt-3 flex flex-wrap gap-2 items-center justify-between">
+                <button onclick="viewLifePlanDetails(<?php echo $lifeplan_booking['lpbooking_id']; ?>, '<?php echo $lifeplan_booking['booking_status']; ?>')" 
+                    class="<?php 
+                        if($lifeplan_booking['booking_status'] === 'pending') echo 'bg-yellow-600 hover:bg-yellow-700';
+                        elseif($lifeplan_booking['booking_status'] === 'accepted') echo 'bg-green-600 hover:bg-green-700';
+                        elseif($lifeplan_booking['booking_status'] === 'decline') echo 'bg-red-600 hover:bg-red-700';
+                        else echo 'bg-gray-600 hover:bg-gray-700';
+                    ?> text-white px-3 py-1.5 rounded-lg text-xs font-medium transition flex items-center">
+                    <i class="fas fa-eye mr-1 text-xs"></i> View Details
+                </button>
+                
+                <!-- Timestamp -->
+                <div class="text-xs text-gray-500 flex items-center">
+                    <i class="fas fa-history mr-1 text-xs"></i> 
+                    <?php 
+                        // Determine which timestamp to use based on status
+                        $timestamp = $lifeplan_booking['booking_status'] === 'pending' 
+                            ? $lifeplan_booking['initial_date'] 
+                            : $lifeplan_booking['acceptdecline_date'];
+                            
+                        echo time_elapsed_string_booking($timestamp); 
+                    ?>
                 </div>
             </div>
         </div>
     </div>
+</div>
 <?php endif; ?>
                 <?php endforeach; ?>
             </div>
