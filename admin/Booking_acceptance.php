@@ -1647,30 +1647,54 @@ $total_lifeplan_bookings = $lifeplan_count_result->fetch_assoc()['total'];
             
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <!-- Valid ID -->
-              <div id="validIdSection">
-                <h5 class="font-medium text-gray-700 mb-2 flex items-center">
-                  <i class="fas fa-id-card text-sm mr-2 text-gray-500"></i>
-                  Valid ID
-                </h5>
-                <div class="border border-gray-200 rounded-lg overflow-hidden">
-                  <div id="validIdAvailable" class="text-center">
-                    <div class="relative bg-gray-100 p-1">
-                      <img id="validIdImage" alt="Valid ID" class="mx-auto rounded-md max-h-48 object-contain" />
-                      <div class="absolute top-2 right-2">
-                        <button class="bg-white rounded-full p-1 shadow-md hover:bg-gray-100 transition-colors duration-200" title="View Full Size">
-                          <i class="fas fa-search-plus text-blue-600"></i>
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                  <div id="validIdNotAvailable" class="hidden">
-                    <div class="flex flex-col items-center justify-center py-8 px-4 bg-gray-50">
-                      <i class="fas fa-exclamation-circle text-gray-400 text-3xl mb-2"></i>
-                      <p class="text-gray-500 text-center">No valid ID has been uploaded yet.</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <div id="lifeplanValidIdSection">
+  <h5 class="font-medium text-gray-700 mb-2 flex items-center">
+    <i class="fas fa-id-card text-sm mr-2 text-gray-500"></i>
+    Valid ID
+  </h5>
+  <div class="border border-gray-200 rounded-lg overflow-hidden">
+    <div id="lifeplanValidIdAvailable" class="text-center">
+      <div class="relative bg-gray-100 p-1">
+        <img id="lifeplanValidIdImage" alt="Valid ID" class="mx-auto rounded-md max-h-48 object-contain" />
+        <div class="absolute top-2 right-2">
+          <button class="bg-white rounded-full p-1 shadow-md hover:bg-gray-100 transition-colors duration-200" title="View Full Size">
+            <i class="fas fa-search-plus text-blue-600"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div id="lifeplanValidIdNotAvailable" class="hidden">
+      <div class="flex flex-col items-center justify-center py-8 px-4 bg-gray-50">
+        <i class="fas fa-exclamation-circle text-gray-400 text-3xl mb-2"></i>
+        <p class="text-gray-500 text-center">No valid ID has been uploaded yet.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Payment Proof Section -->
+<div id="lifeplanPaymentProofSection">
+  <h5 class="font-medium text-gray-700 mb-2 flex items-center">
+    <i class="fas fa-receipt text-sm mr-2 text-gray-500"></i>
+    Initial Payment Proof
+  </h5>
+  <div class="border border-gray-200 rounded-lg overflow-hidden">
+    <div id="lifeplanPaymentProofAvailable" class="relative bg-gray-100 p-1">
+      <img id="lifeplanPaymentProofImage" alt="Payment Proof" class="mx-auto rounded-md max-h-48 object-contain" />
+      <div class="absolute top-2 right-2">
+        <button class="bg-white rounded-full p-1 shadow-md hover:bg-gray-100 transition-colors duration-200" title="View Full Size">
+          <i class="fas fa-search-plus text-blue-600"></i>
+        </button>
+      </div>
+    </div>
+    <div id="lifeplanPaymentProofNotAvailable" class="hidden">
+      <div class="flex flex-col items-center justify-center py-8 px-4 bg-gray-50">
+        <i class="fas fa-exclamation-circle text-gray-400 text-3xl mb-2"></i>
+        <p class="text-gray-500 text-center">No payment proof provided</p>
+      </div>
+    </div>
+  </div>
+</div>
               
               <!-- Payment Proof -->
               <div>
@@ -2603,30 +2627,47 @@ function openLifeplanDetails(lifeplanId) {
       }
 
       // Handle Payment Proof Image
+      const validIdAvailable = document.getElementById('lifeplanValidIdAvailable');
+      const validIdNotAvailable = document.getElementById('lifeplanValidIdNotAvailable');
+      const validIdImage = document.getElementById('lifeplanValidIdImage');
+
+      if (data.image_path && data.image_path !== '') {
+        const validIdPath = data.image_path;
+        
+        validIdImage.onerror = function() {
+          console.error("Failed to load valid ID image:", validIdPath);
+          validIdAvailable.classList.add('hidden');
+          validIdNotAvailable.classList.remove('hidden');
+        };
+        
+        validIdImage.src = validIdPath;
+        validIdAvailable.classList.remove('hidden');
+        validIdNotAvailable.classList.add('hidden');
+      } else {
+        validIdAvailable.classList.add('hidden');
+        validIdNotAvailable.classList.remove('hidden');
+      }
+
+      // Handle Payment Proof Image with new IDs
+      const paymentProofAvailable = document.getElementById('lifeplanPaymentProofAvailable');
+      const paymentProofNotAvailable = document.getElementById('lifeplanPaymentProofNotAvailable');
       const paymentProofImage = document.getElementById('lifeplanPaymentProofImage');
-      const paymentProofContainer = paymentProofImage.parentElement;
 
       if (data.payment_url && data.payment_url !== '') {
         const paymentProofPath = '../customer/booking/uploads/' + data.payment_url.replace(/^uploads\//, '');
         
         paymentProofImage.onerror = function() {
           console.error("Failed to load payment proof image:", paymentProofPath);
-          const placeholderHTML = `
-            <div class="flex flex-col items-center justify-center py-8 px-4 bg-gray-50">
-              <i class="fas fa-exclamation-circle text-gray-400 text-3xl mb-2"></i>
-              <p class="text-gray-500 text-center">Image could not be loaded</p>
-            </div>`;
-          paymentProofContainer.innerHTML = placeholderHTML;
+          paymentProofAvailable.classList.add('hidden');
+          paymentProofNotAvailable.classList.remove('hidden');
         };
         
         paymentProofImage.src = paymentProofPath;
+        paymentProofAvailable.classList.remove('hidden');
+        paymentProofNotAvailable.classList.add('hidden');
       } else {
-        const placeholderHTML = `
-          <div class="flex flex-col items-center justify-center py-8 px-4 bg-gray-50">
-            <i class="fas fa-exclamation-circle text-gray-400 text-3xl mb-2"></i>
-            <p class="text-gray-500 text-center">No payment proof provided</p>
-          </div>`;
-        paymentProofContainer.innerHTML = placeholderHTML;
+        paymentProofAvailable.classList.add('hidden');
+        paymentProofNotAvailable.classList.remove('hidden');
       }
             
       // Show the modal
@@ -2635,8 +2676,18 @@ function openLifeplanDetails(lifeplanId) {
       modal.classList.add("flex");
       document.body.classList.add("overflow-hidden");
       
-      // Set the lifeplan ID for decline/accept actions
-      document.getElementById('lifeplanIdForDecline').value = data.lpbooking_id;
+      // Add image viewer listeners for the lifeplan modal
+      setTimeout(() => {
+        const zoomButtons = modal.querySelectorAll('button[title="View Full Size"]');
+        zoomButtons.forEach(button => {
+          button.addEventListener('click', function() {
+            const imageElement = this.closest('.relative').querySelector('img');
+            if (imageElement && imageElement.src) {
+              viewFullSizeImage(imageElement.src);
+            }
+          });
+        });
+      }, 100);
     })
     .catch(error => {
       console.error('Error:', error);
