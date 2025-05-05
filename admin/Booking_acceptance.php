@@ -96,14 +96,6 @@ if ($custom_current_page > $total_custom_pages && $total_custom_pages > 0) {
 }
 
 $custom_offset = ($custom_current_page - 1) * $custom_bookings_per_page;
-
-
-// Count total lifeplan bookings with status "pending"
-$lifeplan_count_query = "SELECT COUNT(*) as total FROM lifeplan_booking_tb WHERE booking_status = 'pending'";
-$lifeplan_count_result = $conn->query($lifeplan_count_query);
-$total_lifeplan_bookings = $lifeplan_count_result->fetch_assoc()['total'];
-
-
 ?>
 
 <!DOCTYPE html>
@@ -514,15 +506,7 @@ $total_lifeplan_bookings = $lifeplan_count_result->fetch_assoc()['total'];
                 <h3 class="text-lg font-bold text-sidebar-text whitespace-nowrap">Custom Bookings</h3>
                 
                 <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
-                <span id="totalCustomBookings">
-    <?php 
-    if ($total_custom_bookings > 0) {
-        echo $total_custom_bookings . ($total_custom_bookings != 1 ? "" : "");
-    } else {
-        echo "No bookings";
-    }
-    ?>
-</span>
+                    <span id="totalCustomBookings">0</span>
                 </span>
             </div>
             
@@ -1084,17 +1068,9 @@ $total_lifeplan_bookings = $lifeplan_count_result->fetch_assoc()['total'];
     
     <!-- Sticky Pagination Footer with improved spacing -->
     <div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
-    <div id="lifeplanPaginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
-    <?php 
-    if ($total_lifeplan_bookings > 0) {
-        $lifeplan_start = 1; // Adjust if you implement pagination
-        $lifeplan_end = min(10, $total_lifeplan_bookings); // You're currently showing 10 records
-        echo "Showing {$lifeplan_start}-{$lifeplan_end} of {$total_lifeplan_bookings} lifeplan " . ($total_lifeplan_bookings != 1 ? "bookings" : "booking");
-    } else {
-        echo "No lifeplan bookings found";
-    }
-    ?>
-</div>
+        <div id="lifeplanPaginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
+            No lifeplan bookings found
+        </div>
         <div id="lifeplanPaginationContainer" class="flex space-x-1">
             <!-- Pagination will be added when there are records -->
         </div>
@@ -1112,7 +1088,7 @@ $total_lifeplan_bookings = $lifeplan_count_result->fetch_assoc()['total'];
   <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
   
   <!-- Modal Content -->
-  <div class="relative bg-white rounded-xl shadow-card w-full max-w-4xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] flex flex-col">
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-4xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
     <!-- Close Button -->
     <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeModal()">
       <i class="fas fa-times"></i>
@@ -1126,7 +1102,7 @@ $total_lifeplan_bookings = $lifeplan_count_result->fetch_assoc()['total'];
     </div>
     
     <!-- Modal Body -->
-    <div class="px-4 sm:px-6 py-4 sm:py-5 overflow-y-auto modal-scroll-container">
+    <div class="px-4 sm:px-6 py-4 sm:py-5">
       <!-- Top Info Bar - Booking ID and Status -->
       <div class="flex justify-between items-center mb-6 bg-gray-50 p-3 sm:p-4 rounded-lg">
         <div class="flex items-center">
