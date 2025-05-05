@@ -1669,6 +1669,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const archiveBtn = document.getElementById('archiveBtn');
     const archiveModal = document.getElementById('archiveModal');
     const closeArchiveModal = document.getElementById('closeArchiveModal');
+    const closeArchiveModalBtn = document.getElementById('closeArchiveModalBtn');
     const archivedServicesTable = document.getElementById('archivedServicesTable');
     const noArchivedServices = document.getElementById('noArchivedServices');
 
@@ -1680,6 +1681,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Close modal when close button is clicked
     closeArchiveModal.addEventListener('click', function() {
+        archiveModal.classList.add('hidden');
+    });
+
+    // Close modal when close button is clicked
+    closeArchiveModalBtn.addEventListener('click', function() {
         archiveModal.classList.add('hidden');
     });
 
