@@ -59,6 +59,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $paymentPath = $uploadDir . $paymentName;
             move_uploaded_file($_FILES['gcashReceipt']['tmp_name'], $paymentPath);
         }
+
+        $bookingDate = date('Y-m-d H:i:s');
         
         // Insert into database
         $stmt = $conn->prepare("
@@ -66,16 +68,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 service_id, branch_id, customer_id, payment_duration, package_price,
                 benefeciary_fname, benefeciary_mname, benefeciary_lname, benefeciary_suffix,
                 benefeciary_birth, benefeciary_address, phone, with_cremate, 
-                booking_status, reference_code, payment_url, relationship_to_client
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?, ?, ?)
+                booking_status, reference_code, payment_url, relationship_to_client,
+                initial_date
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?, ?, ?, ?)
         ");
         
         $stmt->bind_param(
-            "iiiidsssssssssss", 
+            "iiiidssssssssssss", 
             $service_id, $branch_id, $customer_id, $payment_duration, $package_price,
             $beneficiary_fname, $beneficiary_mname, $beneficiary_lname, $beneficiary_suffix,
             $beneficiary_birth, $beneficiary_address, $phone, $with_cremate,
-            $reference_code, $paymentPath, $relationship_with_beneficiary
+            $reference_code, $paymentPath, $relationship_with_beneficiary, $bookingDate
         );
         
         if ($stmt->execute()) {
