@@ -51,6 +51,7 @@ try {
         exit();
     }
 
+    $inclusions = $booking['inclusion'];
     
 
     // Prepare the response data
