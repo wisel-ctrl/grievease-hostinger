@@ -395,15 +395,15 @@ echo "</tr>";
         }
         ?>
     </div>
-    <div id="paginationContainer" class="flex space-x-2">
+    <div class="flex space-x-2">
         <?php if (isset($totalPages) && $totalPages > 1): ?>
             <!-- First page button (double arrow) -->
-            <a href="?page=1" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($page == 1) ? 'opacity-50 pointer-events-none' : ''; ?>">
+            <a href="?page=1" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($page <= 1) ? 'opacity-50 pointer-events-none' : ''; ?>">
                 &laquo;
             </a>
             
             <!-- Previous page button (single arrow) -->
-            <a href="<?php echo '?page=' . max(1, $page - 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($page == 1) ? 'opacity-50 pointer-events-none' : ''; ?>">
+            <a href="<?php echo '?page=' . max(1, $page - 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($page <= 1) ? 'opacity-50 pointer-events-none' : ''; ?>">
                 &lsaquo;
             </a>
             
@@ -448,14 +448,21 @@ echo "</tr>";
             ?>
             
             <!-- Next page button (single arrow) -->
-            <a href="<?php echo '?page=' . min($totalPages, $page + 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($page == $totalPages) ? 'opacity-50 pointer-events-none' : ''; ?>">
+            <a href="<?php echo '?page=' . min($totalPages, $page + 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($page >= $totalPages) ? 'opacity-50 pointer-events-none' : ''; ?>">
                 &rsaquo;
             </a>
             
             <!-- Last page button (double arrow) -->
-            <a href="<?php echo '?page=' . $totalPages; ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($page == $totalPages) ? 'opacity-50 pointer-events-none' : ''; ?>">
+            <a href="<?php echo '?page=' . $totalPages; ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($page >= $totalPages) ? 'opacity-50 pointer-events-none' : ''; ?>">
                 &raquo;
             </a>
+        <?php else: ?>
+            <!-- Show placeholder buttons when only one page exists -->
+            <span class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm opacity-50 pointer-events-none">&laquo;</span>
+            <span class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm opacity-50 pointer-events-none">&lsaquo;</span>
+            <span class="px-3.5 py-1.5 rounded text-sm bg-sidebar-accent text-white">1</span>
+            <span class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm opacity-50 pointer-events-none">&rsaquo;</span>
+            <span class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm opacity-50 pointer-events-none">&raquo;</span>
         <?php endif; ?>
     </div>
 </div>
