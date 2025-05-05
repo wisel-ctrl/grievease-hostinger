@@ -836,6 +836,7 @@ $total_lifeplan_bookings = $lifeplan_count_result->fetch_assoc()['total'];
         <?php endif; ?>
     </div>
 </div>
+          </div>
 
 
 <!-- LifePlan Bookings List -->
