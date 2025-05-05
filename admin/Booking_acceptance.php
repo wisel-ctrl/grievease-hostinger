@@ -1658,7 +1658,6 @@ $total_lifeplan_bookings = $lifeplan_count_result->fetch_assoc()['total'];
                 </div>
                 <div class="sm:w-2/3">
                   <h6 class="font-semibold text-lg" id="casketName">No casket selected</h6>
-                  <p class="text-gray-600 mb-2" id="casketDescription"></p>
                   <div class="flex justify-between items-center">
                     <span class="font-bold text-sidebar-accent" id="casketPrice">₱0.00</span>
                   </div>
@@ -1680,10 +1679,6 @@ $total_lifeplan_bookings = $lifeplan_count_result->fetch_assoc()['total'];
                 </div>
                 <div class="sm:w-2/3">
                   <h6 class="font-semibold text-lg" id="flowerDesignName">No flower design selected</h6>
-                  <p class="text-gray-600 mb-2" id="flowerDesignDescription"></p>
-                  <div class="flex justify-between items-center">
-                    <span class="font-bold text-sidebar-accent" id="flowerDesignPrice">₱0.00</span>
-                  </div>
                 </div>
               </div>
             </div>
@@ -2963,7 +2958,7 @@ function openCustomDetails(bookingId) {
         new Date(data.booking_date).getFullYear() + '-' + 
         String(data.booking_id).padStart(3, '0');
       document.getElementById('customCustomerName').textContent = data.customer_name;
-      document.getElementById('customContactNumber').textContent = data.contact_number || "Not provided";
+      document.getElementById('customContactNumber').textContent = data.phone_number || "Not provided";
       document.getElementById('customEmailAddress').textContent = data.email;
       document.getElementById('customAddress').textContent = data.address || "Not provided";
       document.getElementById('customPackageType').textContent = "Custom Package";
@@ -3062,9 +3057,8 @@ function openCustomDetails(bookingId) {
       }
       
       // Handle Casket Details
-      if (data.casket_id && data.casket_name) {
-        document.getElementById('casketName').textContent = data.casket_name;
-        document.getElementById('casketDescription').textContent = data.casket_description || "No description available";
+      if (data.casket_id && data.item_name) {
+        document.getElementById('casketName').textContent = data.item_name;
         document.getElementById('casketPrice').textContent = "₱" + (parseFloat(data.casket_price) || 0).toFixed(2);
         
         const casketImage = document.getElementById('casketImage');
@@ -3078,7 +3072,6 @@ function openCustomDetails(bookingId) {
         }
       } else {
         document.getElementById('casketName').textContent = "No casket selected";
-        document.getElementById('casketDescription').textContent = "";
         document.getElementById('casketPrice').textContent = "₱0.00";
         document.getElementById('casketImage').src = '../admin/caskets/default_casket.jpg';
       }
@@ -3086,7 +3079,6 @@ function openCustomDetails(bookingId) {
       // Handle Flower Design Details
       if (data.flower_id && data.flower_name) {
         document.getElementById('flowerDesignName').textContent = data.flower_name;
-        document.getElementById('flowerDesignDescription').textContent = data.flower_description || "No description available";
         document.getElementById('flowerDesignPrice').textContent = "₱" + (parseFloat(data.flower_price) || 0).toFixed(2);
         
         const flowerImage = document.getElementById('flowerDesignImage');
@@ -3100,9 +3092,6 @@ function openCustomDetails(bookingId) {
         }
       } else {
         document.getElementById('flowerDesignName').textContent = "No flower design selected";
-        document.getElementById('flowerDesignDescription').textContent = "";
-        document.getElementById('flowerDesignPrice').textContent = "₱0.00";
-        document.getElementById('flowerDesignImage').src = '../admin/flowers/default_flower.jpg';
       }
       
       // Handle Inclusions
