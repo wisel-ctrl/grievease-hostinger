@@ -901,9 +901,9 @@ foreach ($serviceData as $service => $branches) {
     
     <!-- Sticky Pagination Footer with improved spacing -->
     <div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
-        <div id="paginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
-            Showing 1 - 2 of 2 branches
-        </div>
+    <div id="branchPaginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
+    Showing 1 - 2 of 2 branches
+</div>
         <div class="flex space-x-2">
             <a href="<?php echo '?page=' . max(1, $page - 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover opacity-50 pointer-events-none">&laquo;</a>
             
@@ -1013,18 +1013,13 @@ foreach ($serviceData as $service => $branches) {
   
   <!-- Pagination Footer -->
   <div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
-  <div id="paginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
-            Showing 1 - 2 of 2 branches
-        </div>
-        <div class="flex space-x-2">
-            <a href="<?php echo '?page=' . max(1, $page - 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover opacity-50 pointer-events-none">&laquo;</a>
-            
-            <a href="<?php echo '?page=1'; ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm bg-sidebar-accent text-white">
-                1
-            </a>
-            
-            <a href="<?php echo '?page=' . min($totalPages, $page + 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover opacity-50 pointer-events-none">&raquo;</a>
-        </div>
+    <div id="inventoryPaginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
+    </div>
+    <div class="flex space-x-2" id="paginationControls">
+      <button class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover opacity-50 cursor-not-allowed" disabled>&laquo;</button>
+      <button class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm bg-sidebar-accent text-white">1</button>
+      <button class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">&raquo;</button>
+    </div>
   </div>
 
 </div>
@@ -1051,7 +1046,7 @@ foreach ($serviceData as $service => $branches) {
 function loadInventoryLogs(page = 1) {
     const loadingIndicator = document.getElementById('inventoryLoadingIndicator');
     const tableBody = document.getElementById('inventoryLogsBody');
-    const paginationInfo = document.getElementById('paginationInfo');
+    const paginationInfo = document.getElementById('inventoryPaginationInfo');
     const paginationControls = document.getElementById('paginationControls');
     
     loadingIndicator.classList.remove('hidden');
