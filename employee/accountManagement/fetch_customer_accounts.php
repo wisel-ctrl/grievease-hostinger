@@ -148,21 +148,13 @@ if ($result->num_rows > 0) {
 }
 
 // Return JSON response
-// Return JSON response
 header('Content-Type: application/json');
-$response = [
+echo json_encode([
     'tableContent' => $tableContent,
     'showingFrom' => $start,
     'showingTo' => $end,
     'totalCount' => $totalRows,
     'totalPages' => $totalPages,
-    'currentPage' => $page,
-    'debug' => [
-        'branch_loc' => $branch_loc,
-        'sql' => $sql,
-        'countQuery' => $countQuery
-    ]
-];
-
-echo json_encode($response);
+    'currentPage' => $page
+]);
 ?>
