@@ -1255,8 +1255,8 @@ document.addEventListener('DOMContentLoaded', function() {
 </div>
 
 <?php
-// Assuming you already have a database connection ($conn)
-$customerID = $_SESSION['customer_id']; // Or however you get the customer ID
+// Your PHP database query remains the same
+$customerID = $_SESSION['customer_id'];
 $sql = "SELECT 
             s.sales_id,
             s.get_timestamp,
@@ -1282,179 +1282,24 @@ $stmt->close();
 <!-- Transaction Logs Tab -->
 <div id="transaction-logs" class="tab-content p-4">
     <!-- Service Type Selector -->
-        <div class="mb-6">
-            <div class="flex flex-wrap border-b border-gray-200">
-                <button class="service-tab px-4 py-2 text-navy font-medium border-b-2 border-yellow-600" data-tab="traditional-funeral">
-                    Traditional Funeral
-                </button>
-                <button class="service-tab px-4 py-2 text-gray-500 font-medium mx-2" data-tab="custom-package">
-                    Custom Package
-                </button>
-                <button class="service-tab px-4 py-2 text-gray-500 font-medium" data-tab="life-plan">
-                    Life Plan
-                </button>
-            </div>
-        </div>
-        
-        <div id="traditional-funeral-content" class="service-content">
-        <?php foreach ($services as $service): ?>
-            <?php 
-            // Format date
-            $date = new DateTime($service['get_timestamp']);
-            $formattedDate = $date->format('M j, Y');
-            
-            // Determine status color
-            $statusClass = '';
-            if ($service['payment_status'] == 'Fully Paid') {
-                $statusClass = 'bg-green-100 text-green-800';
-            } elseif ($service['payment_status'] == 'With Balance') {
-                $statusClass = 'bg-blue-100 text-blue-800';
-            } else {
-                $statusClass = 'bg-red-100 text-red-800';
-            }
-            ?>
-            
-            <!-- Service Card -->
-            <div class="bg-white rounded-lg shadow-md p-6 mb-6 border border-gray-100">
-                <div class="flex flex-col md:flex-row md:justify-between md:items-start">
-                    <div class="mb-4 md:mb-0">
-                        <h3 class="font-bold text-lg text-navy"><?= htmlspecialchars($service['service_name']) ?></h3>
-                        <div class="flex flex-wrap gap-4 mt-2">
-                            <div>
-                                <p class="text-sm text-gray-500">ID</p>
-                                <p class="font-medium"><?= htmlspecialchars($service['sales_id']) ?></p>
-                            </div>
-                            <div>
-                                <p class="text-sm text-gray-500">Date</p>
-                                <p class="font-medium"><?= $formattedDate ?></p>
-                            </div>
-                            <div>
-                                <p class="text-sm text-gray-500">Status</p>
-                                <span class="px-2 py-1 <?= $statusClass ?> text-xs font-semibold rounded-full">
-                                    <?= htmlspecialchars($service['payment_status']) ?>
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="flex flex-col md:items-end">
-                        <p class="text-2xl font-bold text-green-600">$<?= number_format($service['amount_paid'], 2) ?></p>
-                        <p class="text-sm text-gray-500">Total Paid</p>
-                        
-                        <?php if ($service['balance'] > 0): ?>
-                            <div class="mt-2">
-                                <p class="text-lg font-semibold text-navy">$<?= number_format($service['balance'], 2) ?></p>
-                                <p class="text-sm text-gray-500">Remaining Balance</p>
-                            </div>
-                        <?php endif; ?>
-                        
-                        <div class="flex space-x-2 mt-3">
-                            <button onclick="openPaymentHistoryModal('traditional-funeral', '<?= $service['sales_id'] ?>')" 
-                                class="bg-gray-100 hover:bg-gray-200 text-gray-800 px-3 py-1 rounded text-sm transition">
-                                View History
-                            </button>
-                            <?php if ($service['balance'] > 0): ?>
-                                <button onclick="openPaymentModal('traditional-funeral', '<?= $service['sales_id'] ?>')" 
-                                    class="bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-1 rounded text-sm transition">
-                                    Add Payment
-                                </button>
-                            <?php endif; ?>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        <?php endforeach; ?>
-    </div>
-    
-    <!-- Custom Package Card -->
-    <div id="custom-package-content" class="service-content" style="display: none;">
-        <div class="bg-white rounded-lg shadow-md p-6 mb-6 border border-gray-100">
-            <div class="flex flex-col md:flex-row md:justify-between md:items-start">
-                <div class="mb-4 md:mb-0">
-                    <h3 class="font-bold text-lg text-navy">Custom Celebration Package</h3>
-                    <div class="flex flex-wrap gap-4 mt-2">
-                        <div>
-                            <p class="text-sm text-gray-500">ID</p>
-                            <p class="font-medium">CP-38967</p>
-                        </div>
-                        <div>
-                            <p class="text-sm text-gray-500">Date</p>
-                            <p class="font-medium">Apr 25, 2025</p>
-                        </div>
-                        <div>
-                            <p class="text-sm text-gray-500">Status</p>
-                            <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs font-semibold rounded-full">In Progress</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="flex flex-col md:items-end">
-                    <div class="mb-2">
-                        <p class="text-xl font-bold text-green-600">$5,000.00</p>
-                        <p class="text-sm text-gray-500">Paid to Date</p>
-                    </div>
-                    <div>
-                        <p class="text-lg font-semibold text-navy">$2,500.00</p>
-                        <p class="text-sm text-gray-500">Remaining Balance</p>
-                    </div>
-                    
-                    <div class="flex space-x-2 mt-3">
-                        <button onclick="openPaymentHistoryModal('custom-package')" class="bg-gray-100 hover:bg-gray-200 text-gray-800 px-3 py-1 rounded text-sm transition">
-                            View History
-                        </button>
-                        <button onclick="openPaymentModal('custom-package')" class="bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-1 rounded text-sm transition">
-                            Make Payment
-                        </button>
-                    </div>
-                </div>
-            </div>
+    <div class="mb-6">
+        <div class="flex flex-wrap border-b border-gray-200">
+            <button class="service-tab px-4 py-2 text-navy font-medium border-b-2 border-yellow-600" data-tab="traditional-funeral">
+                Traditional Funeral
+            </button>
+            <button class="service-tab px-4 py-2 text-gray-500 font-medium mx-2" data-tab="custom-package">
+                Custom Package
+            </button>
+            <button class="service-tab px-4 py-2 text-gray-500 font-medium" data-tab="life-plan">
+                Life Plan
+            </button>
         </div>
     </div>
     
-    <!-- Life Plan Card -->
-    <div id="life-plan-content" class="service-content" style="display: none;">
-        <div class="bg-white rounded-lg shadow-md p-6 mb-6 border border-gray-100">
-            <div class="flex flex-col md:flex-row md:justify-between md:items-start">
-                <div class="mb-4 md:mb-0">
-                    <h3 class="font-bold text-lg text-navy">Life Plan: Premium Family</h3>
-                    <div class="flex flex-wrap gap-4 mt-2">
-                        <div>
-                            <p class="text-sm text-gray-500">ID</p>
-                            <p class="font-medium">LP-23789-F</p>
-                        </div>
-                        <div>
-                            <p class="text-sm text-gray-500">Start Date</p>
-                            <p class="font-medium">Jan 15, 2024</p>
-                        </div>
-                        <div>
-                            <p class="text-sm text-gray-500">Status</p>
-                            <span class="px-2 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded-full">Current</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="flex flex-col md:items-end">
-                    <div class="mb-2">
-                        <p class="text-xl font-bold text-green-600">$2,624.50</p>
-                        <p class="text-sm text-gray-500">Paid to Date</p>
-                    </div>
-                    <div>
-                        <p class="text-lg font-semibold text-navy">$208.33</p>
-                        <p class="text-sm text-gray-500">Next Payment (Apr 15)</p>
-                    </div>
-                    
-                    <div class="flex space-x-2 mt-3">
-                        <button onclick="openPaymentHistoryModal('life-plan')" class="bg-gray-100 hover:bg-gray-200 text-gray-800 px-3 py-1 rounded text-sm transition">
-                            View History
-                        </button>
-                        <button onclick="openPaymentModal('life-plan')" class="bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-1 rounded text-sm transition">
-                            Pay Now
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    <!-- Empty containers that will be populated by JavaScript -->
+    <div id="traditional-funeral-content" class="service-content"></div>
+    <div id="custom-package-content" class="service-content" style="display: none;"></div>
+    <div id="life-plan-content" class="service-content" style="display: none;"></div>
 </div>
 
 <!-- Payment History Modal -->
@@ -1547,7 +1392,12 @@ $stmt->close();
 </div>
 
 <script>
+// Pass PHP data to JavaScript
+const servicesData = <?php echo json_encode($services); ?>;
+const customerID = <?php echo json_encode($customerID); ?>;
+
 document.addEventListener('DOMContentLoaded', function() {
+    // Initialize tabs
     const tabs = document.querySelectorAll('.service-tab');
     const contents = document.querySelectorAll('.service-content');
     
@@ -1573,7 +1423,115 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById(contentId).style.display = 'block';
         });
     });
+    
+    // Populate the traditional funeral content
+    populateServiceCards('traditional-funeral-content', servicesData);
 });
+
+function populateServiceCards(containerId, services) {
+    const container = document.getElementById(containerId);
+    container.innerHTML = ''; // Clear existing content
+    
+    if (services.length === 0) {
+        container.innerHTML = '<p class="text-gray-500 py-4">No services found.</p>';
+        return;
+    }
+    
+    services.forEach(service => {
+        // Format date
+        const date = new Date(service.get_timestamp);
+        const formattedDate = date.toLocaleDateString('en-US', { 
+            year: 'numeric', 
+            month: 'short', 
+            day: 'numeric' 
+        });
+        
+        // Determine status color
+        let statusClass = '';
+        if (service.payment_status == 'Fully Paid') {
+            statusClass = 'bg-green-100 text-green-800';
+        } else if (service.payment_status == 'With Balance') {
+            statusClass = 'bg-blue-100 text-blue-800';
+        } else {
+            statusClass = 'bg-red-100 text-red-800';
+        }
+        
+        // Format currency
+        const formatCurrency = (amount) => {
+            return parseFloat(amount).toLocaleString('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        };
+        
+        // Create card HTML
+        const cardHtml = `
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6 border border-gray-100">
+                <div class="flex flex-col md:flex-row md:justify-between md:items-start">
+                    <div class="mb-4 md:mb-0">
+                        <h3 class="font-bold text-lg text-navy">${escapeHtml(service.service_name)}</h3>
+                        <div class="flex flex-wrap gap-4 mt-2">
+                            <div>
+                                <p class="text-sm text-gray-500">ID</p>
+                                <p class="font-medium">${escapeHtml(service.sales_id)}</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500">Date</p>
+                                <p class="font-medium">${formattedDate}</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500">Status</p>
+                                <span class="px-2 py-1 ${statusClass} text-xs font-semibold rounded-full">
+                                    ${escapeHtml(service.payment_status)}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex flex-col md:items-end">
+                        <p class="text-2xl font-bold text-green-600">${formatCurrency(service.amount_paid)}</p>
+                        <p class="text-sm text-gray-500">Total Paid</p>
+                        
+                        ${service.balance > 0 ? `
+                            <div class="mt-2">
+                                <p class="text-lg font-semibold text-navy">${formatCurrency(service.balance)}</p>
+                                <p class="text-sm text-gray-500">Remaining Balance</p>
+                            </div>
+                        ` : ''}
+                        
+                        <div class="flex space-x-2 mt-3">
+                            <button onclick="openPaymentHistoryModal('traditional-funeral', '${escapeHtml(service.sales_id)}')" 
+                                class="bg-gray-100 hover:bg-gray-200 text-gray-800 px-3 py-1 rounded text-sm transition">
+                                View History
+                            </button>
+                            ${service.balance > 0 ? `
+                                <button onclick="openPaymentModal('traditional-funeral', '${escapeHtml(service.sales_id)}')" 
+                                    class="bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-1 rounded text-sm transition">
+                                    Add Payment
+                                </button>
+                            ` : ''}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        container.insertAdjacentHTML('beforeend', cardHtml);
+    });
+}
+
+// Helper function to escape HTML (prevent XSS)
+function escapeHtml(unsafe) {
+    return unsafe
+         .replace(/&/g, "&amp;")
+         .replace(/</g, "&lt;")
+         .replace(/>/g, "&gt;")
+         .replace(/"/g, "&quot;")
+         .replace(/'/g, "&#039;");
+}
+
 
 function openPaymentHistoryModal(packageType) {
     // Set modal title based on package type
