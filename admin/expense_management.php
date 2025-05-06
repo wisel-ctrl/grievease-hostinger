@@ -679,7 +679,8 @@ if ($branchResult->num_rows > 0) {
                 </div>
 
                 <!-- Archive Button -->
-                <button class="px-4 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover whitespace-nowrap">
+                <button class="px-4 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover whitespace-nowrap"
+                        onclick="openArchiveModal(<?php echo $branchId; ?>)">
                     <i class="fas fa-archive text-sidebar-accent"></i>
                     <span>Archive</span>
                 </button>
@@ -716,7 +717,8 @@ if ($branchResult->num_rows > 0) {
                     </div>
 
                     <!-- Archive Icon Button -->
-                    <button class="w-10 h-10 flex items-center justify-center text-sidebar-accent">
+                    <button class="w-10 h-10 flex items-center justify-center text-sidebar-accent"
+                            onclick="openArchiveModal(<?php echo $branchId; ?>)">
                         <i class="fas fa-archive text-xl"></i>
                     </button>
                 </div>
@@ -1608,6 +1610,155 @@ function addExpense() {
     } else {
         form.reportValidity();
     }
+}
+
+
+// Function to open archive modal with branch-specific expenses
+function openArchiveModal(branchId) {
+    const archiveModal = document.getElementById('archiveModal');
+    archiveModal.dataset.branchId = branchId;
+    
+    // Get branch name for display
+    const branchName = document.querySelector(`input[name="expenseBranch"][value="${branchId}"]`).nextElementSibling.textContent;
+    document.getElementById('archiveBranchName').textContent = branchName;
+    
+    archiveModal.classList.remove('hidden');
+    fetchArchivedExpenses(branchId);
+}
+
+// Function to close archive modal
+function closeArchiveModal() {
+    document.getElementById('archiveModal').classList.add('hidden');
+}
+
+// Function to fetch archived expenses by branch
+function fetchArchivedExpenses(branchId) {
+    const archivedExpensesBody = document.getElementById('archivedExpensesBody');
+    
+    // Show loading state
+    archivedExpensesBody.innerHTML = `
+        <tr>
+            <td colspan="5" class="px-6 py-4 text-center">
+                <div class="flex justify-center">
+                    <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-sidebar-accent"></div>
+                </div>
+            </td>
+        </tr>
+    `;
+    
+    fetch(`expenses/archiveUnarchive.php?action=get_archived_expenses&branch_id=${branchId}`)
+        .then(response => response.json())
+        .then(data => {
+            archivedExpensesBody.innerHTML = '';
+            
+            if (data.length === 0) {
+                archivedExpensesBody.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="px-6 py-4 text-center text-gray-500">No archived expenses found for this branch</td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            data.forEach(expense => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap">${expense.expense_name}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
+                            ${expense.category}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">${formatDate(expense.date)}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">₱${parseFloat(expense.price).toFixed(2)}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <button onclick="unarchiveExpense(${expense.expense_ID}, ${branchId})" 
+                                class="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 transition-colors">
+                            Unarchive
+                        </button>
+                    </td>
+                `;
+                archivedExpensesBody.appendChild(row);
+            });
+        })
+        .catch(error => {
+            console.error('Error fetching archived expenses:', error);
+            archivedExpensesBody.innerHTML = `
+                <tr>
+                    <td colspan="5" class="px-6 py-4 text-center text-red-500">Error loading archived expenses</td>
+                </tr>
+            `;
+        });
+}
+
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    
+    // Check if the date is valid
+    if (isNaN(date.getTime())) {
+        return dateString; // return original if invalid
+    }
+
+    const options = { 
+        year: 'numeric', 
+        month: 'long', 
+        day: '2-digit' 
+    };
+    
+    return date.toLocaleDateString('en-US', options)
+               .replace(/,/g, ''); // removes the comma after the day
+}
+// Function to unarchive an expense
+function unarchiveExpense(expenseId, branchId) {
+    Swal.fire({
+        title: 'Unarchive Expense?',
+        text: "This will restore the expense to the active list.",
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, unarchive it!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch('expenses/archiveUnarchive.php?action=unarchive_expense', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `expense_id=${expenseId}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Unarchived!',
+                        text: 'Expense has been restored.',
+                        confirmButtonColor: '#3085d6',
+                    }).then(() => {
+                        // Refresh the entire page to reflect changes in both active and archived lists
+                        location.reload();
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: data.message,
+                        confirmButtonColor: '#3085d6',
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'An error occurred while unarchiving the expense.',
+                    confirmButtonColor: '#3085d6',
+                });
+            });
+        }
+    });
 }
 
     // Function to open the Edit Expense Modal
