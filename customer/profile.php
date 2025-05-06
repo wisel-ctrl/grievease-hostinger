@@ -1254,26 +1254,37 @@ document.addEventListener('DOMContentLoaded', function() {
     </div>
 </div>
 
+<?php
+// Assuming you already have a database connection ($conn)
+$customerID = $_SESSION['customer_id']; // Or however you get the customer ID
+$sql = "SELECT 
+            s.sales_id,
+            s.get_timestamp,
+            s.payment_status,
+            sv.service_name,
+            s.discounted_price,
+            s.amount_paid,
+            s.balance
+        FROM 
+            sales_tb s
+        JOIN 
+            services_tb sv ON s.service_id = sv.service_id
+        WHERE customerID = ?";
 
-                    <!-- Transaction Logs Tab -->
-<div id="transaction-logs" class="tab-content">
-    <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
-        <div class="p-6 border-b border-gray-100 flex justify-between items-center">
-            <h3 class="font-hedvig text-xl text-navy">Payment History</h3>
-            <div class="flex space-x-2">
-                <button id="export-transactions" class="bg-navy text-white px-3 py-1 rounded hover:bg-navy/80 transition text-sm">
-                    <i class="fas fa-download mr-1"></i> Export Statement
-                </button>
-                <button id="filter-transactions" class="bg-yellow-600 text-white px-3 py-1 rounded hover:bg-yellow-700 transition text-sm">
-                    <i class="fas fa-filter mr-1"></i> Filter
-                </button>
-            </div>
-        </div>
-        
-        <!-- Service Type Selector -->
-        <div class="p-4 bg-gray-50 border-b border-gray-100">
-            <div class="flex flex-wrap">
-                <button class="service-tab px-4 py-2 text-navy font-medium rounded-t border-b-2 border-yellow-600" data-tab="traditional-funeral">
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("i", $customerID);
+$stmt->execute();
+$result = $stmt->get_result();
+$services = $result->fetch_all(MYSQLI_ASSOC);
+$stmt->close();
+?>
+
+<!-- Transaction Logs Tab -->
+<div id="transaction-logs" class="tab-content p-4">
+    <!-- Service Type Selector -->
+        <div class="mb-6">
+            <div class="flex flex-wrap border-b border-gray-200">
+                <button class="service-tab px-4 py-2 text-navy font-medium border-b-2 border-yellow-600" data-tab="traditional-funeral">
                     Traditional Funeral
                 </button>
                 <button class="service-tab px-4 py-2 text-gray-500 font-medium mx-2" data-tab="custom-package">
@@ -1285,449 +1296,258 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
         </div>
         
-        <!-- Traditional Funeral Content -->
-        <div id="traditional-funeral-content" class="service-content p-6">
-            <!-- Service Summary -->
-            <div class="mb-8 bg-gray-50 p-5 rounded-lg">
-                <h3 class="font-hedvig text-lg text-navy mb-3">Traditional Funeral Package</h3>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                        <p class="text-sm text-gray-500">Service ID</p>
-                        <p class="font-medium text-navy">TF-45721</p>
+        <div id="traditional-funeral-content" class="service-content">
+        <?php foreach ($services as $service): ?>
+            <?php 
+            // Format date
+            $date = new DateTime($service['get_timestamp']);
+            $formattedDate = $date->format('M j, Y');
+            
+            // Determine status color
+            $statusClass = '';
+            if ($service['payment_status'] == 'Fully Paid') {
+                $statusClass = 'bg-green-100 text-green-800';
+            } elseif ($service['payment_status'] == 'With Balance') {
+                $statusClass = 'bg-blue-100 text-blue-800';
+            } else {
+                $statusClass = 'bg-red-100 text-red-800';
+            }
+            ?>
+            
+            <!-- Service Card -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6 border border-gray-100">
+                <div class="flex flex-col md:flex-row md:justify-between md:items-start">
+                    <div class="mb-4 md:mb-0">
+                        <h3 class="font-bold text-lg text-navy"><?= htmlspecialchars($service['service_name']) ?></h3>
+                        <div class="flex flex-wrap gap-4 mt-2">
+                            <div>
+                                <p class="text-sm text-gray-500">ID</p>
+                                <p class="font-medium"><?= htmlspecialchars($service['sales_id']) ?></p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500">Date</p>
+                                <p class="font-medium"><?= $formattedDate ?></p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500">Status</p>
+                                <span class="px-2 py-1 <?= $statusClass ?> text-xs font-semibold rounded-full">
+                                    <?= htmlspecialchars($service['payment_status']) ?>
+                                </span>
+                            </div>
+                        </div>
                     </div>
-                    <div>
-                        <p class="text-sm text-gray-500">Service Date</p>
-                        <p class="font-medium text-navy">Apr 10, 2025</p>
-                    </div>
-                    <div>
-                        <p class="text-sm text-gray-500">Payment Status</p>
-                        <span class="inline-block px-2 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded-full">Paid in Full</span>
-                    </div>
-                    <div>
-                        <p class="text-sm text-gray-500">Package Cost</p>
-                        <p class="font-medium text-navy">$8,750.00</p>
-                    </div>
-                    <div>
-                        <p class="text-sm text-gray-500">Additional Services</p>
-                        <p class="font-medium text-navy">$1,200.00</p>
-                    </div>
-                    <div>
+                    
+                    <div class="flex flex-col md:items-end">
+                        <p class="text-2xl font-bold text-green-600">$<?= number_format($service['amount_paid'], 2) ?></p>
                         <p class="text-sm text-gray-500">Total Paid</p>
-                        <p class="font-medium text-navy">$9,950.00</p>
+                        
+                        <?php if ($service['balance'] > 0): ?>
+                            <div class="mt-2">
+                                <p class="text-lg font-semibold text-navy">$<?= number_format($service['balance'], 2) ?></p>
+                                <p class="text-sm text-gray-500">Remaining Balance</p>
+                            </div>
+                        <?php endif; ?>
+                        
+                        <div class="flex space-x-2 mt-3">
+                            <button onclick="openPaymentHistoryModal('traditional-funeral', '<?= $service['sales_id'] ?>')" 
+                                class="bg-gray-100 hover:bg-gray-200 text-gray-800 px-3 py-1 rounded text-sm transition">
+                                View History
+                            </button>
+                            <?php if ($service['balance'] > 0): ?>
+                                <button onclick="openPaymentModal('traditional-funeral', '<?= $service['sales_id'] ?>')" 
+                                    class="bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-1 rounded text-sm transition">
+                                    Add Payment
+                                </button>
+                            <?php endif; ?>
+                        </div>
                     </div>
                 </div>
             </div>
-            
-            <!-- Transaction History -->
-            <div class="mb-8">
-                <h3 class="font-hedvig text-lg text-navy mb-4">Payment History</h3>
-                
-                <!-- Transaction Item 1 -->
-                <div class="border border-gray-200 rounded-lg p-4 mb-4">
-                    <div class="flex flex-col md:flex-row justify-between mb-2">
+        <?php endforeach; ?>
+    </div>
+    
+    <!-- Custom Package Card -->
+    <div id="custom-package-content" class="service-content" style="display: none;">
+        <div class="bg-white rounded-lg shadow-md p-6 mb-6 border border-gray-100">
+            <div class="flex flex-col md:flex-row md:justify-between md:items-start">
+                <div class="mb-4 md:mb-0">
+                    <h3 class="font-bold text-lg text-navy">Custom Celebration Package</h3>
+                    <div class="flex flex-wrap gap-4 mt-2">
                         <div>
-                            <p class="font-medium text-navy">Final Payment</p>
-                            <p class="text-sm text-gray-500">Mar 25, 2025</p>
+                            <p class="text-sm text-gray-500">ID</p>
+                            <p class="font-medium">CP-38967</p>
                         </div>
-                        <div class="md:text-right mt-2 md:mt-0">
-                            <p class="font-semibold text-green-600">$4,375.00</p>
-                            <span class="inline-block px-2 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded-full">Successful</span>
-                        </div>
-                    </div>
-                    <div class="pt-2 border-t border-gray-100 mt-2 flex justify-between items-center">
-                        <p class="text-sm text-gray-600">Traditional Funeral Package - Final Payment (50%)</p>
-                        <button class="text-sm text-yellow-600 hover:text-yellow-700 transition">Receipt</button>
-                    </div>
-                </div>
-                
-                <!-- Transaction Item 2 -->
-                <div class="border border-gray-200 rounded-lg p-4 mb-4">
-                    <div class="flex flex-col md:flex-row justify-between mb-2">
                         <div>
-                            <p class="font-medium text-navy">Additional Services</p>
-                            <p class="text-sm text-gray-500">Mar 20, 2025</p>
+                            <p class="text-sm text-gray-500">Date</p>
+                            <p class="font-medium">Apr 25, 2025</p>
                         </div>
-                        <div class="md:text-right mt-2 md:mt-0">
-                            <p class="font-semibold text-green-600">$1,200.00</p>
-                            <span class="inline-block px-2 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded-full">Successful</span>
-                        </div>
-                    </div>
-                    <div class="pt-2 border-t border-gray-100 mt-2 flex justify-between items-center">
-                        <p class="text-sm text-gray-600">Premium Flowers and Memorial Video</p>
-                        <button class="text-sm text-yellow-600 hover:text-yellow-700 transition">Receipt</button>
-                    </div>
-                </div>
-                
-                <!-- Transaction Item 3 -->
-                <div class="border border-gray-200 rounded-lg p-4 mb-4">
-                    <div class="flex flex-col md:flex-row justify-between mb-2">
                         <div>
-                            <p class="font-medium text-navy">Initial Deposit</p>
-                            <p class="text-sm text-gray-500">Mar 15, 2025</p>
-                        </div>
-                        <div class="md:text-right mt-2 md:mt-0">
-                            <p class="font-semibold text-green-600">$4,375.00</p>
-                            <span class="inline-block px-2 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded-full">Successful</span>
+                            <p class="text-sm text-gray-500">Status</p>
+                            <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs font-semibold rounded-full">In Progress</span>
                         </div>
                     </div>
-                    <div class="pt-2 border-t border-gray-100 mt-2 flex justify-between items-center">
-                        <p class="text-sm text-gray-600">Traditional Funeral Package - Initial Deposit (50%)</p>
-                        <button class="text-sm text-yellow-600 hover:text-yellow-700 transition">Receipt</button>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Payment Summary -->
-            <div>
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-hedvig text-lg text-navy">Payment Summary</h3>
                 </div>
                 
-                <div class="bg-gray-50 rounded-lg p-4">
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div class="bg-white p-4 rounded-lg shadow-sm">
-                            <p class="text-sm text-gray-500">Total Package Cost</p>
-                            <p class="text-xl font-semibold text-green-600">$8,750.00</p>
-                        </div>
-                        <div class="bg-white p-4 rounded-lg shadow-sm">
-                            <p class="text-sm text-gray-500">Additional Services</p>
-                            <p class="text-xl font-semibold text-navy">$1,200.00</p>
-                        </div>
-                        <div class="bg-white p-4 rounded-lg shadow-sm">
-                            <p class="text-sm text-gray-500">Total Paid</p>
-                            <p class="text-xl font-semibold text-navy">$9,950.00</p>
-                        </div>
+                <div class="flex flex-col md:items-end">
+                    <div class="mb-2">
+                        <p class="text-xl font-bold text-green-600">$5,000.00</p>
+                        <p class="text-sm text-gray-500">Paid to Date</p>
+                    </div>
+                    <div>
+                        <p class="text-lg font-semibold text-navy">$2,500.00</p>
+                        <p class="text-sm text-gray-500">Remaining Balance</p>
+                    </div>
+                    
+                    <div class="flex space-x-2 mt-3">
+                        <button onclick="openPaymentHistoryModal('custom-package')" class="bg-gray-100 hover:bg-gray-200 text-gray-800 px-3 py-1 rounded text-sm transition">
+                            View History
+                        </button>
+                        <button onclick="openPaymentModal('custom-package')" class="bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-1 rounded text-sm transition">
+                            Make Payment
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
-        
-        <!-- Custom Package Content -->
-        <div id="custom-package-content" class="service-content p-6" style="display: none;">
-            <!-- Custom Package Summary -->
-            <div class="mb-8 bg-gray-50 p-5 rounded-lg">
-                <h3 class="font-hedvig text-lg text-navy mb-3">Custom Celebration Package</h3>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                        <p class="text-sm text-gray-500">Package ID</p>
-                        <p class="font-medium text-navy">CP-38967</p>
-                    </div>
-                    <div>
-                        <p class="text-sm text-gray-500">Service Date</p>
-                        <p class="font-medium text-navy">Apr 25, 2025</p>
-                    </div>
-                    <div>
-                        <p class="text-sm text-gray-500">Payment Schedule</p>
-                        <p class="font-medium text-navy">Installments</p>
-                    </div>
-                    <div>
-                        <p class="text-sm text-gray-500">Total Package Cost</p>
-                        <p class="font-medium text-navy">$7,500.00</p>
-                    </div>
-                    <div>
-                        <p class="text-sm text-gray-500">Remaining Balance</p>
-                        <p class="font-medium text-navy">$2,500.00</p>
-                    </div>
-                    <div>
-                        <p class="text-sm text-gray-500">Payment Status</p>
-                        <span class="inline-block px-2 py-1 bg-blue-100 text-blue-800 text-xs font-semibold rounded-full">In Progress</span>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Transaction History -->
-            <div class="mb-8">
-                <h3 class="font-hedvig text-lg text-navy mb-4">Payment History</h3>
-                
-                <!-- Transaction Item 1 -->
-                <div class="border border-gray-200 rounded-lg p-4 mb-4">
-                    <div class="flex flex-col md:flex-row justify-between mb-2">
+    </div>
+    
+    <!-- Life Plan Card -->
+    <div id="life-plan-content" class="service-content" style="display: none;">
+        <div class="bg-white rounded-lg shadow-md p-6 mb-6 border border-gray-100">
+            <div class="flex flex-col md:flex-row md:justify-between md:items-start">
+                <div class="mb-4 md:mb-0">
+                    <h3 class="font-bold text-lg text-navy">Life Plan: Premium Family</h3>
+                    <div class="flex flex-wrap gap-4 mt-2">
                         <div>
-                            <p class="font-medium text-navy">Second Installment</p>
-                            <p class="text-sm text-gray-500">Mar 28, 2025</p>
+                            <p class="text-sm text-gray-500">ID</p>
+                            <p class="font-medium">LP-23789-F</p>
                         </div>
-                        <div class="md:text-right mt-2 md:mt-0">
-                            <p class="font-semibold text-green-600">$2,500.00</p>
-                            <span class="inline-block px-2 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded-full">Successful</span>
+                        <div>
+                            <p class="text-sm text-gray-500">Start Date</p>
+                            <p class="font-medium">Jan 15, 2024</p>
                         </div>
-                    </div>
-                    <div class="pt-2 border-t border-gray-100 mt-2 flex justify-between items-center">
-                        <p class="text-sm text-gray-600">Custom Celebration Package - Second Payment</p>
-                        <button class="text-sm text-yellow-600 hover:text-yellow-700 transition">Receipt</button>
+                        <div>
+                            <p class="text-sm text-gray-500">Status</p>
+                            <span class="px-2 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded-full">Current</span>
+                        </div>
                     </div>
                 </div>
                 
-                <!-- Transaction Item 2 -->
-                <div class="border border-gray-200 rounded-lg p-4 mb-4">
-                    <div class="flex flex-col md:flex-row justify-between mb-2">
-                        <div>
-                            <p class="font-medium text-navy">Custom Video Tribute</p>
-                            <p class="text-sm text-gray-500">Mar 20, 2025</p>
-                        </div>
-                        <div class="md:text-right mt-2 md:mt-0">
-                            <p class="font-semibold text-green-600">$750.00</p>
-                            <span class="inline-block px-2 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded-full">Successful</span>
-                        </div>
-                    </div>
-                    <div class="pt-2 border-t border-gray-100 mt-2 flex justify-between items-center">
-                        <p class="text-sm text-gray-600">Premium Video Tribute Service - Add-on</p>
-                        <button class="text-sm text-yellow-600 hover:text-yellow-700 transition">Receipt</button>
-                    </div>
-                </div>
-                
-                <!-- Transaction Item 3 -->
-                <div class="border border-gray-200 rounded-lg p-4 mb-4">
-                    <div class="flex flex-col md:flex-row justify-between mb-2">
-                        <div>
-                            <p class="font-medium text-navy">Initial Deposit</p>
-                            <p class="text-sm text-gray-500">Feb 25, 2025</p>
-                        </div>
-                        <div class="md:text-right mt-2 md:mt-0">
-                            <p class="font-semibold text-green-600">$1,750.00</p>
-                            <span class="inline-block px-2 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded-full">Successful</span>
-                        </div>
-                    </div>
-                    <div class="pt-2 border-t border-gray-100 mt-2 flex justify-between items-center">
-                        <p class="text-sm text-gray-600">Custom Celebration Package - Initial Deposit</p>
-                        <button class="text-sm text-yellow-600 hover:text-yellow-700 transition">Receipt</button>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Upcoming Payments -->
-            <div class="mb-8">
-                <h3 class="font-hedvig text-lg text-navy mb-4">Upcoming Payments</h3>
-                <div class="border border-gray-200 rounded-lg p-4">
-                    <div class="flex flex-col md:flex-row justify-between mb-2">
-                        <div>
-                            <p class="font-medium text-navy">Final Installment</p>
-                            <p class="text-sm text-gray-500">Apr 20, 2025</p>
-                        </div>
-                        <div class="md:text-right mt-2 md:mt-0">
-                            <p class="font-semibold text-navy">$2,500.00</p>
-                            <span class="inline-block px-2 py-1 bg-gray-100 text-gray-800 text-xs font-semibold rounded-full">Upcoming</span>
-                        </div>
-                    </div>
-                    <div class="pt-2 border-t border-gray-100 mt-2 flex justify-between items-center">
-                        <p class="text-sm text-gray-600">Custom Celebration Package - Final Payment</p>
-                        <button class="text-sm bg-yellow-600 text-white px-3 py-1 rounded hover:bg-yellow-700 transition">Pay Now</button>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Payment Summary -->
-            <div>
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-hedvig text-lg text-navy">Payment Summary</h3>
-                </div>
-                
-                <div class="bg-gray-50 rounded-lg p-4">
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div class="bg-white p-4 rounded-lg shadow-sm">
-                            <p class="text-sm text-gray-500">Total Paid to Date</p>
-                            <p class="text-xl font-semibold text-green-600">$5,000.00</p>
-                        </div>
-                        <div class="bg-white p-4 rounded-lg shadow-sm">
-                            <p class="text-sm text-gray-500">Remaining Balance</p>
-                            <p class="text-xl font-semibold text-navy">$2,500.00</p>
-                        </div>
-                        <div class="bg-white p-4 rounded-lg shadow-sm">
-                            <p class="text-sm text-gray-500">Next Payment</p>
-                            <div class="flex justify-between items-center">
-                                <p class="text-xl font-semibold text-navy">$2,500.00</p>
-                                <p class="text-sm text-gray-500">Apr 20, 2025</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Life Plan Content -->
-        <div id="life-plan-content" class="service-content p-6" style="display: none;">
-            <!-- Life Plan Summary -->
-            <div class="mb-8 bg-gray-50 p-5 rounded-lg">
-                <h3 class="font-hedvig text-lg text-navy mb-3">Life Plan: Premium Family Package</h3>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                        <p class="text-sm text-gray-500">Plan ID</p>
-                        <p class="font-medium text-navy">LP-23789-F</p>
+                <div class="flex flex-col md:items-end">
+                    <div class="mb-2">
+                        <p class="text-xl font-bold text-green-600">$2,624.50</p>
+                        <p class="text-sm text-gray-500">Paid to Date</p>
                     </div>
                     <div>
-                        <p class="text-sm text-gray-500">Start Date</p>
-                        <p class="font-medium text-navy">Jan 15, 2024</p>
+                        <p class="text-lg font-semibold text-navy">$208.33</p>
+                        <p class="text-sm text-gray-500">Next Payment (Apr 15)</p>
                     </div>
-                    <div>
-                        <p class="text-sm text-gray-500">Payment Schedule</p>
-                        <p class="font-medium text-navy">Monthly</p>
-                    </div>
-                    <div>
-                        <p class="text-sm text-gray-500">Total Plan Value</p>
-                        <p class="font-medium text-navy">$12,500.00</p>
-                    </div>
-                    <div>
-                        <p class="text-sm text-gray-500">Remaining Balance</p>
-                        <p class="font-medium text-navy">$9,875.50</p>
-                    </div>
-                    <div>
-                        <p class="text-sm text-gray-500">Payment Status</p>
-                        <span class="inline-block px-2 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded-full">Current</span>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Transaction History -->
-            <div class="mb-8">
-                <h3 class="font-hedvig text-lg text-navy mb-4">Payment History</h3>
-                
-                <!-- Transaction Item 1 -->
-                <div class="border border-gray-200 rounded-lg p-4 mb-4">
-                    <div class="flex flex-col md:flex-row justify-between mb-2">
-                        <div>
-                            <p class="font-medium text-navy">Monthly Premium</p>
-                            <p class="text-sm text-gray-500">Mar 15, 2025</p>
-                        </div>
-                        <div class="md:text-right mt-2 md:mt-0">
-                            <p class="font-semibold text-green-600">$208.33</p>
-                            <span class="inline-block px-2 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded-full">Successful</span>
-                        </div>
-                    </div>
-                    <div class="pt-2 border-t border-gray-100 mt-2 flex justify-between items-center">
-                        <p class="text-sm text-gray-600">Premium Family Package - Monthly Payment</p>
-                        <button class="text-sm text-yellow-600 hover:text-yellow-700 transition">Receipt</button>
-                    </div>
-                </div>
-                
-                <!-- Transaction Item 2 -->
-                <div class="border border-gray-200 rounded-lg p-4 mb-4">
-                    <div class="flex flex-col md:flex-row justify-between mb-2">
-                        <div>
-                            <p class="font-medium text-navy">Monthly Premium</p>
-                            <p class="text-sm text-gray-500">Feb 15, 2025</p>
-                        </div>
-                        <div class="md:text-right mt-2 md:mt-0">
-                            <p class="font-semibold text-green-600">$208.33</p>
-                            <span class="inline-block px-2 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded-full">Successful</span>
-                        </div>
-                    </div>
-                    <div class="pt-2 border-t border-gray-100 mt-2 flex justify-between items-center">
-                        <p class="text-sm text-gray-600">Premium Family Package - Monthly Payment</p>
-                        <button class="text-sm text-yellow-600 hover:text-yellow-700 transition">Receipt</button>
-                    </div>
-                </div>
-                
-                <!-- Transaction Item 3 - Service Add-on -->
-                <div class="border border-gray-200 rounded-lg p-4 mb-4">
-                    <div class="flex flex-col md:flex-row justify-between mb-2">
-                        <div>
-                            <p class="font-medium text-navy">Memorial Service Upgrade</p>
-                            <p class="text-sm text-gray-500">Feb 10, 2025</p>
-                        </div>
-                        <div class="md:text-right mt-2 md:mt-0">
-                            <p class="font-semibold text-green-600">$350.00</p>
-                            <span class="inline-block px-2 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded-full">Successful</span>
-                        </div>
-                    </div>
-                    <div class="pt-2 border-t border-gray-100 mt-2 flex justify-between items-center">
-                        <p class="text-sm text-gray-600">Premium Casket Selection - One-time Payment</p>
-                        <button class="text-sm text-yellow-600 hover:text-yellow-700 transition">Receipt</button>
-                    </div>
-                </div>
-                
-                <!-- Transaction Item 4 (Late Payment) -->
-                <div class="border border-gray-200 rounded-lg p-4 mb-4">
-                    <div class="flex flex-col md:flex-row justify-between mb-2">
-                        <div>
-                            <p class="font-medium text-navy">Monthly Premium</p>
-                            <p class="text-sm text-gray-500">Jan 20, 2025</p>
-                        </div>
-                        <div class="md:text-right mt-2 md:mt-0">
-                            <p class="font-semibold text-orange-600">$208.33</p>
-                            <span class="inline-block px-2 py-1 bg-orange-100 text-orange-800 text-xs font-semibold rounded-full">Late Payment</span>
-                        </div>
-                    </div>
-                    <div class="pt-2 border-t border-gray-100 mt-2 flex justify-between items-center">
-                        <p class="text-sm text-gray-600">Premium Family Package - Due Jan 15, 2025</p>
-                        <button class="text-sm text-yellow-600 hover:text-yellow-700 transition">Receipt</button>
-                    </div>
-                </div>
-                
-                <!-- Transaction Item 5 (Initial Payment) -->
-                <div class="border border-gray-200 rounded-lg p-4">
-                    <div class="flex flex-col md:flex-row justify-between mb-2">
-                        <div>
-                            <p class="font-medium text-navy">Initial Payment</p>
-                            <p class="text-sm text-gray-500">Jan 15, 2024</p>
-                        </div>
-                        <div class="md:text-right mt-2 md:mt-0">
-                            <p class="font-semibold text-green-600">$1,250.00</p>
-                            <span class="inline-block px-2 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded-full">Successful</span>
-                        </div>
-                    </div>
-                    <div class="pt-2 border-t border-gray-100 mt-2 flex justify-between items-center">
-                        <p class="text-sm text-gray-600">Premium Family Package - Down Payment (10%)</p>
-                        <button class="text-sm text-yellow-600 hover:text-yellow-700 transition">Receipt</button>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Upcoming Payments -->
-            <div class="mb-8">
-                <h3 class="font-hedvig text-lg text-navy mb-4">Upcoming Payments</h3>
-                <div class="border border-gray-200 rounded-lg p-4">
-                    <div class="flex flex-col md:flex-row justify-between mb-2">
-                        <div>
-                            <p class="font-medium text-navy">Monthly Premium</p>
-                            <p class="text-sm text-gray-500">Apr 15, 2025</p>
-                        </div>
-                        <div class="md:text-right mt-2 md:mt-0">
-                            <p class="font-semibold text-navy">$208.33</p>
-                            <span class="inline-block px-2 py-1 bg-gray-100 text-gray-800 text-xs font-semibold rounded-full">Upcoming</span>
-                        </div>
-                    </div>
-                    <div class="pt-2 border-t border-gray-100 mt-2 flex justify-between items-center">
-                        <p class="text-sm text-gray-600">Premium Family Package - Monthly Payment</p>
-                        <button class="text-sm bg-yellow-600 text-white px-3 py-1 rounded hover:bg-yellow-700 transition">Pay Now</button>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Payment Summary -->
-            <div>
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-hedvig text-lg text-navy">Payment Summary</h3>
-                </div>
-                
-                <div class="bg-gray-50 rounded-lg p-4">
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div class="bg-white p-4 rounded-lg shadow-sm">
-                            <p class="text-sm text-gray-500">Total Paid to Date</p>
-                            <p class="text-xl font-semibold text-green-600">$2,624.50</p>
-                        </div>
-                        <div class="bg-white p-4 rounded-lg shadow-sm">
-                            <p class="text-sm text-gray-500">Remaining Payments</p>
-                            <p class="text-xl font-semibold text-navy">47</p>
-                        </div>
-                        <div class="bg-white p-4 rounded-lg shadow-sm">
-                            <p class="text-sm text-gray-500">Next Payment</p>
-                            <div class="flex justify-between items-center">
-                                <p class="text-xl font-semibold text-navy">$208.33</p>
-                                <p class="text-sm text-gray-500">Apr 15, 2025</p>
-                            </div>
-                        </div>
+                    
+                    <div class="flex space-x-2 mt-3">
+                        <button onclick="openPaymentHistoryModal('life-plan')" class="bg-gray-100 hover:bg-gray-200 text-gray-800 px-3 py-1 rounded text-sm transition">
+                            View History
+                        </button>
+                        <button onclick="openPaymentModal('life-plan')" class="bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-1 rounded text-sm transition">
+                            Pay Now
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Payment History Modal -->
+<div id="payment-history-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[80vh] overflow-y-auto">
+        <div class="p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold text-navy" id="modal-package-title">Payment History</h3>
+                <button onclick="closeModal('payment-history-modal')" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Balance</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Receipt</th>
+                        </tr>
+                    </thead>
+                    <tbody id="payment-history-body" class="bg-white divide-y divide-gray-200">
+                        <!-- Payment history rows will be inserted here by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="mt-6 flex justify-end">
+                <button onclick="closeModal('payment-history-modal')" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded transition">
+                    Close
+                </button>
+            </div>
         </div>
+    </div>
+</div>
+
+<!-- Payment Modal -->
+<div id="payment-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-md">
+        <div class="p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold text-navy" id="payment-modal-title">Make Payment</h3>
+                <button onclick="closeModal('payment-modal')" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-medium mb-2">Amount to Pay</label>
+                <div class="relative">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-600">$</span>
+                    <input type="number" class="pl-8 w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-yellow-500" placeholder="0.00">
+                </div>
+            </div>
+            
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-medium mb-2">Payment Method</label>
+                <select class="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                    <option>Bank Transfer</option>
+                    <option>Credit Card</option>
+                    <option>Cash</option>
+                </select>
+            </div>
+            
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-medium mb-2">Upload Receipt (if bank transfer)</label>
+                <div class="border-2 border-dashed border-gray-300 rounded-md p-4 text-center">
+                    <input type="file" id="receipt-upload" class="hidden">
+                    <label for="receipt-upload" class="cursor-pointer">
+                        <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i>
+                        <p class="text-sm text-gray-600">Click to upload or drag and drop</p>
+                        <p class="text-xs text-gray-500 mt-1">PNG, JPG up to 5MB</p>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="mt-6 flex justify-end space-x-3">
+                <button onclick="closeModal('payment-modal')" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded transition">
+                    Cancel
+                </button>
+                <button class="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded transition">
+                    Submit Payment
+                </button>
+            </div>
         </div>
-        </div>
+    </div>
+</div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Tab switching functionality
     const tabs = document.querySelectorAll('.service-tab');
     const contents = document.querySelectorAll('.service-content');
     
@@ -1735,14 +1555,12 @@ document.addEventListener('DOMContentLoaded', function() {
         tab.addEventListener('click', () => {
             // Remove active class from all tabs
             tabs.forEach(t => {
-                t.classList.remove('border-yellow-600');
+                t.classList.remove('border-yellow-600', 'text-navy');
                 t.classList.add('text-gray-500');
-                t.classList.remove('text-navy');
             });
             
             // Add active class to clicked tab
-            tab.classList.add('border-yellow-600');
-            tab.classList.add('text-navy');
+            tab.classList.add('border-yellow-600', 'text-navy');
             tab.classList.remove('text-gray-500');
             
             // Hide all content
@@ -1756,8 +1574,89 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+
+function openPaymentHistoryModal(packageType) {
+    // Set modal title based on package type
+    const titles = {
+        'traditional-funeral': 'Traditional Funeral Payment History',
+        'custom-package': 'Custom Package Payment History',
+        'life-plan': 'Life Plan Payment History'
+    };
+    document.getElementById('modal-package-title').textContent = titles[packageType];
+    
+    // This would normally come from your backend/data
+    const paymentHistory = getSamplePaymentHistory(packageType);
+    
+    // Populate the table
+    const tbody = document.getElementById('payment-history-body');
+    tbody.innerHTML = '';
+    
+    paymentHistory.forEach(payment => {
+        const row = document.createElement('tr');
+        row.className = 'hover:bg-gray-50';
+        row.innerHTML = `
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${payment.date}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${payment.description}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium ${payment.amountClass}">${payment.amount}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${payment.balance}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                <button class="text-yellow-600 hover:text-yellow-800">View</button>
+            </td>
+        `;
+        tbody.appendChild(row);
+    });
+    
+    // Show the modal
+    document.getElementById('payment-history-modal').classList.remove('hidden');
+}
+
+function openPaymentModal(packageType) {
+    // Set modal title based on package type
+    const titles = {
+        'traditional-funeral': 'Add Payment - Traditional Funeral',
+        'custom-package': 'Make Payment - Custom Package',
+        'life-plan': 'Make Payment - Life Plan'
+    };
+    document.getElementById('payment-modal-title').textContent = titles[packageType];
+    
+    // Show the modal
+    document.getElementById('payment-modal').classList.remove('hidden');
+}
+
+function closeModal(modalId) {
+    document.getElementById(modalId).classList.add('hidden');
+}
+
+// Sample data - in a real app this would come from your backend
+function getSamplePaymentHistory(packageType) {
+    if (packageType === 'traditional-funeral') {
+        return [
+            { date: 'Mar 25, 2025', description: 'Final Payment (50%)', amount: '$4,375.00', amountClass: 'text-green-600', balance: '$0.00' },
+            { date: 'Mar 20, 2025', description: 'Additional Services', amount: '$1,200.00', amountClass: 'text-green-600', balance: '$4,375.00' },
+            { date: 'Mar 15, 2025', description: 'Initial Deposit (50%)', amount: '$4,375.00', amountClass: 'text-green-600', balance: '$5,575.00' }
+        ];
+    } else if (packageType === 'custom-package') {
+        return [
+            { date: 'Mar 28, 2025', description: 'Second Installment', amount: '$2,500.00', amountClass: 'text-green-600', balance: '$2,500.00' },
+            { date: 'Mar 20, 2025', description: 'Video Tribute Add-on', amount: '$750.00', amountClass: 'text-green-600', balance: '$5,000.00' },
+            { date: 'Feb 25, 2025', description: 'Initial Deposit', amount: '$1,750.00', amountClass: 'text-green-600', balance: '$5,750.00' }
+        ];
+    } else { // life-plan
+        return [
+            { date: 'Mar 15, 2025', description: 'Monthly Premium', amount: '$208.33', amountClass: 'text-green-600', balance: '$9,875.50' },
+            { date: 'Feb 15, 2025', description: 'Monthly Premium', amount: '$208.33', amountClass: 'text-green-600', balance: '$10,083.83' },
+            { date: 'Feb 10, 2025', description: 'Service Upgrade', amount: '$350.00', amountClass: 'text-green-600', balance: '$10,292.16' },
+            { date: 'Jan 20, 2025', description: 'Monthly Premium (Late)', amount: '$208.33', amountClass: 'text-orange-600', balance: '$10,642.16' },
+            { date: 'Jan 15, 2024', description: 'Initial Payment', amount: '$1,250.00', amountClass: 'text-green-600', balance: '$11,750.00' }
+        ];
+    }
+}
 </script>
-                    
+          
+</div>
+</div>
+</div>
+
     <!-- Footer -->
     <footer class="bg-black font-playfair text-white py-12">
         <div class="container mx-auto px-6">

@@ -732,6 +732,7 @@ function capitalizeWords(str) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GrievEase - Chats</title>
+  <?php include 'faviconLogo.php'; ?>
   <!-- Include Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>

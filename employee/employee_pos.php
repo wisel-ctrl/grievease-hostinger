@@ -8,6 +8,45 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
+
+// Check for employee user type (user_type = 2)
+if ($_SESSION['user_type'] != 2) {
+    // Redirect to appropriate page based on user type
+    switch ($_SESSION['user_type']) {
+        case 1: // Admin
+            header("Location: ../admin/admin_index.php");
+            break;
+        case 3: // Customer
+            header("Location: ../customer/index.php");
+            break;
+        default:
+            // Invalid user_type
+            session_destroy();
+            header("Location: ../Landing_Page/login.php");
+    }
+    exit();
+}
+
+// Optional: Check for session timeout (30 minutes)
+$session_timeout = 1800; // 30 minutes in seconds
+if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > $session_timeout)) {
+    // Session has expired
+    session_unset();
+    session_destroy();
+    header("Location: ../Landing_Page/login.php?timeout=1");
+    exit();
+}
+
+// Update last activity time
+$_SESSION['last_activity'] = time();
+
+// Prevent caching for authenticated pages
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Cache-Control: post-check=0, pre-check=0", false);
+header("Pragma: no-cache");
+
+
+
 // Database connection
 include '../db_connect.php';
 
@@ -153,6 +192,7 @@ $servicesJson = json_encode($allServices);
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GrievEase - Point-Of-Sale</title>
+  <?php include 'faviconLogo.php'; ?>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
@@ -1279,7 +1319,9 @@ $servicesJson = json_encode($allServices);
       
       serviceCard.innerHTML = `
         <div class="h-40 bg-gray-200 relative overflow-hidden">
-          <img src="${service.image_url || '/api/placeholder/400/250'}" alt="${service.service_name}" class="w-full h-full object-cover">
+          <img src="${service.image_url ? '/admin/servicesManagement/' + service.image_url : '/api/placeholder/400/250'}" 
+             alt="${service.service_name}" 
+             class="w-full h-full object-cover">
           <div class="absolute top-2 right-2 bg-yellow-500 text-white px-2 py-1 rounded-md text-sm font-semibold">
             ${formattedPrice}
           </div>
@@ -1333,7 +1375,7 @@ $servicesJson = json_encode($allServices);
 
     // Use a default image if none provided or if the URL is empty
     const imageUrl = serviceData.image_url && serviceData.image_url.trim() !== '' ? 
-      'servicesManagement/' + serviceData.image_url : '';
+      '/admin/servicesManagement/' + serviceData.image_url : '';
 
     document.getElementById('modal-content').innerHTML = `
       <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -1651,6 +1693,375 @@ function closeLifeplanCheckoutModal() {
       filterAndDisplayServices();
     }
   });
+  
+  function fetchRegions() {
+    console.log('Fetching regions...'); // Add this
+    fetch('../customer/address/get_regions.php')
+        .then(response => {
+            console.log('Regions response:', response); // Add this
+            return response.json();
+        })
+        .then(data => {
+            const regionSelect = document.getElementById('deceasedRegion');
+            regionSelect.innerHTML = '<option value="" disabled selected>Select Region</option>';
+            
+            data.forEach(region => {
+                const option = document.createElement('option');
+                option.value = region.region_id;  // Changed from region_code
+                option.textContent = region.region_name;
+                regionSelect.appendChild(option);
+            });
+        })
+        .catch(error => console.error('Error fetching regions:', error));
+}
+
+function fetchProvinces(regionCode) {
+    console.log('[DEBUG] Fetching provinces for region:', regionCode); // Check if regionCode is correct
+    
+    const provinceSelect = document.getElementById('deceasedProvince');
+    provinceSelect.innerHTML = '<option value="" disabled selected>Select Province</option>';
+    provinceSelect.disabled = true;
+    
+    if (!regionCode) {
+        console.warn('[WARNING] No regionCode provided!');
+        return;
+    }
+    
+    const apiUrl = `../customer/address/get_provinces.php?region_id=${regionCode}`;
+    console.log('[DEBUG] Fetching from:', apiUrl); // Check if URL is correct
+    
+    fetch(apiUrl)
+        .then(response => {
+            console.log('[DEBUG] Provinces API Response:', response); // Check HTTP response
+            if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+            return response.json();
+        })
+        .then(data => {
+            console.log('[DEBUG] Provinces Data:', data); // Check if data is correct
+            
+            if (!data || data.length === 0) {
+                console.warn('[WARNING] No provinces returned!');
+                return;
+            }
+            
+            provinceSelect.innerHTML = '<option value="" disabled selected>Select Province</option>';
+            
+            data.forEach(province => {
+                const option = document.createElement('option');
+                option.value = province.province_id;  // Changed from province_code
+                option.textContent = province.province_name;
+                provinceSelect.appendChild(option);
+            });
+            
+            provinceSelect.disabled = false;
+        })
+        .catch(error => console.error('[ERROR] fetchProvinces failed:', error));
+}
+
+function fetchCities(provinceCode) {
+    console.log('[DEBUG] Fetching cities for province:', provinceCode); // Check if provinceCode is correct
+    
+    const citySelect = document.getElementById('deceasedCity');
+    citySelect.innerHTML = '<option value="" disabled selected>Select City/Municipality</option>';
+    citySelect.disabled = true;
+    
+    if (!provinceCode) {
+        console.warn('[WARNING] No provinceCode provided!');
+        return;
+    }
+    
+    const apiUrl = `../customer/address/get_cities.php?province_id=${provinceCode}`;
+    console.log('[DEBUG] Fetching from:', apiUrl); // Check if URL is correct
+    
+    fetch(apiUrl)
+        .then(response => {
+            console.log('[DEBUG] Cities API Response:', response); // Check HTTP response
+            if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+            return response.json();
+        })
+        .then(data => {
+            console.log('[DEBUG] Cities Data:', data); // Check if data is correct
+            
+            if (!data || data.length === 0) {
+                console.warn('[WARNING] No cities returned!');
+                return;
+            }
+            
+            citySelect.innerHTML = '<option value="" disabled selected>Select City/Municipality</option>';
+            
+            data.forEach(city => {
+                const option = document.createElement('option');
+                option.value = city.municipality_id;  // Changed from city_code
+                option.textContent = city.municipality_name;  // Changed from city_name
+                citySelect.appendChild(option);
+            });
+            
+            citySelect.disabled = false;
+        })
+        .catch(error => console.error('[ERROR] fetchCities failed:', error));
+}
+
+function fetchBarangays(cityCode) {
+    console.log('[DEBUG] Fetching barangays for city:', cityCode); // Check if cityCode is correct
+    
+    const barangaySelect = document.getElementById('deceasedBarangay');
+    barangaySelect.innerHTML = '<option value="" disabled selected>Select Barangay</option>';
+    barangaySelect.disabled = true;
+    
+    if (!cityCode) {
+        console.warn('[WARNING] No cityCode provided!');
+        return;
+    }
+    
+    const apiUrl = `../customer/address/get_barangays.php?city_id=${cityCode}`;
+    console.log('[DEBUG] Fetching from:', apiUrl); // Check if URL is correct
+    
+    fetch(apiUrl)
+        .then(response => {
+            console.log('[DEBUG] Barangays API Response:', response); // Check HTTP response
+            if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+            return response.json();
+        })
+        .then(data => {
+            console.log('[DEBUG] Barangays Data:', data); // Check if data is correct
+            
+            if (!data || data.length === 0) {
+                console.warn('[WARNING] No barangays returned!');
+                return;
+            }
+            
+            barangaySelect.innerHTML = '<option value="" disabled selected>Select Barangay</option>';
+            
+            data.forEach(barangay => {
+                const option = document.createElement('option');
+                option.value = barangay.barangay_id;  // Changed from barangay_code
+                option.textContent = barangay.barangay_name;
+                barangaySelect.appendChild(option);
+            });
+            
+            barangaySelect.disabled = false;
+        })
+        .catch(error => console.error('[ERROR] fetchBarangays failed:', error));
+}
+
+function updateCombinedAddress() {
+    const regionSelect = document.getElementById('deceasedRegion');
+    const provinceSelect = document.getElementById('deceasedProvince');
+    const citySelect = document.getElementById('deceasedCity');
+    const barangaySelect = document.getElementById('deceasedBarangay');
+    const streetAddress = document.getElementById('deceasedStreet').value;
+    const zipCode = document.getElementById('deceasedZip').value;
+    
+    const region = regionSelect.options[regionSelect.selectedIndex]?.text || '';
+    const province = provinceSelect.options[provinceSelect.selectedIndex]?.text || '';
+    const city = citySelect.options[citySelect.selectedIndex]?.text || '';
+    const barangay = barangaySelect.options[barangaySelect.selectedIndex]?.text || '';
+    
+    // Create an array of non-empty address components
+    const addressParts = [];
+    if (streetAddress) addressParts.push(streetAddress);
+    if (barangay) addressParts.push(barangay);
+    if (city) addressParts.push(city);
+    if (province) addressParts.push(province);
+    if (region) addressParts.push(region);
+    if (zipCode) addressParts.push(zipCode);
+    
+    // Join the parts with commas
+    const combinedAddress = addressParts.join(', ');
+    document.getElementById('deceasedAddress').value = combinedAddress;
+}
+
+// Initialize address dropdowns when the page loads
+document.addEventListener('DOMContentLoaded', function() {
+    fetchRegions();
+    
+    // Set up event listeners for cascading dropdowns
+    document.getElementById('deceasedRegion').addEventListener('change', function() {
+        fetchProvinces(this.value);
+        document.getElementById('deceasedProvince').value = '';
+        document.getElementById('deceasedCity').value = '';
+        document.getElementById('deceasedBarangay').value = '';
+        document.getElementById('deceasedCity').disabled = true;
+        document.getElementById('deceasedBarangay').disabled = true;
+        updateCombinedAddress();
+    });
+    
+    document.getElementById('deceasedProvince').addEventListener('change', function() {
+        fetchCities(this.value);
+        document.getElementById('deceasedCity').value = '';
+        document.getElementById('deceasedBarangay').value = '';
+        document.getElementById('deceasedBarangay').disabled = true;
+        updateCombinedAddress();
+    });
+    
+    document.getElementById('deceasedCity').addEventListener('change', function() {
+        fetchBarangays(this.value);
+        document.getElementById('deceasedBarangay').value = '';
+        updateCombinedAddress();
+    });
+    
+    document.getElementById('deceasedBarangay').addEventListener('change', updateCombinedAddress);
+    document.getElementById('deceasedStreet').addEventListener('input', updateCombinedAddress);
+    document.getElementById('deceasedZip').addEventListener('input', updateCombinedAddress);
+    
+    // Also update combined address when form is submitted
+    document.getElementById('bookingForm').addEventListener('submit', function(e) {
+        updateCombinedAddress();
+        // Continue with form submission
+    });
+});
+
+
+      // LIFE-PLAN 
+      // Address handling functions for beneficiary
+function fetchBeneficiaryRegions() {
+    fetch('../customer/address/get_regions.php')
+        .then(response => response.json())
+        .then(data => {
+            const regionSelect = document.getElementById('beneficiaryRegion');
+            regionSelect.innerHTML = '<option value="" disabled selected>Select Region</option>';
+            
+            data.forEach(region => {
+                const option = document.createElement('option');
+                option.value = region.region_id;  // Changed to match PHP response
+                option.textContent = region.region_name;
+                regionSelect.appendChild(option);
+            });
+        })
+        .catch(error => console.error('Error fetching regions:', error));
+}
+
+function fetchBeneficiaryProvinces(regionId) {
+    const provinceSelect = document.getElementById('beneficiaryProvince');
+    provinceSelect.innerHTML = '<option value="" disabled selected>Select Province</option>';
+    provinceSelect.disabled = true;
+    
+    if (!regionId) return;
+    
+    fetch(`../customer/address/get_provinces.php?region_id=${regionId}`)
+        .then(response => response.json())
+        .then(data => {
+            provinceSelect.innerHTML = '<option value="" disabled selected>Select Province</option>';
+            
+            data.forEach(province => {
+                const option = document.createElement('option');
+                option.value = province.province_id;  // Changed to match PHP response
+                option.textContent = province.province_name;
+                provinceSelect.appendChild(option);
+            });
+            
+            provinceSelect.disabled = false;
+        })
+        .catch(error => console.error('Error fetching provinces:', error));
+}
+
+function fetchBeneficiaryCities(provinceId) {
+    const citySelect = document.getElementById('beneficiaryCity');
+    citySelect.innerHTML = '<option value="" disabled selected>Select City/Municipality</option>';
+    citySelect.disabled = true;
+    
+    if (!provinceId) return;
+    
+    fetch(`../customer/address/get_cities.php?province_id=${provinceId}`)
+        .then(response => response.json())
+        .then(data => {
+            citySelect.innerHTML = '<option value="" disabled selected>Select City/Municipality</option>';
+            
+            data.forEach(city => {
+                const option = document.createElement('option');
+                option.value = city.municipality_id;  // Changed to match PHP response
+                option.textContent = city.municipality_name;
+                citySelect.appendChild(option);
+            });
+            
+            citySelect.disabled = false;
+        })
+        .catch(error => console.error('Error fetching cities:', error));
+}
+
+function fetchBeneficiaryBarangays(cityId) {
+    const barangaySelect = document.getElementById('beneficiaryBarangay');
+    barangaySelect.innerHTML = '<option value="" disabled selected>Select Barangay</option>';
+    barangaySelect.disabled = true;
+    
+    if (!cityId) return;
+    
+    fetch(`../customer/address/get_barangays.php?city_id=${cityId}`)
+        .then(response => response.json())
+        .then(data => {
+            barangaySelect.innerHTML = '<option value="" disabled selected>Select Barangay</option>';
+            
+            data.forEach(barangay => {
+                const option = document.createElement('option');
+                option.value = barangay.barangay_id;  // Changed to match PHP response
+                option.textContent = barangay.barangay_name;
+                barangaySelect.appendChild(option);
+            });
+            
+            barangaySelect.disabled = false;
+        })
+        .catch(error => console.error('Error fetching barangays:', error));
+}
+
+function updateBeneficiaryCombinedAddress() {
+    const regionSelect = document.getElementById('beneficiaryRegion');
+    const provinceSelect = document.getElementById('beneficiaryProvince');
+    const citySelect = document.getElementById('beneficiaryCity');
+    const barangaySelect = document.getElementById('beneficiaryBarangay');
+    const streetAddress = document.getElementById('beneficiaryStreet').value;
+    const zipCode = document.getElementById('beneficiaryZip').value;
+    
+    const region = regionSelect.options[regionSelect.selectedIndex]?.text || '';
+    const province = provinceSelect.options[provinceSelect.selectedIndex]?.text || '';
+    const city = citySelect.options[citySelect.selectedIndex]?.text || '';
+    const barangay = barangaySelect.options[barangaySelect.selectedIndex]?.text || '';
+    
+    const addressParts = [];
+    if (streetAddress) addressParts.push(streetAddress);
+    if (barangay) addressParts.push(barangay);
+    if (city) addressParts.push(city);
+    if (province) addressParts.push(province);
+    if (region) addressParts.push(region);
+    if (zipCode) addressParts.push(zipCode);
+    
+    const combinedAddress = addressParts.join(', ');
+    document.getElementById('beneficiaryAddress').value = combinedAddress;
+}
+
+// Initialize beneficiary address dropdowns
+document.addEventListener('DOMContentLoaded', function() {
+    fetchBeneficiaryRegions();
+    
+    // Set up event listeners for beneficiary cascading dropdowns
+    document.getElementById('beneficiaryRegion').addEventListener('change', function() {
+        fetchBeneficiaryProvinces(this.value);
+        document.getElementById('beneficiaryProvince').value = '';
+        document.getElementById('beneficiaryCity').value = '';
+        document.getElementById('beneficiaryBarangay').value = '';
+        document.getElementById('beneficiaryCity').disabled = true;
+        document.getElementById('beneficiaryBarangay').disabled = true;
+        updateBeneficiaryCombinedAddress();
+    });
+    
+    document.getElementById('beneficiaryProvince').addEventListener('change', function() {
+        fetchBeneficiaryCities(this.value);
+        document.getElementById('beneficiaryCity').value = '';
+        document.getElementById('beneficiaryBarangay').value = '';
+        document.getElementById('beneficiaryBarangay').disabled = true;
+        updateBeneficiaryCombinedAddress();
+    });
+    
+    document.getElementById('beneficiaryCity').addEventListener('change', function() {
+        fetchBeneficiaryBarangays(this.value);
+        document.getElementById('beneficiaryBarangay').value = '';
+        updateBeneficiaryCombinedAddress();
+    });
+    
+    document.getElementById('beneficiaryBarangay').addEventListener('change', updateBeneficiaryCombinedAddress);
+    document.getElementById('beneficiaryStreet').addEventListener('input', updateBeneficiaryCombinedAddress);
+    document.getElementById('beneficiaryZip').addEventListener('input', updateBeneficiaryCombinedAddress);
+});
+
 </script>
 
   <script src="sidebar.js"></script>
