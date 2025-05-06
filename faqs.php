@@ -472,7 +472,6 @@
                 <p>We offer flexible payment options to accommodate your needs:</p>
                 <ul class="list-disc ml-6 mt-2 space-y-1">
                     <li>For services over ₱100,000, we require a 30% down payment</li>
-                    <li>For services under ₱100,000, payment is typically made before or on the day of burial</li>
                     <li>We offer interest-free installment plans for those who need additional time to pay</li>
                     <li>Early payment discounts may be available in some cases</li>
                 </ul>

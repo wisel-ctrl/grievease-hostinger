@@ -530,7 +530,6 @@
                         <p>We offer flexible payment options to accommodate various financial situations:</p>
                         <ul class="list-disc ml-6 mt-2 space-y-1">
                             <li><strong>For packages ₱100,000 and above:</strong> 30% down payment required</li>
-                            <li><strong>For packages below ₱100,000:</strong> Payment typically made before or on the day of burial</li>
                             <li><strong>Installment options:</strong> Available without interest for those who need additional time to pay</li>
                             <li><strong>lifeplan plans:</strong> Available for those planning ahead</li>
                         </ul>
