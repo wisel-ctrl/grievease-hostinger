@@ -71,7 +71,23 @@ $traditional_result = mysqli_query($conn, $traditional_query);
 $traditional_requests = mysqli_fetch_all($traditional_result, MYSQLI_ASSOC);
 
 // Fetch Custom Packages Payment Requests (replace with your actual query)
-$custom_query = "SELECT * FROM custompayment_request_tb LIMIT 0"; // Placeholder
+$custom_query = "SELECT 
+    CONCAT(
+        UPPER(LEFT(u.first_name, 1)), LOWER(SUBSTRING(u.first_name, 2)), ' ',
+        IFNULL(CONCAT(UPPER(LEFT(u.middle_name, 1)), LOWER(SUBSTRING(u.middle_name, 2)), ' '), ''),
+        UPPER(LEFT(u.last_name, 1)), LOWER(SUBSTRING(u.last_name, 2)),
+        IF(u.suffix IS NOT NULL AND u.suffix != '', CONCAT(' ', UPPER(LEFT(u.suffix, 1)), LOWER(SUBSTRING(u.suffix, 2))), '')
+    ) AS full_name,
+    ir_tb.payment_id,
+    cs_tb.discounted_price,
+    ir_tb.request_date,
+    ir_tb.amount,
+    ir_tb.payment_method,
+    ir_tb.payment_url,
+    ir_tb.status
+FROM custompayment_request_tb AS ir_tb
+JOIN users AS u ON ir_tb.customer_id = u.id
+JOIN customsales_tb AS cs_tb ON ir_tb.customsales_id = cs_tb.customsales_id";
 $custom_result = mysqli_query($conn, $custom_query);
 $custom_requests = mysqli_fetch_all($custom_result, MYSQLI_ASSOC);
 
@@ -146,39 +162,42 @@ $lifeplan_requests = mysqli_fetch_all($lifeplan_result, MYSQLI_ASSOC);
     </div>
 
     <!-- Custom Packages Payment Requests Section -->
+    <!-- Custom Packages Payment Requests Section -->
     <div class="bg-white rounded-lg shadow-sidebar p-6">
-      <h2 class="text-xl font-semibold mb-4 text-sidebar-text">Custom Packages Payment Requests</h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <h2 class="text-xl font-semibold mb-4 text-sidebar-text">Custom Packages Payment Requests</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <?php foreach ($custom_requests as $request): ?>
-          <div class="border rounded-lg p-4 hover:shadow-md transition-shadow">
+        <div class="border rounded-lg p-4 hover:shadow-md transition-shadow">
             <div class="flex justify-between items-start">
-              <div>
-                <h3 class="font-medium">Customer Name</h3>
+            <div>
+                <h3 class="font-medium"><?= htmlspecialchars($request['full_name']) ?></h3>
                 <p class="text-sm text-gray-600">Custom Package</p>
                 <p class="text-sm mt-2">
-                  <span class="font-medium">Amount:</span> ₱0.00
+                <span class="font-medium">Amount:</span> ₱<?= number_format($request['amount'], 2) ?>
                 </p>
                 <p class="text-sm">
-                  <span class="font-medium">Date:</span> Jan 01, 2023
+                <span class="font-medium">Date:</span> <?= date('M d, Y', strtotime($request['request_date'])) ?>
                 </p>
                 <p class="text-sm">
-                  <span class="font-medium">Method:</span> Bank Transfer
+                <span class="font-medium">Method:</span> <?= htmlspecialchars($request['payment_method']) ?>
                 </p>
-                <span class="inline-block mt-2 px-2 py-1 text-xs rounded-full bg-yellow-100 text-yellow-800">
-                  Pending
+                <span class="inline-block mt-2 px-2 py-1 text-xs rounded-full 
+                <?= $request['status'] == 'pending' ? 'bg-yellow-100 text-yellow-800' : 
+                    ($request['status'] == 'approved' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800') ?>">
+                <?= ucfirst($request['status']) ?>
                 </span>
-              </div>
-              <button onclick="openCustomModal('', '0.00')" 
+            </div>
+            <button onclick="openCustomModal('<?= htmlspecialchars($request['payment_url']) ?>', '<?= number_format($request['amount'], 2) ?>')" 
                 class="px-3 py-1 bg-sidebar text-white rounded hover:bg-blue-700 transition-colors text-sm">
                 View Receipt
-              </button>
+            </button>
             </div>
-          </div>
+        </div>
         <?php endforeach; ?>
         <?php if (empty($custom_requests)): ?>
-          <p class="text-gray-500 col-span-3 text-center py-4">No custom package payment requests found.</p>
+        <p class="text-gray-500 col-span-3 text-center py-4">No custom package payment requests found.</p>
         <?php endif; ?>
-      </div>
+    </div>
     </div>
 
     <!-- Lifeplan Payment Requests Section -->
@@ -305,7 +324,7 @@ $lifeplan_requests = mysqli_fetch_all($lifeplan_result, MYSQLI_ASSOC);
 
   // Custom Packages Modal Functions
   function openCustomModal(imageUrl, amount) {
-    document.getElementById('customReceiptImage').src = imageUrl;
+    document.getElementById('customReceiptImage').src = '../customer/payments/' + imageUrl;
     document.getElementById('customAmount').textContent = '₱' + amount;
     document.getElementById('customModal').classList.remove('hidden');
   }
@@ -316,7 +335,7 @@ $lifeplan_requests = mysqli_fetch_all($lifeplan_result, MYSQLI_ASSOC);
 
   // Lifeplan Modal Functions
   function openLifeplanModal(imageUrl, amount) {
-    document.getElementById('lifeplanReceiptImage').src = imageUrl;
+    document.getElementById('lifeplanReceiptImage').src = '../customer/payments/' + imageUrl;
     document.getElementById('lifeplanAmount').textContent = '₱' + amount;
     document.getElementById('lifeplanModal').classList.remove('hidden');
   }
