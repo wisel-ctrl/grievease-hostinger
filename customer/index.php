@@ -767,7 +767,9 @@ $show_id_card = !$has_id || strtolower($id_data['is_validated']) != 'valid';
                     </div>
                 <?php endif; ?>
                 
-                <?php if (!in_array('Branch Selected', array_column($check_icons, 'text'))): ?>
+                <?php 
+                $branch_not_selected = !in_array('Branch Selected', array_column($check_icons, 'text'));
+                if ($branch_not_selected): ?>
                     <div class="flex items-center text-sm text-gray-400">
                         <i class="far fa-circle mr-2"></i>
                         <span>Select Branch</span>
@@ -790,8 +792,8 @@ $show_id_card = !$has_id || strtolower($id_data['is_validated']) != 'valid';
             <?php endif; ?>
         </div>
         
-        <a href="profile.php#personal-info" class="text-sm text-yellow-600 hover:text-darkgold font-medium flex items-center">
-            <?= $percentage < 100 ? 'Complete Profile' : 'View Profile' ?> <i class="fas fa-arrow-right ml-2"></i>
+        <a href="<?= ($percentage < 100 && $branch_not_selected) ? 'packages.php' : 'profile.php#personal-info' ?>" class="text-sm text-yellow-600 hover:text-darkgold font-medium flex items-center">
+            <?= ($percentage < 100 && $branch_not_selected) ? 'Select Branch' : ($percentage < 100 ? 'Complete Profile' : 'View Profile') ?> <i class="fas fa-arrow-right ml-2"></i>
         </a>
     </div>
     <?php endif; ?>
