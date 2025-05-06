@@ -1301,57 +1301,70 @@ $servicesJson = json_encode($allServices);
   
   // Select a service (implement this function based on your requirements)
   // Function to show service details in modal
-function showServiceDetails(service) {
-  console.log("Showing service details:", service);
-  selectedService = service;
-  document.getElementById('modal-title').textContent = service.service_name;
-  document.getElementById('service-price').value = service.selling_price;
-  
-  // Format inclusions as a list if it contains commas
-  let inclusionsDisplay = service.inclusions;
-  if (service.inclusions && service.inclusions.includes(',')) {
-    const inclusionsList = service.inclusions.split(',').map(item => `<li class="mb-1">- ${item.trim()}</li>`).join('');
-    inclusionsDisplay = `<ul class="list-none mt-2">${inclusionsList}</ul>`;
-  }
+  async function showServiceDetails(service) {
+  try {
+    // If service is just an ID, fetch the full details
+    if (typeof service === 'number' || (typeof service === 'object' && !service.service_name)) {
+      const response = await fetch(`posFuntions/get_services.php?service_id=${typeof service === 'number' ? service : service.service_id}`);
+      if (!response.ok) throw new Error('Network response was not ok');
+      service = await response.json();
+      if (service.error) throw new Error(service.error);
+    }
 
-  // Use a default image if none provided or if the URL is empty
-  const imageUrl = service.image_url && service.image_url.trim() !== '' ? 
-    'servicesManagement/' + service.image_url : '';
+    console.log("Showing service details:", service);
+    selectedService = service;
+    document.getElementById('modal-title').textContent = service.service_name;
+    document.getElementById('service-price').value = service.selling_price;
+    
+    // Format inclusions as a list if it contains commas
+    let inclusionsDisplay = service.inclusions;
+    if (service.inclusions && service.inclusions.includes(',')) {
+      const inclusionsList = service.inclusions.split(',').map(item => `<li class="mb-1">- ${item.trim()}</li>`).join('');
+      inclusionsDisplay = `<ul class="list-none mt-2">${inclusionsList}</ul>`;
+    }
 
-  document.getElementById('modal-content').innerHTML = `
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-      <div class="${imageUrl ? 'h-64 bg-center bg-cover bg-no-repeat rounded-lg' : 'h-64 bg-gray-100 flex items-center justify-center rounded-lg'}" 
-             ${imageUrl ? `style="background-image: url('${imageUrl}');"` : ''}>
-          ${!imageUrl ? '<i class="fas fa-image text-5xl text-gray-300"></i>' : ''}
-        </div>
-      <div>
-        <div class="text-lg font-bold mb-2.5 text-sidebar-text">${service.service_name}</div>
-        <div class="flex items-center mb-4">
-          <span class="text-gray-500 text-sm mr-3"><i class="fas fa-map-marker-alt mr-1"></i> ${service.branch_name}</span>
-          <span class="text-gray-500 text-sm"><i class="fas fa-tag mr-1"></i> ${service.service_category_name}</span>
-        </div>
-        <div class="text-lg font-bold text-sidebar-accent mb-4">₱${parseFloat(service.selling_price).toLocaleString('en-PH', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+    // Use a default image if none provided or if the URL is empty
+    const imageUrl = service.image_url && service.image_url.trim() !== '' ? 
+      'servicesManagement/' + service.image_url : '';
 
-        <!-- Add the description here -->
-        ${service.description ? `
-          <div class="text-gray-700 text-sm mb-3">
-            <strong>Description:</strong>
-            <p class="mt-1">${service.description}</p>
+    document.getElementById('modal-content').innerHTML = `
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div class="${imageUrl ? 'h-64 bg-center bg-cover bg-no-repeat rounded-lg' : 'h-64 bg-gray-100 flex items-center justify-center rounded-lg'}" 
+               ${imageUrl ? `style="background-image: url('${imageUrl}');"` : ''}>
+            ${!imageUrl ? '<i class="fas fa-image text-5xl text-gray-300"></i>' : ''}
           </div>
-        ` : ''}
+        <div>
+          <div class="text-lg font-bold mb-2.5 text-sidebar-text">${service.service_name}</div>
+          <div class="flex items-center mb-4">
+            <span class="text-gray-500 text-sm mr-3"><i class="fas fa-map-marker-alt mr-1"></i> ${service.branch_name}</span>
+            <span class="text-gray-500 text-sm"><i class="fas fa-tag mr-1"></i> ${service.service_category_name}</span>
+          </div>
+          <div class="text-lg font-bold text-sidebar-accent mb-4">₱${parseFloat(service.selling_price).toLocaleString('en-PH', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
 
-        <div class="text-gray-700 text-sm mb-3">
-          <strong>Flower Replacements:</strong>
-          ${service.flower_design}
-        </div>
-        <div class="text-gray-700 text-sm mb-3">
-          <strong>Inclusions:</strong>
-          ${inclusionsDisplay}
+          <!-- Add the description here -->
+          ${service.description ? `
+            <div class="text-gray-700 text-sm mb-3">
+              <strong>Description:</strong>
+              <p class="mt-1">${service.description}</p>
+            </div>
+          ` : ''}
+
+          <div class="text-gray-700 text-sm mb-3">
+            <strong>Flower Replacements:</strong>
+            ${service.flower_design}
+          </div>
+          <div class="text-gray-700 text-sm mb-3">
+            <strong>Inclusions:</strong>
+            ${inclusionsDisplay}
+          </div>
         </div>
       </div>
-    </div>
-  `;
-  document.getElementById('package-modal').classList.remove('hidden');
+    `;
+    document.getElementById('package-modal').classList.remove('hidden');
+  } catch (error) {
+    console.error('Error fetching service details:', error);
+    alert('Failed to load service details: ' + error.message);
+  }
 }
 
 // Function to close the package modal
