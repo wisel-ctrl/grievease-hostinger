@@ -884,15 +884,6 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
     </div>
 </div>
-    <!-- Packages Section -->
-<div class="mt-16">
-    <h2 class="text-2xl font-hedvig text-navy">Packages</h2>
-    <div class="flex justify-end mb-4">
-        <a href="packages.php" class="text-yellow-600 hover:text-darkgold text-sm sm:text-l font-medium">View All Packages
-           <i class="fa-solid fa-arrow-right ml-2"></i>
-        </a>
-    </div>
-</div>
 
 <div class="max-w-6xl mx-auto relative">
     <!-- Carousel Container -->
