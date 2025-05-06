@@ -1305,9 +1305,9 @@ $stmt->close();
             
             // Determine status color
             $statusClass = '';
-            if ($service['payment_status'] == 'Paid') {
+            if ($service['payment_status'] == 'Fully Paid') {
                 $statusClass = 'bg-green-100 text-green-800';
-            } elseif ($service['payment_status'] == 'Pending') {
+            } elseif ($service['payment_status'] == 'With Balance') {
                 $statusClass = 'bg-blue-100 text-blue-800';
             } else {
                 $statusClass = 'bg-red-100 text-red-800';
