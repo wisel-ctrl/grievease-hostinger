@@ -349,7 +349,12 @@ $total_lifeplan_bookings = $lifeplan_count_result->fetch_assoc()['total'];
                     <?php
                     // Query to get booking data with joins and pagination
                     $query = "SELECT b.booking_id, b.booking_date, b.status, 
-                    CONCAT(u.first_name, ' ', COALESCE(u.middle_name, ''), ' ', u.last_name, ' ', COALESCE(u.suffix, '')) AS customer_name,
+                    CONCAT(
+                        UPPER(LEFT(u.first_name, 1)), LOWER(SUBSTRING(u.first_name, 2)), ' ',
+                        UPPER(LEFT(COALESCE(u.middle_name, ''), 1)), LOWER(SUBSTRING(COALESCE(u.middle_name, ''), 2)), ' ',
+                        UPPER(LEFT(u.last_name, 1)), LOWER(SUBSTRING(u.last_name, 2)), ' ',
+                        UPPER(LEFT(COALESCE(u.suffix, ''), 1)), LOWER(SUBSTRING(COALESCE(u.suffix, ''), 2))
+                    ) AS customer_name,
                     COALESCE(s.service_name, 'Custom Package') AS service_name
                     FROM booking_tb b
                     JOIN users u ON b.customerID = u.id
