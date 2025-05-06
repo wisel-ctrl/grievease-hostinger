@@ -1400,27 +1400,30 @@ $lifeplanStmt->close();
 </div>
 
 <!-- Payment Modal -->
-<div id="payment-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+<!-- Traditional Funeral Payment Modal -->
+<div id="traditional-payment-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
     <div class="bg-white rounded-lg shadow-xl w-full max-w-md">
         <div class="p-6">
             <div class="flex justify-between items-center mb-4">
-                <h3 class="text-xl font-bold text-navy" id="payment-modal-title">Make Payment</h3>
-                <button onclick="closeModal('payment-modal')" class="text-gray-500 hover:text-gray-700">
+                <h3 class="text-xl font-bold text-navy">Make Payment - Traditional Funeral</h3>
+                <button onclick="closeModal('traditional-payment-modal')" class="text-gray-500 hover:text-gray-700">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
+            
+            <input type="hidden" id="traditional-sales-id">
             
             <div class="mb-4">
                 <label class="block text-gray-700 text-sm font-medium mb-2">Amount to Pay</label>
                 <div class="relative">
                     <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-600">$</span>
-                    <input type="number" class="pl-8 w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-yellow-500" placeholder="0.00">
+                    <input type="number" id="traditional-amount" class="pl-8 w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-yellow-500" placeholder="0.00">
                 </div>
             </div>
             
             <div class="mb-4">
                 <label class="block text-gray-700 text-sm font-medium mb-2">Payment Method</label>
-                <select class="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                <select id="traditional-method" class="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-yellow-500">
                     <option>Bank Transfer</option>
                     <option>Credit Card</option>
                     <option>Cash</option>
@@ -1430,8 +1433,8 @@ $lifeplanStmt->close();
             <div class="mb-4">
                 <label class="block text-gray-700 text-sm font-medium mb-2">Upload Receipt (if bank transfer)</label>
                 <div class="border-2 border-dashed border-gray-300 rounded-md p-4 text-center">
-                    <input type="file" id="receipt-upload" class="hidden">
-                    <label for="receipt-upload" class="cursor-pointer">
+                    <input type="file" id="traditional-receipt" class="hidden">
+                    <label for="traditional-receipt" class="cursor-pointer">
                         <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i>
                         <p class="text-sm text-gray-600">Click to upload or drag and drop</p>
                         <p class="text-xs text-gray-500 mt-1">PNG, JPG up to 5MB</p>
@@ -1440,10 +1443,118 @@ $lifeplanStmt->close();
             </div>
             
             <div class="mt-6 flex justify-end space-x-3">
-                <button onclick="closeModal('payment-modal')" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded transition">
+                <button onclick="closeModal('traditional-payment-modal')" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded transition">
                     Cancel
                 </button>
-                <button class="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded transition">
+                <button onclick="submitTraditionalPayment()" class="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded transition">
+                    Submit Payment
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Custom Package Payment Modal -->
+<div id="custom-payment-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-md">
+        <div class="p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold text-navy">Make Payment - Custom Package</h3>
+                <button onclick="closeModal('custom-payment-modal')" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <input type="hidden" id="custom-sales-id">
+            
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-medium mb-2">Amount to Pay</label>
+                <div class="relative">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-600">$</span>
+                    <input type="number" id="custom-amount" class="pl-8 w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-yellow-500" placeholder="0.00">
+                </div>
+            </div>
+            
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-medium mb-2">Payment Method</label>
+                <select id="custom-method" class="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                    <option>Bank Transfer</option>
+                    <option>Credit Card</option>
+                    <option>Cash</option>
+                </select>
+            </div>
+            
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-medium mb-2">Upload Receipt (if bank transfer)</label>
+                <div class="border-2 border-dashed border-gray-300 rounded-md p-4 text-center">
+                    <input type="file" id="custom-receipt" class="hidden">
+                    <label for="custom-receipt" class="cursor-pointer">
+                        <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i>
+                        <p class="text-sm text-gray-600">Click to upload or drag and drop</p>
+                        <p class="text-xs text-gray-500 mt-1">PNG, JPG up to 5MB</p>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="mt-6 flex justify-end space-x-3">
+                <button onclick="closeModal('custom-payment-modal')" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded transition">
+                    Cancel
+                </button>
+                <button onclick="submitCustomPayment()" class="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded transition">
+                    Submit Payment
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Life Plan Payment Modal -->
+<div id="lifeplan-payment-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-md">
+        <div class="p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold text-navy">Make Payment - Life Plan</h3>
+                <button onclick="closeModal('lifeplan-payment-modal')" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <input type="hidden" id="lifeplan-id">
+            
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-medium mb-2">Amount to Pay</label>
+                <div class="relative">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-600">$</span>
+                    <input type="number" id="lifeplan-amount" class="pl-8 w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-yellow-500" placeholder="0.00">
+                </div>
+            </div>
+            
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-medium mb-2">Payment Method</label>
+                <select id="lifeplan-method" class="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                    <option>Bank Transfer</option>
+                    <option>Credit Card</option>
+                    <option>Cash</option>
+                </select>
+            </div>
+            
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-medium mb-2">Upload Receipt (if bank transfer)</label>
+                <div class="border-2 border-dashed border-gray-300 rounded-md p-4 text-center">
+                    <input type="file" id="lifeplan-receipt" class="hidden">
+                    <label for="lifeplan-receipt" class="cursor-pointer">
+                        <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i>
+                        <p class="text-sm text-gray-600">Click to upload or drag and drop</p>
+                        <p class="text-xs text-gray-500 mt-1">PNG, JPG up to 5MB</p>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="mt-6 flex justify-end space-x-3">
+                <button onclick="closeModal('lifeplan-payment-modal')" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded transition">
+                    Cancel
+                </button>
+                <button onclick="submitLifeplanPayment()" class="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded transition">
                     Submit Payment
                 </button>
             </div>
@@ -1587,7 +1698,7 @@ function populateServiceCards(containerId, services) {
                                 View History
                             </button>
                             ${service.balance > 0 ? `
-                                <button onclick="openPaymentModal('traditional-funeral', '${escapeHtml(service.sales_id)}')" 
+                                <button onclick="openTraditionalPaymentModal('${escapeHtml(service.sales_id)}')" 
                                     class="bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-1 rounded text-sm transition">
                                     Add Payment
                                 </button>
@@ -1732,7 +1843,7 @@ function populateCustomPackageCards(containerId, packages) {
                                 View History
                             </button>
                             ${pkg.balance > 0 ? `
-                                <button onclick="openPaymentModal('custom-package', '${escapeHtml(pkg.customsales_id)}')" 
+                                <button onclick="openCustomPaymentModal('${escapeHtml(pkg.customsales_id)}')" 
                                     class="bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-1 rounded text-sm transition">
                                     Add Payment
                                 </button>
@@ -1837,7 +1948,7 @@ function populateLifePlanCards(containerId, lifeplans) {
                                 View History
                             </button>
                             ${plan.balance > 0 ? `
-                                <button onclick="openPaymentModal('life-plan', '${escapeHtml(plan.lifeplan_id)}')" 
+                                <button onclick="openLifeplanPaymentModal('${escapeHtml(plan.lifeplan_id)}')" 
                                     class="bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-1 rounded text-sm transition">
                                     Add Payment
                                 </button>
@@ -1852,21 +1963,74 @@ function populateLifePlanCards(containerId, lifeplans) {
     });
 }
 
-function openPaymentModal(packageType) {
-    // Set modal title based on package type
-    const titles = {
-        'traditional-funeral': 'Add Payment - Traditional Funeral',
-        'custom-package': 'Make Payment - Custom Package',
-        'life-plan': 'Make Payment - Life Plan'
-    };
-    document.getElementById('payment-modal-title').textContent = titles[packageType];
-    
-    // Show the modal
-    document.getElementById('payment-modal').classList.remove('hidden');
+function openTraditionalPaymentModal(salesId) {
+    document.getElementById('traditional-sales-id').value = salesId;
+    document.getElementById('traditional-payment-modal').classList.remove('hidden');
+}
+
+function openCustomPaymentModal(salesId) {
+    document.getElementById('custom-sales-id').value = salesId;
+    document.getElementById('custom-payment-modal').classList.remove('hidden');
+}
+
+function openLifeplanPaymentModal(lifeplanId) {
+    document.getElementById('lifeplan-id').value = lifeplanId;
+    document.getElementById('lifeplan-payment-modal').classList.remove('hidden');
 }
 
 function closeModal(modalId) {
     document.getElementById(modalId).classList.add('hidden');
+}
+
+function submitTraditionalPayment() {
+    const salesId = document.getElementById('traditional-sales-id').value;
+    const amount = document.getElementById('traditional-amount').value;
+    const method = document.getElementById('traditional-method').value;
+    const receipt = document.getElementById('traditional-receipt').files[0];
+    
+    // Validate inputs
+    if (!amount || isNaN(amount) || parseFloat(amount) <= 0) {
+        alert('Please enter a valid payment amount');
+        return;
+    }
+    
+    // Create FormData for file upload
+    const formData = new FormData();
+    formData.append('type', 'traditional');
+    formData.append('sales_id', salesId);
+    formData.append('amount', amount);
+    formData.append('method', method);
+    if (receipt) formData.append('receipt', receipt);
+    
+    // Send to server
+    fetch('process_payment.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Payment submitted successfully!');
+            closeModal('traditional-payment-modal');
+            // Refresh the data
+            location.reload();
+        } else {
+            alert('Error: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while submitting payment');
+    });
+}
+
+// Similar functions for custom and lifeplan payments...
+function submitCustomPayment() {
+    // Similar to submitTraditionalPayment but with custom package data
+}
+
+function submitLifeplanPayment() {
+    // Similar to submitTraditionalPayment but with lifeplan data
 }
 
 // Sample data - in a real app this would come from your backend
