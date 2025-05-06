@@ -112,23 +112,23 @@
                             <ul class="space-y-2 sm:space-y-3 mb-4 sm:mb-6 flex-grow text-sm sm:text-base">
                                 <li class="flex items-start">
                                     <i class="fas fa-check-circle mr-2 text-yellow-600 mt-1 flex-shrink-0"></i>
-                                    <span class="text-dark">3 sets of flower arrangements</span>
+                                    <span class="text-dark">Engraved Metal</span>
                                 </li>
                                 <li class="flex items-start">
                                     <i class="fas fa-check-circle mr-2 text-yellow-600 mt-1 flex-shrink-0"></i>
-                                    <span class="text-dark">Catering on last day</span>
+                                    <span class="text-dark">3 Floral Replacement</span>
                                 </li>
                                 <li class="flex items-start">
                                     <i class="fas fa-check-circle mr-2 text-yellow-600 mt-1 flex-shrink-0"></i>
-                                    <span class="text-dark">Premium casket selection</span>
+                                    <span class="text-dark">Transportation</span>
                                 </li>
                                 <li class="flex items-start">
                                     <i class="fas fa-check-circle mr-2 text-yellow-600 mt-1 flex-shrink-0"></i>
-                                    <span class="text-dark">Extended viewing period</span>
+                                    <span class="text-dark">Embalming</span>
                                 </li>
                                 <li class="flex items-start">
                                     <i class="fas fa-check-circle mr-2 text-yellow-600 mt-1 flex-shrink-0"></i>
-                                    <span class="text-dark">Complete funeral service</span>
+                                    <span class="text-dark">Catering</span>
                                 </li>
                             </ul>
                             <a href="Landing_Page/register.php" class="block w-full mt-4 sm:mt-6 bg-yellow-600 hover:bg-yellow-700 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg shadow-md transition-all duration-300 text-center text-sm sm:text-base">
@@ -157,27 +157,19 @@
                             <ul class="space-y-2 sm:space-y-3 mb-4 sm:mb-6 flex-grow text-sm sm:text-base">
                                 <li class="flex items-start">
                                     <i class="fas fa-check-circle mr-2 text-yellow-600 mt-1 flex-shrink-0"></i>
-                                    <span class="text-dark">2 sets of flower arrangements</span>
+                                    <span class="text-dark">Semi Imported</span>
                                 </li>
                                 <li class="flex items-start">
                                     <i class="fas fa-check-circle mr-2 text-yellow-600 mt-1 flex-shrink-0"></i>
-                                    <span class="text-dark">Premium casket selection</span>
+                                    <span class="text-dark">2 Floral Replacement</span>
                                 </li>
                                 <li class="flex items-start">
                                     <i class="fas fa-check-circle mr-2 text-yellow-600 mt-1 flex-shrink-0"></i>
-                                    <span class="text-dark">Extended viewing period</span>
+                                    <span class="text-dark">Transportation</span>
                                 </li>
                                 <li class="flex items-start">
                                     <i class="fas fa-check-circle mr-2 text-yellow-600 mt-1 flex-shrink-0"></i>
-                                    <span class="text-dark">Complete funeral service</span>
-                                </li>
-                                <li class="flex items-start">
-                                    <i class="fas fa-check-circle mr-2 text-yellow-600 mt-1 flex-shrink-0"></i>
-                                    <span class="text-dark">Curtains and lighting</span>
-                                </li>
-                                <li class="flex items-start">
-                                    <i class="fas fa-check-circle mr-2 text-yellow-600 mt-1 flex-shrink-0"></i>
-                                    <span class="text-dark">Water dispenser</span>
+                                    <span class="text-dark">Embalming</span>
                                 </li>
                             </ul>
                             <a href="Landing_Page/register.php" class="block w-full mt-4 sm:mt-6 bg-yellow-600 hover:bg-yellow-700 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg shadow-md transition-all duration-300 text-center text-sm sm:text-base">
@@ -201,7 +193,7 @@
                                 <img src="Landing_Page/Landing_images/logo.png" alt="Custom Memorial" class="w-full h-40 sm:h-48 object-cover rounded-lg">
                             </div>
                             <div class="text-center mb-4 sm:mb-6">
-                                <span class="text-2xl sm:text-3xl font-hedvig text-navy">Starting at ₱150,000</span>
+                                <span class="text-2xl sm:text-3xl font-hedvig text-navy">Starting at ₱54,000</span>
                                 <p class="text-xs sm:text-sm text-gray-600 mt-1">Final price depends on selections</p>
                             </div>
                             <ul class="space-y-2 sm:space-y-3 mb-4 sm:mb-6 flex-grow text-sm sm:text-base">
@@ -211,11 +203,7 @@
                                 </li>
                                 <li class="flex items-start">
                                     <i class="fas fa-sliders-h mr-2 text-yellow-600 mt-1 flex-shrink-0"></i>
-                                    <span class="text-dark"><strong>Select flower arrangements</strong> (1-3 sets)</span>
-                                </li>
-                                <li class="flex items-start">
-                                    <i class="fas fa-sliders-h mr-2 text-yellow-600 mt-1 flex-shrink-0"></i>
-                                    <span class="text-dark"><strong>Customize viewing period</strong> to your needs</span>
+                                    <span class="text-dark"><strong>Select number of flower replacements</strong> (1-3)</span>
                                 </li>
                                 <li class="flex items-start">
                                     <i class="fas fa-sliders-h mr-2 text-yellow-600 mt-1 flex-shrink-0"></i>
@@ -224,10 +212,6 @@
                                 <li class="flex items-start">
                                     <i class="fas fa-check-circle mr-2 text-yellow-600 mt-1 flex-shrink-0"></i>
                                     <span class="text-dark">Core funeral services included</span>
-                                </li>
-                                <li class="flex items-start">
-                                    <i class="fas fa-check-circle mr-2 text-yellow-600 mt-1 flex-shrink-0"></i>
-                                    <span class="text-dark">Personalized assistance throughout</span>
                                 </li>
                             </ul>
                             <a href="Landing_Page/register.php" class="block w-full mt-4 sm:mt-6 bg-yellow-600 hover:bg-yellow-700 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg shadow-md transition-all duration-300 text-center text-sm sm:text-base">
@@ -406,7 +390,7 @@
         <p class="text-dark max-w-4xl text-center text-sm sm:text-base">We provide flexible and compassionate life plan options, including a 5-year installment payment plan with 0% interest for your chosen traditional package, ensuring affordability without compromising dignity or care.</p>  
     </div>  
     
-    <div class="max-w-6xl mx-auto">
+    <div class="max-w-xl mx-auto">
         <div class="package-card bg-white rounded-[20px] shadow-lg overflow-hidden relative group hover:shadow-xl transition-all duration-300 flex flex-col h-full" data-price="Total Package Price ÷ 60 Months" data-service="lifeplan" data-name="Life Plan">
             <div class="h-10 sm:h-12 bg-navy flex items-center justify-center">
                 <h4 class="text-white font-hedvig text-lg sm:text-xl">Flexible Payment Plan</h4>
@@ -417,7 +401,7 @@
             <div class="p-4 sm:p-6 flex flex-col flex-grow">
                 <div class="text-center mb-4 sm:mb-6">
                     <span class="text-2xl sm:text-3xl font-hedvig text-navy">5-Year Payment Option</span>
-                    <p class="text-dark mt-1 sm:mt-2 text-sm sm:text-base">Total Package Price ÷ 60 Months</p>
+                    <p class="text-dark mt-1 sm:mt-2 text-sm sm:text-base">Total Package Price by 60 Months</p>
                 </div>
                 <ul class="space-y-2 sm:space-y-3 mb-4 sm:mb-6 flex-grow text-sm sm:text-base">
                     <li class="flex items-start">
@@ -546,7 +530,6 @@
                         <p>We offer flexible payment options to accommodate various financial situations:</p>
                         <ul class="list-disc ml-6 mt-2 space-y-1">
                             <li><strong>For packages ₱100,000 and above:</strong> 30% down payment required</li>
-                            <li><strong>For packages below ₱100,000:</strong> Payment typically made before or on the day of burial</li>
                             <li><strong>Installment options:</strong> Available without interest for those who need additional time to pay</li>
                             <li><strong>lifeplan plans:</strong> Available for those planning ahead</li>
                         </ul>
