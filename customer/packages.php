@@ -337,94 +337,37 @@ input[name*="LastName"] {
     <!-- Add this right after the opening <body> tag -->
 <?php if ($show_branch_modal): ?>
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Show branch modal immediately if branch is unknown
-        const branchModal = document.getElementById('branch-modal');
-        branchModal.classList.remove('hidden');
-        
-        // Fetch branches from server
-        fetchBranches();
-        
-        // Close modal when clicking outside
-        branchModal.addEventListener('click', function(e) {
-            if (e.target === branchModal) {
-                // Don't allow closing by clicking outside - user must select a branch
-                Swal.fire({
-                    title: 'Branch Selection Required',
-                    text: 'You must select a branch to continue using our services.',
-                    icon: 'warning',
-                    confirmButtonColor: '#d97706'
-                });
-            }
-        });
-    });
+document.addEventListener('DOMContentLoaded', function() {
+    // Show branch modal immediately if branch is unknown
+    const branchModal = document.getElementById('branch-modal');
+    branchModal.classList.remove('hidden');
     
-    function fetchBranches() {
-        const branchOptions = document.getElementById('branch-options');
-        branchOptions.innerHTML = `
-            <div class="text-center py-4">
-                <i class="fas fa-spinner fa-spin"></i> Loading branches...
-            </div>
-        `;
-        
-        fetch('customService/get_branches.php')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data.success && data.branches && data.branches.length > 0) {
-                    populateBranchOptions(data.branches);
-                } else {
-                    showBranchError(data.message || 'No branches available');
-                }
-            })
-            .catch(error => {
-                console.error('Error fetching branches:', error);
-                showBranchError('Failed to load branches. Please try again.');
+    // Fetch branches from server
+    fetchBranches();
+    
+    // Close modal when clicking outside
+    branchModal.addEventListener('click', function(e) {
+        if (e.target === branchModal) {
+            // Don't allow closing by clicking outside - user must select a branch
+            Swal.fire({
+                title: 'Branch Selection Required',
+                text: 'You must select a branch to continue using our services.',
+                icon: 'warning',
+                confirmButtonColor: '#d97706'
             });
-    }
+        }
+    });
+});
+
+function fetchBranches() {
+    const branchOptions = document.getElementById('branch-options');
+    branchOptions.innerHTML = `
+        <div class="text-center py-4">
+            <i class="fas fa-spinner fa-spin"></i> Loading branches...
+        </div>
+    `;
     
-    function populateBranchOptions(branches) {
-        const branchOptions = document.getElementById('branch-options');
-        branchOptions.innerHTML = '';
-        
-        branches.forEach(branch => {
-            const option = document.createElement('button');
-            option.className = 'w-full py-3 px-4 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors text-left mb-2 last:mb-0';
-            option.innerHTML = `
-                <div class="flex items-center">
-                    <i class="fas fa-map-marker-alt text-yellow-600 mr-3"></i>
-                    <div>
-                        <h4 class="font-medium">${branch.name}</h4>
-                    </div>
-                </div>
-            `;
-            
-            option.addEventListener('click', () => selectBranch(branch.id));
-            branchOptions.appendChild(option);
-        });
-    }
-    
-    function selectBranch(branchId) {
-        const branchOptions = document.getElementById('branch-options');
-        branchOptions.innerHTML = `
-            <div class="text-center py-4">
-                <i class="fas fa-spinner fa-spin"></i> Updating your branch...
-            </div>
-        `;
-        
-        fetch('customService/save_branch.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                branch: branchId
-            })
-        })
+    fetch('customService/get_branches.php')
         .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
@@ -432,29 +375,112 @@ input[name*="LastName"] {
             return response.json();
         })
         .then(data => {
-            if (data.success) {
-                // Success - reload the page to show packages from selected branch
-                window.location.reload();
+            if (data.success && data.branches && data.branches.length > 0) {
+                populateBranchOptions(data.branches);
             } else {
-                showBranchError(data.message || 'Failed to update branch');
+                showBranchError(data.message || 'No branches available');
             }
         })
         .catch(error => {
-            console.error('Error updating branch:', error);
-            showBranchError('Network error. Please check your connection.');
+            console.error('Error fetching branches:', error);
+            showBranchError('Failed to load branches. Please try again.');
         });
-    }
+}
+
+function populateBranchOptions(branches) {
+    const branchOptions = document.getElementById('branch-options');
+    branchOptions.innerHTML = '';
     
-    function showBranchError(message) {
-        document.getElementById('branch-options').innerHTML = `
-            <div class="text-center py-4 text-red-500">
-                <i class="fas fa-exclamation-circle"></i> ${message}
-                <button onclick="fetchBranches()" class="mt-2 text-yellow-600 hover:text-yellow-700">
-                    <i class="fas fa-sync-alt mr-1"></i> Try Again
-                </button>
+    branches.forEach(branch => {
+        const option = document.createElement('button');
+        option.className = 'w-full py-3 px-4 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors text-left mb-2 last:mb-0';
+        option.innerHTML = `
+            <div class="flex items-center">
+                <i class="fas fa-map-marker-alt text-yellow-600 mr-3"></i>
+                <div>
+                    <h4 class="font-medium">${capitalizeWords(branch.name)}</h4>
+                </div>
             </div>
         `;
-    }
+        
+        // Modified click handler to show confirmation dialog
+        option.addEventListener('click', () => confirmBranchSelection(branch.id, branch.name));
+        branchOptions.appendChild(option);
+    });
+}
+
+// New function to show confirmation dialog
+function confirmBranchSelection(branchId, branchName) {
+    Swal.fire({
+        title: 'Confirm Branch Selection',
+        html: `You are about to select <strong>${capitalizeWords(branchName)}</strong> as your branch.<br><br>This action is <strong>irreversible</strong>. Are you sure?`,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#d97706',
+        cancelButtonColor: '#6b7280',
+        confirmButtonText: 'Yes, select this branch',
+        cancelButtonText: 'Cancel',
+        reverseButtons: true
+    }).then((result) => {
+        if (result.isConfirmed) {
+            selectBranch(branchId);
+        }
+    });
+}
+
+function selectBranch(branchId) {
+    const branchOptions = document.getElementById('branch-options');
+    branchOptions.innerHTML = `
+        <div class="text-center py-4">
+            <i class="fas fa-spinner fa-spin"></i> Updating your branch...
+        </div>
+    `;
+    
+    fetch('customService/save_branch.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            branch: branchId
+        })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            // Success - reload the page to show packages from selected branch
+            window.location.reload();
+        } else {
+            showBranchError(data.message || 'Failed to update branch');
+        }
+    })
+    .catch(error => {
+        console.error('Error updating branch:', error);
+        showBranchError('Network error. Please check your connection.');
+    });
+}
+
+function showBranchError(message) {
+    document.getElementById('branch-options').innerHTML = `
+        <div class="text-center py-4 text-red-500">
+            <i class="fas fa-exclamation-circle"></i> ${message}
+            <button onclick="fetchBranches()" class="mt-2 text-yellow-600 hover:text-yellow-700">
+                <i class="fas fa-sync-alt mr-1"></i> Try Again
+            </button>
+        </div>
+    `;
+}
+
+function capitalizeWords(str) {
+    return str.replace(/\b\w/g, function(char) {
+        return char.toUpperCase();
+    });
+}
 </script>
 <?php endif; ?>    
     
