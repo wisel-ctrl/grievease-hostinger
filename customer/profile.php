@@ -1276,6 +1276,36 @@ $stmt->execute();
 $result = $stmt->get_result();
 $services = $result->fetch_all(MYSQLI_ASSOC);
 $stmt->close();
+
+// Query for life plans
+$lifeplanSql = "SELECT 
+                    l.lifeplan_id,
+                    l.initial_date,
+                    l.end_date,
+                    l.payment_status,
+                    l.custom_price,
+                    l.amount_paid,
+                    l.balance,
+                    s.service_name,
+                    CONCAT(
+                        COALESCE(l.benefeciary_fname, ''), ' ',
+                        COALESCE(l.benefeciary_mname, ''), ' ',
+                        COALESCE(l.benefeciary_lname, ''), ' ',
+                        COALESCE(l.benefeciary_suffix, '')
+                    ) AS benefeciary_name
+                FROM 
+                    lifeplan_tb l
+                JOIN 
+                    services_tb s ON l.service_id = s.service_id
+                WHERE l.customerID = ?";
+
+$lifeplanStmt = $conn->prepare($lifeplanSql);
+$lifeplanStmt->bind_param("i", $customerID);
+$lifeplanStmt->execute();
+$lifeplanResult = $lifeplanStmt->get_result();
+$lifeplans = $lifeplanResult->fetch_all(MYSQLI_ASSOC);
+$lifeplanStmt->close();
+
 ?>
 <!-- Transaction Logs Tab -->
 <div id="transaction-logs" class="tab-content p-4">
@@ -1392,6 +1422,7 @@ $stmt->close();
 <script>
 // Pass PHP data to JavaScript
 const servicesData = <?php echo json_encode($services); ?>;
+const lifeplansData = <?php echo json_encode($lifeplans); ?>;
 const customerID = <?php echo json_encode($customerID); ?>;
 console.log('1: ', servicesData);
 console.log('2: ', customerID);
@@ -1576,6 +1607,111 @@ function openPaymentHistoryModal(packageType) {
     
     // Show the modal
     document.getElementById('payment-history-modal').classList.remove('hidden');
+}
+
+function populateLifePlanCards(containerId, lifeplans) {
+    const container = document.getElementById(containerId);
+    container.innerHTML = ''; // Clear existing content
+    
+    if (lifeplans.length === 0) {
+        container.innerHTML = '<p class="text-gray-500 py-4">No life plans found.</p>';
+        return;
+    }
+    
+    lifeplans.forEach(plan => {
+        // Format dates
+        const initialDate = new Date(plan.initial_date);
+        const endDate = new Date(plan.end_date);
+        const formattedInitialDate = initialDate.toLocaleDateString('en-US', { 
+            year: 'numeric', 
+            month: 'short', 
+            day: 'numeric' 
+        });
+        const formattedEndDate = endDate.toLocaleDateString('en-US', { 
+            year: 'numeric', 
+            month: 'short', 
+            day: 'numeric' 
+        });
+        
+        // Determine status color
+        let statusClass = '';
+        if (plan.payment_status == 'Fully Paid') {
+            statusClass = 'bg-green-100 text-green-800';
+        } else if (plan.payment_status == 'With Balance') {
+            statusClass = 'bg-blue-100 text-blue-800';
+        } else {
+            statusClass = 'bg-red-100 text-red-800';
+        }
+        
+        // Format currency
+        const formatCurrency = (amount) => {
+            return parseFloat(amount).toLocaleString('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        };
+        
+        // Create card HTML
+        const cardHtml = `
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6 border border-gray-100">
+                <div class="flex flex-col md:flex-row md:justify-between md:items-start">
+                    <div class="mb-4 md:mb-0">
+                        <h3 class="font-bold text-lg text-navy">${escapeHtml(plan.service_name)}</h3>
+                        <p class="text-sm text-gray-600">Beneficiary: ${escapeHtml(plan.benefeciary_name)}</p>
+                        <div class="flex flex-wrap gap-4 mt-2">
+                            <div>
+                                <p class="text-sm text-gray-500">Plan ID</p>
+                                <p class="font-medium">${escapeHtml(plan.lifeplan_id)}</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500">Start Date</p>
+                                <p class="font-medium">${formattedInitialDate}</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500">End Date</p>
+                                <p class="font-medium">${formattedEndDate}</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500">Status</p>
+                                <span class="px-2 py-1 ${statusClass} text-xs font-semibold rounded-full">
+                                    ${escapeHtml(plan.payment_status)}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex flex-col md:items-end">
+                        <p class="text-2xl font-bold text-green-600">${formatCurrency(plan.amount_paid)}</p>
+                        <p class="text-sm text-gray-500">Total Paid</p>
+                        
+                        ${plan.balance > 0 ? `
+                            <div class="mt-2">
+                                <p class="text-lg font-semibold text-navy">${formatCurrency(plan.balance)}</p>
+                                <p class="text-sm text-gray-500">Remaining Balance</p>
+                            </div>
+                        ` : ''}
+                        
+                        <div class="flex space-x-2 mt-3">
+                            <button onclick="openPaymentHistoryModal('life-plan', '${escapeHtml(plan.lifeplan_id)}')" 
+                                class="bg-gray-100 hover:bg-gray-200 text-gray-800 px-3 py-1 rounded text-sm transition">
+                                View History
+                            </button>
+                            ${plan.balance > 0 ? `
+                                <button onclick="openPaymentModal('life-plan', '${escapeHtml(plan.lifeplan_id)}')" 
+                                    class="bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-1 rounded text-sm transition">
+                                    Add Payment
+                                </button>
+                            ` : ''}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        container.insertAdjacentHTML('beforeend', cardHtml);
+    });
 }
 
 function openPaymentModal(packageType) {
