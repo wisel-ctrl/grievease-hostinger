@@ -188,32 +188,6 @@ header("Pragma: no-cache");
                     $regions[] = $row;
                 }
 
-                
-                
-// Your PHP database query remains the same
-                $customerID = $_SESSION['user_id'];
-                $sql = "SELECT 
-                            s.sales_id,
-                            s.get_timestamp,
-                            s.payment_status,
-                            sv.service_name,
-                            s.discounted_price,
-                            s.amount_paid,
-                            s.balance
-                        FROM 
-                            sales_tb s
-                        JOIN 
-                            services_tb sv ON s.service_id = sv.service_id
-                        WHERE customerID = ?";
-
-                $stmt = $conn->prepare($sql);
-                $stmt->bind_param("i", $customerID);
-                $stmt->execute();
-                $result = $stmt->get_result();
-                $services = $result->fetch_all(MYSQLI_ASSOC);
-                $stmt->close();
-                
-
                 $addressDB->close();
 ?>
 <!DOCTYPE html>
@@ -1280,7 +1254,29 @@ document.addEventListener('DOMContentLoaded', function() {
 </div>
 
 
+<?php
+$customerID = $_SESSION['user_id'];
+$sql = "SELECT 
+            s.sales_id,
+            s.get_timestamp,
+            s.payment_status,
+            sv.service_name,
+            s.discounted_price,
+            s.amount_paid,
+            s.balance
+        FROM 
+            sales_tb s
+        JOIN 
+            services_tb sv ON s.service_id = sv.service_id
+        WHERE customerID = ?";
 
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("i", $customerID);
+$stmt->execute();
+$result = $stmt->get_result();
+$services = $result->fetch_all(MYSQLI_ASSOC);
+$stmt->close();
+?>
 <!-- Transaction Logs Tab -->
 <div id="transaction-logs" class="tab-content p-4">
     <!-- Service Type Selector -->
