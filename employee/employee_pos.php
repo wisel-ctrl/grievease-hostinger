@@ -1432,12 +1432,13 @@ function openTraditionalCheckout() {
 function confirmCheckout() {
   // Get the form element
   const form = document.getElementById('checkoutForm');
+  const firstName = document.getElementById('clientFirstName').value;
+  const lastName = document.getElementById('clientLastName').value;
   
   // Create a FormData object from the form
   const formData = new FormData(form);
+  formData.append('clientFirstName', firstName);
 
-  const trial = document.getElementById('clientFirstName').value
-  console.log(trial);
   
   // Add additional data that might not be in the form
   formData.append('sold_by', <?php echo $_SESSION['user_id']; ?>);
