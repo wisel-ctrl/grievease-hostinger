@@ -1746,6 +1746,130 @@ document.addEventListener('DOMContentLoaded', function() {
         .catch(error => console.error('Error:', error));
 }
 });
+
+
+// Add these validation functions for the edit modal
+function validateEditItemName(input) {
+  const errorElement = document.getElementById('editItemNameError');
+  let value = input.value;
+  
+  // Check if first character is space
+  if (value.length > 0 && value.charAt(0) === ' ') {
+    if (!errorElement) {
+      // Create error element if it doesn't exist
+      const errorDiv = document.createElement('div');
+      errorDiv.id = 'editItemNameError';
+      errorDiv.className = 'text-red-500 text-xs mt-1';
+      errorDiv.textContent = 'Item name cannot start with space or have consecutive spaces';
+      input.parentNode.appendChild(errorDiv);
+    } else {
+      errorElement.classList.remove('hidden');
+    }
+    input.value = value.trim();
+    return;
+  }
+  
+  // Check for consecutive spaces
+  if (value.includes('  ')) {
+    if (!errorElement) {
+      const errorDiv = document.createElement('div');
+      errorDiv.id = 'editItemNameError';
+      errorDiv.className = 'text-red-500 text-xs mt-1';
+      errorDiv.textContent = 'Item name cannot start with space or have consecutive spaces';
+      input.parentNode.appendChild(errorDiv);
+    } else {
+      errorElement.classList.remove('hidden');
+    }
+    input.value = value.replace(/\s+/g, ' ');
+    return;
+  }
+  
+  if (errorElement) {
+    errorElement.classList.add('hidden');
+  }
+  
+  // Auto-capitalize first letter
+  if (value.length === 1) {
+    input.value = value.charAt(0).toUpperCase() + value.slice(1);
+  }
+}
+
+function validateEditUnitPrice(input) {
+  if (input.value < 0) {
+    input.value = '';
+  }
+}
+
+// Image Preview Functionality for Edit Modal
+function previewEditImage(input) {
+  const previewContainer = document.getElementById('editImagePreviewContainer');
+  const preview = document.getElementById('editImagePreview');
+  
+  if (input.files && input.files[0]) {
+    const reader = new FileReader();
+    
+    reader.onload = function(e) {
+      preview.src = e.target.result;
+      previewContainer.classList.remove('hidden');
+    }
+    
+    reader.readAsDataURL(input.files[0]);
+  } else {
+    previewContainer.classList.add('hidden');
+    preview.src = '#';
+  }
+}
+
+// Add event listeners to the edit modal inputs when it opens
+function setupEditModalValidations() {
+  const editItemName = document.getElementById('editItemName');
+  const editUnitPrice = document.getElementById('editUnitPrice');
+  const editItemImage = document.getElementById('editItemImage');
+  
+  if (editItemName) {
+    editItemName.addEventListener('input', function() {
+      validateEditItemName(this);
+    });
+  }
+  
+  if (editUnitPrice) {
+    editUnitPrice.addEventListener('input', function() {
+      validateEditUnitPrice(this);
+    });
+  }
+  
+  if (editItemImage) {
+    editItemImage.addEventListener('change', function() {
+      previewEditImage(this);
+    });
+  }
+  
+  // Form submission validation
+  const editForm = document.getElementById('editInventoryForm');
+  if (editForm) {
+    editForm.addEventListener('submit', function(e) {
+      const itemName = document.getElementById('editItemName').value;
+      
+      // Final validation for item name
+      if (itemName.trim() === '' || itemName.charAt(0) === ' ' || itemName.includes('  ')) {
+        e.preventDefault();
+        const errorElement = document.getElementById('editItemNameError') || 
+          document.createElement('div');
+        errorElement.id = 'editItemNameError';
+        errorElement.className = 'text-red-500 text-xs mt-1';
+        errorElement.textContent = 'Item name cannot start with space or have consecutive spaces';
+        
+        if (!document.getElementById('editItemNameError')) {
+          document.getElementById('editItemName').parentNode.appendChild(errorElement);
+        } else {
+          errorElement.classList.remove('hidden');
+        }
+        
+        document.getElementById('editItemName').focus();
+      }
+    });
+  }
+}
 </script>
   <script src="inventory_functions.js"></script>
   <script src="script.js"></script>
