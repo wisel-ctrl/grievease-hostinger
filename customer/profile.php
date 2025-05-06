@@ -1,4 +1,3 @@
-@ -1,4564 +1,4564 @@
 <?php
 session_start();
 
@@ -96,8 +95,37 @@ header("Pragma: no-cache");
                     'pending' => 0,
                     'accepted' => 0,
                     'declined' => 0,
-                    'id_validation' => 0
+                    'id_pending' => 0,
+                    'id_accepted' => 0,
+                    'id_declined' => 0
                 ];
+                
+                // Get user's life plan bookings from database (notifications)
+                $lifeplan_query = "SELECT * FROM lifeplan_booking_tb WHERE customer_id = ? ORDER BY initial_date DESC";
+                $lifeplan_stmt = $conn->prepare($lifeplan_query);
+                $lifeplan_stmt->bind_param("i", $user_id);
+                $lifeplan_stmt->execute();
+                $lifeplan_result = $lifeplan_stmt->get_result();
+                $lifeplan_bookings = [];
+                
+                while ($lifeplan_booking = $lifeplan_result->fetch_assoc()) {
+                    $lifeplan_bookings[] = $lifeplan_booking;
+                    
+                    switch ($lifeplan_booking['booking_status']) {
+                        case 'pending':
+                            $notifications_count['total']++;
+                            $notifications_count['pending']++;
+                            break;
+                        case 'accepted':
+                            $notifications_count['total']++;
+                            $notifications_count['accepted']++;
+                            break;
+                        case 'decline':
+                            $notifications_count['total']++;
+                            $notifications_count['declined']++;
+                            break;
+                    }
+                }
                 
                 if (isset($_SESSION['user_id'])) {
                     $user_id = $_SESSION['user_id'];
@@ -2101,7 +2129,16 @@ document.addEventListener('DOMContentLoaded', function() {
               </div>
               <div>
                 <label class="block text-sm font-medium text-navy mb-1 sm:mb-2">Suffix</label>
-                <input type="text" name="deceased_suffix" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base">
+                <select id="deceased_suffix" name="clientSuffix" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                                    <option value="">None</option>
+                                    <option value="Jr.">Jr.</option>
+                                    <option value="Sr.">Sr.</option>
+                                    <option value="I">I</option>
+                                    <option value="II">II</option>
+                                    <option value="III">III</option>
+                                    <option value="IV">IV</option>
+                                    <option value="V">V</option>
+                                </select>
               </div>
             </div>
           </div>
@@ -2196,7 +2233,7 @@ document.addEventListener('DOMContentLoaded', function() {
         <button type="button" class="close-modal w-full sm:w-auto px-6 py-3 bg-white border border-yellow-600 text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center">
           Cancel
         </button>
-        <button type="submit" form="modifyBookingForm" class="w-full sm:w-auto px-6 py-3 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg shadow-md transition-all duration-300 flex items-center justify-center">
+        <button type="submit" form="modifyBookingForm" id="modifyBookingSubmit" class="w-full sm:w-auto px-6 py-3 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg shadow-md transition-all duration-300 flex items-center justify-center">
           <i class="fas fa-save mr-2"></i>
           Save Changes
         </button>
@@ -2902,7 +2939,7 @@ function fetchBookingForModification(bookingId) {
 function submitBookingModification() {
     const form = document.getElementById('modifyBookingForm');
     const formData = new FormData(form);
-    const submitBtn = form.querySelector('button[type="submit"]');
+    const submitBtn = document.getElementById('modifyBookingSubmit'); // Target by ID
     
     // Disable submit button during processing
     submitBtn.disabled = true;
@@ -2910,7 +2947,7 @@ function submitBookingModification() {
     
     fetch('booking/update_booking.php', {
         method: 'POST',
-        body: formData // FormData will automatically handle file uploads
+        body: formData
     })
     .then(response => response.json())
     .then(data => {
