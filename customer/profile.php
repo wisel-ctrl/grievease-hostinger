@@ -1534,6 +1534,9 @@ function populateServiceCards(containerId, services) {
 
 // Helper function to escape HTML (prevent XSS)
 function escapeHtml(unsafe) {
+    if (typeof unsafe !== 'string') {
+        return String(unsafe ?? '');
+    }
     return unsafe
          .replace(/&/g, "&amp;")
          .replace(/</g, "&lt;")
@@ -1541,6 +1544,7 @@ function escapeHtml(unsafe) {
          .replace(/"/g, "&quot;")
          .replace(/'/g, "&#039;");
 }
+
 
 
 function openPaymentHistoryModal(packageType) {
