@@ -2345,7 +2345,11 @@ $total_lifeplan_bookings = $lifeplan_count_result->fetch_assoc()['total'];
       document.getElementById('serviceDate').textContent = 
         data.deceased_dateOfBurial ? new Date(data.deceased_dateOfBurial).toLocaleDateString('en-US', 
         { month: 'short', day: 'numeric', year: 'numeric' }) : "Not scheduled";
-      document.getElementById('amountPaid').textContent = "₱" + (parseFloat(data.initial_price) || 0).toFixed(2);
+        document.getElementById('amountPaid').textContent = 
+    "₱" + (parseFloat(data.initial_price) || 0).toLocaleString('en-PH', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    });
 
       const deceasedFullName = [
         data.deceased_fname || '',
