@@ -675,13 +675,10 @@ function capitalizeWords(str) {
         </select>
 
         <!-- Reset Filters Button -->
-        <button 
-            id="resetFilters" 
-            class="w-full md:w-1/5 px-6 py-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg flex items-center justify-center space-x-2 transition duration-300"
-        >
-            <i class="fas fa-sync mr-2"></i>
-            <span>Reset</span>
-        </button>
+        <button id="resetFilters" class="w-full md:w-1/5 px-6 py-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg flex items-center justify-center space-x-2 transition duration-300">
+    <i class="fas fa-sync mr-2"></i>
+    <span>Reset</span>
+</button>
     </div>
 
         <!-- Packages Grid -->
@@ -834,8 +831,8 @@ function capitalizeWords(str) {
             <h3 class="text-2xl font-hedvig text-navy mb-2">No Packages Found</h3>
             <p class="text-gray-600 max-w-md mx-auto">We couldn't find any packages matching your criteria. Try adjusting your filters or search terms.</p>
             <button id="reset-filters-no-results" class="mt-6 bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg shadow-md transition-all duration-300">
-                Reset All Filters
-            </button>
+    Reset All Filters
+</button>
         </div>
     </div>
 
@@ -3402,25 +3399,27 @@ function resetFilters() {
     // Reset search input
     document.getElementById('searchInput').value = '';
     
-    // Reset price sort dropdown
-    document.getElementById('priceSort').selectedIndex = 0;
+    // Reset price sort dropdown to default
+    document.getElementById('priceSort').value = '';
     
-    // Show all package cards
+    // Show all packages
     document.querySelectorAll('.package-card').forEach(card => {
         card.classList.remove('hidden');
-        card.style.order = ''; // Reset any custom ordering
     });
     
     // Hide the "no results" message
     document.getElementById('no-results').classList.add('hidden');
     
-    // Reset the package container to its original order
-    const container = document.getElementById('packages-container');
-    const cards = Array.from(container.children);
+    // Re-sort packages to their original order (if needed)
+    const packagesContainer = document.getElementById('packages-container');
+    const cards = Array.from(packagesContainer.querySelectorAll('.package-card'));
     cards.sort((a, b) => {
-        return Array.from(container.children).indexOf(a) - Array.from(container.children).indexOf(b);
+        return Array.from(packagesContainer.children).indexOf(a) - Array.from(packagesContainer.children).indexOf(b);
     });
-    cards.forEach(card => container.appendChild(card));
+    
+    cards.forEach(card => {
+        packagesContainer.appendChild(card);
+    });
 }
 
 // Event Listeners
