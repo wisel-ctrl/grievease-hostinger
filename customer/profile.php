@@ -1296,21 +1296,9 @@ $stmt->close();
             </div>
         </div>
         
+        <div id="traditional-funeral-content" class="service-content">
         <?php foreach ($services as $service): ?>
             <?php 
-            // Determine which tab this service belongs to
-            $tab = '';
-            if (stripos($service['service_name'], 'Traditional Funeral') !== false) {
-                $tab = 'traditional-funeral';
-            } elseif (stripos($service['service_name'], 'Custom Package') !== false) {
-                $tab = 'custom-package';
-            } elseif (stripos($service['service_name'], 'Life Plan') !== false) {
-                $tab = 'life-plan';
-            }
-            
-            // Skip if service doesn't match any tab
-            if (empty($tab)) continue;
-            
             // Format date
             $date = new DateTime($service['get_timestamp']);
             $formattedDate = $date->format('M j, Y');
@@ -1327,52 +1315,50 @@ $stmt->close();
             ?>
             
             <!-- Service Card -->
-            <div id="<?= $tab ?>-content" class="service-content" style="<?= $tab != 'traditional-funeral' ? 'display: none;' : '' ?>">
-                <div class="bg-white rounded-lg shadow-md p-6 mb-6 border border-gray-100">
-                    <div class="flex flex-col md:flex-row md:justify-between md:items-start">
-                        <div class="mb-4 md:mb-0">
-                            <h3 class="font-bold text-lg text-navy"><?= htmlspecialchars($service['service_name']) ?></h3>
-                            <div class="flex flex-wrap gap-4 mt-2">
-                                <div>
-                                    <p class="text-sm text-gray-500">ID</p>
-                                    <p class="font-medium"><?= htmlspecialchars($service['sales_id']) ?></p>
-                                </div>
-                                <div>
-                                    <p class="text-sm text-gray-500">Date</p>
-                                    <p class="font-medium"><?= $formattedDate ?></p>
-                                </div>
-                                <div>
-                                    <p class="text-sm text-gray-500">Status</p>
-                                    <span class="px-2 py-1 <?= $statusClass ?> text-xs font-semibold rounded-full">
-                                        <?= htmlspecialchars($service['payment_status']) ?>
-                                    </span>
-                                </div>
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6 border border-gray-100">
+                <div class="flex flex-col md:flex-row md:justify-between md:items-start">
+                    <div class="mb-4 md:mb-0">
+                        <h3 class="font-bold text-lg text-navy"><?= htmlspecialchars($service['service_name']) ?></h3>
+                        <div class="flex flex-wrap gap-4 mt-2">
+                            <div>
+                                <p class="text-sm text-gray-500">ID</p>
+                                <p class="font-medium"><?= htmlspecialchars($service['sales_id']) ?></p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500">Date</p>
+                                <p class="font-medium"><?= $formattedDate ?></p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500">Status</p>
+                                <span class="px-2 py-1 <?= $statusClass ?> text-xs font-semibold rounded-full">
+                                    <?= htmlspecialchars($service['payment_status']) ?>
+                                </span>
                             </div>
                         </div>
+                    </div>
+                    
+                    <div class="flex flex-col md:items-end">
+                        <p class="text-2xl font-bold text-green-600">$<?= number_format($service['amount_paid'], 2) ?></p>
+                        <p class="text-sm text-gray-500">Total Paid</p>
                         
-                        <div class="flex flex-col md:items-end">
-                            <p class="text-2xl font-bold text-green-600">$<?= number_format($service['amount_paid'], 2) ?></p>
-                            <p class="text-sm text-gray-500">Total Paid</p>
-                            
-                            <?php if ($service['balance'] > 0): ?>
-                                <div class="mt-2">
-                                    <p class="text-lg font-semibold text-navy">$<?= number_format($service['balance'], 2) ?></p>
-                                    <p class="text-sm text-gray-500">Remaining Balance</p>
-                                </div>
-                            <?php endif; ?>
-                            
-                            <div class="flex space-x-2 mt-3">
-                                <button onclick="openPaymentHistoryModal('<?= $tab ?>', '<?= $service['sales_id'] ?>')" 
-                                    class="bg-gray-100 hover:bg-gray-200 text-gray-800 px-3 py-1 rounded text-sm transition">
-                                    View History
-                                </button>
-                                <?php if ($service['balance'] > 0): ?>
-                                    <button onclick="openPaymentModal('<?= $tab ?>', '<?= $service['sales_id'] ?>')" 
-                                        class="bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-1 rounded text-sm transition">
-                                        Add Payment
-                                    </button>
-                                <?php endif; ?>
+                        <?php if ($service['balance'] > 0): ?>
+                            <div class="mt-2">
+                                <p class="text-lg font-semibold text-navy">$<?= number_format($service['balance'], 2) ?></p>
+                                <p class="text-sm text-gray-500">Remaining Balance</p>
                             </div>
+                        <?php endif; ?>
+                        
+                        <div class="flex space-x-2 mt-3">
+                            <button onclick="openPaymentHistoryModal('traditional-funeral', '<?= $service['sales_id'] ?>')" 
+                                class="bg-gray-100 hover:bg-gray-200 text-gray-800 px-3 py-1 rounded text-sm transition">
+                                View History
+                            </button>
+                            <?php if ($service['balance'] > 0): ?>
+                                <button onclick="openPaymentModal('traditional-funeral', '<?= $service['sales_id'] ?>')" 
+                                    class="bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-1 rounded text-sm transition">
+                                    Add Payment
+                                </button>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>
@@ -1562,7 +1548,6 @@ $stmt->close();
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Tab switching functionality
     const tabs = document.querySelectorAll('.service-tab');
     const contents = document.querySelectorAll('.service-content');
     
