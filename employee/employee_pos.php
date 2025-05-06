@@ -312,7 +312,7 @@ $servicesJson = json_encode($allServices);
           </a>
         </li>
         <li>
-          <a href="history.php" class="sidebar-link flex items-center px-5 py-3 text-sidebar-text opacity-80 hover:opacity-100 no-underline transition-all duration-300 hover:bg-sidebar-hover">
+          <a href="employee_history.php" class="sidebar-link flex items-center px-5 py-3 text-sidebar-text opacity-80 hover:opacity-100 no-underline transition-all duration-300 hover:bg-sidebar-hover">
             <i class="fas fa-history w-5 text-center mr-3 text-sidebar-accent"></i>
             <span>Service History</span>
           </a>
@@ -1436,18 +1436,41 @@ function confirmCheckout() {
   // Create a FormData object from the form
   const formData = new FormData(form);
   
-  // Convert FormData to a plain object for easier viewing
+  // Add additional data that might not be in the form
+  formData.append('sold_by', <?php echo $_SESSION['user_id']; ?>);
+  
+  // Log the form data to the console for debugging
   const formDataObj = {};
   formData.forEach((value, key) => {
     formDataObj[key] = value;
   });
-  
-  // Log the form data to the console
   console.log('Checkout Form Data:', formDataObj);
   
-  // Here you would typically send this data to your server
-  // For now, we'll just log it and show the confirmation modal
-  showConfirmationModal();
+  // Send the data to the server
+  fetch('posFunctions/traditional_checkout.php', {
+    method: 'POST',
+    body: formData
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    return response.json();
+  })
+  .then(data => {
+    if (data.success) {
+      // Show success message and order ID
+      document.getElementById('order-id').textContent = data.order_id;
+      showConfirmationModal();
+    } else {
+      // Show error message
+      alert('Error: ' + (data.message || 'Failed to process order'));
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    alert('An error occurred while processing your order. Please try again.');
+  });
 }
 
 function showConfirmationModal() {
