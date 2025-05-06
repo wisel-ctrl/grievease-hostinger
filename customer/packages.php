@@ -2169,7 +2169,7 @@ function removeGcash() {
                                     </button>
                                 </div>
                                 <div class="flex flex-col items-center justify-center">
-                                    <img id="lifeplanQrCodeImage" src="../image\gcashqrvjay.jpg" alt="Payment QR Code" class="w-64 h-64 object-contain mb-4">
+                                    <img id="lifeplanQrCodeImage" src="../image/gcashqrvjay.jpg" alt="Payment QR Code" class="w-64 h-64 object-contain mb-4">
                                     <p class="text-center text-sm text-gray-600 mb-2">Scan this QR code with your GCash app to make payment</p>
                                     <p class="text-center font-bold text-yellow-600" id="lifeplanQrCodeAmount">Amount: ₱0</p>
                                 </div>
@@ -3399,14 +3399,28 @@ function filterAndSortPackages() {
 }
 
 function resetFilters() {
+    // Reset search input
     document.getElementById('searchInput').value = '';
-    document.getElementById('priceSort').value = '';
     
+    // Reset price sort dropdown
+    document.getElementById('priceSort').selectedIndex = 0;
+    
+    // Show all package cards
     document.querySelectorAll('.package-card').forEach(card => {
         card.classList.remove('hidden');
+        card.style.order = ''; // Reset any custom ordering
     });
     
+    // Hide the "no results" message
     document.getElementById('no-results').classList.add('hidden');
+    
+    // Reset the package container to its original order
+    const container = document.getElementById('packages-container');
+    const cards = Array.from(container.children);
+    cards.sort((a, b) => {
+        return Array.from(container.children).indexOf(a) - Array.from(container.children).indexOf(b);
+    });
+    cards.forEach(card => container.appendChild(card));
 }
 
 // Event Listeners
