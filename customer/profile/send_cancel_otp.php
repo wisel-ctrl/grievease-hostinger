@@ -54,8 +54,8 @@ try {
         throw new Exception("Invalid request data");
     }
 
-    // Fetch booking details
-    $query = "SELECT b.*, CONCAT(u.first_name, ' ', u.last_name) AS full_name, u.email
+    // First try to fetch from booking_tb
+    $query = "SELECT b.*, CONCAT(u.first_name, ' ', u.last_name) AS full_name, u.email, 'funeral' as booking_type
           FROM booking_tb b
           JOIN users u ON b.customerID = u.id
           WHERE b.booking_id = ? AND b.status != 'Cancelled'";
@@ -66,7 +66,22 @@ try {
     $result = $stmt->get_result();
     
     if ($result->num_rows === 0) {
-        throw new Exception("Booking not found or already cancelled");
+        // If not found in booking_tb, try lifeplan_booking_tb
+        $stmt->close();
+        
+        $query = "SELECT l.*, CONCAT(u.first_name, ' ', u.last_name) AS full_name, u.email, 'lifeplan' as booking_type
+              FROM lifeplan_booking_tb l
+              JOIN users u ON l.customer_id = u.id
+              WHERE l.lpbooking_id = ? AND l.booking_status != 'Cancelled'";
+        
+        $stmt = $conn->prepare($query);
+        $stmt->bind_param("i", $data['booking_id']);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        if ($result->num_rows === 0) {
+            throw new Exception("Booking not found or already cancelled");
+        }
     }
     
     $booking = $result->fetch_assoc();
@@ -79,6 +94,7 @@ try {
     $_SESSION['cancel_booking_id'] = $data['booking_id'];
     $_SESSION['otp_created_at'] = time();
     $_SESSION['otp_email'] = $booking['email'];
+    $_SESSION['booking_type'] = $booking['booking_type']; // Store whether it's funeral or lifeplan
 
     // Send email
     $mail = new PHPMailer\PHPMailer\PHPMailer(true);
@@ -136,7 +152,7 @@ try {
                 </div>
                 <div class="content">
                     <p>Hello ' . htmlspecialchars($booking['full_name']) . ',</p>
-                    <p>We received a request to cancel your booking (ID: ' . $data['booking_id'] . ').</p>
+                    <p>We received a request to cancel your ' . ($booking['booking_type'] === 'lifeplan' ? 'Life Plan' : 'Funeral Service') . ' booking (ID: ' . $data['booking_id'] . ').</p>
                     <p>Please use the following verification code to confirm the cancellation:</p>
                     
                     <div class="otp-code">' . $otp . '</div>
@@ -155,7 +171,7 @@ try {
         ';
 
         $mail->AltBody = "Hello {$booking['full_name']},\n\n"
-            . "We received a request to cancel your booking (ID: {$data['booking_id']}).\n\n"
+            . "We received a request to cancel your " . ($booking['booking_type'] === 'lifeplan' ? 'Life Plan' : 'Funeral Service') . " booking (ID: {$data['booking_id']}).\n\n"
             . "Your verification code is: {$otp}\n"
             . "This code will expire in 10 minutes.\n\n"
             . "Important: Please note that your downpayment will not be refunded if you proceed with cancellation.\n\n"
@@ -163,7 +179,7 @@ try {
             . "© " . date('Y') . " GrievEase. All rights reserved.";
         
         $mail->send();
-        logToFile("OTP sent to {$booking['email']} for booking #{$data['booking_id']}");
+        logToFile("OTP sent to {$booking['email']} for {$booking['booking_type']} booking #{$data['booking_id']}");
         
         $response['success'] = true;
         $response['message'] = 'OTP sent successfully';

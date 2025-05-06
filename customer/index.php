@@ -702,7 +702,7 @@ $show_id_card = !$has_id || strtolower($id_data['is_validated']) != 'valid';
             </div>
         </div>
         <p class="text-sm text-dark mb-4">Your Traditional Funeral package payment is due by March 28, 2025.</p>
-        <a href="profile.php#payment-info" class="text-sm text-yellow-600 hover:text-darkgold font-medium flex items-center">
+        <a href="profile.php#transaction-logs" class="text-sm text-yellow-600 hover:text-darkgold font-medium flex items-center">
             Make Payment <i class="fas fa-arrow-right ml-2"></i>
         </a>
     </div>

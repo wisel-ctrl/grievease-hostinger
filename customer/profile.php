@@ -1111,7 +1111,7 @@ document.addEventListener('DOMContentLoaded', function() {
         <!-- Content area with improved spacing and grouping -->
         <div class="p-6">
             <?php
-            // Fetch all bookings for the current customer - including those with NULL service_id
+            // Fetch all traditional bookings for the current customer
             $query = "SELECT b.*, s.service_name, s.selling_price, br.branch_name 
                       FROM booking_tb b
                       LEFT JOIN services_tb s ON b.service_id = s.service_id
@@ -1249,6 +1249,141 @@ document.addEventListener('DOMContentLoaded', function() {
             <?php
                 }
             } else {
+                echo '<p class="text-gray-500">You have no bookings yet.</p>';
+            }
+            $stmt->close();
+            
+            // Now fetch all life plan bookings for the current customer
+            $query = "SELECT lb.*, s.service_name, s.selling_price as package_price, br.branch_name 
+                      FROM lifeplan_booking_tb lb
+                      LEFT JOIN services_tb s ON lb.service_id = s.service_id
+                      JOIN branch_tb br ON lb.branch_id = br.branch_id
+                      WHERE lb.customer_id = ?
+                      ORDER BY CASE 
+                          WHEN lb.booking_status = 'pending' THEN 1
+                          WHEN lb.booking_status = 'accepted' THEN 2
+                          WHEN lb.booking_status = 'decline' THEN 3
+                          ELSE 4
+                      END, lb.initial_date DESC";
+            
+            $stmt = $conn->prepare($query);
+            $stmt->bind_param("i", $user_id);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            
+            if ($result->num_rows > 0) {
+                while ($booking = $result->fetch_assoc()) {
+                    // Determine status color and text for life plan
+                    $status_class = '';
+                    $status_text = '';
+                    switch ($booking['booking_status']) {
+                        case 'pending':
+                            $status_class = 'bg-yellow-600/10 text-yellow-600';
+                            $status_text = 'Pending';
+                            break;
+                        case 'accepted':
+                            $status_class = 'bg-green-500/10 text-green-500';
+                            $status_text = 'Accepted';
+                            break;
+                        case 'decline':
+                            $status_class = 'bg-red-500/10 text-red-500';
+                            $status_text = 'Declined';
+                            break;
+                        default:
+                            $status_class = 'bg-blue-500/10 text-blue-500';
+                            $status_text = ucfirst($booking['booking_status']);
+                    }
+                    
+                    // Format dates
+                    $booking_date = date('F j, Y', strtotime($booking['initial_date']));
+                    $end_date = $booking['end_date'] ? date('F j, Y', strtotime($booking['end_date'])) : 'Not set';
+                    
+                    // Format beneficiary name
+                    $beneficiary_name = $booking['benefeciary_lname'] . ', ' . $booking['benefeciary_fname'];
+                    if (!empty($booking['benefeciary_mname'])) {
+                        $beneficiary_name .= ' ' . $booking['benefeciary_mname'];
+                    }
+                    if (!empty($booking['benefeciary_suffix'])) {
+                        $beneficiary_name .= ' ' . $booking['benefeciary_suffix'];
+                    }
+                    
+                    // Handle NULL service_id (custom packages)
+                    $service_name = $booking['service_name'] ?? 'Customize Package';
+                    $selling_price = $booking['package_price'] ?? 0;
+                    
+                    // Format price
+                    $price = number_format($selling_price, 2);
+                    $amount_paid = $booking['amount_paid'] ? number_format($booking['amount_paid'], 2) : '0.00';
+                    $balance = number_format($selling_price - ($booking['amount_paid'] ?? 0), 2);
+            ?>
+            
+            <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden mb-4">
+                <div class="bg-blue-600 bg-opacity-10 px-4 py-3 sm:px-6 sm:py-4 border-b border-gray-200">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="<?php echo $status_class; ?> text-xs px-2 py-1 rounded-full"><?php echo $status_text; ?></span>
+                        <p class="text-sm text-gray-500">Life Plan ID: <?php echo $booking['lpbooking_id']; ?></p>
+                    </div>
+                    <h4 class="font-hedvig text-lg text-blue-600 mb-2"><?php echo $service_name; ?> (Life Plan)</h4>
+                </div>
+                <div class="p-4 sm:p-6 space-y-3 sm:space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
+                        <div>
+                            <p class="text-sm text-gray-500">Beneficiary Name</p>
+                            <p class="text-blue-600"><?php echo ucwords(strtolower($beneficiary_name)); ?></p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Branch</p>
+                            <p class="text-blue-600"><?php echo ucwords(strtolower($booking['branch_name'])); ?></p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">End Date</p>
+                            <p class="text-blue-600"><?php echo $end_date; ?></p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
+                        <div>
+                            <p class="text-sm text-gray-500">Total Amount</p>
+                            <p class="text-blue-600 font-bold">₱<?php echo $price; ?></p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Amount Paid</p>
+                            <p class="text-blue-600">₱<?php echo $amount_paid; ?></p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Balance</p>
+                            <p class="text-blue-600">₱<?php echo $balance; ?></p>
+                        </div>
+                    </div>
+                    <div class="flex justify-end">
+                        <button class="view-lifeplan-details bg-blue-600/5 text-blue-600 px-3 py-1 rounded hover:bg-blue-600/10 transition text-sm mr-2" data-booking="<?php echo $booking['lpbooking_id']; ?>">
+                            <i class="fas fa-file-alt mr-1"></i> View Details
+                        </button>
+                        
+                        <?php if ($booking['booking_status'] === 'accepted'): ?>
+                            <button class="view-lifeplan-receipt bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 transition text-sm mr-2" data-booking="<?php echo $booking['lpbooking_id']; ?>">
+                                <i class="fas fa-receipt mr-1"></i> View Receipt
+                            </button>
+                        <?php endif; ?>
+                        
+                        <?php if ($booking['booking_status'] === 'pending' || $booking['booking_status'] === 'decline'): ?>
+                            <button class="modify-lifeplan-booking bg-yellow-600 text-white px-3 py-1 rounded hover:bg-yellow-700 transition text-sm mr-2" data-booking="<?php echo $booking['lpbooking_id']; ?>">
+                                <i class="fas fa-edit mr-1"></i> Modify
+                            </button>
+                        <?php endif; ?>
+                        
+                        <?php if ($booking['booking_status'] === 'pending'): ?>
+                            <button class="cancel-lifeplan-booking bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition text-sm" data-booking="<?php echo $booking['lpbooking_id']; ?>">
+                                <i class="fas fa-times mr-1"></i> Cancel
+                            </button>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+            <?php
+                }
+            }
+            
+            if ($result->num_rows === 0 && !isset($has_traditional_bookings)) {
                 echo '<p class="text-gray-500">You have no bookings yet.</p>';
             }
             $stmt->close();
@@ -2774,6 +2909,7 @@ function getSamplePaymentHistory(packageType) {
           <input type="hidden" id="modify-booking-id" name="booking_id">
           <input type="hidden" id="modify-service-id" name="service_id">
           <input type="hidden" id="modify-branch-id" name="branch_id">
+          <input type="hidden" id="modify-lifeplan-status" name="booking_status" value="pending">
           
           <!-- Service Information -->
           <div class="space-y-5 mb-6">
@@ -2914,6 +3050,290 @@ function getSamplePaymentHistory(packageType) {
         <button type="submit" form="modifyBookingForm" id="modifyBookingSubmit" class="w-full sm:w-auto px-6 py-3 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg shadow-md transition-all duration-300 flex items-center justify-center">
           <i class="fas fa-save mr-2"></i>
           Save Changes
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Life Plan View Details Modal -->
+<div id="viewLifeplanDetailsModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70 p-4 hidden backdrop-blur-sm">
+  <div class="w-full max-w-4xl bg-white rounded-2xl shadow-2xl overflow-hidden max-h-[90vh]">
+    <div class="modal-scroll-container overflow-y-auto max-h-[90vh]">
+      <!-- Header with close button -->
+      <div class="bg-blue-600 p-6 flex justify-between items-center">
+        <div class="flex items-center">
+          <h2 class="text-2xl font-hedvig text-white">Life Plan Booking Details</h2>
+        </div>
+        <button class="close-lifeplan-modal text-white hover:text-blue-300 transition-colors duration-200">
+          <i class="fas fa-times text-2xl"></i>
+        </button>
+      </div>
+      
+      <!-- Booking Status Banner -->
+      <div id="lifeplan-status-banner" class="px-6 py-3 bg-blue-50 border-b border-blue-100 flex items-center">
+        <div class="flex items-center">
+          <div class="h-3 w-3 rounded-full bg-blue-500 mr-2"></div>
+          <span class="font-medium text-blue-600">Status:</span>
+          <span id="lifeplan-detail-status" class="ml-2 text-blue-600 font-bold"></span>
+        </div>
+        <div class="ml-auto text-sm">
+          <span class="text-gray-500">Reference Code:</span>
+          <span id="lifeplan-detail-reference" class="text-blue-600 font-mono ml-1"></span>
+        </div>
+      </div>
+      
+      <!-- Modal Body -->
+      <div class="p-6 bg-gray-50">
+        <!-- Service Information Card -->
+        <div class="bg-white rounded-xl shadow-sm p-5 mb-6">
+          <div class="flex items-center mb-4">
+            <h4 class="font-semibold text-blue-600 text-lg">Service Information</h4>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3">
+            <div class="flex">
+              <span class="text-gray-500 w-32">Service Type:</span> 
+              <span id="lifeplan-detail-service" class="text-blue-600 font-medium"></span>
+            </div>
+            <div class="flex">
+              <span class="text-gray-500 w-32">Branch:</span> 
+              <span id="lifeplan-detail-branch" class="text-blue-600 font-medium"></span>
+            </div>
+            <div class="flex">
+              <span class="text-gray-500 w-32">Booking Date:</span> 
+              <span id="lifeplan-detail-booking-date" class="text-blue-600 font-medium"></span>
+            </div>
+            <div class="flex">
+              <span class="text-gray-500 w-32">Total Amount:</span> 
+              <span id="lifeplan-detail-total" class="text-blue-600 font-bold"></span>
+            </div>
+            <div class="flex">
+              <span class="text-gray-500 w-32">Payment Duration:</span> 
+              <span id="lifeplan-detail-duration" class="text-blue-600 font-medium"></span>
+            </div>
+            <div class="flex">
+              <span class="text-gray-500 w-32">End Date:</span> 
+              <span id="lifeplan-detail-end-date" class="text-blue-600 font-medium"></span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Beneficiary Information Card -->
+        <div class="bg-white rounded-xl shadow-sm p-5 mb-6">
+          <div class="flex items-center mb-4">
+            <h4 class="font-semibold text-blue-600 text-lg">Beneficiary Information</h4>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3">
+            <div class="flex">
+              <span class="text-gray-500 w-32">Full Name:</span> 
+              <span id="lifeplan-detail-beneficiary-name" class="text-blue-600 font-medium"></span>
+            </div>
+            <div class="flex">
+              <span class="text-gray-500 w-32">Birth Date:</span> 
+              <span id="lifeplan-detail-birth" class="text-blue-600 font-medium"></span>
+            </div>
+            <div class="flex">
+              <span class="text-gray-500 w-32">Relationship:</span> 
+              <span id="lifeplan-detail-relationship" class="text-blue-600 font-medium"></span>
+            </div>
+            <div class="flex">
+              <span class="text-gray-500 w-32">Phone Number:</span> 
+              <span id="lifeplan-detail-phone" class="text-blue-600 font-medium"></span>
+            </div>
+            <div class="flex md:col-span-2">
+              <span class="text-gray-500 w-32">Address:</span> 
+              <span id="lifeplan-detail-address" class="text-blue-600 font-medium"></span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Payment Information Card -->
+        <div class="bg-white rounded-xl shadow-sm p-5 mb-6">
+          <div class="flex items-center mb-4">
+            <h4 class="font-semibold text-blue-600 text-lg">Payment Information</h4>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="bg-gray-50 p-4 rounded-lg border border-gray-100 flex items-center">
+              <div class="bg-green-100 p-3 rounded-full mr-4">
+                <i class="fas fa-check-circle text-green-600 text-xl"></i>
+              </div>
+              <div class="flex-grow">
+                <p class="text-gray-600 font-medium">Amount Paid</p>
+                <p id="lifeplan-detail-paid" class="text-blue-600 font-bold text-xl"></p>
+              </div>
+            </div>
+            <div class="bg-gray-50 p-4 rounded-lg border border-gray-100 flex items-center">
+              <div class="bg-blue-100 p-3 rounded-full mr-4">
+                <i class="fas fa-balance-scale text-blue-600 text-xl"></i>
+              </div>
+              <div class="flex-grow">
+                <p class="text-gray-600 font-medium">Balance</p>
+                <p id="lifeplan-detail-balance" class="text-blue-600 font-bold text-xl"></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Modal Footer -->
+      <div class="modal-sticky-footer px-6 py-4 flex flex-col sm:flex-row sm:justify-end gap-3 border-t border-gray-200 bg-white">
+        <button class="close-lifeplan-modal w-full sm:w-auto px-6 py-3 bg-white border border-blue-600 text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Life Plan Modify Modal -->
+<div id="modifyLifeplanModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70 p-4 hidden backdrop-blur-sm">
+  <div class="w-full max-w-3xl bg-white rounded-2xl shadow-xl overflow-hidden max-h-[90vh]">
+    <div class="modal-scroll-container overflow-y-auto max-h-[90vh]">
+      <!-- Header with close button -->
+      <div class="bg-blue-600 p-6 flex justify-between items-center">
+        <h2 class="text-2xl font-hedvig text-white">Modify Life Plan Booking</h2>
+        <button class="close-lifeplan-modal text-white hover:text-blue-300">
+          <i class="fas fa-times text-2xl"></i>
+        </button>
+      </div>
+      
+      <!-- Modal Body -->
+      <div class="p-6 bg-gray-50">
+        <form id="modifyLifeplanForm">
+          <input type="hidden" id="modify-lifeplan-id" name="booking_id">
+          <input type="hidden" id="modify-lifeplan-service-id" name="service_id">
+          <input type="hidden" id="modify-lifeplan-branch-id" name="branch_id">
+          
+          <!-- Service Information -->
+          <div class="space-y-5 mb-6">
+            <h4 class="font-semibold text-blue-600 text-lg">Service Information</h4>
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium text-blue-600 mb-1 sm:mb-2">Service Package</label>
+                <div id="display-lifeplan-service" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg bg-gray-50 text-sm sm:text-base">
+                  <!-- Service package details will be displayed here -->
+                </div>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-blue-600 mb-1 sm:mb-2">Branch Location</label>
+                <div id="display-lifeplan-branch" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg bg-gray-50 text-sm sm:text-base">
+                  <!-- Branch location will be displayed here -->
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Beneficiary Information -->
+          <div class="space-y-5 mb-6">
+            <h4 class="font-semibold text-blue-600 text-lg">Beneficiary Information</h4>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+              <div>
+                <label class="block text-sm font-medium text-blue-600 mb-1 sm:mb-2">First Name*</label>
+                <input type="text" name="benefeciary_fname" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base" required>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-blue-600 mb-1 sm:mb-2">Middle Name</label>
+                <input type="text" name="benefeciary_mname" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-blue-600 mb-1 sm:mb-2">Last Name*</label>
+                <input type="text" name="benefeciary_lname" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base" required>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-blue-600 mb-1 sm:mb-2">Suffix</label>
+                <input type="text" name="benefeciary_suffix" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-blue-600 mb-1 sm:mb-2">Date of Birth</label>
+                <input type="date" name="benefeciary_birth" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-blue-600 mb-1 sm:mb-2">Relationship</label>
+                <input type="text" name="relationship_to_client" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-blue-600 mb-1 sm:mb-2">Phone Number</label>
+                <input type="text" name="phone" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base">
+              </div>
+              <div class="md:col-span-2">
+                <label class="block text-sm font-medium text-blue-600 mb-1 sm:mb-2">Address</label>
+                <textarea name="benefeciary_address" rows="2" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"></textarea>
+              </div>
+              <div class="md:col-span-2">
+                <div class="flex items-center">
+                  <input type="checkbox" name="with_cremate" id="lifeplan-with_cremate" class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 mr-2">
+                  <label for="lifeplan-with_cremate" class="text-sm font-medium text-blue-600">Include Cremation Service</label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      
+      <!-- Modal Footer -->
+      <div class="modal-sticky-footer px-6 py-4 flex flex-col sm:flex-row sm:justify-end gap-3 border-t border-gray-200 bg-white">
+        <button type="button" class="close-lifeplan-modal w-full sm:w-auto px-6 py-3 bg-white border border-blue-600 text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center">
+          Cancel
+        </button>
+        <button type="submit" form="modifyLifeplanForm" id="modifyLifeplanSubmit" class="w-full sm:w-auto px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-md transition-all duration-300 flex items-center justify-center">
+          <i class="fas fa-save mr-2"></i>
+          Save Changes
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Life Plan Cancel Modal -->
+<div id="cancelLifeplanModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70 p-4 hidden backdrop-blur-sm">
+  <div class="w-full max-w-md bg-white rounded-2xl shadow-xl overflow-hidden max-h-[90vh]">
+    <div class="modal-scroll-container overflow-y-auto max-h-[90vh]">
+      <!-- Header with close button -->
+      <div class="bg-blue-600 p-6 flex justify-between items-center">
+        <h2 class="text-2xl font-hedvig text-white">Cancel Life Plan Booking</h2>
+        <button class="close-lifeplan-modal text-white hover:text-blue-300">
+          <i class="fas fa-times text-2xl"></i>
+        </button>
+      </div>
+      
+      <!-- Modal Body -->
+      <div class="p-6 bg-gray-50">
+        <form id="cancelLifeplanForm">
+          <input type="hidden" id="cancel-lifeplan-id" name="booking_id">
+          <p class="text-gray-600 text-base mb-4">Are you sure you want to cancel this life plan booking?</p>
+          <p class="mb-4 text-red-600 font-semibold">Please note that your downpayment will NOT be refunded if you proceed with cancellation.</p>
+          
+          <div class="space-y-4 sm:space-y-6">
+            <!-- Reason for Cancellation -->
+            <div>
+              <label class="block text-sm font-medium text-blue-600 mb-1 sm:mb-2">Reason for Cancellation*</label>
+              <textarea name="cancel_reason" rows="3" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base" required></textarea>
+            </div>
+            
+            <!-- OTP Verification -->
+            <div>
+              <label class="block text-sm font-medium text-blue-600 mb-1 sm:mb-2">OTP Verification*</label>
+              <div class="flex items-center space-x-2">
+                <input type="text" name="otp" id="lifeplan-otpInput" class="flex-1 px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base" placeholder="Enter OTP" required>
+                <button type="button" id="lifeplan-sendOtpBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 sm:py-3 rounded-lg shadow-md transition-all duration-300">
+                  Send OTP
+                </button>
+              </div>
+              <p class="text-xs text-gray-500 mt-1">We'll send a verification code to your email</p>
+            </div>
+          </div>
+        </form>
+      </div>
+      
+      <!-- Modal Footer -->
+      <div class="modal-sticky-footer px-6 py-4 flex flex-col sm:flex-row sm:justify-end gap-3 border-t border-gray-200 bg-white">
+        <button class="close-lifeplan-modal w-full sm:w-auto px-6 py-3 bg-white border border-blue-600 text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center">
+          No, Keep Booking
+        </button>
+        <button type="submit" form="cancelLifeplanForm" class="w-full sm:w-auto px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg shadow-md transition-all duration-300 flex items-center justify-center">
+          <i class="fas fa-times mr-2"></i>
+          Confirm Cancellation
         </button>
       </div>
     </div>
@@ -3094,14 +3514,17 @@ document.addEventListener('DOMContentLoaded', function() {
       
       <!-- Modal Footer -->
       <div class="modal-sticky-footer px-6 py-4 flex flex-col sm:flex-row sm:justify-end gap-3 border-t border-gray-200 bg-white">
-        <button class="close-modal w-full sm:w-auto px-6 py-3 bg-white border border-yellow-600 text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center">
-          No, Keep Booking
-        </button>
-        <button type="submit" form="cancelBookingForm" class="w-full sm:w-auto px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg shadow-md transition-all duration-300 flex items-center justify-center">
-          <i class="fas fa-times mr-2"></i>
-          Confirm Cancellation
-        </button>
-      </div>
+          <button class="close-lifeplan-modal w-full sm:w-auto px-6 py-3 bg-white border border-blue-600 text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center">
+            No, Keep Booking
+          </button>
+          <form id="cancelLifeplanForm">
+            <!-- Your existing form inputs -->
+            <button type="submit" class="w-full sm:w-auto px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg shadow-md transition-all duration-300 flex items-center justify-center">
+              <i class="fas fa-times mr-2"></i>
+              Confirm Cancellation
+            </button>
+          </form>
+        </div>
     </div>
   </div>
 </div>
@@ -3696,11 +4119,6 @@ document.getElementById('cancelBookingForm').addEventListener('submit', function
     
     const form = this;
     const formData = new FormData(form);
-    const submitBtn = form.querySelector('button[type="submit"]');
-    
-    // Disable submit button during processing
-    submitBtn.disabled = true;
-    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Processing...';
     
     fetch('profile/cancel_booking.php', {
         method: 'POST',
@@ -3740,30 +4158,309 @@ document.getElementById('cancelBookingForm').addEventListener('submit', function
 });
 
 
-function submitBookingCancellation() {
-    const form = document.getElementById('cancelBookingForm');
+// Life Plan View Details
+    const viewLifeplanDetailsButtons = document.querySelectorAll('.view-lifeplan-details');
+    const viewLifeplanDetailsModal = document.getElementById('viewLifeplanDetailsModal');
+    
+    viewLifeplanDetailsButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const bookingId = this.getAttribute('data-booking');
+            fetchLifeplanDetails(bookingId);
+        });
+    });
+
+    // Life Plan Modify Booking
+    const modifyLifeplanButtons = document.querySelectorAll('.modify-lifeplan-booking');
+    const modifyLifeplanModal = document.getElementById('modifyLifeplanModal');
+    
+    modifyLifeplanButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const bookingId = this.getAttribute('data-booking');
+            fetchLifeplanForModification(bookingId);
+        });
+    });
+
+    // Life Plan Cancel Booking
+    const cancelLifeplanButtons = document.querySelectorAll('.cancel-lifeplan-booking');
+    const cancelLifeplanModal = document.getElementById('cancelLifeplanModal');
+    
+    cancelLifeplanButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const bookingId = this.getAttribute('data-booking');
+            document.getElementById('cancel-lifeplan-id').value = bookingId;
+            cancelLifeplanModal.classList.remove('hidden');
+        });
+    });
+
+    // Life Plan View Receipt
+    const viewLifeplanReceiptButtons = document.querySelectorAll('.view-lifeplan-receipt');
+    viewLifeplanReceiptButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const bookingId = this.getAttribute('data-booking');
+            showDocument('Life Plan Receipt', `uploads/lifeplan_receipts/${bookingId}.pdf`);
+        });
+    });
+
+    // Close life plan modals
+    document.querySelectorAll('.close-lifeplan-modal').forEach(button => {
+        button.addEventListener('click', function() {
+            document.getElementById('viewLifeplanDetailsModal').classList.add('hidden');
+            document.getElementById('modifyLifeplanModal').classList.add('hidden');
+            document.getElementById('cancelLifeplanModal').classList.add('hidden');
+        });
+    });
+
+    // Click outside life plan modals to close
+    window.addEventListener('click', function(e) {
+        if (e.target === document.getElementById('viewLifeplanDetailsModal')) {
+            document.getElementById('viewLifeplanDetailsModal').classList.add('hidden');
+        }
+        if (e.target === document.getElementById('modifyLifeplanModal')) {
+            document.getElementById('modifyLifeplanModal').classList.add('hidden');
+        }
+        if (e.target === document.getElementById('cancelLifeplanModal')) {
+            document.getElementById('cancelLifeplanModal').classList.add('hidden');
+        }
+    });
+
+    // Life Plan Form Submissions
+    document.getElementById('modifyLifeplanForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        submitLifeplanModification();
+    });
+    
+    document.getElementById('cancelLifeplanForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        submitLifeplanCancellation();
+    });
+
+    // Life Plan OTP Send
+    document.getElementById('lifeplan-sendOtpBtn').addEventListener('click', function() {
+        const bookingId = document.getElementById('cancel-lifeplan-id').value;
+        if (!bookingId) {
+            showError('No booking selected');
+            return;
+        }
+        
+        const otpBtn = this;
+        otpBtn.disabled = true;
+        otpBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Sending...';
+        
+        fetch('profile/send_cancel_otp.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ 
+                booking_id: bookingId,
+                booking_type: 'lifeplan'
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showSuccess('OTP sent to your email!');
+                document.getElementById('lifeplan-otpInput').focus();
+            } else {
+                showError(data.message || 'Failed to send OTP');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showError('Failed to send OTP');
+        })
+        .finally(() => {
+            otpBtn.disabled = false;
+            otpBtn.textContent = 'Send OTP';
+        });
+    });
+
+    // Life Plan Functions
+    function fetchLifeplanDetails(bookingId) {
+        fetch(`profile/fetch_lifeplan_details.php?booking_id=${bookingId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Populate the life plan details modal
+                    document.getElementById('lifeplan-detail-service').textContent = data.data.service_name;
+                    document.getElementById('lifeplan-detail-branch').textContent = data.data.branch_name;
+                    
+                    // Format status
+                    let statusText = data.data.booking_status.charAt(0).toUpperCase() + data.data.booking_status.slice(1);
+                    document.getElementById('lifeplan-detail-status').textContent = statusText;
+                    
+                    // Update status banner color
+                    const statusBanner = document.getElementById('lifeplan-status-banner');
+                    if (data.data.booking_status === 'accepted') {
+                        statusBanner.className = 'px-6 py-3 bg-green-50 border-b border-green-100 flex items-center';
+                        document.getElementById('lifeplan-detail-status').className = 'ml-2 text-green-600 font-bold';
+                    } else if (data.data.booking_status === 'decline') {
+                        statusBanner.className = 'px-6 py-3 bg-red-50 border-b border-red-100 flex items-center';
+                        document.getElementById('lifeplan-detail-status').className = 'ml-2 text-red-600 font-bold';
+                    } else {
+                        statusBanner.className = 'px-6 py-3 bg-yellow-50 border-b border-yellow-100 flex items-center';
+                        document.getElementById('lifeplan-detail-status').className = 'ml-2 text-yellow-600 font-bold';
+                    }
+                    
+                    document.getElementById('lifeplan-detail-booking-date').textContent = formatDate(data.data.initial_date);
+                    document.getElementById('lifeplan-detail-total').textContent = `₱${parseFloat(data.data.package_price).toFixed(2)}`;
+                    document.getElementById('lifeplan-detail-duration').textContent = `${data.data.payment_duration} months`;
+                    document.getElementById('lifeplan-detail-end-date').textContent = data.data.end_date ? formatDate(data.data.end_date) : 'Not set';
+                    document.getElementById('lifeplan-detail-reference').textContent = data.data.reference_code || 'N/A';
+                    
+                    // Beneficiary info
+                    let beneficiaryName = `${data.data.benefeciary_lname}, ${data.data.benefeciary_fname}`;
+                    if (data.data.benefeciary_mname) beneficiaryName += ` ${data.data.benefeciary_mname}`;
+                    if (data.data.benefeciary_suffix) beneficiaryName += ` ${data.data.benefeciary_suffix}`;
+                    
+                    document.getElementById('lifeplan-detail-beneficiary-name').textContent = beneficiaryName;
+                    document.getElementById('lifeplan-detail-birth').textContent = data.data.benefeciary_birth ? formatDate(data.data.benefeciary_birth) : 'Not provided';
+                    document.getElementById('lifeplan-detail-relationship').textContent = data.data.relationship_to_client || 'Not provided';
+                    document.getElementById('lifeplan-detail-phone').textContent = data.data.phone || 'Not provided';
+                    document.getElementById('lifeplan-detail-address').textContent = data.data.benefeciary_address || 'Not provided';
+                    
+                    // Payment info
+                    document.getElementById('lifeplan-detail-paid').textContent = `₱${parseFloat(data.data.amount_paid || 0).toFixed(2)}`;
+                    const balance = parseFloat(data.data.package_price) - parseFloat(data.data.amount_paid || 0);
+                    document.getElementById('lifeplan-detail-balance').textContent = `₱${balance.toFixed(2)}`;
+                    
+                    // Show the modal
+                    viewLifeplanDetailsModal.classList.remove('hidden');
+                } else {
+                    showError(data.message || 'Failed to fetch life plan details');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showError('An error occurred while fetching life plan details');
+            });
+    }
+
+    function fetchLifeplanForModification(bookingId) {
+        fetch(`profile/fetch_lifeplan_for_modification.php?booking_id=${bookingId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Populate the modify form
+                    const form = document.getElementById('modifyLifeplanForm');
+                    form.reset();
+                    
+                    // Set booking ID and hidden service/branch IDs
+                    document.getElementById('modify-lifeplan-id').value = data.data.lpbooking_id;
+                    document.getElementById('modify-lifeplan-service-id').value = data.data.service_id;
+                    document.getElementById('modify-lifeplan-branch-id').value = data.data.branch_id;
+                    
+                    // Display service package and branch name
+                    document.getElementById('display-lifeplan-service').textContent = 
+                        `${data.data.service_name} (₱${parseFloat(data.data.package_price).toFixed(2)})`;
+                    document.getElementById('display-lifeplan-branch').textContent = data.data.branch_name;
+                    
+                    // Set beneficiary info
+                    form.querySelector('input[name="benefeciary_fname"]').value = data.data.benefeciary_fname || '';
+                    form.querySelector('input[name="benefeciary_mname"]').value = data.data.benefeciary_mname || '';
+                    form.querySelector('input[name="benefeciary_lname"]').value = data.data.benefeciary_lname || '';
+                    form.querySelector('input[name="benefeciary_suffix"]').value = data.data.benefeciary_suffix || '';
+                    form.querySelector('input[name="benefeciary_birth"]').value = data.data.benefeciary_birth || '';
+                    form.querySelector('textarea[name="benefeciary_address"]').value = data.data.benefeciary_address || '';
+                    form.querySelector('input[name="phone"]').value = data.data.phone || '';
+                    form.querySelector('input[name="relationship_to_client"]').value = data.data.relationship_to_client || '';
+                    form.querySelector('input[name="with_cremate"]').checked = data.data.with_cremate === 'yes';
+                    
+                    // Show the modal
+                    modifyLifeplanModal.classList.remove('hidden');
+                } else {
+                    showError(data.message || 'Failed to fetch life plan for modification');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showError('An error occurred while fetching life plan for modification');
+            });
+    }
+
+    function submitLifeplanModification() {
+    const form = document.getElementById('modifyLifeplanForm');
     const formData = new FormData(form);
     
-    fetch('profile/cancel_booking.php', {
+    // Explicitly set the status to pending
+    formData.set('booking_status', 'pending');
+    
+    const submitBtn = document.getElementById('modifyLifeplanSubmit');
+    
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Saving...';
+    
+    fetch('profile/update_lifeplan.php', {
         method: 'POST',
         body: formData
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            return response.text().then(text => { throw new Error(text) });
+        }
+        return response.json();
+    })
     .then(data => {
         if (data.success) {
-            showSuccess('Booking cancelled successfully');
-            document.getElementById('cancelBookingModal').classList.add('hidden');
-            // Refresh the bookings list or update UI
-            setTimeout(() => location.reload(), 1500);
+            showSuccess(data.message || 'Life plan booking updated successfully!');
+            document.getElementById('modifyLifeplanModal').classList.add('hidden');
+            
+            setTimeout(() => {
+                location.reload();
+            }, 1500);
         } else {
-            showError(data.message || 'Failed to cancel booking');
+            showError(data.message || 'Failed to update life plan booking');
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        showError('An error occurred while cancelling booking');
+        showError('An error occurred while updating life plan booking');
+    })
+    .finally(() => {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="fas fa-save mr-2"></i> Save Changes';
     });
 }
+
+    function submitLifeplanCancellation() {
+        const form = document.getElementById('cancelLifeplanForm');
+        const formData = new FormData(form);
+        const submitBtn = document.querySelector('button[type="submit"][form="cancelLifeplanForm"]');
+    
+        if (!submitBtn) {
+            console.error('Submit button not found');
+            return;
+        }
+        
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Processing...';
+        
+        fetch('profile/cancel_lifeplan.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showSuccess('Life plan booking cancelled successfully!');
+                document.getElementById('cancelLifeplanModal').classList.add('hidden');
+                
+                setTimeout(() => {
+                    location.reload();
+                }, 1500);
+            } else {
+                showError(data.message || 'Failed to cancel life plan booking');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showError('An error occurred while cancelling life plan booking');
+        })
+        .finally(() => {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fas fa-times mr-2"></i> Confirm Cancellation';
+        });
+    }
 
 // Remove the redundant submitBookingCancellation() function
 
