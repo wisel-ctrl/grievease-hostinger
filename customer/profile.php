@@ -2003,7 +2003,7 @@ function submitTraditionalPayment() {
     if (receipt) formData.append('receipt', receipt);
     
     // Send to server
-    fetch('process_payment.php', {
+    fetch('payments/process_installment_payment.php', {
         method: 'POST',
         body: formData
     })
