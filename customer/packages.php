@@ -3399,14 +3399,28 @@ function filterAndSortPackages() {
 }
 
 function resetFilters() {
+    // Reset search input
     document.getElementById('searchInput').value = '';
-    document.getElementById('priceSort').value = '';
     
+    // Reset price sort dropdown
+    document.getElementById('priceSort').selectedIndex = 0;
+    
+    // Show all package cards
     document.querySelectorAll('.package-card').forEach(card => {
         card.classList.remove('hidden');
+        card.style.order = ''; // Reset any custom ordering
     });
     
+    // Hide the "no results" message
     document.getElementById('no-results').classList.add('hidden');
+    
+    // Reset the package container to its original order
+    const container = document.getElementById('packages-container');
+    const cards = Array.from(container.children);
+    cards.sort((a, b) => {
+        return Array.from(container.children).indexOf(a) - Array.from(container.children).indexOf(b);
+    });
+    cards.forEach(card => container.appendChild(card));
 }
 
 // Event Listeners
