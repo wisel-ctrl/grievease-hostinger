@@ -1068,7 +1068,12 @@ $total_lifeplan_bookings = $lifeplan_count_result->fetch_assoc()['total'];
                     <?php
                     // Query to get lifeplan bookings
                     $lifeplanQuery = "SELECT lb.*, 
-                                    CONCAT(u.first_name, ' ', COALESCE(u.middle_name, ''), ' ', u.last_name, ' ', COALESCE(u.suffix, '')) AS customer_name,
+                                    CONCAT(
+                                        UPPER(LEFT(u.first_name, 1)), LOWER(SUBSTRING(u.first_name, 2)), ' ',
+                                        UPPER(LEFT(COALESCE(u.middle_name, ''), 1)), LOWER(SUBSTRING(COALESCE(u.middle_name, ''), 2)), ' ',
+                                        UPPER(LEFT(u.last_name, 1)), LOWER(SUBSTRING(u.last_name, 2)), ' ',
+                                        UPPER(LEFT(COALESCE(u.suffix, ''), 1)), LOWER(SUBSTRING(COALESCE(u.suffix, ''), 2))
+                                    ) AS customer_name,
                                     s.service_name
                                     FROM lifeplan_booking_tb lb
                                     JOIN users u ON lb.customer_id = u.id
