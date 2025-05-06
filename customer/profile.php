@@ -1495,7 +1495,7 @@ document.addEventListener('DOMContentLoaded', function() {
             } else if (contentId === 'life-plan-content') {
                 populateLifePlanCards(contentId, lifeplansData);
             }
-            document.getElementById(contentId).style.display = 'block';
+            // Add similar condition for custom-package-content if needed
         });
     });
     
