@@ -882,7 +882,7 @@ require_once '../db_connect.php'; // Database connection
                         <!-- First Name & Middle Name (Side by side) -->
                         <div class="flex flex-wrap -mx-2 mb-3">
                             <div class="w-full sm:w-1/2 px-2 mb-3 sm:mb-0">
-                                <label for="lifeplanHolderFirstName" class="block text-sm font-medium text-navy mb-1">First Name *</label>
+                                <label for="lifeplanHolderFirstName" class="block text-sm font-medium text-navy mb-1">First Name <span class="text-red-500">*</label>
                                 <input type="text" id="lifeplanHolderFirstName" name="holderFirstName" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" pattern="[A-Za-z'-][A-Za-z'-]*( [A-Za-z'-]+)*" title="Please enter a valid name (letters only, no leading spaces, numbers or symbols)">
                             </div>
                             <div class="w-full sm:w-1/2 px-2">
@@ -894,7 +894,7 @@ require_once '../db_connect.php'; // Database connection
                         <!-- Last Name & Suffix (Side by side) -->
                         <div class="flex flex-wrap -mx-2 mb-3">
                             <div class="w-full sm:w-3/4 px-2 mb-3 sm:mb-0">
-                                <label for="lifeplanHolderLastName" class="block text-sm font-medium text-navy mb-1">Last Name *</label>
+                                <label for="lifeplanHolderLastName" class="block text-sm font-medium text-navy mb-1">Last Name <span class="text-red-500">*</label>
                                 <input type="text" id="lifeplanHolderLastName" name="holderLastName" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" pattern="[A-Za-z'-][A-Za-z'-]*( [A-Za-z'-]+)*" title="Please enter a valid name (letters only, no leading spaces, numbers or symbols)">
                             </div>
                             <div class="w-full sm:w-1/4 px-2">
@@ -914,11 +914,11 @@ require_once '../db_connect.php'; // Database connection
                         
                         <div class="flex flex-wrap -mx-2 mb-3">
                             <div class="w-full sm:w-1/2 px-2 mb-3 sm:mb-0">
-                                <label for="lifeplanDateOfBirth" class="block text-sm font-medium text-navy mb-1">Date of Birth *</label>
+                                <label for="lifeplanDateOfBirth" class="block text-sm font-medium text-navy mb-1">Date of Birth <span class="text-red-500">*</label>
                                 <input type="date" id="lifeplanDateOfBirth" name="dateOfBirth" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                             </div>
                             <div class="w-full sm:w-1/2 px-2">
-                                <label for="lifeplanContactNumber" class="block text-sm font-medium text-navy mb-1">Contact Number *</label>
+                                <label for="lifeplanContactNumber" class="block text-sm font-medium text-navy mb-1">Contact Number <span class="text-red-500">*</label>
                                 <input type="tel" id="lifeplanContactNumber" name="contactNumber" required 
        pattern="09[0-9]{9}" 
        title="Please enter a valid Philippine mobile number starting with 09 (11 digits total)"
@@ -928,7 +928,7 @@ require_once '../db_connect.php'; // Database connection
                         
                         <div class="mb-3">
                             <label for="relationshipWithBeneficiary" class="block text-sm font-medium text-navy mb-1">
-                                Relationship with the Beneficiary *
+                                Relationship with the Beneficiary <span class="text-red-500">*
                             </label>
                             <input type="text" id="relationshipWithBeneficiary" name="relationshipWithBeneficiary" required
                                 title="Please enter the relationship with the beneficiary"
@@ -1029,7 +1029,7 @@ require_once '../db_connect.php'; // Database connection
                         
                         <!-- GCash Upload with Preview (Improved UI) -->
                         <div class="mb-4">
-                            <label for="lifeplanGcashReceipt" class="block text-sm font-medium text-navy mb-1">First Payment Receipt</label>
+                            <label for="lifeplanGcashReceipt" class="block text-sm font-medium text-navy mb-1">First Payment Receipt <span class="text-red-500">*</label>
                             <div class="border border-input-border bg-white rounded-lg p-3 focus-within:ring-2 focus-within:ring-yellow-600">
                                 <!-- Upload Button and File Name -->
                                 <div class="flex items-center mb-2">
@@ -1062,7 +1062,7 @@ require_once '../db_connect.php'; // Database connection
                         </div>
                         
                         <div class="mb-3">
-                            <label for="lifeplanReferenceNumber" class="block text-sm font-medium text-navy mb-1">Reference Number *</label>
+                            <label for="lifeplanReferenceNumber" class="block text-sm font-medium text-navy mb-1">Reference Number <span class="text-red-500">*</label>
                             <input type="text" id="lifeplanReferenceNumber" name="referenceNumber" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" placeholder="e.g. 1234567890">
                         </div>
                     </div>
