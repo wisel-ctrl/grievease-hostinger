@@ -1146,21 +1146,85 @@ $total_lifeplan_bookings = $lifeplan_count_result->fetch_assoc()['total'];
     </div>
     
     <!-- Sticky Pagination Footer with improved spacing -->
-    <div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
+<div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
     <div id="lifeplanPaginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
     <?php 
-    if ($total_lifeplan_bookings > 0) {
-        $lifeplan_start = 1; // Adjust if you implement pagination
-        $lifeplan_end = min(5, $total_lifeplan_bookings); // You're currently showing 10 records
-        echo "Showing {$lifeplan_start}-{$lifeplan_end} of {$total_lifeplan_bookings} lifeplan " . ($total_lifeplan_bookings != 1 ? "bookings" : "booking");
-    } else {
-        echo "No lifeplan bookings found";
-    }
-    ?>
-</div>
-        <div id="lifeplanPaginationContainer" class="flex space-x-1">
-            <!-- Pagination will be added when there are records -->
-        </div>
+        // Get the number of lifeplan bookings on the current page
+        $current_page_lifeplan_bookings = $lifeplan_result->num_rows;
+
+        if ($total_lifeplan_bookings > 0) {
+            $lifeplan_start = $lifeplan_offset + 1;
+            $lifeplan_end = $lifeplan_offset + $lifeplan_result->num_rows;
+        
+            echo "Showing {$lifeplan_start} - {$lifeplan_end} of {$total_lifeplan_bookings} " . 
+                 ($total_lifeplan_bookings != 1 ? "lifeplan bookings" : "lifeplan booking");
+        } else {
+            echo "No lifeplan bookings found";
+        }
+        ?>
+    </div>
+    <div id="lifeplanPaginationContainer" class="flex space-x-2">
+        <?php if ($lifeplan_total_pages > 1): ?>
+            <!-- First page button (double arrow) -->
+            <a href="?lifeplan_page=1" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($lifeplan_current_page == 1) ? 'opacity-50 pointer-events-none' : ''; ?>">
+                &laquo;
+            </a>
+            
+            <!-- Previous page button (single arrow) -->
+            <a href="<?php echo '?lifeplan_page=' . max(1, $lifeplan_current_page - 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($lifeplan_current_page == 1) ? 'opacity-50 pointer-events-none' : ''; ?>">
+                &lsaquo;
+            </a>
+            
+            <?php
+            // Show exactly 3 page numbers
+            if ($lifeplan_total_pages <= 3) {
+                // If total pages is 3 or less, show all pages
+                $lifeplan_start_page = 1;
+                $lifeplan_end_page = $lifeplan_total_pages;
+            } else {
+                // With more than 3 pages, determine which 3 to show
+                if ($lifeplan_current_page == 1) {
+                    // At the beginning, show first 3 pages
+                    $lifeplan_start_page = 1;
+                    $lifeplan_end_page = 3;
+                } elseif ($lifeplan_current_page == $lifeplan_total_pages) {
+                    // At the end, show last 3 pages
+                    $lifeplan_start_page = $lifeplan_total_pages - 2;
+                    $lifeplan_end_page = $lifeplan_total_pages;
+                } else {
+                    // In the middle, show current page with one before and after
+                    $lifeplan_start_page = $lifeplan_current_page - 1;
+                    $lifeplan_end_page = $lifeplan_current_page + 1;
+                    
+                    // Handle edge cases
+                    if ($lifeplan_start_page < 1) {
+                        $lifeplan_start_page = 1;
+                        $lifeplan_end_page = 3;
+                    }
+                    if ($lifeplan_end_page > $lifeplan_total_pages) {
+                        $lifeplan_end_page = $lifeplan_total_pages;
+                        $lifeplan_start_page = $lifeplan_total_pages - 2;
+                    }
+                }
+            }
+            
+            // Generate the page buttons
+            for ($i = $lifeplan_start_page; $i <= $lifeplan_end_page; $i++) {
+                $active_class = ($i == $lifeplan_current_page) ? 'bg-sidebar-accent text-white' : 'border border-sidebar-border hover:bg-sidebar-hover';
+                echo '<a href="?lifeplan_page=' . $i . '" class="px-3.5 py-1.5 rounded text-sm ' . $active_class . '">' . $i . '</a>';
+            }
+            ?>
+            
+            <!-- Next page button (single arrow) -->
+            <a href="<?php echo '?lifeplan_page=' . min($lifeplan_total_pages, $lifeplan_current_page + 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($lifeplan_current_page == $lifeplan_total_pages) ? 'opacity-50 pointer-events-none' : ''; ?>">
+                &rsaquo;
+            </a>
+            
+            <!-- Last page button (double arrow) -->
+            <a href="<?php echo '?lifeplan_page=' . $lifeplan_total_pages; ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($lifeplan_current_page == $lifeplan_total_pages) ? 'opacity-50 pointer-events-none' : ''; ?>">
+                &raquo;
+            </a>
+        <?php endif; ?>
     </div>
 </div>
 
