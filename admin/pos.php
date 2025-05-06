@@ -2499,7 +2499,8 @@ function setupLifeplanPaymentTerms() {
 }
 
 // Function to open lifeplan checkout
-function openLifeplanCheckout() {
+// Update your openLifeplanCheckout function to this:
+  function openLifeplanCheckout() {
   const serviceTypeModal = document.getElementById('serviceTypeModal');
   const serviceId = serviceTypeModal.dataset.serviceId;
   const servicePrice = serviceTypeModal.dataset.servicePrice;
@@ -2520,8 +2521,27 @@ function openLifeplanCheckout() {
   document.getElementById('lp-min-price').textContent = `₱${minimumPrice.toFixed(2)}`;
   
   setupLifeplanPaymentTerms();
-  // Open lifeplan checkout modal
-  document.getElementById('lifeplanCheckoutModal').classList.remove('hidden');
+  
+  // First close the service type modal
+  closeServiceTypeModal();
+  
+  // Then open the lifeplan checkout modal
+  const lifeplanModal = document.getElementById('lifeplanCheckoutModal');
+  if (lifeplanModal) {
+    lifeplanModal.classList.remove('hidden');
+    // Bring to front
+    lifeplanModal.style.zIndex = '9999'; 
+  } else {
+    console.error('Lifeplan modal element not found');
+  }
+}
+
+// Also ensure your close function works properly:
+function closeLifeplanCheckoutModal() {
+  const modal = document.getElementById('lifeplanCheckoutModal');
+  if (modal) {
+    modal.classList.add('hidden');
+  }
 }
 
 // Function to close lifeplan checkout modal
