@@ -1435,6 +1435,7 @@ document.addEventListener('DOMContentLoaded', function() {
 function populateServiceCards(containerId, services) {
     const container = document.getElementById(containerId);
     container.innerHTML = ''; // Clear existing content
+    console.log('called');
     
     if (services.length === 0) {
         container.innerHTML = '<p class="text-gray-500 py-4">No services found.</p>';
