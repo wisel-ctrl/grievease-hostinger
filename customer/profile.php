@@ -1395,6 +1395,8 @@ $stmt->close();
 // Pass PHP data to JavaScript
 const servicesData = <?php echo json_encode($services); ?>;
 const customerID = <?php echo json_encode($customerID); ?>;
+console.log('1: ', servicesData);
+console.log('2: ', customerID);
 
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize tabs
