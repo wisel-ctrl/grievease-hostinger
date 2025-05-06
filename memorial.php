@@ -154,31 +154,31 @@ function toggleMenu() {
                 <h3 class="text-lg sm:text-xl font-hedvig text-white mb-2 text-center">Light a Virtual Candle</h3>
                 
                 <!-- Candle Animation Container - Smaller on mobile -->
-                <div class="relative w-full h-32 sm:h-40 mb-2 sm:mb-3 flex items-center justify-center">
-                    <!-- Candle -->
-                    <div id="candle" class="relative w-12 sm:w-16">
-                        <!-- Wick -->
-                        <div class="w-1 h-3 sm:h-4 bg-gray-700 mx-auto mb-0 rounded-t-lg"></div>
-                        
-                        <!-- Flame (hidden initially) -->
-                        <div id="flame" class="hidden">
-                            <!-- Outer Flame -->
-                            <div class="absolute left-1/2 transform -translate-x-1/2 bottom-[55px] sm:bottom-[70px] w-5 sm:w-6 h-10 sm:h-12 bg-yellow-600/80 rounded-full blur-sm animate-pulse"></div>
-                            
-                            <!-- Inner Flame -->
-                            <div class="absolute left-1/2 transform -translate-x-1/2 bottom-[60px] sm:bottom-[75px] w-2.5 sm:w-3 h-7 sm:h-9 bg-white/90 rounded-full blur-[2px] animate-flame"></div>
-                        </div>
-                        
-                        <!-- Candle Body - Smaller on mobile -->
-                        <div class="w-10 sm:w-12 h-20 sm:h-24 bg-gradient-to-b from-cream to-white mx-auto rounded-t-lg"></div>
-                        
-                        <!-- Candle Base -->
-                        <div class="w-12 sm:w-16 h-2.5 sm:h-3 bg-gradient-to-b from-cream to-yellow-600/20 mx-auto rounded-b-lg"></div>
-                    </div>
-                    
-                    <!-- Reflection/Glow -->
-                    <div id="candle-glow" class="absolute bottom-2 w-36 sm:w-48 h-6 sm:h-8 bg-yellow-600/0 rounded-full blur-xl transition-all duration-1000"></div>
-                </div>
+<div class="relative w-full h-32 sm:h-40 mb-2 sm:mb-3 flex items-center justify-center">
+    <!-- Candle -->
+    <div id="candle" class="relative w-12 sm:w-16">
+        <!-- Updated Wick with Flame -->
+        <div class="relative w-1 h-3 sm:h-4 bg-gray-700 mx-auto rounded-t-lg">
+            <!-- Outer Flame (hidden initially) -->
+            <div id="flame" class="hidden">
+                <!-- Outer Flame -->
+                <div class="absolute left-1/2 top-[-18px] transform -translate-x-1/2 w-4 h-8 bg-yellow-600/80 rounded-full blur-sm animate-flame"></div>
+                
+                <!-- Inner Flame -->
+                <div class="absolute left-1/2 top-[-15px] transform -translate-x-1/2 w-2 h-6 bg-white/90 rounded-full blur-[2px] animate-flame"></div>
+            </div>
+        </div>
+        
+        <!-- Candle Body - Smaller on mobile -->
+        <div class="w-10 sm:w-12 h-20 sm:h-24 bg-gradient-to-b from-cream to-white mx-auto rounded-t-lg"></div>
+        
+        <!-- Candle Base -->
+        <div class="w-12 sm:w-16 h-2.5 sm:h-3 bg-gradient-to-b from-cream to-yellow-600/20 mx-auto rounded-b-lg"></div>
+    </div>
+    
+    <!-- Reflection/Glow -->
+    <div id="candle-glow" class="absolute bottom-2 w-36 sm:w-48 h-6 sm:h-8 bg-yellow-600/0 rounded-full blur-xl transition-all duration-1000"></div>
+</div>
                 
                 <!-- Light Button -->
                 <button id="light-button" class="bg-yellow-600 hover:bg-yellow-700 text-white px-4 sm:px-6 py-2 rounded-lg shadow-lg transition-all duration-300 text-sm w-full max-w-xs">
