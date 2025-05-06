@@ -3118,7 +3118,11 @@ function openCustomDetails(bookingId) {
       // Handle Casket Details
       if (data.casket_id && data.casket_name) {
         document.getElementById('casketName').textContent = data.casket_name;
-        document.getElementById('casketPrice').textContent = "₱" + (parseFloat(data.casket_price) || 0).toFixed(2);
+        document.getElementById('casketPrice').textContent = 
+    "₱" + (parseFloat(data.casket_price) || 0).toLocaleString('en-PH', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    });
         
         const casketImage = document.getElementById('casketImage');
         if (data.casket_image) {
