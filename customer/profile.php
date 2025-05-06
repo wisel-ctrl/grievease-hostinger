@@ -1478,7 +1478,7 @@ function populateServiceCards(containerId, services) {
         
         // Create card HTML
         const cardHtml = `
-            <div class="bg-white rounded-lg shadow-md p-6 mb-6 border border-gray-100">
+            <div class="bg-white z-50 rounded-lg shadow-md p-6 mb-6 border border-gray-100">
                 <div class="flex flex-col md:flex-row md:justify-between md:items-start">
                     <div class="mb-4 md:mb-0">
                         <h3 class="font-bold text-lg text-navy">${escapeHtml(service.service_name)}</h3>
