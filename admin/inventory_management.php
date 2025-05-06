@@ -355,9 +355,7 @@ while ($row = $categoryResult->fetch_assoc()) {
     <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300">
       <div class="flex justify-between items-center p-5 border-b border-sidebar-border">
         <h3 class="font-medium text-sidebar-text">Inventory by Category</h3>
-        <button class="px-3 py-2 border border-sidebar-border rounded-md text-sm flex items-center text-sidebar-text hover:bg-sidebar-hover transition-all duration-300">
-          <i class="fas fa-download mr-2"></i> Export
-        </button>
+        
       </div>
       <div class="p-5">
         <canvas id="inventoryCategoryChart" class="h-64"></canvas>
