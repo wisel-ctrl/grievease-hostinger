@@ -293,7 +293,8 @@ $lifeplan_requests = mysqli_fetch_all($lifeplan_result, MYSQLI_ASSOC);
 <script>
   // Traditional Payment Modal Functions
   function openTraditionalModal(imageUrl, amount) {
-    document.getElementById('traditionalReceiptImage').src = imageUrl;
+    document.getElementById('traditionalReceiptImage').src = '../customer/payments/' + imageUrl;
+
     document.getElementById('traditionalAmount').textContent = '₱' + amount;
     document.getElementById('traditionalModal').classList.remove('hidden');
   }
