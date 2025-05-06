@@ -3350,8 +3350,16 @@ function renderPackages(filteredPackages) {
     });
 }
 
+// Update the filter function to handle the validation
 function filterAndSortPackages() {
-    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+    const searchInput = document.getElementById('searchInput');
+    const searchTerm = searchInput.value.toLowerCase();
+    
+    // Don't proceed if the input is invalid
+    if (searchInput.classList.contains('invalid')) {
+        return;
+    }
+    
     const priceSort = document.getElementById('priceSort').value;
     const packagesContainer = document.getElementById('packages-container');
     const noResults = document.getElementById('no-results');
@@ -3693,6 +3701,58 @@ function validateNameInput(input) {
             });
         }
     });
+});
+
+// Add this function to validate the search input
+function validateSearchInput(input) {
+    // Remove any non-letter characters (except spaces when allowed)
+    let value = input.value.replace(/[^a-zA-Z\s]/g, '');
+    
+    // Don't allow leading spaces
+    value = value.replace(/^\s+/, '');
+    
+    // Don't allow multiple consecutive spaces
+    value = value.replace(/\s{2,}/g, ' ');
+    
+    // Don't allow space until at least 2 characters are entered
+    if (value.length < 2) {
+        value = value.replace(/\s/g, '');
+    }
+    
+    // Update the input value
+    input.value = value;
+    
+    // Add/remove invalid class based on input validity
+    if (value.length > 0 && !/^[a-zA-Z]{2,}(?: [a-zA-Z]+)*$/.test(value)) {
+        input.classList.add('invalid');
+    } else {
+        input.classList.remove('invalid');
+    }
+}
+
+// Update the event listener for the search input
+document.getElementById('searchInput').addEventListener('input', function(e) {
+    // First validate the input
+    validateSearchInput(this);
+    
+    // Then filter and sort packages
+    filterAndSortPackages();
+});
+
+// Prevent paste of invalid content
+document.getElementById('searchInput').addEventListener('paste', function(e) {
+    e.preventDefault();
+    const pastedText = (e.clipboardData || window.clipboardData).getData('text');
+    let cleanedText = pastedText.replace(/[^a-zA-Z\s]/g, '');
+    
+    // Apply the same validation rules
+    cleanedText = cleanedText.replace(/^\s+/, '');
+    cleanedText = cleanedText.replace(/\s{2,}/g, ' ');
+    if (cleanedText.length < 2) {
+        cleanedText = cleanedText.replace(/\s/g, '');
+    }
+    
+    document.execCommand('insertText', false, cleanedText);
 });
 </script>
 
