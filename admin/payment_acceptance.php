@@ -92,7 +92,25 @@ $custom_result = mysqli_query($conn, $custom_query);
 $custom_requests = mysqli_fetch_all($custom_result, MYSQLI_ASSOC);
 
 // Fetch Lifeplan Payment Requests (replace with your actual query)
-$lifeplan_query = "SELECT * FROM lifeplanpayment_request_tb LIMIT 0"; // Placeholder
+$lifeplan_query = "SELECT 
+    CONCAT(
+        UPPER(LEFT(u.first_name, 1)), LOWER(SUBSTRING(u.first_name, 2)), ' ',
+        IFNULL(CONCAT(UPPER(LEFT(u.middle_name, 1)), LOWER(SUBSTRING(u.middle_name, 2)), ' '), ''),
+        UPPER(LEFT(u.last_name, 1)), LOWER(SUBSTRING(u.last_name, 2)),
+        IF(u.suffix IS NOT NULL AND u.suffix != '', CONCAT(' ', UPPER(LEFT(u.suffix, 1)), LOWER(SUBSTRING(u.suffix, 2))), '')
+    ) AS full_name,
+    ir_tb.lifeplan_id,
+    s_tb.service_name,
+    sl_tb.custom_price,
+    ir_tb.request_date,
+    ir_tb.amount,
+    ir_tb.payment_method,
+    ir_tb.payment_url,
+    ir_tb.status
+FROM lifeplanpayment_request_tb AS ir_tb
+JOIN users AS u ON ir_tb.customer_id = u.id
+JOIN lifeplan_tb AS sl_tb ON ir_tb.lifeplan_id = sl_tb.lifeplan_id
+JOIN services_tb AS s_tb ON sl_tb.service_id = s_tb.service_id";
 $lifeplan_result = mysqli_query($conn, $lifeplan_query);
 $lifeplan_requests = mysqli_fetch_all($lifeplan_result, MYSQLI_ASSOC);
 ?>
@@ -201,40 +219,44 @@ $lifeplan_requests = mysqli_fetch_all($lifeplan_result, MYSQLI_ASSOC);
     </div>
 
     <!-- Lifeplan Payment Requests Section -->
+    <!-- Lifeplan Payment Requests Section -->
     <div class="bg-white rounded-lg shadow-sidebar p-6">
-      <h2 class="text-xl font-semibold mb-4 text-sidebar-text">Lifeplan Payment Requests</h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <h2 class="text-xl font-semibold mb-4 text-sidebar-text">Lifeplan Payment Requests</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <?php foreach ($lifeplan_requests as $request): ?>
-          <div class="border rounded-lg p-4 hover:shadow-md transition-shadow">
+        <div class="border rounded-lg p-4 hover:shadow-md transition-shadow">
             <div class="flex justify-between items-start">
-              <div>
-                <h3 class="font-medium">Customer Name</h3>
-                <p class="text-sm text-gray-600">Lifeplan</p>
+            <div>
+                <h3 class="font-medium"><?= htmlspecialchars($request['full_name']) ?></h3>
+                <p class="text-sm text-gray-600"><?= htmlspecialchars($request['service_name']) ?> (₱<?= number_format($request['custom_price'], 2) ?>)</p>
                 <p class="text-sm mt-2">
-                  <span class="font-medium">Amount:</span> ₱0.00
+                <span class="font-medium">Amount:</span> ₱<?= number_format($request['amount'], 2) ?>
                 </p>
                 <p class="text-sm">
-                  <span class="font-medium">Date:</span> Jan 01, 2023
+                <span class="font-medium">Date:</span> <?= date('M d, Y', strtotime($request['request_date'])) ?>
                 </p>
                 <p class="text-sm">
-                  <span class="font-medium">Method:</span> Bank Transfer
+                <span class="font-medium">Method:</span> <?= htmlspecialchars($request['payment_method']) ?>
                 </p>
-                <span class="inline-block mt-2 px-2 py-1 text-xs rounded-full bg-yellow-100 text-yellow-800">
-                  Pending
+                <span class="inline-block mt-2 px-2 py-1 text-xs rounded-full 
+                <?= $request['status'] == 'pending' ? 'bg-yellow-100 text-yellow-800' : 
+                    ($request['status'] == 'approved' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800') ?>">
+                <?= ucfirst($request['status']) ?>
                 </span>
-              </div>
-              <button onclick="openLifeplanModal('', '0.00')" 
+            </div>
+            <button onclick="openLifeplanModal('<?= htmlspecialchars($request['payment_url']) ?>', '<?= number_format($request['amount'], 2) ?>')" 
                 class="px-3 py-1 bg-sidebar text-white rounded hover:bg-blue-700 transition-colors text-sm">
                 View Receipt
-              </button>
+            </button>
             </div>
-          </div>
+        </div>
         <?php endforeach; ?>
         <?php if (empty($lifeplan_requests)): ?>
-          <p class="text-gray-500 col-span-3 text-center py-4">No lifeplan payment requests found.</p>
+        <p class="text-gray-500 col-span-3 text-center py-4">No lifeplan payment requests found.</p>
         <?php endif; ?>
-      </div>
     </div>
+    </div>
+
   </div>
 </div>
 
