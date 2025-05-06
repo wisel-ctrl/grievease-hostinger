@@ -1325,28 +1325,29 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Lifeplan modal QR code
-const lifeplanShowQrCodeBtn = document.getElementById('lifeplanShowQrCodeBtn');
-const lifeplanQrCodeModal = document.getElementById('lifeplanQrCodeModal');
-const lifeplanCloseQrModal = document.getElementById('lifeplanCloseQrModal');
-const lifeplanQrCodeAmount = document.getElementById('lifeplanQrCodeAmount');
-
-if (lifeplanShowQrCodeBtn && lifeplanQrCodeModal) {
-    lifeplanShowQrCodeBtn.addEventListener('click', function() {
-        const monthlyPayment = document.getElementById('lifeplanMonthlyPayment').textContent;
-        lifeplanQrCodeAmount.textContent = 'Amount: ' + monthlyPayment;
-        lifeplanQrCodeModal.classList.remove('hidden');
-    });
+    const lifeplanShowQrCodeBtn = document.getElementById('lifeplanShowQrCodeBtn');
+    const lifeplanQrCodeModal = document.getElementById('lifeplanQrCodeModal');
+    const lifeplanCloseQrModal = document.getElementById('lifeplanCloseQrModal');
+    const lifeplanQrCodeAmount = document.getElementById('lifeplanQrCodeAmount');
     
-    lifeplanCloseQrModal.addEventListener('click', function() {
-        lifeplanQrCodeModal.classList.add('hidden');
-    });
-    
-    lifeplanQrCodeModal.addEventListener('click', function(e) {
-        if (e.target === lifeplanQrCodeModal) {
+    if (lifeplanShowQrCodeBtn && lifeplanQrCodeModal) {
+        lifeplanShowQrCodeBtn.addEventListener('click', function() {
+            const monthlyPayment = document.getElementById('lifeplanMonthlyPayment').textContent;
+            lifeplanQrCodeAmount.textContent = 'Amount: ' + monthlyPayment;
+            lifeplanQrCodeModal.classList.remove('hidden');
+        });
+        
+        lifeplanCloseQrModal.addEventListener('click', function() {
             lifeplanQrCodeModal.classList.add('hidden');
-        }
-    });
-}
+        });
+        
+        lifeplanQrCodeModal.addEventListener('click', function(e) {
+            if (e.target === lifeplanQrCodeModal) {
+                lifeplanQrCodeModal.classList.add('hidden');
+            }
+        });
+    }
+});
 
 // Lifeplan Holder Street Address Validation
 function validateLifeplanHolderStreet(input) {
@@ -2210,34 +2211,21 @@ function removeGcash() {
                         </div>
                         
                         <!-- QR Code Modal -->
-                        <!-- Lifeplan QR Code Modal -->
-<div id="lifeplanQrCodeModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
-    <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-        <div class="flex justify-between items-center mb-4">
-            <h3 class="text-lg font-hedvig text-navy">Scan to Pay</h3>
-            <button id="lifeplanCloseQrModal" class="text-gray-500 hover:text-navy">
-                <i class="fas fa-times text-xl"></i>
-            </button>
-        </div>
-        <div class="flex flex-col items-center justify-center">
-            <img id="lifeplanQrCodeImage" src="../image/qrnivjaygcash.jpg" alt="Payment QR Code" 
-                 class="w-64 h-64 object-contain mb-4 cursor-pointer hover:scale-105 transition-transform"
-                 onclick="enlargeQrCode(this)">
-            <p class="text-center text-sm text-gray-600 mb-2">Scan this QR code with your GCash app to make payment</p>
-            <p class="text-center font-bold text-yellow-600" id="lifeplanQrCodeAmount">Amount: ₱0</p>
-        </div>
-    </div>
-</div>
-
-<!-- Enlarged QR Code View (hidden by default) -->
-<div id="enlargedQrView" class="fixed inset-0 bg-black bg-opacity-90 z-[60] flex items-center justify-center hidden">
-    <div class="relative max-w-4xl w-full p-4">
-        <button onclick="closeEnlargedQr()" class="absolute top-4 right-4 text-white text-2xl z-10">
-            <i class="fas fa-times"></i>
-        </button>
-        <img id="enlargedQrImage" src="" class="w-full max-h-[90vh] object-contain" alt="Enlarged QR Code">
-    </div>
-</div>
+                        <div id="lifeplanQrCodeModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
+                            <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+                                <div class="flex justify-between items-center mb-4">
+                                    <h3 class="text-lg font-hedvig text-navy">Scan to Pay</h3>
+                                    <button id="lifeplanCloseQrModal" class="text-gray-500 hover:text-navy">
+                                        <i class="fas fa-times text-xl"></i>
+                                    </button>
+                                </div>
+                                <div class="flex flex-col items-center justify-center">
+                                    <img id="lifeplanQrCodeImage" src="../image/qrnivjaygcash.jpg" alt="Payment QR Code" class="w-64 h-64 object-contain mb-4">
+                                    <p class="text-center text-sm text-gray-600 mb-2">Scan this QR code with your GCash app to make payment</p>
+                                    <p class="text-center font-bold text-yellow-600" id="lifeplanQrCodeAmount">Amount: ₱0</p>
+                                </div>
+                            </div>
+                        </div>
                         
                         <!-- GCash Upload with Preview (Improved UI) -->
                         <div class="mb-4">
