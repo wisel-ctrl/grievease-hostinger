@@ -884,6 +884,7 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
     </div>
 </div>
+</div>
 
 
     <!-- Footer -->
@@ -1056,6 +1057,6 @@ document.addEventListener('DOMContentLoaded', function() {
         <?php include 'customService/chat_elements.html'; ?>
 
         <script src="customer_support.js"></script>
-</div>
+
 </body> 
 </html> 
