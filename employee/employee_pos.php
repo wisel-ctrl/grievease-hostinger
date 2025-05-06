@@ -1429,6 +1429,71 @@ function openTraditionalCheckout() {
   document.getElementById('checkoutModal').classList.remove('hidden');
 }
 
+function confirmCheckout() {
+  // Get the form element
+  const form = document.getElementById('checkoutForm');
+  
+  // Create a FormData object from the form
+  const formData = new FormData(form);
+  
+  // Convert FormData to a plain object for easier viewing
+  const formDataObj = {};
+  formData.forEach((value, key) => {
+    formDataObj[key] = value;
+  });
+  
+  // Log the form data to the console
+  console.log('Checkout Form Data:', formDataObj);
+  
+  // Here you would typically send this data to your server
+  // For now, we'll just log it and show the confirmation modal
+  showConfirmationModal();
+}
+
+function showConfirmationModal() {
+  // Generate a random order ID for demonstration
+  const orderId = 'ORD-' + Math.floor(Math.random() * 100000);
+  document.getElementById('order-id').textContent = orderId;
+  
+  // Show the confirmation modal
+  document.getElementById('confirmation-modal').classList.remove('hidden');
+  
+  // Close the checkout modal
+  closeCheckoutModal();
+}
+
+function startNewOrder() {
+  // Close the confirmation modal
+  document.getElementById('confirmation-modal').classList.add('hidden');
+  
+  // Reset the form
+  document.getElementById('checkoutForm').reset();
+  
+  // You might want to reset other states here
+}
+
+// Similarly for the lifeplan checkout
+function confirmLifeplanCheckout() {
+  // Get the form element
+  const form = document.getElementById('lifeplanCheckoutForm');
+  
+  // Create a FormData object from the form
+  const formData = new FormData(form);
+  
+  // Convert FormData to a plain object for easier viewing
+  const formDataObj = {};
+  formData.forEach((value, key) => {
+    formDataObj[key] = value;
+  });
+  
+  // Log the form data to the console
+  console.log('Lifeplan Checkout Form Data:', formDataObj);
+  
+  // Here you would typically send this data to your server
+  // For now, we'll just log it and show the confirmation modal
+  showConfirmationModal();
+}
+
 function setupLifeplanPaymentTerms() {
   const paymentTermSelect = document.getElementById('lp-paymentTerm');
   const totalPriceInput = document.getElementById('lp-totalPrice');
