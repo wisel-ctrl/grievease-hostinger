@@ -2451,7 +2451,32 @@ function openTraditionalCheckout() {
   document.getElementById('checkoutModal').classList.remove('hidden');
 }
 
-function setupLifeplanPaymentTerms() {
+
+
+// Function to open lifeplan checkout
+// Update your openLifeplanCheckout function to this:
+function openLifeplanCheckout() {
+    console.log(nagbukas ang hayop);
+  const serviceTypeModal = document.getElementById('serviceTypeModal');
+  const serviceId = serviceTypeModal.dataset.serviceId;
+  const servicePrice = serviceTypeModal.dataset.servicePrice;
+  const branchId = serviceTypeModal.dataset.branchId;
+
+  // Set the service details in the lifeplan form
+  document.getElementById('lp-service-id').value = serviceId;
+  document.getElementById('lp-service-price').value = servicePrice;
+  document.getElementById('lp-branch-id').value = branchId;
+  
+  // Update the total price in the lifeplan checkout form
+  document.getElementById('lp-totalPrice').value = servicePrice;
+  document.getElementById('lp-footer-total-price').textContent = 
+    `₱${parseFloat(servicePrice).toLocaleString('en-PH', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+  
+  // Update minimum price display
+  const minimumPrice = parseFloat(servicePrice) * 0.5;
+  document.getElementById('lp-min-price').textContent = `₱${minimumPrice.toFixed(2)}`;
+
+  function setupLifeplanPaymentTerms() {
   const paymentTermSelect = document.getElementById('lp-paymentTerm');
   const totalPriceInput = document.getElementById('lp-totalPrice');
   const monthlyPaymentDiv = document.getElementById('lp-monthlyPayment');
@@ -2497,29 +2522,6 @@ function setupLifeplanPaymentTerms() {
   // Initial calculation
   calculateMonthlyPayment();
 }
-
-// Function to open lifeplan checkout
-// Update your openLifeplanCheckout function to this:
-  function openLifeplanCheckout() {
-    console.log(nagbukas ang hayop);
-  const serviceTypeModal = document.getElementById('serviceTypeModal');
-  const serviceId = serviceTypeModal.dataset.serviceId;
-  const servicePrice = serviceTypeModal.dataset.servicePrice;
-  const branchId = serviceTypeModal.dataset.branchId;
-
-  // Set the service details in the lifeplan form
-  document.getElementById('lp-service-id').value = serviceId;
-  document.getElementById('lp-service-price').value = servicePrice;
-  document.getElementById('lp-branch-id').value = branchId;
-  
-  // Update the total price in the lifeplan checkout form
-  document.getElementById('lp-totalPrice').value = servicePrice;
-  document.getElementById('lp-footer-total-price').textContent = 
-    `₱${parseFloat(servicePrice).toLocaleString('en-PH', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
-  
-  // Update minimum price display
-  const minimumPrice = parseFloat(servicePrice) * 0.5;
-  document.getElementById('lp-min-price').textContent = `₱${minimumPrice.toFixed(2)}`;
   
   setupLifeplanPaymentTerms();
   
