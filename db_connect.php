@@ -1,9 +1,9 @@
 <?php
 // Database connection parameters
 $servername = "localhost";
-$username = "u349622494_grievease";
-$password = "Grievease_2k25";
-$dbname = "u349622494_grievease";
+$username = "root";
+$password = "Abcd1234";
+$dbname = "grievease";
 
 try {
     // Create a new connection using MySQLi
