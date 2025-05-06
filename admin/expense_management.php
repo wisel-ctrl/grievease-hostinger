@@ -1,6 +1,7 @@
 <?php
-
 session_start();
+
+include 'faviconLogo.php'; 
 
 require_once '../db_connect.php'; // Database connection
 

@@ -1,5 +1,8 @@
 <?php
 session_start();
+
+include 'faviconLogo.php'; 
+
 date_default_timezone_set('Asia/Manila'); // Or your appropriate timezone
 // Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
