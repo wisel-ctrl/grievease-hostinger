@@ -1254,61 +1254,130 @@ document.addEventListener('DOMContentLoaded', function() {
     </div>
 </div>
 
+<?php
+// Assuming you already have a database connection ($conn)
+$customerID = $_SESSION['customer_id']; // Or however you get the customer ID
+$sql = "SELECT 
+            s.sales_id,
+            s.get_timestamp,
+            s.payment_status,
+            sv.service_name,
+            s.discounted_price,
+            s.amount_paid,
+            s.balance
+        FROM 
+            sales_tb s
+        JOIN 
+            services_tb sv ON s.service_id = sv.service_id
+        WHERE customerID = ?";
 
-                    <!-- Transaction Logs Tab -->
-                    <div id="transaction-logs" class="tab-content p-4">
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("i", $customerID);
+$stmt->execute();
+$result = $stmt->get_result();
+$services = $result->fetch_all(MYSQLI_ASSOC);
+$stmt->close();
+?>
+
+<!-- Transaction Logs Tab -->
+<div id="transaction-logs" class="tab-content p-4">
     <!-- Service Type Selector -->
-    <div class="mb-6">
-        <div class="flex flex-wrap border-b border-gray-200">
-            <button class="service-tab px-4 py-2 text-navy font-medium border-b-2 border-yellow-600" data-tab="traditional-funeral">
-                Traditional Funeral
-            </button>
-            <button class="service-tab px-4 py-2 text-gray-500 font-medium mx-2" data-tab="custom-package">
-                Custom Package
-            </button>
-            <button class="service-tab px-4 py-2 text-gray-500 font-medium" data-tab="life-plan">
-                Life Plan
-            </button>
+        <div class="mb-6">
+            <div class="flex flex-wrap border-b border-gray-200">
+                <button class="service-tab px-4 py-2 text-navy font-medium border-b-2 border-yellow-600" data-tab="traditional-funeral">
+                    Traditional Funeral
+                </button>
+                <button class="service-tab px-4 py-2 text-gray-500 font-medium mx-2" data-tab="custom-package">
+                    Custom Package
+                </button>
+                <button class="service-tab px-4 py-2 text-gray-500 font-medium" data-tab="life-plan">
+                    Life Plan
+                </button>
+            </div>
         </div>
-    </div>
-    
-    <!-- Traditional Funeral Card -->
-    <div id="traditional-funeral-content" class="service-content">
-        <div class="bg-white rounded-lg shadow-md p-6 mb-6 border border-gray-100">
-            <div class="flex flex-col md:flex-row md:justify-between md:items-start">
-                <div class="mb-4 md:mb-0">
-                    <h3 class="font-bold text-lg text-navy">Traditional Funeral Package</h3>
-                    <div class="flex flex-wrap gap-4 mt-2">
-                        <div>
-                            <p class="text-sm text-gray-500">ID</p>
-                            <p class="font-medium">TF-45721</p>
+        
+        <?php foreach ($services as $service): ?>
+            <?php 
+            // Determine which tab this service belongs to
+            $tab = '';
+            if (stripos($service['service_name'], 'Traditional Funeral') !== false) {
+                $tab = 'traditional-funeral';
+            } elseif (stripos($service['service_name'], 'Custom Package') !== false) {
+                $tab = 'custom-package';
+            } elseif (stripos($service['service_name'], 'Life Plan') !== false) {
+                $tab = 'life-plan';
+            }
+            
+            // Skip if service doesn't match any tab
+            if (empty($tab)) continue;
+            
+            // Format date
+            $date = new DateTime($service['get_timestamp']);
+            $formattedDate = $date->format('M j, Y');
+            
+            // Determine status color
+            $statusClass = '';
+            if ($service['payment_status'] == 'Paid') {
+                $statusClass = 'bg-green-100 text-green-800';
+            } elseif ($service['payment_status'] == 'Pending') {
+                $statusClass = 'bg-blue-100 text-blue-800';
+            } else {
+                $statusClass = 'bg-red-100 text-red-800';
+            }
+            ?>
+            
+            <!-- Service Card -->
+            <div id="<?= $tab ?>-content" class="service-content" style="<?= $tab != 'traditional-funeral' ? 'display: none;' : '' ?>">
+                <div class="bg-white rounded-lg shadow-md p-6 mb-6 border border-gray-100">
+                    <div class="flex flex-col md:flex-row md:justify-between md:items-start">
+                        <div class="mb-4 md:mb-0">
+                            <h3 class="font-bold text-lg text-navy"><?= htmlspecialchars($service['service_name']) ?></h3>
+                            <div class="flex flex-wrap gap-4 mt-2">
+                                <div>
+                                    <p class="text-sm text-gray-500">ID</p>
+                                    <p class="font-medium"><?= htmlspecialchars($service['sales_id']) ?></p>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-500">Date</p>
+                                    <p class="font-medium"><?= $formattedDate ?></p>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-500">Status</p>
+                                    <span class="px-2 py-1 <?= $statusClass ?> text-xs font-semibold rounded-full">
+                                        <?= htmlspecialchars($service['payment_status']) ?>
+                                    </span>
+                                </div>
+                            </div>
                         </div>
-                        <div>
-                            <p class="text-sm text-gray-500">Date</p>
-                            <p class="font-medium">Apr 10, 2025</p>
+                        
+                        <div class="flex flex-col md:items-end">
+                            <p class="text-2xl font-bold text-green-600">$<?= number_format($service['amount_paid'], 2) ?></p>
+                            <p class="text-sm text-gray-500">Total Paid</p>
+                            
+                            <?php if ($service['balance'] > 0): ?>
+                                <div class="mt-2">
+                                    <p class="text-lg font-semibold text-navy">$<?= number_format($service['balance'], 2) ?></p>
+                                    <p class="text-sm text-gray-500">Remaining Balance</p>
+                                </div>
+                            <?php endif; ?>
+                            
+                            <div class="flex space-x-2 mt-3">
+                                <button onclick="openPaymentHistoryModal('<?= $tab ?>', '<?= $service['sales_id'] ?>')" 
+                                    class="bg-gray-100 hover:bg-gray-200 text-gray-800 px-3 py-1 rounded text-sm transition">
+                                    View History
+                                </button>
+                                <?php if ($service['balance'] > 0): ?>
+                                    <button onclick="openPaymentModal('<?= $tab ?>', '<?= $service['sales_id'] ?>')" 
+                                        class="bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-1 rounded text-sm transition">
+                                        Add Payment
+                                    </button>
+                                <?php endif; ?>
+                            </div>
                         </div>
-                        <div>
-                            <p class="text-sm text-gray-500">Status</p>
-                            <span class="px-2 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded-full">Paid in Full</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="flex flex-col md:items-end">
-                    <p class="text-2xl font-bold text-green-600">$9,950.00</p>
-                    <p class="text-sm text-gray-500">Total Paid</p>
-                    
-                    <div class="flex space-x-2 mt-3">
-                        <button onclick="openPaymentHistoryModal('traditional-funeral')" class="bg-gray-100 hover:bg-gray-200 text-gray-800 px-3 py-1 rounded text-sm transition">
-                            View History
-                        </button>
-                        <button class="bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-1 rounded text-sm transition">
-                            Add Payment
-                        </button>
                     </div>
                 </div>
             </div>
-        </div>
+        <?php endforeach; ?>
     </div>
     
     <!-- Custom Package Card -->
