@@ -2,7 +2,7 @@
 header('Content-Type: application/json');
 
 // Database connection
-require_once '../includes/config.php';
+require_once '../../dp_connect.php';
 
 // Get the service ID from the request
 $service_id = isset($_GET['service_id']) ? intval($_GET['service_id']) : 0;
