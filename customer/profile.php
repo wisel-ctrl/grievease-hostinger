@@ -2207,7 +2207,7 @@ document.addEventListener('DOMContentLoaded', function() {
         <button type="button" class="close-modal w-full sm:w-auto px-6 py-3 bg-white border border-yellow-600 text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center">
           Cancel
         </button>
-        <button type="submit" form="modifyBookingForm" id="modifyBookingSubmit" class="w-full sm:w-auto px-6 py-3 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg shadow-md transition-all duration-300 flex items-center justify-center">
+        <button type="submit" form="modifyBookingForm" class="w-full sm:w-auto px-6 py-3 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg shadow-md transition-all duration-300 flex items-center justify-center">
           <i class="fas fa-save mr-2"></i>
           Save Changes
         </button>
@@ -2913,8 +2913,7 @@ function fetchBookingForModification(bookingId) {
 function submitBookingModification() {
     const form = document.getElementById('modifyBookingForm');
     const formData = new FormData(form);
-    const submitBtn = document.getElementById('modifyBookingSubmit'); // Target by ID
-    
+    const submitBtn = form.querySelector('button[type="submit"]');    
     // Disable submit button during processing
     submitBtn.disabled = true;
     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Saving...';
