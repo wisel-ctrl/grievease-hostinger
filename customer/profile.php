@@ -100,32 +100,6 @@ header("Pragma: no-cache");
                     'id_declined' => 0
                 ];
                 
-                // Get user's life plan bookings from database (notifications)
-                $lifeplan_query = "SELECT * FROM lifeplan_booking_tb WHERE customer_id = ? ORDER BY initial_date DESC";
-                $lifeplan_stmt = $conn->prepare($lifeplan_query);
-                $lifeplan_stmt->bind_param("i", $user_id);
-                $lifeplan_stmt->execute();
-                $lifeplan_result = $lifeplan_stmt->get_result();
-                $lifeplan_bookings = [];
-                
-                while ($lifeplan_booking = $lifeplan_result->fetch_assoc()) {
-                    $lifeplan_bookings[] = $lifeplan_booking;
-                    
-                    switch ($lifeplan_booking['booking_status']) {
-                        case 'pending':
-                            $notifications_count['total']++;
-                            $notifications_count['pending']++;
-                            break;
-                        case 'accepted':
-                            $notifications_count['total']++;
-                            $notifications_count['accepted']++;
-                            break;
-                        case 'decline':
-                            $notifications_count['total']++;
-                            $notifications_count['declined']++;
-                            break;
-                    }
-                }
                 
                 if (isset($_SESSION['user_id'])) {
                     $user_id = $_SESSION['user_id'];
