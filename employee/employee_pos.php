@@ -1501,6 +1501,41 @@ function openLifeplanCheckout() {
   // Open lifeplan checkout modal
   document.getElementById('lifeplanCheckoutModal').classList.remove('hidden');
 }
+
+// Function to close the traditional checkout modal
+function closeCheckoutModal() {
+  const modal = document.getElementById('checkoutModal');
+  if (modal) {
+    modal.classList.add('hidden');
+    
+    // Optionally reset the form fields
+    const form = document.getElementById('checkoutForm');
+    if (form) {
+      form.reset();
+    }
+    
+    // Reset any dynamic elements
+    document.getElementById('footer-total-price').textContent = '₱0.00';
+  }
+}
+
+// Function to close the lifeplan checkout modal
+function closeLifeplanCheckoutModal() {
+  const modal = document.getElementById('lifeplanCheckoutModal');
+  if (modal) {
+    modal.classList.add('hidden');
+    
+    // Optionally reset the form fields
+    const form = document.getElementById('lifeplanCheckoutForm');
+    if (form) {
+      form.reset();
+    }
+    
+    // Reset any dynamic elements
+    document.getElementById('lp-footer-total-price').textContent = '₱0.00';
+    document.getElementById('lp-monthlyPayment').classList.add('hidden');
+  }
+}
   
   // Event listeners for filtering and sorting
   
