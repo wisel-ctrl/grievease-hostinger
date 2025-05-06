@@ -2501,6 +2501,7 @@ function setupLifeplanPaymentTerms() {
 // Function to open lifeplan checkout
 // Update your openLifeplanCheckout function to this:
   function openLifeplanCheckout() {
+    console.log(nagbukas ang hayop);
   const serviceTypeModal = document.getElementById('serviceTypeModal');
   const serviceId = serviceTypeModal.dataset.serviceId;
   const servicePrice = serviceTypeModal.dataset.servicePrice;
