@@ -2167,7 +2167,7 @@ function removeGcash() {
                                     </button>
                                 </div>
                                 <div class="flex flex-col items-center justify-center">
-                                    <img id="lifeplanQrCodeImage" src="" alt="Payment QR Code" class="w-64 h-64 object-contain mb-4">
+                                    <img id="lifeplanQrCodeImage" src="../image/qrnivjaygcash.jpg" alt="Payment QR Code" class="w-64 h-64 object-contain mb-4">
                                     <p class="text-center text-sm text-gray-600 mb-2">Scan this QR code with your GCash app to make payment</p>
                                     <p class="text-center font-bold text-yellow-600" id="lifeplanQrCodeAmount">Amount: ₱0</p>
                                 </div>
