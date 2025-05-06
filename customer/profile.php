@@ -1602,6 +1602,7 @@ function getSamplePaymentHistory(packageType) {
 </div>
 </div>
 </div>
+</div>
     <!-- Footer -->
     <footer class="bg-black font-playfair text-white py-12">
         <div class="container mx-auto px-6">
