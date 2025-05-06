@@ -2,6 +2,8 @@
 //employee_chat.php
 session_start();
 
+include 'faviconLogo.php'; 
+
 // Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
     // Redirect to login page
