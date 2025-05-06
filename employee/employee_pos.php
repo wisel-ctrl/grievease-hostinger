@@ -1429,6 +1429,53 @@ function openTraditionalCheckout() {
   document.getElementById('checkoutModal').classList.remove('hidden');
 }
 
+function setupLifeplanPaymentTerms() {
+  const paymentTermSelect = document.getElementById('lp-paymentTerm');
+  const totalPriceInput = document.getElementById('lp-totalPrice');
+  const monthlyPaymentDiv = document.getElementById('lp-monthlyPayment');
+  const monthlyPaymentAmount = monthlyPaymentDiv.querySelector('span');
+  
+  // Function to calculate monthly payment
+  function calculateMonthlyPayment() {
+    const servicePrice = parseFloat(document.getElementById('lp-service-price').value) || 0;
+    const termYears = parseInt(paymentTermSelect.value) || 1;
+    
+    if (termYears === 1) {
+      // Full payment
+      monthlyPaymentDiv.classList.add('hidden');
+      totalPriceInput.value = servicePrice.toFixed(2);
+      document.getElementById('lp-footer-total-price').textContent = 
+        `₱${servicePrice.toLocaleString('en-PH', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+    } else {
+      // Installment
+      const termMonths = termYears * 12;
+      const monthlyPayment = servicePrice / termMonths;
+      
+      monthlyPaymentAmount.textContent = 
+        `₱${monthlyPayment.toLocaleString('en-PH', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+      monthlyPaymentDiv.classList.remove('hidden');
+      
+      // Update total price (can be overridden by user)
+      totalPriceInput.value = servicePrice.toFixed(2);
+      document.getElementById('lp-footer-total-price').textContent = 
+        `₱${servicePrice.toLocaleString('en-PH', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+    }
+    
+    // Update minimum price
+    const minimumPrice = servicePrice * 0.5;
+    document.getElementById('lp-min-price').textContent = `₱${minimumPrice.toFixed(2)}`;
+  }
+  
+  // Calculate when term changes
+  paymentTermSelect.addEventListener('change', calculateMonthlyPayment);
+  
+  // Also calculate when service price changes
+  document.getElementById('lp-service-price').addEventListener('change', calculateMonthlyPayment);
+  
+  // Initial calculation
+  calculateMonthlyPayment();
+}
+
 // Function to open lifeplan checkout
 function openLifeplanCheckout() {
   const serviceTypeModal = document.getElementById('serviceTypeModal');
@@ -1453,6 +1500,41 @@ function openLifeplanCheckout() {
   setupLifeplanPaymentTerms();
   // Open lifeplan checkout modal
   document.getElementById('lifeplanCheckoutModal').classList.remove('hidden');
+}
+
+// Function to close the traditional checkout modal
+function closeCheckoutModal() {
+  const modal = document.getElementById('checkoutModal');
+  if (modal) {
+    modal.classList.add('hidden');
+    
+    // Optionally reset the form fields
+    const form = document.getElementById('checkoutForm');
+    if (form) {
+      form.reset();
+    }
+    
+    // Reset any dynamic elements
+    document.getElementById('footer-total-price').textContent = '₱0.00';
+  }
+}
+
+// Function to close the lifeplan checkout modal
+function closeLifeplanCheckoutModal() {
+  const modal = document.getElementById('lifeplanCheckoutModal');
+  if (modal) {
+    modal.classList.add('hidden');
+    
+    // Optionally reset the form fields
+    const form = document.getElementById('lifeplanCheckoutForm');
+    if (form) {
+      form.reset();
+    }
+    
+    // Reset any dynamic elements
+    document.getElementById('lp-footer-total-price').textContent = '₱0.00';
+    document.getElementById('lp-monthlyPayment').classList.add('hidden');
+  }
 }
   
   // Event listeners for filtering and sorting
