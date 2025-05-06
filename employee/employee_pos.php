@@ -1303,28 +1303,36 @@ $servicesJson = json_encode($allServices);
   // Function to show service details in modal
   async function showServiceDetails(service) {
   try {
-    // If service is just an ID, fetch the full details
-    const response = await fetch(`posFunctions/get_services.php?service_id=${service}`);
-    if (!response.ok) throw new Error('Network response was not ok');
+    // Get the service ID whether service is an object or just an ID
+    const serviceId = service.service_id || service;
+    
+    const response = await fetch(`posFunctions/get_services.php?service_id=${serviceId}`);
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
     const serviceData = await response.json();
-    if (serviceData.error) throw new Error(serviceData.error);
+    
+    // Check for error in response (your PHP returns either an object or {error: ...})
+    if (serviceData.error) {
+      throw new Error(serviceData.error);
+    }
 
-    console.log("Showing service details:", service);
-    selectedService = service;
-    document.getElementById('modal-title').textContent = service.service_name;
-    document.getElementById('service-price').value = service.selling_price;
+    console.log("Showing service details:", serviceData);
+    selectedService = serviceData;
+    
+    // Rest of your code using serviceData instead of service...
+    document.getElementById('modal-title').textContent = serviceData.service_name;
+    document.getElementById('service-price').value = serviceData.selling_price;
     
     // Format inclusions as a list if it contains commas
-    let inclusionsDisplay = service.inclusions;
-    if (service.inclusions && service.inclusions.includes(',')) {
-      const inclusionsList = service.inclusions.split(',').map(item => `<li class="mb-1">- ${item.trim()}</li>`).join('');
+    let inclusionsDisplay = serviceData.inclusions;
+    if (serviceData.inclusions && serviceData.inclusions.includes(',')) {
+      const inclusionsList = serviceData.inclusions.split(',').map(item => `<li class="mb-1">- ${item.trim()}</li>`).join('');
       inclusionsDisplay = `<ul class="list-none mt-2">${inclusionsList}</ul>`;
     }
 
     // Use a default image if none provided or if the URL is empty
-    const imageUrl = service.image_url && service.image_url.trim() !== '' ? 
-      'servicesManagement/' + service.image_url : '';
+    const imageUrl = serviceData.image_url && serviceData.image_url.trim() !== '' ? 
+      'servicesManagement/' + serviceData.image_url : '';
 
     document.getElementById('modal-content').innerHTML = `
       <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -1333,24 +1341,24 @@ $servicesJson = json_encode($allServices);
             ${!imageUrl ? '<i class="fas fa-image text-5xl text-gray-300"></i>' : ''}
           </div>
         <div>
-          <div class="text-lg font-bold mb-2.5 text-sidebar-text">${service.service_name}</div>
+          <div class="text-lg font-bold mb-2.5 text-sidebar-text">${serviceData.service_name}</div>
           <div class="flex items-center mb-4">
-            <span class="text-gray-500 text-sm mr-3"><i class="fas fa-map-marker-alt mr-1"></i> ${service.branch_name}</span>
-            <span class="text-gray-500 text-sm"><i class="fas fa-tag mr-1"></i> ${service.service_category_name}</span>
+            <span class="text-gray-500 text-sm mr-3"><i class="fas fa-map-marker-alt mr-1"></i> ${serviceData.branch_name}</span>
+            <span class="text-gray-500 text-sm"><i class="fas fa-tag mr-1"></i> ${serviceData.service_category_name}</span>
           </div>
-          <div class="text-lg font-bold text-sidebar-accent mb-4">₱${parseFloat(service.selling_price).toLocaleString('en-PH', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+          <div class="text-lg font-bold text-sidebar-accent mb-4">₱${parseFloat(serviceData.selling_price).toLocaleString('en-PH', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
 
           <!-- Add the description here -->
-          ${service.description ? `
+          ${serviceData.description ? `
             <div class="text-gray-700 text-sm mb-3">
               <strong>Description:</strong>
-              <p class="mt-1">${service.description}</p>
+              <p class="mt-1">${serviceData.description}</p>
             </div>
           ` : ''}
 
           <div class="text-gray-700 text-sm mb-3">
             <strong>Flower Replacements:</strong>
-            ${service.flower_design}
+            ${serviceData.flower_design}
           </div>
           <div class="text-gray-700 text-sm mb-3">
             <strong>Inclusions:</strong>
