@@ -1353,7 +1353,7 @@ function populatePackagesGrid() {
                 </div>
                 <div class="text-center mb-4">
                     <span class="text-2xl font-hedvig text-navy">${formatPrice(pkg.price)}</span>
-                    <p class="text-dark mt-1 text-sm">Monthly: ${formatMonthlyPayment(pkg.price)}</p>
+                    <p class="text-yellow-600 mt-1 text-sm">Monthly: ${formatMonthlyPayment(pkg.price)}</p>
                 </div>
                 <p class="text-dark mb-4 text-sm">${pkg.description}</p>
                 <div class="flex-grow">
