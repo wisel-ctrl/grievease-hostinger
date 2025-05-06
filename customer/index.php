@@ -690,24 +690,7 @@ $show_id_card = !$has_id || strtolower($id_data['is_validated']) != 'valid';
         
         <!-- Status Cards Row -->
 <div class="grid grid-cols-1 gap-6 mb-8 dashboard-cards-container">
-    <!-- Payment Status Card -->
-    <div class="bg-white rounded-xl shadow-lg p-6 dashboard-card transition-all duration-300">
-        <div class="flex items-start justify-between mb-4">
-            <div>
-                <p class="text-sm text-gray-500 font-medium">Payment Status</p>
-                <h3 class="text-xl font-hedvig text-navy">Pending Payment</h3>
-            </div>
-            <div class="w-10 h-10 rounded-full bg-yellow-600/10 flex items-center justify-center">
-                <i class="fas fa-credit-card text-yellow-600"></i>
-            </div>
-        </div>
-        <p class="text-sm text-dark mb-4">Your Traditional Funeral package payment is due by March 28, 2025.</p>
-        <a href="profile.php#transaction-logs" class="text-sm text-yellow-600 hover:text-darkgold font-medium flex items-center">
-            Make Payment <i class="fas fa-arrow-right ml-2"></i>
-        </a>
-    </div>
-    
-    <?php if ($show_booking_card): ?>
+    <?php if ($show_booking_card && $booking_status !== 'No Booking'): ?>
     <!-- Booking Status Card -->
     <div class="bg-white rounded-xl shadow-lg p-6 dashboard-card transition-all duration-300">
         <div class="flex items-start justify-between mb-4">
@@ -819,7 +802,6 @@ $show_id_card = !$has_id || strtolower($id_data['is_validated']) != 'valid';
     </div>
     <?php endif; ?>
 </div>
-
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Get the container and count visible cards
