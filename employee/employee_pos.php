@@ -439,6 +439,731 @@ $servicesJson = json_encode($allServices);
 
 </div> <!-- MAIN CONTENT-->
 
+<div id="package-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto">
+  <!-- Modal Backdrop -->
+  <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+  
+  <!-- Modal Content -->
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-3xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+    <!-- Close Button -->
+    <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closePackageModal()">
+      <i class="fas fa-times"></i>
+    </button>
+    
+    <!-- Modal Header -->
+    <div class="px-4 sm:px-6 py-4 sm:py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
+      <h3 class="text-lg sm:text-xl font-bold text-white flex items-center" id="modal-title">
+        Package Details
+      </h3>
+    </div>
+    
+    <!-- Modal Body -->
+    <div class="px-4 sm:px-6 py-4 sm:py-5" id="modal-content">
+      <!-- Content will be dynamically added here -->
+    </div>
+    
+    <!-- Modal Footer --> 
+    <div class="px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row sm:justify-end gap-2 sm:gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
+      <button class="w-full sm:w-auto px-4 sm:px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center" onclick="closePackageModal()">
+        Cancel
+      </button>
+      <button class="w-full sm:w-auto px-5 sm:px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="addToCart()">
+        Buy Now
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Checkout Modal -->
+<div class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto" id="checkoutModal">
+  <!-- Modal Backdrop -->
+  <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+  
+  <!-- Modal Content -->
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-5xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] flex flex-col">
+    <!-- Close Button -->
+    <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeCheckoutModal()">
+      <i class="fas fa-times"></i>
+    </button>
+    
+    <!-- Modal Header -->
+    <div class="px-4 sm:px-6 py-4 sm:py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200 ">
+      <h3 class="text-lg sm:text-xl font-bold text-white flex items-center" id="modal-package-title">
+        Complete Your Order
+      </h3>
+    </div>
+    
+    <!-- Modal Body -->
+    <div class="px-4 sm:px-6 py-4 sm:py-5 overflow-y-auto modal-scroll-container">
+      <form id="checkoutForm" class="space-y-3 sm:space-y-4">
+        <input type="hidden" id="service-id" name="service_id" value="">
+        <input type="hidden" id="service-price" name="service_price">
+        <input type="hidden" id="branch-id" name="branch_id" value="">
+
+        <!-- Client Information Section -->
+        <div class="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-200">
+          <h4 class="text-base sm:text-lg font-bold text-gray-800 mb-3 sm:mb-4 pb-2 border-b border-gray-200 flex items-center">
+            Client Information
+          </h4>
+          <div class="space-y-3 sm:space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-2 sm:gap-4">
+              <div>
+                <label for="clientFirstName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                  First Name
+                </label>
+                <input type="text" id="clientFirstName" name="clientFirstName" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+              </div>
+              <div>
+                <label for="clientMiddleName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                  Middle Name <span class="text-xs text-gray-500">(Optional)</span>
+                </label>
+                <input type="text" id="clientMiddleName" name="clientMiddleName" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+              </div>
+              <div>
+                <label for="clientLastName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                  Last Name
+                </label>
+                <input type="text" id="clientLastName" name="clientLastName" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+              </div>
+              <div>
+                <label for="clientSuffix" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                  Suffix <span class="text-xs text-gray-500">(Optional)</span>
+                </label>
+                <select id="clientSuffix" name="clientSuffix" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                                    <option value="">None</option>
+                                    <option value="Jr.">Jr.</option>
+                                    <option value="Sr.">Sr.</option>
+                                    <option value="I">I</option>
+                                    <option value="II">II</option>
+                                    <option value="III">III</option>
+                                    <option value="IV">IV</option>
+                                    <option value="V">V</option>
+                                </select>
+              </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-4">
+              <div>
+                <label for="clientPhone" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                  Phone Number <span class="text-red-500">*</span>
+                </label>
+                <input type="tel" id="clientPhone" name="clientPhone" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+              </div>
+              <div>
+                <label for="clientEmail" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                  Email Address <span class="text-xs text-gray-500">(Optional)</span>
+                </label>
+                <input type="email" id="clientEmail" name="clientEmail" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Deceased Information Section -->
+        <div class="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-200">
+          <h4 class="text-base sm:text-lg font-bold text-gray-800 mb-3 sm:mb-4 pb-2 border-b border-gray-200 flex items-center">
+            Deceased Information
+          </h4>
+          <div class="space-y-3 sm:space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-2 sm:gap-4">
+              <div>
+                <label for="deceasedFirstName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                  First Name
+                </label>
+                <input type="text" id="deceasedFirstName" name="deceasedFirstName" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+              </div>
+              <div>
+                <label for="deceasedMiddleName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                  Middle Name <span class="text-xs text-gray-500">(Optional)</span>
+                </label>
+                <input type="text" id="deceasedMiddleName" name="deceasedMiddleName" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+              </div>
+              <div>
+                <label for="deceasedLastName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                  Last Name
+                </label>
+                <input type="text" id="deceasedLastName" name="deceasedLastName" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+              </div>
+              <div>
+                <label for="deceasedSuffix" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                  Suffix <span class="text-xs text-gray-500">(Optional)</span>
+                </label>
+                <select id="traditionalDeceasedSuffix" name="traditionalDeceasedSuffix" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                                    <option value="">None</option>
+                                    <option value="Jr.">Jr.</option>
+                                    <option value="Sr.">Sr.</option>
+                                    <option value="I">I</option>
+                                    <option value="II">II</option>
+                                    <option value="III">III</option>
+                                    <option value="IV">IV</option>
+                                    <option value="V">V</option>
+                                </select>
+              </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-2 sm:gap-4">
+              <div>
+                <label for="dateOfBirth" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                  Date of Birth <span class="text-xs text-gray-500">(Optional)</span>
+                </label>
+                <input type="date" id="dateOfBirth" name="dateOfBirth" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+              </div>
+              <div>
+                <label for="dateOfDeath" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                  Date of Death <span class="text-red-500">*</span>
+                </label>
+                <input type="date" id="dateOfDeath" name="dateOfDeath" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+              </div>
+              <div>
+                <label for="dateOfBurial" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                  Date of Burial/Cremation <span class="text-xs text-gray-500">(Optional)</span>
+                </label>
+                <input type="date" id="dateOfBurial" name="dateOfBurial" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+              </div>
+            </div>
+            <!-- New Address Dropdown Hierarchy -->
+    <div class="space-y-3">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-2 sm:gap-4">
+        <div>
+          <label for="deceasedRegion" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            Region <span class="text-red-500">*</span>
+          </label>
+          <select id="deceasedRegion" name="deceasedRegion" required 
+                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+            <option value="" disabled selected>Select Region</option>
+            <?php foreach ($regions as $region): ?>
+              <option value="<?php echo $region['region_code']; ?>"><?php echo $region['region_name']; ?></option>
+            <?php endforeach; ?>
+          </select>
+        </div>
+        <div>
+          <label for="deceasedProvince" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            Province <span class="text-red-500">*</span>
+          </label>
+          <select id="deceasedProvince" name="deceasedProvince" required disabled
+                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+            <option value="" disabled selected>Select Province</option>
+          </select>
+        </div>
+        <div>
+          <label for="deceasedCity" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            City/Municipality <span class="text-red-500">*</span>
+          </label>
+          <select id="deceasedCity" name="deceasedCity" required disabled
+                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+            <option value="" disabled selected>Select City/Municipality</option>
+          </select>
+        </div>
+        <div>
+          <label for="deceasedBarangay" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            Barangay <span class="text-red-500">*</span>
+          </label>
+          <select id="deceasedBarangay" name="deceasedBarangay" required disabled
+                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+            <option value="" disabled selected>Select Barangay</option>
+          </select>
+        </div>
+      </div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-2 sm:gap-4">
+        <div class="md:col-span-2">
+          <label for="deceasedStreet" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            Street Address <span class="text-red-500">*</span>
+          </label>
+          <input type="text" id="deceasedStreet" name="deceasedStreet" required 
+                 class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+        </div>
+        <div>
+          <label for="deceasedZip" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            ZIP Code <span class="text-red-500">*</span>
+          </label>
+          <input type="text" id="deceasedZip" name="deceasedZip" required 
+                 class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+        </div>
+      </div>
+    </div>
+    
+    <div>
+      <label for="deathCertificate" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+        Death Certificate <span class="text-xs text-gray-500">(If available)</span>
+      </label>
+      <div class="relative">
+        <div class="flex items-center border border-gray-300 rounded-lg px-3 py-2 focus-within:ring-1 focus-within:ring-sidebar-accent focus-within:border-sidebar-accent transition-all duration-200">
+          <input type="file" id="deathCertificate" name="deathCertificate" accept="image/*,.pdf" class="w-full focus:outline-none">
+        </div>
+        <!-- Image preview container -->
+        <div id="deathCertificatePreview" class="mt-2 hidden">
+          <div class="relative inline-block">
+            <img id="previewImage" src="#" alt="Death Certificate Preview" class="max-h-40 rounded-lg border border-gray-200">
+            <button type="button" id="removeImageBtn" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600 transition-colors">
+              <i class="fas fa-times text-xs"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+  
+        <!-- Payment Information -->
+        <div class="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-200">
+          <h4 class="text-base sm:text-lg font-bold text-gray-800 mb-3 sm:mb-4 pb-2 border-b border-gray-200 flex items-center">
+            Payment Information
+          </h4>
+          <div class="space-y-3 sm:space-y-4">
+            <div>
+              <label for="paymentMethod" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                Method of Payment
+              </label>
+              <select id="paymentMethod" name="paymentMethod" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+                <option value="" disabled selected>Select payment method</option>
+                <option value="Cash">Cash</option>
+                <option value="G-Cash">G-Cash</option>
+                <option value="Bank Transfer">Bank Transfer</option>
+              </select>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-4">
+              <div>
+                <label for="totalPrice" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                  Total Price 
+                  <span class="text-xs text-gray-500 ml-1">(Minimum: <span id="min-price">₱0.00</span>)</span>
+                </label>
+                <div class="relative">
+                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <span class="text-gray-500">₱</span>
+                  </div>
+                  <input type="number" id="totalPrice" name="totalPrice" class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+                </div>
+              </div>
+              <div>
+                <label for="amountPaid" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                  Amount Paid
+                </label>
+                <div class="relative">
+                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <span class="text-gray-500">₱</span>
+                  </div>
+                  <input type="number" id="amountPaid" name="amountPaid" required class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cremation Checklist Section -->
+        <div class="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-200">
+          <h4 class="text-base sm:text-lg font-bold text-gray-800 mb-3 sm:mb-4 pb-2 border-b border-gray-200 flex items-center">
+            Additional Services
+          </h4>
+          <div class="space-y-3">
+            <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
+              <input type="checkbox" name="withCremation" id="withCremation" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
+              With Cremation
+            </label>
+            <p class="text-sm text-gray-500 ml-8">Check this box if the service includes cremation</p>
+          </div>
+        </div>
+      </form>
+    </div>
+    
+    <!-- Modal Footer -->
+    <div class="px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row sm:justify-between items-center border-t border-gray-200 sticky bottom-0 bg-white">
+      <div class="text-gray-600 mb-3 sm:mb-0 w-full sm:w-auto text-center sm:text-left">
+        <p class="font-medium">Order Total: <span class="text-xl font-bold text-sidebar-accent" id="footer-total-price">₱0.00</span></p>
+      </div>
+      <div class="flex flex-col sm:flex-row gap-2 sm:gap-4 w-full sm:w-auto">
+        <button class="w-full sm:w-auto px-4 sm:px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center" onclick="closeCheckoutModal()">
+          Cancel
+        </button>
+        <button class="w-full sm:w-auto px-5 sm:px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="confirmCheckout()">
+          Confirm Order
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Service Type Selection Modal -->
+<div id="serviceTypeModal" class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto">
+  <!-- Modal Backdrop -->
+  <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+  
+  <!-- Modal Content -->
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-md mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+    <!-- Close Button -->
+    <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeServiceTypeModal()">
+      <i class="fas fa-times"></i>
+    </button>
+    
+    <!-- Modal Header -->
+    <div class="px-4 sm:px-6 py-4 sm:py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
+      <h3 class="text-lg sm:text-xl font-bold text-white flex items-center">
+        Select Service Type
+      </h3>
+    </div>
+    
+    <!-- Modal Body -->
+    <div class="px-4 sm:px-6 py-4 sm:py-5">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <button id="traditionalServiceBtn" class="bg-[#F9F6F0] hover:bg-yellow-100 border-2 border-[#CA8A04] text-[#2D2B30] px-4 py-6 rounded-lg shadow-md transition-all duration-300 flex flex-col items-center">
+          <i class="fas fa-dove text-3xl text-[#CA8A04] mb-2"></i>
+          <span class="font-medium text-lg">Traditional</span>
+          <span class="text-sm text-gray-600 mt-2 text-center">For immediate funeral needs</span>
+        </button>
+        
+        <button id="lifeplanServiceBtn" class="bg-[#F9F6F0] hover:bg-yellow-100 border-2 border-[#CA8A04] text-[#2D2B30] px-4 py-6 rounded-lg shadow-md transition-all duration-300 flex flex-col items-center">
+          <i class="fas fa-seedling text-3xl text-[#CA8A04] mb-2"></i>
+          <span class="font-medium text-lg">Lifeplan</span>
+          <span class="text-sm text-gray-600 mt-2 text-center">lifeplan funeral planning</span>
+        </button>
+      </div>
+    </div>
+    
+    <!-- Modal Footer -->
+    <div class="px-4 sm:px-6 py-3 sm:py-4 flex justify-end border-t border-gray-200 sticky bottom-0 bg-white">
+      <button class="px-4 sm:px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center" onclick="closeServiceTypeModal()">
+        Cancel
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Lifeplan Checkout Modal -->
+<div class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto" id="lifeplanCheckoutModal">
+  <!-- Modal Backdrop -->
+  <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+  
+  <!-- Modal Content -->
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-5xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] flex flex-col">
+    <!-- Close Button -->
+    <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeLifeplanCheckoutModal()">
+      <i class="fas fa-times"></i>
+    </button>
+    
+    <!-- Modal Header -->
+    <div class="px-4 sm:px-6 py-4 sm:py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
+      <h3 class="text-lg sm:text-xl font-bold text-white flex items-center">
+        Complete Your Lifeplan Order
+      </h3>
+    </div>
+    
+    <!-- Modal Body -->
+    <div class="px-4 sm:px-6 py-4 sm:py-5 overflow-y-auto modal-scroll-container">
+      <form id="lifeplanCheckoutForm" class="space-y-3 sm:space-y-4" onsubmit="event.preventDefault(); confirmLifeplanCheckout();">
+        <input type="hidden" id="lp-service-id" name="service_id" value="">
+        <input type="hidden" id="lp-service-price" name="service_price">
+        <input type="hidden" id="lp-branch-id" name="branch_id" value="">
+
+        <!-- Client Information Section -->
+        <div class="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-200">
+          <h4 class="text-base sm:text-lg font-bold text-gray-800 mb-3 sm:mb-4 pb-2 border-b border-gray-200 flex items-center">
+            Client Information
+          </h4>
+          <div class="space-y-3 sm:space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-2 sm:gap-4">
+              <div>
+                <label for="lp-clientFirstName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                  First Name
+                </label>
+                <input type="text" id="lp-clientFirstName" name="clientFirstName" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+              </div>
+              <div>
+                <label for="lp-clientMiddleName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                  Middle Name <span class="text-xs text-gray-500">(Optional)</span>
+                </label>
+                <input type="text" id="lp-clientMiddleName" name="clientMiddleName" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+              </div>
+              <div>
+                <label for="lp-clientLastName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                  Last Name
+                </label>
+                <input type="text" id="lp-clientLastName" name="clientLastName" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+              </div>
+              <div>
+                <label for="lp-clientSuffix" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                  Suffix <span class="text-xs text-gray-500">(Optional)</span>
+                </label>
+                <select id="lp-clientSuffix" name="clientSuffix" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                                    <option value="">None</option>
+                                    <option value="Jr.">Jr.</option>
+                                    <option value="Sr.">Sr.</option>
+                                    <option value="I">I</option>
+                                    <option value="II">II</option>
+                                    <option value="III">III</option>
+                                    <option value="IV">IV</option>
+                                    <option value="V">V</option>
+                                </select>
+              </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-4">
+              <div>
+                <label for="lp-clientPhone" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                  Phone Number
+                </label>
+                <input type="tel" id="lp-clientPhone" name="clientPhone" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" minlength="11" maxlength="11">
+              </div>
+              <div>
+                <label for="lp-clientEmail" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                  Email Address <span class="text-xs text-gray-500">(Optional)</span>
+                </label>
+                <input type="email" id="lp-clientEmail" name="clientEmail" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Beneficiary Information Section -->
+        <div class="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-200">
+          <h4 class="text-base sm:text-lg font-bold text-gray-800 mb-3 sm:mb-4 pb-2 border-b border-gray-200 flex items-center">
+            Beneficiary Information
+          </h4>
+          <div class="space-y-3 sm:space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-2 sm:gap-4">
+              <div>
+                <label for="beneficiaryFirstName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                  First Name
+                </label>
+                <input type="text" id="beneficiaryFirstName" name="beneficiaryFirstName" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+              </div>
+              <div>
+                <label for="beneficiaryMiddleName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                  Middle Name <span class="text-xs text-gray-500">(Optional)</span>
+                </label>
+                <input type="text" id="beneficiaryMiddleName" name="beneficiaryMiddleName" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+              </div>
+              <div>
+                <label for="beneficiaryLastName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                  Last Name
+                </label>
+                <input type="text" id="beneficiaryLastName" name="beneficiaryLastName" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+              </div>
+              <div>
+                <label for="beneficiarySuffix" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                  Suffix <span class="text-xs text-gray-500">(Optional)</span>
+                </label>
+                <select id="beneficiarySuffix" name="beneficiarySuffix" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                                    <option value="">None</option>
+                                    <option value="Jr.">Jr.</option>
+                                    <option value="Sr.">Sr.</option>
+                                    <option value="I">I</option>
+                                    <option value="II">II</option>
+                                    <option value="III">III</option>
+                                    <option value="IV">IV</option>
+                                    <option value="V">V</option>
+                                </select>
+              </div>
+            </div>
+            
+            <div>
+              <label for="beneficiaryDateOfBirth" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                Date of Birth
+              </label>
+              <input type="date" id="beneficiaryDateOfBirth" name="beneficiaryDateOfBirth" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+            </div>
+            <!-- New Address Dropdown Hierarchy -->
+    <div class="space-y-3">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-2 sm:gap-4">
+        <div>
+          <label for="beneficiaryRegion" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            Region <span class="text-red-500">*</span>
+          </label>
+          <select id="beneficiaryRegion" name="beneficiaryRegion" required 
+                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+            <option value="" disabled selected>Select Region</option>
+            <?php foreach ($regions as $region): ?>
+              <option value="<?php echo $region['region_code']; ?>"><?php echo $region['region_name']; ?></option>
+            <?php endforeach; ?>
+          </select>
+        </div>
+        <div>
+          <label for="beneficiaryProvince" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            Province <span class="text-red-500">*</span>
+          </label>
+          <select id="beneficiaryProvince" name="beneficiaryProvince" required disabled
+                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+            <option value="" disabled selected>Select Province</option>
+          </select>
+        </div>
+        <div>
+          <label for="beneficiaryCity" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            City/Municipality <span class="text-red-500">*</span>
+          </label>
+          <select id="beneficiaryCity" name="beneficiaryCity" required disabled
+                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+            <option value="" disabled selected>Select City/Municipality</option>
+          </select>
+        </div>
+        <div>
+          <label for="beneficiaryBarangay" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            Barangay <span class="text-red-500">*</span>
+          </label>
+          <select id="beneficiaryBarangay" name="beneficiaryBarangay" required disabled
+                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+            <option value="" disabled selected>Select Barangay</option>
+          </select>
+        </div>
+      </div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-2 sm:gap-4">
+        <div class="md:col-span-2">
+          <label for="beneficiaryStreet" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            Street Address <span class="text-red-500">*</span>
+          </label>
+          <input type="text" id="beneficiaryStreet" name="beneficiaryAddress" required 
+                 class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+        </div>
+        <div>
+          <label for="beneficiaryZip" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            ZIP Code <span class="text-red-500">*</span>
+          </label>
+          <input type="text" id="beneficiaryZip" name="beneficiaryZip" required 
+                 class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+        </div>
+      </div>
+    </div>
+    
+            <div>
+              <label for="beneficiaryRelationship" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                Relationship to Client
+              </label>
+              <input type="text" id="beneficiaryRelationship" name="beneficiaryRelationship" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+            </div>
+          </div>
+        </div>
+  
+        <!-- Payment Information -->
+        <div class="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-200">
+          <h4 class="text-base sm:text-lg font-bold text-gray-800 mb-3 sm:mb-4 pb-2 border-b border-gray-200 flex items-center">
+            Payment Information
+          </h4>
+          <div class="space-y-3 sm:space-y-4">
+            <div>
+              <label for="lp-paymentMethod" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                Method of Payment
+              </label>
+              <select id="lp-paymentMethod" name="paymentMethod" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+                <option value="" disabled selected>Select payment method</option>
+                <option value="Cash">Cash</option>
+                <option value="G-Cash">G-Cash</option>
+                <option value="Bank Transfer">Bank Transfer</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="lp-paymentTerm" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                Payment Term
+              </label>
+              <select id="lp-paymentTerm" name="paymentTerm" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+                <option value="1">1 Year (Full Payment)</option>
+                <option value="2">2 Years</option>
+                <option value="3">3 Years</option>
+                <option value="5">5 Years</option>
+              </select>
+              <div id="lp-monthlyPayment" class="mt-2 text-sm text-gray-600 hidden">
+                Monthly Payment: <span class="font-semibold text-sidebar-accent">₱0.00</span>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-4">
+              <div>
+                <label for="lp-totalPrice" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                  Total Price 
+                  <span class="text-xs text-gray-500 ml-1">(Minimum: <span id="lp-min-price">₱0.00</span>)</span>
+                </label>
+                <div class="relative">
+                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <span class="text-gray-500">₱</span>
+                  </div>
+                  <input type="number" id="lp-totalPrice" name="totalPrice" class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+                </div>
+              </div>
+              <div>
+                <label for="lp-amountPaid" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                  Amount Paid
+                </label>
+                <div class="relative">
+                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <span class="text-gray-500">₱</span>
+                  </div>
+                  <input type="number" id="lp-amountPaid" name="amountPaid" required class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Additional Services (Cremation) -->
+        <div class="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-200">
+          <h4 class="text-base sm:text-lg font-bold text-gray-800 mb-3 sm:mb-4 pb-2 border-b border-gray-200 flex items-center">
+            Additional Services
+          </h4>
+          <div class="space-y-3">
+            <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
+              <input type="checkbox" name="withCremation" id="lp-withCremation" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
+              With Cremation
+            </label>
+            <p class="text-sm text-gray-500 ml-8">Check this box if the service includes cremation</p>
+          </div>
+        </div>
+      </form>
+    </div>
+    
+    <!-- Modal Footer --> 
+    <div class="px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row justify-between items-center gap-2 sm:gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
+      <div class="text-gray-600 w-full sm:w-auto">
+        <p class="font-medium">Order Total: <span class="text-xl font-bold text-sidebar-accent" id="lp-footer-total-price">₱0.00</span></p>
+      </div>
+      <div class="flex flex-col sm:flex-row w-full sm:w-auto gap-2 sm:gap-4">
+        <button class="w-full sm:w-auto px-4 sm:px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center" onclick="closeLifeplanCheckoutModal()">
+          Cancel
+        </button>
+        <button id="lp-confirm-btn" class="w-full sm:w-auto px-5 sm:px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="confirmLifeplanCheckout()">
+          Confirm Order
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <!-- Order Confirmation Modal -->
+<div id="confirmation-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
+  <!-- Modal Backdrop -->
+  <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+  
+  <!-- Modal Content -->
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-md mx-4 z-10 transform transition-all duration-300">
+    <!-- Close Button -->
+    <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeConfirmationModal()">
+      <i class="fas fa-times"></i>
+    </button>
+    
+    <!-- Modal Header -->
+    <div class="px-6 py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
+      <h3 class="text-xl font-bold text-white flex items-center">
+        Order Confirmed
+      </h3>
+    </div>
+    
+    <!-- Modal Body -->
+    <div class="px-6 py-5 text-center">
+      <div class="w-16 h-16 mx-auto mb-4 bg-green-100 rounded-full flex items-center justify-center">
+        <i class="fas fa-check-circle text-3xl text-green-600"></i>
+      </div>
+      <h4 class="text-lg font-semibold mb-2 text-sidebar-text">Order Confirmed!</h4>
+      <p class="text-gray-600 mb-4">Your order has been successfully placed.</p>
+      <p class="text-gray-600 mb-2">Order ID: <span id="order-id" class="font-semibold">ORD-12345</span></p>
+      <p class="text-gray-600">A confirmation has been sent to your records.</p>
+    </div>
+    
+    <!-- Modal Footer --> 
+    <div class="px-6 py-4 flex justify-center border-t border-gray-200 sticky bottom-0 bg-white">
+      <button class="px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="startNewOrder()">
+        Start New Order
+      </button>
+    </div>
+  </div>
+</div>
+
+
  
 
 
@@ -462,6 +1187,17 @@ $servicesJson = json_encode($allServices);
   // On page load, show all services for the user's branch
   document.addEventListener('DOMContentLoaded', function() {
     filterAndDisplayServices();
+
+      document.getElementById('traditionalServiceBtn').addEventListener('click', function() {
+      document.getElementById('serviceTypeModal').classList.add('hidden');
+      openTraditionalCheckout();
+    });
+    
+    document.getElementById('lifeplanServiceBtn').addEventListener('click', function() {
+      document.getElementById('serviceTypeModal').classList.add('hidden');
+      openLifeplanCheckout();
+    });
+
   });
   
   // Filter and display services based on current selections
@@ -515,6 +1251,7 @@ $servicesJson = json_encode($allServices);
   }
   
   // Display services in the container
+  // Display services in the container
   function displayServices(services) {
     servicesContainer.innerHTML = '';
     
@@ -551,7 +1288,7 @@ $servicesJson = json_encode($allServices);
           <p class="text-sm text-gray-600 mb-3 line-clamp-2">${service.description}</p>
           <div class="flex justify-between items-center">
             <span class="text-xs bg-gray-100 px-2 py-1 rounded-full">${service.service_category_name}</span>
-            <button onclick="selectService(${service.service_id})" class="px-3 py-1 bg-sidebar-accent text-white rounded-md text-sm hover:bg-yellow-600 transition-all duration-300">
+            <button onclick="showServiceDetails(${service.service_id})" class="px-3 py-1 bg-sidebar-accent text-white rounded-md text-sm hover:bg-yellow-600 transition-all duration-300">
               Select
             </button>
           </div>
@@ -563,13 +1300,140 @@ $servicesJson = json_encode($allServices);
   }
   
   // Select a service (implement this function based on your requirements)
-  function selectService(serviceId) {
-    const selectedService = services.find(service => service.service_id == serviceId);
-    if (selectedService) {
-      alert(`Selected service: ${selectedService.service_name}\nPrice: ₱${selectedService.selling_price}\n\nImplement your POS logic here.`);
-      // Navigate to transaction page or show modal for order processing
-    }
+  // Function to show service details in modal
+function showServiceDetails(service) {
+  console.log("Showing service details:", service);
+  selectedService = service;
+  document.getElementById('modal-title').textContent = service.service_name;
+  document.getElementById('service-price').value = service.selling_price;
+  
+  // Format inclusions as a list if it contains commas
+  let inclusionsDisplay = service.inclusions;
+  if (service.inclusions && service.inclusions.includes(',')) {
+    const inclusionsList = service.inclusions.split(',').map(item => `<li class="mb-1">- ${item.trim()}</li>`).join('');
+    inclusionsDisplay = `<ul class="list-none mt-2">${inclusionsList}</ul>`;
   }
+
+  // Use a default image if none provided or if the URL is empty
+  const imageUrl = service.image_url && service.image_url.trim() !== '' ? 
+    'servicesManagement/' + service.image_url : '';
+
+  document.getElementById('modal-content').innerHTML = `
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+      <div class="${imageUrl ? 'h-64 bg-center bg-cover bg-no-repeat rounded-lg' : 'h-64 bg-gray-100 flex items-center justify-center rounded-lg'}" 
+             ${imageUrl ? `style="background-image: url('${imageUrl}');"` : ''}>
+          ${!imageUrl ? '<i class="fas fa-image text-5xl text-gray-300"></i>' : ''}
+        </div>
+      <div>
+        <div class="text-lg font-bold mb-2.5 text-sidebar-text">${service.service_name}</div>
+        <div class="flex items-center mb-4">
+          <span class="text-gray-500 text-sm mr-3"><i class="fas fa-map-marker-alt mr-1"></i> ${service.branch_name}</span>
+          <span class="text-gray-500 text-sm"><i class="fas fa-tag mr-1"></i> ${service.service_category_name}</span>
+        </div>
+        <div class="text-lg font-bold text-sidebar-accent mb-4">₱${parseFloat(service.selling_price).toLocaleString('en-PH', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+
+        <!-- Add the description here -->
+        ${service.description ? `
+          <div class="text-gray-700 text-sm mb-3">
+            <strong>Description:</strong>
+            <p class="mt-1">${service.description}</p>
+          </div>
+        ` : ''}
+
+        <div class="text-gray-700 text-sm mb-3">
+          <strong>Flower Replacements:</strong>
+          ${service.flower_design}
+        </div>
+        <div class="text-gray-700 text-sm mb-3">
+          <strong>Inclusions:</strong>
+          ${inclusionsDisplay}
+        </div>
+      </div>
+    </div>
+  `;
+  document.getElementById('package-modal').classList.remove('hidden');
+}
+
+// Function to close the package modal
+function closePackageModal() {
+  document.getElementById('package-modal').classList.add('hidden');
+  selectedService = null;
+}
+
+function closeServiceTypeModal() {
+  const modal = document.getElementById('serviceTypeModal');
+  if (modal) {
+    modal.classList.add('hidden');
+  }
+}
+
+// Function to handle adding to cart and immediately proceed to checkout
+function addToCart() {
+  console.log("Selected service in addToCart:", selectedService);
+  if (selectedService) {
+    // Store the selected service in the service type modal's data attributes
+    const serviceTypeModal = document.getElementById('serviceTypeModal');
+    serviceTypeModal.dataset.serviceId = selectedService.service_id;
+    serviceTypeModal.dataset.servicePrice = selectedService.selling_price;
+    serviceTypeModal.dataset.branchId = selectedService.branch_id;
+    
+    // Close package modal and show service type selection
+    closePackageModal();
+    document.getElementById('serviceTypeModal').classList.remove('hidden');
+  }
+}
+
+// Function to open traditional checkout
+function openTraditionalCheckout() {
+  console.log("Opening traditional checkout with service:", document.getElementById('serviceTypeModal').dataset);
+  const serviceTypeModal = document.getElementById('serviceTypeModal');
+  const serviceId = serviceTypeModal.dataset.serviceId;
+  const servicePrice = serviceTypeModal.dataset.servicePrice;
+  const branchId = serviceTypeModal.dataset.branchId;
+
+  // Set the service details in the form
+  document.getElementById('service-id').value = serviceId;
+  document.getElementById('service-price').value = servicePrice;
+  document.getElementById('branch-id').value = branchId;
+  
+  // Update the total price in the checkout form
+  document.getElementById('totalPrice').value = servicePrice;
+  document.getElementById('footer-total-price').textContent = 
+    `₱${parseFloat(servicePrice).toLocaleString('en-PH', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+  
+  // Update minimum price display
+  const minimumPrice = parseFloat(servicePrice) * 0.5;
+  document.getElementById('min-price').textContent = `₱${minimumPrice.toFixed(2)}`;
+  
+  // Open checkout modal
+  document.getElementById('checkoutModal').classList.remove('hidden');
+}
+
+// Function to open lifeplan checkout
+function openLifeplanCheckout() {
+  const serviceTypeModal = document.getElementById('serviceTypeModal');
+  const serviceId = serviceTypeModal.dataset.serviceId;
+  const servicePrice = serviceTypeModal.dataset.servicePrice;
+  const branchId = serviceTypeModal.dataset.branchId;
+
+  // Set the service details in the lifeplan form
+  document.getElementById('lp-service-id').value = serviceId;
+  document.getElementById('lp-service-price').value = servicePrice;
+  document.getElementById('lp-branch-id').value = branchId;
+  
+  // Update the total price in the lifeplan checkout form
+  document.getElementById('lp-totalPrice').value = servicePrice;
+  document.getElementById('lp-footer-total-price').textContent = 
+    `₱${parseFloat(servicePrice).toLocaleString('en-PH', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+  
+  // Update minimum price display
+  const minimumPrice = parseFloat(servicePrice) * 0.5;
+  document.getElementById('lp-min-price').textContent = `₱${minimumPrice.toFixed(2)}`;
+  
+  setupLifeplanPaymentTerms();
+  // Open lifeplan checkout modal
+  document.getElementById('lifeplanCheckoutModal').classList.remove('hidden');
+}
   
   // Event listeners for filtering and sorting
   
