@@ -424,10 +424,6 @@
                         <i class="fas fa-check-circle mr-2 text-yellow-600 mt-1 flex-shrink-0"></i>
                         <span class="text-dark">Equal Monthly Installments</span>
                     </li>
-                    <li class="flex items-start">
-                        <i class="fas fa-check-circle mr-2 text-yellow-600 mt-1 flex-shrink-0"></i>
-                        <span class="text-dark">Flexible Payment Option</span>
-                    </li>
                 </ul>
                 <a href="Landing_Page/register.php" class="block w-full mt-4 sm:mt-6 bg-yellow-600 hover:bg-yellow-700 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg shadow-md transition-all duration-300 text-center text-sm sm:text-base">
                     Select Package

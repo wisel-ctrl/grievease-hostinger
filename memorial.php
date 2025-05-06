@@ -428,7 +428,6 @@ document.addEventListener('DOMContentLoaded', setInitialCandleColor);
 // Form submission handling
 submitDedication.addEventListener('click', (e) => {
     e.preventDefault();
-    
 
     // Get form values
     const inMemoryOf = document.getElementById('in-memory-of').value.trim();
