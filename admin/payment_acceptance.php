@@ -189,7 +189,7 @@ $lifeplan_requests = mysqli_fetch_all($lifeplan_result, MYSQLI_ASSOC);
             
             <div class="pt-3 border-t border-gray-100">
               <button onclick="openTraditionalModal('<?= htmlspecialchars($request['payment_url']) ?>', '<?= number_format($request['amount'], 2) ?>')" 
-                class="w-full py-2 bg-sidebar text-white rounded-lg hover:bg-hover-bg transition-colors flex items-center justify-center group-hover:shadow-md">
+                class="w-full py-2 bg-sidebar-accent text-white rounded-lg hover:bg-hover-bg transition-colors flex items-center justify-center group-hover:shadow-md">
                 <i class="fas fa-receipt mr-2"></i> View Receipt
               </button>
             </div>
@@ -252,7 +252,7 @@ $lifeplan_requests = mysqli_fetch_all($lifeplan_result, MYSQLI_ASSOC);
             
             <div class="pt-3 border-t border-gray-100">
               <button onclick="openCustomModal('<?= htmlspecialchars($request['payment_url']) ?>', '<?= number_format($request['amount'], 2) ?>')" 
-                class="w-full py-2 bg-sidebar text-white rounded-lg hover:bg-hover-bg transition-colors flex items-center justify-center group-hover:shadow-md">
+                class="w-full py-2 bg-sidebar-accent text-white rounded-lg hover:bg-hover-bg transition-colors flex items-center justify-center group-hover:shadow-md">
                 <i class="fas fa-receipt mr-2"></i> View Receipt
               </button>
             </div>
@@ -334,9 +334,9 @@ $lifeplan_requests = mysqli_fetch_all($lifeplan_result, MYSQLI_ASSOC);
 </div>
 
 <!-- Traditional Payment Modal -->
-<div id="traditionalModal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center hidden z-50 backdrop-blur-sm transition-all duration-300">
-  <div class="bg-white rounded-xl p-0 max-w-3xl w-full max-h-[90vh] overflow-hidden shadow-2xl transform transition-all duration-300">
-    <div class="bg-sidebar-text py-4 px-6 flex justify-between items-center">
+<div id="traditionalModal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center hidden z-50 backdrop-blur-sm transition-all duration-300 overflow-y-auto py-8">
+  <div class="bg-white rounded-xl p-0 max-w-3xl w-full mx-4 my-8 shadow-2xl transform transition-all duration-300">
+    <div class="bg-sidebar-text py-4 px-6 flex justify-between items-center sticky top-0 z-10">
       <h3 class="text-xl font-semibold text-white flex items-center">
         <i class="fas fa-receipt mr-2"></i> Payment Receipt
       </h3>
@@ -345,9 +345,9 @@ $lifeplan_requests = mysqli_fetch_all($lifeplan_result, MYSQLI_ASSOC);
       </button>
     </div>
     
-    <div class="p-6">
+    <div class="p-6 overflow-y-auto max-h-[calc(100vh-180px)]">
       <div class="mb-6 rounded-lg overflow-hidden border-4 border-gray-200 shadow-lg">
-        <img id="traditionalReceiptImage" src="" alt="Payment Receipt" class="w-full h-auto object-contain">
+        <img id="traditionalReceiptImage" src="" alt="Payment Receipt" class="w-full max-h-[70vh] object-contain mx-auto">
       </div>
       
       <div class="bg-blue-50 p-5 rounded-lg shadow-inner mb-6">
@@ -358,12 +358,10 @@ $lifeplan_requests = mysqli_fetch_all($lifeplan_result, MYSQLI_ASSOC);
       </div>
       
       <!-- Action buttons -->
-      <div class="flex space-x-4 justify-end">
-        <!-- Add approve/reject buttons if needed -->
+      <div class="flex space-x-4 justify-end sticky bottom-0 bg-white pt-4 pb-2 -mb-2">
         <button onclick="closeTraditionalModal()" class="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors font-medium">
           Close
         </button>
-        <!-- Example of an approval button -->
         <button class="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium">
           <i class="fas fa-check mr-2"></i> Approve Payment
         </button>
@@ -373,9 +371,9 @@ $lifeplan_requests = mysqli_fetch_all($lifeplan_result, MYSQLI_ASSOC);
 </div>
 
 <!-- Custom Packages Modal -->
-<div id="customModal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center hidden z-50 backdrop-blur-sm transition-all duration-300">
-  <div class="bg-white rounded-xl p-0 max-w-3xl w-full max-h-[90vh] overflow-hidden shadow-2xl transform transition-all duration-300">
-    <div class="bg-sidebar-text py-4 px-6 flex justify-between items-center">
+<div id="customModal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center hidden z-50 backdrop-blur-sm transition-all duration-300 overflow-y-auto py-8">
+  <div class="bg-white rounded-xl p-0 max-w-3xl w-full mx-4 my-8 shadow-2xl transform transition-all duration-300">
+    <div class="bg-sidebar-text py-4 px-6 flex justify-between items-center sticky top-0 z-10">
       <h3 class="text-xl font-semibold text-white flex items-center">
         <i class="fas fa-box-open mr-2"></i> Custom Package Receipt
       </h3>
@@ -384,9 +382,9 @@ $lifeplan_requests = mysqli_fetch_all($lifeplan_result, MYSQLI_ASSOC);
       </button>
     </div>
     
-    <div class="p-6">
+    <div class="p-6 overflow-y-auto max-h-[calc(100vh-180px)]">
       <div class="mb-6 rounded-lg overflow-hidden border-4 border-gray-200 shadow-lg">
-        <img id="customReceiptImage" src="" alt="Payment Receipt" class="w-full h-auto object-contain">
+        <img id="customReceiptImage" src="" alt="Payment Receipt" class="w-full max-h-[70vh] object-contain mx-auto">
       </div>
       
       <div class="bg-blue-50 p-5 rounded-lg shadow-inner mb-6">
@@ -397,7 +395,7 @@ $lifeplan_requests = mysqli_fetch_all($lifeplan_result, MYSQLI_ASSOC);
       </div>
       
       <!-- Action buttons -->
-      <div class="flex space-x-4 justify-end">
+      <div class="flex space-x-4 justify-end sticky bottom-0 bg-white pt-4 pb-2 -mb-2">
         <button onclick="closeCustomModal()" class="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors font-medium">
           Close
         </button>
@@ -410,9 +408,9 @@ $lifeplan_requests = mysqli_fetch_all($lifeplan_result, MYSQLI_ASSOC);
 </div>
 
 <!-- Lifeplan Modal -->
-<div id="lifeplanModal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center hidden z-50 backdrop-blur-sm transition-all duration-300">
-  <div class="bg-white rounded-xl p-0 max-w-3xl w-full max-h-[90vh] overflow-hidden shadow-2xl transform transition-all duration-300">
-    <div class="bg-sidebar-text py-4 px-6 flex justify-between items-center">
+<div id="lifeplanModal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center hidden z-50 backdrop-blur-sm transition-all duration-300 overflow-y-auto py-8">
+  <div class="bg-white rounded-xl p-0 max-w-3xl w-full mx-4 my-8 shadow-2xl transform transition-all duration-300">
+    <div class="bg-sidebar-text py-4 px-6 flex justify-between items-center sticky top-0 z-10">
       <h3 class="text-xl font-semibold text-white flex items-center">
         <i class="fas fa-heart mr-2"></i> Lifeplan Payment Receipt
       </h3>
@@ -421,9 +419,9 @@ $lifeplan_requests = mysqli_fetch_all($lifeplan_result, MYSQLI_ASSOC);
       </button>
     </div>
     
-    <div class="p-6">
+    <div class="p-6 overflow-y-auto max-h-[calc(100vh-180px)]">
       <div class="mb-6 rounded-lg overflow-hidden border-4 border-gray-200 shadow-lg">
-        <img id="lifeplanReceiptImage" src="" alt="Payment Receipt" class="w-full h-auto object-contain">
+        <img id="lifeplanReceiptImage" src="" alt="Payment Receipt" class="w-full max-h-[70vh] object-contain mx-auto">
       </div>
       
       <div class="bg-blue-50 p-5 rounded-lg shadow-inner mb-6">
@@ -434,7 +432,7 @@ $lifeplan_requests = mysqli_fetch_all($lifeplan_result, MYSQLI_ASSOC);
       </div>
       
       <!-- Action buttons -->
-      <div class="flex space-x-4 justify-end">
+      <div class="flex space-x-4 justify-end sticky bottom-0 bg-white pt-4 pb-2 -mb-2">
         <button onclick="closeLifeplanModal()" class="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors font-medium">
           Close
         </button>
