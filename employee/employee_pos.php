@@ -1288,7 +1288,7 @@ $servicesJson = json_encode($allServices);
           <p class="text-sm text-gray-600 mb-3 line-clamp-2">${service.description}</p>
           <div class="flex justify-between items-center">
             <span class="text-xs bg-gray-100 px-2 py-1 rounded-full">${service.service_category_name}</span>
-            <button onclick="showServiceDetails(${service})" class="px-3 py-1 bg-sidebar-accent text-white rounded-md text-sm hover:bg-yellow-600 transition-all duration-300">
+            <button onclick="showServiceDetails(${service.service_id})" class="px-3 py-1 bg-sidebar-accent text-white rounded-md text-sm hover:bg-yellow-600 transition-all duration-300">
               Select
             </button>
           </div>
