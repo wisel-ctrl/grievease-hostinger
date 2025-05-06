@@ -267,6 +267,7 @@ $conn->close();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GrievEase - Packages</title>
+    <?php include 'faviconLogo.php'; ?>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Cinzel:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -2239,6 +2240,23 @@ function removeGcash() {
 
 <!-- Add this script at the end -->
 <script>
+let originalPackages = [];
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Collect original packages from the DOM
+    const packageCards = document.querySelectorAll('.package-card');
+    originalPackages = Array.from(packageCards).map(card => ({
+        name: card.dataset.name,
+        price: parseFloat(card.dataset.price),
+        service: card.dataset.service,
+        image: card.dataset.image,
+        icon: card.querySelector('.fa-')?.className.match(/fa-(.+?)( |$)/)[1] || 'box',
+        description: card.querySelector('p').textContent,
+        features: Array.from(card.querySelectorAll('ul li')).map(li => li.textContent.trim())
+    }));
+
+    // Rest of your existing DOMContentLoaded code...
+});
 
 document.addEventListener('DOMContentLoaded', function() {
     // Set max date for lifeplan date of birth to today
@@ -3410,31 +3428,18 @@ function resetFilters() {
     // Reset price sort dropdown to default
     document.getElementById('priceSort').value = '';
     
-    // Show all packages
-    document.querySelectorAll('.package-card').forEach(card => {
-        card.classList.remove('hidden');
-    });
+    // Re-render the original packages
+    renderPackages(originalPackages);
     
     // Hide the "no results" message
     document.getElementById('no-results').classList.add('hidden');
-    
-    // Re-sort packages to their original order (if needed)
-    const packagesContainer = document.getElementById('packages-container');
-    const cards = Array.from(packagesContainer.querySelectorAll('.package-card'));
-    cards.sort((a, b) => {
-        return Array.from(packagesContainer.children).indexOf(a) - Array.from(packagesContainer.children).indexOf(b);
-    });
-    
-    cards.forEach(card => {
-        packagesContainer.appendChild(card);
-    });
 }
 
 // Event Listeners
 document.getElementById('searchInput').addEventListener('input', filterAndSortPackages);
 document.getElementById('priceSort').addEventListener('change', filterAndSortPackages);
 document.getElementById('resetFilters').addEventListener('click', resetFilters);
-document.getElementById('reset-filters-no-results').addEventListener('click', resetFilters);
+document.getElementById('reset-filters-no-results')?.addEventListener('click', resetFilters);
 
 // Date validation for traditional booking form
 document.addEventListener('DOMContentLoaded', function() {
