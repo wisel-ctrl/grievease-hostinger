@@ -2984,9 +2984,7 @@ document.addEventListener('DOMContentLoaded', function() {
 <script>
   //functions for custom bookings 
   let currentCustomBookingIdForPayment = null;
-  function toTitleCase(str) {
-    return str.toLowerCase().replace(/\b\w/g, char => char.toUpperCase());
-}
+
 function openCustomDetails(bookingId) {
   // First, fetch custom booking details via AJAX
   fetch('bookingpage/get_custom_booking_details.php?id=' + bookingId)
@@ -2996,8 +2994,7 @@ function openCustomDetails(bookingId) {
       document.getElementById('customBookingId').textContent = '#BK-' + 
         new Date(data.booking_date).getFullYear() + '-' + 
         String(data.booking_id).padStart(3, '0');
-        document.getElementById('customCustomerName').textContent = 
-        toTitleCase(data.customer_name);
+      document.getElementById('customCustomerName').textContent = data.customer_name;
       document.getElementById('customContactNumber').textContent = data.contact_number || "Not provided";
       document.getElementById('customEmailAddress').textContent = data.email;
       document.getElementById('customAddress').textContent = data.address || "Not provided";
