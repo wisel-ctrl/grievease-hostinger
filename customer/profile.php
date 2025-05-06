@@ -1451,11 +1451,20 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Show the corresponding content
             const contentId = tab.dataset.tab + '-content';
-            document.getElementById(contentId).style.display = 'block';
+            const contentElement = document.getElementById(contentId);
+            contentElement.style.display = 'block';
+            
+            // Populate content based on which tab was clicked
+            if (contentId === 'traditional-funeral-content') {
+                populateServiceCards(contentId, servicesData);
+            } else if (contentId === 'life-plan-content') {
+                populateLifePlanCards(contentId, lifeplansData);
+            }
+            // Add similar condition for custom-package-content if needed
         });
     });
     
-    // Populate the traditional funeral content
+    // Populate the traditional funeral content by default
     populateServiceCards('traditional-funeral-content', servicesData);
 });
 
