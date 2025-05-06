@@ -188,6 +188,7 @@ require_once '../db_connect.php'; // Database connection
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Hedvig+Letters+Serif:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="../tailwind.js"></script>
     <style>
         .modal {
@@ -1301,8 +1302,95 @@ require_once '../db_connect.php'; // Database connection
                             <span id="traditionalAmountDue" class="text-yellow-600">₱0</span>
                         </div>
                     </div>
+                    
+                    <div class="mt-4 mb-4 border border-gray-200 rounded-lg p-4 bg-gray-50 terms-checkbox-container">
+                        <div class="flex items-start">
+                            <input type="checkbox" id="termsCheckbox" name="terms_accepted" required 
+                                class="h-5 w-5 text-yellow-600 rounded focus:ring-yellow-500 mt-1">
+                            <label for="termsCheckbox" class="ml-3 text-sm">
+                                <span class="block text-navy mb-1">I have read and agree to the <a href="#" class="text-yellow-600 hover:underline" id="viewPrivacyPolicy">Privacy Policy</a> and <a href="#" class="text-yellow-600 hover:underline" id="viewTermsOfService">Terms of Service</a>. <span class="text-red-500">*</span></span>
+                                <span class="block text-gray-500 text-xs">By checking this box, you consent to our data collection practices as described in our Privacy Policy.</span>
+                            </label>
+                        </div>
+                    </div>
 
-                    <button type="submit" class="w-full bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg shadow-md transition-all duration-300">
+                    <!-- Privacy Policy Modal -->
+                    <div id="privacyPolicyModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
+                        <div class="bg-white rounded-lg p-6 max-w-lg w-full mx-4 max-h-[80vh] overflow-y-auto">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-lg font-hedvig text-navy">Privacy Policy</h3>
+                                <button id="closePrivacyModal" class="text-gray-500 hover:text-navy">
+                                    <i class="fas fa-times text-xl"></i>
+                                </button>
+                            </div>
+                            <div class="text-sm text-gray-700 space-y-4">
+                                <p>At GrievEase, we understand that privacy is of utmost importance, especially during times of grief and loss. Last Updated: March 22, 2025</p>
+                                
+                                <h4 class="font-medium text-navy">Information We Collect</h4>
+                                <ul class="list-disc ml-5 space-y-1">
+                                    <li>Full name and contact information (email, phone number, address)</li>
+                                    <li>Information about the deceased required for documentation</li>
+                                    <li>Payment information for service arrangements</li>
+                                </ul>
+                                
+                                <h4 class="font-medium text-navy">How We Use Your Information</h4>
+                                <ul class="list-disc ml-5 space-y-1">
+                                    <li>To arrange and conduct funeral services according to your wishes</li>
+                                    <li>To respond to your inquiries and provide support</li>
+                                    <li>To complete necessary documentation and legal obligations</li>
+                                </ul>
+                                
+                                <h4 class="font-medium text-navy">Information Sharing</h4>
+                                <p>We do not sell, rent, or trade your personal information. We may share with trusted partners when necessary to fulfill your service requests or when required by law.</p>
+                                
+                                <h4 class="font-medium text-navy">Security Measures</h4>
+                                <p>We implement comprehensive security measures including secure storage, encryption, access controls, and regular audits to protect your personal information.</p>
+                                
+                                <h4 class="font-medium text-navy">Your Rights</h4>
+                                <p>You have rights to access, rectify, erase, restrict processing, and data portability regarding your personal information.</p>
+                                
+                                <p class="text-xs text-gray-500 mt-4">For the complete Privacy Policy, please visit our full Privacy Policy page.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Terms of Service Modal -->
+                    <div id="termsOfServiceModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
+                        <div class="bg-white rounded-lg p-6 max-w-lg w-full mx-4 max-h-[80vh] overflow-y-auto">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-lg font-hedvig text-navy">Terms of Service</h3>
+                                <button id="closeTermsModal" class="text-gray-500 hover:text-navy">
+                                    <i class="fas fa-times text-xl"></i>
+                                </button>
+                            </div>
+                            <div class="text-sm text-gray-700 space-y-4">
+                                <p>By accessing and using the GrievEase website and services, you agree to be bound by these Terms of Service. Last Updated: March 2024</p>
+                                
+                                <h4 class="font-medium text-navy">1. Acceptance of Terms</h4>
+                                <p>If you do not agree with these terms, please do not use our services.</p>
+                                
+                                <h4 class="font-medium text-navy">2. Services</h4>
+                                <p>GrievEase provides funeral and memorial services with compassion and respect. We reserve the right to modify, suspend, or discontinue any aspect of our services.</p>
+                                
+                                <h4 class="font-medium text-navy">3. User Responsibilities</h4>
+                                <ul class="list-disc ml-5 space-y-1">
+                                    <li>Provide accurate and complete information during service arrangements</li>
+                                    <li>Respect the guidelines and policies of our funeral home</li>
+                                    <li>Treat our staff with dignity and respect</li>
+                                </ul>
+                                
+                                <h4 class="font-medium text-navy">4. Payment and Fees</h4>
+                                <p>All fees for services are due at the time of service unless otherwise arranged. We accept various payment methods and can discuss payment plans during consultation.</p>
+                                
+                                <h4 class="font-medium text-navy">5. Limitation of Liability</h4>
+                                <p>GrievEase strives to provide compassionate and professional services. However, we are not liable for any indirect, incidental, or consequential damages arising from our services.</p>
+                                
+                                <p class="text-xs text-gray-500 mt-4">For the complete Terms of Service, please visit our full Terms of Service page.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="w-full bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg shadow-md transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
                         Confirm Booking
                     </button>
                 </form>
@@ -1468,6 +1556,70 @@ require_once '../db_connect.php'; // Database connection
 
 
 <script>
+    
+    // Add this script to your form page
+document.addEventListener('DOMContentLoaded', function() {
+    const termsCheckbox = document.getElementById('termsCheckbox');
+    const submitButton = document.querySelector('#traditionalBookingForm button[type="submit"]');
+    const termsContainer = document.querySelector('.terms-checkbox-container'); // You'll need to add this class
+    
+    // Initially disable the button
+    submitButton.disabled = true;
+    submitButton.classList.add('opacity-50', 'cursor-not-allowed');
+    
+    // Add event listener to checkbox
+    termsCheckbox.addEventListener('change', function() {
+        if (this.checked) {
+            submitButton.disabled = false;
+            submitButton.classList.remove('opacity-50', 'cursor-not-allowed');
+            // Remove any existing error message
+            const existingError = document.querySelector('.terms-error-message');
+            if (existingError) {
+                existingError.remove();
+            }
+        } else {
+            submitButton.disabled = true;
+            submitButton.classList.add('opacity-50', 'cursor-not-allowed');
+        }
+    });
+    
+    // Add validation on form submit
+    document.getElementById('traditionalBookingForm').addEventListener('submit', function(e) {
+        if (!termsCheckbox.checked) {
+            e.preventDefault();
+            
+            // Add error message if not already present
+            if (!document.querySelector('.terms-error-message')) {
+                const errorMessage = document.createElement('p');
+                errorMessage.className = 'terms-error-message text-red-500 text-sm mt-2';
+                errorMessage.innerHTML = '<i class="fas fa-exclamation-circle mr-1"></i> You must agree to the Privacy Policy and Terms of Service to continue.';
+                
+                // Insert after the checkbox container
+                const checkboxContainer = termsCheckbox.closest('.flex.items-start');
+                checkboxContainer.parentNode.insertBefore(errorMessage, checkboxContainer.nextSibling);
+            }
+        }
+    });
+    
+    // Modal handling for Privacy Policy and Terms of Service
+    document.getElementById('viewPrivacyPolicy').addEventListener('click', function(e) {
+        e.preventDefault();
+        document.getElementById('privacyPolicyModal').classList.remove('hidden');
+    });
+    
+    document.getElementById('viewTermsOfService').addEventListener('click', function(e) {
+        e.preventDefault();
+        document.getElementById('termsOfServiceModal').classList.remove('hidden');
+    });
+    
+    document.getElementById('closePrivacyModal').addEventListener('click', function() {
+        document.getElementById('privacyPolicyModal').classList.add('hidden');
+    });
+    
+    document.getElementById('closeTermsModal').addEventListener('click', function() {
+        document.getElementById('termsOfServiceModal').classList.add('hidden');
+    });
+});
     // Address handling functions
 function fetchRegions() {
     fetch('address/get_regions.php')
@@ -2770,30 +2922,71 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.log(key + ': ' + value);
             }
             
-            // Send data to PHP handler
-            fetch('booking/insert_custom_booking.php', {
-                method: 'POST',
-                body: formData // No need to set Content-Type, fetch sets it automatically with boundary for FormData
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok: ' + response.statusText);
+            // First show confirmation dialog
+            Swal.fire({
+                title: 'Confirm Booking Submission',
+                text: 'Are you sure you want to submit this booking?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, submit it!',
+                customClass: {
+                    popup: 'animated bounceIn'
                 }
-                return response.json();
-            })
-            .then(data => {
-                console.log('Response:', data);
-                if (data.status === 'success') {
-                    alert('Custom package booking created successfully! Booking ID: ' + data.bookingId);
-                    closeAllModals();
-                    // Optionally redirect or refresh the page
-                } else {
-                    alert('Error creating booking: ' + data.message);
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Send data to PHP handler
+                    fetch('booking/insert_custom_booking.php', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok: ' + response.statusText);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log('Response:', data);
+                        if (data.status === 'success') {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Booking Created!',
+                                html: `Custom package booked successfully!<br><br>Booking ID: <strong>${data.bookingId}</strong>`,
+                                confirmButtonText: 'Okay!',
+                                customClass: {
+                                    popup: 'animated bounceIn'
+                                }
+                            }).then(() => {
+                                closeAllModals();
+                                window.location.reload(); // Page will reload here
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Booking Failed',
+                                text: data.message,
+                                confirmButtonText: 'Try Again',
+                                customClass: {
+                                    popup: 'animated shake'
+                                }
+                            });
+                        }
+                    })
+                    .catch((error) => {
+                        console.error('Error:', error);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Submission Error',
+                            html: `An error occurred while submitting the form:<br><br><small>${error.message}</small>`,
+                            confirmButtonText: 'OK',
+                            customClass: {
+                                popup: 'animated wobble'
+                            }
+                        });
+                    });
                 }
-            })
-            .catch((error) => {
-                console.error('Error:', error);
-                alert('An error occurred while submitting the form: ' + error.message);
             });
         } else {
             const serviceId = document.getElementById('serviceID').value;
@@ -2870,22 +3063,53 @@ document.addEventListener('DOMContentLoaded', function() {
             formData.append('referenceNumber', packageData.documents.referenceNumber);
             
             // Send to server
-            fetch('booking/insert_booking.php', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert('Booking successful!');
-                    closeAllModals();
-                } else {
-                    alert('Error: ' + data.message);
+            Swal.fire({
+                title: 'Confirm Booking',
+                text: 'Are you sure you want to submit this booking?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, submit it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Only proceed with the fetch if user confirmed
+                    fetch('booking/insert_booking.php', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Booking Successful!',
+                                text: 'Your booking has been confirmed.',
+                                confirmButtonText: 'OK'
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    location.reload(); // This will reload the page
+                                }
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: data.message,
+                                confirmButtonText: 'OK'
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: 'An error occurred while submitting the form.',
+                            confirmButtonText: 'OK'
+                        });
+                    });
                 }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('An error occurred while submitting the form.');
             });
         }
     });

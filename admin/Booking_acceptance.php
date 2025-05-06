@@ -349,7 +349,12 @@ $total_lifeplan_bookings = $lifeplan_count_result->fetch_assoc()['total'];
                     <?php
                     // Query to get booking data with joins and pagination
                     $query = "SELECT b.booking_id, b.booking_date, b.status, 
-                    CONCAT(u.first_name, ' ', COALESCE(u.middle_name, ''), ' ', u.last_name, ' ', COALESCE(u.suffix, '')) AS customer_name,
+                    CONCAT(
+                        UPPER(LEFT(u.first_name, 1)), LOWER(SUBSTRING(u.first_name, 2)), ' ',
+                        UPPER(LEFT(COALESCE(u.middle_name, ''), 1)), LOWER(SUBSTRING(COALESCE(u.middle_name, ''), 2)), ' ',
+                        UPPER(LEFT(u.last_name, 1)), LOWER(SUBSTRING(u.last_name, 2)), ' ',
+                        UPPER(LEFT(COALESCE(u.suffix, ''), 1)), LOWER(SUBSTRING(COALESCE(u.suffix, ''), 2))
+                    ) AS customer_name,
                     COALESCE(s.service_name, 'Custom Package') AS service_name
                     FROM booking_tb b
                     JOIN users u ON b.customerID = u.id
@@ -702,7 +707,12 @@ $total_lifeplan_bookings = $lifeplan_count_result->fetch_assoc()['total'];
                     <?php
                     // Query to get custom booking data (where service_id is NULL)
                     $custom_query = "SELECT b.booking_id, b.booking_date, b.status, b.initial_price,
-                                    CONCAT(u.first_name, ' ', COALESCE(u.middle_name, ''), ' ', u.last_name, ' ', COALESCE(u.suffix, '')) AS customer_name
+                                    CONCAT(
+                                        UPPER(LEFT(u.first_name, 1)), LOWER(SUBSTRING(u.first_name, 2)), ' ',
+                                        UPPER(LEFT(COALESCE(u.middle_name, ''), 1)), LOWER(SUBSTRING(COALESCE(u.middle_name, ''), 2)), ' ',
+                                        UPPER(LEFT(u.last_name, 1)), LOWER(SUBSTRING(u.last_name, 2)), ' ',
+                                        UPPER(LEFT(COALESCE(u.suffix, ''), 1)), LOWER(SUBSTRING(COALESCE(u.suffix, ''), 2))
+                                    ) AS customer_name
                                     FROM booking_tb b
                                     JOIN users u ON b.customerID = u.id
                                     WHERE b.service_id IS NULL AND b.status = 'Pending'
@@ -1058,7 +1068,12 @@ $total_lifeplan_bookings = $lifeplan_count_result->fetch_assoc()['total'];
                     <?php
                     // Query to get lifeplan bookings
                     $lifeplanQuery = "SELECT lb.*, 
-                                    CONCAT(u.first_name, ' ', COALESCE(u.middle_name, ''), ' ', u.last_name, ' ', COALESCE(u.suffix, '')) AS customer_name,
+                                    CONCAT(
+                                        UPPER(LEFT(u.first_name, 1)), LOWER(SUBSTRING(u.first_name, 2)), ' ',
+                                        UPPER(LEFT(COALESCE(u.middle_name, ''), 1)), LOWER(SUBSTRING(COALESCE(u.middle_name, ''), 2)), ' ',
+                                        UPPER(LEFT(u.last_name, 1)), LOWER(SUBSTRING(u.last_name, 2)), ' ',
+                                        UPPER(LEFT(COALESCE(u.suffix, ''), 1)), LOWER(SUBSTRING(COALESCE(u.suffix, ''), 2))
+                                    ) AS customer_name,
                                     s.service_name
                                     FROM lifeplan_booking_tb lb
                                     JOIN users u ON lb.customer_id = u.id
@@ -3004,7 +3019,11 @@ function openCustomDetails(bookingId) {
       document.getElementById('customServiceDate').textContent = 
         data.deceased_dateOfBurial ? new Date(data.deceased_dateOfBurial).toLocaleDateString('en-US', 
         { month: 'short', day: 'numeric', year: 'numeric' }) : "Not scheduled";
-      document.getElementById('customAmountPaid').textContent = "₱" + (parseFloat(data.initial_price) || 0).toFixed(2);
+        document.getElementById('customAmountPaid').textContent = 
+    "₱" + (parseFloat(data.initial_price) || 0).toLocaleString('en-PH', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    });
 
       const deceasedFullName = [
         data.deceased_fname || '',
@@ -3114,7 +3133,11 @@ function openCustomDetails(bookingId) {
       // Handle Casket Details
       if (data.casket_id && data.casket_name) {
         document.getElementById('casketName').textContent = data.casket_name;
-        document.getElementById('casketPrice').textContent = "₱" + (parseFloat(data.casket_price) || 0).toFixed(2);
+        document.getElementById('casketPrice').textContent = 
+    "₱" + (parseFloat(data.casket_price) || 0).toLocaleString('en-PH', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    });
         
         const casketImage = document.getElementById('casketImage');
         if (data.casket_image) {
