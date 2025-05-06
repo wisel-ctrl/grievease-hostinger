@@ -1149,12 +1149,16 @@ $total_lifeplan_bookings = $lifeplan_count_result->fetch_assoc()['total'];
 <div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
     <div id="lifeplanPaginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
     <?php 
+        // Initialize variables if not set
+        if (!isset($lifeplan_current_page)) $lifeplan_current_page = 1;
+        if (!isset($lifeplan_offset)) $lifeplan_offset = ($lifeplan_current_page - 1) * 5; // Assuming 5 per page
+        
         // Get the number of lifeplan bookings on the current page
-        $current_page_lifeplan_bookings = $lifeplan_result->num_rows;
+        $current_page_lifeplan_bookings = isset($lifeplan_result) && is_object($lifeplan_result) ? $lifeplan_result->num_rows : min(5, $total_lifeplan_bookings - $lifeplan_offset);
 
         if ($total_lifeplan_bookings > 0) {
             $lifeplan_start = $lifeplan_offset + 1;
-            $lifeplan_end = $lifeplan_offset + $lifeplan_result->num_rows;
+            $lifeplan_end = min($total_lifeplan_bookings, $lifeplan_offset + $current_page_lifeplan_bookings);
         
             echo "Showing {$lifeplan_start} - {$lifeplan_end} of {$total_lifeplan_bookings} " . 
                  ($total_lifeplan_bookings != 1 ? "lifeplan bookings" : "lifeplan booking");
@@ -1164,7 +1168,15 @@ $total_lifeplan_bookings = $lifeplan_count_result->fetch_assoc()['total'];
         ?>
     </div>
     <div id="lifeplanPaginationContainer" class="flex space-x-2">
-        <?php if ($lifeplan_total_pages > 1): ?>
+        <?php
+        // Make sure these variables are defined - add fallbacks if they're not set
+        if (!isset($lifeplan_current_page)) $lifeplan_current_page = 1;
+        if (!isset($lifeplan_total_pages)) $lifeplan_total_pages = ceil($total_lifeplan_bookings / 5); // Assuming 5 per page
+        if (!isset($lifeplan_result)) $lifeplan_result = null;
+        
+        // Always show pagination if there are more than 5 items total
+        if ($total_lifeplan_bookings > 5): 
+        ?>
             <!-- First page button (double arrow) -->
             <a href="?lifeplan_page=1" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($lifeplan_current_page == 1) ? 'opacity-50 pointer-events-none' : ''; ?>">
                 &laquo;
