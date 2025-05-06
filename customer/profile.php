@@ -2033,6 +2033,10 @@ document.addEventListener('DOMContentLoaded', function() {
     </div>
 </div>
 
+                </div>
+                </div>
+                </div>
+
 <!-- Add JavaScript for functionality -->
 <script>
     // Toggle between service tabs
