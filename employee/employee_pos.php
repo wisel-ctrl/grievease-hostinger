@@ -1435,6 +1435,9 @@ function confirmCheckout() {
   
   // Create a FormData object from the form
   const formData = new FormData(form);
+
+  const trial = document.getElementById('clientFirstName').value
+  console.log(trial);
   
   // Add additional data that might not be in the form
   formData.append('sold_by', <?php echo $_SESSION['user_id']; ?>);
