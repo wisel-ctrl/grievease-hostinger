@@ -13,18 +13,7 @@ $response = ['success' => false, 'message' => ''];
 
 try {
     // Validate required fields
-    $requiredFields = [
-        'clientFirstName', 'clientLastName', 'clientPhone',
-        'deceasedFirstName', 'deceasedLastName', 'dateOfDeath',
-        'paymentMethod', 'totalPrice', 'amountPaid',
-        'service_id', 'branch_id'
-    ];
     
-    foreach ($requiredFields as $field) {
-        if (empty($_POST[$field])) {
-            throw new Exception("Missing required field: $field");
-        }
-    }
     
     // Prepare data for insertion
     $customerID = null; // Traditional services may not have a customer account
