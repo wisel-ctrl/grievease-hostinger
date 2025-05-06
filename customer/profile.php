@@ -2026,11 +2026,87 @@ function submitTraditionalPayment() {
 
 // Similar functions for custom and lifeplan payments...
 function submitCustomPayment() {
-    // Similar to submitTraditionalPayment but with custom package data
+    const salesId = document.getElementById('custom-sales-id').value;
+    const amount = document.getElementById('custom-amount').value;
+    const method = document.getElementById('custom-method').value;
+    const receipt = document.getElementById('custom-receipt').files[0];
+    
+    // Validate inputs
+    if (!amount || isNaN(amount) || parseFloat(amount) <= 0) {
+        alert('Please enter a valid payment amount');
+        return;
+    }
+    
+    // Create FormData for file upload
+    const formData = new FormData();
+    formData.append('type', 'custom');
+    formData.append('customsales_id', salesId);
+    formData.append('amount', amount);
+    formData.append('method', method);
+    if (receipt) formData.append('receipt', receipt);
+    
+    // Send to server
+    fetch('payments/process_custom_payment.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Payment submitted successfully!');
+            closeModal('custom-payment-modal');
+            // Refresh the data
+            location.reload();
+        } else {
+            alert('Error: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while submitting payment');
+    });
 }
 
 function submitLifeplanPayment() {
-    // Similar to submitTraditionalPayment but with lifeplan data
+    const lifeplanId = document.getElementById('lifeplan-id').value;
+    const amount = document.getElementById('lifeplan-amount').value;
+    const method = document.getElementById('lifeplan-method').value;
+    const receipt = document.getElementById('lifeplan-receipt').files[0];
+    
+    // Validate inputs
+    if (!amount || isNaN(amount) || parseFloat(amount) <= 0) {
+        alert('Please enter a valid payment amount');
+        return;
+    }
+    
+    // Create FormData for file upload
+    const formData = new FormData();
+    formData.append('type', 'lifeplan');
+    formData.append('lifeplan_id', lifeplanId);
+    formData.append('amount', amount);
+    formData.append('method', method);
+    if (receipt) formData.append('receipt', receipt);
+    
+    // Send to server
+    fetch('payments/process_lifeplan_payment.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Payment submitted successfully!');
+            closeModal('lifeplan-payment-modal');
+            // Refresh the data
+            location.reload();
+        } else {
+            alert('Error: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while submitting payment');
+    });
 }
 
 // Sample data - in a real app this would come from your backend
