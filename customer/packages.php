@@ -1185,7 +1185,7 @@ function capitalizeWords(str) {
             </button>
         </div>
         <div class="flex flex-col items-center justify-center">
-            <img id="qrCodeImage" src="" alt="Payment QR Code" 
+            <img id="qrCodeImage" src="../image/qrnivjaygcash.jpg" alt="Payment QR Code" 
                  class="w-64 h-64 object-contain mb-4 cursor-pointer hover:scale-105 transition-transform"
                  onclick="enlargeQrCode(this)">
             <p class="text-center text-sm text-gray-600 mb-2">Scan this QR code with your GCash app to make payment</p>
