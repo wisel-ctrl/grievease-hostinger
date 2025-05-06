@@ -562,7 +562,11 @@ document.addEventListener('DOMContentLoaded', function() {
       
       // Update forecast summary
       const totalForecast = regressionResults.forecastData.reduce((sum, point) => sum + point.y, 0);
-      document.querySelector('.sales-forecast-value').textContent = '₱' + Math.round(totalForecast).toLocaleString();
+      document.querySelector('.sales-forecast-value').textContent = 
+    '₱' + parseFloat(totalForecast).toLocaleString('en-PH', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    });
   } else {
       document.querySelector("#salesForecastChart").innerHTML = '<div class="p-4 text-center text-gray-500">No revenue data available</div>';
   }
