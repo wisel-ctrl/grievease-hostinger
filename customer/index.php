@@ -885,6 +885,7 @@ document.addEventListener('DOMContentLoaded', function() {
     </div>
 </div>
 </div>
+</div>
 
 
     <!-- Footer -->
