@@ -352,6 +352,57 @@ function setInitialCandleColor() {
     }
 }
 
+// Validation functions
+function validateNameInput(input) {
+    // Remove any non-letter characters (including numbers and special chars)
+    input.value = input.value.replace(/[^a-zA-Z\s]/g, '');
+    
+    // Prevent multiple consecutive spaces
+    input.value = input.value.replace(/\s{2,}/g, ' ');
+    
+    // Don't allow space as first character or unless there are already 2 letters
+    if (input.value.length === 1 && input.value === ' ') {
+        input.value = '';
+    } else if (input.value.length === 2 && input.value.endsWith(' ')) {
+        input.value = input.value.trim();
+    }
+    
+    // Capitalize first letter
+    if (input.value.length > 0) {
+        input.value = input.value.charAt(0).toUpperCase() + input.value.slice(1).toLowerCase();
+    }
+}
+
+function validateMessageInput(input) {
+    // Prevent multiple consecutive spaces
+    input.value = input.value.replace(/\s{2,}/g, ' ');
+    
+    // Don't allow space as first character or unless there are already 2 characters
+    if (input.value.length === 1 && input.value === ' ') {
+        input.value = '';
+    } else if (input.value.length === 2 && input.value.endsWith(' ')) {
+        input.value = input.value.trim();
+    }
+    
+    // Capitalize first letter
+    if (input.value.length > 0) {
+        input.value = input.value.charAt(0).toUpperCase() + input.value.slice(1);
+    }
+}
+
+// Add event listeners for validation
+document.getElementById('in-memory-of').addEventListener('input', function(e) {
+    validateNameInput(e.target);
+});
+
+document.getElementById('dedicated-by').addEventListener('input', function(e) {
+    validateNameInput(e.target);
+});
+
+document.getElementById('dedication-message').addEventListener('input', function(e) {
+    validateMessageInput(e.target);
+});
+
 // Update candle color in modal
 function updateModalCandleColor(color) {
     // Remove all color classes first
@@ -378,10 +429,27 @@ document.addEventListener('DOMContentLoaded', setInitialCandleColor);
 submitDedication.addEventListener('click', (e) => {
     e.preventDefault();
     
+
     // Get form values
-    const inMemoryOf = document.getElementById('in-memory-of').value;
-    const dedicatedBy = document.getElementById('dedicated-by').value;
-    const message = document.getElementById('dedication-message').value;
+    const inMemoryOf = document.getElementById('in-memory-of').value.trim();
+    const dedicatedBy = document.getElementById('dedicated-by').value.trim();
+    const message = document.getElementById('dedication-message').value.trim();
+    
+    // Validate inputs
+    if (!inMemoryOf || inMemoryOf.length < 2) {
+        showNotification('Please enter a valid name (at least 2 characters) for "In Memory Of"');
+        return;
+    }
+    
+    if (!dedicatedBy || dedicatedBy.length < 2) {
+        showNotification('Please enter a valid name (at least 2 characters) for "Dedicated By"');
+        return;
+    }
+    
+    if (!message || message.length < 2) {
+        showNotification('Please enter a meaningful message (at least 2 characters)');
+        return;
+    }
     
     // Create a new dedication object (all dedications are now public)
     const newDedication = {
