@@ -993,7 +993,7 @@ input[name*="LastName"] {
                         <!-- First Name & Middle Name (Side by side) -->
                         <div class="flex flex-wrap -mx-2 mb-3">
                             <div class="w-full sm:w-1/2 px-2 mb-3 sm:mb-0">
-                                <label for="traditionalDeceasedFirstName" class="block text-sm font-medium text-navy mb-1">First Name *</label>
+                                <label for="traditionalDeceasedFirstName" class="block text-sm font-medium text-navy mb-1">First Name <span class="text-red-500">*</label>
                                 <input type="text" id="traditionalDeceasedFirstName" name="deceasedFirstName" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" pattern="[A-Za-z'-][A-Za-z'-]*( [A-Za-z'-]+)*" title="Please enter a valid name (letters only, no leading spaces, numbers or symbols)">
                             </div>
                             <div class="w-full sm:w-1/2 px-2">
@@ -1005,7 +1005,7 @@ input[name*="LastName"] {
                         <!-- Last Name & Suffix (Side by side) -->
                         <div class="flex flex-wrap -mx-2 mb-3">
                             <div class="w-full sm:w-3/4 px-2 mb-3 sm:mb-0">
-                                <label for="traditionalDeceasedLastName" class="block text-sm font-medium text-navy mb-1">Last Name *</label>
+                                <label for="traditionalDeceasedLastName" class="block text-sm font-medium text-navy mb-1">Last Name <span class="text-red-500">*</label>
                                 <input type="text" id="traditionalDeceasedLastName" name="deceasedLastName" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" pattern="[A-Za-z'-][A-Za-z'-]*( [A-Za-z'-]+)*" title="Please enter a valid name (letters only, no leading spaces, numbers or symbols)">
                             </div>
                             <div class="w-full sm:w-1/4 px-2">
@@ -1030,7 +1030,7 @@ input[name*="LastName"] {
                                 <input type="date" id="traditionalDateOfBirth" name="dateOfBirth" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                             </div>
                             <div class="w-full sm:w-1/3 px-2 mb-3 sm:mb-0">
-                                <label for="traditionalDateOfDeath" class="block text-sm font-medium text-navy mb-1">Date of Death *</label>
+                                <label for="traditionalDateOfDeath" class="block text-sm font-medium text-navy mb-1">Date of Death <span class="text-red-500">*</label>
                                 <input type="date" id="traditionalDateOfDeath" name="dateOfDeath" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                             </div>
                             <div class="w-full sm:w-1/3 px-2">
@@ -1077,7 +1077,7 @@ input[name*="LastName"] {
                         <!-- Address (Improved UI with dropdowns in specified layout) -->
                         <div class="flex flex-wrap -mx-2 mb-3">
                             <div class="w-full sm:w-1/2 px-2 mb-3 sm:mb-0">
-                                <label for="traditionalDeceasedRegion" class="block text-sm font-medium text-navy mb-1">Region</label>
+                                <label for="traditionalDeceasedRegion" class="block text-sm font-medium text-navy mb-1">Region <span class="text-red-500">*</label>
                                 <select id="traditionalDeceasedRegion" name="deceasedRegion" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                                     <option value="">Select Region</option>
                                     <option value="NCR">National Capital Region (NCR)</option>
@@ -1087,7 +1087,7 @@ input[name*="LastName"] {
                                 </select>
                             </div>
                             <div class="w-full sm:w-1/2 px-2">
-                                <label for="traditionalDeceasedProvince" class="block text-sm font-medium text-navy mb-1">Province</label>
+                                <label for="traditionalDeceasedProvince" class="block text-sm font-medium text-navy mb-1">Province <span class="text-red-500">*</label>
                                 <select id="traditionalDeceasedProvince" name="deceasedProvince" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                                     <option value="">Select Province</option>
                                     <!-- Provinces will be populated by JavaScript based on selected region -->
@@ -1097,14 +1097,14 @@ input[name*="LastName"] {
                         
                         <div class="flex flex-wrap -mx-2 mb-3">
                             <div class="w-full sm:w-1/2 px-2 mb-3 sm:mb-0">
-                                <label for="traditionalDeceasedCity" class="block text-sm font-medium text-navy mb-1">City/Municipality</label>
+                                <label for="traditionalDeceasedCity" class="block text-sm font-medium text-navy mb-1">City/Municipality <span class="text-red-500">*</label>
                                 <select id="traditionalDeceasedCity" name="deceasedCity" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                                     <option value="">Select City/Municipality</option>
                                     <!-- Cities will be populated by JavaScript based on selected province -->
                                 </select>
                             </div>
                             <div class="w-full sm:w-1/2 px-2">
-                                <label for="traditionalDeceasedBarangay" class="block text-sm font-medium text-navy mb-1">Barangay</label>
+                                <label for="traditionalDeceasedBarangay" class="block text-sm font-medium text-navy mb-1">Barangay <span class="text-red-500">*</label>
                                 <select id="traditionalDeceasedBarangay" name="deceasedBarangay" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                                     <option value="">Select Barangay</option>
                                     <!-- Barangays will be populated by JavaScript based on selected city -->
@@ -1113,7 +1113,7 @@ input[name*="LastName"] {
                         </div>
                         
                         <div class="mb-3">
-                            <label for="traditionalDeceasedStreet" class="block text-sm font-medium text-navy mb-1">Street/Block/House Number</label>
+                            <label for="traditionalDeceasedStreet" class="block text-sm font-medium text-navy mb-1">Street/Block/House Number <span class="text-red-500">*</label>
                             <input type="text" id="traditionalDeceasedStreet" name="deceasedStreet" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" placeholder="Enter detailed street address">
                         </div>
                         
@@ -1157,7 +1157,7 @@ input[name*="LastName"] {
                         
                         <!-- GCash Upload with Preview -->
                         <div class="mb-4">
-                            <label for="traditionalGcashReceipt" class="block text-sm font-medium text-navy mb-1">Payment Proof</label>
+                            <label for="traditionalGcashReceipt" class="block text-sm font-medium text-navy mb-1">Payment Proof <span class="text-red-500">*</label>
                             <div class="border border-input-border bg-white rounded-lg p-3 focus-within:ring-2 focus-within:ring-yellow-600">
                                 <!-- Upload Button and File Name -->
                                 <div class="flex items-center mb-2">
@@ -1191,7 +1191,7 @@ input[name*="LastName"] {
                         </div>
                         
                         <div class="mb-3">
-                            <label for="traditionalReferenceNumber" class="block text-sm font-medium text-navy mb-1">Reference Number *</label>
+                            <label for="traditionalReferenceNumber" class="block text-sm font-medium text-navy mb-1">Reference Number <span class="text-red-500">*</label>
                             <input type="text" id="traditionalReferenceNumber" name="referenceNumber" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" placeholder="e.g. 1234567890">
                         </div>
                     </div>
@@ -2000,7 +2000,7 @@ function removeGcash() {
                         <!-- First Name & Middle Name (Side by side) -->
                         <div class="flex flex-wrap -mx-2 mb-3">
                             <div class="w-full sm:w-1/2 px-2 mb-3 sm:mb-0">
-                                <label for="lifeplanHolderFirstName" class="block text-sm font-medium text-navy mb-1">First Name *</label>
+                                <label for="lifeplanHolderFirstName" class="block text-sm font-medium text-navy mb-1">First Name <span class="text-red-500">*</label>
                                 <input type="text" id="lifeplanHolderFirstName" name="holderFirstName" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" pattern="[A-Za-z'-][A-Za-z'-]*( [A-Za-z'-]+)*" title="Please enter a valid name (letters only, no leading spaces, numbers or symbols)">
                             </div>
                             <div class="w-full sm:w-1/2 px-2">
@@ -2012,7 +2012,7 @@ function removeGcash() {
                         <!-- Last Name & Suffix (Side by side) -->
                         <div class="flex flex-wrap -mx-2 mb-3">
                             <div class="w-full sm:w-3/4 px-2 mb-3 sm:mb-0">
-                                <label for="lifeplanHolderLastName" class="block text-sm font-medium text-navy mb-1">Last Name *</label>
+                                <label for="lifeplanHolderLastName" class="block text-sm font-medium text-navy mb-1">Last Name <span class="text-red-500">*</label>
                                 <input type="text" id="lifeplanHolderLastName" name="holderLastName" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" pattern="[A-Za-z'-][A-Za-z'-]*( [A-Za-z'-]+)*" title="Please enter a valid name (letters only, no leading spaces, numbers or symbols)">
                             </div>
                             <div class="w-full sm:w-1/4 px-2">
@@ -2032,11 +2032,11 @@ function removeGcash() {
                         
                         <div class="flex flex-wrap -mx-2 mb-3">
                             <div class="w-full sm:w-1/2 px-2 mb-3 sm:mb-0">
-                                <label for="lifeplanDateOfBirth" class="block text-sm font-medium text-navy mb-1">Date of Birth *</label>
+                                <label for="lifeplanDateOfBirth" class="block text-sm font-medium text-navy mb-1">Date of Birth <span class="text-red-500">*</label>
                                 <input type="date" id="lifeplanDateOfBirth" name="dateOfBirth" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                             </div>
                             <div class="w-full sm:w-1/2 px-2">
-                                <label for="lifeplanContactNumber" class="block text-sm font-medium text-navy mb-1">Contact Number *</label>
+                                <label for="lifeplanContactNumber" class="block text-sm font-medium text-navy mb-1">Contact Number <span class="text-red-500">*</label>
                                 <input type="tel" id="lifeplanContactNumber" name="contactNumber" required 
        pattern="09[0-9]{9}" 
        title="Please enter a valid Philippine mobile number starting with 09 (11 digits total)"
@@ -2046,7 +2046,7 @@ function removeGcash() {
                         
                         <div class="mb-3">
                             <label for="relationshipWithBeneficiary" class="block text-sm font-medium text-navy mb-1">
-                                Relationship with the Beneficiary *
+                                Relationship with the Beneficiary <span class="text-red-500">*
                             </label>
                             <input type="text" id="relationshipWithBeneficiary" name="relationshipWithBeneficiary" required
                                 title="Please enter the relationship with the beneficiary"
@@ -2056,7 +2056,7 @@ function removeGcash() {
                         <!-- Address (Improved UI with dropdowns in specified layout) -->
                         <div class="flex flex-wrap -mx-2 mb-3">
                             <div class="w-full sm:w-1/2 px-2 mb-3 sm:mb-0">
-                                <label for="lifeplanHolderRegion" class="block text-sm font-medium text-navy mb-1">Region</label>
+                                <label for="lifeplanHolderRegion" class="block text-sm font-medium text-navy mb-1">Region <span class="text-red-500">*</label>
                                 <select id="lifeplanHolderRegion" name="holderRegion" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                                     <option value="">Select Region</option>
                                     <option value="NCR">National Capital Region (NCR)</option>
@@ -2066,7 +2066,7 @@ function removeGcash() {
                                 </select>
                             </div>
                             <div class="w-full sm:w-1/2 px-2">
-                                <label for="lifeplanHolderProvince" class="block text-sm font-medium text-navy mb-1">Province</label>
+                                <label for="lifeplanHolderProvince" class="block text-sm font-medium text-navy mb-1">Province <span class="text-red-500">*</label>
                                 <select id="lifeplanHolderProvince" name="holderProvince" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                                     <option value="">Select Province</option>
                                     <!-- Provinces will be populated by JavaScript based on selected region -->
@@ -2076,14 +2076,14 @@ function removeGcash() {
                         
                         <div class="flex flex-wrap -mx-2 mb-3">
                             <div class="w-full sm:w-1/2 px-2 mb-3 sm:mb-0">
-                                <label for="lifeplanHolderCity" class="block text-sm font-medium text-navy mb-1">City/Municipality</label>
+                                <label for="lifeplanHolderCity" class="block text-sm font-medium text-navy mb-1">City/Municipality <span class="text-red-500">*</label>
                                 <select id="lifeplanHolderCity" name="holderCity" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                                     <option value="">Select City/Municipality</option>
                                     <!-- Cities will be populated by JavaScript based on selected province -->
                                 </select>
                             </div>
                             <div class="w-full sm:w-1/2 px-2">
-                                <label for="lifeplanHolderBarangay" class="block text-sm font-medium text-navy mb-1">Barangay</label>
+                                <label for="lifeplanHolderBarangay" class="block text-sm font-medium text-navy mb-1">Barangay <span class="text-red-500">*</label>
                                 <select id="lifeplanHolderBarangay" name="holderBarangay" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
                                     <option value="">Select Barangay</option>
                                     <!-- Barangays will be populated by JavaScript based on selected city -->
@@ -2092,7 +2092,7 @@ function removeGcash() {
                         </div>
                         
                         <div class="mb-3">
-                            <label for="lifeplanHolderStreet" class="block text-sm font-medium text-navy mb-1">Street/Block/House Number</label>
+                            <label for="lifeplanHolderStreet" class="block text-sm font-medium text-navy mb-1">Street/Block/House Number <span class="text-red-500">*</label>
                             <input type="text" id="lifeplanHolderStreet" name="holderStreet" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" placeholder="Enter detailed street address">
                         </div>
                     </div>
@@ -2152,7 +2152,7 @@ function removeGcash() {
                         
                         <!-- GCash Upload with Preview (Improved UI) -->
                         <div class="mb-4">
-                            <label for="lifeplanGcashReceipt" class="block text-sm font-medium text-navy mb-1">First Payment Receipt</label>
+                            <label for="lifeplanGcashReceipt" class="block text-sm font-medium text-navy mb-1">First Payment Receipt <span class="text-red-500">*</label>
                             <div class="border border-input-border bg-white rounded-lg p-3 focus-within:ring-2 focus-within:ring-yellow-600">
                                 <!-- Upload Button and File Name -->
                                 <div class="flex items-center mb-2">
@@ -2185,7 +2185,7 @@ function removeGcash() {
                         </div>
                         
                         <div class="mb-3">
-                            <label for="lifeplanReferenceNumber" class="block text-sm font-medium text-navy mb-1">Reference Number *</label>
+                            <label for="lifeplanReferenceNumber" class="block text-sm font-medium text-navy mb-1">Reference Number <span class="text-red-500">*</label>
                             <input type="text" id="lifeplanReferenceNumber" name="referenceNumber" required class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" placeholder="e.g. 1234567890">
                         </div>
                     </div>
