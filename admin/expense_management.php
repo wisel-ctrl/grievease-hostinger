@@ -99,6 +99,8 @@ if ($lastMonth > 0) {
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <style>
     .modal-scroll-container {
     scrollbar-width: thin;
@@ -116,6 +118,31 @@ if ($lastMonth > 0) {
 .modal-scroll-container::-webkit-scrollbar-thumb {
     background-color: #d4a933;
     border-radius: 6px;
+}
+
+.filter-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.filter-window {
+    position: absolute;
+    right: 0;
+    z-index: 10;
+    margin-top: 0.5rem;
+    width: 16rem;
+    border-radius: 0.375rem;
+    background-color: white;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    border: 1px solid #e5e7eb;
+}
+
+.filter-option {
+    transition: all 0.2s ease;
+}
+
+.filter-option:hover {
+    background-color: #f3f4f6;
 }
   </style>
  
@@ -601,11 +628,10 @@ if ($branchResult->num_rows > 0) {
             <div class="hidden lg:flex items-center gap-3">
                 <!-- Search Input -->
                 <div class="relative">
-                    <input type="text" id="searchInput<?php echo $branchId; ?>" 
+                    <input type="text" id="searchInput_<?php echo $branchId; ?>" 
                            placeholder="Search expenses..." 
-                           value="<?php echo htmlspecialchars($searchQuery); ?>"
                            class="pl-8 pr-3 py-2 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent"
-                           oninput="debouncedSearch(<?php echo $branchId; ?>)">
+                           onkeyup="searchExpenses(<?php echo $branchId; ?>)">
                     <i class="fas fa-search absolute left-2.5 top-3 text-gray-400"></i>
                 </div>
 
@@ -621,13 +647,13 @@ if ($branchResult->num_rows > 0) {
                     </button>
                     
                     <!-- Filter Window -->
-                    <div id="filterWindow<?php echo $branchId; ?>" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-4">
+                    <div id="filterWindow<?php echo $branchId; ?>" class="filter-window hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-4">
                         <div class="space-y-4">
                             <!-- Category Filter -->
                             <div>
                                 <h5 class="text-sm font-medium text-sidebar-text mb-2">Category</h5>
                                 <div class="space-y-1">
-                                    <div class="flex items-center cursor-pointer" onclick="setFilter(<?php echo $branchId; ?>, 'category', '')">
+                                    <div class="flex items-center cursor-pointer" onclick="setFilter(<?php echo $branchId; ?>, 'category', '<?php echo urlencode($category['category']); ?>')">
                                         <span class="filter-option <?php echo !$categoryFilter ? 'bg-sidebar-accent text-white' : 'hover:bg-sidebar-hover'; ?> px-2 py-1 rounded text-sm w-full">
                                             All Categories
                                         </span>
@@ -666,9 +692,9 @@ if ($branchResult->num_rows > 0) {
                                     foreach($statuses as $status): 
                                         $isActive = $statusFilter === $status;
                                     ?>
-                                        <div class="flex items-center cursor-pointer" onclick="setFilter(<?php echo $branchId; ?>, 'status', '<?php echo urlencode($status); ?>')">
+                                        <div class="flex items-center cursor-pointer" onclick="setFilter(<?php echo $branchId; ?>, 'category', '<?php echo urlencode($category['category']); ?>')">
                                             <span class="filter-option <?php echo $isActive ? 'bg-sidebar-accent text-white' : 'hover:bg-sidebar-hover'; ?> px-2 py-1 rounded text-sm w-full">
-                                                <?php echo ucfirst($status); ?>
+                                                <?php echo htmlspecialchars($category['category']); ?>
                                             </span>
                                         </div>
                                     <?php endforeach; ?>
@@ -679,7 +705,8 @@ if ($branchResult->num_rows > 0) {
                 </div>
 
                 <!-- Archive Button -->
-                <button class="px-4 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover whitespace-nowrap">
+                <button class="px-4 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover whitespace-nowrap"
+                        onclick="openArchiveModal(<?php echo $branchId; ?>)">
                     <i class="fas fa-archive text-sidebar-accent"></i>
                     <span>Archive</span>
                 </button>
@@ -697,12 +724,11 @@ if ($branchResult->num_rows > 0) {
             <div class="flex items-center w-full gap-3 mb-4">
                 <!-- Search Input - Takes most of the space -->
                 <div class="relative flex-grow">
-                    <input type="text" id="searchInput<?php echo $branchId; ?>_mobile" 
+                    <input type="text" id="searchInput_<?php echo $branchId; ?>" 
                            placeholder="Search expenses..." 
-                           value="<?php echo htmlspecialchars($searchQuery); ?>"
-                           class="pl-8 pr-3 py-2.5 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent"
-                           oninput="debouncedSearch(<?php echo $branchId; ?>)">
-                    <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                           class="pl-8 pr-3 py-2 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent"
+                           onkeyup="searchExpenses(<?php echo $branchId; ?>)">
+                    <i class="fas fa-search absolute left-2.5 top-3 text-gray-400"></i>
                 </div>
 
                 <!-- Icon-only buttons for filter and archive -->
@@ -716,7 +742,8 @@ if ($branchResult->num_rows > 0) {
                     </div>
 
                     <!-- Archive Icon Button -->
-                    <button class="w-10 h-10 flex items-center justify-center text-sidebar-accent">
+                    <button class="w-10 h-10 flex items-center justify-center text-sidebar-accent" 
+                            onclick="openArchiveModal(<?php echo $branchId; ?>)">
                         <i class="fas fa-archive text-xl"></i>
                     </button>
                 </div>
@@ -732,6 +759,13 @@ if ($branchResult->num_rows > 0) {
     </div>
     
     <!-- Responsive Table Container with improved spacing -->
+    <div class="overflow-x-auto scrollbar-thin" id="tableContainer<?php echo $branchId; ?>">
+        <div id="loadingIndicator<?php echo $branchId; ?>" class="hidden absolute inset-0 bg-white bg-opacity-50 flex items-center justify-center">
+            <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-sidebar-accent"></div>
+        </div>
+        
+        
+        <!-- Table Container with Loading Indicator -->
     <div class="overflow-x-auto scrollbar-thin" id="tableContainer<?php echo $branchId; ?>">
         <div id="loadingIndicator<?php echo $branchId; ?>" class="hidden absolute inset-0 bg-white bg-opacity-50 flex items-center justify-center">
             <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-sidebar-accent"></div>
@@ -817,9 +851,9 @@ if ($branchResult->num_rows > 0) {
                                                     '<?php echo addslashes($expense['notes'] ?? ''); ?>')">
                                             <i class="fas fa-edit"></i>
                                         </button>
-                                        <button class="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-all tooltip" title="Delete Expense" 
-                                                onclick="deleteExpense('#EXP-<?php echo str_pad($expense['expense_ID'], 3, '0', STR_PAD_LEFT); ?>')">
-                                            <i class="fas fa-archive text-red"></i>
+                                        <button class="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-all tooltip" title="Archive Expense" 
+                                                onclick="archiveExpense('#EXP-<?php echo str_pad($expense['expense_ID'], 3, '0', STR_PAD_LEFT); ?>')">
+                                            <i class="fas fa-archive"></i>
                                         </button>
                                     </div>
                                 </td>
@@ -841,6 +875,7 @@ if ($branchResult->num_rows > 0) {
     </div>
     
     <!-- Sticky Pagination Footer with improved spacing -->
+<!-- Sticky Pagination Footer with improved spacing -->
 <div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
     <div id="paginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
     <?php 
@@ -1117,25 +1152,7 @@ $conn->close();
           </div>
         </div>
         
-        <!-- Receipt Upload -->
-        <div>
-          <label for="expenseReceipt" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            Upload Receipt
-          </label>
-          <div class="relative flex flex-col gap-2">
-            <div class="flex items-center border border-gray-300 rounded-lg px-3 py-2 focus-within:ring-1 focus-within:ring-sidebar-accent focus-within:border-sidebar-accent transition-all duration-200">
-              <input type="file" id="expenseReceipt" name="expenseReceipt" accept="image/*" class="w-full focus:outline-none" onchange="previewReceipt(event)">
-            </div>
-            <div id="receiptPreviewContainer" class="hidden mt-2">
-              <div class="border border-gray-200 rounded-lg p-2">
-                <img id="receiptPreview" src="#" alt="Receipt preview" class="max-h-40 mx-auto">
-                <button type="button" onclick="removeReceiptPreview()" class="mt-2 text-xs text-red-600 hover:text-red-800 flex items-center justify-center">
-                  <i class="fas fa-times mr-1"></i> Remove
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+        
       </form>
     </div>
     
@@ -1146,6 +1163,56 @@ $conn->close();
       </button>
       <button type="button" class="w-full sm:w-auto px-5 sm:px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="addExpense()">
         Add Expense
+      </button>
+    </div>
+  </div>
+</div>
+
+
+<!-- Archive Modal -->
+<div id="archiveModal" class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto">
+  <!-- Modal Backdrop -->
+  <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+  
+  <!-- Modal Content -->
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-4xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] flex flex-col">
+    <!-- Close Button -->
+    <button type="button" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 transition-colors" onclick="closeArchiveModal()">
+      <i class="fas fa-times"></i>
+    </button>
+    
+    <!-- Modal Header -->
+    <div class="px-4 sm:px-6 py-4 sm:py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
+      <h3 class="text-lg sm:text-xl font-bold text-white flex items-center">
+        <i class="fas fa-archive mr-2"></i> Archived Expenses
+      </h3>
+    </div>
+    
+    <!-- Modal Body -->
+    <div class="px-4 sm:px-6 py-4 sm:py-5 overflow-y-auto modal-scroll-container">
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Expense Name</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="archivedExpensesTableBody" class="bg-white divide-y divide-gray-200">
+            <!-- Archived expenses will be loaded here -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+    
+    <!-- Modal Footer -->
+    <div class="px-4 sm:px-6 py-3 sm:py-4 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
+      <button type="button" class="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors" onclick="closeArchiveModal()">
+        Close
       </button>
     </div>
   </div>
@@ -1321,25 +1388,7 @@ $conn->close();
                     onkeydown="preventDoubleSpace(event)"></textarea>
         </div>
         
-        <!-- Receipt Upload -->
-        <div>
-          <label for="editExpenseReceipt" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            Upload Receipt
-          </label>
-          <div class="relative flex flex-col gap-2">
-            <div class="flex items-center border border-gray-300 rounded-lg px-3 py-2 focus-within:ring-1 focus-within:ring-sidebar-accent focus-within:border-sidebar-accent transition-all duration-200">
-              <input type="file" id="editExpenseReceipt" name="editExpenseReceipt" accept="image/*" class="w-full focus:outline-none" onchange="previewEditReceipt(event)">
-            </div>
-            <div id="editReceiptPreviewContainer" class="hidden mt-2">
-              <div class="border border-gray-200 rounded-lg p-2">
-                <img id="editReceiptPreview" src="#" alt="Receipt preview" class="max-h-40 mx-auto">
-                <button type="button" onclick="removeEditReceiptPreview()" class="mt-2 text-xs text-red-600 hover:text-red-800 flex items-center justify-center">
-                  <i class="fas fa-times mr-1"></i> Remove
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+        
       </form>
     </div>
     
@@ -1356,7 +1405,172 @@ $conn->close();
 </div>
 
   <script>
+      
+      // Global variables to store current filters
+let currentFilters = {};
 
+
+// Function to search expenses in real-time
+function searchExpenses(branchId) {
+    const searchTerm = document.getElementById(`searchInput_${branchId}`).value;
+    currentFilters[branchId] = currentFilters[branchId] || {};
+    currentFilters[branchId].search = searchTerm;
+    
+    // Debounce the search to avoid too many requests
+    debounce(() => loadExpenses(branchId), 300);
+}
+
+// Function to set filters
+function setFilter(branchId, filterType, filterValue) {
+    currentFilters[branchId] = currentFilters[branchId] || {};
+    
+    if (filterValue === '') {
+        delete currentFilters[branchId][filterType];
+    } else {
+        currentFilters[branchId][filterType] = decodeURIComponent(filterValue);
+    }
+    
+    // Close filter dropdown if open
+    const filterWindow = document.getElementById(`filterWindow${branchId}`);
+    if (filterWindow) {
+        filterWindow.classList.add('hidden');
+    }
+    
+    loadExpenses(branchId);
+}
+
+// Debounce function to limit how often a function is called
+let debounceTimer;
+function debounce(callback, time) {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(callback, time);
+}
+
+// Main function to load expenses via AJAX
+function loadExpenses(branchId, page = 1) {
+    const loadingIndicator = document.getElementById(`loadingIndicator${branchId}`);
+    const tableContainer = document.getElementById(`tableContainer${branchId}`);
+    const paginationInfo = document.querySelector(`#branch-${branchId} #paginationInfo`);
+    const paginationContainer = document.querySelector(`#branch-${branchId} #paginationContainer`);
+    
+    loadingIndicator.classList.remove('hidden');
+    
+    // Prepare filter data
+    const filters = currentFilters[branchId] || {};
+    filters.branch_id = branchId;
+    filters.page = page;
+    
+    fetch('expenses/load_expenses.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(filters)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.html) {
+            const tbody = tableContainer.querySelector('tbody');
+            if (tbody) {
+                tbody.innerHTML = data.html;
+            }
+        }
+        
+        if (data.pagination_info && paginationInfo) {
+            paginationInfo.innerHTML = data.pagination_info;
+        }
+        
+        if (data.pagination_html && paginationContainer) {
+            paginationContainer.innerHTML = data.pagination_html;
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        const tbody = tableContainer.querySelector('tbody');
+        if (tbody) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="7" class="px-4 py-6 text-sm text-center text-red-500">
+                        Error loading expenses. Please try again.
+                    </td>
+                </tr>
+            `;
+        }
+    })
+    .finally(() => {
+        loadingIndicator.classList.add('hidden');
+    });
+}
+
+
+function toggleFilterWindow(branchId) {
+    const filterWindow = document.getElementById(`filterWindow${branchId}`);
+    if (filterWindow) {
+        filterWindow.classList.toggle('hidden');
+    }
+}
+
+// Add this to your main script
+document.addEventListener('click', function(event) {
+    if (!event.target.closest('.filter-dropdown')) {
+        document.querySelectorAll('.filter-window').forEach(window => {
+            window.classList.add('hidden');
+        });
+    }
+});
+// Function to change page
+function changeBranchPage(branchId, page) {
+    loadExpenses(branchId, page);
+    
+    // Update URL without reloading
+    const urlParams = new URLSearchParams(window.location.search);
+    urlParams.set(`page_${branchId}`, page);
+    window.history.pushState({}, '', `${window.location.pathname}?${urlParams.toString()}`);
+}
+
+function setFilter(branchId, filterType, filterValue) {
+    currentFilters[branchId] = currentFilters[branchId] || {};
+    
+    // Decode the filter value
+    filterValue = decodeURIComponent(filterValue);
+    
+    // Clear the filter if it's the same value (toggle behavior)
+    if (currentFilters[branchId][filterType] === filterValue) {
+        delete currentFilters[branchId][filterType];
+    } else {
+        currentFilters[branchId][filterType] = filterValue;
+    }
+    
+    // Update the filter indicator
+    updateFilterIndicator(branchId);
+    
+    // Reload the expenses
+    loadExpenses(branchId);
+}
+
+function updateFilterIndicator(branchId) {
+    const hasFilters = currentFilters[branchId] && 
+                      (currentFilters[branchId].category || currentFilters[branchId].status);
+    const indicator = document.getElementById(`filterIndicator${branchId}`);
+    if (indicator) {
+        indicator.classList.toggle('hidden', !hasFilters);
+    }
+}
+
+// Function to change branch page
+function changeBranchPage(branchId, page) {
+    // Get current URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    
+    // Update the branch-specific page parameter
+    urlParams.set(`page_${branchId}`, page);
+    
+    // Update the URL without reloading (for modern browsers)
+    window.history.pushState({}, '', `${window.location.pathname}?${urlParams.toString()}`);
+    
+    // Reload the page to show the new data
+    window.location.reload();
+}
     // Function to handle expense name dropdown change in edit modal
 function handleEditExpenseNameChange(select) {
     const expenseInput = document.getElementById('editExpenseDescription');
@@ -1440,7 +1654,7 @@ function openAddExpenseModal(branchId) {
     document.getElementById('statusPaid').checked = true;
     document.getElementById('methodCash').checked = true;
     document.getElementById('expenseNote').value = '';
-    removeReceiptPreview();
+
 }
 
     // Function to close the Add Expense Modal
@@ -1549,16 +1763,6 @@ function previewReceipt(event) {
     }
 }
 
-// Function to remove receipt preview
-function removeReceiptPreview() {
-    const input = document.getElementById('expenseReceipt');
-    const previewContainer = document.getElementById('receiptPreviewContainer');
-    const preview = document.getElementById('receiptPreview');
-    
-    input.value = '';
-    preview.src = '#';
-    previewContainer.classList.add('hidden');
-}
 
     // Function to add an expense
     // Function to add an expense
@@ -1593,17 +1797,34 @@ function addExpense() {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                alert('Expense added successfully!');
-                closeAddExpenseModal();
-                // Refresh the expenses table or add the new expense to the table
-                location.reload(); // Simple refresh for now
+                Swal.fire({
+                    title: 'Success!',
+                    text: 'Expense added successfully!',
+                    icon: 'success',
+                    confirmButtonText: 'OK',
+                    timer: 3000,
+                    timerProgressBar: true
+                }).then(() => {
+                    closeAddExpenseModal();
+                    location.reload();
+                });
             } else {
-                alert('Error: ' + data.message);
+                Swal.fire({
+                    title: 'Error!',
+                    text: data.message,
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('An error occurred while adding the expense.');
+            Swal.fire({
+                title: 'Error!',
+                text: 'An error occurred while adding the expense.',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
         });
     } else {
         form.reportValidity();
@@ -1655,8 +1876,6 @@ function addExpense() {
         updateEditDateLimits(); // Update date limits based on status
     }
     
-    // Reset receipt preview
-    removeEditReceiptPreview();
     
     document.getElementById('editExpenseModal').style.display = 'flex';
 }
@@ -1666,6 +1885,16 @@ function saveExpenseChanges() {
     const form = document.getElementById('editExpenseForm');
     
     if (form.checkValidity()) {
+        // Show loading indicator
+        Swal.fire({
+            title: 'Updating Expense',
+            text: 'Please wait...',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
         // Get form values
         const expenseId = document.getElementById('editExpenseId').value;
         const description = document.getElementById('editExpenseDescription').value;
@@ -1675,18 +1904,6 @@ function saveExpenseChanges() {
         const date = document.getElementById('editExpenseDate').value;
         const status = document.querySelector('input[name="editExpenseStatus"]:checked').value;
         const note = document.getElementById('editExpenseNote').value;
-        
-        // Debug: Log all values before creating FormData
-        console.log('--- Form Values Before Submission ---');
-        console.log('Expense ID:', expenseId);
-        console.log('Description:', description);
-        console.log('Branch:', branch);
-        console.log('Category:', category);
-        console.log('Amount:', amount);
-        console.log('Date:', date);
-        console.log('Status:', status);
-        console.log('Note:', note);
-        console.log('------------------------------------');
 
         // Create FormData object
         const formData = new FormData();
@@ -1699,45 +1916,173 @@ function saveExpenseChanges() {
         formData.append('status', status);
         formData.append('note', note);
 
-        // Debug: Log FormData contents
-        console.log('--- FormData Contents ---');
-        for (let [key, value] of formData.entries()) {
-            console.log(key + ':', value);
-        }
-        console.log('-------------------------');
-
-        // Send data to server using AJAX
-        console.log('Sending request to server...');
+        // Send data to server
         fetch('expenses/update_expense.php', {
             method: 'POST',
             body: formData
         })
-        .then(response => {
-            console.log('Response received, processing...');
-            return response.json();
-        })
+        .then(response => response.json())
         .then(data => {
-            console.log('Server response:', data);
             if (data.success) {
-                console.log('Update successful');
-                alert('Expense updated successfully!');
-                closeEditExpenseModal();
-                location.reload(); // Refresh the page to show changes
+                Swal.fire({
+                    title: 'Success!',
+                    text: 'Expense updated successfully!',
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                }).then(() => {
+                    closeEditExpenseModal();
+                    location.reload();
+                });
             } else {
-                console.error('Server reported error:', data.message);
-                alert('Error: ' + data.message);
+                Swal.fire({
+                    title: 'Error!',
+                    text: data.message || 'Failed to update expense',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
             }
         })
         .catch(error => {
-            console.error('Fetch error:', error);
-            alert('An error occurred while updating the expense.');
+            console.error('Error:', error);
+            Swal.fire({
+                title: 'Error!',
+                text: 'An unexpected error occurred while updating the expense',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
         });
     } else {
-        console.warn('Form validation failed');
         form.reportValidity();
+        Swal.fire({
+            title: 'Form Error',
+            text: 'Please fill out all required fields correctly',
+            icon: 'warning',
+            confirmButtonText: 'OK'
+        });
     }
 }
 
+// Function to open the archive modal
+function openArchiveModal(branchId = 0) {
+    const modal = document.getElementById('archiveModal');
+    const tableBody = document.getElementById('archivedExpensesTableBody');
+    
+    // Show loading state
+    tableBody.innerHTML = `
+        <tr>
+            <td colspan="6" class="px-6 py-4 text-center">
+                <div class="flex justify-center items-center">
+                    <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-sidebar-accent"></div>
+                </div>
+            </td>
+        </tr>
+    `;
+    
+    modal.style.display = 'flex';
+    
+    // Load archived expenses
+    fetch(`expenses/archiveUnarchive.php?action=get_archived_expenses&branch_id=${branchId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.length > 0) {
+                let html = '';
+                data.forEach(expense => {
+                    html += `
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">#EXP-${String(expense.expense_ID).padStart(3, '0')}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${expense.expense_name}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                                    ${expense.category}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">₱${parseFloat(expense.price).toFixed(2)}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${expense.date}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                <button onclick="unarchiveExpense(${expense.expense_ID})" class="px-3 py-1 bg-green-100 text-green-800 rounded-md hover:bg-green-200 transition-colors">
+                                    <i class="fas fa-undo mr-1"></i> Unarchive
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                tableBody.innerHTML = html;
+            } else {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="px-6 py-4 text-center text-gray-500">
+                            No archived expenses found
+                        </td>
+                    </tr>
+                `;
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="6" class="px-6 py-4 text-center text-red-500">
+                        Error loading archived expenses
+                    </td>
+                </tr>
+            `;
+        });
+}
+
+// Function to close the archive modal
+function closeArchiveModal() {
+    document.getElementById('archiveModal').style.display = 'none';
+}
+
+// Function to unarchive an expense
+function unarchiveExpense(expenseId) {
+    Swal.fire({
+        title: 'Unarchive Expense',
+        text: 'Are you sure you want to restore this expense?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, restore it!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const formData = new FormData();
+            formData.append('expense_id', expenseId);
+            
+            fetch('expenses/archiveUnarchive.php?action=unarchive_expense', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire(
+                        'Restored!',
+                        'The expense has been restored.',
+                        'success'
+                    ).then(() => {
+                        // Reload the page
+                        location.reload();
+                    });
+                } else {
+                    Swal.fire(
+                        'Error!',
+                        'There was an error restoring the expense: ' + data.message,
+                        'error'
+                    );
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire(
+                    'Error!',
+                    'An error occurred while restoring the expense.',
+                    'error'
+                );
+            });
+        }
+    });
+}
 // Update the edit button in your table rows to pass all necessary parameters:
 // onclick="openEditExpenseModal('#EXP-'.str_pad($expense['expense_ID'], 3, '0', STR_PAD_LEFT), '".$expense['expense_name']."', '".$expense['category']."', ".$expense['price'].", '".$expense['date']."', ".$expense['branch_id'].", '".$expense['status']."', '".($expense['notes'] ?? '')."')"
 
@@ -1748,32 +2093,56 @@ function saveExpenseChanges() {
 
     // Function to delete an expense
     // Function to "delete" an expense by setting appearance to 'hidden'
-function deleteExpense(expenseId) {
-    if (confirm('Are you sure you want to hide this expense? It will no longer be visible in the table.')) {
-        // Create FormData object
-        const formData = new FormData();
-        const numericId = expenseId.replace('#EXP-', ''); // Extract numeric ID
-        formData.append('expense_id', numericId);
-        
-        // Send request to update appearance
-        fetch('expenses/hide_expense.php', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert('Expense hidden successfully!');
-                location.reload(); // Refresh the page to show changes
-            } else {
-                alert('Error: ' + data.message);
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('An error occurred while hiding the expense.');
-        });
-    }
+// Function to archive an expense
+function archiveExpense(expenseId) {
+    Swal.fire({
+        title: 'Archive Expense',
+        text: 'Are you sure you want to archive this expense?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, archive it!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Create FormData object
+            const formData = new FormData();
+            const numericId = expenseId.replace('#EXP-', ''); // Extract numeric ID
+            formData.append('expense_id', numericId);
+            
+            // Send request to update appearance
+            fetch('expenses/hide_expense.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire(
+                        'Archived!',
+                        'The expense has been archived.',
+                        'success'
+                    ).then(() => {
+                        location.reload(); // Refresh the page after success
+                    });
+                } else {
+                    Swal.fire(
+                        'Error!',
+                        'There was an error archiving the expense: ' + data.message,
+                        'error'
+                    );
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire(
+                    'Error!',
+                    'An error occurred while archiving the expense.',
+                    'error'
+                );
+            });
+        }
+    });
 }
 </script>
 <script>
@@ -1913,5 +2282,8 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
   <script src="script.js"></script>
   <script src="tailwind.js"></script>
+  
+
+  
 </body>
 </html>
