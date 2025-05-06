@@ -785,7 +785,7 @@ require_once '../db_connect.php'; // Database connection
     <!-- Traditional Packages Selection Modal (Hidden by Default) -->
 <div id="traditionalPackagesModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4 hidden">
     <div class="w-full max-w-6xl bg-white rounded-2xl shadow-xl overflow-hidden max-h-[90vh]">
-        <div class="modal-scroll-container overflow-y-auto max-h-[90vh]">
+        <div class="overflow-y-auto max-h-[90vh]">
             <!-- Header with close button -->
             <div class="bg-navy p-6 flex justify-between items-center">
                 <h2 class="text-2xl font-hedvig text-white">Select Traditional Package</h2>
@@ -795,7 +795,7 @@ require_once '../db_connect.php'; // Database connection
             </div>
             
             <!-- Packages grid -->
-            <div class="p-6 bg-cream">
+            <div class="p-6 bg-cream overflow-y-auto modal-scroll-container">
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="traditionalPackagesGrid">
                     <!-- Packages will be dynamically inserted here -->
                     
