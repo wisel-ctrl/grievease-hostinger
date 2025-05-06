@@ -1870,6 +1870,311 @@ document.addEventListener('DOMContentLoaded', function() {
 }
 </script>
 <script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Name fields validation (First, Middle, Last)
+    const nameFields = ['lifeplanHolderFirstName', 'lifeplanHolderMiddleName', 'lifeplanHolderLastName'];
+    
+    nameFields.forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        if (field) {
+            field.addEventListener('input', function(e) {
+                // Get current cursor position
+                const cursorPos = this.selectionStart;
+                
+                // Remove any numbers, symbols, and extra spaces
+                let cleanedValue = this.value.replace(/[^a-zA-Z\s]/g, '')
+                    .replace(/\s{2,}/g, ' ')
+                    .replace(/^\s+/, '');
+                
+                // Don't allow space as first character or unless there are already 2 characters
+                if (cleanedValue.length < 2 && cleanedValue.includes(' ')) {
+                    cleanedValue = cleanedValue.replace(/\s/g, '');
+                }
+                
+                // Capitalize first letter of each word
+                cleanedValue = cleanedValue.toLowerCase().replace(/(?:^|\s)\S/g, function(a) {
+                    return a.toUpperCase();
+                });
+                
+                this.value = cleanedValue;
+                
+                // Restore cursor position
+                this.setSelectionRange(cursorPos, cursorPos);
+            });
+            
+            // Handle paste event
+            field.addEventListener('paste', function(e) {
+                e.preventDefault();
+                const pastedText = (e.clipboardData || window.clipboardData).getData('text');
+                const cleanedText = pastedText.replace(/[^a-zA-Z\s]/g, '')
+                    .replace(/\s{2,}/g, ' ')
+                    .replace(/^\s+/, '');
+                
+                if (cleanedText.length < 2 && cleanedText.includes(' ')) {
+                    cleanedText = cleanedText.replace(/\s/g, '');
+                }
+                
+                const capitalized = cleanedText.toLowerCase().replace(/(?:^|\s)\S/g, function(a) {
+                    return a.toUpperCase();
+                });
+                
+                // Insert the cleaned text at cursor position
+                const startPos = this.selectionStart;
+                const endPos = this.selectionEnd;
+                const currentValue = this.value;
+                
+                this.value = currentValue.substring(0, startPos) + 
+                              capitalized + 
+                              currentValue.substring(endPos);
+            });
+        }
+    });
+    
+    // Date of Birth validation
+    const dobField = document.getElementById('lifeplanDateOfBirth');
+    if (dobField) {
+        const today = new Date();
+        const hundredYearsAgo = new Date();
+        hundredYearsAgo.setFullYear(today.getFullYear() - 100);
+        
+        dobField.max = today.toISOString().split('T')[0];
+        dobField.min = hundredYearsAgo.toISOString().split('T')[0];
+    }
+    
+    // Contact Number validation
+    const contactField = document.getElementById('lifeplanContactNumber');
+    if (contactField) {
+        contactField.addEventListener('input', function() {
+            // Remove any non-digit characters
+            this.value = this.value.replace(/\D/g, '');
+            
+            // Ensure it starts with 09 and limit to 11 digits
+            if (this.value.length > 0 && !this.value.startsWith('09')) {
+                this.value = '09' + this.value.substring(2);
+            }
+            
+            if (this.value.length > 11) {
+                this.value = this.value.substring(0, 11);
+            }
+        });
+        
+        contactField.addEventListener('paste', function(e) {
+            e.preventDefault();
+            const pastedText = (e.clipboardData || window.clipboardData).getData('text');
+            const cleanedText = pastedText.replace(/\D/g, '');
+            
+            let finalText = cleanedText;
+            if (cleanedText.length > 0 && !cleanedText.startsWith('09')) {
+                finalText = '09' + cleanedText.substring(2);
+            }
+            
+            if (finalText.length > 11) {
+                finalText = finalText.substring(0, 11);
+            }
+            
+            // Insert at cursor position
+            const startPos = this.selectionStart;
+            const endPos = this.selectionEnd;
+            const currentValue = this.value;
+            
+            this.value = currentValue.substring(0, startPos) + 
+                         finalText + 
+                         currentValue.substring(endPos);
+        });
+    }
+    
+    // Relationship with beneficiary validation
+    const relationshipField = document.getElementById('relationshipWithBeneficiary');
+    if (relationshipField) {
+        relationshipField.addEventListener('input', function() {
+            // Remove numbers and symbols
+            let cleanedValue = this.value.replace(/[^a-zA-Z\s]/g, '')
+                .replace(/\s{2,}/g, ' ')
+                .replace(/^\s+/, '');
+            
+            // Don't allow space as first character or unless there are already 2 characters
+            if (cleanedValue.length < 2 && cleanedValue.includes(' ')) {
+                cleanedValue = cleanedValue.replace(/\s/g, '');
+            }
+            
+            // Capitalize first letter
+            if (cleanedValue.length > 0) {
+                cleanedValue = cleanedValue.charAt(0).toUpperCase() + 
+                               cleanedValue.slice(1).toLowerCase();
+            }
+            
+            this.value = cleanedValue;
+        });
+        
+        relationshipField.addEventListener('paste', function(e) {
+            e.preventDefault();
+            const pastedText = (e.clipboardData || window.clipboardData).getData('text');
+            let cleanedText = pastedText.replace(/[^a-zA-Z\s]/g, '')
+                .replace(/\s{2,}/g, ' ')
+                .replace(/^\s+/, '');
+            
+            if (cleanedText.length < 2 && cleanedText.includes(' ')) {
+                cleanedText = cleanedText.replace(/\s/g, '');
+            }
+            
+            if (cleanedText.length > 0) {
+                cleanedText = cleanedText.charAt(0).toUpperCase() + 
+                              cleanedText.slice(1).toLowerCase();
+            }
+            
+            // Insert at cursor position
+            const startPos = this.selectionStart;
+            const endPos = this.selectionEnd;
+            const currentValue = this.value;
+            
+            this.value = currentValue.substring(0, startPos) + 
+                         cleanedText + 
+                         currentValue.substring(endPos);
+        });
+    }
+    
+    // Street Address validation
+    const addressField = document.getElementById('traditionalDeceasedAddress');
+    if (addressField) {
+        addressField.addEventListener('input', function() {
+            // Remove multiple consecutive spaces
+            let cleanedValue = this.value.replace(/\s{2,}/g, ' ')
+                .replace(/^\s+/, '');
+            
+            // Don't allow space as first character or unless there are already 2 characters
+            if (cleanedValue.length < 2 && cleanedValue.includes(' ')) {
+                cleanedValue = cleanedValue.replace(/\s/g, '');
+            }
+            
+            // Capitalize first letter of each word
+            cleanedValue = cleanedValue.toLowerCase().replace(/(?:^|\s)\S/g, function(a) {
+                return a.toUpperCase();
+            });
+            
+            this.value = cleanedValue;
+        });
+        
+        addressField.addEventListener('paste', function(e) {
+            e.preventDefault();
+            const pastedText = (e.clipboardData || window.clipboardData).getData('text');
+            let cleanedText = pastedText.replace(/\s{2,}/g, ' ')
+                .replace(/^\s+/, '');
+            
+            if (cleanedText.length < 2 && cleanedText.includes(' ')) {
+                cleanedText = cleanedText.replace(/\s/g, '');
+            }
+            
+            cleanedText = cleanedText.toLowerCase().replace(/(?:^|\s)\S/g, function(a) {
+                return a.toUpperCase();
+            });
+            
+            // Insert at cursor position
+            const startPos = this.selectionStart;
+            const endPos = this.selectionEnd;
+            const currentValue = this.value;
+            
+            this.value = currentValue.substring(0, startPos) + 
+                         cleanedText + 
+                         currentValue.substring(endPos);
+        });
+    }
+    
+    // Reference Number validation
+    const refNumField = document.getElementById('lifeplanReferenceNumber');
+    if (refNumField) {
+        refNumField.addEventListener('input', function() {
+            // Remove any non-digit characters
+            this.value = this.value.replace(/\D/g, '');
+            
+            // Limit to 20 characters
+            if (this.value.length > 20) {
+                this.value = this.value.substring(0, 20);
+            }
+        });
+        
+        refNumField.addEventListener('paste', function(e) {
+            e.preventDefault();
+            const pastedText = (e.clipboardData || window.clipboardData).getData('text');
+            const cleanedText = pastedText.replace(/\D/g, '');
+            
+            const finalText = cleanedText.substring(0, 20);
+            
+            // Insert at cursor position
+            const startPos = this.selectionStart;
+            const endPos = this.selectionEnd;
+            const currentValue = this.value;
+            
+            this.value = currentValue.substring(0, startPos) + 
+                         finalText + 
+                         currentValue.substring(endPos);
+        });
+    }
+    
+    // Form submission validation
+    const lifeplanForm = document.getElementById('lifeplanBookingForm');
+    if (lifeplanForm) {
+        lifeplanForm.addEventListener('submit', function(e) {
+            // Check required name fields
+            const firstName = document.getElementById('lifeplanHolderFirstName');
+            const lastName = document.getElementById('lifeplanHolderLastName');
+            
+            if (firstName && firstName.value.trim().length < 2) {
+                e.preventDefault();
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Invalid First Name',
+                    text: 'Please enter a valid first name (minimum 2 characters)',
+                    confirmButtonColor: '#3085d6',
+                });
+                firstName.focus();
+                return;
+            }
+            
+            if (lastName && lastName.value.trim().length < 2) {
+                e.preventDefault();
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Invalid Last Name',
+                    text: 'Please enter a valid last name (minimum 2 characters)',
+                    confirmButtonColor: '#3085d6',
+                });
+                lastName.focus();
+                return;
+            }
+            
+            // Check contact number
+            const contactNumber = document.getElementById('lifeplanContactNumber');
+            if (contactNumber && (contactNumber.value.length < 11 || !contactNumber.value.startsWith('09'))) {
+                e.preventDefault();
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Invalid Contact Number',
+                    text: 'Please enter a valid Philippine mobile number starting with 09 (11 digits)',
+                    confirmButtonColor: '#3085d6',
+                });
+                contactNumber.focus();
+                return;
+            }
+            
+            // Check reference number
+            const refNumber = document.getElementById('lifeplanReferenceNumber');
+            if (refNumber && refNumber.value.length < 1) {
+                e.preventDefault();
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Reference Number Required',
+                    text: 'Please enter your payment reference number',
+                    confirmButtonColor: '#3085d6',
+                });
+                refNumber.focus();
+                return;
+            }
+        });
+    }
+});
+</script>
     //script for pektyur
 
     // Function to handle QR code button click
