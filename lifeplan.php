@@ -175,7 +175,7 @@
         <p class="text-dark max-w-3xl text-center">We provide flexible and compassionate life plan options, including a 5-year installment payment plan with 0% interest for your chosen traditional package, ensuring affordability without compromising dignity or care.</p>  
     </div>  
     
-    <div class="max-w-6xl mx-auto">
+    <div class="max-w-2xl mx-auto">
         <div class="package-card bg-white rounded-[20px] shadow-lg overflow-hidden relative group hover:shadow-xl transition-all duration-300 flex flex-col max-h-[480px]" data-price="35000" data-service="cremate" data-name="Direct Cremation">
             <div class="h-12 bg-navy flex items-center justify-center">
                 <h4 class="text-white font-hedvig text-xl">Flexible Payment Plan</h4>
@@ -208,10 +208,6 @@
                     <li class="flex items-start">
                         <i class="fas fa-check-circle mr-2 text-yellow-600 mt-1"></i>
                         <span class="text-dark">Equal Monthly Installments</span>
-                    </li>
-                    <li class="flex items-start">
-                        <i class="fas fa-check-circle mr-2 text-yellow-600 mt-1"></i>
-                        <span class="text-dark">Flexible Payment Option</span>
                     </li>
                 </ul>
                 <a href="Landing_Page/register.php" class="block w-full mt-4 bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg shadow-md transition-all duration-300 text-center">

@@ -481,10 +481,6 @@ require_once '../db_connect.php'; // Database connection
                         <i class="fas fa-check-circle mr-2 text-yellow-600 mt-1"></i>
                         <span class="text-dark">Equal Monthly Installments</span>
                     </li>
-                    <li class="flex items-start">
-                        <i class="fas fa-check-circle mr-2 text-yellow-600 mt-1"></i>
-                        <span class="text-dark">Flexible Payment Option</span>
-                    </li>
                 </ul>
                 <button class="block w-full mt-4 bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg shadow-md transition-all duration-300 text-center">
                     Select Package
@@ -1020,7 +1016,7 @@ require_once '../db_connect.php'; // Database connection
                                     </button>
                                 </div>
                                 <div class="flex flex-col items-center justify-center">
-                                    <img id="lifeplanQrCodeImage" src="../image\gcashqrvjay.jpg" alt="Payment QR Code" class="w-64 h-64 object-contain mb-4">
+                                    <img id="lifeplanQrCodeImage" src="../image/qrnivjaygcash.jpg" alt="Payment QR Code" class="w-64 h-64 object-contain mb-4">
                                     <p class="text-center text-sm text-gray-600 mb-2">Scan this QR code with your GCash app to make payment</p>
                                     <p class="text-center font-bold text-yellow-600" id="lifeplanQrCodeAmount">Amount: ₱0</p>
                                 </div>
