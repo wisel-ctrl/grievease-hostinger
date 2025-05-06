@@ -334,70 +334,114 @@ $lifeplan_requests = mysqli_fetch_all($lifeplan_result, MYSQLI_ASSOC);
 </div>
 
 <!-- Traditional Payment Modal -->
-<div id="traditionalModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
-  <div class="bg-white rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-auto">
-    <div class="flex justify-between items-center mb-4">
-      <h3 class="text-xl font-semibold">Payment Receipt</h3>
-      <button onclick="closeTraditionalModal()" class="text-gray-500 hover:text-gray-700">
-        <i class="fas fa-times"></i>
+<div id="traditionalModal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center hidden z-50 backdrop-blur-sm transition-all duration-300">
+  <div class="bg-white rounded-xl p-0 max-w-3xl w-full max-h-[90vh] overflow-hidden shadow-2xl transform transition-all duration-300">
+    <div class="bg-sidebar-text py-4 px-6 flex justify-between items-center">
+      <h3 class="text-xl font-semibold text-white flex items-center">
+        <i class="fas fa-receipt mr-2"></i> Payment Receipt
+      </h3>
+      <button onclick="closeTraditionalModal()" class="text-white hover:text-gray-200 transition-colors">
+        <i class="fas fa-times text-lg"></i>
       </button>
     </div>
-    <div class="mb-4">
-      <img id="traditionalReceiptImage" src="" alt="Payment Receipt" class="w-full h-auto border rounded">
-    </div>
-    <div class="bg-gray-100 p-4 rounded">
-      <p class="font-medium">Amount: <span id="traditionalAmount" class="font-normal">₱0.00</span></p>
-    </div>
-    <div class="mt-4 flex justify-end">
-      <button onclick="closeTraditionalModal()" class="px-4 py-2 bg-sidebar text-white rounded hover:bg-blue-700 transition-colors">
-        Close
-      </button>
+    
+    <div class="p-6">
+      <div class="mb-6 rounded-lg overflow-hidden border-4 border-gray-200 shadow-lg">
+        <img id="traditionalReceiptImage" src="" alt="Payment Receipt" class="w-full h-auto object-contain">
+      </div>
+      
+      <div class="bg-blue-50 p-5 rounded-lg shadow-inner mb-6">
+        <div class="flex justify-between items-center">
+          <p class="text-sidebar-text font-semibold text-lg">Payment Amount:</p>
+          <p id="traditionalAmount" class="text-2xl font-bold text-sidebar">₱0.00</p>
+        </div>
+      </div>
+      
+      <!-- Action buttons -->
+      <div class="flex space-x-4 justify-end">
+        <!-- Add approve/reject buttons if needed -->
+        <button onclick="closeTraditionalModal()" class="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors font-medium">
+          Close
+        </button>
+        <!-- Example of an approval button -->
+        <button class="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium">
+          <i class="fas fa-check mr-2"></i> Approve Payment
+        </button>
+      </div>
     </div>
   </div>
 </div>
 
 <!-- Custom Packages Modal -->
-<div id="customModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
-  <div class="bg-white rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-auto">
-    <div class="flex justify-between items-center mb-4">
-      <h3 class="text-xl font-semibold">Payment Receipt</h3>
-      <button onclick="closeCustomModal()" class="text-gray-500 hover:text-gray-700">
-        <i class="fas fa-times"></i>
+<div id="customModal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center hidden z-50 backdrop-blur-sm transition-all duration-300">
+  <div class="bg-white rounded-xl p-0 max-w-3xl w-full max-h-[90vh] overflow-hidden shadow-2xl transform transition-all duration-300">
+    <div class="bg-sidebar-text py-4 px-6 flex justify-between items-center">
+      <h3 class="text-xl font-semibold text-white flex items-center">
+        <i class="fas fa-box-open mr-2"></i> Custom Package Receipt
+      </h3>
+      <button onclick="closeCustomModal()" class="text-white hover:text-gray-200 transition-colors">
+        <i class="fas fa-times text-lg"></i>
       </button>
     </div>
-    <div class="mb-4">
-      <img id="customReceiptImage" src="" alt="Payment Receipt" class="w-full h-auto border rounded">
-    </div>
-    <div class="bg-gray-100 p-4 rounded">
-      <p class="font-medium">Amount: <span id="customAmount" class="font-normal">₱0.00</span></p>
-    </div>
-    <div class="mt-4 flex justify-end">
-      <button onclick="closeCustomModal()" class="px-4 py-2 bg-sidebar text-white rounded hover:bg-blue-700 transition-colors">
-        Close
-      </button>
+    
+    <div class="p-6">
+      <div class="mb-6 rounded-lg overflow-hidden border-4 border-gray-200 shadow-lg">
+        <img id="customReceiptImage" src="" alt="Payment Receipt" class="w-full h-auto object-contain">
+      </div>
+      
+      <div class="bg-blue-50 p-5 rounded-lg shadow-inner mb-6">
+        <div class="flex justify-between items-center">
+          <p class="text-sidebar-text font-semibold text-lg">Payment Amount:</p>
+          <p id="customAmount" class="text-2xl font-bold text-sidebar">₱0.00</p>
+        </div>
+      </div>
+      
+      <!-- Action buttons -->
+      <div class="flex space-x-4 justify-end">
+        <button onclick="closeCustomModal()" class="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors font-medium">
+          Close
+        </button>
+        <button class="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium">
+          <i class="fas fa-check mr-2"></i> Approve Payment
+        </button>
+      </div>
     </div>
   </div>
 </div>
 
 <!-- Lifeplan Modal -->
-<div id="lifeplanModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
-  <div class="bg-white rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-auto">
-    <div class="flex justify-between items-center mb-4">
-      <h3 class="text-xl font-semibold">Payment Receipt</h3>
-      <button onclick="closeLifeplanModal()" class="text-gray-500 hover:text-gray-700">
-        <i class="fas fa-times"></i>
+<div id="lifeplanModal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center hidden z-50 backdrop-blur-sm transition-all duration-300">
+  <div class="bg-white rounded-xl p-0 max-w-3xl w-full max-h-[90vh] overflow-hidden shadow-2xl transform transition-all duration-300">
+    <div class="bg-sidebar-text py-4 px-6 flex justify-between items-center">
+      <h3 class="text-xl font-semibold text-white flex items-center">
+        <i class="fas fa-heart mr-2"></i> Lifeplan Payment Receipt
+      </h3>
+      <button onclick="closeLifeplanModal()" class="text-white hover:text-gray-200 transition-colors">
+        <i class="fas fa-times text-lg"></i>
       </button>
     </div>
-    <div class="mb-4">
-      <img id="lifeplanReceiptImage" src="" alt="Payment Receipt" class="w-full h-auto border rounded">
-    </div>
-    <div class="bg-gray-100 p-4 rounded">
-      <p class="font-medium">Amount: <span id="lifeplanAmount" class="font-normal">₱0.00</span></p>
-    </div>
-    <div class="mt-4 flex justify-end">
-      <button onclick="closeLifeplanModal()" class="px-4 py-2 bg-sidebar text-white rounded hover:bg-blue-700 transition-colors">
-        Close
-      </button>
+    
+    <div class="p-6">
+      <div class="mb-6 rounded-lg overflow-hidden border-4 border-gray-200 shadow-lg">
+        <img id="lifeplanReceiptImage" src="" alt="Payment Receipt" class="w-full h-auto object-contain">
+      </div>
+      
+      <div class="bg-blue-50 p-5 rounded-lg shadow-inner mb-6">
+        <div class="flex justify-between items-center">
+          <p class="text-sidebar-text font-semibold text-lg">Payment Amount:</p>
+          <p id="lifeplanAmount" class="text-2xl font-bold text-sidebar">₱0.00</p>
+        </div>
+      </div>
+      
+      <!-- Action buttons -->
+      <div class="flex space-x-4 justify-end">
+        <button onclick="closeLifeplanModal()" class="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors font-medium">
+          Close
+        </button>
+        <button class="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium">
+          <i class="fas fa-check mr-2"></i> Approve Payment
+        </button>
+      </div>
     </div>
   </div>
 </div>
@@ -408,13 +452,20 @@ $lifeplan_requests = mysqli_fetch_all($lifeplan_result, MYSQLI_ASSOC);
   // Traditional Payment Modal Functions
   function openTraditionalModal(imageUrl, amount) {
     document.getElementById('traditionalReceiptImage').src = '../customer/payments/' + imageUrl;
-
     document.getElementById('traditionalAmount').textContent = '₱' + amount;
     document.getElementById('traditionalModal').classList.remove('hidden');
+    document.body.classList.add('overflow-hidden');
+    
+    // Add fade-in animation
+    setTimeout(() => {
+      document.getElementById('traditionalModal').querySelector('.bg-white').classList.add('scale-100');
+      document.getElementById('traditionalModal').querySelector('.bg-white').classList.remove('scale-95');
+    }, 10);
   }
 
   function closeTraditionalModal() {
     document.getElementById('traditionalModal').classList.add('hidden');
+    document.body.classList.remove('overflow-hidden');
   }
 
   // Custom Packages Modal Functions
@@ -422,10 +473,18 @@ $lifeplan_requests = mysqli_fetch_all($lifeplan_result, MYSQLI_ASSOC);
     document.getElementById('customReceiptImage').src = '../customer/payments/' + imageUrl;
     document.getElementById('customAmount').textContent = '₱' + amount;
     document.getElementById('customModal').classList.remove('hidden');
+    document.body.classList.add('overflow-hidden');
+    
+    // Add fade-in animation
+    setTimeout(() => {
+      document.getElementById('customModal').querySelector('.bg-white').classList.add('scale-100');
+      document.getElementById('customModal').querySelector('.bg-white').classList.remove('scale-95');
+    }, 10);
   }
 
   function closeCustomModal() {
     document.getElementById('customModal').classList.add('hidden');
+    document.body.classList.remove('overflow-hidden');
   }
 
   // Lifeplan Modal Functions
@@ -433,10 +492,18 @@ $lifeplan_requests = mysqli_fetch_all($lifeplan_result, MYSQLI_ASSOC);
     document.getElementById('lifeplanReceiptImage').src = '../customer/payments/' + imageUrl;
     document.getElementById('lifeplanAmount').textContent = '₱' + amount;
     document.getElementById('lifeplanModal').classList.remove('hidden');
+    document.body.classList.add('overflow-hidden');
+    
+    // Add fade-in animation
+    setTimeout(() => {
+      document.getElementById('lifeplanModal').querySelector('.bg-white').classList.add('scale-100');
+      document.getElementById('lifeplanModal').querySelector('.bg-white').classList.remove('scale-95');
+    }, 10);
   }
 
   function closeLifeplanModal() {
     document.getElementById('lifeplanModal').classList.add('hidden');
+    document.body.classList.remove('overflow-hidden');
   }
 
   // Close modals when clicking outside
@@ -450,6 +517,14 @@ $lifeplan_requests = mysqli_fetch_all($lifeplan_result, MYSQLI_ASSOC);
     if (event.target.id === 'lifeplanModal') {
       closeLifeplanModal();
     }
+  });
+  
+  // Initialize modals with scale-95 for animation
+  document.addEventListener('DOMContentLoaded', function() {
+    const modals = document.querySelectorAll('#traditionalModal .bg-white, #customModal .bg-white, #lifeplanModal .bg-white');
+    modals.forEach(modal => {
+      modal.classList.add('scale-95', 'transition-transform', 'duration-300');
+    });
   });
 </script>
 </body>
