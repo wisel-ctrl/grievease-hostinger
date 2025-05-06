@@ -191,6 +191,17 @@ require_once '../db_connect.php'; // Database connection
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="../tailwind.js"></script>
     <style>
+        #enlargedQrView {
+    transition: opacity 0.3s ease;
+}
+
+#enlargedQrView img {
+    transition: transform 0.3s ease;
+}
+
+#enlargedQrView:hover img {
+    transform: scale(1.02);
+}
         .modal {
             transition: opacity 0.3s ease-in-out;
             pointer-events: none;
