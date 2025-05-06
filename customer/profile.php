@@ -1258,374 +1258,145 @@ document.addEventListener('DOMContentLoaded', function() {
                     <!-- Transaction Logs Tab -->
 <div id="transaction-logs" class="tab-content">
     <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
-        <div class="p-6 border-b border-gray-100 flex flex-col md:flex-row justify-between items-center gap-4">
+        <div class="p-6 border-b border-gray-100 flex justify-between items-center">
             <h3 class="font-hedvig text-xl text-navy">Payment History</h3>
-            <div class="flex flex-wrap gap-2">
-                <div class="relative">
-                    <input type="text" placeholder="Search transactions..." class="border border-gray-200 rounded px-3 py-1 text-sm w-full md:w-48 focus:outline-none focus:ring-2 focus:ring-yellow-600">
-                    <i class="fas fa-search absolute right-3 top-2 text-gray-400"></i>
-                </div>
-                <button id="export-transactions" class="bg-navy text-white px-3 py-1 rounded hover:bg-navy/80 transition text-sm whitespace-nowrap">
+            <div class="flex space-x-2">
+                <button id="export-transactions" class="bg-navy text-white px-3 py-1 rounded hover:bg-navy/80 transition text-sm">
                     <i class="fas fa-download mr-1"></i> Export Statement
                 </button>
-                <button id="filter-transactions" class="bg-yellow-600 text-white px-3 py-1 rounded hover:bg-yellow-700 transition text-sm whitespace-nowrap">
+                <button id="filter-transactions" class="bg-yellow-600 text-white px-3 py-1 rounded hover:bg-yellow-700 transition text-sm">
                     <i class="fas fa-filter mr-1"></i> Filter
                 </button>
             </div>
         </div>
         
         <!-- Service Type Selector -->
-        <div class="p-4 bg-gray-50 border-b border-gray-100 overflow-x-auto">
-            <div class="flex flex-nowrap min-w-max">
+        <div class="p-4 bg-gray-50 border-b border-gray-100">
+            <div class="flex flex-wrap">
                 <button class="service-tab px-4 py-2 text-navy font-medium rounded-t border-b-2 border-yellow-600" data-tab="traditional-funeral">
                     Traditional Funeral
-                    <span class="ml-1 bg-navy text-white text-xs px-2 py-0.5 rounded-full">2</span>
                 </button>
                 <button class="service-tab px-4 py-2 text-gray-500 font-medium mx-2" data-tab="custom-package">
                     Custom Package
-                    <span class="ml-1 bg-gray-200 text-gray-700 text-xs px-2 py-0.5 rounded-full">3</span>
                 </button>
                 <button class="service-tab px-4 py-2 text-gray-500 font-medium" data-tab="life-plan">
                     Life Plan
-                    <span class="ml-1 bg-gray-200 text-gray-700 text-xs px-2 py-0.5 rounded-full">1</span>
                 </button>
             </div>
         </div>
         
         <!-- Traditional Funeral Content -->
         <div id="traditional-funeral-content" class="service-content p-6">
-            <!-- Service Selector for Multiple Bookings -->
-            <div class="mb-6">
-                <label for="service-select" class="block text-sm font-medium text-gray-700 mb-2">Select Service</label>
-                <div class="relative">
-                    <select id="service-select" class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-yellow-600 focus:border-yellow-600 sm:text-sm rounded-md">
-                        <option value="tf-45721">TF-45721 - Smith Family (Apr 10, 2025)</option>
-                        <option value="tf-45892">TF-45892 - Johnson Memorial (May 15, 2025)</option>
-                    </select>
-                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                        <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                        </svg>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Service Accordion for First Booking -->
-            <div class="booking-item mb-8 border border-gray-200 rounded-lg overflow-hidden" data-booking-id="tf-45721">
-                <div class="booking-header p-4 bg-gray-50 flex justify-between items-center cursor-pointer">
-                    <div>
-                        <h3 class="font-hedvig text-lg text-navy">Smith Family - Traditional Funeral</h3>
-                        <p class="text-sm text-gray-500">Service Date: Apr 10, 2025</p>
-                    </div>
-                    <div class="flex items-center">
-                        <span class="inline-block px-2 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded-full mr-3">Paid in Full</span>
-                        <svg class="w-5 h-5 transform transition-transform" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                        </svg>
-                    </div>
-                </div>
-                
-                <div class="booking-content p-4">
-                    <!-- Service Summary -->
-                    <div class="mb-6 bg-gray-50 p-5 rounded-lg">
-                        <h4 class="font-hedvig text-md text-navy mb-3">Service Details</h4>
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <div>
-                                <p class="text-sm text-gray-500">Service ID</p>
-                                <p class="font-medium text-navy">TF-45721</p>
-                            </div>
-                            <div>
-                                <p class="text-sm text-gray-500">Client</p>
-                                <p class="font-medium text-navy">Smith Family</p>
-                            </div>
-                            <div>
-                                <p class="text-sm text-gray-500">Service Date</p>
-                                <p class="font-medium text-navy">Apr 10, 2025</p>
-                            </div>
-                            <div>
-                                <p class="text-sm text-gray-500">Package Cost</p>
-                                <p class="font-medium text-navy">$8,750.00</p>
-                            </div>
-                            <div>
-                                <p class="text-sm text-gray-500">Additional Services</p>
-                                <p class="font-medium text-navy">$1,200.00</p>
-                            </div>
-                            <div>
-                                <p class="text-sm text-gray-500">Total Paid</p>
-                                <p class="font-medium text-navy">$9,950.00</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Transaction History -->
-                    <div class="mb-6">
-                        <div class="flex justify-between items-center mb-4">
-                            <h4 class="font-hedvig text-md text-navy">Payment History</h4>
-                            <button class="text-xs text-yellow-600 hover:text-yellow-700 transition flex items-center">
-                                <i class="fas fa-print mr-1"></i> Print All Receipts
-                            </button>
-                        </div>
-                        
-                        <div class="space-y-3">
-                            <!-- Transaction Item 1 -->
-                            <div class="border border-gray-200 rounded-lg p-4">
-                                <div class="flex flex-col md:flex-row justify-between mb-2">
-                                    <div>
-                                        <p class="font-medium text-navy">Final Payment</p>
-                                        <p class="text-sm text-gray-500">Mar 25, 2025</p>
-                                    </div>
-                                    <div class="md:text-right mt-2 md:mt-0">
-                                        <p class="font-semibold text-green-600">$4,375.00</p>
-                                        <span class="inline-block px-2 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded-full">Successful</span>
-                                    </div>
-                                </div>
-                                <div class="pt-2 border-t border-gray-100 mt-2 flex justify-between items-center">
-                                    <p class="text-sm text-gray-600">Traditional Funeral Package - Final Payment (50%)</p>
-                                    <div class="flex space-x-2">
-                                        <button class="text-sm text-yellow-600 hover:text-yellow-700 transition">View</button>
-                                        <span class="text-gray-300">|</span>
-                                        <button class="text-sm text-yellow-600 hover:text-yellow-700 transition">Download</button>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Transaction Item 2 -->
-                            <div class="border border-gray-200 rounded-lg p-4">
-                                <div class="flex flex-col md:flex-row justify-between mb-2">
-                                    <div>
-                                        <p class="font-medium text-navy">Additional Services</p>
-                                        <p class="text-sm text-gray-500">Mar 20, 2025</p>
-                                    </div>
-                                    <div class="md:text-right mt-2 md:mt-0">
-                                        <p class="font-semibold text-green-600">$1,200.00</p>
-                                        <span class="inline-block px-2 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded-full">Successful</span>
-                                    </div>
-                                </div>
-                                <div class="pt-2 border-t border-gray-100 mt-2 flex justify-between items-center">
-                                    <p class="text-sm text-gray-600">Premium Flowers and Memorial Video</p>
-                                    <div class="flex space-x-2">
-                                        <button class="text-sm text-yellow-600 hover:text-yellow-700 transition">View</button>
-                                        <span class="text-gray-300">|</span>
-                                        <button class="text-sm text-yellow-600 hover:text-yellow-700 transition">Download</button>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Transaction Item 3 -->
-                            <div class="border border-gray-200 rounded-lg p-4">
-                                <div class="flex flex-col md:flex-row justify-between mb-2">
-                                    <div>
-                                        <p class="font-medium text-navy">Initial Deposit</p>
-                                        <p class="text-sm text-gray-500">Mar 15, 2025</p>
-                                    </div>
-                                    <div class="md:text-right mt-2 md:mt-0">
-                                        <p class="font-semibold text-green-600">$4,375.00</p>
-                                        <span class="inline-block px-2 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded-full">Successful</span>
-                                    </div>
-                                </div>
-                                <div class="pt-2 border-t border-gray-100 mt-2 flex justify-between items-center">
-                                    <p class="text-sm text-gray-600">Traditional Funeral Package - Initial Deposit (50%)</p>
-                                    <div class="flex space-x-2">
-                                        <button class="text-sm text-yellow-600 hover:text-yellow-700 transition">View</button>
-                                        <span class="text-gray-300">|</span>
-                                        <button class="text-sm text-yellow-600 hover:text-yellow-700 transition">Download</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Payment Summary -->
-                    <div>
-                        <h4 class="font-hedvig text-md text-navy mb-4">Payment Summary</h4>
-                        <div class="bg-gray-50 rounded-lg p-4">
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <div class="bg-white p-4 rounded-lg shadow-sm">
-                                    <p class="text-sm text-gray-500">Total Package Cost</p>
-                                    <p class="text-xl font-semibold text-green-600">$8,750.00</p>
-                                </div>
-                                <div class="bg-white p-4 rounded-lg shadow-sm">
-                                    <p class="text-sm text-gray-500">Additional Services</p>
-                                    <p class="text-xl font-semibold text-navy">$1,200.00</p>
-                                </div>
-                                <div class="bg-white p-4 rounded-lg shadow-sm">
-                                    <p class="text-sm text-gray-500">Total Paid</p>
-                                    <p class="text-xl font-semibold text-navy">$9,950.00</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-          
-            <!-- Service Accordion for Second Booking (Collapsed by default) -->
-            <div class="booking-item mb-8 border border-gray-200 rounded-lg overflow-hidden" data-booking-id="tf-45892">
-                <div class="booking-header p-4 bg-gray-50 flex justify-between items-center cursor-pointer">
-                    <div>
-                        <h3 class="font-hedvig text-lg text-navy">Johnson Memorial - Traditional Funeral</h3>
-                        <p class="text-sm text-gray-500">Service Date: May 15, 2025</p>
-                    </div>
-                    <div class="flex items-center">
-                        <span class="inline-block px-2 py-1 bg-blue-100 text-blue-800 text-xs font-semibold rounded-full mr-3">In Progress</span>
-                        <svg class="w-5 h-5 transform transition-transform rotate-180" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                        </svg>
-                    </div>
-                </div>
-                
-                <div class="booking-content p-4 hidden">
-                    <!-- Service Summary -->
-                    <div class="mb-6 bg-gray-50 p-5 rounded-lg">
-                        <h4 class="font-hedvig text-md text-navy mb-3">Service Details</h4>
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <div>
-                                <p class="text-sm text-gray-500">Service ID</p>
-                                <p class="font-medium text-navy">TF-45892</p>
-                            </div>
-                            <div>
-                                <p class="text-sm text-gray-500">Client</p>
-                                <p class="font-medium text-navy">Johnson Memorial</p>
-                            </div>
-                            <div>
-                                <p class="text-sm text-gray-500">Service Date</p>
-                                <p class="font-medium text-navy">May 15, 2025</p>
-                            </div>
-                            <div>
-                                <p class="text-sm text-gray-500">Package Cost</p>
-                                <p class="font-medium text-navy">$9,350.00</p>
-                            </div>
-                            <div>
-                                <p class="text-sm text-gray-500">Additional Services</p>
-                                <p class="font-medium text-navy">$450.00</p>
-                            </div>
-                            <div>
-                                <p class="text-sm text-gray-500">Total Paid</p>
-                                <p class="font-medium text-navy">$5,100.00</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Transaction History -->
-                    <div class="mb-6">
-                        <div class="flex justify-between items-center mb-4">
-                            <h4 class="font-hedvig text-md text-navy">Payment History</h4>
-                            <button class="text-xs text-yellow-600 hover:text-yellow-700 transition flex items-center">
-                                <i class="fas fa-print mr-1"></i> Print All Receipts
-                            </button>
-                        </div>
-                        
-                        <div class="space-y-3">
-                            <!-- Transaction Item 1 -->
-                            <div class="border border-gray-200 rounded-lg p-4">
-                                <div class="flex flex-col md:flex-row justify-between mb-2">
-                                    <div>
-                                        <p class="font-medium text-navy">Additional Services</p>
-                                        <p class="text-sm text-gray-500">Apr 12, 2025</p>
-                                    </div>
-                                    <div class="md:text-right mt-2 md:mt-0">
-                                        <p class="font-semibold text-green-600">$450.00</p>
-                                        <span class="inline-block px-2 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded-full">Successful</span>
-                                    </div>
-                                </div>
-                                <div class="pt-2 border-t border-gray-100 mt-2 flex justify-between items-center">
-                                    <p class="text-sm text-gray-600">Premium Casket Upgrade</p>
-                                    <div class="flex space-x-2">
-                                        <button class="text-sm text-yellow-600 hover:text-yellow-700 transition">View</button>
-                                        <span class="text-gray-300">|</span>
-                                        <button class="text-sm text-yellow-600 hover:text-yellow-700 transition">Download</button>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Transaction Item 2 -->
-                            <div class="border border-gray-200 rounded-lg p-4">
-                                <div class="flex flex-col md:flex-row justify-between mb-2">
-                                    <div>
-                                        <p class="font-medium text-navy">Initial Payment</p>
-                                        <p class="text-sm text-gray-500">Apr 05, 2025</p>
-                                    </div>
-                                    <div class="md:text-right mt-2 md:mt-0">
-                                        <p class="font-semibold text-green-600">$4,650.00</p>
-                                        <span class="inline-block px-2 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded-full">Successful</span>
-                                    </div>
-                                </div>
-                                <div class="pt-2 border-t border-gray-100 mt-2 flex justify-between items-center">
-                                    <p class="text-sm text-gray-600">Traditional Funeral Package - Initial Deposit (50%)</p>
-                                    <div class="flex space-x-2">
-                                        <button class="text-sm text-yellow-600 hover:text-yellow-700 transition">View</button>
-                                        <span class="text-gray-300">|</span>
-                                        <button class="text-sm text-yellow-600 hover:text-yellow-700 transition">Download</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Upcoming Payments -->
-                    <div class="mb-6">
-                        <h4 class="font-hedvig text-md text-navy mb-4">Upcoming Payments</h4>
-                        <div class="border border-gray-200 rounded-lg p-4">
-                            <div class="flex flex-col md:flex-row justify-between mb-2">
-                                <div>
-                                    <p class="font-medium text-navy">Final Payment</p>
-                                    <p class="text-sm text-gray-500">May 05, 2025</p>
-                                </div>
-                                <div class="md:text-right mt-2 md:mt-0">
-                                    <p class="font-semibold text-navy">$4,700.00</p>
-                                    <span class="inline-block px-2 py-1 bg-gray-100 text-gray-800 text-xs font-semibold rounded-full">Upcoming</span>
-                                </div>
-                            </div>
-                            <div class="pt-2 border-t border-gray-100 mt-2 flex justify-between items-center">
-                                <p class="text-sm text-gray-600">Traditional Funeral Package - Final Payment (50%)</p>
-                                <button class="text-sm bg-yellow-600 text-white px-3 py-1 rounded hover:bg-yellow-700 transition">Pay Now</button>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Payment Summary -->
-                    <div>
-                        <h4 class="font-hedvig text-md text-navy mb-4">Payment Summary</h4>
-                        <div class="bg-gray-50 rounded-lg p-4">
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <div class="bg-white p-4 rounded-lg shadow-sm">
-                                    <p class="text-sm text-gray-500">Total Paid to Date</p>
-                                    <p class="text-xl font-semibold text-green-600">$5,100.00</p>
-                                </div>
-                                <div class="bg-white p-4 rounded-lg shadow-sm">
-                                    <p class="text-sm text-gray-500">Remaining Balance</p>
-                                    <p class="text-xl font-semibold text-navy">$4,700.00</p>
-                                </div>
-                                <div class="bg-white p-4 rounded-lg shadow-sm">
-                                    <p class="text-sm text-gray-500">Next Payment</p>
-                                    <div class="flex justify-between items-center">
-                                        <p class="text-xl font-semibold text-navy">$4,700.00</p>
-                                        <p class="text-sm text-gray-500">May 05, 2025</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Multi-booking Summary (Optional) -->
-            <div class="bg-gray-50 p-5 rounded-lg">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-hedvig text-lg text-navy">Service Type Summary</h3>
-                    <span class="text-sm text-gray-500">2 Traditional Funeral Services</span>
-                </div>
+            <!-- Service Summary -->
+            <div class="mb-8 bg-gray-50 p-5 rounded-lg">
+                <h3 class="font-hedvig text-lg text-navy mb-3">Traditional Funeral Package</h3>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div class="bg-white p-4 rounded-lg shadow-sm">
-                        <p class="text-sm text-gray-500">Total Services Value</p>
-                        <p class="text-xl font-semibold text-navy">$19,550.00</p>
+                    <div>
+                        <p class="text-sm text-gray-500">Service ID</p>
+                        <p class="font-medium text-navy">TF-45721</p>
                     </div>
-                    <div class="bg-white p-4 rounded-lg shadow-sm">
+                    <div>
+                        <p class="text-sm text-gray-500">Service Date</p>
+                        <p class="font-medium text-navy">Apr 10, 2025</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500">Payment Status</p>
+                        <span class="inline-block px-2 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded-full">Paid in Full</span>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500">Package Cost</p>
+                        <p class="font-medium text-navy">$8,750.00</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500">Additional Services</p>
+                        <p class="font-medium text-navy">$1,200.00</p>
+                    </div>
+                    <div>
                         <p class="text-sm text-gray-500">Total Paid</p>
-                        <p class="text-xl font-semibold text-green-600">$15,050.00</p>
+                        <p class="font-medium text-navy">$9,950.00</p>
                     </div>
-                    <div class="bg-white p-4 rounded-lg shadow-sm">
-                        <p class="text-sm text-gray-500">Total Remaining</p>
-                        <p class="text-xl font-semibold text-navy">$4,700.00</p>
+                </div>
+            </div>
+            
+            <!-- Transaction History -->
+            <div class="mb-8">
+                <h3 class="font-hedvig text-lg text-navy mb-4">Payment History</h3>
+                
+                <!-- Transaction Item 1 -->
+                <div class="border border-gray-200 rounded-lg p-4 mb-4">
+                    <div class="flex flex-col md:flex-row justify-between mb-2">
+                        <div>
+                            <p class="font-medium text-navy">Final Payment</p>
+                            <p class="text-sm text-gray-500">Mar 25, 2025</p>
+                        </div>
+                        <div class="md:text-right mt-2 md:mt-0">
+                            <p class="font-semibold text-green-600">$4,375.00</p>
+                            <span class="inline-block px-2 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded-full">Successful</span>
+                        </div>
+                    </div>
+                    <div class="pt-2 border-t border-gray-100 mt-2 flex justify-between items-center">
+                        <p class="text-sm text-gray-600">Traditional Funeral Package - Final Payment (50%)</p>
+                        <button class="text-sm text-yellow-600 hover:text-yellow-700 transition">Receipt</button>
+                    </div>
+                </div>
+                
+                <!-- Transaction Item 2 -->
+                <div class="border border-gray-200 rounded-lg p-4 mb-4">
+                    <div class="flex flex-col md:flex-row justify-between mb-2">
+                        <div>
+                            <p class="font-medium text-navy">Additional Services</p>
+                            <p class="text-sm text-gray-500">Mar 20, 2025</p>
+                        </div>
+                        <div class="md:text-right mt-2 md:mt-0">
+                            <p class="font-semibold text-green-600">$1,200.00</p>
+                            <span class="inline-block px-2 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded-full">Successful</span>
+                        </div>
+                    </div>
+                    <div class="pt-2 border-t border-gray-100 mt-2 flex justify-between items-center">
+                        <p class="text-sm text-gray-600">Premium Flowers and Memorial Video</p>
+                        <button class="text-sm text-yellow-600 hover:text-yellow-700 transition">Receipt</button>
+                    </div>
+                </div>
+                
+                <!-- Transaction Item 3 -->
+                <div class="border border-gray-200 rounded-lg p-4 mb-4">
+                    <div class="flex flex-col md:flex-row justify-between mb-2">
+                        <div>
+                            <p class="font-medium text-navy">Initial Deposit</p>
+                            <p class="text-sm text-gray-500">Mar 15, 2025</p>
+                        </div>
+                        <div class="md:text-right mt-2 md:mt-0">
+                            <p class="font-semibold text-green-600">$4,375.00</p>
+                            <span class="inline-block px-2 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded-full">Successful</span>
+                        </div>
+                    </div>
+                    <div class="pt-2 border-t border-gray-100 mt-2 flex justify-between items-center">
+                        <p class="text-sm text-gray-600">Traditional Funeral Package - Initial Deposit (50%)</p>
+                        <button class="text-sm text-yellow-600 hover:text-yellow-700 transition">Receipt</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Payment Summary -->
+            <div>
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-hedvig text-lg text-navy">Payment Summary</h3>
+                </div>
+                
+                <div class="bg-gray-50 rounded-lg p-4">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="bg-white p-4 rounded-lg shadow-sm">
+                            <p class="text-sm text-gray-500">Total Package Cost</p>
+                            <p class="text-xl font-semibold text-green-600">$8,750.00</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg shadow-sm">
+                            <p class="text-sm text-gray-500">Additional Services</p>
+                            <p class="text-xl font-semibold text-navy">$1,200.00</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg shadow-sm">
+                            <p class="text-sm text-gray-500">Total Paid</p>
+                            <p class="text-xl font-semibold text-navy">$9,950.00</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1633,47 +1404,140 @@ document.addEventListener('DOMContentLoaded', function() {
         
         <!-- Custom Package Content -->
         <div id="custom-package-content" class="service-content p-6" style="display: none;">
-            <!-- Multi-booking dropdown would go here, similar to the Traditional Funeral section -->
-            <div class="mb-6">
-                <label for="service-select-custom" class="block text-sm font-medium text-gray-700 mb-2">Select Service</label>
-                <div class="relative">
-                    <select id="service-select-custom" class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-yellow-600 focus:border-yellow-600 sm:text-sm rounded-md">
-                        <option value="cp-38967">CP-38967 - Peterson Celebration (Apr 25, 2025)</option>
-                        <option value="cp-39085">CP-39085 - Rivera Memorial (Jun 10, 2025)</option>
-                        <option value="cp-39127">CP-39127 - Chen Commemoration (Jul 05, 2025)</option>
-                    </select>
-                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                        <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                        </svg>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Custom Package Service Accordion(s) would go here -->
-            <div class="booking-item mb-8 border border-gray-200 rounded-lg overflow-hidden">
-                <!-- Each booking content similar to the Traditional Funeral format -->
-                <!-- ... -->
-            </div>
-            
-            <!-- Multi-booking Summary for Custom Packages -->
-            <div class="bg-gray-50 p-5 rounded-lg">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-hedvig text-lg text-navy">Service Type Summary</h3>
-                    <span class="text-sm text-gray-500">3 Custom Celebration Services</span>
-                </div>
+            <!-- Custom Package Summary -->
+            <div class="mb-8 bg-gray-50 p-5 rounded-lg">
+                <h3 class="font-hedvig text-lg text-navy mb-3">Custom Celebration Package</h3>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div class="bg-white p-4 rounded-lg shadow-sm">
-                        <p class="text-sm text-gray-500">Total Services Value</p>
-                        <p class="text-xl font-semibold text-navy">$24,750.00</p>
+                    <div>
+                        <p class="text-sm text-gray-500">Package ID</p>
+                        <p class="font-medium text-navy">CP-38967</p>
                     </div>
-                    <div class="bg-white p-4 rounded-lg shadow-sm">
-                        <p class="text-sm text-gray-500">Total Paid</p>
-                        <p class="text-xl font-semibold text-green-600">$12,300.00</p>
+                    <div>
+                        <p class="text-sm text-gray-500">Service Date</p>
+                        <p class="font-medium text-navy">Apr 25, 2025</p>
                     </div>
-                    <div class="bg-white p-4 rounded-lg shadow-sm">
-                        <p class="text-sm text-gray-500">Total Remaining</p>
-                        <p class="text-xl font-semibold text-navy">$12,450.00</p>
+                    <div>
+                        <p class="text-sm text-gray-500">Payment Schedule</p>
+                        <p class="font-medium text-navy">Installments</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500">Total Package Cost</p>
+                        <p class="font-medium text-navy">$7,500.00</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500">Remaining Balance</p>
+                        <p class="font-medium text-navy">$2,500.00</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500">Payment Status</p>
+                        <span class="inline-block px-2 py-1 bg-blue-100 text-blue-800 text-xs font-semibold rounded-full">In Progress</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Transaction History -->
+            <div class="mb-8">
+                <h3 class="font-hedvig text-lg text-navy mb-4">Payment History</h3>
+                
+                <!-- Transaction Item 1 -->
+                <div class="border border-gray-200 rounded-lg p-4 mb-4">
+                    <div class="flex flex-col md:flex-row justify-between mb-2">
+                        <div>
+                            <p class="font-medium text-navy">Second Installment</p>
+                            <p class="text-sm text-gray-500">Mar 28, 2025</p>
+                        </div>
+                        <div class="md:text-right mt-2 md:mt-0">
+                            <p class="font-semibold text-green-600">$2,500.00</p>
+                            <span class="inline-block px-2 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded-full">Successful</span>
+                        </div>
+                    </div>
+                    <div class="pt-2 border-t border-gray-100 mt-2 flex justify-between items-center">
+                        <p class="text-sm text-gray-600">Custom Celebration Package - Second Payment</p>
+                        <button class="text-sm text-yellow-600 hover:text-yellow-700 transition">Receipt</button>
+                    </div>
+                </div>
+                
+                <!-- Transaction Item 2 -->
+                <div class="border border-gray-200 rounded-lg p-4 mb-4">
+                    <div class="flex flex-col md:flex-row justify-between mb-2">
+                        <div>
+                            <p class="font-medium text-navy">Custom Video Tribute</p>
+                            <p class="text-sm text-gray-500">Mar 20, 2025</p>
+                        </div>
+                        <div class="md:text-right mt-2 md:mt-0">
+                            <p class="font-semibold text-green-600">$750.00</p>
+                            <span class="inline-block px-2 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded-full">Successful</span>
+                        </div>
+                    </div>
+                    <div class="pt-2 border-t border-gray-100 mt-2 flex justify-between items-center">
+                        <p class="text-sm text-gray-600">Premium Video Tribute Service - Add-on</p>
+                        <button class="text-sm text-yellow-600 hover:text-yellow-700 transition">Receipt</button>
+                    </div>
+                </div>
+                
+                <!-- Transaction Item 3 -->
+                <div class="border border-gray-200 rounded-lg p-4 mb-4">
+                    <div class="flex flex-col md:flex-row justify-between mb-2">
+                        <div>
+                            <p class="font-medium text-navy">Initial Deposit</p>
+                            <p class="text-sm text-gray-500">Feb 25, 2025</p>
+                        </div>
+                        <div class="md:text-right mt-2 md:mt-0">
+                            <p class="font-semibold text-green-600">$1,750.00</p>
+                            <span class="inline-block px-2 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded-full">Successful</span>
+                        </div>
+                    </div>
+                    <div class="pt-2 border-t border-gray-100 mt-2 flex justify-between items-center">
+                        <p class="text-sm text-gray-600">Custom Celebration Package - Initial Deposit</p>
+                        <button class="text-sm text-yellow-600 hover:text-yellow-700 transition">Receipt</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Upcoming Payments -->
+            <div class="mb-8">
+                <h3 class="font-hedvig text-lg text-navy mb-4">Upcoming Payments</h3>
+                <div class="border border-gray-200 rounded-lg p-4">
+                    <div class="flex flex-col md:flex-row justify-between mb-2">
+                        <div>
+                            <p class="font-medium text-navy">Final Installment</p>
+                            <p class="text-sm text-gray-500">Apr 20, 2025</p>
+                        </div>
+                        <div class="md:text-right mt-2 md:mt-0">
+                            <p class="font-semibold text-navy">$2,500.00</p>
+                            <span class="inline-block px-2 py-1 bg-gray-100 text-gray-800 text-xs font-semibold rounded-full">Upcoming</span>
+                        </div>
+                    </div>
+                    <div class="pt-2 border-t border-gray-100 mt-2 flex justify-between items-center">
+                        <p class="text-sm text-gray-600">Custom Celebration Package - Final Payment</p>
+                        <button class="text-sm bg-yellow-600 text-white px-3 py-1 rounded hover:bg-yellow-700 transition">Pay Now</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Payment Summary -->
+            <div>
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-hedvig text-lg text-navy">Payment Summary</h3>
+                </div>
+                
+                <div class="bg-gray-50 rounded-lg p-4">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="bg-white p-4 rounded-lg shadow-sm">
+                            <p class="text-sm text-gray-500">Total Paid to Date</p>
+                            <p class="text-xl font-semibold text-green-600">$5,000.00</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg shadow-sm">
+                            <p class="text-sm text-gray-500">Remaining Balance</p>
+                            <p class="text-xl font-semibold text-navy">$2,500.00</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg shadow-sm">
+                            <p class="text-sm text-gray-500">Next Payment</p>
+                            <div class="flex justify-between items-center">
+                                <p class="text-xl font-semibold text-navy">$2,500.00</p>
+                                <p class="text-sm text-gray-500">Apr 20, 2025</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1681,349 +1545,174 @@ document.addEventListener('DOMContentLoaded', function() {
         
         <!-- Life Plan Content -->
         <div id="life-plan-content" class="service-content p-6" style="display: none;">
-            <!-- Life Plan selector for multiple plans (if applicable) -->
-            <!-- Similar structure to other tabs -->
-        </div>
-    </div>
-    
-    <!-- Filter Modal (Hidden by default) -->
-    <div id="filter-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
-        <div class="bg-white rounded-xl p-6 w-full max-w-md">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="font-hedvig text-lg text-navy">Filter Transactions</h3>
-                <button id="close-filter" class="text-gray-500 hover:text-gray-700">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                    </svg>
-                </button>
-            </div>
-            
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Date Range</label>
-                    <div class="grid grid-cols-2 gap-2">
-                        <div>
-                            <label class="block text-xs text-gray-500 mb-1">From</label>
-                            <input type="date" class="border border-gray-300 rounded p-2 w-full text-sm focus:ring-yellow-600 focus:border-yellow-600"></div>
-                        <div>
-                            <label class="block text-xs text-gray-500 mb-1">To</label>
-                            <input type="date" class="border border-gray-300 rounded p-2 w-full text-sm focus:ring-yellow-600 focus:border-yellow-600">
-                        </div>
-                    </div>
-                </div>
-                
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Payment Status</label>
-                    <div class="space-y-2">
-                        <label class="flex items-center">
-                            <input type="checkbox" class="rounded text-yellow-600 focus:ring-yellow-600 mr-2">
-                            <span class="text-sm text-gray-700">Successful</span>
-                        </label>
-                        <label class="flex items-center">
-                            <input type="checkbox" class="rounded text-yellow-600 focus:ring-yellow-600 mr-2">
-                            <span class="text-sm text-gray-700">Pending</span>
-                        </label>
-                        <label class="flex items-center">
-                            <input type="checkbox" class="rounded text-yellow-600 focus:ring-yellow-600 mr-2">
-                            <span class="text-sm text-gray-700">Failed</span>
-                        </label>
-                        <label class="flex items-center">
-                            <input type="checkbox" class="rounded text-yellow-600 focus:ring-yellow-600 mr-2">
-                            <span class="text-sm text-gray-700">Refunded</span>
-                        </label>
-                    </div>
-                </div>
-                
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Payment Method</label>
-                    <div class="space-y-2">
-                        <label class="flex items-center">
-                            <input type="checkbox" class="rounded text-yellow-600 focus:ring-yellow-600 mr-2">
-                            <span class="text-sm text-gray-700">Credit Card</span>
-                        </label>
-                        <label class="flex items-center">
-                            <input type="checkbox" class="rounded text-yellow-600 focus:ring-yellow-600 mr-2">
-                            <span class="text-sm text-gray-700">Bank Transfer</span>
-                        </label>
-                        <label class="flex items-center">
-                            <input type="checkbox" class="rounded text-yellow-600 focus:ring-yellow-600 mr-2">
-                            <span class="text-sm text-gray-700">Cash</span>
-                        </label>
-                        <label class="flex items-center">
-                            <input type="checkbox" class="rounded text-yellow-600 focus:ring-yellow-600 mr-2">
-                            <span class="text-sm text-gray-700">Check</span>
-                        </label>
-                    </div>
-                </div>
-                
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Amount Range</label>
-                    <div class="grid grid-cols-2 gap-2">
-                        <div class="relative">
-                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-500">$</span>
-                            <input type="number" placeholder="Min" class="border border-gray-300 rounded p-2 pl-6 w-full text-sm focus:ring-yellow-600 focus:border-yellow-600">
-                        </div>
-                        <div class="relative">
-                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-500">$</span>
-                            <input type="number" placeholder="Max" class="border border-gray-300 rounded p-2 pl-6 w-full text-sm focus:ring-yellow-600 focus:border-yellow-600">
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="pt-4 border-t border-gray-200 flex justify-end space-x-3">
-                    <button class="px-3 py-2 text-sm border border-gray-300 rounded text-gray-700 hover:bg-gray-50 transition">Reset</button>
-                    <button class="px-3 py-2 text-sm bg-yellow-600 text-white rounded hover:bg-yellow-700 transition">Apply Filters</button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Life Plan Module Completion -->
-<div id="life-plan-content" class="service-content p-6" style="display: none;">
-    <div class="mb-6">
-        <label for="life-plan-select" class="block text-sm font-medium text-gray-700 mb-2">Select Life Plan</label>
-        <div class="relative">
-            <select id="life-plan-select" class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-yellow-600 focus:border-yellow-600 sm:text-sm rounded-md">
-                <option value="lp-29561">LP-29561 - Thompson Family Plan (Active)</option>
-            </select>
-            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                </svg>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Life Plan Details -->
-    <div class="booking-item mb-8 border border-gray-200 rounded-lg overflow-hidden">
-        <div class="booking-header p-4 bg-gray-50 flex justify-between items-center cursor-pointer">
-            <div>
-                <h3 class="font-hedvig text-lg text-navy">Thompson Family Life Plan</h3>
-                <p class="text-sm text-gray-500">Started: January 15, 2025</p>
-            </div>
-            <div class="flex items-center">
-                <span class="inline-block px-2 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded-full mr-3">Active</span>
-                <svg class="w-5 h-5 transform transition-transform" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                </svg>
-            </div>
-        </div>
-        
-        <div class="booking-content p-4">
-            <!-- Plan Summary -->
-            <div class="mb-6 bg-gray-50 p-5 rounded-lg">
-                <h4 class="font-hedvig text-md text-navy mb-3">Plan Details</h4>
+            <!-- Life Plan Summary -->
+            <div class="mb-8 bg-gray-50 p-5 rounded-lg">
+                <h3 class="font-hedvig text-lg text-navy mb-3">Life Plan: Premium Family Package</h3>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
                         <p class="text-sm text-gray-500">Plan ID</p>
-                        <p class="font-medium text-navy">LP-29561</p>
-                    </div>
-                    <div>
-                        <p class="text-sm text-gray-500">Plan Holder</p>
-                        <p class="font-medium text-navy">Thompson Family</p>
+                        <p class="font-medium text-navy">LP-23789-F</p>
                     </div>
                     <div>
                         <p class="text-sm text-gray-500">Start Date</p>
-                        <p class="font-medium text-navy">Jan 15, 2025</p>
+                        <p class="font-medium text-navy">Jan 15, 2024</p>
                     </div>
                     <div>
-                        <p class="text-sm text-gray-500">Plan Cost</p>
+                        <p class="text-sm text-gray-500">Payment Schedule</p>
+                        <p class="font-medium text-navy">Monthly</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500">Total Plan Value</p>
                         <p class="font-medium text-navy">$12,500.00</p>
                     </div>
                     <div>
-                        <p class="text-sm text-gray-500">Payment Method</p>
-                        <p class="font-medium text-navy">Monthly Installments</p>
+                        <p class="text-sm text-gray-500">Remaining Balance</p>
+                        <p class="font-medium text-navy">$9,875.50</p>
                     </div>
                     <div>
-                        <p class="text-sm text-gray-500">Next Payment</p>
-                        <p class="font-medium text-navy">Jun 15, 2025</p>
+                        <p class="text-sm text-gray-500">Payment Status</p>
+                        <span class="inline-block px-2 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded-full">Current</span>
                     </div>
                 </div>
             </div>
             
-            <!-- Payment History -->
-            <div class="mb-6">
-                <div class="flex justify-between items-center mb-4">
-                    <h4 class="font-hedvig text-md text-navy">Payment History</h4>
-                    <button class="text-xs text-yellow-600 hover:text-yellow-700 transition flex items-center">
-                        <i class="fas fa-print mr-1"></i> Print Statement
-                    </button>
+            <!-- Transaction History -->
+            <div class="mb-8">
+                <h3 class="font-hedvig text-lg text-navy mb-4">Payment History</h3>
+                
+                <!-- Transaction Item 1 -->
+                <div class="border border-gray-200 rounded-lg p-4 mb-4">
+                    <div class="flex flex-col md:flex-row justify-between mb-2">
+                        <div>
+                            <p class="font-medium text-navy">Monthly Premium</p>
+                            <p class="text-sm text-gray-500">Mar 15, 2025</p>
+                        </div>
+                        <div class="md:text-right mt-2 md:mt-0">
+                            <p class="font-semibold text-green-600">$208.33</p>
+                            <span class="inline-block px-2 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded-full">Successful</span>
+                        </div>
+                    </div>
+                    <div class="pt-2 border-t border-gray-100 mt-2 flex justify-between items-center">
+                        <p class="text-sm text-gray-600">Premium Family Package - Monthly Payment</p>
+                        <button class="text-sm text-yellow-600 hover:text-yellow-700 transition">Receipt</button>
+                    </div>
                 </div>
                 
-                <div class="space-y-3">
-                    <!-- Transaction Item 1 -->
-                    <div class="border border-gray-200 rounded-lg p-4">
-                        <div class="flex flex-col md:flex-row justify-between mb-2">
-                            <div>
-                                <p class="font-medium text-navy">Monthly Installment</p>
-                                <p class="text-sm text-gray-500">May 15, 2025</p>
-                            </div>
-                            <div class="md:text-right mt-2 md:mt-0">
-                                <p class="font-semibold text-green-600">$350.00</p>
-                                <span class="inline-block px-2 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded-full">Successful</span>
-                            </div>
+                <!-- Transaction Item 2 -->
+                <div class="border border-gray-200 rounded-lg p-4 mb-4">
+                    <div class="flex flex-col md:flex-row justify-between mb-2">
+                        <div>
+                            <p class="font-medium text-navy">Monthly Premium</p>
+                            <p class="text-sm text-gray-500">Feb 15, 2025</p>
                         </div>
-                        <div class="pt-2 border-t border-gray-100 mt-2 flex justify-between items-center">
-                            <p class="text-sm text-gray-600">Life Plan Payment - Auto-debit</p>
-                            <div class="flex space-x-2">
-                                <button class="text-sm text-yellow-600 hover:text-yellow-700 transition">View</button>
-                                <span class="text-gray-300">|</span>
-                                <button class="text-sm text-yellow-600 hover:text-yellow-700 transition">Download</button>
-                            </div>
+                        <div class="md:text-right mt-2 md:mt-0">
+                            <p class="font-semibold text-green-600">$208.33</p>
+                            <span class="inline-block px-2 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded-full">Successful</span>
                         </div>
                     </div>
-                    
-                    <!-- Transaction Item 2 -->
-                    <div class="border border-gray-200 rounded-lg p-4">
-                        <div class="flex flex-col md:flex-row justify-between mb-2">
-                            <div>
-                                <p class="font-medium text-navy">Monthly Installment</p>
-                                <p class="text-sm text-gray-500">Apr 15, 2025</p>
-                            </div>
-                            <div class="md:text-right mt-2 md:mt-0">
-                                <p class="font-semibold text-green-600">$350.00</p>
-                                <span class="inline-block px-2 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded-full">Successful</span>
-                            </div>
+                    <div class="pt-2 border-t border-gray-100 mt-2 flex justify-between items-center">
+                        <p class="text-sm text-gray-600">Premium Family Package - Monthly Payment</p>
+                        <button class="text-sm text-yellow-600 hover:text-yellow-700 transition">Receipt</button>
+                    </div>
+                </div>
+                
+                <!-- Transaction Item 3 - Service Add-on -->
+                <div class="border border-gray-200 rounded-lg p-4 mb-4">
+                    <div class="flex flex-col md:flex-row justify-between mb-2">
+                        <div>
+                            <p class="font-medium text-navy">Memorial Service Upgrade</p>
+                            <p class="text-sm text-gray-500">Feb 10, 2025</p>
                         </div>
-                        <div class="pt-2 border-t border-gray-100 mt-2 flex justify-between items-center">
-                            <p class="text-sm text-gray-600">Life Plan Payment - Auto-debit</p>
-                            <div class="flex space-x-2">
-                                <button class="text-sm text-yellow-600 hover:text-yellow-700 transition">View</button>
-                                <span class="text-gray-300">|</span>
-                                <button class="text-sm text-yellow-600 hover:text-yellow-700 transition">Download</button>
-                            </div>
+                        <div class="md:text-right mt-2 md:mt-0">
+                            <p class="font-semibold text-green-600">$350.00</p>
+                            <span class="inline-block px-2 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded-full">Successful</span>
                         </div>
                     </div>
-                    
-                    <!-- Transaction Item 3 -->
-                    <div class="border border-gray-200 rounded-lg p-4">
-                        <div class="flex flex-col md:flex-row justify-between mb-2">
-                            <div>
-                                <p class="font-medium text-navy">Monthly Installment</p>
-                                <p class="text-sm text-gray-500">Mar 15, 2025</p>
-                            </div>
-                            <div class="md:text-right mt-2 md:mt-0">
-                                <p class="font-semibold text-green-600">$350.00</p>
-                                <span class="inline-block px-2 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded-full">Successful</span>
-                            </div>
+                    <div class="pt-2 border-t border-gray-100 mt-2 flex justify-between items-center">
+                        <p class="text-sm text-gray-600">Premium Casket Selection - One-time Payment</p>
+                        <button class="text-sm text-yellow-600 hover:text-yellow-700 transition">Receipt</button>
+                    </div>
+                </div>
+                
+                <!-- Transaction Item 4 (Late Payment) -->
+                <div class="border border-gray-200 rounded-lg p-4 mb-4">
+                    <div class="flex flex-col md:flex-row justify-between mb-2">
+                        <div>
+                            <p class="font-medium text-navy">Monthly Premium</p>
+                            <p class="text-sm text-gray-500">Jan 20, 2025</p>
                         </div>
-                        <div class="pt-2 border-t border-gray-100 mt-2 flex justify-between items-center">
-                            <p class="text-sm text-gray-600">Life Plan Payment - Auto-debit</p>
-                            <div class="flex space-x-2">
-                                <button class="text-sm text-yellow-600 hover:text-yellow-700 transition">View</button>
-                                <span class="text-gray-300">|</span>
-                                <button class="text-sm text-yellow-600 hover:text-yellow-700 transition">Download</button>
-                            </div>
+                        <div class="md:text-right mt-2 md:mt-0">
+                            <p class="font-semibold text-orange-600">$208.33</p>
+                            <span class="inline-block px-2 py-1 bg-orange-100 text-orange-800 text-xs font-semibold rounded-full">Late Payment</span>
                         </div>
                     </div>
-                    
-                    <!-- Transaction Item 4 -->
-                    <div class="border border-gray-200 rounded-lg p-4">
-                        <div class="flex flex-col md:flex-row justify-between mb-2">
-                            <div>
-                                <p class="font-medium text-navy">Monthly Installment</p>
-                                <p class="text-sm text-gray-500">Feb 15, 2025</p>
-                            </div>
-                            <div class="md:text-right mt-2 md:mt-0">
-                                <p class="font-semibold text-green-600">$350.00</p>
-                                <span class="inline-block px-2 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded-full">Successful</span>
-                            </div>
+                    <div class="pt-2 border-t border-gray-100 mt-2 flex justify-between items-center">
+                        <p class="text-sm text-gray-600">Premium Family Package - Due Jan 15, 2025</p>
+                        <button class="text-sm text-yellow-600 hover:text-yellow-700 transition">Receipt</button>
+                    </div>
+                </div>
+                
+                <!-- Transaction Item 5 (Initial Payment) -->
+                <div class="border border-gray-200 rounded-lg p-4">
+                    <div class="flex flex-col md:flex-row justify-between mb-2">
+                        <div>
+                            <p class="font-medium text-navy">Initial Payment</p>
+                            <p class="text-sm text-gray-500">Jan 15, 2024</p>
                         </div>
-                        <div class="pt-2 border-t border-gray-100 mt-2 flex justify-between items-center">
-                            <p class="text-sm text-gray-600">Life Plan Payment - Auto-debit</p>
-                            <div class="flex space-x-2">
-                                <button class="text-sm text-yellow-600 hover:text-yellow-700 transition">View</button>
-                                <span class="text-gray-300">|</span>
-                                <button class="text-sm text-yellow-600 hover:text-yellow-700 transition">Download</button>
-                            </div>
+                        <div class="md:text-right mt-2 md:mt-0">
+                            <p class="font-semibold text-green-600">$1,250.00</p>
+                            <span class="inline-block px-2 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded-full">Successful</span>
                         </div>
                     </div>
-                    
-                    <!-- Transaction Item 5 -->
-                    <div class="border border-gray-200 rounded-lg p-4">
-                        <div class="flex flex-col md:flex-row justify-between mb-2">
-                            <div>
-                                <p class="font-medium text-navy">Setup Fee</p>
-                                <p class="text-sm text-gray-500">Jan 15, 2025</p>
-                            </div>
-                            <div class="md:text-right mt-2 md:mt-0">
-                                <p class="font-semibold text-green-600">$500.00</p>
-                                <span class="inline-block px-2 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded-full">Successful</span>
-                            </div>
-                        </div>
-                        <div class="pt-2 border-t border-gray-100 mt-2 flex justify-between items-center">
-                            <p class="text-sm text-gray-600">Life Plan Setup and First Month</p>
-                            <div class="flex space-x-2">
-                                <button class="text-sm text-yellow-600 hover:text-yellow-700 transition">View</button>
-                                <span class="text-gray-300">|</span>
-                                <button class="text-sm text-yellow-600 hover:text-yellow-700 transition">Download</button>
-                            </div>
-                        </div>
+                    <div class="pt-2 border-t border-gray-100 mt-2 flex justify-between items-center">
+                        <p class="text-sm text-gray-600">Premium Family Package - Down Payment (10%)</p>
+                        <button class="text-sm text-yellow-600 hover:text-yellow-700 transition">Receipt</button>
                     </div>
                 </div>
             </div>
             
-            <!-- Plan Progress -->
-            <div class="mb-6">
-                <h4 class="font-hedvig text-md text-navy mb-4">Plan Progress</h4>
-                <div class="bg-gray-50 p-4 rounded-lg">
-                    <div class="mb-3">
-                        <div class="flex justify-between text-sm mb-1">
-                            <span class="text-gray-500">Progress: 19%</span>
-                            <span class="text-gray-500">$1,900.00 of $10,000.00</span>
+            <!-- Upcoming Payments -->
+            <div class="mb-8">
+                <h3 class="font-hedvig text-lg text-navy mb-4">Upcoming Payments</h3>
+                <div class="border border-gray-200 rounded-lg p-4">
+                    <div class="flex flex-col md:flex-row justify-between mb-2">
+                        <div>
+                            <p class="font-medium text-navy">Monthly Premium</p>
+                            <p class="text-sm text-gray-500">Apr 15, 2025</p>
                         </div>
-                        <div class="w-full bg-gray-200 rounded-full h-2.5">
-                            <div class="bg-yellow-600 h-2.5 rounded-full" style="width: 19%"></div>
+                        <div class="md:text-right mt-2 md:mt-0">
+                            <p class="font-semibold text-navy">$208.33</p>
+                            <span class="inline-block px-2 py-1 bg-gray-100 text-gray-800 text-xs font-semibold rounded-full">Upcoming</span>
                         </div>
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-                        <div class="bg-white p-4 rounded-lg shadow-sm">
-                            <p class="text-sm text-gray-500">Monthly Payment</p>
-                            <p class="text-xl font-semibold text-navy">$350.00</p>
-                        </div>
-                        <div class="bg-white p-4 rounded-lg shadow-sm">
-                            <p class="text-sm text-gray-500">Total Paid</p>
-                            <p class="text-xl font-semibold text-green-600">$1,900.00</p>
-                        </div>
-                        <div class="bg-white p-4 rounded-lg shadow-sm">
-                            <p class="text-sm text-gray-500">Estimated Completion</p>
-                            <p class="text-xl font-semibold text-navy">Dec 2027</p>
-                        </div>
+                    <div class="pt-2 border-t border-gray-100 mt-2 flex justify-between items-center">
+                        <p class="text-sm text-gray-600">Premium Family Package - Monthly Payment</p>
+                        <button class="text-sm bg-yellow-600 text-white px-3 py-1 rounded hover:bg-yellow-700 transition">Pay Now</button>
                     </div>
                 </div>
             </div>
             
-            <!-- Payment Settings -->
+            <!-- Payment Summary -->
             <div>
-                <h4 class="font-hedvig text-md text-navy mb-4">Payment Settings</h4>
-                <div class="border border-gray-200 rounded-lg p-5">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <h5 class="text-sm font-medium text-navy mb-3">Payment Method</h5>
-                            <div class="flex items-center p-3 border border-gray-200 rounded-md bg-gray-50">
-                                <div class="mr-3">
-                                    <i class="far fa-credit-card text-xl text-gray-500"></i>
-                                </div>
-                                <div>
-                                    <p class="font-medium text-navy">•••• •••• •••• 4587</p>
-                                    <p class="text-xs text-gray-500">Expires 09/27</p>
-                                </div>
-                                <button class="ml-auto text-sm text-yellow-600 hover:text-yellow-700 transition">Change</button>
-                            </div>
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-hedvig text-lg text-navy">Payment Summary</h3>
+                </div>
+                
+                <div class="bg-gray-50 rounded-lg p-4">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="bg-white p-4 rounded-lg shadow-sm">
+                            <p class="text-sm text-gray-500">Total Paid to Date</p>
+                            <p class="text-xl font-semibold text-green-600">$2,624.50</p>
                         </div>
-                        <div>
-                            <h5 class="text-sm font-medium text-navy mb-3">Billing Schedule</h5>
-                            <div class="flex flex-col p-3 border border-gray-200 rounded-md bg-gray-50">
-                                <div class="flex justify-between mb-1">
-                                    <p class="text-sm text-gray-600">Frequency</p>
-                                    <p class="text-sm font-medium text-navy">Monthly</p>
-                                </div>
-                                <div class="flex justify-between">
-                                    <p class="text-sm text-gray-600">Next Payment</p>
-                                    <p class="text-sm font-medium text-navy">June 15, 2025</p>
-                                </div>
-                                <button class="mt-3 text-sm text-yellow-600 hover:text-yellow-700 transition text-left">Change Billing Frequency</button>
+                        <div class="bg-white p-4 rounded-lg shadow-sm">
+                            <p class="text-sm text-gray-500">Remaining Payments</p>
+                            <p class="text-xl font-semibold text-navy">47</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg shadow-sm">
+                            <p class="text-sm text-gray-500">Next Payment</p>
+                            <div class="flex justify-between items-center">
+                                <p class="text-xl font-semibold text-navy">$208.33</p>
+                                <p class="text-sm text-gray-500">Apr 15, 2025</p>
                             </div>
                         </div>
                     </div>
@@ -2032,76 +1721,9 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
     </div>
 </div>
-
-<!-- Add JavaScript for functionality -->
-<script>
-    // Toggle between service tabs
-    document.querySelectorAll('.service-tab').forEach(tab => {
-        tab.addEventListener('click', () => {
-            // Remove active class from all tabs
-            document.querySelectorAll('.service-tab').forEach(t => {
-                t.classList.remove('border-b-2', 'border-yellow-600', 'text-navy');
-                t.classList.add('text-gray-500');
-            });
-            
-            // Add active class to clicked tab
-            tab.classList.add('border-b-2', 'border-yellow-600', 'text-navy');
-            tab.classList.remove('text-gray-500');
-            
-            // Hide all content sections
-            document.querySelectorAll('.service-content').forEach(content => {
-                content.style.display = 'none';
-            });
-            
-            // Show the corresponding content
-            const tabId = tab.getAttribute('data-tab');
-            document.getElementById(`${tabId}-content`).style.display = 'block';
-        });
-    });
-    
-    // Toggle booking accordions
-    document.querySelectorAll('.booking-header').forEach(header => {
-        header.addEventListener('click', () => {
-            const content = header.nextElementSibling;
-            const icon = header.querySelector('svg');
-            
-            // Toggle content visibility
-            content.classList.toggle('hidden');
-            
-            // Rotate icon
-            icon.classList.toggle('rotate-180');
-        });
-    });
-    
-    // Show/hide filter modal
-    document.getElementById('filter-transactions').addEventListener('click', () => {
-        document.getElementById('filter-modal').classList.remove('hidden');
-    });
-    
-    document.getElementById('close-filter').addEventListener('click', () => {
-        document.getElementById('filter-modal').classList.add('hidden');
-    });
-    
-    // Service selector change event
-    document.getElementById('service-select').addEventListener('change', function() {
-        const selectedBookingId = this.value;
-        
-        // Hide all booking items
-        document.querySelectorAll('.booking-item').forEach(item => {
-            if (item.getAttribute('data-booking-id') === selectedBookingId) {
-                item.style.display = 'block';
-            } else {
-                item.style.display = 'none';
-            }
-        });
-    });
-    
-    // Export transactions button
-    document.getElementById('export-transactions').addEventListener('click', function() {
-        alert('Your statement is being generated and will be downloaded shortly.');
-        // In a real implementation, this would trigger the download of a PDF or CSV
-    });
-</script>
+        </div>
+        </div>
+        </div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
