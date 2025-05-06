@@ -367,7 +367,7 @@ $ratioChange = number_format($changes['ratio_change'] ?? 0, 1);
   <div class="grid grid-cols-1 md:grid-cols-3 gap-5 px-5 pb-5">
     <div class="bg-gray-50 p-4 rounded-lg">
         <div class="text-sm font-medium text-gray-600 mb-2">Average Price</div>
-          <div class="text-2xl font-bold text-sidebar-text">$<?php echo $avgPrice; ?> 
+          <div class="text-2xl font-bold text-sidebar-text">₱<?php echo $avgPrice; ?> 
               <span class="<?php echo ($priceChange >= 0) ? 'text-green-600' : 'text-red-600'; ?> text-sm font-normal">
                   <?php echo ($priceChange >= 0) ? '+' : ''; ?><?php echo $priceChange; ?>%
               </span>
@@ -375,7 +375,7 @@ $ratioChange = number_format($changes['ratio_change'] ?? 0, 1);
         </div>
     <div class="bg-gray-50 p-4 rounded-lg">
         <div class="text-sm font-medium text-gray-600 mb-2">Average Payment</div>
-          <div class="text-2xl font-bold text-sidebar-text">$<?php echo $avgPayment; ?> 
+          <div class="text-2xl font-bold text-sidebar-text">₱<?php echo $avgPayment; ?> 
               <span class="<?php echo ($paymentChange >= 0) ? 'text-green-600' : 'text-red-600'; ?> text-sm font-normal">
                   <?php echo ($paymentChange >= 0) ? '+' : ''; ?><?php echo $paymentChange; ?>%
               </span>
@@ -1085,7 +1085,7 @@ document.addEventListener('DOMContentLoaded', function() {
       },
       yaxis: {
         title: {
-          text: 'Amount ($)',
+          text: 'Amount (₱)',
           style: {
             fontSize: '14px',
             fontWeight: 600,
@@ -1094,7 +1094,7 @@ document.addEventListener('DOMContentLoaded', function() {
         },
         labels: {
           formatter: function(value) {
-            return '$' + value.toLocaleString('en-US', {
+            return '₱' + value.toLocaleString('en-US', {
               minimumFractionDigits: 0,
               maximumFractionDigits: 0
             });
