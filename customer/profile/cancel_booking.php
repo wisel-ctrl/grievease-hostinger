@@ -31,26 +31,29 @@ function secureSessionStart() {
 
 secureSessionStart();
 
-header('Content-Type: application/json');
-$response = ['success' => false, 'message' => ''];
-
+// Debug logging (similar to lifeplan version)
 function logToFile($message) {
     $logFile = __DIR__ . '/cancellation_errors.log';
     $timestamp = date('Y-m-d H:i:s');
     file_put_contents($logFile, "[$timestamp] $message\n", FILE_APPEND);
 }
 
+header('Content-Type: application/json');
+$response = ['success' => false, 'message' => ''];
+
 try {
-    // Get input data (handling both JSON and form-data)
+    // Enhanced input handling with logging
     $input = file_get_contents('php://input');
     if (strlen($input) > 0) {
         $data = json_decode($input, true);
         if (json_last_error() !== JSON_ERROR_NONE) {
-            parse_str($input, $data); // Fallback for form-data
+            parse_str($input, $data);
         }
     } else {
         $data = $_POST;
     }
+    
+    logToFile("Received data: " . print_r($data, true));
 
     // Validate required fields
     $required = ['booking_id', 'otp', 'cancel_reason'];
@@ -62,6 +65,7 @@ try {
 
     // Verify OTP session data exists
     if (!isset($_SESSION['cancel_otp']) || !isset($_SESSION['cancel_booking_id']) || !isset($_SESSION['otp_created_at'])) {
+        logToFile("OTP session data missing. Full session: " . print_r($_SESSION, true));
         throw new Exception("OTP expired or not requested");
     }
 
@@ -84,25 +88,35 @@ try {
     // Begin transaction
     $conn->begin_transaction();
 
+    // Debug: Check current booking status
+    $checkStmt = $conn->prepare("SELECT status FROM booking_tb WHERE booking_id = ?");
+    $checkStmt->bind_param("i", $data['booking_id']);
+    $checkStmt->execute();
+    $checkStmt->bind_result($currentStatus);
+    $checkStmt->fetch();
+    $checkStmt->close();
+    logToFile("Current booking status: $currentStatus");
+
     // Update booking status
     $query = "UPDATE booking_tb SET 
           status = 'Cancelled', 
           cancelled_date = NOW(), 
           cancel_reason = ? 
-          WHERE booking_id = ? AND status != 'Cancelled'";
+          WHERE booking_id = ? 
+          AND status IN ('Pending', 'Confirmed')"; // Specify cancellable states
     
     $stmt = $conn->prepare($query);
     $stmt->bind_param("si", $data['cancel_reason'], $data['booking_id']);
     $stmt->execute();
     
     if ($stmt->affected_rows === 0) {
-        throw new Exception("Booking not found or already cancelled");
+        throw new Exception("Booking not found, already cancelled, or not in cancellable state");
     }
 
     // Commit transaction
     $conn->commit();
 
-    // Clear only OTP-related session data
+    // Clear OTP-related session data
     unset(
         $_SESSION['cancel_otp'],
         $_SESSION['cancel_booking_id'],
@@ -117,11 +131,11 @@ try {
         $conn->rollback();
     }
     $response['message'] = $e->getMessage();
-    logToFile("Cancellation Error: " . $e->getMessage());
+    logToFile("ERROR: " . $e->getMessage() . "\nTrace:\n" . $e->getTraceAsString());
 } finally {
     if (isset($stmt)) $stmt->close();
     $conn->close();
     ob_end_flush();
     echo json_encode($response);
+    logToFile("Final response: " . json_encode($response));
 }
-?>

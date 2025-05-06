@@ -3513,16 +3513,15 @@ document.addEventListener('DOMContentLoaded', function() {
       </div>
       
       <!-- Modal Footer -->
-      <div class="modal-sticky-footer px-6 py-4 flex flex-col sm:flex-row sm:justify-end gap-3 border-t border-gray-200 bg-white">
-          <button class="close-lifeplan-modal w-full sm:w-auto px-6 py-3 bg-white border border-blue-600 text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center">
-            No, Keep Booking
-          </button>
-          <form id="cancelLifeplanForm">
-            <!-- Your existing form inputs -->
-            <button type="submit" class="w-full sm:w-auto px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg shadow-md transition-all duration-300 flex items-center justify-center">
-              <i class="fas fa-times mr-2"></i>
-              Confirm Cancellation
+        <div class="modal-sticky-footer px-6 py-4 flex flex-col sm:flex-row sm:justify-end gap-3 border-t border-gray-200 bg-white">
+            <button class="close-modal w-full sm:w-auto px-6 py-3 bg-white border border-blue-600 text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center">
+                No, Keep Booking
             </button>
+            <button type="submit" form="cancelBookingForm" class="w-full sm:w-auto px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg shadow-md transition-all duration-300 flex items-center justify-center">
+                <i class="fas fa-times mr-2"></i>
+                Confirm Cancellation
+            </button>
+        </div>
           </form>
         </div>
     </div>
