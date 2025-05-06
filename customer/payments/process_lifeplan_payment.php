@@ -9,7 +9,7 @@ try {
     $amount = floatval($_POST['amount']);
     $method = $_POST['method'] ?? '';
     $customerID = $_SESSION['user_id'];
-    $salesId = $_POST['sales_id'] ?? null;
+    $salesId = $_POST['lifeplan_id'] ?? null;
     
     // Handle file upload if exists
     $receiptPath = '';
