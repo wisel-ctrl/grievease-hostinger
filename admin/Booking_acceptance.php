@@ -3004,7 +3004,11 @@ function openCustomDetails(bookingId) {
       document.getElementById('customServiceDate').textContent = 
         data.deceased_dateOfBurial ? new Date(data.deceased_dateOfBurial).toLocaleDateString('en-US', 
         { month: 'short', day: 'numeric', year: 'numeric' }) : "Not scheduled";
-      document.getElementById('customAmountPaid').textContent = "₱" + (parseFloat(data.initial_price) || 0).toFixed(2);
+        document.getElementById('customAmountPaid').textContent = 
+    "₱" + (parseFloat(data.initial_price) || 0).toLocaleString('en-PH', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    });
 
       const deceasedFullName = [
         data.deceased_fname || '',
