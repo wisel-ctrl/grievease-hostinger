@@ -171,7 +171,7 @@ $lifeplan_requests = mysqli_fetch_all($lifeplan_result, MYSQLI_ASSOC);
             <div class="flex justify-between items-start">
             <div>
                 <h3 class="font-medium"><?= htmlspecialchars($request['full_name']) ?></h3>
-                <p class="text-sm text-gray-600">Custom Package</span> ₱<?= number_format($request['discounted_price'], 2) ?></p>
+                <p class="text-sm text-gray-600">Custom Package</span> (₱<?= number_format($request['discounted_price'], 2) ?>)</p>
                 <p class="text-sm mt-2">
                 <span class="font-medium">Amount:</span> ₱<?= number_format($request['amount'], 2) ?>
                 </p>
