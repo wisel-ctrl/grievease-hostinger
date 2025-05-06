@@ -188,32 +188,6 @@ header("Pragma: no-cache");
                     $regions[] = $row;
                 }
 
-                
-                
-// Your PHP database query remains the same
-                $customerID = $_SESSION['user_id'];
-                $sql = "SELECT 
-                            s.sales_id,
-                            s.get_timestamp,
-                            s.payment_status,
-                            sv.service_name,
-                            s.discounted_price,
-                            s.amount_paid,
-                            s.balance
-                        FROM 
-                            sales_tb s
-                        JOIN 
-                            services_tb sv ON s.service_id = sv.service_id
-                        WHERE customerID = ?";
-
-                $stmt = $conn->prepare($sql);
-                $stmt->bind_param("i", $customerID);
-                $stmt->execute();
-                $result = $stmt->get_result();
-                $services = $result->fetch_all(MYSQLI_ASSOC);
-                $stmt->close();
-                
-
                 $addressDB->close();
 ?>
 <!DOCTYPE html>
@@ -1280,7 +1254,29 @@ document.addEventListener('DOMContentLoaded', function() {
 </div>
 
 
+<?php
+$customerID = $_SESSION['user_id'];
+$sql = "SELECT 
+            s.sales_id,
+            s.get_timestamp,
+            s.payment_status,
+            sv.service_name,
+            s.discounted_price,
+            s.amount_paid,
+            s.balance
+        FROM 
+            sales_tb s
+        JOIN 
+            services_tb sv ON s.service_id = sv.service_id
+        WHERE customerID = ?";
 
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("i", $customerID);
+$stmt->execute();
+$result = $stmt->get_result();
+$services = $result->fetch_all(MYSQLI_ASSOC);
+$stmt->close();
+?>
 <!-- Transaction Logs Tab -->
 <div id="transaction-logs" class="tab-content p-4">
     <!-- Service Type Selector -->
@@ -1451,6 +1447,11 @@ function populateServiceCards(containerId, services) {
             day: 'numeric' 
         });
         
+        console.log(service.get_timestamp);
+        console.log(service.service_name);
+        console.log(service.sales_id);
+        console.log(service.amount_paid);
+
         // Determine status color
         let statusClass = '';
         if (service.payment_status == 'Fully Paid') {
@@ -1473,7 +1474,7 @@ function populateServiceCards(containerId, services) {
         
         // Create card HTML
         const cardHtml = `
-            <div class="bg-white rounded-lg shadow-md p-6 mb-6 border border-gray-100">
+            <div class="bg-white z-50 rounded-lg shadow-md p-6 mb-6 border border-gray-100">
                 <div class="flex flex-col md:flex-row md:justify-between md:items-start">
                     <div class="mb-4 md:mb-0">
                         <h3 class="font-bold text-lg text-navy">${escapeHtml(service.service_name)}</h3>
@@ -1529,6 +1530,9 @@ function populateServiceCards(containerId, services) {
 
 // Helper function to escape HTML (prevent XSS)
 function escapeHtml(unsafe) {
+    if (typeof unsafe !== 'string') {
+        return String(unsafe ?? '');
+    }
     return unsafe
          .replace(/&/g, "&amp;")
          .replace(/</g, "&lt;")
@@ -1536,6 +1540,7 @@ function escapeHtml(unsafe) {
          .replace(/"/g, "&quot;")
          .replace(/'/g, "&#039;");
 }
+
 
 
 function openPaymentHistoryModal(packageType) {

@@ -367,7 +367,7 @@ $ratioChange = number_format($changes['ratio_change'] ?? 0, 1);
   <div class="grid grid-cols-1 md:grid-cols-3 gap-5 px-5 pb-5">
     <div class="bg-gray-50 p-4 rounded-lg">
         <div class="text-sm font-medium text-gray-600 mb-2">Average Price</div>
-          <div class="text-2xl font-bold text-sidebar-text">$<?php echo $avgPrice; ?> 
+          <div class="text-2xl font-bold text-sidebar-text">₱<?php echo $avgPrice; ?> 
               <span class="<?php echo ($priceChange >= 0) ? 'text-green-600' : 'text-red-600'; ?> text-sm font-normal">
                   <?php echo ($priceChange >= 0) ? '+' : ''; ?><?php echo $priceChange; ?>%
               </span>
@@ -375,7 +375,7 @@ $ratioChange = number_format($changes['ratio_change'] ?? 0, 1);
         </div>
     <div class="bg-gray-50 p-4 rounded-lg">
         <div class="text-sm font-medium text-gray-600 mb-2">Average Payment</div>
-          <div class="text-2xl font-bold text-sidebar-text">$<?php echo $avgPayment; ?> 
+          <div class="text-2xl font-bold text-sidebar-text">₱<?php echo $avgPayment; ?> 
               <span class="<?php echo ($paymentChange >= 0) ? 'text-green-600' : 'text-red-600'; ?> text-sm font-normal">
                   <?php echo ($paymentChange >= 0) ? '+' : ''; ?><?php echo $paymentChange; ?>%
               </span>
@@ -522,7 +522,12 @@ document.addEventListener('DOMContentLoaded', function() {
           yaxis: {
               labels: {
                   formatter: function(value) {
-                      return '₱' + value.toFixed(2);
+                    return value.toLocaleString('en-PH', {
+                        style: 'currency',
+                        currency: 'PHP',
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    });
                   }
               }
           },
@@ -557,7 +562,11 @@ document.addEventListener('DOMContentLoaded', function() {
       
       // Update forecast summary
       const totalForecast = regressionResults.forecastData.reduce((sum, point) => sum + point.y, 0);
-      document.querySelector('.sales-forecast-value').textContent = '₱' + Math.round(totalForecast).toLocaleString();
+      document.querySelector('.sales-forecast-value').textContent = 
+    '₱' + parseFloat(totalForecast).toLocaleString('en-PH', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    });
   } else {
       document.querySelector("#salesForecastChart").innerHTML = '<div class="p-4 text-center text-gray-500">No revenue data available</div>';
   }
@@ -1085,7 +1094,7 @@ document.addEventListener('DOMContentLoaded', function() {
       },
       yaxis: {
         title: {
-          text: 'Amount ($)',
+          text: 'Amount (₱)',
           style: {
             fontSize: '14px',
             fontWeight: 600,
@@ -1094,7 +1103,7 @@ document.addEventListener('DOMContentLoaded', function() {
         },
         labels: {
           formatter: function(value) {
-            return '$' + value.toLocaleString('en-US', {
+            return '₱' + value.toLocaleString('en-US', {
               minimumFractionDigits: 0,
               maximumFractionDigits: 0
             });
