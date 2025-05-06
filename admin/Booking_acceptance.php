@@ -1151,7 +1151,7 @@ $total_lifeplan_bookings = $lifeplan_count_result->fetch_assoc()['total'];
     <?php 
     if ($total_lifeplan_bookings > 0) {
         $lifeplan_start = 1; // Adjust if you implement pagination
-        $lifeplan_end = min(10, $total_lifeplan_bookings); // You're currently showing 10 records
+        $lifeplan_end = min(5, $total_lifeplan_bookings); // You're currently showing 10 records
         echo "Showing {$lifeplan_start}-{$lifeplan_end} of {$total_lifeplan_bookings} lifeplan " . ($total_lifeplan_bookings != 1 ? "bookings" : "booking");
     } else {
         echo "No lifeplan bookings found";
