@@ -2451,28 +2451,7 @@ function openTraditionalCheckout() {
   document.getElementById('checkoutModal').classList.remove('hidden');
 }
 
-function openLifeplanCheckout() {
-  console.log("nagbukas ang hayop");
-  const serviceTypeModal = document.getElementById('serviceTypeModal');
-  const serviceId = serviceTypeModal.dataset.serviceId;
-  const servicePrice = serviceTypeModal.dataset.servicePrice;
-  const branchId = serviceTypeModal.dataset.branchId;
-  
-  // Set the service details in the lifeplan form
-  document.getElementById('lp-service-id').value = serviceId;
-  document.getElementById('lp-service-price').value = servicePrice;
-  document.getElementById('lp-branch-id').value = branchId;
-  
-  // Update the total price in the lifeplan checkout form
-  document.getElementById('lp-totalPrice').value = servicePrice;
-  document.getElementById('lp-footer-total-price').textContent = 
-    `₱${parseFloat(servicePrice).toLocaleString('en-PH', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
-  
-  // Update minimum price display
-  const minimumPrice = parseFloat(servicePrice) * 0.5;
-  document.getElementById('lp-min-price').textContent = `₱${minimumPrice.toFixed(2)}`;
-  
-  // Setup payment terms functionality (moved inside this function)
+function setupLifeplanPaymentTerms() {
   const paymentTermSelect = document.getElementById('lp-paymentTerm');
   const totalPriceInput = document.getElementById('lp-totalPrice');
   const monthlyPaymentDiv = document.getElementById('lp-monthlyPayment');
@@ -2517,27 +2496,32 @@ function openLifeplanCheckout() {
   
   // Initial calculation
   calculateMonthlyPayment();
-  
-  // First close the service type modal
-  closeServiceTypeModal();
-  
-  // Then open the lifeplan checkout modal
-  const lifeplanModal = document.getElementById('lifeplanCheckoutModal');
-  if (lifeplanModal) {
-    lifeplanModal.classList.remove('hidden');
-    // Bring to front
-    lifeplanModal.style.zIndex = '9999'; 
-  } else {
-    console.error('Lifeplan modal element not found');
-  }
 }
 
-// Also ensure your close function works properly:
-function closeLifeplanCheckoutModal() {
-  const modal = document.getElementById('lifeplanCheckoutModal');
-  if (modal) {
-    modal.classList.add('hidden');
-  }
+// Function to open lifeplan checkout
+function openLifeplanCheckout() {
+  const serviceTypeModal = document.getElementById('serviceTypeModal');
+  const serviceId = serviceTypeModal.dataset.serviceId;
+  const servicePrice = serviceTypeModal.dataset.servicePrice;
+  const branchId = serviceTypeModal.dataset.branchId;
+
+  // Set the service details in the lifeplan form
+  document.getElementById('lp-service-id').value = serviceId;
+  document.getElementById('lp-service-price').value = servicePrice;
+  document.getElementById('lp-branch-id').value = branchId;
+  
+  // Update the total price in the lifeplan checkout form
+  document.getElementById('lp-totalPrice').value = servicePrice;
+  document.getElementById('lp-footer-total-price').textContent = 
+    `₱${parseFloat(servicePrice).toLocaleString('en-PH', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+  
+  // Update minimum price display
+  const minimumPrice = parseFloat(servicePrice) * 0.5;
+  document.getElementById('lp-min-price').textContent = `₱${minimumPrice.toFixed(2)}`;
+  
+  setupLifeplanPaymentTerms();
+  // Open lifeplan checkout modal
+  document.getElementById('lifeplanCheckoutModal').classList.remove('hidden');
 }
 
 // Function to close lifeplan checkout modal
