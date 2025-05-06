@@ -1304,12 +1304,11 @@ $servicesJson = json_encode($allServices);
   async function showServiceDetails(service) {
   try {
     // If service is just an ID, fetch the full details
-    if (typeof service === 'number' || (typeof service === 'object' && !service.service_name)) {
-      const response = await fetch(`posFunctions/get_services.php?service_id=${typeof service === 'number' ? service : service.service_id}`);
-      if (!response.ok) throw new Error('Network response was not ok');
-      service = await response.json();
-      if (service.error) throw new Error(service.error);
-    }
+    const response = await fetch(`posFunctions/get_services.php?service_id=${service}`);
+    if (!response.ok) throw new Error('Network response was not ok');
+
+    const serviceData = await response.json();
+    if (serviceData.error) throw new Error(serviceData.error);
 
     console.log("Showing service details:", service);
     selectedService = service;
