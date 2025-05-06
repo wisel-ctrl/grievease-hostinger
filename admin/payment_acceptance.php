@@ -189,7 +189,7 @@ $lifeplan_requests = mysqli_fetch_all($lifeplan_result, MYSQLI_ASSOC);
             
             <div class="pt-3 border-t border-gray-100">
               <button onclick="openTraditionalModal('<?= htmlspecialchars($request['payment_url']) ?>', '<?= number_format($request['amount'], 2) ?>')" 
-                class="w-full py-2 bg-sidebar text-white rounded-lg hover:bg-hover-bg sidebar-accent flex items-center justify-center group-hover:shadow-md">
+                class="w-full py-2 bg-sidebar text-white rounded-lg hover:bg-hover-bg transition-colors flex items-center justify-center group-hover:shadow-md">
                 <i class="fas fa-receipt mr-2"></i> View Receipt
               </button>
             </div>
@@ -315,7 +315,7 @@ $lifeplan_requests = mysqli_fetch_all($lifeplan_result, MYSQLI_ASSOC);
             
             <div class="pt-3 border-t border-gray-100">
               <button onclick="openLifeplanModal('<?= htmlspecialchars($request['payment_url']) ?>', '<?= number_format($request['amount'], 2) ?>')" 
-                class="w-full py-2 bg-sidebar text-white rounded-lg hover:bg-hover-bg transition-colors flex items-center justify-center group-hover:shadow-md">
+                class="w-full py-2 bg-sidebar-accent text-white rounded-lg hover:bg-hover-bg transition-colors flex items-center justify-center group-hover:shadow-md">
                 <i class="fas fa-receipt mr-2"></i> View Receipt
               </button>
             </div>
