@@ -390,7 +390,7 @@
         <p class="text-dark max-w-4xl text-center text-sm sm:text-base">We provide flexible and compassionate life plan options, including a 5-year installment payment plan with 0% interest for your chosen traditional package, ensuring affordability without compromising dignity or care.</p>  
     </div>  
     
-    <div class="max-w-2xl mx-auto">
+    <div class="max-w-xl mx-auto">
         <div class="package-card bg-white rounded-[20px] shadow-lg overflow-hidden relative group hover:shadow-xl transition-all duration-300 flex flex-col h-full" data-price="Total Package Price ÷ 60 Months" data-service="lifeplan" data-name="Life Plan">
             <div class="h-10 sm:h-12 bg-navy flex items-center justify-center">
                 <h4 class="text-white font-hedvig text-lg sm:text-xl">Flexible Payment Plan</h4>
