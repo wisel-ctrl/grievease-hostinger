@@ -100,10 +100,22 @@ if ($custom_current_page > $total_custom_pages && $total_custom_pages > 0) {
 $custom_offset = ($custom_current_page - 1) * $custom_bookings_per_page;
 
 
-// Count total lifeplan bookings with status "pending"
+// Add these near the other pagination variables at the top
+$lifeplan_bookings_per_page = 5; // Set items per page
+$lifeplan_current_page = isset($_GET['lifeplan_page']) ? (int)$_GET['lifeplan_page'] : 1;
+if ($lifeplan_current_page < 1) $lifeplan_current_page = 1;
+
+// Update the count query to match your actual query conditions
 $lifeplan_count_query = "SELECT COUNT(*) as total FROM lifeplan_booking_tb WHERE booking_status = 'pending'";
 $lifeplan_count_result = $conn->query($lifeplan_count_query);
 $total_lifeplan_bookings = $lifeplan_count_result->fetch_assoc()['total'];
+$total_lifeplan_pages = ceil($total_lifeplan_bookings / $lifeplan_bookings_per_page);
+
+if ($lifeplan_current_page > $total_lifeplan_pages && $total_lifeplan_pages > 0) {
+    $lifeplan_current_page = $total_lifeplan_pages;
+}
+
+$lifeplan_offset = ($lifeplan_current_page - 1) * $lifeplan_bookings_per_page;
 
 
 ?>
@@ -1067,22 +1079,26 @@ $total_lifeplan_bookings = $lifeplan_count_result->fetch_assoc()['total'];
                 <tbody id="lifeplanBookingTableBody">
                     <?php
                     // Query to get lifeplan bookings
-                    $lifeplanQuery = "SELECT lb.*, 
-                                    CONCAT(
-                                        UPPER(LEFT(u.first_name, 1)), LOWER(SUBSTRING(u.first_name, 2)), ' ',
-                                        UPPER(LEFT(COALESCE(u.middle_name, ''), 1)), LOWER(SUBSTRING(COALESCE(u.middle_name, ''), 2)), ' ',
-                                        UPPER(LEFT(u.last_name, 1)), LOWER(SUBSTRING(u.last_name, 2)), ' ',
-                                        UPPER(LEFT(COALESCE(u.suffix, ''), 1)), LOWER(SUBSTRING(COALESCE(u.suffix, ''), 2))
-                                    ) AS customer_name,
-                                    s.service_name
-                                    FROM lifeplan_booking_tb lb
-                                    JOIN users u ON lb.customer_id = u.id
-                                    LEFT JOIN services_tb s ON lb.service_id = s.service_id
-                                    WHERE lb.booking_status = 'pending'
-                                    ORDER BY lb.lpbooking_id DESC
-                                    LIMIT 10";
-                    
-                    $lifeplanResult = $conn->query($lifeplanQuery);
+                    // Replace the existing lifeplanQuery with this:
+$lifeplanQuery = "SELECT lb.*, 
+CONCAT(
+    UPPER(LEFT(u.first_name, 1)), LOWER(SUBSTRING(u.first_name, 2)), ' ',
+    UPPER(LEFT(COALESCE(u.middle_name, ''), 1)), LOWER(SUBSTRING(COALESCE(u.middle_name, ''), 2)), ' ',
+    UPPER(LEFT(u.last_name, 1)), LOWER(SUBSTRING(u.last_name, 2)), ' ',
+    UPPER(LEFT(COALESCE(u.suffix, ''), 1)), LOWER(SUBSTRING(COALESCE(u.suffix, ''), 2))
+) AS customer_name,
+s.service_name
+FROM lifeplan_booking_tb lb
+JOIN users u ON lb.customer_id = u.id
+LEFT JOIN services_tb s ON lb.service_id = s.service_id
+WHERE lb.booking_status = 'pending'
+ORDER BY lb.lpbooking_id DESC
+LIMIT ?, ?";
+
+$lifeplan_stmt = $conn->prepare($lifeplanQuery);
+$lifeplan_stmt->bind_param("ii", $lifeplan_offset, $lifeplan_bookings_per_page);
+$lifeplan_stmt->execute();
+$lifeplanResult = $lifeplan_stmt->get_result();
                     
                     if ($lifeplanResult->num_rows > 0) {
                         while ($row = $lifeplanResult->fetch_assoc()) {
@@ -1145,22 +1161,85 @@ $total_lifeplan_bookings = $lifeplan_count_result->fetch_assoc()['total'];
         </div>
     </div>
     
-    <!-- Sticky Pagination Footer with improved spacing -->
-    <div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
+    <!-- Replace the existing lifeplan pagination footer with this: -->
+<div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
     <div id="lifeplanPaginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
-    <?php 
-    if ($total_lifeplan_bookings > 0) {
-        $lifeplan_start = 1; // Adjust if you implement pagination
-        $lifeplan_end = min(10, $total_lifeplan_bookings); // You're currently showing 10 records
-        echo "Showing {$lifeplan_start}-{$lifeplan_end} of {$total_lifeplan_bookings} lifeplan " . ($total_lifeplan_bookings != 1 ? "bookings" : "booking");
-    } else {
-        echo "No lifeplan bookings found";
-    }
-    ?>
-</div>
-        <div id="lifeplanPaginationContainer" class="flex space-x-1">
-            <!-- Pagination will be added when there are records -->
-        </div>
+        <?php 
+        $current_page_lifeplan_bookings = $lifeplanResult->num_rows;
+        
+        if ($total_lifeplan_bookings > 0) {
+            $lifeplan_start = $lifeplan_offset + 1;
+            $lifeplan_end = $lifeplan_offset + $current_page_lifeplan_bookings;
+        
+            echo "Showing {$lifeplan_start} - {$lifeplan_end} of {$total_lifeplan_bookings} " . 
+                 ($total_lifeplan_bookings != 1 ? "lifeplan bookings" : "lifeplan booking");
+        } else {
+            echo "No lifeplan bookings found";
+        }
+        ?>
+    </div>
+    <div id="lifeplanPaginationContainer" class="flex space-x-2">
+        <?php if ($total_lifeplan_pages > 1): ?>
+            <!-- First page button (double arrow) -->
+            <a href="?lifeplan_page=1" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($lifeplan_current_page == 1) ? 'opacity-50 pointer-events-none' : ''; ?>">
+                &laquo;
+            </a>
+            
+            <!-- Previous page button (single arrow) -->
+            <a href="<?php echo '?lifeplan_page=' . max(1, $lifeplan_current_page - 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($lifeplan_current_page == 1) ? 'opacity-50 pointer-events-none' : ''; ?>">
+                &lsaquo;
+            </a>
+            
+            <?php
+            // Show exactly 3 page numbers
+            if ($total_lifeplan_pages <= 3) {
+                // If total pages is 3 or less, show all pages
+                $lifeplan_start_page = 1;
+                $lifeplan_end_page = $total_lifeplan_pages;
+            } else {
+                // With more than 3 pages, determine which 3 to show
+                if ($lifeplan_current_page == 1) {
+                    // At the beginning, show first 3 pages
+                    $lifeplan_start_page = 1;
+                    $lifeplan_end_page = 3;
+                } elseif ($lifeplan_current_page == $total_lifeplan_pages) {
+                    // At the end, show last 3 pages
+                    $lifeplan_start_page = $total_lifeplan_pages - 2;
+                    $lifeplan_end_page = $total_lifeplan_pages;
+                } else {
+                    // In the middle, show current page with one before and after
+                    $lifeplan_start_page = $lifeplan_current_page - 1;
+                    $lifeplan_end_page = $lifeplan_current_page + 1;
+                    
+                    // Handle edge cases
+                    if ($lifeplan_start_page < 1) {
+                        $lifeplan_start_page = 1;
+                        $lifeplan_end_page = 3;
+                    }
+                    if ($lifeplan_end_page > $total_lifeplan_pages) {
+                        $lifeplan_end_page = $total_lifeplan_pages;
+                        $lifeplan_start_page = $total_lifeplan_pages - 2;
+                    }
+                }
+            }
+            
+            // Generate the page buttons
+            for ($i = $lifeplan_start_page; $i <= $lifeplan_end_page; $i++) {
+                $active_class = ($i == $lifeplan_current_page) ? 'bg-sidebar-accent text-white' : 'border border-sidebar-border hover:bg-sidebar-hover';
+                echo '<a href="?lifeplan_page=' . $i . '" class="px-3.5 py-1.5 rounded text-sm ' . $active_class . '">' . $i . '</a>';
+            }
+            ?>
+            
+            <!-- Next page button (single arrow) -->
+            <a href="<?php echo '?lifeplan_page=' . min($total_lifeplan_pages, $lifeplan_current_page + 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($lifeplan_current_page == $total_lifeplan_pages) ? 'opacity-50 pointer-events-none' : ''; ?>">
+                &rsaquo;
+            </a>
+            
+            <!-- Last page button (double arrow) -->
+            <a href="<?php echo '?lifeplan_page=' . $total_lifeplan_pages; ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($lifeplan_current_page == $total_lifeplan_pages) ? 'opacity-50 pointer-events-none' : ''; ?>">
+                &raquo;
+            </a>
+        <?php endif; ?>
     </div>
 </div>
 
