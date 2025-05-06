@@ -398,9 +398,13 @@ $show_id_card = !$has_id || strtolower($id_data['is_validated']) != 'valid';
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="../tailwind.js"></script>
     <style>
-        body, html {
-    margin: 0;
-    padding: 0;
+        body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+footer {
+    margin-top: auto; /* Pushes footer to bottom */
 }
         .modal {
             transition: opacity 0.3s ease-in-out;
