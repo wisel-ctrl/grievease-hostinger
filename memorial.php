@@ -321,10 +321,10 @@ lightButton.addEventListener('click', () => {
     }
 });
 
-// Candle color change functionality
+// Candle color change functionality - Updated to show immediately
 const candleTypeRadios = document.querySelectorAll('input[name="candle-type"]');
-const candleBody = document.querySelector('#candle .w-12.h-24'); // Candle body element
-const candleBase = document.querySelector('#candle .w-16.h-3'); // Candle base element
+const candleBody = document.querySelector('#candle .w-10.sm\\:w-12.h-20.sm\\:h-24'); // Candle body element
+const candleBase = document.querySelector('#candle .w-12.sm\\:w-16.h-2.5.sm\\:h-3'); // Candle base element
 
 // Color classes for each candle type
 const candleColors = {
@@ -342,21 +342,36 @@ const candleColors = {
     }
 };
 
+// Set initial candle color to cream (default selection)
+function setInitialCandleColor() {
+    const selectedRadio = document.querySelector('input[name="candle-type"]:checked');
+    if (selectedRadio) {
+        const selectedColor = selectedRadio.value;
+        updateCandleColor(selectedColor);
+    }
+}
+
+// Update candle color function
+function updateCandleColor(color) {
+    // Remove all color classes first
+    candleBody.className = 'w-10 sm:w-12 h-20 sm:h-24 mx-auto rounded-t-lg';
+    candleBase.className = 'w-12 sm:w-16 h-2.5 sm:h-3 mx-auto rounded-b-lg';
+    
+    // Add the selected color classes
+    candleBody.classList.add(...candleColors[color].body.split(' '));
+    candleBase.classList.add(...candleColors[color].base.split(' '));
+}
+
 // Add event listeners to radio buttons
 candleTypeRadios.forEach(radio => {
     radio.addEventListener('change', function() {
         const selectedColor = this.value;
-        
-        // Remove all color classes first
-        candleBody.className = 'w-12 h-24 mx-auto rounded-t-lg';
-        candleBase.className = 'w-16 h-3 mx-auto rounded-b-lg';
-        
-        // Add the selected color classes
-        candleBody.classList.add(...candleColors[selectedColor].body.split(' '));
-        candleBase.classList.add(...candleColors[selectedColor].base.split(' '));
+        updateCandleColor(selectedColor);
     });
 });
 
+// Set initial candle color when page loads
+document.addEventListener('DOMContentLoaded', setInitialCandleColor);
 // Form submission handling
 // Form submission handling
 submitDedication.addEventListener('click', (e) => {
