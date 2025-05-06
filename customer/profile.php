@@ -1277,6 +1277,33 @@ $result = $stmt->get_result();
 $services = $result->fetch_all(MYSQLI_ASSOC);
 $stmt->close();
 
+// Query for custom packages
+$customSql = "SELECT 
+                c.customsales_id,
+                c.get_timestamp,
+                c.payment_status,
+                c.discounted_price,
+                c.amount_paid,
+                c.balance,
+                CONCAT(
+                    UPPER(LEFT(u.first_name, 1)), LOWER(SUBSTRING(u.first_name, 2)), ' ',
+                    UPPER(LEFT(COALESCE(u.middle_name, ''), 1)), LOWER(SUBSTRING(COALESCE(u.middle_name, ''), 2)), ' ',
+                    UPPER(LEFT(u.last_name, 1)), LOWER(SUBSTRING(u.last_name, 2)), ' ',
+                    UPPER(LEFT(COALESCE(u.suffix, ''), 1)), LOWER(SUBSTRING(COALESCE(u.suffix, ''), 2))
+                ) AS customer_name
+            FROM 
+                customsales_tb c
+            JOIN 
+                users u ON c.customer_id = u.id
+            WHERE c.customer_id = ?";
+
+$customStmt = $conn->prepare($customSql);
+$customStmt->bind_param("i", $customerID);
+$customStmt->execute();
+$customResult = $customStmt->get_result();
+$customPackages = $customResult->fetch_all(MYSQLI_ASSOC);
+$customStmt->close();
+
 // Query for life plans
 $lifeplanSql = "SELECT 
                     l.lifeplan_id,
@@ -1422,6 +1449,7 @@ $lifeplanStmt->close();
 <script>
 // Pass PHP data to JavaScript
 const servicesData = <?php echo json_encode($services); ?>;
+const customPackagesData = <?php echo json_encode($customPackages); ?>;
 const lifeplansData = <?php echo json_encode($lifeplans); ?>;
 const customerID = <?php echo json_encode($customerID); ?>;
 console.log('1: ', servicesData);
@@ -1457,6 +1485,8 @@ document.addEventListener('DOMContentLoaded', function() {
             // Populate content based on which tab was clicked
             if (contentId === 'traditional-funeral-content') {
                 populateServiceCards(contentId, servicesData);
+            } else if (contentId === 'custom-package-content') {
+                populateCustomPackageCards(contentId, customPackagesData);
             } else if (contentId === 'life-plan-content') {
                 populateLifePlanCards(contentId, lifeplansData);
             }
@@ -1616,6 +1646,101 @@ function openPaymentHistoryModal(packageType) {
     
     // Show the modal
     document.getElementById('payment-history-modal').classList.remove('hidden');
+}
+
+function populateCustomPackageCards(containerId, packages) {
+    const container = document.getElementById(containerId);
+    container.innerHTML = ''; // Clear existing content
+    
+    if (packages.length === 0) {
+        container.innerHTML = '<p class="text-gray-500 py-4">No custom packages found.</p>';
+        return;
+    }
+    
+    packages.forEach(pkg => {
+        // Format date
+        const date = new Date(pkg.get_timestamp);
+        const formattedDate = date.toLocaleDateString('en-US', { 
+            year: 'numeric', 
+            month: 'short', 
+            day: 'numeric' 
+        });
+        
+        // Determine status color
+        let statusClass = '';
+        if (pkg.payment_status == 'Fully Paid') {
+            statusClass = 'bg-green-100 text-green-800';
+        } else if (pkg.payment_status == 'With Balance') {
+            statusClass = 'bg-blue-100 text-blue-800';
+        } else {
+            statusClass = 'bg-red-100 text-red-800';
+        }
+        
+        // Format currency
+        const formatCurrency = (amount) => {
+            return parseFloat(amount).toLocaleString('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        };
+        
+        // Create card HTML
+        const cardHtml = `
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6 border border-gray-100">
+                <div class="flex flex-col md:flex-row md:justify-between md:items-start">
+                    <div class="mb-4 md:mb-0">
+                        <h3 class="font-bold text-lg text-navy">Custom Funeral Package</h3>
+                        <p class="text-sm text-gray-600">Customer: ${escapeHtml(pkg.customer_name)}</p>
+                        <div class="flex flex-wrap gap-4 mt-2">
+                            <div>
+                                <p class="text-sm text-gray-500">Package ID</p>
+                                <p class="font-medium">${escapeHtml(pkg.customsales_id)}</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500">Date</p>
+                                <p class="font-medium">${formattedDate}</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500">Status</p>
+                                <span class="px-2 py-1 ${statusClass} text-xs font-semibold rounded-full">
+                                    ${escapeHtml(pkg.payment_status)}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex flex-col md:items-end">
+                        <p class="text-2xl font-bold text-green-600">${formatCurrency(pkg.amount_paid)}</p>
+                        <p class="text-sm text-gray-500">Total Paid</p>
+                        
+                        ${pkg.balance > 0 ? `
+                            <div class="mt-2">
+                                <p class="text-lg font-semibold text-navy">${formatCurrency(pkg.balance)}</p>
+                                <p class="text-sm text-gray-500">Remaining Balance</p>
+                            </div>
+                        ` : ''}
+                        
+                        <div class="flex space-x-2 mt-3">
+                            <button onclick="openPaymentHistoryModal('custom-package', '${escapeHtml(pkg.customsales_id)}')" 
+                                class="bg-gray-100 hover:bg-gray-200 text-gray-800 px-3 py-1 rounded text-sm transition">
+                                View History
+                            </button>
+                            ${pkg.balance > 0 ? `
+                                <button onclick="openPaymentModal('custom-package', '${escapeHtml(pkg.customsales_id)}')" 
+                                    class="bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-1 rounded text-sm transition">
+                                    Add Payment
+                                </button>
+                            ` : ''}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        container.insertAdjacentHTML('beforeend', cardHtml);
+    });
 }
 
 function populateLifePlanCards(containerId, lifeplans) {
