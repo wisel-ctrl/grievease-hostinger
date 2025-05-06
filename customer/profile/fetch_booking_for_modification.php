@@ -3,9 +3,12 @@ require_once '../../db_connect.php';
 
 $bookingId = $_GET['booking_id'] ?? 0;
 
-$query = "SELECT b.*, s.service_name, s.selling_price, br.branch_name 
+$query = "SELECT b.*, 
+                 IFNULL(s.service_name, 'Customize Package') as service_name, 
+                 IFNULL(s.selling_price, 0) as selling_price, 
+                 br.branch_name 
           FROM booking_tb b
-          JOIN services_tb s ON b.service_id = s.service_id
+          LEFT JOIN services_tb s ON b.service_id = s.service_id
           JOIN branch_tb br ON b.branch_id = br.branch_id
           WHERE b.booking_id = ?";
 
@@ -32,4 +35,5 @@ if ($result->num_rows > 0) {
 
 $stmt->close();
 $conn->close();
+
 ?>
