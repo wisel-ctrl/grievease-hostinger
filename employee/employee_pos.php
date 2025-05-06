@@ -8,6 +8,45 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
+
+// Check for employee user type (user_type = 2)
+if ($_SESSION['user_type'] != 2) {
+    // Redirect to appropriate page based on user type
+    switch ($_SESSION['user_type']) {
+        case 1: // Admin
+            header("Location: ../admin/admin_index.php");
+            break;
+        case 3: // Customer
+            header("Location: ../customer/index.php");
+            break;
+        default:
+            // Invalid user_type
+            session_destroy();
+            header("Location: ../Landing_Page/login.php");
+    }
+    exit();
+}
+
+// Optional: Check for session timeout (30 minutes)
+$session_timeout = 1800; // 30 minutes in seconds
+if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > $session_timeout)) {
+    // Session has expired
+    session_unset();
+    session_destroy();
+    header("Location: ../Landing_Page/login.php?timeout=1");
+    exit();
+}
+
+// Update last activity time
+$_SESSION['last_activity'] = time();
+
+// Prevent caching for authenticated pages
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Cache-Control: post-check=0, pre-check=0", false);
+header("Pragma: no-cache");
+
+
+
 // Database connection
 include '../db_connect.php';
 
