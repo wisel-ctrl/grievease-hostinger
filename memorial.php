@@ -322,56 +322,40 @@ lightButton.addEventListener('click', () => {
 });
 
 // Candle color change functionality
-// Candle color change functionality for the virtual candle modal
 const candleTypeRadios = document.querySelectorAll('input[name="candle-type"]');
-const modalCandleBody = document.querySelector('#candle .w-12.sm\\:w-16'); // Target the candle container
-const modalCandleWax = modalCandleBody.querySelector('div:nth-child(2)'); // Candle wax element
-const modalCandleBase = modalCandleBody.querySelector('div:nth-child(3)'); // Candle base element
+const candleBody = document.querySelector('#candle .w-12.h-24'); // Candle body element
+const candleBase = document.querySelector('#candle .w-16.h-3'); // Candle base element
 
 // Color classes for each candle type
 const candleColors = {
     white: {
-        wax: 'bg-gradient-to-b from-white to-gray-100',
+        body: 'bg-gradient-to-b from-white to-gray-100',
         base: 'bg-gradient-to-b from-white to-gray-300'
     },
     cream: {
-        wax: 'bg-gradient-to-b from-cream to-white',
+        body: 'bg-gradient-to-b from-cream to-white',
         base: 'bg-gradient-to-b from-cream to-yellow-600/20'
     },
     gold: {
-        wax: 'bg-gradient-to-b from-yellow-400 to-yellow-600',
+        body: 'bg-gradient-to-b from-yellow-400 to-yellow-600',
         base: 'bg-gradient-to-b from-yellow-500 to-yellow-700'
     }
 };
 
-// Set initial candle color based on default selection
-function setInitialCandleColor() {
-    const selectedRadio = document.querySelector('input[name="candle-type"]:checked');
-    if (selectedRadio) {
-        updateModalCandleColor(selectedRadio.value);
-    }
-}
-
-// Update candle color in modal
-function updateModalCandleColor(color) {
-    // Remove all color classes first
-    modalCandleWax.className = 'w-10 sm:w-12 h-20 sm:h-24 mx-auto rounded-t-lg';
-    modalCandleBase.className = 'w-12 sm:w-16 h-2.5 sm:h-3 mx-auto rounded-b-lg';
-    
-    // Add the selected color classes
-    modalCandleWax.classList.add(...candleColors[color].wax.split(' '));
-    modalCandleBase.classList.add(...candleColors[color].base.split(' '));
-}
-
 // Add event listeners to radio buttons
 candleTypeRadios.forEach(radio => {
     radio.addEventListener('change', function() {
-        updateModalCandleColor(this.value);
+        const selectedColor = this.value;
+        
+        // Remove all color classes first
+        candleBody.className = 'w-12 h-24 mx-auto rounded-t-lg';
+        candleBase.className = 'w-16 h-3 mx-auto rounded-b-lg';
+        
+        // Add the selected color classes
+        candleBody.classList.add(...candleColors[selectedColor].body.split(' '));
+        candleBase.classList.add(...candleColors[selectedColor].base.split(' '));
     });
 });
-
-// Set initial candle color when page loads
-document.addEventListener('DOMContentLoaded', setInitialCandleColor);
 
 // Form submission handling
 // Form submission handling
