@@ -499,6 +499,7 @@ $servicesJson = json_encode($allServices);
         <input type="hidden" id="service-id" name="service_id" value="">
         <input type="hidden" id="service-price" name="service_price">
         <input type="hidden" id="branch-id" name="branch_id" value="">
+        <input type="hidden" id="sold_by" name="sold_by" value="<?php echo htmlspecialchars($_SESSION['user_id']); ?>">
 
         <!-- Client Information Section -->
         <div class="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-200">
@@ -1432,36 +1433,40 @@ function openTraditionalCheckout() {
 function confirmCheckout() {
   // Get the form element
   const form = document.getElementById('checkoutForm');
-  const firstName = document.getElementById('clientFirstName').value;
-  const lastName = document.getElementById('clientLastName').value;
   
-  // Create a FormData object from the form
+  // Create a FormData object from the form (this automatically includes all form fields)
   const formData = new FormData(form);
-  formData.append('clientFirstName', firstName);
-
   
-  // Add additional data that might not be in the form
-  formData.append('sold_by', <?php echo $_SESSION['user_id']; ?>);
+  // Add session data that isn't in the form
+  // Use a hidden input field in the form instead of direct PHP insertion
+  const soldBy = document.getElementById('sold_by').value;
+  formData.append('sold_by', soldBy);
   
   // Log the form data to the console for debugging
-  const formDataObj = {};
-  formData.forEach((value, key) => {
-    formDataObj[key] = value;
-  });
-  console.log('Checkout Form Data:', formDataObj);
+  console.log('Checkout Form Data:');
+  for (let [key, value] of formData.entries()) {
+    // Don't log file content, just log that a file was included
+    if (value instanceof File) {
+      console.log(key + ': File included - ' + value.name);
+    } else {
+      console.log(key + ': ' + value);
+    }
+  }
   
-  // Send the data to the server
+  // Send the data to the server (make sure the path is correct relative to the JS file location)
   fetch('posFunctions/traditional_checkout.php', {
     method: 'POST',
     body: formData
+    // Don't set Content-Type header when using FormData - it will be set automatically with boundary
   })
   .then(response => {
     if (!response.ok) {
-      throw new Error('Network response was not ok');
+      throw new Error('Network response was not ok: ' + response.status);
     }
     return response.json();
   })
   .then(data => {
+    console.log('Server response:', data);
     if (data.success) {
       // Show success message and order ID
       document.getElementById('order-id').textContent = data.order_id;
