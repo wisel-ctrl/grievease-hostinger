@@ -1294,44 +1294,6 @@ document.addEventListener('DOMContentLoaded', function() {
         
         <!-- Traditional Funeral Content -->
         <div id="traditional-funeral-content" class="service-content p-6">
-<<<<<<< HEAD
-            <!-- Service Summary -->
-            <div class="flex flex-col lg:flex-row justify-between mb-4">
-                    <div class="mb-4 lg:mb-0">
-                        <h3 class="font-hedvig text-lg text-navy">Traditional Funeral Package</h3>
-                        <p class="text-sm text-gray-500">Package ID: TF-45721</p>
-                        <p class="text-sm text-gray-500">Purchased: Mar 15, 2025</p>
-                        <p class="text-sm text-gray-500">Service Date: Apr 10, 2025</p>
-                    </div>
-                    <div class="mb-4 lg:mb-0">
-                        <div class="bg-gray-50 p-3 rounded">
-                            <div class="flex justify-between mb-1">
-                                <span class="text-sm text-gray-500">Total Cost:</span>
-                                <span class="font-medium text-navy">$9,950.00</span>
-                            </div>
-                            <div class="flex justify-between mb-1">
-                                <span class="text-sm text-gray-500">Paid Amount:</span>
-                                <span class="font-medium text-green-600">$9,950.00</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span class="text-sm text-gray-500">Remaining:</span>
-                                <span class="font-medium text-navy">$0.00</span>
-                            </div>
-                        </div>
-                        <div class="mt-2">
-                            <span class="inline-block px-2 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded-full">Paid in Full</span>
-                        </div>
-                    </div>
-                    <div class="flex flex-col space-y-2">
-                        <button id="view-traditional-history" class="bg-navy text-white px-3 py-2 rounded hover:bg-navy/80 transition text-sm">
-                            <i class="fas fa-history mr-1"></i> View Payment History
-                        </button>
-                        <button id="pay-traditional-balance" class="bg-yellow-600 text-white px-3 py-2 rounded hover:bg-yellow-700 transition text-sm" disabled>
-                            <i class="fas fa-credit-card mr-1"></i> Make Payment
-                        </button>
-                    </div>
-                </div>
-=======
             <!-- Service Selector for Multiple Bookings -->
             <div class="mb-6">
                 <label for="service-select" class="block text-sm font-medium text-gray-700 mb-2">Select Service</label>
@@ -1667,7 +1629,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>
                 </div>
             </div>
->>>>>>> 69d628e6a318fb58a2f09bfc6ac70149fc9c5cae
         </div>
         
         <!-- Custom Package Content -->
