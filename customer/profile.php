@@ -1436,7 +1436,10 @@ function populateServiceCards(containerId, services) {
     const container = document.getElementById(containerId);
     container.innerHTML = ''; // Clear existing content
     console.log('called');
-    
+    console.log(service.get_timestamp);
+    console.log(service.service_name);
+    console.log(service.sales_id);
+    console.log(service.amount_paid);
     if (services.length === 0) {
         container.innerHTML = '<p class="text-gray-500 py-4">No services found.</p>';
         return;
