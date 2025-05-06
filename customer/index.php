@@ -887,24 +887,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
     
-    <!-- Navigation Arrows - Modified for smaller screens -->
-    <button id="prev-btn" class="absolute left-0 top-1/2 transform -translate-y-1/2 -ml-2 sm:-ml-4 bg-yellow-600 w-8 h-8 sm:w-10 sm:h-10 rounded-full shadow-lg flex items-center justify-center border border-gray-200 z-20 hover:bg-yellow-700 focus:outline-none">
-        <i class="fas fa-chevron-left text-white text-xs sm:text-base"></i>
-    </button>
-    <button id="next-btn" class="absolute right-0 top-1/2 transform -translate-y-1/2 -mr-2 sm:-mr-4 bg-yellow-600 w-8 h-8 sm:w-10 sm:h-10 rounded-full shadow-lg flex items-center justify-center border border-gray-200 z-20 hover:bg-yellow-700 focus:outline-none">
-        <i class="fas fa-chevron-right text-white text-xs sm:text-base"></i>
-    </button>
-
-    <!-- Dots Indicator -->
-    <div class="flex justify-center mt-4 sm:mt-6 mb-4 sm:mb-8">
-        <div id="carousel-dots" class="flex space-x-2">
-            <button class="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-navy opacity-100" data-index="0"></button>
-            <button class="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-navy opacity-50" data-index="1"></button>
-            <button class="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-navy opacity-50" data-index="2"></button>
-            <button class="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-navy opacity-50" data-index="3"></button>
-            <button class="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-navy opacity-50" data-index="4"></button>
-        </div>
-    </div>
+    
 </div>
 
 <!-- Carousel JavaScript - Updated for better responsiveness -->
