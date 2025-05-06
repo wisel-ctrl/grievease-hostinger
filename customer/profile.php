@@ -2129,16 +2129,7 @@ document.addEventListener('DOMContentLoaded', function() {
               </div>
               <div>
                 <label class="block text-sm font-medium text-navy mb-1 sm:mb-2">Suffix</label>
-                <select id="deceased_suffix" name="clientSuffix" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
-                                    <option value="">None</option>
-                                    <option value="Jr.">Jr.</option>
-                                    <option value="Sr.">Sr.</option>
-                                    <option value="I">I</option>
-                                    <option value="II">II</option>
-                                    <option value="III">III</option>
-                                    <option value="IV">IV</option>
-                                    <option value="V">V</option>
-                                </select>
+                <input type="text" name="deceased_suffix" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base">
               </div>
             </div>
           </div>
