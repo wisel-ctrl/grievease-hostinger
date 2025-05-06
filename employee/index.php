@@ -305,7 +305,7 @@ header("Pragma: no-cache");
           </div>
           <span class="text-sidebar-text font-medium">Today's Revenue</span>
         </div>
-        <div class="text-3xl font-bold mb-2 text-sidebar-text">$1,200</div>
+        <div class="text-3xl font-bold mb-2 text-sidebar-text">₱1,200</div>
         <div class="text-sm text-green-600 flex items-center">
           <i class="fas fa-arrow-up mr-1"></i> 5% from yesterday
         </div>

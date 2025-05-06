@@ -293,7 +293,7 @@ require_once '../db_connect.php';
           </div>
           <span class="text-sidebar-text font-medium">Total Expenses</span>
         </div>
-        <div class="text-3xl font-bold mb-2 text-sidebar-text">$12,340</div>
+        <div class="text-3xl font-bold mb-2 text-sidebar-text">₱12,340</div>
         <div class="text-sm text-green-600 flex items-center">
           <i class="fas fa-arrow-up mr-1"></i> 8% from last month
         </div>
@@ -306,7 +306,7 @@ require_once '../db_connect.php';
           </div>
           <span class="text-sidebar-text font-medium">This Month</span>
         </div>
-        <div class="text-3xl font-bold mb-2 text-sidebar-text">$1,700</div>
+        <div class="text-3xl font-bold mb-2 text-sidebar-text">₱1,700</div>
         <div class="text-sm text-green-600 flex items-center">
           <i class="fas fa-arrow-up mr-1"></i> 12% from last month
         </div>
@@ -387,7 +387,7 @@ require_once '../db_connect.php';
             <td class="p-4 text-sm text-sidebar-text">
               <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">Supplies</span>
             </td>
-            <td class="p-4 text-sm text-sidebar-text">$500</td>
+            <td class="p-4 text-sm text-sidebar-text">₱500</td>
             <td class="p-4 text-sm text-sidebar-text">2023-10-01</td>
             <td class="p-4 text-sm">
               <span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">Paid</span>
@@ -409,7 +409,7 @@ require_once '../db_connect.php';
             <td class="p-4 text-sm text-sidebar-text">
               <span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">Utilities</span>
             </td>
-            <td class="p-4 text-sm text-sidebar-text">$1,200</td>
+            <td class="p-4 text-sm text-sidebar-text">₱1,200</td>
             <td class="p-4 text-sm text-sidebar-text">2023-10-05</td>
             <td class="p-4 text-sm">
               <span class="px-2 py-1 bg-orange-100 text-orange-800 rounded-full text-xs">Pending</span>
@@ -471,10 +471,10 @@ require_once '../db_connect.php';
           </select>
         </div>
         <div class="mb-5">
-          <label for="expenseAmount" class="block mb-2 font-medium text-gray-700">Amount ($)</label>
+          <label for="expenseAmount" class="block mb-2 font-medium text-gray-700">Amount (₱)</label>
           <div class="relative">
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <span class="text-gray-500">$</span>
+              <span class="text-gray-500">₱</span>
             </div>
             <input type="number" id="expenseAmount" name="expenseAmount" placeholder="0.00" step="0.01" min="0" class="w-full pl-8 px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent" required>
           </div>
@@ -543,10 +543,10 @@ require_once '../db_connect.php';
           </select>
         </div>
         <div class="mb-5">
-          <label for="editExpenseAmount" class="block mb-2 font-medium text-gray-700">Amount ($)</label>
+          <label for="editExpenseAmount" class="block mb-2 font-medium text-gray-700">Amount (₱)</label>
           <div class="relative">
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <span class="text-gray-500">$</span>
+              <span class="text-gray-500">₱</span>
             </div>
             <input type="number" id="editExpenseAmount" name="editExpenseAmount" placeholder="0.00" step="0.01" min="0" class="w-full pl-8 px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent" required>
           </div>
