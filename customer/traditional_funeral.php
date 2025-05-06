@@ -191,6 +191,17 @@ require_once '../db_connect.php'; // Database connection
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="../tailwind.js"></script>
     <style>
+        #enlargedQrView {
+    transition: opacity 0.3s ease;
+}
+
+#enlargedQrView img {
+    transition: transform 0.3s ease;
+}
+
+#enlargedQrView:hover img {
+    transform: scale(1.02);
+}
         .modal {
             transition: opacity 0.3s ease-in-out;
             pointer-events: none;
@@ -1218,21 +1229,34 @@ require_once '../db_connect.php'; // Database connection
                         </div>
 
                         <!-- QR Code Modal -->
-                        <div id="qrCodeModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
-                            <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-                                <div class="flex justify-between items-center mb-4">
-                                    <h3 class="text-lg font-hedvig text-navy">Scan to Pay</h3>
-                                    <button id="closeQrModal" class="text-gray-500 hover:text-navy">
-                                        <i class="fas fa-times text-xl"></i>
-                                    </button>
-                                </div>
-                                <div class="flex flex-col items-center justify-center">
-                                    <img id="qrCodeImage" src="../image/qrnivjaygcash.jpg" alt="Payment QR Code" class="w-64 h-64 object-contain mb-4">
-                                    <p class="text-center text-sm text-gray-600 mb-2">Scan this QR code with your GCash app to make payment</p>
-                                    <p class="text-center font-bold text-yellow-600" id="qrCodeAmount">Amount: ₱0</p>
-                                </div>
-                            </div>
-                        </div>
+                        <!-- QR Code Modal (for traditional) -->
+<div id="qrCodeModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
+    <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-hedvig text-navy">Scan to Pay</h3>
+            <button id="closeQrModal" class="text-gray-500 hover:text-navy">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+        <div class="flex flex-col items-center justify-center">
+            <img id="qrCodeImage" src="../image/qrnivjaygcash.jpg" alt="Payment QR Code" 
+                 class="w-64 h-64 object-contain mb-4 cursor-pointer hover:scale-105 transition-transform"
+                 onclick="enlargeQrCode(this)">
+            <p class="text-center text-sm text-gray-600 mb-2">Scan this QR code with your GCash app to make payment</p>
+            <p class="text-center font-bold text-yellow-600" id="qrCodeAmount">Amount: ₱0</p>
+        </div>
+    </div>
+</div>
+
+<!-- Enlarged QR Code View (hidden by default) -->
+<div id="enlargedQrView" class="fixed inset-0 bg-black bg-opacity-90 z-[60] flex items-center justify-center hidden">
+    <div class="relative max-w-4xl w-full p-4">
+        <button onclick="closeEnlargedQr()" class="absolute top-4 right-4 text-white text-2xl z-10">
+            <i class="fas fa-times"></i>
+        </button>
+        <img id="enlargedQrImage" src="" class="w-full max-h-[90vh] object-contain" alt="Enlarged QR Code">
+    </div>
+</div>
 
                         <!-- GCash Upload with Preview -->
                         <div class="mb-4">
@@ -1556,6 +1580,35 @@ require_once '../db_connect.php'; // Database connection
 
 
 <script>
+
+
+// Function to enlarge QR code
+function enlargeQrCode(imgElement) {
+    const enlargedView = document.getElementById('enlargedQrView');
+    const enlargedImg = document.getElementById('enlargedQrImage');
+    
+    enlargedImg.src = imgElement.src;
+    enlargedView.classList.remove('hidden');
+    
+    // Close when clicking outside the image
+    enlargedView.addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeEnlargedQr();
+        }
+    });
+}
+
+// Function to close enlarged view
+function closeEnlargedQr() {
+    document.getElementById('enlargedQrView').classList.add('hidden');
+}
+
+// Close with Escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && !document.getElementById('enlargedQrView').classList.contains('hidden')) {
+        closeEnlargedQr();
+    }
+});
     
     // Add this script to your form page
 document.addEventListener('DOMContentLoaded', function() {
