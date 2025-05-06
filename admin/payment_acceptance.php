@@ -142,119 +142,192 @@ $lifeplan_requests = mysqli_fetch_all($lifeplan_result, MYSQLI_ASSOC);
   <!-- Page content -->
   <div class="space-y-8">
     <!-- Traditional Payment Requests Section -->
-    <div class="bg-white rounded-lg shadow-sidebar p-6">
-      <h2 class="text-xl font-semibold mb-4 text-sidebar-text">Traditional Payment Requests</h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div class="bg-white rounded-xl shadow-md p-6 transition-all duration-300 hover:shadow-lg">
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="text-2xl font-semibold text-sidebar-text flex items-center">
+          <i class="fas fa-money-bill-wave mr-3 text-sidebar"></i>
+          Traditional Payment Requests
+        </h2>
+        <span class="bg-blue-100 text-sidebar-text px-3 py-1 rounded-full text-sm font-medium">
+          <?= count($traditional_requests) ?> Requests
+        </span>
+      </div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
         <?php foreach ($traditional_requests as $request): ?>
-          <div class="border rounded-lg p-4 hover:shadow-md transition-shadow">
-            <div class="flex justify-between items-start">
-              <div>
-                <h3 class="font-medium"><?= htmlspecialchars($request['full_name']) ?></h3>
-                <p class="text-sm text-gray-600"><?= htmlspecialchars($request['service_name']) ?> (₱<?= number_format($request['discounted_price'], 2) ?>)</p>
-                <p class="text-sm mt-2">
-                  <span class="font-medium">Amount:</span> ₱<?= number_format($request['amount'], 2) ?>
-                </p>
-                <p class="text-sm">
-                  <span class="font-medium">Date:</span> <?= date('M d, Y', strtotime($request['request_date'])) ?>
-                </p>
-                <p class="text-sm">
-                  <span class="font-medium">Method:</span> <?= htmlspecialchars($request['payment_method']) ?>
-                </p>
-                <span class="inline-block mt-2 px-2 py-1 text-xs rounded-full 
-                  <?= $request['status'] == 'pending' ? 'bg-yellow-100 text-yellow-800' : 
-                     ($request['status'] == 'approved' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800') ?>">
-                  <?= ucfirst($request['status']) ?>
-                </span>
+          <div class="border border-gray-200 rounded-xl p-5 hover:shadow-lg transition-shadow bg-white relative overflow-hidden group">
+            <!-- Status badge at top right -->
+            <span class="absolute top-0 right-0 px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-bl-lg
+              <?= $request['status'] == 'pending' ? 'bg-yellow-100 text-yellow-800' : 
+                 ($request['status'] == 'approved' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800') ?>">
+              <?= ucfirst($request['status']) ?>
+            </span>
+            
+            <div class="mb-4 pt-4">
+              <h3 class="font-semibold text-lg text-sidebar-text"><?= htmlspecialchars($request['full_name']) ?></h3>
+              <p class="text-gray-600 font-medium"><?= htmlspecialchars($request['service_name']) ?></p>
+            </div>
+            
+            <div class="space-y-2 mb-4">
+              <div class="flex justify-between items-center">
+                <span class="text-gray-500">Total Price:</span>
+                <span class="font-semibold">₱<?= number_format($request['discounted_price'], 2) ?></span>
               </div>
+              <div class="flex justify-between items-center">
+                <span class="text-gray-500">Payment Amount:</span>
+                <span class="font-semibold text-sidebar-text">₱<?= number_format($request['amount'], 2) ?></span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-gray-500">Date:</span>
+                <span><?= date('M d, Y', strtotime($request['request_date'])) ?></span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-gray-500">Method:</span>
+                <span class="capitalize"><?= htmlspecialchars($request['payment_method']) ?></span>
+              </div>
+            </div>
+            
+            <div class="pt-3 border-t border-gray-100">
               <button onclick="openTraditionalModal('<?= htmlspecialchars($request['payment_url']) ?>', '<?= number_format($request['amount'], 2) ?>')" 
-                class="px-3 py-1 bg-sidebar text-white rounded hover:bg-blue-700 transition-colors text-sm">
-                View Receipt
+                class="w-full py-2 bg-sidebar text-white rounded-lg hover:bg-hover-bg transition-colors flex items-center justify-center group-hover:shadow-md">
+                <i class="fas fa-receipt mr-2"></i> View Receipt
               </button>
             </div>
           </div>
         <?php endforeach; ?>
         <?php if (empty($traditional_requests)): ?>
-          <p class="text-gray-500 col-span-3 text-center py-4">No traditional payment requests found.</p>
+          <div class="col-span-3 py-16 flex flex-col items-center justify-center bg-gray-50 rounded-xl border border-dashed border-gray-300">
+            <i class="fas fa-file-invoice-dollar text-4xl text-gray-400 mb-3"></i>
+            <p class="text-gray-500 text-lg">No traditional payment requests found.</p>
+          </div>
         <?php endif; ?>
       </div>
     </div>
 
     <!-- Custom Packages Payment Requests Section -->
-    <!-- Custom Packages Payment Requests Section -->
-    <div class="bg-white rounded-lg shadow-sidebar p-6">
-    <h2 class="text-xl font-semibold mb-4 text-sidebar-text">Custom Packages Payment Requests</h2>
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div class="bg-white rounded-xl shadow-md p-6 transition-all duration-300 hover:shadow-lg">
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="text-2xl font-semibold text-sidebar-text flex items-center">
+          <i class="fas fa-box-open mr-3 text-sidebar"></i>
+          Custom Packages Payment Requests
+        </h2>
+        <span class="bg-blue-100 text-sidebar-text px-3 py-1 rounded-full text-sm font-medium">
+          <?= count($custom_requests) ?> Requests
+        </span>
+      </div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
         <?php foreach ($custom_requests as $request): ?>
-        <div class="border rounded-lg p-4 hover:shadow-md transition-shadow">
-            <div class="flex justify-between items-start">
-            <div>
-                <h3 class="font-medium"><?= htmlspecialchars($request['full_name']) ?></h3>
-                <p class="text-sm text-gray-600">Custom Package</span> (₱<?= number_format($request['discounted_price'], 2) ?>)</p>
-                <p class="text-sm mt-2">
-                <span class="font-medium">Amount:</span> ₱<?= number_format($request['amount'], 2) ?>
-                </p>
-                <p class="text-sm">
-                <span class="font-medium">Date:</span> <?= date('M d, Y', strtotime($request['request_date'])) ?>
-                </p>
-                <p class="text-sm">
-                <span class="font-medium">Method:</span> <?= htmlspecialchars($request['payment_method']) ?>
-                </p>
-                <span class="inline-block mt-2 px-2 py-1 text-xs rounded-full 
-                <?= $request['status'] == 'pending' ? 'bg-yellow-100 text-yellow-800' : 
-                    ($request['status'] == 'approved' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800') ?>">
-                <?= ucfirst($request['status']) ?>
-                </span>
+          <div class="border border-gray-200 rounded-xl p-5 hover:shadow-lg transition-shadow bg-white relative overflow-hidden group">
+            <!-- Status badge at top right -->
+            <span class="absolute top-0 right-0 px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-bl-lg
+              <?= $request['status'] == 'pending' ? 'bg-yellow-100 text-yellow-800' : 
+                 ($request['status'] == 'approved' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800') ?>">
+              <?= ucfirst($request['status']) ?>
+            </span>
+            
+            <div class="mb-4 pt-4">
+              <h3 class="font-semibold text-lg text-sidebar-text"><?= htmlspecialchars($request['full_name']) ?></h3>
+              <p class="text-gray-600 font-medium">Custom Package</p>
             </div>
-            <button onclick="openCustomModal('<?= htmlspecialchars($request['payment_url']) ?>', '<?= number_format($request['amount'], 2) ?>')" 
-                class="px-3 py-1 bg-sidebar text-white rounded hover:bg-blue-700 transition-colors text-sm">
-                View Receipt
-            </button>
+            
+            <div class="space-y-2 mb-4">
+              <div class="flex justify-between items-center">
+                <span class="text-gray-500">Total Price:</span>
+                <span class="font-semibold">₱<?= number_format($request['discounted_price'], 2) ?></span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-gray-500">Payment Amount:</span>
+                <span class="font-semibold text-sidebar-text">₱<?= number_format($request['amount'], 2) ?></span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-gray-500">Date:</span>
+                <span><?= date('M d, Y', strtotime($request['request_date'])) ?></span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-gray-500">Method:</span>
+                <span class="capitalize"><?= htmlspecialchars($request['payment_method']) ?></span>
+              </div>
             </div>
-        </div>
+            
+            <div class="pt-3 border-t border-gray-100">
+              <button onclick="openCustomModal('<?= htmlspecialchars($request['payment_url']) ?>', '<?= number_format($request['amount'], 2) ?>')" 
+                class="w-full py-2 bg-sidebar text-white rounded-lg hover:bg-hover-bg transition-colors flex items-center justify-center group-hover:shadow-md">
+                <i class="fas fa-receipt mr-2"></i> View Receipt
+              </button>
+            </div>
+          </div>
         <?php endforeach; ?>
         <?php if (empty($custom_requests)): ?>
-        <p class="text-gray-500 col-span-3 text-center py-4">No custom package payment requests found.</p>
+          <div class="col-span-3 py-16 flex flex-col items-center justify-center bg-gray-50 rounded-xl border border-dashed border-gray-300">
+            <i class="fas fa-box-open text-4xl text-gray-400 mb-3"></i>
+            <p class="text-gray-500 text-lg">No custom package payment requests found.</p>
+          </div>
         <?php endif; ?>
-    </div>
+      </div>
     </div>
 
     <!-- Lifeplan Payment Requests Section -->
-    <!-- Lifeplan Payment Requests Section -->
-    <div class="bg-white rounded-lg shadow-sidebar p-6">
-    <h2 class="text-xl font-semibold mb-4 text-sidebar-text">Lifeplan Payment Requests</h2>
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div class="bg-white rounded-xl shadow-md p-6 transition-all duration-300 hover:shadow-lg">
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="text-2xl font-semibold text-sidebar-text flex items-center">
+          <i class="fas fa-heart mr-3 text-sidebar"></i>
+          Lifeplan Payment Requests
+        </h2>
+        <span class="bg-blue-100 text-sidebar-text px-3 py-1 rounded-full text-sm font-medium">
+          <?= count($lifeplan_requests) ?> Requests
+        </span>
+      </div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
         <?php foreach ($lifeplan_requests as $request): ?>
-        <div class="border rounded-lg p-4 hover:shadow-md transition-shadow">
-            <div class="flex justify-between items-start">
-            <div>
-                <h3 class="font-medium"><?= htmlspecialchars($request['full_name']) ?></h3>
-                <p class="text-sm text-gray-600"><?= htmlspecialchars($request['service_name']) ?> (₱<?= number_format($request['custom_price'], 2) ?>)</p>
-                <p class="text-sm mt-2">
-                <span class="font-medium">Amount:</span> ₱<?= number_format($request['amount'], 2) ?>
-                </p>
-                <p class="text-sm">
-                <span class="font-medium">Date:</span> <?= date('M d, Y', strtotime($request['request_date'])) ?>
-                </p>
-                <p class="text-sm">
-                <span class="font-medium">Method:</span> <?= htmlspecialchars($request['payment_method']) ?>
-                </p>
-                <span class="inline-block mt-2 px-2 py-1 text-xs rounded-full 
-                <?= $request['status'] == 'pending' ? 'bg-yellow-100 text-yellow-800' : 
-                    ($request['status'] == 'approved' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800') ?>">
-                <?= ucfirst($request['status']) ?>
-                </span>
+          <div class="border border-gray-200 rounded-xl p-5 hover:shadow-lg transition-shadow bg-white relative overflow-hidden group">
+            <!-- Status badge at top right -->
+            <span class="absolute top-0 right-0 px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-bl-lg
+              <?= $request['status'] == 'pending' ? 'bg-yellow-100 text-yellow-800' : 
+                 ($request['status'] == 'approved' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800') ?>">
+              <?= ucfirst($request['status']) ?>
+            </span>
+            
+            <div class="mb-4 pt-4">
+              <h3 class="font-semibold text-lg text-sidebar-text"><?= htmlspecialchars($request['full_name']) ?></h3>
+              <p class="text-gray-600 font-medium"><?= htmlspecialchars($request['service_name']) ?></p>
             </div>
-            <button onclick="openLifeplanModal('<?= htmlspecialchars($request['payment_url']) ?>', '<?= number_format($request['amount'], 2) ?>')" 
-                class="px-3 py-1 bg-sidebar text-white rounded hover:bg-blue-700 transition-colors text-sm">
-                View Receipt
-            </button>
+            
+            <div class="space-y-2 mb-4">
+              <div class="flex justify-between items-center">
+                <span class="text-gray-500">Total Price:</span>
+                <span class="font-semibold">₱<?= number_format($request['custom_price'], 2) ?></span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-gray-500">Payment Amount:</span>
+                <span class="font-semibold text-sidebar-text">₱<?= number_format($request['amount'], 2) ?></span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-gray-500">Date:</span>
+                <span><?= date('M d, Y', strtotime($request['request_date'])) ?></span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-gray-500">Method:</span>
+                <span class="capitalize"><?= htmlspecialchars($request['payment_method']) ?></span>
+              </div>
             </div>
-        </div>
+            
+            <div class="pt-3 border-t border-gray-100">
+              <button onclick="openLifeplanModal('<?= htmlspecialchars($request['payment_url']) ?>', '<?= number_format($request['amount'], 2) ?>')" 
+                class="w-full py-2 bg-sidebar text-white rounded-lg hover:bg-hover-bg transition-colors flex items-center justify-center group-hover:shadow-md">
+                <i class="fas fa-receipt mr-2"></i> View Receipt
+              </button>
+            </div>
+          </div>
         <?php endforeach; ?>
         <?php if (empty($lifeplan_requests)): ?>
-        <p class="text-gray-500 col-span-3 text-center py-4">No lifeplan payment requests found.</p>
+          <div class="col-span-3 py-16 flex flex-col items-center justify-center bg-gray-50 rounded-xl border border-dashed border-gray-300">
+            <i class="fas fa-heart text-4xl text-gray-400 mb-3"></i>
+            <p class="text-gray-500 text-lg">No lifeplan payment requests found.</p>
+          </div>
         <?php endif; ?>
-    </div>
+      </div>
     </div>
 
   </div>
