@@ -522,7 +522,12 @@ document.addEventListener('DOMContentLoaded', function() {
           yaxis: {
               labels: {
                   formatter: function(value) {
-                      return '₱' + value.toFixed(2);
+                    return value.toLocaleString('en-PH', {
+                        style: 'currency',
+                        currency: 'PHP',
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    });
                   }
               }
           },
