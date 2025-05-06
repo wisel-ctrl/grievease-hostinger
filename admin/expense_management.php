@@ -1850,12 +1850,14 @@ function saveExpenseChanges() {
         formData.append('status', status);
         formData.append('note', note);
 
-        // Debug: Log FormData contents
-        console.log('--- FormData Contents ---');
-        for (let [key, value] of formData.entries()) {
-            console.log(key + ':', value);
-        }
-        console.log('-------------------------');
+        Swal.fire({
+            title: 'Updating Expense',
+            html: 'Please wait...',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
 
         // Send data to server using AJAX
         console.log('Sending request to server...');
@@ -1870,13 +1872,22 @@ function saveExpenseChanges() {
         .then(data => {
             console.log('Server response:', data);
             if (data.success) {
-                console.log('Update successful');
-                alert('Expense updated successfully!');
-                closeEditExpenseModal();
-                location.reload(); // Refresh the page to show changes
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Updated!',
+                    text: 'Expense updated successfully!',
+                    confirmButtonColor: '#3085d6',
+                }).then(() => {
+                    closeEditExpenseModal();
+                    location.reload(); // Refresh the page to show changes
+                }); // Refresh the page to show changes
             } else {
-                console.error('Server reported error:', data.message);
-                alert('Error: ' + data.message);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: data.message,
+                    confirmButtonColor: '#3085d6',
+                });
             }
         })
         .catch(error => {
@@ -1900,31 +1911,67 @@ function saveExpenseChanges() {
     // Function to delete an expense
     // Function to "delete" an expense by setting appearance to 'hidden'
 function deleteExpense(expenseId) {
-    if (confirm('Are you sure you want to hide this expense? It will no longer be visible in the table.')) {
-        // Create FormData object
-        const formData = new FormData();
-        const numericId = expenseId.replace('#EXP-', ''); // Extract numeric ID
-        formData.append('expense_id', numericId);
-        
-        // Send request to update appearance
-        fetch('expenses/hide_expense.php', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert('Expense hidden successfully!');
-                location.reload(); // Refresh the page to show changes
-            } else {
-                alert('Error: ' + data.message);
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('An error occurred while hiding the expense.');
-        });
-    }
+    Swal.fire({
+        title: 'Are you sure?',
+        text: "This expense will be hidden and no longer visible in the table.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, hide it!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Create FormData object
+            const formData = new FormData();
+            const numericId = expenseId.replace('#EXP-', ''); // Extract numeric ID
+            formData.append('expense_id', numericId);
+            
+            // Show loading
+            Swal.fire({
+                title: 'Hiding Expense',
+                html: 'Please wait...',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+            
+            // Send request to update appearance
+            fetch('expenses/hide_expense.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Hidden!',
+                        text: 'Expense has been hidden.',
+                        confirmButtonColor: '#3085d6',
+                    }).then(() => {
+                        location.reload(); // Refresh the page to show changes
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: data.message,
+                        confirmButtonColor: '#3085d6',
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'An error occurred while hiding the expense.',
+                    confirmButtonColor: '#3085d6',
+                });
+            });
+        }
+    });
 }
 </script>
 <script>
