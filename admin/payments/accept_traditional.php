@@ -109,7 +109,7 @@ try {
 } catch (Exception $e) {
     // Rollback transaction on error
     mysqli_rollback($conn);
-    header("Location: payment_acceptance.php?error=approval_failed");
+    header("Location: ../payment_acceptance.php?error=approval_failed");
     exit();
 }
 ?>
