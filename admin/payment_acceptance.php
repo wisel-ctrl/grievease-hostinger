@@ -190,10 +190,10 @@ $lifeplan_requests = mysqli_fetch_all($lifeplan_result, MYSQLI_ASSOC);
             </div>
             
             <div class="pt-3 border-t border-gray-100">
-              <button onclick="openTraditionalModal('<?= htmlspecialchars($request['payment_url']) ?>', '<?= number_format($request['amount'], 2) ?>')" 
-                class="w-full py-2 bg-sidebar-accent text-white rounded-lg hover:bg-hover-bg transition-colors flex items-center justify-center group-hover:shadow-md">
-                <i class="fas fa-receipt mr-2"></i> View Receipt
-              </button>
+            <button onclick="openTraditionalModal('<?= htmlspecialchars($request['payment_url']) ?>', '<?= number_format($request['amount'], 2) ?>', '<?= $request['payment_id'] ?>', '<?= $request['sales_id'] ?>')" 
+              class="w-full py-2 bg-sidebar-accent text-white rounded-lg hover:bg-hover-bg transition-colors flex items-center justify-center group-hover:shadow-md">
+              <i class="fas fa-receipt mr-2"></i> View Receipt
+            </button>
             </div>
           </div>
         <?php endforeach; ?>
@@ -316,10 +316,10 @@ $lifeplan_requests = mysqli_fetch_all($lifeplan_result, MYSQLI_ASSOC);
             </div>
             
             <div class="pt-3 border-t border-gray-100">
-              <button onclick="openLifeplanModal('<?= htmlspecialchars($request['payment_url']) ?>', '<?= number_format($request['amount'], 2) ?>')" 
-                class="w-full py-2 bg-sidebar-accent text-white rounded-lg hover:bg-hover-bg transition-colors flex items-center justify-center group-hover:shadow-md">
-                <i class="fas fa-receipt mr-2"></i> View Receipt
-              </button>
+            <button onclick="openLifeplanModal('<?= htmlspecialchars($request['payment_url']) ?>', '<?= number_format($request['amount'], 2) ?>', '<?= $request['payment_id'] ?>', '<?= $request['lifeplan_id'] ?>')" 
+              class="w-full py-2 bg-sidebar-accent text-white rounded-lg hover:bg-hover-bg transition-colors flex items-center justify-center group-hover:shadow-md">
+              <i class="fas fa-receipt mr-2"></i> View Receipt
+            </button>
             </div>
           </div>
         <?php endforeach; ?>
@@ -464,6 +464,11 @@ $lifeplan_requests = mysqli_fetch_all($lifeplan_result, MYSQLI_ASSOC);
     document.getElementById('traditionalAmount').textContent = '₱' + amount;
     document.getElementById('traditionalModal').classList.remove('hidden');
     document.body.classList.add('overflow-hidden');
+
+    const approveBtn = document.querySelector('#traditionalModal .bg-green-600');
+    approveBtn.onclick = function() {
+      window.location.href = `accept_traditional.php?payment_id=${paymentId}&sales_id=${salesId}&amount=${amount}`;
+    };
     
     // Add fade-in animation
     setTimeout(() => {
@@ -502,6 +507,11 @@ $lifeplan_requests = mysqli_fetch_all($lifeplan_result, MYSQLI_ASSOC);
     document.getElementById('lifeplanAmount').textContent = '₱' + amount;
     document.getElementById('lifeplanModal').classList.remove('hidden');
     document.body.classList.add('overflow-hidden');
+
+    const approveBtn = document.querySelector('#lifeplanModal .bg-green-600');
+    approveBtn.onclick = function() {
+      window.location.href = `accept_lifeplan.php?payment_id=${paymentId}&lifeplan_id=${lifeplanId}&amount=${amount}`;
+    };
     
     // Add fade-in animation
     setTimeout(() => {
