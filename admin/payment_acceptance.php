@@ -467,7 +467,7 @@ $lifeplan_requests = mysqli_fetch_all($lifeplan_result, MYSQLI_ASSOC);
 
     const approveBtn = document.querySelector('#traditionalModal .bg-green-600');
     approveBtn.onclick = function() {
-      window.location.href = `accept_traditional.php?payment_id=${paymentId}&sales_id=${salesId}&amount=${amount}`;
+      window.location.href = `payments/accept_traditional.php?payment_id=${paymentId}&sales_id=${salesId}&amount=${amount}`;
     };
     
     // Add fade-in animation
@@ -510,7 +510,7 @@ $lifeplan_requests = mysqli_fetch_all($lifeplan_result, MYSQLI_ASSOC);
 
     const approveBtn = document.querySelector('#lifeplanModal .bg-green-600');
     approveBtn.onclick = function() {
-      window.location.href = `accept_lifeplan.php?payment_id=${paymentId}&lifeplan_id=${lifeplanId}&amount=${amount}`;
+      window.location.href = `payments/accept_lifeplan.php?payment_id=${paymentId}&lifeplan_id=${lifeplanId}&amount=${amount}`;
     };
     
     // Add fade-in animation
