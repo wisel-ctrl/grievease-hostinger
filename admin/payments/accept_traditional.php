@@ -104,7 +104,7 @@ try {
     mysqli_commit($conn);
     
     // Redirect back with success message
-    header("Location: payment_acceptance.php?success=payment_approved");
+    header("Location: ../payment_acceptance.php?success=payment_approved");
     exit();
 } catch (Exception $e) {
     // Rollback transaction on error
