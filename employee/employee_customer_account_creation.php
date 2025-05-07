@@ -45,6 +45,16 @@ header("Cache-Control: post-check=0, pre-check=0", false);
 header("Pragma: no-cache");
 
 require_once '../db_connect.php';
+$user_id = $_SESSION['user_id'];
+  $query = "SELECT first_name , last_name , email , birthdate FROM users WHERE id = ?";
+  $stmt = $conn->prepare($query);
+  $stmt->bind_param("i", $user_id);
+  $stmt->execute();
+  $result = $stmt->get_result();
+  $row = $result->fetch_assoc();
+  $first_name = $row['first_name']; // We're confident user_id exists
+  $last_name = $row['last_name'];
+  $email = $row['email'];
 
 ?>
 
@@ -234,7 +244,9 @@ require_once '../db_connect.php';
         <i class="fas fa-user text-white"></i>
       </div>
       <div class="ml-3">
-        <div class="text-sm font-medium text-sidebar-text">John Doe</div>
+        <div class="text-sm font-medium text-sidebar-text">
+          <?php echo htmlspecialchars($first_name . ' ' . $last_name); ?>
+        </div>
         <div class="text-xs text-sidebar-text opacity-70">Employee</div>
       </div>
       <div class="ml-auto">

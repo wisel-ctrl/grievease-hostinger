@@ -56,6 +56,18 @@ $stmt->bind_param("i", $user_id);
 $stmt->execute();
 $result = $stmt->get_result();
 
+$user_id = $_SESSION['user_id'];
+  $query = "SELECT first_name , last_name , email , birthdate FROM users WHERE id = ?";
+  $stmt = $conn->prepare($query);
+  $stmt->bind_param("i", $user_id);
+  $stmt->execute();
+  $result = $stmt->get_result();
+  $row = $result->fetch_assoc();
+  $first_name = $row['first_name']; // We're confident user_id exists
+  $last_name = $row['last_name'];
+  $email = $row['email'];
+
+
 if ($result->num_rows === 0) {
     // Employee not found or not valid
     session_destroy();
@@ -281,7 +293,9 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == 1) {
         <i class="fas fa-user text-white"></i>
       </div>
       <div class="ml-3">
-        <div class="text-sm font-medium text-sidebar-text">John Doe</div>
+        <div class="text-sm font-medium text-sidebar-text">
+          <?php echo htmlspecialchars($first_name . ' ' . $last_name); ?>
+        </div>
         <div class="text-xs text-sidebar-text opacity-70">Employee</div>
       </div>
       <div class="ml-auto">
@@ -334,7 +348,7 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == 1) {
           </a>
         </li>
         <li>
-          <a href="history.php" class="sidebar-link flex items-center px-5 py-3 text-sidebar-text opacity-80 hover:opacity-100 no-underline transition-all duration-300 hover:bg-sidebar-hover">
+          <a href="employee_history.php" class="sidebar-link flex items-center px-5 py-3 text-sidebar-text opacity-80 hover:opacity-100 no-underline transition-all duration-300 hover:bg-sidebar-hover">
             <i class="fas fa-history w-5 text-center mr-3 text-sidebar-accent"></i>
             <span>Service History</span>
           </a>
