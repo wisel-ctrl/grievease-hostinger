@@ -459,7 +459,7 @@ $lifeplan_requests = mysqli_fetch_all($lifeplan_result, MYSQLI_ASSOC);
 <script src="tailwind.js"></script>
 <script>
   // Traditional Payment Modal Functions
-  function openTraditionalModal(imageUrl, amount) {
+  function openTraditionalModal(imageUrl, amount, paymentId, salesId) {
     document.getElementById('traditionalReceiptImage').src = '../customer/payments/' + imageUrl;
     document.getElementById('traditionalAmount').textContent = '₱' + amount;
     document.getElementById('traditionalModal').classList.remove('hidden');
@@ -502,7 +502,7 @@ $lifeplan_requests = mysqli_fetch_all($lifeplan_result, MYSQLI_ASSOC);
   }
 
   // Lifeplan Modal Functions
-  function openLifeplanModal(imageUrl, amount) {
+  function openLifeplanModal(imageUrl, amount, paymentId, lifeplanId) {
     document.getElementById('lifeplanReceiptImage').src = '../customer/payments/' + imageUrl;
     document.getElementById('lifeplanAmount').textContent = '₱' + amount;
     document.getElementById('lifeplanModal').classList.remove('hidden');
