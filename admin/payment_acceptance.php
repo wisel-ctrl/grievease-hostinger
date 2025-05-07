@@ -67,7 +67,8 @@ $traditional_query = "SELECT
 FROM installment_request_tb AS ir_tb
 JOIN users AS u ON ir_tb.customer_id = u.id
 JOIN sales_tb AS sl_tb ON ir_tb.sales_id = sl_tb.sales_id
-JOIN services_tb AS s_tb ON sl_tb.service_id = s_tb.service_id";
+JOIN services_tb AS s_tb ON sl_tb.service_id = s_tb.service_id
+WHERE ir_tb.status = 'pending'";
 $traditional_result = mysqli_query($conn, $traditional_query);
 $traditional_requests = mysqli_fetch_all($traditional_result, MYSQLI_ASSOC);
 
