@@ -36,21 +36,21 @@ try {
     mysqli_stmt_execute($stmt);
     
     // Update lifeplan status to 'paid' or whatever your business logic requires
-    $update_lifeplan = "UPDATE lifeplan_tb SET status = 'paid' WHERE lifeplan_id = ?";
-    $stmt = mysqli_prepare($conn, $update_lifeplan);
-    mysqli_stmt_bind_param($stmt, "i", $lifeplan_id);
-    mysqli_stmt_execute($stmt);
+    // $update_lifeplan = "UPDATE lifeplan_tb SET status = 'paid' WHERE lifeplan_id = ?";
+    // $stmt = mysqli_prepare($conn, $update_lifeplan);
+    // mysqli_stmt_bind_param($stmt, "i", $lifeplan_id);
+    // mysqli_stmt_execute($stmt);
     
     // Commit transaction
     mysqli_commit($conn);
     
     // Redirect back with success message
-    header("Location: payment_acceptance.php?success=payment_approved");
+    header("Location: ../payment_acceptance.php?success=payment_approved");
     exit();
 } catch (Exception $e) {
     // Rollback transaction on error
     mysqli_rollback($conn);
-    header("Location: payment_acceptance.php?error=approval_failed");
+    header("Location: ../payment_acceptance.php?error=approval_failed");
     exit();
 }
 ?>
