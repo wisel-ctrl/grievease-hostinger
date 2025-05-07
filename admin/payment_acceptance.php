@@ -502,6 +502,7 @@ $lifeplan_requests = mysqli_fetch_all($lifeplan_result, MYSQLI_ASSOC);
                   // 4. Optional: Close modal and refresh data (if needed)
                   document.getElementById('traditionalModal').classList.add('hidden');
                   document.body.classList.remove('overflow-hidden');
+                  location.reload();
                   // location.reload(); // Uncomment if you need to refresh the page
               });
 
