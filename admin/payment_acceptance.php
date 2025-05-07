@@ -377,7 +377,7 @@ $lifeplan_requests = mysqli_fetch_all($lifeplan_result, MYSQLI_ASSOC);
 
 <!-- Custom Packages Modal -->
 <div id="customModal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center hidden z-50 backdrop-blur-sm transition-all duration-300 overflow-y-auto py-8">
-  <div class="bg-white rounded-xl p-0 max-w-3xl w-full mx-4 my-8 shadow-2xl transform transition-all duration-300">
+  <div class="bg-white rounded-xl p-0 max-w-3xl w-full mx-4 my-8 shadow-2xl transform transition-all duration-300 flex flex-col max-h-[calc(100vh-64px)]">
     <div class="bg-sidebar-text py-4 px-6 flex justify-between items-center sticky top-0 z-10">
       <h3 class="text-xl font-semibold text-white flex items-center">
         <i class="fas fa-box-open mr-2"></i> Custom Package Receipt
@@ -387,7 +387,8 @@ $lifeplan_requests = mysqli_fetch_all($lifeplan_result, MYSQLI_ASSOC);
       </button>
     </div>
     
-    <div class="p-6 overflow-y-auto max-h-[calc(100vh-180px)]">
+    <!-- Scrollable content area -->
+    <div class="p-6 overflow-y-auto flex-1">
       <div class="mb-6 rounded-lg overflow-hidden border-4 border-gray-200 shadow-lg">
         <img id="customReceiptImage" src="" alt="Payment Receipt" class="w-full max-h-[70vh] object-contain mx-auto">
       </div>
@@ -398,9 +399,11 @@ $lifeplan_requests = mysqli_fetch_all($lifeplan_result, MYSQLI_ASSOC);
           <p id="customAmount" class="text-2xl font-bold text-sidebar">₱0.00</p>
         </div>
       </div>
-      
-      <!-- Action buttons -->
-      <div class="flex space-x-4 justify-end sticky bottom-0 bg-white pt-4 pb-2 -mb-2">
+    </div>
+    
+    <!-- Action buttons - now outside scrollable area -->
+    <div class="sticky bottom-0 bg-white border-t border-gray-200 px-6 py-4">
+      <div class="flex space-x-4 justify-end">
         <button onclick="closeCustomModal()" class="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors font-medium">
           Close
         </button>
@@ -414,7 +417,7 @@ $lifeplan_requests = mysqli_fetch_all($lifeplan_result, MYSQLI_ASSOC);
 
 <!-- Lifeplan Modal -->
 <div id="lifeplanModal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center hidden z-50 backdrop-blur-sm transition-all duration-300 overflow-y-auto py-8">
-  <div class="bg-white rounded-xl p-0 max-w-3xl w-full mx-4 my-8 shadow-2xl transform transition-all duration-300">
+  <div class="bg-white rounded-xl p-0 max-w-3xl w-full mx-4 my-8 shadow-2xl transform transition-all duration-300 flex flex-col max-h-[calc(100vh-64px)]">
     <div class="bg-sidebar-text py-4 px-6 flex justify-between items-center sticky top-0 z-10">
       <h3 class="text-xl font-semibold text-white flex items-center">
         <i class="fas fa-heart mr-2"></i> Lifeplan Payment Receipt
@@ -424,7 +427,8 @@ $lifeplan_requests = mysqli_fetch_all($lifeplan_result, MYSQLI_ASSOC);
       </button>
     </div>
     
-    <div class="p-6 overflow-y-auto max-h-[calc(100vh-180px)]">
+    <!-- Scrollable content area -->
+    <div class="p-6 overflow-y-auto flex-1">
       <div class="mb-6 rounded-lg overflow-hidden border-4 border-gray-200 shadow-lg">
         <img id="lifeplanReceiptImage" src="" alt="Payment Receipt" class="w-full max-h-[70vh] object-contain mx-auto">
       </div>
@@ -435,9 +439,11 @@ $lifeplan_requests = mysqli_fetch_all($lifeplan_result, MYSQLI_ASSOC);
           <p id="lifeplanAmount" class="text-2xl font-bold text-sidebar">₱0.00</p>
         </div>
       </div>
-      
-      <!-- Action buttons -->
-      <div class="flex space-x-4 justify-end sticky bottom-0 bg-white pt-4 pb-2 -mb-2">
+    </div>
+    
+    <!-- Action buttons - now outside scrollable area -->
+    <div class="sticky bottom-0 bg-white border-t border-gray-200 px-6 py-4">
+      <div class="flex space-x-4 justify-end">
         <button onclick="closeLifeplanModal()" class="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors font-medium">
           Close
         </button>
