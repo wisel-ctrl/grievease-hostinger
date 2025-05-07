@@ -30,7 +30,16 @@ mysqli_begin_transaction($conn);
 
 try {
     // First, get the current amount_paid from sales_tb
-    $get_amount_paid = "SELECT amount_paid FROM sales_tb WHERE sales_id = ?";
+    $get_amount_paid = "
+    SELECT 
+        amount_paid, 
+        branch_id,
+        balance, 
+        CONCAT(fname, ' ', mname, ' ', lname, ' ', suffix) AS full_name 
+    FROM 
+        sales_tb 
+    WHERE 
+        sales_id = ?";
     $stmt = mysqli_prepare($conn, $get_amount_paid);
     mysqli_stmt_bind_param($stmt, "i", $sales_id);
     mysqli_stmt_execute($stmt);
@@ -42,18 +51,53 @@ try {
     
     $row = mysqli_fetch_assoc($result);
     $current_amount_paid = floatval($row['amount_paid']);
+    $branch_id = $row['branch_id'];
+    $balance = floatval($row['balance']);
+    $full_name = $row['full_name'];
     $new_amount_paid = $current_amount_paid + $amount;
+    $new_balance = $balance - $amount;
     
     // Update payment status to 'approved'
     $update_payment = "UPDATE installment_request_tb SET status = 'accepted', acceptdecline_date = ? WHERE payment_id = ?";
     $stmt = mysqli_prepare($conn, $update_payment);
-    mysqli_stmt_bind_param($stmt, "si", $current_datetime,$payment_id);
+    mysqli_stmt_bind_param($stmt, "si", $current_datetime, $payment_id);
     mysqli_stmt_execute($stmt);
     
     // Update sales with new amount_paid and status
     $update_sales = "UPDATE sales_tb SET amount_paid = ?, status = 'paid' WHERE sales_id = ?";
     $stmt = mysqli_prepare($conn, $update_sales);
     mysqli_stmt_bind_param($stmt, "di", $new_amount_paid, $sales_id);
+    mysqli_stmt_execute($stmt);
+    
+    // Insert into installment_tb
+    $insert_installment = "
+    INSERT INTO installment_tb (
+        CustomerID, 
+        Branch_id, 
+        Client_Name, 
+        Before_Balance, 
+        After_Payment_Balance, 
+        Payment_Amount, 
+        Payment_Timestamp, 
+        Method_of_Payment, 
+        sales_ID
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    
+    $stmt = mysqli_prepare($conn, $insert_installment);
+    $method_of_payment = 'Online Payment';
+    mysqli_stmt_bind_param(
+        $stmt, 
+        "iisddsssi", 
+        $_SESSION['user_id'], 
+        $branch_id, 
+        $full_name, 
+        $balance, 
+        $new_balance, 
+        $amount, 
+        $current_datetime, 
+        $method_of_payment, 
+        $sales_id
+    );
     mysqli_stmt_execute($stmt);
     
     // Commit transaction
