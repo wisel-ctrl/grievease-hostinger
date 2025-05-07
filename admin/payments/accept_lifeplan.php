@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once '../../db_connect.php';
+date_default_timezone_set('Asia/Manila');
 
 // Check if user is logged in and is admin
 if (!isset($_SESSION['user_id'])) {
@@ -21,13 +22,15 @@ if (!isset($_GET['payment_id']) || !isset($_GET['lifeplan_id'])) {
 
 $payment_id = $_GET['payment_id'];
 $lifeplan_id = $_GET['lifeplan_id'];
+$amount = $_GET['amount'];
+$current_datetime = date('Y-m-d H:i:s');
 
 // Start transaction
 mysqli_begin_transaction($conn);
 
 try {
     // Update payment status to 'approved'
-    $update_payment = "UPDATE lifeplanpayment_request_tb SET status = 'approved' WHERE payment_id = ?";
+    $update_payment = "UPDATE lifeplanpayment_request_tb SET status = 'accepted' WHERE payment_id = ?";
     $stmt = mysqli_prepare($conn, $update_payment);
     mysqli_stmt_bind_param($stmt, "i", $payment_id);
     mysqli_stmt_execute($stmt);

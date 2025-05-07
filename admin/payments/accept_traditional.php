@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once '../../db_connect.php';
+date_default_timezone_set('Asia/Manila');
 
 // Check if user is logged in and is admin
 if (!isset($_SESSION['user_id'])) {
@@ -14,28 +15,45 @@ if ($_SESSION['user_type'] != 1) {
 }
 
 // Check if payment_id and sales_id are provided
-if (!isset($_GET['payment_id']) || !isset($_GET['sales_id'])) {
+if (!isset($_GET['payment_id']) || !isset($_GET['sales_id']) || !isset($_GET['amount'])) {
     header("Location: payment_acceptance.php?error=missing_parameters");
     exit();
 }
 
 $payment_id = $_GET['payment_id'];
 $sales_id = $_GET['sales_id'];
+$amount = floatval($_GET['amount']); // Convert to float for safety
+$current_datetime = date('Y-m-d H:i:s');
 
 // Start transaction
 mysqli_begin_transaction($conn);
 
 try {
+    // First, get the current amount_paid from sales_tb
+    $get_amount_paid = "SELECT amount_paid FROM sales_tb WHERE sales_id = ?";
+    $stmt = mysqli_prepare($conn, $get_amount_paid);
+    mysqli_stmt_bind_param($stmt, "i", $sales_id);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    
+    if (mysqli_num_rows($result) == 0) {
+        throw new Exception("Sales record not found");
+    }
+    
+    $row = mysqli_fetch_assoc($result);
+    $current_amount_paid = floatval($row['amount_paid']);
+    $new_amount_paid = $current_amount_paid + $amount;
+    
     // Update payment status to 'approved'
-    $update_payment = "UPDATE installment_request_tb SET status = 'approved' WHERE payment_id = ?";
+    $update_payment = "UPDATE installment_request_tb SET status = 'accepted', acceptdecline_date = ? WHERE payment_id = ?";
     $stmt = mysqli_prepare($conn, $update_payment);
-    mysqli_stmt_bind_param($stmt, "i", $payment_id);
+    mysqli_stmt_bind_param($stmt, "si", $current_datetime,$payment_id);
     mysqli_stmt_execute($stmt);
     
-    // Update sales status to 'paid' or whatever your business logic requires
-    $update_sales = "UPDATE sales_tb SET status = 'paid' WHERE sales_id = ?";
+    // Update sales with new amount_paid and status
+    $update_sales = "UPDATE sales_tb SET amount_paid = ?, status = 'paid' WHERE sales_id = ?";
     $stmt = mysqli_prepare($conn, $update_sales);
-    mysqli_stmt_bind_param($stmt, "i", $sales_id);
+    mysqli_stmt_bind_param($stmt, "di", $new_amount_paid, $sales_id);
     mysqli_stmt_execute($stmt);
     
     // Commit transaction
