@@ -56,6 +56,7 @@ $traditional_query = "SELECT
         IF(u.suffix IS NOT NULL AND u.suffix != '', CONCAT(' ', UPPER(LEFT(u.suffix, 1)), LOWER(SUBSTRING(u.suffix, 2))), '')
     ) AS full_name,
     ir_tb.payment_id,
+    ir_tb.sales_id,
     s_tb.service_name,
     sl_tb.discounted_price,
     ir_tb.request_date,
