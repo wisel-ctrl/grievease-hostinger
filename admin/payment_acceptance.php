@@ -100,6 +100,7 @@ $lifeplan_query = "SELECT
         UPPER(LEFT(u.last_name, 1)), LOWER(SUBSTRING(u.last_name, 2)),
         IF(u.suffix IS NOT NULL AND u.suffix != '', CONCAT(' ', UPPER(LEFT(u.suffix, 1)), LOWER(SUBSTRING(u.suffix, 2))), '')
     ) AS full_name,
+    ir_tb.payment_id,
     ir_tb.lifeplan_id,
     s_tb.service_name,
     sl_tb.custom_price,
