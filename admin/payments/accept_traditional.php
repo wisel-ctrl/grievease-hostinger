@@ -64,9 +64,9 @@ try {
     mysqli_stmt_execute($stmt);
     
     // Update sales with new amount_paid and status
-    $update_sales = "UPDATE sales_tb SET amount_paid = ?, status = 'paid' WHERE sales_id = ?";
+    $update_sales = "UPDATE sales_tb SET amount_paid = ?, status = 'paid', balance = ? WHERE sales_id = ?";
     $stmt = mysqli_prepare($conn, $update_sales);
-    mysqli_stmt_bind_param($stmt, "di", $new_amount_paid, $sales_id);
+    mysqli_stmt_bind_param($stmt, "ddi", $new_amount_paid, $new_balance ,$sales_id);
     mysqli_stmt_execute($stmt);
     
     // Insert into installment_tb
