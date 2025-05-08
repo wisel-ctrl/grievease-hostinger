@@ -91,7 +91,7 @@ function sendSMSviaSemaphore($conn, $number, $message, $userId = null, $bookingI
         'apikey' => $apiKey,
         'number' => $formattedNumber,
         'message' => $message,
-        'sendername' => 'SEMAPHORE' // Change to your registered sender name
+        'sendername' => 'GrievEase' // Change to your registered sender name
     ];
     
     curl_setopt($ch, CURLOPT_URL, 'https://api.semaphore.co/api/v4/messages');
