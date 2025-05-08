@@ -1498,7 +1498,7 @@ function confirmCheckout() {
   const soldBy = document.getElementById('sold_by').value;
   formData.append('sold_by', soldBy);
 
-  const address = document.getElementById('deceasedAdress').value;
+  const address = document.getElementById('deceasedAddress').value;
   console.log("newAddress:", address);
   
   // Log the form data to the console for debugging
