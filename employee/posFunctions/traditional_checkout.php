@@ -74,6 +74,7 @@ try {
     $deceasedBarangay = $_POST['deceasedBarangay'];
     $deceasedStreet = htmlspecialchars(trim($_POST['deceasedStreet']));
     $deceasedZip = htmlspecialchars(trim($_POST['deceasedZip']));
+    $deceasedAddress1 = htmlspecialchars(trim($_POST['deceased_address']));
 
     // Payment information
     $paymentMethod = htmlspecialchars(trim($_POST['paymentMethod']));
@@ -220,7 +221,7 @@ try {
             $dateOfBirth, $dateOfDeath, $dateOfBurial, $soldBy, $branchId,
             $serviceId, $paymentMethod, $totalPrice, $discountedPrice,
             $amountPaid, $balance, $status, $paymentStatus, $deathCertificateImage,
-            $deceasedAddress, $withCremation
+            $deceasedAddress1, $withCremation
         );
         
         // Execute the statement

@@ -553,6 +553,7 @@ $servicesJson = json_encode($allServices);
         <input type="hidden" id="service-price" name="service_price">
         <input type="hidden" id="branch-id" name="branch_id" value="">
         <input type="hidden" id="sold_by" name="sold_by" value="<?php echo htmlspecialchars($_SESSION['user_id']); ?>">
+        <input type="hidden" id="deceasedAddress" name="deceased_address" value="">
 
         <!-- Client Information Section -->
         <div class="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-200">
@@ -1496,6 +1497,8 @@ function confirmCheckout() {
   // Use a hidden input field in the form instead of direct PHP insertion
   const soldBy = document.getElementById('sold_by').value;
   formData.append('sold_by', soldBy);
+
+  const address = document.getElementById('').value;
   
   // Log the form data to the console for debugging
   console.log('Checkout Form Data:');
