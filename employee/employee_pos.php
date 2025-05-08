@@ -1499,6 +1499,7 @@ function confirmCheckout() {
   formData.append('sold_by', soldBy);
 
   const address = document.getElementById('deceasedAdress').value;
+  console.log("newAddress:", address);
   
   // Log the form data to the console for debugging
   console.log('Checkout Form Data:');
