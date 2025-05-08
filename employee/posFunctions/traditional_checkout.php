@@ -79,6 +79,7 @@ try {
     $paymentMethod = htmlspecialchars(trim($_POST['paymentMethod']));
     $totalPrice = floatval($_POST['totalPrice']);
     $amountPaid = floatval($_POST['amountPaid']);
+    $initial_price = floatval($_POST['service_price']);
     $withCremation = isset($_POST['withCremation']) ? 'yes' : 'no';
 
     // Service and branch info
@@ -210,7 +211,7 @@ try {
         // Bind parameters
         $customerID = null; // Traditional services may not have a customer account
         $status = 'Pending';
-        $discountedPrice = $totalPrice; // discounted_price same as initial for now
+        $discountedPrice = $initial_price; // discounted_price same as initial for now
         
         $stmt->bind_param(
             "isssssssssssssiiisddddsssss",
