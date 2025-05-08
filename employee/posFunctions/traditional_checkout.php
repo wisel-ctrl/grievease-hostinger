@@ -213,7 +213,7 @@ try {
         $discountedPrice = $totalPrice; // discounted_price same as initial for now
         
         $stmt->bind_param(
-            "isssssssssssssiiiisdddssss",
+            "isssssssssssssiiisddddsssss",
             $customerID, $clientFirstName, $clientMiddleName, $clientLastName, $clientSuffix, $clientPhone, $clientEmail,
             $deceasedFirstName, $deceasedMiddleName, $deceasedLastName, $deceasedSuffix,
             $dateOfBirth, $dateOfDeath, $dateOfBurial, $soldBy, $branchId,
