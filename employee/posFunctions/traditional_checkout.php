@@ -1,6 +1,10 @@
 <?php
 session_start();
 
+// Set error logging
+ini_set('log_errors', 1);
+ini_set('error_log', __DIR__ . '/order_processing_error.log');
+
 // Check if user is logged in and is an employee
 if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] != 2) {
     header("Location: ../Landing_Page/login.php");
@@ -12,6 +16,23 @@ include '../../db_connect.php';
 
 // Initialize response array
 $response = ['success' => false, 'message' => '', 'order_id' => ''];
+
+// Log received data for debugging
+$logData = [
+    'timestamp' => date('Y-m-d H:i:s'),
+    'post_data' => $_POST,
+    'files_data' => isset($_FILES) ? array_map(function($file) {
+        return [
+            'name' => $file['name'],
+            'type' => $file['type'],
+            'size' => $file['size'],
+            'error' => $file['error']
+        ];
+    }, $_FILES) : null,
+    'session_data' => $_SESSION
+];
+
+file_put_contents(__DIR__ . '/order_processing_debug.log', print_r($logData, true), FILE_APPEND);
 
 try {
     // Validate required fields
@@ -26,7 +47,7 @@ try {
 
     foreach ($requiredFields as $field) {
         if (empty($_POST[$field])) {
-            throw new Exception("Please fill in all required fields.");
+            throw new Exception("Please fill in all required fields. Missing: $field");
         }
     }
 
@@ -65,9 +86,51 @@ try {
     $branchId = intval($_POST['branch_id']);
     $soldBy = intval($_POST['sold_by']);
 
+    // Log sanitized data for verification
+    $sanitizedData = [
+        'client_data' => [
+            'first_name' => $clientFirstName,
+            'middle_name' => $clientMiddleName,
+            'last_name' => $clientLastName,
+            'suffix' => $clientSuffix,
+            'phone' => $clientPhone,
+            'email' => $clientEmail
+        ],
+        'deceased_data' => [
+            'first_name' => $deceasedFirstName,
+            'middle_name' => $deceasedMiddleName,
+            'last_name' => $deceasedLastName,
+            'suffix' => $deceasedSuffix,
+            'date_of_birth' => $dateOfBirth,
+            'date_of_death' => $dateOfDeath,
+            'date_of_burial' => $dateOfBurial
+        ],
+        'address' => [
+            'region' => $deceasedRegion,
+            'province' => $deceasedProvince,
+            'city' => $deceasedCity,
+            'barangay' => $deceasedBarangay,
+            'street' => $deceasedStreet,
+            'zip' => $deceasedZip
+        ],
+        'payment' => [
+            'method' => $paymentMethod,
+            'total_price' => $totalPrice,
+            'amount_paid' => $amountPaid,
+            'with_cremation' => $withCremation
+        ],
+        'service_info' => [
+            'service_id' => $serviceId,
+            'branch_id' => $branchId,
+            'sold_by' => $soldBy
+        ]
+    ];
+
+    file_put_contents(__DIR__ . '/order_processing_debug.log', "\nSanitized Data:\n" . print_r($sanitizedData, true), FILE_APPEND);
+
     // Validate prices
     if ($totalPrice <= 0 || $amountPaid <= 0) {
-        throw new Exception("Invalid price values.");
+        throw new Exception("Invalid price values. Total: $totalPrice, Paid: $amountPaid");
     }
 
     // Validate service exists and is active
@@ -78,21 +141,25 @@ try {
     $serviceResult = $stmt->get_result();
 
     if ($serviceResult->num_rows === 0) {
-        throw new Exception("Selected service is not available.");
+        throw new Exception("Selected service is not available. Service ID: $serviceId");
     }
 
     $service = $serviceResult->fetch_assoc();
 
     // Validate minimum payment
-    $minimumPayment = $service['selling_price'] * 0.5;
+    $minimumPayment = $service['selling_price'] * 0.05;
     if ($amountPaid < $minimumPayment) {
-        throw new Exception("Initial payment must be at least 50% of the total price.");
+        throw new Exception("Initial payment must be at least 5% of the total price. Required: $minimumPayment, Provided: $amountPaid");
     }
 
     // Handle file upload (death certificate)
     $deathCertificateImage = null;
     if (isset($_FILES['deathCertificate']) && $_FILES['deathCertificate']['error'] === UPLOAD_ERR_OK) {
         $deathCertificateImage = file_get_contents($_FILES['deathCertificate']['tmp_name']);
+        file_put_contents(__DIR__ . '/order_processing_debug.log', "\nDeath certificate uploaded. Size: " . $_FILES['deathCertificate']['size'] . " bytes", FILE_APPEND);
+    } else {
+        $uploadError = isset($_FILES['deathCertificate']) ? $_FILES['deathCertificate']['error'] : 'No file uploaded';
+        file_put_contents(__DIR__ . '/order_processing_debug.log', "\nDeath certificate upload status: $uploadError", FILE_APPEND);
     }
 
     // Calculate balance and payment status
@@ -108,6 +175,8 @@ try {
         $deceasedRegion,
         $deceasedZip
     ]));
+
+    file_put_contents(__DIR__ . '/order_processing_debug.log', "\nDeceased Address: $deceasedAddress", FILE_APPEND);
 
     // Start transaction
     $conn->begin_transaction();
@@ -133,7 +202,9 @@ try {
         ");
         
         if (!$stmt) {
-            throw new Exception("Prepare failed: " . $conn->error);
+            $error = $conn->error;
+            file_put_contents(__DIR__ . '/order_processing_error.log', "\nPrepare failed: $error", FILE_APPEND);
+            throw new Exception("Prepare failed: $error");
         }
         
         // Bind parameters
@@ -160,8 +231,11 @@ try {
                 'message' => 'Order placed successfully',
                 'order_id' => 'SALE-' . str_pad($sales_id, 6, '0', STR_PAD_LEFT)
             ];
+            file_put_contents(__DIR__ . '/order_processing_debug.log', "\nOrder successfully created. Sales ID: $sales_id", FILE_APPEND);
         } else {
-            throw new Exception("Failed to insert order: " . $stmt->error);
+            $error = $stmt->error;
+            file_put_contents(__DIR__ . '/order_processing_error.log', "\nFailed to insert order: $error", FILE_APPEND);
+            throw new Exception("Failed to insert order: $error");
         }
         
         $stmt->close();
@@ -169,11 +243,13 @@ try {
     } catch (Exception $e) {
         // Rollback transaction on error
         $conn->rollback();
+        file_put_contents(__DIR__ . '/order_processing_error.log', "\nTransaction rolled back: " . $e->getMessage(), FILE_APPEND);
         throw $e;
     }
 
 } catch (Exception $e) {
     $response['message'] = $e->getMessage();
+    file_put_contents(__DIR__ . '/order_processing_error.log', "\nError: " . $e->getMessage(), FILE_APPEND);
 }
 
 // Close database connection
