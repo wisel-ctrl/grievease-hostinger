@@ -219,7 +219,7 @@ try {
             $customerID, $clientFirstName, $clientMiddleName, $clientLastName, $clientSuffix, $clientPhone, $clientEmail,
             $deceasedFirstName, $deceasedMiddleName, $deceasedLastName, $deceasedSuffix,
             $dateOfBirth, $dateOfDeath, $dateOfBurial, $soldBy, $branchId,
-            $serviceId, $paymentMethod, $totalPrice, $discountedPrice,
+            $serviceId, $paymentMethod, $discountedPrice, $totalPrice,
             $amountPaid, $balance, $status, $paymentStatus, $deathCertificateImage,
             $deceasedAddress1, $withCremation
         );
