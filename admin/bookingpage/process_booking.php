@@ -9,6 +9,44 @@ header('Content-Type: application/json');
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
+function sendSMS($phoneNumber, $message, $bookingStatus) {
+    $apiKey = '024cb8782cdb71b2925fb933f6f8635f';
+    $senderName = 'GrievEase';
+    
+    // Sanitize phone number (remove any non-digit characters)
+    $phoneNumber = preg_replace('/[^0-9]/', '', $phoneNumber);
+    
+    // Check if phone number starts with 0, if not prepend 0
+    if (substr($phoneNumber, 0, 1) !== '0') {
+        $phoneNumber = '0' . $phoneNumber;
+    }
+    
+    // Prepare the message based on status
+    $fullMessage = "GrievEase Booking Update: ";
+    if ($bookingStatus === 'Accepted') {
+        $fullMessage .= "Your booking has been accepted. " . $message;
+    } else {
+        $fullMessage .= "Your booking has been declined. " . $message;
+    }
+    
+    $parameters = [
+        'apikey' => $apiKey,
+        'number' => $phoneNumber,
+        'message' => $fullMessage,
+        'sendername' => $senderName
+    ];
+    
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, 'https://api.semaphore.co/api/v4/messages');
+    curl_setopt($ch, CURLOPT_POST, 1);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($parameters));
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    $response = curl_exec($ch);
+    curl_close($ch);
+    
+    return $response;
+}
+
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     echo json_encode(['success' => false, 'message' => 'Invalid request method']);
     exit;
@@ -152,6 +190,22 @@ function handleAcceptBooking($conn) {
         
         $stmt->execute();
         $salesId = $conn->insert_id;
+        
+        // Get customer phone number for SMS
+        $stmt = $conn->prepare("SELECT u.phone_number FROM users u 
+                               JOIN booking_tb b ON u.id = b.customerID 
+                               WHERE b.booking_id = ?");
+        $stmt->bind_param("i", $bookingId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $customer = $result->fetch_assoc();
+        
+        if ($customer && !empty($customer['phone_number'])) {
+            $message = "Receipt #: $receipt_number. Thank you for choosing our services.";
+            $smsResponse = sendSMS($customer['phone_number'], $message, 'Accepted');
+            // You might want to log $smsResponse for debugging
+        }
+
         $conn->commit();
 
         echo json_encode([
@@ -205,6 +259,21 @@ function handleDeclineBooking($conn) {
         
         if ($stmt->affected_rows === 0) {
             throw new Exception("Booking not found, already processed, or not in Pending status");
+        }
+        
+        // Get customer phone number for SMS
+        $stmt = $conn->prepare("SELECT u.phone_number FROM users u 
+                               JOIN booking_tb b ON u.id = b.customerID 
+                               WHERE b.booking_id = ?");
+        $stmt->bind_param("i", $bookingId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $customer = $result->fetch_assoc();
+        
+        if ($customer && !empty($customer['phone_number'])) {
+            $message = "Reason: $reason. Please contact us for more information.";
+            $smsResponse = sendSMS($customer['phone_number'], $message, 'Declined');
+            // You might want to log $smsResponse for debugging
         }
 
         $conn->commit();
