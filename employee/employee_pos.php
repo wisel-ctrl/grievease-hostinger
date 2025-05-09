@@ -908,6 +908,7 @@ $servicesJson = json_encode($allServices);
         <input type="hidden" id="lp-service-price" name="service_price">
         <input type="hidden" id="lp-branch-id" name="branch_id" value="">
         <input type="hidden" id="lp-sold_by" name="sold_by" value="<?php echo htmlspecialchars($_SESSION['user_id']); ?>">
+        <input type="hidden" id="beneficiaryAddress" name="lp-address" value="">
 
         <!-- Client Information Section -->
         <div class="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-200">
@@ -1572,21 +1573,46 @@ function confirmLifeplanCheckout() {
   // Create a FormData object from the form
   const formData = new FormData(form);
 
-  const soldBy = document.getElementById('lp-sold_by').value;
-  formData.append('sold_by', soldBy);
+  // Add beneficiary address
+  updateBeneficiaryCombinedAddress();
   
-  // Convert FormData to a plain object for easier viewing
-  const formDataObj = {};
-  formData.forEach((value, key) => {
-    formDataObj[key] = value;
+  // Show loading state on confirm button
+  const confirmBtn = document.getElementById('lp-confirm-btn');
+  confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Processing...';
+  confirmBtn.disabled = true;
+  
+  // Send the data to the server
+  fetch('posFunctions/lifeplan_checkout.php', {
+    method: 'POST',
+    body: formData
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return response.json();
+  })
+  .then(data => {
+    console.log('Server response:', data);
+    if (data.success) {
+      // Show success message and order ID
+      document.getElementById('order-id').textContent = data.order_id;
+      showConfirmationModal();
+      closeLifeplanCheckoutModal();
+    } else {
+      // Show error message
+      alert('Error: ' + (data.message || 'Failed to process lifeplan contract'));
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    alert('An error occurred while processing your lifeplan contract. Please try again.');
+  })
+  .finally(() => {
+    // Reset button state
+    confirmBtn.innerHTML = 'Confirm Order';
+    confirmBtn.disabled = false;
   });
-  
-  // Log the form data to the console
-  console.log('Lifeplan Checkout Form Data:', formDataObj);
-  
-  // Here you would typically send this data to your server
-  // For now, we'll just log it and show the confirmation modal
-  showConfirmationModal();
 }
 
 function setupLifeplanPaymentTerms() {
