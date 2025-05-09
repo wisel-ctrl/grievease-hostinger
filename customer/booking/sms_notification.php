@@ -190,4 +190,52 @@ function updateSMSLog($conn, $id, $data) {
     return $stmt->execute();
 }
 
+
+//ID CONFIRMATION NOTIFICATION TO admin
+function sendAdminIDUploadNotification($conn, $uploadDetails) {
+    if (!$conn || $conn->connect_error) {
+        error_log("ID Upload SMS Notification: Database connection error");
+        return false;
+    }
+
+    // Get admin phone numbers (users with user_type = 1)
+    $query = "SELECT id, phone_number FROM users WHERE user_type = 1";
+    $result = $conn->query($query);
+    
+    if (!$result) {
+        error_log("ID Upload SMS Notification: Query failed - " . $conn->error);
+        return false;
+    }
+    
+    if ($result->num_rows === 0) {
+        error_log("ID Upload SMS Notification: No admins found");
+        return false;
+    }
+    
+    $admins = [];
+    while ($row = $result->fetch_assoc()) {
+        $admins[] = $row;
+    }
+    
+    // Prepare message
+    $message = "NEW ID UPLOAD FOR VERIFICATION:\n";
+    $message .= "User ID: {$uploadDetails['user_id']}\n";
+    $message .= "Name: {$uploadDetails['first_name']} {$uploadDetails['last_name']}\n";
+    $message .= "Uploaded at: " . date('M d, Y h:i A', strtotime($uploadDetails['upload_time']));
+    $message .= "\n\nPlease review in admin panel.";
+    
+    // Send SMS to each admin
+    $results = [];
+    foreach ($admins as $admin) {
+        $formattedNumber = formatPhoneNumber($admin['phone_number']);
+        if ($formattedNumber) {
+            $response = sendSMSviaSemaphore($conn, $formattedNumber, $message, $admin['id']);
+            $results[] = $response;
+        }
+    }
+    
+    error_log("ID Upload SMS Notification Results: " . print_r($results, true));
+    
+    return $results;
+}
 ?>

@@ -9,6 +9,7 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 require_once '../../addressDB.php';
+require_once '../booking/sms_notification.php';
 
 date_default_timezone_set('Asia/Manila');
 
@@ -225,6 +226,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->execute();
             $stmt->close();
         }
+        
+        // Prepare ID upload details for SMS
+        $idUploadDetails = [
+            'user_id' => $user_id,
+            'first_name' => $first_name,
+            'last_name' => $last_name,
+            'upload_time' => $upload_at
+        ];
+        
+        // Send SMS notification to admin about new ID upload
+        $smsResults = sendAdminIDUploadNotification($conn, $idUploadDetails);
+        
+        // You can log or handle the SMS results if needed
+        error_log("ID Upload SMS Results: " . print_r($smsResults, true));
         
         // Commit the transaction
         $conn->commit();
