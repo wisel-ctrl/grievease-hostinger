@@ -19,6 +19,45 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit();
 }
 
+// SMS Function
+function sendSMS($phoneNumber, $message, $bookingStatus) {
+    $apiKey = '024cb8782cdb71b2925fb933f6f8635f';
+    $senderName = 'GrievEase';
+    
+    // Sanitize phone number (remove any non-digit characters)
+    $phoneNumber = preg_replace('/[^0-9]/', '', $phoneNumber);
+    
+    // Check if phone number starts with 0, if not prepend 0
+    if (substr($phoneNumber, 0, 1) !== '0') {
+        $phoneNumber = '0' . $phoneNumber;
+    }
+    
+    // Prepare the message based on status
+    $fullMessage = "GrievEase Life Plan Update: ";
+    if ($bookingStatus === 'Accepted') {
+        $fullMessage .= "Your life plan has been accepted. " . $message;
+    } else {
+        $fullMessage .= "Your life plan has been declined. " . $message;
+    }
+    
+    $parameters = [
+        'apikey' => $apiKey,
+        'number' => $phoneNumber,
+        'message' => $fullMessage,
+        'sendername' => $senderName
+    ];
+    
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, 'https://api.semaphore.co/api/v4/messages');
+    curl_setopt($ch, CURLOPT_POST, 1);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($parameters));
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    $response = curl_exec($ch);
+    curl_close($ch);
+    
+    return $response;
+}
+
 // Process the accept lifeplan action
 $response = acceptLifeplan($conn);
 echo json_encode($response);
@@ -47,6 +86,7 @@ function acceptLifeplan($conn) {
     $amountPaid = (float)$_POST['amountPaid'];
     $paymentMethod = $conn->real_escape_string($_POST['paymentMethod']);
     $paymentDuration = (int)$_POST['payment_duration'];
+    $phoneNumber = $_POST['phone_number'];
     
     // Calculate balance
     $balance = $packagePrice - $amountPaid;
@@ -56,11 +96,6 @@ function acceptLifeplan($conn) {
     $conn->begin_transaction();
     
     try {
-        
-        $phTime = new DateTime('now', new DateTimeZone('Asia/Manila'));
-        $phTimeFormatted = $phTime->format('Y-m-d H:i:s');
-
-
         // 1. Update the lifeplan booking status to 'Confirmed'
         $updateBookingQuery = "UPDATE lifeplan_booking_tb 
                       SET booking_status = 'accepted', 
@@ -68,7 +103,7 @@ function acceptLifeplan($conn) {
                           amount_paid = ?
                       WHERE lpbooking_id = ?";
         $stmt = $conn->prepare($updateBookingQuery);
-        $stmt->bind_param("di", $amountPaid, $lifeplanId); // 'd' for double/float, 'i' for integer
+        $stmt->bind_param("di", $amountPaid, $lifeplanId);
         $stmt->execute();
         
         if ($stmt->affected_rows === 0) {
@@ -107,7 +142,7 @@ function acceptLifeplan($conn) {
             ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 
             ?, ?, ?, ?, ?, ?, ?, ?, ?,
             ?, ?, ?, ?, ?, ?, ? 
-        )";// 26 ?
+        )";
         
         $stmt = $conn->prepare($insertQuery);
         
@@ -154,6 +189,13 @@ function acceptLifeplan($conn) {
         
         $stmt->execute();
         $newLifeplanId = $conn->insert_id;
+        
+        // Send SMS notification
+        if (!empty($phoneNumber)) {
+            $message = "Amount paid: ₱" . number_format($amountPaid, 2) . ". Balance: ₱" . number_format($balance, 2);
+            $smsResponse = sendSMS($phoneNumber, $message, 'Accepted');
+            // You might want to log $smsResponse for debugging
+        }
         
         // Commit transaction
         $conn->commit();
