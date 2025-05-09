@@ -126,6 +126,7 @@ $lifeplan_requests = mysqli_fetch_all($lifeplan_result, MYSQLI_ASSOC);
     <!-- Add Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body class="flex bg-gray-50">
@@ -462,65 +463,81 @@ $lifeplan_requests = mysqli_fetch_all($lifeplan_result, MYSQLI_ASSOC);
 <script>
     // Traditional Payment Modal Functions
     function openTraditionalModal(imageUrl, amount, paymentId, salesId) {
-      document.getElementById('traditionalReceiptImage').src = '../customer/payments/' + imageUrl;
-      document.getElementById('traditionalAmount').textContent = '₱' + amount;
-      document.getElementById('traditionalModal').classList.remove('hidden');
-      document.body.classList.add('overflow-hidden');
+  const imgSrc = '../customer/payments/' + imageUrl;
+  document.getElementById('traditionalReceiptImage').src = imgSrc;
+  document.getElementById('traditionalAmount').textContent = '₱' + amount;
+  document.getElementById('traditionalModal').classList.remove('hidden');
+  document.body.classList.add('overflow-hidden');
 
-      const approveBtn = document.querySelector('#traditionalModal .bg-green-600');
-      
-      approveBtn.onclick = async function() {
-          // 1. Show confirmation dialog
-          const { isConfirmed } = await Swal.fire({
-              title: 'Confirm Acceptance',
-              text: 'Are you sure you want to accept this payment?',
-              icon: 'question',
-              showCancelButton: true,
-              confirmButtonColor: '#3085d6',
-              cancelButtonColor: '#d33',
-              confirmButtonText: 'Yes, accept it!'
+  // Load Tesseract.js and process the image
+  const { TesseractWorker } = Tesseract;
+  const worker = new TesseractWorker();
+  
+  worker
+    .recognize(imgSrc)
+    .then(({ text }) => {
+      console.log('Extracted text from receipt:', text);
+    })
+    .catch(err => {
+      console.error('Error during OCR:', err);
+    })
+    .finally(() => {
+      worker.terminate();
+    });
+
+  const approveBtn = document.querySelector('#traditionalModal .bg-green-600');
+  
+  approveBtn.onclick = async function() {
+      // 1. Show confirmation dialog
+      const { isConfirmed } = await Swal.fire({
+          title: 'Confirm Acceptance',
+          text: 'Are you sure you want to accept this payment?',
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Yes, accept it!'
+      });
+
+      if (!isConfirmed) return; // Exit if user cancels
+
+      try {
+          // 2. Send AJAX request
+          const response = await fetch(
+              `payments/accept_traditional.php?payment_id=${paymentId}&sales_id=${salesId}&amount=${amount}`,
+              { method: 'GET' }
+          );
+          
+          if (!response.ok) throw new Error('Server error');
+
+          // 3. Show success message
+          Swal.fire({
+              title: 'Success!',
+              text: 'Payment accepted successfully',
+              icon: 'success',
+              confirmButtonText: 'OK'
+          }).then(() => {
+              // 4. Optional: Close modal and refresh data (if needed)
+              document.getElementById('traditionalModal').classList.add('hidden');
+              document.body.classList.remove('overflow-hidden');
+              location.reload();
           });
 
-          if (!isConfirmed) return; // Exit if user cancels
+      } catch (error) {
+          Swal.fire({
+              title: 'Error!',
+              text: 'Failed to accept payment: ' + error.message,
+              icon: 'error'
+          });
+      }
+  };
 
-          try {
-              // 2. Send AJAX request
-              const response = await fetch(
-                  `payments/accept_traditional.php?payment_id=${paymentId}&sales_id=${salesId}&amount=${amount}`,
-                  { method: 'GET' }
-              );
-              
-              if (!response.ok) throw new Error('Server error');
-
-              // 3. Show success message
-              Swal.fire({
-                  title: 'Success!',
-                  text: 'Payment accepted successfully',
-                  icon: 'success',
-                  confirmButtonText: 'OK'
-              }).then(() => {
-                  // 4. Optional: Close modal and refresh data (if needed)
-                  document.getElementById('traditionalModal').classList.add('hidden');
-                  document.body.classList.remove('overflow-hidden');
-                  location.reload();
-                  // location.reload(); // Uncomment if you need to refresh the page
-              });
-
-          } catch (error) {
-              Swal.fire({
-                  title: 'Error!',
-                  text: 'Failed to accept payment: ' + error.message,
-                  icon: 'error'
-              });
-          }
-      };
-
-      // Modal animation
-      setTimeout(() => {
-          document.getElementById('traditionalModal').querySelector('.bg-white').classList.add('scale-100');
-          document.getElementById('traditionalModal').querySelector('.bg-white').classList.remove('scale-95');
-      }, 10);
-  }
+  // Modal animation
+  setTimeout(() => {
+      document.getElementById('traditionalModal').querySelector('.bg-white').classList.add('scale-100');
+      document.getElementById('traditionalModal').querySelector('.bg-white').classList.remove('scale-95');
+  }, 10);
+}
 
   function closeTraditionalModal() {
     document.getElementById('traditionalModal').classList.add('hidden');
