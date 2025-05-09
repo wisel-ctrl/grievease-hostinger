@@ -907,6 +907,7 @@ $servicesJson = json_encode($allServices);
         <input type="hidden" id="lp-service-id" name="service_id" value="">
         <input type="hidden" id="lp-service-price" name="service_price">
         <input type="hidden" id="lp-branch-id" name="branch_id" value="">
+        <input type="hidden" id="lp-sold_by" name="sold_by" value="<?php echo htmlspecialchars($_SESSION['user_id']); ?>">
 
         <!-- Client Information Section -->
         <div class="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-200">
@@ -1570,6 +1571,9 @@ function confirmLifeplanCheckout() {
   
   // Create a FormData object from the form
   const formData = new FormData(form);
+
+  const soldBy = document.getElementById('lp-sold_by').value;
+  formData.append('sold_by', soldBy);
   
   // Convert FormData to a plain object for easier viewing
   const formDataObj = {};
