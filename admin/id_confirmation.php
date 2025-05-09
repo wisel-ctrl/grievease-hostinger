@@ -5,13 +5,11 @@ include 'faviconLogo.php';
 
 // Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
-    // Redirect to login page
     header("Location: ../Landing_Page/login.php");
     exit();
 }
 // Check for admin user type (user_type = 1)
 if ($_SESSION['user_type'] != 1) {
-    // Redirect to appropriate page based on user type
     switch ($_SESSION['user_type']) {
         case 2:
             header("Location: ../employee/index.php");
@@ -20,30 +18,57 @@ if ($_SESSION['user_type'] != 1) {
             header("Location: ../customer/index.php");
             break;
         default:
-            // Invalid user_type
             session_destroy();
             header("Location: ../Landing_Page/login.php");
     }
     exit();
 }
-// Optional: Check for session timeout (30 minutes)
-$session_timeout = 1800; // 30 minutes in seconds
+// Session timeout (30 minutes)
+$session_timeout = 1800;
 if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > $session_timeout)) {
-    // Session has expired
     session_unset();
     session_destroy();
     header("Location: ../Landing_Page/login.php?timeout=1");
     exit();
 }
-// Update last activity time
 $_SESSION['last_activity'] = time();
-// Prevent caching for authenticated pages
 header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Cache-Control: post-check=0, pre-check=0", false);
 header("Pragma: no-cache");
 
-// Include database connection
 require_once '../db_connect.php';
+
+// SMS Function
+function sendSMS($phoneNumber, $message, $status) {
+    $apiKey = '024cb8782cdb71b2925fb933f6f8635f';
+    $senderName = 'GrievEase';
+    
+    $phoneNumber = preg_replace('/[^0-9]/', '', $phoneNumber);
+    if (substr($phoneNumber, 0, 1) !== '0') {
+        $phoneNumber = '0' . $phoneNumber;
+    }
+    
+    $fullMessage = "GrievEase ID Validation: ";
+    $fullMessage .= ($status === 'Accepted') ? "Your ID has been approved. " : "Your ID has been declined. ";
+    $fullMessage .= $message;
+    
+    $parameters = [
+        'apikey' => $apiKey,
+        'number' => $phoneNumber,
+        'message' => $fullMessage,
+        'sendername' => $senderName
+    ];
+    
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, 'https://api.semaphore.co/api/v4/messages');
+    curl_setopt($ch, CURLOPT_POST, 1);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($parameters));
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    $response = curl_exec($ch);
+    curl_close($ch);
+    
+    return $response;
+}
 
 // Process ID validation requests
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && isset($_POST['id'])) {
@@ -54,20 +79,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && isset($_
     $current_time = new DateTime('now', $ph_timezone);
     $ph_time = $current_time->format('Y-m-d H:i:s');
 
+    // First get user's phone number
+    $stmt = $conn->prepare("SELECT phone_number FROM users WHERE id = (SELECT id FROM valid_id_tb WHERE id = ?)");
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $user = $result->fetch_assoc();
+    $phoneNumber = $user['phone_number'];
+
     if ($action === 'approve') {
-        // Update ID status to valid and set accepted_at timestamp
-        $stmt = $conn->prepare("UPDATE valid_id_tb SET is_validated = 'valid', accepted_at = ? WHERE id = ?");
-        $stmt->bind_param("si", $ph_time, $id);
-        $stmt->execute();
-        
-        // Also update the user's validated_id status
-        $stmt = $conn->prepare("UPDATE users SET validated_id = 'yes' WHERE id = (SELECT id FROM valid_id_tb WHERE id = ?)");
-        $stmt->bind_param("i", $id);
-        $stmt->execute();
-        
-        // Set success message
-        $_SESSION['message'] = "ID successfully approved.";
-        $_SESSION['message_type'] = "success";
+        $conn->begin_transaction();
+        try {
+            // Update ID status to valid
+            $stmt = $conn->prepare("UPDATE valid_id_tb SET is_validated = 'valid', accepted_at = ? WHERE id = ?");
+            $stmt->bind_param("si", $ph_time, $id);
+            $stmt->execute();
+            
+            // Update user's validated_id status
+            $stmt = $conn->prepare("UPDATE users SET validated_id = 'yes' WHERE id = (SELECT id FROM valid_id_tb WHERE id = ?)");
+            $stmt->bind_param("i", $id);
+            $stmt->execute();
+            
+            // Send SMS
+            if (!empty($phoneNumber)) {
+                $message = "You can now book a package.";
+                sendSMS($phoneNumber, $message, 'Accepted');
+            }
+            
+            $conn->commit();
+            $_SESSION['message'] = "ID successfully approved.";
+            $_SESSION['message_type'] = "success";
+        } catch (Exception $e) {
+            $conn->rollback();
+            $_SESSION['message'] = "Error approving ID: " . $e->getMessage();
+            $_SESSION['message_type'] = "error";
+        }
     } 
     elseif ($action === 'deny') {
         $decline_reason = filter_input(INPUT_POST, 'decline_reason', FILTER_SANITIZE_STRING);
@@ -76,22 +122,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && isset($_
             $_SESSION['message'] = "Please select a reason for declining the ID.";
             $_SESSION['message_type'] = "error";
         } else {
-            // Update ID status to denied with reason and set decline_at timestamp
-            $stmt = $conn->prepare("UPDATE valid_id_tb SET is_validated = 'denied', decline_reason = ?, decline_at = ? WHERE id = ?");
-            $stmt->bind_param("ssi", $decline_reason, $ph_time, $id);
-            $stmt->execute();
-            
-            // Set info message
-            $_SESSION['message'] = "ID request denied. Reason: " . htmlspecialchars($decline_reason);
-            $_SESSION['message_type'] = "info";
+            $conn->begin_transaction();
+            try {
+                // Update ID status to denied
+                $stmt = $conn->prepare("UPDATE valid_id_tb SET is_validated = 'denied', decline_reason = ?, decline_at = ? WHERE id = ?");
+                $stmt->bind_param("ssi", $decline_reason, $ph_time, $id);
+                $stmt->execute();
+                
+                // Send SMS
+                if (!empty($phoneNumber)) {
+                    $message = "Reason: " . $decline_reason;
+                    sendSMS($phoneNumber, $message, 'Declined');
+                }
+                
+                $conn->commit();
+                $_SESSION['message'] = "ID request denied. Reason: " . htmlspecialchars($decline_reason);
+                $_SESSION['message_type'] = "info";
+            } catch (Exception $e) {
+                $conn->rollback();
+                $_SESSION['message'] = "Error declining ID: " . $e->getMessage();
+                $_SESSION['message_type'] = "error";
+            }
         }
-    } 
-    // Redirect to refresh the page
+    }
+    
     header("Location: id_confirmation.php");
     exit();
 }
 
-// Fetch pending ID validation requests with branch location
+// Rest of your existing code for fetching data...
 $stmt = $conn->prepare("
     SELECT v.id as validation_id, v.image_path, v.is_validated, v.id,
            u.first_name, u.last_name, u.email, u.phone_number, u.branch_loc,
@@ -106,7 +165,6 @@ $stmt->execute();
 $result = $stmt->get_result();
 $pending_ids = $result->fetch_all(MYSQLI_ASSOC);
 
-// Count stats
 $total_pending = count($pending_ids);
 
 $stmt = $conn->prepare("SELECT COUNT(*) as count FROM valid_id_tb WHERE is_validated = 'valid'");
