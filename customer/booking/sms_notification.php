@@ -58,6 +58,53 @@ function sendAdminSMSNotification($conn, $bookingDetails, $bookingId) {
     return $results;
 }
 
+function sendAdminLifeplanSMSNotification($conn, $bookingDetails, $bookingId) {
+    if (!$conn || $conn->connect_error) {
+        error_log("Lifeplan SMS Notification: Database connection error");
+        return false;
+    }
+
+    // Get admin phone numbers (users with user_type = 1)
+    $query = "SELECT id, phone_number FROM users WHERE user_type = 1";
+    $result = $conn->query($query);
+    
+    if (!$result) {
+        error_log("Lifeplan SMS Notification: Query failed - " . $conn->error);
+        return false;
+    }
+    
+    if ($result->num_rows === 0) {
+        error_log("Lifeplan SMS Notification: No admins found");
+        return false;
+    }
+    
+    $admins = [];
+    while ($row = $result->fetch_assoc()) {
+        $admins[] = $row;
+    }
+    
+    // Prepare message
+    $message = "NEW LIFEPLAN BOOKING:\n";
+    $message .= "Beneficiary: {$bookingDetails['beneficiary_fname']} {$bookingDetails['beneficiary_lname']}\n";
+    $message .= "Branch ID: {$bookingDetails['branch_id']}\n";
+    $message .= "Amount: ₱" . number_format($bookingDetails['package_price'], 2);
+    $message .= "\nPayment Duration: {$bookingDetails['payment_duration']} years";
+    
+    // Send SMS to each admin
+    $results = [];
+    foreach ($admins as $admin) {
+        $formattedNumber = formatPhoneNumber($admin['phone_number']);
+        if ($formattedNumber) {
+            $response = sendSMSviaSemaphore($conn, $formattedNumber, $message, $admin['id'], $bookingId);
+            $results[] = $response;
+        }
+    }
+    
+    error_log("Lifeplan SMS Notification Results: " . print_r($results, true));
+    
+    return $results;
+}
+
 function sendSMSviaSemaphore($conn, $number, $message, $userId = null, $bookingId = null) {
     $apiKey = '024cb8782cdb71b2925fb933f6f8635f';
     

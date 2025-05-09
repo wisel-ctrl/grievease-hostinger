@@ -1,7 +1,7 @@
 <?php
 // lifeplan_booking_for_lifeplanpage.php
 session_start();
-require_once '../../db_connect.php';
+require_once 'sms_notification.php';
 
 // Set timezone to Philippines
 date_default_timezone_set('Asia/Manila');
@@ -79,15 +79,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         );
         
         if ($stmt->execute()) {
+            $bookingId = $stmt->insert_id;
+            
+            // Prepare booking details for SMS
+            $bookingDetails = [
+                'beneficiary_fname' => $beneficiary_fname,
+                'beneficiary_lname' => $beneficiary_lname,
+                'branch_id' => $branch_id,
+                'package_price' => $package_price,
+                'payment_duration' => $payment_duration
+            ];
+            
+            // Send SMS notification to admin
+            $smsResults = sendAdminLifeplanSMSNotification($conn, $bookingDetails, $bookingId);
+            
             // Success
             $_SESSION['booking_success'] = true;
             $_SESSION['booking_message'] = 'Lifeplan booking submitted successfully!';
-            $_SESSION['booking_id'] = $stmt->insert_id;
+            $_SESSION['booking_id'] = $bookingId;
             
             echo json_encode([
                 'success' => true,
                 'message' => 'Lifeplan booking submitted successfully!',
-                'booking_id' => $stmt->insert_id
+                'booking_id' => $bookingId,
+                'sms_results' => $smsResults
             ]);
         } else {
             throw new Exception("Database error: " . $stmt->error);
