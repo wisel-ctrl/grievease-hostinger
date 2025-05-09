@@ -126,7 +126,7 @@ $lifeplan_requests = mysqli_fetch_all($lifeplan_result, MYSQLI_ASSOC);
     <!-- Add Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body class="flex bg-gray-50">
@@ -470,20 +470,17 @@ $lifeplan_requests = mysqli_fetch_all($lifeplan_result, MYSQLI_ASSOC);
   document.body.classList.add('overflow-hidden');
 
   // Load Tesseract.js and process the image
-  const { TesseractWorker } = Tesseract;
-  const worker = new TesseractWorker();
-  
-  worker
-    .recognize(imgSrc)
-    .then(({ text }) => {
-      console.log('Extracted text from receipt:', text);
-    })
-    .catch(err => {
-      console.error('Error during OCR:', err);
-    })
-    .finally(() => {
-      worker.terminate();
-    });
+  Tesseract.recognize(
+    imgSrc,
+    'eng', // language
+    {
+      logger: m => console.log(m) // Optional: log progress
+    }
+  ).then(({ data: { text } }) => {
+    console.log('Extracted text from receipt:', text);
+  }).catch(err => {
+    console.error('Error during OCR:', err);
+  });
 
   const approveBtn = document.querySelector('#traditionalModal .bg-green-600');
   
