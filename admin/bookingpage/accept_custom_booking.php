@@ -10,6 +10,45 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] != 1) {
 
 date_default_timezone_set('Asia/Manila');
 
+// SMS Function
+function sendSMS($phoneNumber, $message, $bookingStatus) {
+    $apiKey = '024cb8782cdb71b2925fb933f6f8635f';
+    $senderName = 'GrievEase';
+    
+    // Sanitize phone number (remove any non-digit characters)
+    $phoneNumber = preg_replace('/[^0-9]/', '', $phoneNumber);
+    
+    // Check if phone number starts with 0, if not prepend 0
+    if (substr($phoneNumber, 0, 1) !== '0') {
+        $phoneNumber = '0' . $phoneNumber;
+    }
+    
+    // Prepare the message based on status
+    $fullMessage = "GrievEase Booking Update: ";
+    if ($bookingStatus === 'Accepted') {
+        $fullMessage .= "Your custom booking has been accepted. " . $message;
+    } else {
+        $fullMessage .= "Your custom booking has been declined. " . $message;
+    }
+    
+    $parameters = [
+        'apikey' => $apiKey,
+        'number' => $phoneNumber,
+        'message' => $fullMessage,
+        'sendername' => $senderName
+    ];
+    
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, 'https://api.semaphore.co/api/v4/messages');
+    curl_setopt($ch, CURLOPT_POST, 1);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($parameters));
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    $response = curl_exec($ch);
+    curl_close($ch);
+    
+    return $response;
+}
+
 // Check if the request is a POST request
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Get all the form data
@@ -45,21 +84,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Validate required fields
     $errors = [];
 
-if ($bookingId <= 0) $errors[] = 'bookingId';
-if ($customerId <= 0) $errors[] = 'customerId';
-if ($branchId <= 0) $errors[] = 'branchId';
-if (empty($fnameDeceased)) $errors[] = 'fnameDeceased';
-if (empty($lnameDeceased)) $errors[] = 'lnameDeceased';
-if (empty($paymentMethod)) $errors[] = 'paymentMethod';
-if ($initialPrice <= 0) $errors[] = 'initialPrice';
+    if ($bookingId <= 0) $errors[] = 'bookingId';
+    if ($customerId <= 0) $errors[] = 'customerId';
+    if ($branchId <= 0) $errors[] = 'branchId';
+    if (empty($fnameDeceased)) $errors[] = 'fnameDeceased';
+    if (empty($lnameDeceased)) $errors[] = 'lnameDeceased';
+    if (empty($paymentMethod)) $errors[] = 'paymentMethod';
+    if ($initialPrice <= 0) $errors[] = 'initialPrice';
 
-if (!empty($errors)) {
-    echo json_encode([
-        'success' => false,
-        'error' => 'Missing or invalid fields: ' . implode(', ', $errors)
-    ]);
-    exit();
-}
+    if (!empty($errors)) {
+        echo json_encode([
+            'success' => false,
+            'error' => 'Missing or invalid fields: ' . implode(', ', $errors)
+        ]);
+        exit();
+    }
     
     // Start transaction
     $conn->begin_transaction();
@@ -99,6 +138,20 @@ if (!empty($errors)) {
             throw new Exception("Failed to update booking status: " . $stmt->error);
         }
         $stmt->close();
+        
+        // Get customer phone number for SMS
+        $stmt = $conn->prepare("SELECT phone_number FROM users WHERE id = ?");
+        $stmt->bind_param("i", $customerId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $customer = $result->fetch_assoc();
+        $stmt->close();
+        
+        if ($customer && !empty($customer['phone_number'])) {
+            $message = "Your custom package has been accepted. Amount paid: ₱" . number_format($amountPaid, 2);
+            $smsResponse = sendSMS($customer['phone_number'], $message, 'Accepted');
+            // You might want to log $smsResponse for debugging
+        }
         
         // If everything is successful, commit the transaction
         $conn->commit();
