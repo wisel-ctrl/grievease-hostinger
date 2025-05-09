@@ -3,6 +3,7 @@ header('Content-Type: application/json');
 
 // Database connection
 require_once '../../db_connect.php';
+require_once 'sms_notification.php';
 
 // For debugging
 error_log("Request received in insert_booking.php");
@@ -132,14 +133,29 @@ try {
     // Execute the statement
     if ($stmt->execute()) {
         $bookingId = $conn->insert_id;
+        
+         // Prepare booking details for SMS
+        $bookingDetails = [
+            'deceased_fname' => $deceasedFirstName,
+            'deceased_lname' => $deceasedLastName,
+            'service_id' => $serviceId,
+            'branch_id' => $branchId,
+            'initial_price' => $packageTotal
+        ];
+        
+        // Send SMS notification to admin
+        $smsResults = sendAdminSMSNotification($conn, $bookingDetails, $bookingId);
+    
+    
         echo json_encode([
-            'success' => true, 
-            'message' => 'Booking created successfully',
-            'bookingId' => $bookingId
-        ]);
-    } else {
-        throw new Exception($stmt->error);
-    }
+        'success' => true, 
+        'message' => 'Booking created successfully',
+        'bookingId' => $bookingId,
+        'sms_results' => $smsResults
+            ]);
+        } else {
+            throw new Exception($stmt->error);
+        }
 } catch (Exception $e) {
     error_log("Database error: " . $e->getMessage());
     http_response_code(500);

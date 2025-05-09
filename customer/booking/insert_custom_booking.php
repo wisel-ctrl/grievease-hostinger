@@ -3,6 +3,7 @@ header('Content-Type: application/json');
 
 // Database connection
 require_once '../../db_connect.php';
+require_once 'sms_notification.php';
 
 // For debugging
 error_log("Request received in insert_custom_booking.php");
@@ -163,10 +164,25 @@ try {
     // Execute the statement
     if ($stmt->execute()) {
         $bookingId = $conn->insert_id;
+        
+        
+        // Prepare booking details for SMS
+        $bookingDetails = [
+            'deceased_fname' => $deceasedFirstName,
+            'deceased_lname' => $deceasedLastName,
+            'service_id' => 'Custom Package', // Since this is a custom booking
+            'branch_id' => $branchId,
+            'initial_price' => $packageTotal
+        ];
+        
+        // Send SMS notification to admin
+        $smsResults = sendAdminSMSNotification($conn, $bookingDetails, $bookingId);
+        
         echo json_encode([
             'status' => 'success', 
             'message' => 'Booking created successfully',
-            'bookingId' => $bookingId
+            'bookingId' => $bookingId,
+            'sms_results' => $smsResults
         ]);
     } else {
         throw new Exception($stmt->error);
