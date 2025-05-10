@@ -7,6 +7,8 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] != 2) {
     exit();
 }
 
+date_default_timezone_set('Asia/Manila');
+
 // Database connection
 require_once '../../db_connect.php';
 

@@ -4,6 +4,7 @@ session_start();
 // Set error logging
 ini_set('log_errors', 1);
 ini_set('error_log', __DIR__ . '/order_processing_error.log');
+date_default_timezone_set('Asia/Manila');
 
 // Check if user is logged in and is an employee
 if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] != 2) {
@@ -87,6 +88,7 @@ try {
     $serviceId = intval($_POST['service_id']);
     $branchId = intval($_POST['branch_id']);
     $soldBy = intval($_POST['sold_by']);
+    $defaultTime= date('Y-m-d H:i:s');
 
     // Log sanitized data for verification
     $sanitizedData = [
@@ -192,14 +194,14 @@ try {
                 date_of_birth, date_of_death, date_of_burial, sold_by, branch_id,
                 service_id, payment_method, initial_price, discounted_price,
                 amount_paid, balance, status, payment_status, death_cert_image,
-                deceased_address, with_cremate
+                deceased_address, with_cremate,get_timestamp
             ) VALUES (
                 ?, ?, ?, ?, ?, ?, ?,
                 ?, ?, ?, ?,
                 ?, ?, ?, ?, ?,
                 ?, ?, ?, ?,
                 ?, ?, ?, ?, ?,
-                ?, ?
+                ?, ?, ?
             )
         ");
         
@@ -215,13 +217,13 @@ try {
         $discountedPrice = $initial_price; // discounted_price same as initial for now
         
         $stmt->bind_param(
-            "isssssssssssssiiisddddsssss",
+            "isssssssssssssiiisddddssssss",
             $customerID, $clientFirstName, $clientMiddleName, $clientLastName, $clientSuffix, $clientPhone, $clientEmail,
             $deceasedFirstName, $deceasedMiddleName, $deceasedLastName, $deceasedSuffix,
             $dateOfBirth, $dateOfDeath, $dateOfBurial, $soldBy, $branchId,
             $serviceId, $paymentMethod, $discountedPrice, $totalPrice,
             $amountPaid, $balance, $status, $paymentStatus, $deathCertificateImage,
-            $deceasedAddress1, $withCremation
+            $deceasedAddress1, $withCremation, $defaultTime
         );
         
         // Execute the statement
