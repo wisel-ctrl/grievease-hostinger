@@ -1551,7 +1551,7 @@ $lifeplanStmt->close();
             <div class="mb-4">
                 <label class="block text-gray-700 text-sm font-medium mb-2">Amount to Pay</label>
                 <div class="relative">
-                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-600">$</span>
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-600">₱</span>
                     <input type="number" id="traditional-amount" class="pl-8 w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-yellow-500" placeholder="0.00">
                 </div>
             </div>
@@ -1605,7 +1605,7 @@ $lifeplanStmt->close();
             <div class="mb-4">
                 <label class="block text-gray-700 text-sm font-medium mb-2">Amount to Pay</label>
                 <div class="relative">
-                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-600">$</span>
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-600">₱</span>
                     <input type="number" id="custom-amount" class="pl-8 w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-yellow-500" placeholder="0.00">
                 </div>
             </div>
@@ -1659,7 +1659,7 @@ $lifeplanStmt->close();
             <div class="mb-4">
                 <label class="block text-gray-700 text-sm font-medium mb-2">Amount to Pay</label>
                 <div class="relative">
-                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-600">$</span>
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-600">₱</span>
                     <input type="number" id="lifeplan-amount" class="pl-8 w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-yellow-500" placeholder="0.00">
                 </div>
             </div>
