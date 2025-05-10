@@ -1784,9 +1784,9 @@ function populateServiceCards(containerId, services) {
         
         // Format currency
         const formatCurrency = (amount) => {
-            return parseFloat(amount).toLocaleString('en-US', {
+            return parseFloat(amount).toLocaleString('en-PH', {
                 style: 'currency',
-                currency: 'USD',
+                currency: 'PHP',
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2
             });
@@ -1928,9 +1928,9 @@ function populateCustomPackageCards(containerId, packages) {
         
         // Format currency
         const formatCurrency = (amount) => {
-            return parseFloat(amount).toLocaleString('en-US', {
+            return parseFloat(amount).toLocaleString('en-PH', {
                 style: 'currency',
-                currency: 'USD',
+                currency: 'PHP',
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2
             });
@@ -2029,9 +2029,9 @@ function populateLifePlanCards(containerId, lifeplans) {
         
         // Format currency
         const formatCurrency = (amount) => {
-            return parseFloat(amount).toLocaleString('en-US', {
+            return parseFloat(amount).toLocaleString('en-PHP', {
                 style: 'currency',
-                currency: 'USD',
+                currency: 'PHP',
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2
             });
