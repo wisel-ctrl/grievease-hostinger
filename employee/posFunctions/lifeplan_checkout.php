@@ -100,7 +100,7 @@ try {
     try {
         // Single INSERT into lifeplan_tb
         $lifeplanQuery = "INSERT INTO lifeplan_tb (
-            service_id, branch_id, sold_by,
+            service_id, branch_id, sellerID,
             fname, mname, lname, suffix, email, phone,
             initial_date, end_date,
             benefeciary_fname, benefeciary_mname, benefeciary_lname, benefeciary_suffix,
