@@ -47,6 +47,11 @@ header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Cache-Control: post-check=0, pre-check=0", false);
 header("Pragma: no-cache");
 
+// Pagination variables
+$per_page = 10; // Number of items per page
+$current_page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
+$offset = ($current_page - 1) * $per_page;
+
 // Fetch Traditional Payment Requests
 $traditional_query = "SELECT 
     CONCAT(
@@ -69,10 +74,19 @@ JOIN users AS u ON ir_tb.customer_id = u.id
 JOIN sales_tb AS sl_tb ON ir_tb.sales_id = sl_tb.sales_id
 JOIN services_tb AS s_tb ON sl_tb.service_id = s_tb.service_id
 WHERE ir_tb.status = 'pending'";
+
+// Get total count for traditional payments
+$traditional_count_query = "SELECT COUNT(*) as total FROM installment_request_tb WHERE status = 'pending'";
+$traditional_count_result = mysqli_query($conn, $traditional_count_query);
+$traditional_total = mysqli_fetch_assoc($traditional_count_result)['total'];
+$traditional_total_pages = ceil($traditional_total / $per_page);
+
+// Add pagination to traditional query
+$traditional_query .= " LIMIT $per_page OFFSET $offset";
 $traditional_result = mysqli_query($conn, $traditional_query);
 $traditional_requests = mysqli_fetch_all($traditional_result, MYSQLI_ASSOC);
 
-// Fetch Custom Packages Payment Requests (replace with your actual query)
+// Fetch Custom Packages Payment Requests
 $custom_query = "SELECT 
     CONCAT(
         UPPER(LEFT(u.first_name, 1)), LOWER(SUBSTRING(u.first_name, 2)), ' ',
@@ -90,10 +104,19 @@ $custom_query = "SELECT
 FROM custompayment_request_tb AS ir_tb
 JOIN users AS u ON ir_tb.customer_id = u.id
 JOIN customsales_tb AS cs_tb ON ir_tb.customsales_id = cs_tb.customsales_id";
+
+// Get total count for custom payments
+$custom_count_query = "SELECT COUNT(*) as total FROM custompayment_request_tb";
+$custom_count_result = mysqli_query($conn, $custom_count_query);
+$custom_total = mysqli_fetch_assoc($custom_count_result)['total'];
+$custom_total_pages = ceil($custom_total / $per_page);
+
+// Add pagination to custom query
+$custom_query .= " LIMIT $per_page OFFSET $offset";
 $custom_result = mysqli_query($conn, $custom_query);
 $custom_requests = mysqli_fetch_all($custom_result, MYSQLI_ASSOC);
 
-// Fetch Lifeplan Payment Requests (replace with your actual query)
+// Fetch Lifeplan Payment Requests
 $lifeplan_query = "SELECT 
     CONCAT(
         UPPER(LEFT(u.first_name, 1)), LOWER(SUBSTRING(u.first_name, 2)), ' ',
@@ -114,6 +137,15 @@ FROM lifeplanpayment_request_tb AS ir_tb
 JOIN users AS u ON ir_tb.customer_id = u.id
 JOIN lifeplan_tb AS sl_tb ON ir_tb.lifeplan_id = sl_tb.lifeplan_id
 JOIN services_tb AS s_tb ON sl_tb.service_id = s_tb.service_id";
+
+// Get total count for lifeplan payments
+$lifeplan_count_query = "SELECT COUNT(*) as total FROM lifeplanpayment_request_tb";
+$lifeplan_count_result = mysqli_query($conn, $lifeplan_count_query);
+$lifeplan_total = mysqli_fetch_assoc($lifeplan_count_result)['total'];
+$lifeplan_total_pages = ceil($lifeplan_total / $per_page);
+
+// Add pagination to lifeplan query
+$lifeplan_query .= " LIMIT $per_page OFFSET $offset";
 $lifeplan_result = mysqli_query($conn, $lifeplan_query);
 $lifeplan_requests = mysqli_fetch_all($lifeplan_result, MYSQLI_ASSOC);
 ?>
@@ -172,7 +204,7 @@ $lifeplan_requests = mysqli_fetch_all($lifeplan_result, MYSQLI_ASSOC);
                 </div>
             </div>
             <div class="flex items-end">
-                <span class="text-2xl md:text-3xl font-bold font-cinzel text-gray-800"><?php echo number_format(count($traditional_requests)); ?></span>
+                <span class="text-2xl md:text-3xl font-bold font-cinzel text-gray-800"><?php echo number_format($traditional_total); ?></span>
             </div>
         </div>
         <div class="px-6 py-3 bg-white border-t border-gray-100">
@@ -192,7 +224,7 @@ $lifeplan_requests = mysqli_fetch_all($lifeplan_result, MYSQLI_ASSOC);
                 </div>
             </div>
             <div class="flex items-end">
-                <span class="text-2xl md:text-3xl font-bold font-cinzel text-gray-800"><?php echo number_format(count($custom_requests)); ?></span>
+                <span class="text-2xl md:text-3xl font-bold font-cinzel text-gray-800"><?php echo number_format($custom_total); ?></span>
             </div>
         </div>
         <div class="px-6 py-3 bg-white border-t border-gray-100">
@@ -212,7 +244,7 @@ $lifeplan_requests = mysqli_fetch_all($lifeplan_result, MYSQLI_ASSOC);
                 </div>
             </div>
             <div class="flex items-end">
-                <span class="text-2xl md:text-3xl font-bold font-cinzel text-gray-800"><?php echo number_format(count($lifeplan_requests)); ?></span>
+                <span class="text-2xl md:text-3xl font-bold font-cinzel text-gray-800"><?php echo number_format($lifeplan_total); ?></span>
             </div>
         </div>
         <div class="px-6 py-3 bg-white border-t border-gray-100">
@@ -315,6 +347,85 @@ $lifeplan_requests = mysqli_fetch_all($lifeplan_result, MYSQLI_ASSOC);
       </table>
     </div>
   </div>
+  
+  <!-- Traditional Payments Pagination -->
+  <div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
+      <div id="paginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
+      <?php 
+          if ($traditional_total > 0) {
+              $start = $offset + 1;
+              $end = $offset + count($traditional_requests);
+          
+              echo "Showing {$start} - {$end} of {$traditional_total} requests";
+          } else {
+              echo "No requests found";
+          }
+          ?>
+      </div>
+      <div id="paginationContainer" class="flex space-x-2">
+          <?php if ($traditional_total_pages > 1): ?>
+              <!-- First page button (double arrow) -->
+              <a href="?page=1" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($current_page == 1) ? 'opacity-50 pointer-events-none' : ''; ?>">
+                  &laquo;
+              </a>
+              
+              <!-- Previous page button (single arrow) -->
+              <a href="<?php echo '?page=' . max(1, $current_page - 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($current_page == 1) ? 'opacity-50 pointer-events-none' : ''; ?>">
+                  &lsaquo;
+              </a>
+              
+              <?php
+              // Show exactly 3 page numbers
+              if ($traditional_total_pages <= 3) {
+                  // If total pages is 3 or less, show all pages
+                  $start_page = 1;
+                  $end_page = $traditional_total_pages;
+              } else {
+                  // With more than 3 pages, determine which 3 to show
+                  if ($current_page == 1) {
+                      // At the beginning, show first 3 pages
+                      $start_page = 1;
+                      $end_page = 3;
+                  } elseif ($current_page == $traditional_total_pages) {
+                      // At the end, show last 3 pages
+                      $start_page = $traditional_total_pages - 2;
+                      $end_page = $traditional_total_pages;
+                  } else {
+                      // In the middle, show current page with one before and after
+                      $start_page = $current_page - 1;
+                      $end_page = $current_page + 1;
+                      
+                      // Handle edge cases
+                      if ($start_page < 1) {
+                          $start_page = 1;
+                          $end_page = 3;
+                      }
+                      if ($end_page > $traditional_total_pages) {
+                          $end_page = $traditional_total_pages;
+                          $start_page = $traditional_total_pages - 2;
+                      }
+                  }
+              }
+              
+              // Generate the page buttons
+              for ($i = $start_page; $i <= $end_page; $i++) {
+                  $active_class = ($i == $current_page) ? 'bg-sidebar-accent text-white' : 'border border-sidebar-border hover:bg-sidebar-hover';
+                  echo '<a href="?page=' . $i . '" class="px-3.5 py-1.5 rounded text-sm ' . $active_class . '">' . $i . '</a>';
+              }
+              ?>
+              
+              <!-- Next page button (single arrow) -->
+              <a href="<?php echo '?page=' . min($traditional_total_pages, $current_page + 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($current_page == $traditional_total_pages) ? 'opacity-50 pointer-events-none' : ''; ?>">
+                  &rsaquo;
+              </a>
+              
+              <!-- Last page button (double arrow) -->
+              <a href="<?php echo '?page=' . $traditional_total_pages; ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($current_page == $traditional_total_pages) ? 'opacity-50 pointer-events-none' : ''; ?>">
+                  &raquo;
+              </a>
+          <?php endif; ?>
+      </div>
+  </div>
 </div>
 
 <!-- Custom Packages Payment Requests Section -->
@@ -409,6 +520,85 @@ $lifeplan_requests = mysqli_fetch_all($lifeplan_result, MYSQLI_ASSOC);
       </table>
     </div>
   </div>
+  
+  <!-- Custom Packages Pagination -->
+  <div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
+      <div id="paginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
+      <?php 
+          if ($custom_total > 0) {
+              $start = $offset + 1;
+              $end = $offset + count($custom_requests);
+          
+              echo "Showing {$start} - {$end} of {$custom_total} requests";
+          } else {
+              echo "No requests found";
+          }
+          ?>
+      </div>
+      <div id="paginationContainer" class="flex space-x-2">
+          <?php if ($custom_total_pages > 1): ?>
+              <!-- First page button (double arrow) -->
+              <a href="?page=1" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($current_page == 1) ? 'opacity-50 pointer-events-none' : ''; ?>">
+                  &laquo;
+              </a>
+              
+              <!-- Previous page button (single arrow) -->
+              <a href="<?php echo '?page=' . max(1, $current_page - 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($current_page == 1) ? 'opacity-50 pointer-events-none' : ''; ?>">
+                  &lsaquo;
+              </a>
+              
+              <?php
+              // Show exactly 3 page numbers
+              if ($custom_total_pages <= 3) {
+                  // If total pages is 3 or less, show all pages
+                  $start_page = 1;
+                  $end_page = $custom_total_pages;
+              } else {
+                  // With more than 3 pages, determine which 3 to show
+                  if ($current_page == 1) {
+                      // At the beginning, show first 3 pages
+                      $start_page = 1;
+                      $end_page = 3;
+                  } elseif ($current_page == $custom_total_pages) {
+                      // At the end, show last 3 pages
+                      $start_page = $custom_total_pages - 2;
+                      $end_page = $custom_total_pages;
+                  } else {
+                      // In the middle, show current page with one before and after
+                      $start_page = $current_page - 1;
+                      $end_page = $current_page + 1;
+                      
+                      // Handle edge cases
+                      if ($start_page < 1) {
+                          $start_page = 1;
+                          $end_page = 3;
+                      }
+                      if ($end_page > $custom_total_pages) {
+                          $end_page = $custom_total_pages;
+                          $start_page = $custom_total_pages - 2;
+                      }
+                  }
+              }
+              
+              // Generate the page buttons
+              for ($i = $start_page; $i <= $end_page; $i++) {
+                  $active_class = ($i == $current_page) ? 'bg-sidebar-accent text-white' : 'border border-sidebar-border hover:bg-sidebar-hover';
+                  echo '<a href="?page=' . $i . '" class="px-3.5 py-1.5 rounded text-sm ' . $active_class . '">' . $i . '</a>';
+              }
+              ?>
+              
+              <!-- Next page button (single arrow) -->
+              <a href="<?php echo '?page=' . min($custom_total_pages, $current_page + 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($current_page == $custom_total_pages) ? 'opacity-50 pointer-events-none' : ''; ?>">
+                  &rsaquo;
+              </a>
+              
+              <!-- Last page button (double arrow) -->
+              <a href="<?php echo '?page=' . $custom_total_pages; ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($current_page == $custom_total_pages) ? 'opacity-50 pointer-events-none' : ''; ?>">
+                  &raquo;
+              </a>
+          <?php endif; ?>
+      </div>
+  </div>
 </div>
 
 <!-- Lifeplan Payment Requests Section -->
@@ -502,6 +692,85 @@ $lifeplan_requests = mysqli_fetch_all($lifeplan_result, MYSQLI_ASSOC);
         </tbody>
       </table>
     </div>
+  </div>
+  
+  <!-- Lifeplan Payments Pagination -->
+  <div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
+      <div id="paginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
+      <?php 
+          if ($lifeplan_total > 0) {
+              $start = $offset + 1;
+              $end = $offset + count($lifeplan_requests);
+          
+              echo "Showing {$start} - {$end} of {$lifeplan_total} requests";
+          } else {
+              echo "No requests found";
+          }
+          ?>
+      </div>
+      <div id="paginationContainer" class="flex space-x-2">
+          <?php if ($lifeplan_total_pages > 1): ?>
+              <!-- First page button (double arrow) -->
+              <a href="?page=1" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($current_page == 1) ? 'opacity-50 pointer-events-none' : ''; ?>">
+                  &laquo;
+              </a>
+              
+              <!-- Previous page button (single arrow) -->
+              <a href="<?php echo '?page=' . max(1, $current_page - 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($current_page == 1) ? 'opacity-50 pointer-events-none' : ''; ?>">
+                  &lsaquo;
+              </a>
+              
+              <?php
+              // Show exactly 3 page numbers
+              if ($lifeplan_total_pages <= 3) {
+                  // If total pages is 3 or less, show all pages
+                  $start_page = 1;
+                  $end_page = $lifeplan_total_pages;
+              } else {
+                  // With more than 3 pages, determine which 3 to show
+                  if ($current_page == 1) {
+                      // At the beginning, show first 3 pages
+                      $start_page = 1;
+                      $end_page = 3;
+                  } elseif ($current_page == $lifeplan_total_pages) {
+                      // At the end, show last 3 pages
+                      $start_page = $lifeplan_total_pages - 2;
+                      $end_page = $lifeplan_total_pages;
+                  } else {
+                      // In the middle, show current page with one before and after
+                      $start_page = $current_page - 1;
+                      $end_page = $current_page + 1;
+                      
+                      // Handle edge cases
+                      if ($start_page < 1) {
+                          $start_page = 1;
+                          $end_page = 3;
+                      }
+                      if ($end_page > $lifeplan_total_pages) {
+                          $end_page = $lifeplan_total_pages;
+                          $start_page = $lifeplan_total_pages - 2;
+                      }
+                  }
+              }
+              
+              // Generate the page buttons
+              for ($i = $start_page; $i <= $end_page; $i++) {
+                  $active_class = ($i == $current_page) ? 'bg-sidebar-accent text-white' : 'border border-sidebar-border hover:bg-sidebar-hover';
+                  echo '<a href="?page=' . $i . '" class="px-3.5 py-1.5 rounded text-sm ' . $active_class . '">' . $i . '</a>';
+              }
+              ?>
+              
+              <!-- Next page button (single arrow) -->
+              <a href="<?php echo '?page=' . min($lifeplan_total_pages, $current_page + 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($current_page == $lifeplan_total_pages) ? 'opacity-50 pointer-events-none' : ''; ?>">
+                  &rsaquo;
+              </a>
+              
+              <!-- Last page button (double arrow) -->
+              <a href="<?php echo '?page=' . $lifeplan_total_pages; ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($current_page == $lifeplan_total_pages) ? 'opacity-50 pointer-events-none' : ''; ?>">
+                  &raquo;
+              </a>
+          <?php endif; ?>
+      </div>
   </div>
 </div>
 
