@@ -1986,11 +1986,7 @@ const cardHtml = `
                         class="bg-yellow-600 text-white px-3 py-1 rounded hover:bg-yellow-700 transition text-sm mr-2">
                         <i class="fas fa-money-bill mr-1"></i> Add Payment
                     </button>
-                ` : `
-                    <button class="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 transition text-sm mr-2">
-                        <i class="fas fa-check-circle mr-1"></i> Fully Paid
-                    </button>
-                `}
+                ` : ''}
             </div>
         </div>
     </div>
