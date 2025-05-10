@@ -2029,7 +2029,7 @@ function populateLifePlanCards(containerId, lifeplans) {
         
         // Format currency
         const formatCurrency = (amount) => {
-            return parseFloat(amount).toLocaleString('en-PHP', {
+            return parseFloat(amount).toLocaleString('en-PH', {
                 style: 'currency',
                 currency: 'PHP',
                 minimumFractionDigits: 2,
