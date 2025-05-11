@@ -1994,26 +1994,26 @@ function populateLifePlanCards(containerId, lifeplans) {
     lifeplans.forEach(plan => {
         // Format dates
         const initialDate = new Date(plan.initial_date);
-        const endDate = new Date(plan.end_date);
         const formattedInitialDate = initialDate.toLocaleDateString('en-US', { 
             year: 'numeric', 
-            month: 'short', 
+            month: 'long', 
             day: 'numeric' 
         });
-        const formattedEndDate = endDate.toLocaleDateString('en-US', { 
+        const formattedEndDate = plan.end_date ? new Date(plan.end_date).toLocaleDateString('en-US', { 
             year: 'numeric', 
-            month: 'short', 
+            month: 'long', 
             day: 'numeric' 
-        });
+        }) : 'Not set';
         
         // Determine status color
         let statusClass = '';
-        if (plan.payment_status == 'Fully Paid') {
-            statusClass = 'bg-green-100 text-green-800';
-        } else if (plan.payment_status == 'With Balance') {
-            statusClass = 'bg-blue-100 text-blue-800';
+        let statusText = plan.payment_status;
+        if (plan.payment_status === 'Fully Paid') {
+            statusClass = 'bg-green-500/10 text-green-500';
+        } else if (plan.payment_status === 'With Balance') {
+            statusClass = 'bg-blue-500/10 text-blue-500';
         } else {
-            statusClass = 'bg-red-100 text-red-800';
+            statusClass = 'bg-red-500/10 text-red-500';
         }
         
         // Format currency
@@ -2026,58 +2026,56 @@ function populateLifePlanCards(containerId, lifeplans) {
             });
         };
         
-        // Create card HTML
+        // Create card HTML with bookings tab UI
         const cardHtml = `
-            <div class="bg-white rounded-lg shadow-md p-6 mb-6 border border-gray-100">
-                <div class="flex flex-col md:flex-row md:justify-between md:items-start">
-                    <div class="mb-4 md:mb-0">
-                        <h3 class="font-bold text-lg text-navy">${escapeHtml(plan.service_name)}</h3>
-                        <p class="text-sm text-gray-600">Beneficiary: ${escapeHtml(plan.benefeciary_name)}</p>
-                        <div class="flex flex-wrap gap-4 mt-2">
-                            <div>
-                                <p class="text-sm text-gray-500">Plan ID</p>
-                                <p class="font-medium">${escapeHtml(plan.lifeplan_id)}</p>
-                            </div>
-                            <div>
-                                <p class="text-sm text-gray-500">Start Date</p>
-                                <p class="font-medium">${formattedInitialDate}</p>
-                            </div>
-                            <div>
-                                <p class="text-sm text-gray-500">End Date</p>
-                                <p class="font-medium">${formattedEndDate}</p>
-                            </div>
-                            <div>
-                                <p class="text-sm text-gray-500">Status</p>
-                                <span class="px-2 py-1 ${statusClass} text-xs font-semibold rounded-full">
-                                    ${escapeHtml(plan.payment_status)}
-                                </span>
-                            </div>
+            <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden mb-4">
+                <div class="bg-blue-600 bg-opacity-10 px-4 py-3 sm:px-6 sm:py-4 border-b border-gray-200">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="${statusClass} text-xs px-2 py-1 rounded-full">${escapeHtml(statusText)}</span>
+                        <p class="text-sm text-gray-500">Life Plan ID: ${escapeHtml(plan.lifeplan_id)}</p>
+                    </div>
+                    <h4 class="font-hedvig text-lg text-blue-600 mb-2">${escapeHtml(plan.service_name)} (Life Plan)</h4>
+                </div>
+                <div class="p-4 sm:p-6 space-y-3 sm:space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
+                        <div>
+                            <p class="text-sm text-gray-500">Beneficiary Name</p>
+                            <p class="text-blue-600">${escapeHtml(plan.benefeciary_name)}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Start Date</p>
+                            <p class="text-blue-600">${formattedInitialDate}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">End Date</p>
+                            <p class="text-blue-600">${formattedEndDate}</p>
                         </div>
                     </div>
-                    
-                    <div class="flex flex-col md:items-end">
-                        <p class="text-2xl font-bold text-green-600">${formatCurrency(plan.amount_paid)}</p>
-                        <p class="text-sm text-gray-500">Total Paid</p>
-                        
-                        ${plan.balance > 0 ? `
-                            <div class="mt-2">
-                                <p class="text-lg font-semibold text-navy">${formatCurrency(plan.balance)}</p>
-                                <p class="text-sm text-gray-500">Remaining Balance</p>
-                            </div>
-                        ` : ''}
-                        
-                        <div class="flex space-x-2 mt-3">
-                            <button onclick="openPaymentHistoryModal('life-plan', '${escapeHtml(plan.lifeplan_id)}')" 
-                                class="bg-gray-100 hover:bg-gray-200 text-gray-800 px-3 py-1 rounded text-sm transition">
-                                View History
-                            </button>
-                            ${plan.balance > 0 ? `
-                                <button onclick="openLifeplanPaymentModal('${escapeHtml(plan.lifeplan_id)}')" 
-                                    class="bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-1 rounded text-sm transition">
-                                    Add Payment
-                                </button>
-                            ` : ''}
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
+                        <div>
+                            <p class="text-sm text-gray-500">Total Amount</p>
+                            <p class="text-blue-600 font-bold">${formatCurrency(plan.custom_price)}</p>
                         </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Amount Paid</p>
+                            <p class="text-blue-600">${formatCurrency(plan.amount_paid)}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Balance</p>
+                            <p class="text-blue-600">${formatCurrency(plan.balance)}</p>
+                        </div>
+                    </div>
+                    <div class="flex justify-end space-x-2">
+                        <button onclick="openPaymentHistoryModal('life-plan', '${escapeHtml(plan.lifeplan_id)}')" 
+                            class="bg-blue-600/5 text-blue-600 px-3 py-1 rounded hover:bg-blue-600/10 transition text-sm">
+                            <i class="fas fa-file-alt mr-1"></i> View History
+                        </button>
+                        ${plan.balance > 0 ? `
+                            <button onclick="openLifeplanPaymentModal('${escapeHtml(plan.lifeplan_id)}')" 
+                                class="bg-yellow-600 text-white px-3 py-1 rounded hover:bg-yellow-700 transition text-sm">
+                                <i class="fas fa-plus mr-1"></i> Add Payment
+                            </button>
+                        ` : ''}
                     </div>
                 </div>
             </div>
