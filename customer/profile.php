@@ -1066,6 +1066,9 @@ document.addEventListener('DOMContentLoaded', function() {
         if (event.key === 'Escape') {
             closeImageModal();
             closeDeclineReasonModal();
+            document.getElementById('payment-history-modal').classList.add('hidden');
+        document.getElementById('edit-profile-modal').classList.add('hidden');
+        document.getElementById('change-password-modal').classList.add('hidden');
         }
     });
 
@@ -2109,6 +2112,22 @@ function openLifeplanPaymentModal(lifeplanId) {
 function closeModal(modalId) {
     document.getElementById(modalId).classList.add('hidden');
 }
+
+// Close payment history modal
+document.getElementById('close-payment-history-modal').addEventListener('click', function() {
+    document.getElementById('payment-history-modal').classList.add('hidden');
+});
+
+document.getElementById('cancel-payment-history').addEventListener('click', function() {
+    document.getElementById('payment-history-modal').classList.add('hidden');
+});
+
+// Also add click handler for the modal backdrop
+document.getElementById('payment-history-modal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        this.classList.add('hidden');
+    }
+});
 
 function submitTraditionalPayment() {
     const salesId = document.getElementById('traditional-sales-id').value;
