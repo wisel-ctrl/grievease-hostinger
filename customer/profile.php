@@ -1740,6 +1740,71 @@ $lifeplanStmt->close();
 </div>
 
 <script>
+    // Traditional Payment Validation
+document.getElementById('traditional-amount').addEventListener('input', function() {
+    const amountInput = this;
+    const submitBtn = document.querySelector('#traditional-payment-modal button[onclick="submitTraditionalPayment()"]');
+    
+    // Ensure amount is positive and not zero
+    if (parseFloat(amountInput.value) <= 0 || isNaN(parseFloat(amountInput.value))) {
+        amountInput.classList.add('border-red-500');
+        amountInput.classList.remove('border-input-border');
+        submitBtn.disabled = true;
+        submitBtn.classList.remove('bg-yellow-600', 'hover:bg-yellow-700');
+        submitBtn.classList.add('bg-gray-400', 'cursor-not-allowed');
+    } else {
+        amountInput.classList.remove('border-red-500');
+        amountInput.classList.add('border-input-border');
+        submitBtn.disabled = false;
+        submitBtn.classList.add('bg-yellow-600', 'hover:bg-yellow-700');
+        submitBtn.classList.remove('bg-gray-400', 'cursor-not-allowed');
+    }
+});
+
+// Custom Payment Validation
+document.getElementById('custom-amount').addEventListener('input', function() {
+    const amountInput = this;
+    const submitBtn = document.querySelector('#custom-payment-modal button[onclick="submitCustomPayment()"]');
+    
+    // Ensure amount is positive and not zero
+    if (parseFloat(amountInput.value) <= 0 || isNaN(parseFloat(amountInput.value))) {
+        amountInput.classList.add('border-red-500');
+        amountInput.classList.remove('border-input-border');
+        submitBtn.disabled = true;
+        submitBtn.classList.remove('bg-yellow-600', 'hover:bg-yellow-700');
+        submitBtn.classList.add('bg-gray-400', 'cursor-not-allowed');
+    } else {
+        amountInput.classList.remove('border-red-500');
+        amountInput.classList.add('border-input-border');
+        submitBtn.disabled = false;
+        submitBtn.classList.add('bg-yellow-600', 'hover:bg-yellow-700');
+        submitBtn.classList.remove('bg-gray-400', 'cursor-not-allowed');
+    }
+});
+
+// Lifeplan Payment Validation
+document.getElementById('lifeplan-amount').addEventListener('input', function() {
+    const amountInput = this;
+    const submitBtn = document.querySelector('#lifeplan-payment-modal button[onclick="submitLifeplanPayment()"]');
+    
+    // Ensure amount is positive and not zero
+    if (parseFloat(amountInput.value) <= 0 || isNaN(parseFloat(amountInput.value))) {
+        amountInput.classList.add('border-red-500');
+        amountInput.classList.remove('border-input-border');
+        submitBtn.disabled = true;
+        submitBtn.classList.remove('bg-yellow-600', 'hover:bg-yellow-700');
+        submitBtn.classList.add('bg-gray-400', 'cursor-not-allowed');
+    } else {
+        amountInput.classList.remove('border-red-500');
+        amountInput.classList.add('border-input-border');
+        submitBtn.disabled = false;
+        submitBtn.classList.add('bg-yellow-600', 'hover:bg-yellow-700');
+        submitBtn.classList.remove('bg-gray-400', 'cursor-not-allowed');
+    }
+});
+</script>
+
+<script>
 // Pass PHP data to JavaScript
 const servicesData = <?php echo json_encode($services); ?>;
 const customPackagesData = <?php echo json_encode($customPackages); ?>;
