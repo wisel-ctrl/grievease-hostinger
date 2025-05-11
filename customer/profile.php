@@ -1545,165 +1545,198 @@ $lifeplanStmt->close();
 
 <!-- Payment Modal -->
 <!-- Traditional Funeral Payment Modal -->
-<div id="traditional-payment-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-    <div class="bg-white rounded-lg shadow-xl w-full max-w-md">
-        <div class="p-6">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-xl font-bold text-navy">Make Payment - Traditional Funeral</h3>
-                <button onclick="closeModal('traditional-payment-modal')" class="text-gray-500 hover:text-gray-700">
-                    <i class="fas fa-times"></i>
-                </button>
+<div id="traditional-payment-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4 hidden">
+  <!-- Modal Content -->
+  <div class="w-full max-w-md bg-white rounded-2xl shadow-xl overflow-hidden max-h-[90vh]">
+    <div class="modal-scroll-container overflow-y-auto max-h-[90vh]">
+      <!-- Header with close button -->
+      <div class="bg-navy p-6 flex justify-between items-center">
+        <h2 class="text-2xl font-hedvig text-white">Make Payment - Traditional Funeral</h2>
+        <button onclick="closeModal('traditional-payment-modal')" class="text-white hover:text-yellow-300">
+          <i class="fas fa-times text-2xl"></i>
+        </button>
+      </div>
+      
+      <!-- Modal Body -->
+      <div class="p-6 bg-cream">
+        <input type="hidden" id="traditional-sales-id">
+        
+        <div class="space-y-4 sm:space-y-6">
+          <!-- Amount to Pay -->
+          <div>
+            <label for="traditional-amount" class="block text-sm font-medium text-navy mb-1 sm:mb-2">Amount to Pay</label>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-600">₱</span>
+              <input type="number" id="traditional-amount" class="pl-8 w-full px-3 sm:px-4 py-2 sm:py-3 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base" placeholder="0.00">
             </div>
-            
-            <input type="hidden" id="traditional-sales-id">
-            
-            <div class="mb-4">
-                <label class="block text-gray-700 text-sm font-medium mb-2">Amount to Pay</label>
-                <div class="relative">
-                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-600">₱</span>
-                    <input type="number" id="traditional-amount" class="pl-8 w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-yellow-500" placeholder="0.00">
-                </div>
+          </div>
+          
+          <!-- Payment Method -->
+          <div>
+            <label for="traditional-method" class="block text-sm font-medium text-navy mb-1 sm:mb-2">Payment Method</label>
+            <select id="traditional-method" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base">
+              <option>Bank Transfer</option>
+              <option>Credit Card</option>
+              <option>Cash</option>
+            </select>
+          </div>
+          
+          <!-- Upload Receipt -->
+          <div>
+            <label for="traditional-receipt" class="block text-sm font-medium text-navy mb-1 sm:mb-2">Upload Receipt (if bank transfer)</label>
+            <div class="border-2 border-dashed border-input-border rounded-lg p-4 text-center">
+              <input type="file" id="traditional-receipt" class="hidden">
+              <label for="traditional-receipt" class="cursor-pointer">
+                <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i>
+                <p class="text-sm text-gray-600">Click to upload or drag and drop</p>
+                <p class="text-xs text-gray-500 mt-1">PNG, JPG up to 5MB</p>
+              </label>
             </div>
-            
-            <div class="mb-4">
-                <label class="block text-gray-700 text-sm font-medium mb-2">Payment Method</label>
-                <select id="traditional-method" class="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-yellow-500">
-                    <option>Bank Transfer</option>
-                    <option>Credit Card</option>
-                    <option>Cash</option>
-                </select>
-            </div>
-            
-            <div class="mb-4">
-                <label class="block text-gray-700 text-sm font-medium mb-2">Upload Receipt (if bank transfer)</label>
-                <div class="border-2 border-dashed border-gray-300 rounded-md p-4 text-center">
-                    <input type="file" id="traditional-receipt" class="hidden">
-                    <label for="traditional-receipt" class="cursor-pointer">
-                        <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i>
-                        <p class="text-sm text-gray-600">Click to upload or drag and drop</p>
-                        <p class="text-xs text-gray-500 mt-1">PNG, JPG up to 5MB</p>
-                    </label>
-                </div>
-            </div>
-            
-            <div class="mt-6 flex justify-end space-x-3">
-                <button onclick="closeModal('traditional-payment-modal')" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded transition">
-                    Cancel
-                </button>
-                <button onclick="submitTraditionalPayment()" class="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded transition">
-                    Submit Payment
-                </button>
-            </div>
+          </div>
         </div>
+      </div>
+      
+      <!-- Modal Footer -->
+      <div class="modal-sticky-footer px-6 py-4 flex flex-col sm:flex-row sm:justify-end gap-3 border-t border-gray-200 bg-white">
+        <button onclick="closeModal('traditional-payment-modal')" class="w-full sm:w-auto px-6 py-3 bg-white border border-yellow-600 text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center">
+          Cancel
+        </button>
+        <button onclick="submitTraditionalPayment()" class="w-full sm:w-auto px-6 py-3 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg shadow-md transition-all duration-300 flex items-center justify-center">
+          Submit Payment
+        </button>
+      </div>
     </div>
+  </div>
 </div>
 
 <!-- Custom Package Payment Modal -->
-<div id="custom-payment-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-    <div class="bg-white rounded-lg shadow-xl w-full max-w-md">
-        <div class="p-6">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-xl font-bold text-navy">Make Payment - Custom Package</h3>
-                <button onclick="closeModal('custom-payment-modal')" class="text-gray-500 hover:text-gray-700">
-                    <i class="fas fa-times"></i>
-                </button>
+<div id="custom-payment-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4 hidden">
+  <!-- Modal Content -->
+  <div class="w-full max-w-md bg-white rounded-2xl shadow-xl overflow-hidden max-h-[90vh]">
+    <div class="modal-scroll-container overflow-y-auto max-h-[90vh]">
+      <!-- Header with close button -->
+      <div class="bg-navy p-6 flex justify-between items-center">
+        <h2 class="text-2xl font-hedvig text-white">Make Payment - Custom Package</h2>
+        <button onclick="closeModal('custom-payment-modal')" class="text-white hover:text-yellow-300">
+          <i class="fas fa-times text-2xl"></i>
+        </button>
+      </div>
+      
+      <!-- Modal Body -->
+      <div class="p-6 bg-cream">
+        <input type="hidden" id="custom-sales-id">
+        
+        <div class="space-y-4 sm:space-y-6">
+          <!-- Amount to Pay -->
+          <div>
+            <label for="custom-amount" class="block text-sm font-medium text-navy mb-1 sm:mb-2">Amount to Pay</label>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-600">₱</span>
+              <input type="number" id="custom-amount" class="pl-8 w-full px-3 sm:px-4 py-2 sm:py-3 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base" placeholder="0.00">
             </div>
-            
-            <input type="hidden" id="custom-sales-id">
-            
-            <div class="mb-4">
-                <label class="block text-gray-700 text-sm font-medium mb-2">Amount to Pay</label>
-                <div class="relative">
-                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-600">₱</span>
-                    <input type="number" id="custom-amount" class="pl-8 w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-yellow-500" placeholder="0.00">
-                </div>
+          </div>
+          
+          <!-- Payment Method -->
+          <div>
+            <label for="custom-method" class="block text-sm font-medium text-navy mb-1 sm:mb-2">Payment Method</label>
+            <select id="custom-method" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base">
+              <option>Bank Transfer</option>
+              <option>Credit Card</option>
+              <option>Cash</option>
+            </select>
+          </div>
+          
+          <!-- Upload Receipt -->
+          <div>
+            <label for="custom-receipt" class="block text-sm font-medium text-navy mb-1 sm:mb-2">Upload Receipt (if bank transfer)</label>
+            <div class="border-2 border-dashed border-input-border rounded-lg p-4 text-center">
+              <input type="file" id="custom-receipt" class="hidden">
+              <label for="custom-receipt" class="cursor-pointer">
+                <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i>
+                <p class="text-sm text-gray-600">Click to upload or drag and drop</p>
+                <p class="text-xs text-gray-500 mt-1">PNG, JPG up to 5MB</p>
+              </label>
             </div>
-            
-            <div class="mb-4">
-                <label class="block text-gray-700 text-sm font-medium mb-2">Payment Method</label>
-                <select id="custom-method" class="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-yellow-500">
-                    <option>Bank Transfer</option>
-                    <option>Credit Card</option>
-                    <option>Cash</option>
-                </select>
-            </div>
-            
-            <div class="mb-4">
-                <label class="block text-gray-700 text-sm font-medium mb-2">Upload Receipt (if bank transfer)</label>
-                <div class="border-2 border-dashed border-gray-300 rounded-md p-4 text-center">
-                    <input type="file" id="custom-receipt" class="hidden">
-                    <label for="custom-receipt" class="cursor-pointer">
-                        <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i>
-                        <p class="text-sm text-gray-600">Click to upload or drag and drop</p>
-                        <p class="text-xs text-gray-500 mt-1">PNG, JPG up to 5MB</p>
-                    </label>
-                </div>
-            </div>
-            
-            <div class="mt-6 flex justify-end space-x-3">
-                <button onclick="closeModal('custom-payment-modal')" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded transition">
-                    Cancel
-                </button>
-                <button onclick="submitCustomPayment()" class="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded transition">
-                    Submit Payment
-                </button>
-            </div>
+          </div>
         </div>
+      </div>
+      
+      <!-- Modal Footer -->
+      <div class="modal-sticky-footer px-6 py-4 flex flex-col sm:flex-row sm:justify-end gap-3 border-t border-gray-200 bg-white">
+        <button onclick="closeModal('custom-payment-modal')" class="w-full sm:w-auto px-6 py-3 bg-white border border-yellow-600 text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center">
+          Cancel
+        </button>
+        <button onclick="submitCustomPayment()" class="w-full sm:w-auto px-6 py-3 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg shadow-md transition-all duration-300 flex items-center justify-center">
+          Submit Payment
+        </button>
+      </div>
     </div>
+  </div>
 </div>
 
 <!-- Life Plan Payment Modal -->
-<div id="lifeplan-payment-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-    <div class="bg-white rounded-lg shadow-xl w-full max-w-md">
-        <div class="p-6">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-xl font-bold text-navy">Make Payment - Life Plan</h3>
-                <button onclick="closeModal('lifeplan-payment-modal')" class="text-gray-500 hover:text-gray-700">
-                    <i class="fas fa-times"></i>
-                </button>
+<div id="lifeplan-payment-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4 hidden">
+  <!-- Modal Content -->
+  <div class="w-full max-w-md bg-white rounded-2xl shadow-xl overflow-hidden max-h-[90vh]">
+    <div class="modal-scroll-container overflow-y-auto max-h-[90vh]">
+      <!-- Header with close button -->
+      <div class="bg-navy p-6 flex justify-between items-center">
+        <h2 class="text-2xl font-hedvig text-white">Make Payment - Life Plan</h2>
+        <button onclick="closeModal('lifeplan-payment-modal')" class="text-white hover:text-yellow-300">
+          <i class="fas fa-times text-2xl"></i>
+        </button>
+      </div>
+      
+      <!-- Modal Body -->
+      <div class="p-6 bg-cream">
+        <input type="hidden" id="lifeplan-id">
+        
+        <div class="space-y-4 sm:space-y-6">
+          <!-- Amount to Pay -->
+          <div>
+            <label for="lifeplan-amount" class="block text-sm font-medium text-navy mb-1 sm:mb-2">Amount to Pay</label>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-600">₱</span>
+              <input type="number" id="lifeplan-amount" class="pl-8 w-full px-3 sm:px-4 py-2 sm:py-3 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base" placeholder="0.00">
             </div>
-            
-            <input type="hidden" id="lifeplan-id">
-            
-            <div class="mb-4">
-                <label class="block text-gray-700 text-sm font-medium mb-2">Amount to Pay</label>
-                <div class="relative">
-                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-600">₱</span>
-                    <input type="number" id="lifeplan-amount" class="pl-8 w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-yellow-500" placeholder="0.00">
-                </div>
+          </div>
+          
+          <!-- Payment Method -->
+          <div>
+            <label for="lifeplan-method" class="block text-sm font-medium text-navy mb-1 sm:mb-2">Payment Method</label>
+            <select id="lifeplan-method" class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent text-sm sm:text-base">
+              <option>Bank Transfer</option>
+              <option>Credit Card</option>
+              <option>Cash</option>
+            </select>
+          </div>
+          
+          <!-- Upload Receipt -->
+          <div>
+            <label for="lifeplan-receipt" class="block text-sm font-medium text-navy mb-1 sm:mb-2">Upload Receipt (if bank transfer)</label>
+            <div class="border-2 border-dashed border-input-border rounded-lg p-4 text-center">
+              <input type="file" id="lifeplan-receipt" class="hidden">
+              <label for="lifeplan-receipt" class="cursor-pointer">
+                <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i>
+                <p class="text-sm text-gray-600">Click to upload or drag and drop</p>
+                <p class="text-xs text-gray-500 mt-1">PNG, JPG up to 5MB</p>
+              </label>
             </div>
-            
-            <div class="mb-4">
-                <label class="block text-gray-700 text-sm font-medium mb-2">Payment Method</label>
-                <select id="lifeplan-method" class="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-yellow-500">
-                    <option>Bank Transfer</option>
-                    <option>Credit Card</option>
-                    <option>Cash</option>
-                </select>
-            </div>
-            
-            <div class="mb-4">
-                <label class="block text-gray-700 text-sm font-medium mb-2">Upload Receipt (if bank transfer)</label>
-                <div class="border-2 border-dashed border-gray-300 rounded-md p-4 text-center">
-                    <input type="file" id="lifeplan-receipt" class="hidden">
-                    <label for="lifeplan-receipt" class="cursor-pointer">
-                        <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i>
-                        <p class="text-sm text-gray-600">Click to upload or drag and drop</p>
-                        <p class="text-xs text-gray-500 mt-1">PNG, JPG up to 5MB</p>
-                    </label>
-                </div>
-            </div>
-            
-            <div class="mt-6 flex justify-end space-x-3">
-                <button onclick="closeModal('lifeplan-payment-modal')" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded transition">
-                    Cancel
-                </button>
-                <button onclick="submitLifeplanPayment()" class="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded transition">
-                    Submit Payment
-                </button>
-            </div>
+          </div>
         </div>
+      </div>
+      
+      <!-- Modal Footer -->
+      <div class="modal-sticky-footer px-6 py-4 flex flex-col sm:flex-row sm:justify-end gap-3 border-t border-gray-200 bg-white">
+        <button onclick="closeModal('lifeplan-payment-modal')" class="w-full sm:w-auto px-6 py-3 bg-white border border-yellow-600 text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center">
+          Cancel
+        </button>
+        <button onclick="submitLifeplanPayment()" class="w-full sm:w-auto px-6 py-3 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg shadow-md transition-all duration-300 flex items-center justify-center">
+          Submit Payment
+        </button>
+      </div>
     </div>
+  </div>
 </div>
 
 <script>
