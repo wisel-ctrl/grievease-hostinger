@@ -52,7 +52,7 @@ $row = $result->fetch_assoc();
 $first_name = $row['first_name'];
 $last_name = $row['last_name'];
 $email = $row['email'];
-$branch = $row['branch_loc'];
+$branch = (int)$row['branch_loc'];
 
 // Get expenses for the current branch with pagination
 $items_per_page = 5;
