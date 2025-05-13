@@ -633,7 +633,7 @@ $pending_payments = $pending_result->fetch_assoc()['pending'];
           <label for="expenseStatus" class="block mb-2 font-medium text-gray-700">Status</label>
           <select id="expenseStatus" name="expenseStatus" class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent" required>
             <option value="paid">Paid</option>
-            <option value="To be paid">Pending</option>
+            <option value="To be paid">To be Paid</option>
           </select>
           </div>
         <div class="mb-5">
@@ -747,13 +747,7 @@ $pending_payments = $pending_result->fetch_assoc()['pending'];
       </div>
     </div>
 
-    <!-- Success Notification -->
-    <div id="successNotification" class="fixed top-5 right-5 bg-green-500 text-white px-4 py-2 rounded-md shadow-lg hidden">
-      <div class="flex items-center">
-        <i class="fas fa-check-circle mr-2"></i>
-        <span id="notificationMessage"></span>
-      </div>
-    </div>
+    
 
   
     <script>
@@ -820,16 +814,17 @@ $pending_payments = $pending_result->fetch_assoc()['pending'];
               })
               .then(response => response.text())
               .then(() => {
-                  // On success, show notification and reload
+                  // On success, show SweetAlert notification
                   showNotification('Expense added successfully!');
                   closeAddExpenseModal();
-                  // setTimeout(() => {
-                  //     window.location.reload();
-                  // }, 1500);
+                  // Optional: reload the page after a delay
+                  setTimeout(() => {
+                      window.location.reload();
+                  }, 1500);
               })
               .catch(error => {
                   console.error('Error:', error);
-                  showNotification('Error adding expense. Please try again.');
+                  showNotification('Error adding expense. Please try again.', false);
               });
           } else {
               form.reportValidity();
@@ -901,16 +896,18 @@ $pending_payments = $pending_result->fetch_assoc()['pending'];
       }
       
       // Function to show notification
-      function showNotification(message) {
-        const notification = document.getElementById('successNotification');
-        const messageElement = document.getElementById('notificationMessage');
-        
-        messageElement.textContent = message;
-        notification.classList.remove('hidden');
-        
-        setTimeout(() => {
-          notification.classList.add('hidden');
-        }, 3000);
+      function showNotification(message, isSuccess = true) {
+        Swal.fire({
+          title: isSuccess ? 'Success!' : 'Error!',
+          text: message,
+          icon: isSuccess ? 'success' : 'error',
+          confirmButtonColor: '#CA8A04',
+          timer: 3000,
+          timerProgressBar: true,
+          toast: true,
+          position: 'top-end',
+          showConfirmButton: false
+        });
       }
     </script>
     <script src="tailwind.js"></script>
