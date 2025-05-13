@@ -482,7 +482,7 @@ $pending_payments = $pending_result->fetch_assoc()['pending'];
       </div>
     </div>
 
-    <script src="employee_script.js"></script>
+  
     <script>
       // Initialize current date for date inputs
       document.addEventListener('DOMContentLoaded', function() {
