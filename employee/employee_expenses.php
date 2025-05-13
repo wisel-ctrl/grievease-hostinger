@@ -132,14 +132,24 @@ $total_result = $total_stmt->get_result();
 $total_expenses = $total_result->fetch_assoc()['total'] ?? 0;
 
 // 2. Monthly expenses query (filtering by current month)
-// $current_month = date('Y-m');
-// $monthly_expenses_query = "SELECT SUM(price) as total FROM expense_tb WHERE branch_id = ? AND appearance = 'visible' AND DATE_FORMAT(date, '%Y-%m') = ?";
-// $monthly_stmt = $conn->prepare($monthly_expenses_query);
-// $monthly_stmt->bind_param("ss", $branch, $current_month);
-// $monthly_stmt->execute();
-// $monthly_result = $monthly_stmt->get_result();
-// $monthly_expenses = $monthly_result->fetch_assoc()['total'] ?? 0;
-$monthly_expenses = 0;
+$current_month_start = date('Y-m-01'); // First day of current month
+$next_month_start = date('Y-m-01', strtotime('+1 month')); // First day of next month
+
+$monthly_expenses_query = "
+    SELECT SUM(price) as total 
+    FROM expense_tb 
+    WHERE branch_id = ? 
+      AND appearance = 'visible' 
+      AND date >= ? 
+      AND date < ?
+";
+
+$monthly_stmt = $conn->prepare($monthly_expenses_query);
+$monthly_stmt->bind_param("iss", $branch, $current_month_start, $next_month_start);
+$monthly_stmt->execute();
+$monthly_result = $monthly_stmt->get_result();
+$monthly_expenses = $monthly_result->fetch_assoc()['total'] ?? 0;
+
 
 // Get pending payments count
 $pending_query = "SELECT COUNT(*) as pending FROM expense_tb WHERE branch_id = ? AND status = 'To be paid' AND appearance = 'visible'";
