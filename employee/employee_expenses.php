@@ -125,7 +125,7 @@ $expenses = $expense_result->fetch_all(MYSQLI_ASSOC);
 
 $total_expenses_query = "SELECT SUM(price) as total FROM expense_tb WHERE branch_id = ? AND appearance = 'visible'";
 $total_stmt = $conn->prepare($total_expenses_query);
-$total_stmt->bind_param("s", $branch);
+$total_stmt->bind_param("i", $branch);
 $total_stmt->execute();
 $total_result = $total_stmt->get_result();
 $total_expenses = $total_result->fetch_assoc()['total'] ?? 0;
