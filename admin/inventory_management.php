@@ -495,14 +495,14 @@ if ($branchResult->num_rows > 0) {
 
         <!-- Filter Dropdown -->
         <div class="relative filter-dropdown">
-          <button id="filterButton_<?php echo $branchId; ?>" class="px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover">
+          <button id="filterButton_mobile<?php echo $branchId; ?>" class="px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover">
             <i class="fas fa-filter text-sidebar-accent"></i>
             <span>Filters</span>
-            <span id="filterIndicator_<?php echo $branchId; ?>" class="hidden h-2 w-2 bg-sidebar-accent rounded-full"></span>
+            <span id="filterIndicator_mobile<?php echo $branchId; ?>" class="hidden h-2 w-2 bg-sidebar-accent rounded-full"></span>
           </button>
           
           <!-- Filter Window -->
-          <div id="filterDropdown_<?php echo $branchId; ?>" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-4">
+          <div id="filterDropdown_mobile<?php echo $branchId; ?>" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-4">
             <div class="space-y-4">
               <!-- Sort Options -->
               <div>
