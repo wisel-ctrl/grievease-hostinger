@@ -581,6 +581,8 @@ $pending_payments = $pending_result->fetch_assoc()['pending'];
       </div>
     </div>
 
+          </div>
+
     <!-- Add Expense Modal (same as before) -->
     <!-- Add Expense Modal -->
 <div class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 hidden" id="addExpenseModal">
