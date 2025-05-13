@@ -24,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 require_once '../../db_connect.php';
 
 // Get branch_id from user session
-$branch_id = isset($_SESSION['branch_loc']) ? (int) $_SESSION['branch_loc'] : 0;
+$branch_id = isset($_POST['branch_id']) ? (int) $_POST['branch_id'] : 0;
 
 
 // Get and sanitize input data

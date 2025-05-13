@@ -601,6 +601,7 @@ $pending_payments = $pending_result->fetch_assoc()['pending'];
     <div class="p-6">
       <form id="expenseForm">
         <div class="mb-5">
+          <input type="hidden" id="expenseBranch" name="branch_id" value="<?php echo $branch?>">
           <label for="expenseDescription" class="block mb-2 font-medium text-gray-700">Name</label>
           <input type="text" id="expenseDescription" name="expenseDescription" placeholder="Enter expense description" class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent" required>
         </div>
