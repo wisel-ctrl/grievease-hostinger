@@ -153,13 +153,215 @@ $pending_payments = $pending_result->fetch_assoc()['pending'];
   <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    /* Your existing styles here */
+        /* Custom scrollbar styles */
+        .scrollbar-thin::-webkit-scrollbar {
+          width: 4px;
+          height: 4px;
+        }
+        
+        .scrollbar-thin::-webkit-scrollbar-track {
+          background: rgba(0, 0, 0, 0.05);
+        }
+        
+        .scrollbar-thin::-webkit-scrollbar-thumb {
+          background: rgba(202, 138, 4, 0.6);
+          border-radius: 4px;
+        }
+        
+        .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+          background: rgba(202, 138, 4, 0.9);
+        }
+        
+        /* Hover and active states for sidebar links */
+        .sidebar-link {
+          position: relative;
+          transition: all 0.3s ease;
+        }
+        
+        .sidebar-link::before {
+          content: '';
+          position: absolute;
+          left: 0;
+          top: 0;
+          height: 100%;
+          width: 3px;
+          background-color: transparent;
+          transition: all 0.3s ease;
+        }
+        
+        .sidebar-link:hover::before,
+        .sidebar-link.active::before {
+          background-color: #CA8A04;
+        }
+        
+        /* Animate the sidebar
+        @keyframes slideIn {
+          from { transform: translateX(-100%); opacity: 0; }
+          to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .animate-sidebar {
+          animation: slideIn 0.3s ease forwards;
+        } */
+
+        /* Gradient background for menu section headers */
+        .menu-header {
+          background: linear-gradient(to right, rgba(202, 138, 4, 0.1), transparent);
+        }
+        /* Add this to your existing styles */
+    .main-content {
+      margin-left: 16rem; /* Adjust this value to match the width of your sidebar */
+      width: calc(100% - 16rem); /* Ensure the main content takes up the remaining width */
+      z-index: 1; /* Ensure the main content is above the sidebar */
+    }
+
+    .sidebar {
+      z-index: 10; /* Ensure the sidebar is below the main content */
+    }
+    /* Add this to your existing styles */
+    #sidebar {
+      transition: width 0.3s ease, opacity 0.3s ease, visibility 0.3s ease;
+    }
+
+    #main-content {
+      transition: margin-left 0.3s ease;
+    }
+
+    .w-0 {
+      width: 0;
+    }
+
+    .opacity-0 {
+      opacity: 0;
+    }
+
+    .invisible {
+      visibility: hidden;
+    }
+    .w-\[calc\(100\%-16rem\)\] {
+      width: calc(100% - 16rem);
+    }
+
+    .w-\[calc\(100\%-4rem\)\] {
+      width: calc(100% - 4rem);
+    }
   </style>
 </head>
 <body class="flex bg-gray-50">
   <!-- Sidebar (same as before) -->
   <nav id="sidebar" class="w-64 h-screen bg-sidebar-bg font-hedvig fixed transition-all duration-300 overflow-y-auto z-10 scrollbar-thin shadow-sidebar animate-sidebar sidebar">
-    <!-- Your existing sidebar content -->
+  <!-- Logo and Header with hamburger menu -->
+  <div class="flex items-center px-5 py-6 border-b border-sidebar-border">
+    <button id="hamburger-menu" class="p-2 mr-2 bg-white rounded-lg shadow-md text-gray-600 hover:text-gray-900 transition-all duration-300">
+      <i class="fas fa-bars"></i>
+    </button>
+    <!-- <img src="../Landing_Page/Landing_images/logo.png" alt="GrievEase Logo" class="h-10 w-auto mr-3"> -->
+    <div class="text-2xl font-cinzel font-bold text-sidebar-accent">GrievEase</div>
+  </div>
+    
+    <!-- User Profile -->
+    <div class="flex items-center px-5 py-4 border-b border-sidebar-border bg-gradient-to-r from-navy to-primary">
+      <div class="w-10 h-10 rounded-full bg-yellow-600 flex items-center justify-center shadow-md">
+        <i class="fas fa-user text-white"></i>
+      </div>
+      <div class="ml-3">
+        <div class="text-sm font-medium text-sidebar-text">
+          <?php echo htmlspecialchars($first_name . ' ' . $last_name); ?>
+        </div>
+        <div class="text-xs text-sidebar-text opacity-70">Employee</div>
+      </div>
+      <div class="ml-auto">
+        <span class="w-3 h-3 bg-success rounded-full block"></span>
+      </div>
+    </div>
+    
+    <!-- Menu Items -->
+    <div class="pt-4 pb-8">
+      <!-- Main Navigation -->
+      <div class="px-5 mb-2 py-2 menu-header">
+        <h5 class="text-xs font-medium text-sidebar-accent uppercase tracking-wider">Main</h5>
+      </div>
+      <ul class="list-none p-0 mb-6">
+        <li>
+          <a href="index.php" class="sidebar-link flex items-center px-5 py-3 text-sidebar-text opacity-80 hover:opacity-100 no-underline transition-all duration-300 hover:bg-sidebar-hover">
+            <i class="fas fa-tachometer-alt w-5 text-center mr-3 text-sidebar-accent"></i>
+            <span>Dashboard</span>
+          </a>
+        </li> 
+        <li>
+          <a href="employee_customer_account_creation.php" class="sidebar-link flex items-center px-5 py-3 text-sidebar-text opacity-80 hover:opacity-100 no-underline transition-all duration-300 hover:bg-sidebar-hover">
+            <i class="fas fa-user-circle w-5 text-center mr-3 text-sidebar-accent"></i>
+            <span>Customer Account Management</span>
+          </a>
+        </li>
+        <li>
+          <a href="employee_inventory.php" class="sidebar-link flex items-center px-5 py-3 text-sidebar-text opacity-80 hover:opacity-100 no-underline transition-all duration-300 hover:bg-sidebar-hover">
+            <i class="fas fa-boxes w-5 text-center mr-3 text-sidebar-accent"></i>
+            <span>View Inventory</span>
+          </a>
+        </li>
+        <li>
+          <a href="employee_pos.php" class="sidebar-link flex items-center px-5 py-3 text-sidebar-text opacity-80 hover:opacity-100 no-underline transition-all duration-300 hover:bg-sidebar-hover">
+            <i class="fas fa-cash-register w-5 text-center mr-3 text-sidebar-accent"></i>
+            <span>Point-Of-Sale (POS)</span>
+          </a>
+        </li>
+      </ul>
+        
+      <!-- Reports & Analytics -->
+      <div class="px-5 mb-2 py-2 menu-header">
+        <h5 class="text-xs font-medium text-sidebar-accent uppercase tracking-wider">Reports & Analytics</h5>
+      </div>
+      <ul class="list-none p-0 mb-6">
+        <li>
+          <a href="employee_expenses.php" class="sidebar-link flex items-center px-5 py-3 text-sidebar-text opacity-80 hover:opacity-100 no-underline transition-all duration-300 hover:bg-sidebar-hover">
+            <i class="fas fa-money-bill-wave w-5 text-center mr-3 text-sidebar-accent"></i>
+            <span>Expenses</span>
+          </a>
+        </li>
+        <li>
+          <a href="employee_history.php" class="sidebar-link flex items-center px-5 py-3 text-sidebar-text opacity-80 hover:opacity-100 no-underline transition-all duration-300 hover:bg-sidebar-hover">
+            <i class="fas fa-history w-5 text-center mr-3 text-sidebar-accent"></i>
+            <span>Service History</span>
+          </a>
+        </li>
+      </ul>
+        
+      <!-- Services & Staff -->
+      <div class="px-5 mb-2 py-2 menu-header">
+        <h5 class="text-xs font-medium text-sidebar-accent uppercase tracking-wider">Communication</h5>
+      </div>
+      <ul class="list-none p-0 mb-6">
+          <a href="employee_chat.php" class="sidebar-link flex items-center px-5 py-3 text-sidebar-text opacity-80 hover:opacity-100 no-underline transition-all duration-300 hover:bg-sidebar-hover">
+            <i class="fas fa-comments w-5 text-center mr-3 text-sidebar-accent"></i>
+            <span>Chats</span>
+          </a>
+        </li>
+      </ul>
+        
+      <!-- Account -->
+      <div class="px-5 mb-2 py-2 menu-header">
+        <h5 class="text-xs font-medium text-sidebar-accent uppercase tracking-wider">Account</h5>
+      </div>
+      <ul class="list-none p-0">
+        <li>
+          <a href="..\logout.php" class="sidebar-link flex items-center px-5 py-3 text-sidebar-text opacity-80 hover:opacity-100 no-underline transition-all duration-300 hover:bg-sidebar-hover hover:text-error">
+            <i class="fas fa-sign-out-alt w-5 text-center mr-3 text-error"></i>
+            <span>Logout</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+    
+    <!-- Footer -->
+    <div class="relative bottom-0 left-0 right-0 px-5 py-3 border-t border-sidebar-border bg-gradient-to-r from-navy to-primary">
+      <div class="flex justify-between items-center">
+        <p class="text-xs text-sidebar-text opacity-60">© 2025 GrievEase</p>
+        <div class="text-xs text-sidebar-accent">
+          <i class="fas fa-heart"></i> With Compassion
+        </div>
+      </div>
+    </div>
   </nav>
 
   <!-- Main Content -->
@@ -380,9 +582,77 @@ $pending_payments = $pending_result->fetch_assoc()['pending'];
     </div>
 
     <!-- Add Expense Modal (same as before) -->
-    <div class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 hidden" id="addExpenseModal">
-      <!-- Your existing add expense modal content -->
+    <!-- Add Expense Modal -->
+<div class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 hidden" id="addExpenseModal">
+  <div class="bg-white rounded-xl w-full max-w-lg mx-4 shadow-xl max-h-[90vh] overflow-y-auto">
+    <!-- Modal Header -->
+    <div class="bg-gradient-to-r from-sidebar-accent to-white flex justify-between items-center p-6 flex-shrink-0">
+      <h3 class="text-xl font-bold text-white">Add New Expense</h3>
+      <button class="bg-black bg-opacity-20 hover:bg-opacity-30 rounded-full p-2 text-white hover:text-white transition-all duration-200" onclick="closeAddExpenseModal()">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+        </svg>
+      </button>
     </div>
+
+    <!-- Modal Body -->
+    <div class="p-6">
+      <form id="expenseForm">
+        <div class="mb-5">
+          <label for="expenseDescription" class="block mb-2 font-medium text-gray-700">Description</label>
+          <input type="text" id="expenseDescription" name="expenseDescription" placeholder="Enter expense description" class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent" required>
+        </div>
+        <div class="mb-5">
+          <label for="expenseCategory" class="block mb-2 font-medium text-gray-700">Category</label>
+          <select id="expenseCategory" name="expenseCategory" class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent" required>
+            <option value="">Select a category</option>
+            <option value="Supplies">Supplies</option>
+            <option value="Utilities">Utilities</option>
+            <option value="Salaries">Salaries</option>
+            <option value="Maintenance">Maintenance</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div class="mb-5">
+          <label for="expenseAmount" class="block mb-2 font-medium text-gray-700">Amount (₱)</label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <span class="text-gray-500">₱</span>
+              </div>
+            <input type="number" id="expenseAmount" name="expenseAmount" placeholder="0.00" step="0.01" min="0" class="w-full pl-8 px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent" required>
+          </div>
+        </div>
+        <div class="mb-5">
+          <label for="expenseDate" class="block mb-2 font-medium text-gray-700">Date</label>
+          <input type="date" id="expenseDate" name="expenseDate" class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent" required>
+        </div>
+        <div class="mb-5">
+          <label for="expenseStatus" class="block mb-2 font-medium text-gray-700">Status</label>
+          <select id="expenseStatus" name="expenseStatus" class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent" required>
+            <option value="Paid">Paid</option>
+            <option value="Pending">Pending</option>
+          </select>
+          </div>
+        <div class="mb-5">
+          <label for="expenseNotes" class="block mb-2 font-medium text-gray-700">Notes <span class="text-xs text-gray-500">(Optional)</span></label>
+          <textarea id="expenseNotes" name="expenseNotes" rows="3" placeholder="Add any additional details here" class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent"></textarea>
+          </div>
+      </form>
+    </div>
+    
+    <!-- Modal Footer -->
+    <div class="p-6 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
+      <button class="px-5 py-3 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-semibold hover:bg-navy transition-colors" onclick="closeAddExpenseModal()">Cancel</button>
+      <button class="px-6 py-3 bg-sidebar-accent text-white rounded-lg font-semibold hover:bg-darkgold transition-colors flex items-center" onclick="addExpense()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
+          <path d="M12 5v14"></path>
+          <path d="M5 12h14"></path>
+        </svg>
+        Add Expense
+      </button>
+    </div>
+  </div>
+</div>
 
     <!-- Edit Expense Modal -->
     <div class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 hidden" id="editExpenseModal">
