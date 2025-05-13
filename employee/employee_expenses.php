@@ -52,7 +52,7 @@ $row = $result->fetch_assoc();
 $first_name = $row['first_name'];
 $last_name = $row['last_name'];
 $email = $row['email'];
-$branch = $row['branch_loc'];
+$branch = (int)$row['branch_loc'];
 
 // Get expenses for the current branch with pagination
 $items_per_page = 5;
@@ -67,7 +67,7 @@ $expense_query = "SELECT expense_ID, category, expense_name, date, branch_id, st
 // Count total expenses for pagination
 $count_query = "SELECT COUNT(*) as total FROM expense_tb WHERE branch_id = ? AND appearance = 'visible'";
 $count_stmt = $conn->prepare($count_query);
-$count_stmt->bind_param("s", $branch);
+$count_stmt->bind_param("i", $branch);
 $count_stmt->execute();
 $count_result = $count_stmt->get_result();
 $total_items = $count_result->fetch_assoc()['total'];
@@ -82,7 +82,7 @@ $sort_order = isset($_GET['order']) ? $_GET['order'] : 'DESC';
 
 // Add filters to query
 $params = [$branch];
-$types = "s";
+$types = "i";
 
 if (!empty($search)) {
     $expense_query .= " AND (expense_name LIKE ? OR notes LIKE ?)";
