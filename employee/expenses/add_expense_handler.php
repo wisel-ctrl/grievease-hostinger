@@ -21,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 // Database connection
-require_once '../db_connect.php';
+require_once '../../db_connect.php';
 
 // Get branch_id from user session
 $branch_id = $_SESSION['branch_loc'];
