@@ -135,7 +135,7 @@ foreach ($expenses as $expense) {
 }
 
 // Get pending payments count
-$pending_query = "SELECT COUNT(*) as pending FROM expense_tb WHERE branch_id = ? AND status = 'Pending' AND appearance = 'visible'";
+$pending_query = "SELECT COUNT(*) as pending FROM expense_tb WHERE branch_id = ? AND status = 'To be paid' AND appearance = 'visible'";
 $pending_stmt = $conn->prepare($pending_query);
 $pending_stmt->bind_param("s", $branch);
 $pending_stmt->execute();
@@ -808,15 +808,31 @@ $pending_payments = $pending_result->fetch_assoc()['pending'];
 
       // Function to add an expense (AJAX implementation would go here)
       function addExpense() {
-        const form = document.getElementById('expenseForm');
-        if (form.checkValidity()) {
-          // In a real implementation, you would use AJAX to submit the form
-          // For now, we'll just show a success message
-          showNotification('Expense added successfully!');
-          closeAddExpenseModal();
-        } else {
-          form.reportValidity();
-        }
+          const form = document.getElementById('expenseForm');
+          if (form.checkValidity()) {
+              // Submit the form via AJAX
+              const formData = new FormData(form);
+              
+              fetch('expenses/add_expense_handler.php', {
+                  method: 'POST',
+                  body: formData
+              })
+              .then(response => response.text())
+              .then(() => {
+                  // On success, show notification and reload
+                  showNotification('Expense added successfully!');
+                  closeAddExpenseModal();
+                  setTimeout(() => {
+                      window.location.reload();
+                  }, 1500);
+              })
+              .catch(error => {
+                  console.error('Error:', error);
+                  showNotification('Error adding expense. Please try again.');
+              });
+          } else {
+              form.reportValidity();
+          }
       }
 
       // Function to open the Edit Expense Modal
