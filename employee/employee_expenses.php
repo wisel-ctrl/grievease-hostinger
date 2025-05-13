@@ -822,9 +822,9 @@ $pending_payments = $pending_result->fetch_assoc()['pending'];
                   // On success, show notification and reload
                   showNotification('Expense added successfully!');
                   closeAddExpenseModal();
-                  setTimeout(() => {
-                      window.location.reload();
-                  }, 1500);
+                  // setTimeout(() => {
+                  //     window.location.reload();
+                  // }, 1500);
               })
               .catch(error => {
                   console.error('Error:', error);
