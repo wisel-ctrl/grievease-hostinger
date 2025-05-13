@@ -601,7 +601,7 @@ $pending_payments = $pending_result->fetch_assoc()['pending'];
     <div class="p-6">
       <form id="expenseForm">
         <div class="mb-5">
-          <label for="expenseDescription" class="block mb-2 font-medium text-gray-700">Description</label>
+          <label for="expenseDescription" class="block mb-2 font-medium text-gray-700">Name</label>
           <input type="text" id="expenseDescription" name="expenseDescription" placeholder="Enter expense description" class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent" required>
         </div>
         <div class="mb-5">
@@ -631,8 +631,8 @@ $pending_payments = $pending_result->fetch_assoc()['pending'];
         <div class="mb-5">
           <label for="expenseStatus" class="block mb-2 font-medium text-gray-700">Status</label>
           <select id="expenseStatus" name="expenseStatus" class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent" required>
-            <option value="Paid">Paid</option>
-            <option value="Pending">Pending</option>
+            <option value="paid">Paid</option>
+            <option value="To be paid">Pending</option>
           </select>
           </div>
         <div class="mb-5">
