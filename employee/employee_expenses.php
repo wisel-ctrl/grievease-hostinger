@@ -704,8 +704,8 @@ $pending_payments = $pending_result->fetch_assoc()['pending'];
             <div class="mb-5">
               <label for="editExpenseStatus" class="block mb-2 font-medium text-gray-700">Status</label>
               <select id="editExpenseStatus" name="editExpenseStatus" class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent" required>
-                <option value="Paid">Paid</option>
-                <option value="Pending">Pending</option>
+                <option value="paid">Paid</option>
+                <option value="To be paid">To Be Paid</option>
               </select>
             </div>
             <div class="mb-5">
