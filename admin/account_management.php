@@ -281,7 +281,7 @@ $customersResult = mysqli_query($conn, $customersQuery);
           </div>
 
           <!-- Archive Icon Button -->
-          <button class="w-10 h-10 flex items-center justify-center text-sidebar-accent" onclick="showArchivedItems(<?php echo $branchId; ?>)">
+          <button class="w-10 h-10 flex items-center justify-center text-sidebar-accent" onclick="showArchivedCustomerMobile">
             <i class="fas fa-archive text-xl"></i>
           </button>
 </div>
@@ -1957,7 +1957,7 @@ if ($result->num_rows > 0) {
                 </div>
 
             <!-- Archive Icon Button -->
-          <button class="w-10 h-10 flex items-center justify-center text-sidebar-accent" onclick="showArchivedItems(<?php echo $branchId; ?>)">
+          <button class="w-10 h-10 flex items-center justify-center text-sidebar-accent" onclick="showArchivedEmployeeMobile">
             <i class="fas fa-archive text-xl"></i>
           </button>
 </div>
@@ -3829,7 +3829,9 @@ function verifyOtp(accountType) {
 <script>
     
     document.querySelector('[onclick="showArchivedCustomer"]').setAttribute('onclick', 'showArchivedCustomer()');
+    document.querySelector('[onclick="showArchivedCustomerMobile"]').setAttribute('onclick', 'showArchivedCustomer()');
     document.querySelector('[onclick="showArchivedEmployee"]').setAttribute('onclick', 'showArchivedEmployee()');
+    document.querySelector('[onclick="showArchivedEmployeeMobile"]').setAttribute('onclick', 'showArchivedEmployee()');
 
 // Function to show archived customers
 function showArchivedCustomer() {
