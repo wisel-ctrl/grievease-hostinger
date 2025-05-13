@@ -52,7 +52,7 @@ $row = $result->fetch_assoc();
 $first_name = $row['first_name'];
 $last_name = $row['last_name'];
 $email = $row['email'];
-$branch = (int)$row['branch_loc'];
+$branch = $row['branch_loc'];
 
 // Get expenses for the current branch with pagination
 $items_per_page = 5;
@@ -67,7 +67,7 @@ $expense_query = "SELECT expense_ID, category, expense_name, date, branch_id, st
 // Count total expenses for pagination
 $count_query = "SELECT COUNT(*) as total FROM expense_tb WHERE branch_id = ? AND appearance = 'visible'";
 $count_stmt = $conn->prepare($count_query);
-$count_stmt->bind_param("i", $branch);
+$count_stmt->bind_param("s", $branch);
 $count_stmt->execute();
 $count_result = $count_stmt->get_result();
 $total_items = $count_result->fetch_assoc()['total'];
@@ -82,7 +82,7 @@ $sort_order = isset($_GET['order']) ? $_GET['order'] : 'DESC';
 
 // Add filters to query
 $params = [$branch];
-$types = "i";
+$types = "s";
 
 if (!empty($search)) {
     $expense_query .= " AND (expense_name LIKE ? OR notes LIKE ?)";
@@ -123,26 +123,21 @@ $expense_stmt->execute();
 $expense_result = $expense_stmt->get_result();
 $expenses = $expense_result->fetch_all(MYSQLI_ASSOC);
 
-$total_expenses_query = "SELECT SUM(price) as total FROM expense_tb WHERE branch_id = ? AND appearance = 'visible'";
-$total_stmt = $conn->prepare($total_expenses_query);
-$total_stmt->bind_param("i", $branch);
-$total_stmt->execute();
-$total_result = $total_stmt->get_result();
-$total_expenses = $total_result->fetch_assoc()['total'] ?? 0;
-
-// Calculate monthly expenses (current month, unfiltered)
+// Calculate totals
+$total_expenses = 0;
+$monthly_expenses = 0;
 $current_month = date('Y-m');
-$monthly_expenses_query = "SELECT SUM(price) as total FROM expense_tb WHERE branch_id = ? AND appearance = 'visible' AND DATE_FORMAT(date, '%Y-%m') = ?";
-$monthly_stmt = $conn->prepare($monthly_expenses_query);
-$monthly_stmt->bind_param("is", $branch, $current_month);
-$monthly_stmt->execute();
-$monthly_result = $monthly_stmt->get_result();
-$monthly_expenses = $monthly_result->fetch_assoc()['total'] ?? 0;
+foreach ($expenses as $expense) {
+    $total_expenses += $expense['price'];
+    if (date('Y-m', strtotime($expense['date'])) === $current_month) {
+        $monthly_expenses += $expense['price'];
+    }
+}
 
 // Get pending payments count
 $pending_query = "SELECT COUNT(*) as pending FROM expense_tb WHERE branch_id = ? AND status = 'To be paid' AND appearance = 'visible'";
 $pending_stmt = $conn->prepare($pending_query);
-$pending_stmt->bind_param("i", $branch);
+$pending_stmt->bind_param("s", $branch);
 $pending_stmt->execute();
 $pending_result = $pending_stmt->get_result();
 $pending_payments = $pending_result->fetch_assoc()['pending'];
