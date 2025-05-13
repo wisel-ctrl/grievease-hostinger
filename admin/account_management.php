@@ -281,9 +281,9 @@ $customersResult = mysqli_query($conn, $customersQuery);
           </div>
 
           <!-- Archive Icon Button -->
-          <button class="w-10 h-10 flex items-center justify-center text-sidebar-accent" onclick="showArchivedItems(<?php echo $branchId; ?>)">
-            <i class="fas fa-archive text-xl"></i>
-          </button>
+<button class="w-10 h-10 flex items-center justify-center text-sidebar-accent" onclick="confirmShowArchivedCustomer()">
+    <i class="fas fa-archive text-xl"></i>
+</button>
 </div>
             
 
@@ -3843,6 +3843,23 @@ function showArchivedEmployee() {
     document.getElementById('modalTitle').textContent = 'Archived Employee Accounts';
     fetchArchivedAccounts(2); // 2 is the user_type for employees
     document.getElementById('archivedModal').classList.remove('hidden');
+}
+
+function confirmShowArchivedCustomer() {
+    Swal.fire({
+        title: 'Are you sure?',
+        text: "You are about to view archived items. Do you want to proceed?",
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, view archived',
+        cancelButtonText: 'Cancel'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            showArchivedCustomer();
+        }
+    });
 }
 
 // Function to close the modal
