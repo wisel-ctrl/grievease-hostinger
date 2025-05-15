@@ -867,23 +867,37 @@ $pending_payments = $pending_result->fetch_assoc()['pending'];
         document.getElementById('editExpenseModal').style.display = 'none';
       }
 
-      // Function to save changes to an expense (AJAX implementation would go here)
+      // Function to save changes to an expense
       function saveExpenseChanges() {
-        const form = document.getElementById('editExpenseForm');
-        if (form.checkValidity()) {
-          // In a real implementation, you would use AJAX to submit the form
-          // For now, we'll just show a success message
-          const expenseId = document.getElementById('editExpenseId').value;
-          showNotification(`Expense ${expenseId} updated successfully!`);
-          closeEditExpenseModal();
-          
-          // Reload the page to see changes (in a real app, you'd update the table via AJAX)
-          setTimeout(() => {
-            window.location.reload();
-          }, 1500);
-        } else {
-          form.reportValidity();
-        }
+          const form = document.getElementById('editExpenseForm');
+          if (form.checkValidity()) {
+              // Submit the form via AJAX
+              const formData = new FormData(form);
+              
+              fetch('expenses/save_expense_changes_handler.php', {
+                  method: 'POST',
+                  body: formData
+              })
+              .then(response => response.json())
+              .then(data => {
+                  if (data.success) {
+                      showNotification(data.message);
+                      closeEditExpenseModal();
+                      // Reload the page after a delay
+                      setTimeout(() => {
+                          window.location.reload();
+                      }, 1500);
+                  } else {
+                      showNotification(data.message, false);
+                  }
+              })
+              .catch(error => {
+                  console.error('Error:', error);
+                  showNotification('Error updating expense. Please try again.', false);
+              });
+          } else {
+              form.reportValidity();
+          }
       }
       
       // Function to confirm archive
