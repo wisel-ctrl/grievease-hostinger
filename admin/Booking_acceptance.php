@@ -152,6 +152,18 @@ $lifeplan_offset = ($lifeplan_current_page - 1) * $lifeplan_bookings_per_page;
   white-space: pre-wrap; /* Preserves line breaks in notes */
   word-break: break-word; /* Prevents long words from overflowing */
 }
+
+#imageEnlargerOverlay {
+    z-index: 9999; /* Ensure it's above everything else */
+  }
+  
+  #modalPaymentProofImage {
+    transition: transform 0.2s;
+  }
+  
+  #modalPaymentProofImage:hover {
+    transform: scale(1.01);
+  }
     </style>
 </head>
 
@@ -1567,6 +1579,26 @@ $lifeplanResult = $lifeplan_stmt->get_result();
         <input type="hidden" id="deathCertUrl" name="deathcert_url">
         <input type="hidden" id="withCremate" name="with_cremate">
         
+        
+        <!-- Add this payment proof display section -->
+        <div class="mb-4">
+          <h5 class="font-medium text-gray-700 mb-2 flex items-center">
+            <i class="fas fa-receipt text-sm mr-2 text-gray-500"></i>
+            Payment Proof
+          </h5>
+          <div class="border border-gray-200 rounded-lg overflow-hidden">
+            <div class="relative bg-gray-100 p-1">
+              <img id="modalPaymentProofImage" alt="Payment Proof" class="mx-auto rounded-md max-h-48 object-contain cursor-zoom-in" onclick="enlargeImage(this)" />
+            </div>
+          </div>
+          <div id="processingIndicator" class="text-center py-2">
+            <div class="inline-block animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-blue-500"></div>
+            <p class="text-gray-600 text-sm mt-1">Processing receipt for amount...</p>
+          </div>
+          <p id="extractionMessage" class="text-sm mt-1 hidden text-center"></p>
+        </div>
+        
+        <!-- Amount Paid Input -->
         <div class="mb-4">
           <label for="amountPaidInput" class="block text-sm font-medium text-gray-700 mb-1">Amount Paid</label>
           <div class="relative">
@@ -1579,6 +1611,7 @@ $lifeplanResult = $lifeplan_stmt->get_result();
           </div>
         </div>
         
+        <!-- Payment Method Select -->
         <div class="mb-4">
           <label for="paymentMethod" class="block text-sm font-medium text-gray-700 mb-1">Payment Method</label>
           <select id="paymentMethod" name="paymentMethod" 
@@ -1602,8 +1635,16 @@ $lifeplanResult = $lifeplan_stmt->get_result();
     </div>
   </div>
 </div>
-
 </div>
+
+<!-- Image enlarger overlay -->
+        <div id="imageEnlargerOverlay" class="fixed inset-0 bg-black bg-opacity-90 z-[9999] hidden flex items-center justify-center p-4" onclick="closeEnlargedImage()">
+  <div class="max-w-full max-h-full flex flex-col items-center justify-center">
+    <img id="enlargedImage" class="max-w-full max-h-[90vh] object-contain" />
+    <button class="mt-4 text-white text-2xl hover:text-gray-300" onclick="closeEnlargedImage(event)">×</button>
+  </div>
+</div>
+
 
 <!-- Custom Booking Details Modal -->
 <div id="customDetailsModal" class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto">
@@ -2416,6 +2457,7 @@ $lifeplanResult = $lifeplan_stmt->get_result();
 
     <script src="script.js"></script>
     <script src="tailwind.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
 
     <script>
       let currentBookingIdForPayment = null;
@@ -2512,37 +2554,46 @@ $lifeplanResult = $lifeplan_stmt->get_result();
         deathCertNotAvailable.classList.remove('hidden');
       }
 
-      // Handle Payment Proof Image
-      const paymentProofImage = document.getElementById('paymentProofImage');
-      const paymentProofContainer = paymentProofImage.parentElement;
+      // Handle Payment Proof Images
+const paymentProofImage = document.getElementById('paymentProofImage');
+const modalPaymentProofImage = document.getElementById('modalPaymentProofImage');
+const paymentProofContainer = paymentProofImage.parentElement;
+const modalPaymentProofContainer = modalPaymentProofImage.parentElement;
 
-      if (data.payment_url && data.payment_url !== '') {
-        // Use relative path with ../ to navigate up and then to the customer/booking/uploads folder
-        const paymentProofPath = '../customer/booking/uploads/' + data.payment_url.replace(/^uploads\//, '');
-        console.log("Payment Proof Path:", paymentProofPath);
-        
-        // Set error handler before setting src
-        paymentProofImage.onerror = function() {
-          console.error("Failed to load payment proof image:", paymentProofPath);
-          // Create a placeholder instead of loading another image
-          const placeholderHTML = `
-            <div class="flex flex-col items-center justify-center py-8 px-4 bg-gray-50">
-              <i class="fas fa-exclamation-circle text-gray-400 text-3xl mb-2"></i>
-              <p class="text-gray-500 text-center">Image could not be loaded</p>
-            </div>`;
-          paymentProofContainer.innerHTML = placeholderHTML;
-        };
-        
-        paymentProofImage.src = paymentProofPath;
-      } else {
-        // Create a placeholder for when no payment proof exists
-        const placeholderHTML = `
-          <div class="flex flex-col items-center justify-center py-8 px-4 bg-gray-50">
-            <i class="fas fa-exclamation-circle text-gray-400 text-3xl mb-2"></i>
-            <p class="text-gray-500 text-center">No payment proof provided</p>
-          </div>`;
-        paymentProofContainer.innerHTML = placeholderHTML;
-      }
+if (data.payment_url && data.payment_url !== '') {
+  // Use relative path with ../ to navigate up and then to the customer/booking/uploads folder
+  const paymentProofPath = '../customer/booking/uploads/' + data.payment_url.replace(/^uploads\//, '');
+  console.log("Payment Proof Path:", paymentProofPath);
+  
+  // Set error handler before setting src for both images
+  const errorHandler = function() {
+    console.error("Failed to load payment proof image:", paymentProofPath);
+    // Create a placeholder instead of loading another image
+    const placeholderHTML = `
+      <div class="flex flex-col items-center justify-center py-8 px-4 bg-gray-50">
+        <i class="fas fa-exclamation-circle text-gray-400 text-3xl mb-2"></i>
+        <p class="text-gray-500 text-center">Image could not be loaded</p>
+      </div>`;
+    paymentProofContainer.innerHTML = placeholderHTML;
+    modalPaymentProofContainer.innerHTML = placeholderHTML;
+  };
+  
+  paymentProofImage.onerror = errorHandler;
+  modalPaymentProofImage.onerror = errorHandler;
+  
+  // Set the source for both images
+  paymentProofImage.src = paymentProofPath;
+  modalPaymentProofImage.src = paymentProofPath;
+} else {
+  // Create a placeholder for when no payment proof exists
+  const placeholderHTML = `
+    <div class="flex flex-col items-center justify-center py-8 px-4 bg-gray-50">
+      <i class="fas fa-exclamation-circle text-gray-400 text-3xl mb-2"></i>
+      <p class="text-gray-500 text-center">No payment proof provided</p>
+    </div>`;
+  paymentProofContainer.innerHTML = placeholderHTML;
+  modalPaymentProofContainer.innerHTML = placeholderHTML;
+}
             
       // Show the modal
       const modal = document.getElementById("bookingDetailsModal");
@@ -2677,11 +2728,131 @@ function confirmAccept() {
         });
 }
 
+
+// Function to extract amount from text
+function extractAmountFromText(text) {
+  // Enhanced patterns for amount detection
+  const amountPatterns = [
+    /Amount\s*:\s*₱?\s*([\d,]+\.\d{2})/i,      // "Amount: ₱1,234.56"
+    /Amount\s*₱?\s*([\d,]+\.\d{2})/i,          // "Amount ₱1,234.56"
+    /Amount\s*PHP\s*([\d,]+\.\d{2})/i,         // "Amount PHP 1,234.56"
+    /^.*Amount\s*[^0-9]*([\d,]+\.\d{2})/im,    // More flexible amount match
+    /Total\s*:\s*₱?\s*([\d,]+\.\d{2})/i,       // "Total: ₱1,234.56"
+    /Total\s*₱?\s*([\d,]+\.\d{2})/i,           // "Total ₱1,234.56"
+    /₱\s*([\d,]+\.\d{2})/i,                    // "₱1,234.56"
+    /PHP\s*([\d,]+\.\d{2})/i,                  // "PHP 1,234.56"
+    /([\d,]+\.\d{2})\s*PHP/i,                  // "1,234.56 PHP"
+    /Paid\s*:\s*₱?\s*([\d,]+\.\d{2})/i,        // "Paid: ₱1,234.56"
+    /Payment\s*:\s*₱?\s*([\d,]+\.\d{2})/i,     // "Payment: ₱1,234.56"
+    /([\d,]+\.\d{2})\s*pesos/i,                // "1,234.56 pesos"
+    /([\d,]+\.\d{2})\s*PH/i                    // "1,234.56 PH"
+  ];
+  
+  // First try to find exact matches
+  for (const pattern of amountPatterns) {
+    const match = text.match(pattern);
+    if (match && match[1]) {
+      return parseFloat(match[1].replace(/,/g, ''));
+    }
+  }
+  
+  // Fallback - look for any number with 2 decimal places
+  const fallbackMatch = text.match(/(\d[\d,]*\.\d{2})\b/);
+  if (fallbackMatch && fallbackMatch[1]) {
+    return parseFloat(fallbackMatch[1].replace(/,/g, ''));
+  }
+  
+  // Final fallback - return 0 if no amount found
+  return 0;
+}
+
+// When opening the modal, make sure to set the image source
+function openPaymentModalWithImage(bookingId, imageUrl) {
+  // Reset form
+  document.getElementById('paymentForm').reset();
+  
+  // Reset messages
+  document.getElementById('extractionMessage').classList.add('hidden');
+  
+  // Set the payment proof image
+  const proofImage = document.getElementById('modalPaymentProofImage');
+  proofImage.src = imageUrl;
+  proofImage.onerror = function() {
+    this.style.display = 'none';
+  };
+  
+  // Show modal
+  document.getElementById('paymentModal').classList.remove('hidden');
+  
+  // Set booking ID or other data as needed
+  document.getElementById('bookingIdForPayment').value = bookingId;
+}
+
 function openPaymentModal() {
     const modal = document.getElementById("paymentModal");
     modal.classList.remove("hidden");
     modal.classList.add("flex");
     document.body.classList.add("overflow-hidden");
+    
+    // Automatically start processing the receipt when modal opens
+    autoExtractAmountFromImage();
+}
+
+async function autoExtractAmountFromImage() {
+  const amountInput = document.getElementById('amountPaidInput');
+  const processingIndicator = document.getElementById('processingIndicator');
+  const extractionMessage = document.getElementById('extractionMessage');
+  
+  const proofImage = document.getElementById('modalPaymentProofImage');
+  if (!proofImage.src) {
+    processingIndicator.classList.add('hidden');
+    extractionMessage.textContent = 'No payment proof image available';
+    extractionMessage.classList.remove('hidden');
+    extractionMessage.classList.add('text-red-500');
+    return;
+  }
+  
+  try {
+    // Convert the image to a blob for processing
+    const blob = await fetch(proofImage.src).then(res => res.blob());
+    
+    // Process with Tesseract
+    const { data: { text } } = await Tesseract.recognize(
+      blob,
+      'eng',
+      { 
+        logger: m => console.log(m),
+        tessedit_pageseg_mode: 6 // Assume a single uniform block of text
+      }
+    );
+    
+    console.log('Extracted text:', text); // For debugging
+    
+    // Extract the amount
+    const amount = extractAmountFromText(text);
+    
+    // Fill the amount input if found
+    if (amount > 0) {
+      amountInput.value = amount.toFixed(2);
+      extractionMessage.textContent = 'Amount automatically detected from receipt!';
+      extractionMessage.classList.remove('text-red-500');
+      extractionMessage.classList.add('text-green-500');
+    } else {
+      extractionMessage.textContent = 'Could not automatically detect amount. Please enter manually.';
+      extractionMessage.classList.remove('text-green-500');
+      extractionMessage.classList.add('text-red-500');
+    }
+    extractionMessage.classList.remove('hidden');
+  } catch (error) {
+    console.error('Error processing receipt:', error);
+    extractionMessage.textContent = 'Error processing receipt. Please enter amount manually.';
+    extractionMessage.classList.remove('text-green-500');
+    extractionMessage.classList.add('text-red-500');
+    extractionMessage.classList.remove('hidden');
+  } finally {
+    // Hide processing indicator
+    processingIndicator.classList.add('hidden');
+  }
 }
 
 function closePaymentModal() {
@@ -4044,7 +4215,35 @@ window.addEventListener("keydown", function (event) {
         closeLifeplanDeclineReasonModal();
     }
 });
+
+function enlargeImage(imgElement) {
+    const enlargedImage = document.getElementById('enlargedImage');
+    const overlay = document.getElementById('imageEnlargerOverlay');
+    
+    enlargedImage.src = imgElement.src;
+    overlay.classList.remove('hidden');
+    document.body.style.overflow = 'hidden'; // Prevent scrolling when overlay is open
+  }
+
+  function closeEnlargedImage(event) {
+    if (event) {
+      event.stopPropagation(); // Prevent the overlay click from triggering when clicking the button
+    }
+    const overlay = document.getElementById('imageEnlargerOverlay');
+    overlay.classList.add('hidden');
+    document.body.style.overflow = ''; // Re-enable scrolling
+  }
+
+  // Close when pressing Escape key
+  document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+      closeEnlargedImage();
+    }
+  });
+
 </script>
+
+
 
 </body>
 </html>
