@@ -304,7 +304,7 @@ $user_id = $_SESSION['user_id'];
           <div class="w-12 h-12 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center mr-3">
             <i class="fas fa-calendar-alt text-lg"></i>
           </div>
-          <span class="text-sidebar-text font-medium">Upcoming Services</span>
+          <span class="text-sidebar-text font-medium">Services this Month</span>
         </div>
         <div class="text-3xl font-bold mb-2 text-sidebar-text">5</div>
         <div class="text-sm text-green-600 flex items-center">
@@ -317,7 +317,7 @@ $user_id = $_SESSION['user_id'];
           <div class="w-12 h-12 rounded-lg bg-green-100 text-green-600 flex items-center justify-center mr-3">
             <i class="fas fa-peso-sign text-lg"></i>
           </div>
-          <span class="text-sidebar-text font-medium">Today's Revenue</span>
+          <span class="text-sidebar-text font-medium">Monthly Revenue</span>
         </div>
         <div class="text-3xl font-bold mb-2 text-sidebar-text">₱1,200</div>
         <div class="text-sm text-green-600 flex items-center">
@@ -330,7 +330,7 @@ $user_id = $_SESSION['user_id'];
           <div class="w-12 h-12 rounded-lg bg-orange-100 text-orange-600 flex items-center justify-center mr-3">
             <i class="fas fa-tasks text-lg"></i>
           </div>
-          <span class="text-sidebar-text font-medium">Pending Tasks</span>
+          <span class="text-sidebar-text font-medium">Ongoing Services</span>
         </div>
         <div class="text-3xl font-bold mb-2 text-sidebar-text">3</div>
         <div class="text-sm text-red-600 flex items-center">
