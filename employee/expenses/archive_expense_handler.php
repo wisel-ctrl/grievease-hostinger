@@ -33,7 +33,7 @@ $query = "UPDATE expense_tb SET appearance = 'hidden' WHERE expense_ID = ? AND b
 $stmt = $conn->prepare($query);
 
 // Get the user's branch
-$branch = $_SESSION['branch_loc'] ?? null;
+$branch = $_SESSION['branch_employee'] ?? null;
 if (!$branch) {
     http_response_code(400); // Bad Request
     echo json_encode(['success' => false, 'message' => 'User branch not found']);

@@ -53,7 +53,7 @@ $first_name = $row['first_name'];
 $last_name = $row['last_name'];
 $email = $row['email'];
 $branch = (int)$row['branch_loc'];
-$_SESSION['branch_loc'] = (int)$row['branch_loc'];
+$_SESSION['branch_employee'] = (int)$row['branch_loc'];
 
 // Get expenses for the current branch with pagination
 $items_per_page = 5;
