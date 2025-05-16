@@ -911,19 +911,36 @@ $pending_payments = $pending_result->fetch_assoc()['pending'];
         document.getElementById('archiveConfirmModal').style.display = 'none';
       }
 
-      // Function to archive an expense (AJAX implementation would go here)
+      // Function to archive an expense
       function archiveExpense() {
-        const expenseId = document.getElementById('archiveExpenseId').textContent;
-        
-        // In a real implementation, you would use AJAX to archive the expense
-        // For now, we'll just show a success message
-        showNotification(`Expense ${expenseId} archived successfully!`);
-        closeArchiveConfirmModal();
-        
-        // Reload the page to see changes (in a real app, you'd remove the row via AJAX)
-        setTimeout(() => {
-          window.location.reload();
-        }, 1500);
+          const expenseId = document.getElementById('archiveExpenseId').textContent;
+          
+          // Create form data
+          const formData = new FormData();
+          formData.append('expense_id', expenseId);
+          
+          // Send AJAX request
+          fetch('expenses/archive_expense_handler.php', {
+              method: 'POST',
+              body: formData
+          })
+          .then(response => response.json())
+          .then(data => {
+              if (data.success) {
+                  showNotification(data.message);
+                  closeArchiveConfirmModal();
+                  // Reload the page after a delay
+                  setTimeout(() => {
+                      window.location.reload();
+                  }, 1500);
+              } else {
+                  showNotification(data.message, false);
+              }
+          })
+          .catch(error => {
+              console.error('Error:', error);
+              showNotification('Error archiving expense. Please try again.', false);
+          });
       }
       
       // Function to show notification
