@@ -386,7 +386,7 @@ $show_profile_card = $percentage < 100;
 $show_id_card = !$has_id || strtolower($id_data['is_validated']) != 'valid';
 
 // MONTHLY PAYMENT REMINDER
-$payment_reminder_query = "SELECT lb.initial_date, lb.package_price, lb.amount_paid, lb.booking_status, u.phone_number 
+$payment_reminder_query = "SELECT lb.initial_date, lb.package_price, lb.amount_paid, lb.booking_status, lb.last_sms_date, u.phone_number 
                           FROM lifeplan_booking_tb lb
                           JOIN users u ON lb.customer_id = u.id
                           WHERE lb.customer_id = ? AND lb.booking_status = 'accepted'";
@@ -444,33 +444,44 @@ if ($has_payment_plan && $payment_data['booking_status'] === 'accepted') {
             $payment_bg_class = 'bg-yellow-600/10';
         }
         
-        // Send SMS notification
-        $phone_number = $payment_data['phone_number'];
-        $sms_message = "GrievEase Reminder: $payment_message Please make your payment on time to avoid service interruptions.";
+        // Check if SMS was already sent for this specific days_remaining count
+        $last_sms_days_remaining = $payment_data['last_sms_days_remaining'] ?? null;
+        $should_send_sms = ($last_sms_days_remaining != $days_remaining);
         
-        // SEMAPHORE API integration
-        $semaphore_api_key = '024cb8782cdb71b2925fb933f6f8635f';
-        $sender_name = 'GrievEase';
-        
-        $ch = curl_init();
-        $parameters = array(
-            'apikey' => $semaphore_api_key,
-            'number' => $phone_number,
-            'message' => $sms_message,
-            'sendername' => $sender_name
-        );
-        curl_setopt($ch, CURLOPT_URL, 'https://api.semaphore.co/api/v4/messages');
-        curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($parameters));
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        $output = curl_exec($ch);
-        curl_close($ch);
-        
-        // Optional: Log the SMS sending result
-        // file_put_contents('sms_log.txt', date('Y-m-d H:i:s') . " - " . $output . "\n", FILE_APPEND);
+        if ($should_send_sms) {
+            // Send SMS notification
+            $phone_number = $payment_data['phone_number'];
+            $sms_message = "GrievEase Reminder: $payment_message Please make your payment on time to avoid service interruptions.";
+            
+            // SEMAPHORE API integration
+            $semaphore_api_key = '024cb8782cdb71b2925fb933f6f8635f';
+            $sender_name = 'GrievEase';
+            
+            $ch = curl_init();
+            $parameters = array(
+                'apikey' => $semaphore_api_key,
+                'number' => $phone_number,
+                'message' => $sms_message,
+                'sendername' => $sender_name
+            );
+            curl_setopt($ch, CURLOPT_URL, 'https://api.semaphore.co/api/v4/messages');
+            curl_setopt($ch, CURLOPT_POST, 1);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($parameters));
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            $output = curl_exec($ch);
+            curl_close($ch);
+            
+            // Update last_sms_days_remaining in database
+            $update_sms_query = "UPDATE lifeplan_booking_tb SET last_sms_date = NOW(), last_sms_days_remaining = ? WHERE customer_id = ?";
+            $update_stmt = $conn->prepare($update_sms_query);
+            $update_stmt->bind_param("ii", $days_remaining, $user_id);
+            $update_stmt->execute();
+            
+            // Optional: Log the SMS sending result
+            // file_put_contents('sms_log.txt', date('Y-m-d H:i:s') . " - " . $output . "\n", FILE_APPEND);
+        }
     }
 }
-
                 $conn->close();
 ?>
 <!DOCTYPE html>
