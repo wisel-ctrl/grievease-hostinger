@@ -376,7 +376,7 @@ if ($has_booking) {
             }
             
             $booking_link_text = 'Book Again';
-            $booking_redirect_url = 'services.php';
+            $booking_redirect_url = 'packages.php';
             break;
     }
 }
@@ -384,6 +384,92 @@ if ($has_booking) {
 $show_booking_card = !$has_booking || strtolower($booking_data['status']) != 'accepted';
 $show_profile_card = $percentage < 100;
 $show_id_card = !$has_id || strtolower($id_data['is_validated']) != 'valid';
+
+// MONTHLY PAYMENT REMINDER
+$payment_reminder_query = "SELECT lb.initial_date, lb.package_price, lb.amount_paid, lb.booking_status, u.phone_number 
+                          FROM lifeplan_booking_tb lb
+                          JOIN users u ON lb.customer_id = u.id
+                          WHERE lb.customer_id = ? AND lb.booking_status = 'accepted'";
+$payment_stmt = $conn->prepare($payment_reminder_query);
+$payment_stmt->bind_param("i", $user_id);
+$payment_stmt->execute();
+$payment_result = $payment_stmt->get_result();
+$has_payment_plan = $payment_result->num_rows > 0;
+$payment_data = $has_payment_plan ? $payment_result->fetch_assoc() : null;
+
+$show_payment_reminder = false;
+$payment_message = '';
+$payment_due_date = '';
+$days_remaining = 0;
+$payment_status_class = '';
+$payment_icon_class = '';
+$payment_bg_class = '';
+
+if ($has_payment_plan && $payment_data['booking_status'] === 'accepted') {
+    // Calculate monthly due date (same day each month as initial_date)
+    $initial_date = new DateTime($payment_data['initial_date']);
+    $today = new DateTime();
+    
+    // Get the day of the month from initial date
+    $due_day = $initial_date->format('d');
+    
+    // Create the current month's due date
+    $current_due_date = new DateTime();
+    $current_due_date->setDate($today->format('Y'), $today->format('m'), $due_day);
+    
+    // If today's date is after the due day, set to next month
+    if ($today > $current_due_date) {
+        $current_due_date->modify('+1 month');
+    }
+    
+    // Calculate reminder date (5 days before due date)
+    $reminder_date = clone $current_due_date;
+    $reminder_date->modify('-5 days');
+    
+    // Check if today is within the reminder period (5 days before due date)
+    if ($today >= $reminder_date && $today < $current_due_date) {
+        $show_payment_reminder = true;
+        $days_remaining = $current_due_date->diff($today)->days;
+        
+        $payment_due_date = $current_due_date->format('F j, Y');
+        $payment_message = "Your monthly payment is due in $days_remaining days on $payment_due_date.";
+        
+        if ($days_remaining <= 2) {
+            $payment_status_class = 'text-danger';
+            $payment_icon_class = 'text-danger';
+            $payment_bg_class = 'bg-danger/10';
+        } else {
+            $payment_status_class = 'text-yellow-600';
+            $payment_icon_class = 'text-yellow-600';
+            $payment_bg_class = 'bg-yellow-600/10';
+        }
+        
+        // Send SMS notification
+        $phone_number = $payment_data['phone_number'];
+        $sms_message = "GrievEase Reminder: $payment_message Please make your payment on time to avoid service interruptions.";
+        
+        // SEMAPHORE API integration
+        $semaphore_api_key = '024cb8782cdb71b2925fb933f6f8635f';
+        $sender_name = 'GrievEase';
+        
+        $ch = curl_init();
+        $parameters = array(
+            'apikey' => $semaphore_api_key,
+            'number' => $phone_number,
+            'message' => $sms_message,
+            'sendername' => $sender_name
+        );
+        curl_setopt($ch, CURLOPT_URL, 'https://api.semaphore.co/api/v4/messages');
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($parameters));
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $output = curl_exec($ch);
+        curl_close($ch);
+        
+        // Optional: Log the SMS sending result
+        // file_put_contents('sms_log.txt', date('Y-m-d H:i:s') . " - " . $output . "\n", FILE_APPEND);
+    }
+}
 
                 $conn->close();
 ?>
@@ -690,6 +776,24 @@ $show_id_card = !$has_id || strtolower($id_data['is_validated']) != 'valid';
         
         <!-- Status Cards Row -->
 <div class="grid grid-cols-1 gap-6 mb-8 dashboard-cards-container">
+    <?php if ($show_payment_reminder): ?>
+        <!-- Monthly Payment Reminder Card -->
+        <div class="bg-white rounded-xl shadow-lg p-6 dashboard-card transition-all duration-300">
+            <div class="flex items-start justify-between mb-4">
+                <div>
+                    <p class="text-sm text-gray-500 font-medium">Payment Reminder</p>
+                    <h3 class="text-xl font-hedvig <?= $payment_status_class ?>">Payment Due Soon</h3>
+                </div>
+            </div>
+            
+            <p class="text-sm text-dark mb-4"><?= $payment_message ?></p>
+            
+            <a href="profile.php#transaction-logs#" class="text-sm text-yellow-600 hover:text-darkgold font-medium flex items-center">
+                Make Payment <i class="fas fa-arrow-right ml-2"></i>
+            </a>
+        </div>
+    <?php endif; ?>
+
     <?php if ($show_booking_card && $booking_status !== 'No Booking'): ?>
     <!-- Booking Status Card -->
     <div class="bg-white rounded-xl shadow-lg p-6 dashboard-card transition-all duration-300">
