@@ -455,44 +455,105 @@ $user_id = $_SESSION['user_id'];
     <div class="overflow-x-auto scrollbar-thin">
       <table class="w-full">
         <thead>
-          <tr class="bg-sidebar-hover">
-            <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(0)">ID</th>
-            <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(1)">Client Name</th>
-            <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(2)">Service Type</th>
-            <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(3)">Date</th>
-            <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(4)">Status</th>
-            <th class="p-4 text-left text-sm font-medium text-sidebar-text">Actions</th>
+          <tr class="bg-gray-50 border-b border-sidebar-border">
+            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(0)">
+              <div class="flex items-center gap-1.5">
+                <i class="fas fa-hashtag text-sidebar-accent"></i> ID
+              </div>
+            </th>
+            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(1)">
+              <div class="flex items-center gap-1.5">
+                <i class="fas fa-user text-sidebar-accent"></i> Client
+              </div>
+            </th>
+            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(2)">
+              <div class="flex items-center gap-1.5">
+                <i class="fas fa-user-alt text-sidebar-accent"></i> Deceased
+              </div>
+            </th>
+            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(3)">
+              <div class="flex items-center gap-1.5">
+                <i class="fas fa-tag text-sidebar-accent"></i> Service Type
+              </div>
+            </th>
+            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(4)">
+              <div class="flex items-center gap-1.5">
+                <i class="fas fa-calendar text-sidebar-accent"></i> Date of Burial
+              </div>
+            </th>
+            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(5)">
+              <div class="flex items-center gap-1.5">
+                <i class="fas fa-toggle-on text-sidebar-accent"></i> Status
+              </div>
+            </th>
+            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text whitespace-nowrap">
+              <div class="flex items-center gap-1.5">
+                <i class="fas fa-cogs text-sidebar-accent"></i> Actions
+              </div>
+            </th>
           </tr>
         </thead>
-        <tbody>
-          <tr class="border-b border-sidebar-border hover:bg-sidebar-hover">
-            <td class="p-4 text-sm text-sidebar-text">#SRV-003</td>
-            <td class="p-4 text-sm text-sidebar-text">Michael Brown</td>
-            <td class="p-4 text-sm text-sidebar-text">Cremation Service</td>
-            <td class="p-4 text-sm text-sidebar-text">2023-09-10</td>
-            <td class="p-4 text-sm">
-              <span class="px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-500">Completed</span>
-            </td>
-            <td class="p-4 text-sm">
-              <button class="p-1.5 bg-blue-100 text-blue-600 rounded hover:bg-blue-200 transition-all" onclick="viewServiceDetails('SRV-003')">
-                <i class="fas fa-eye"></i>
-              </button>
-            </td>
-          </tr>
-          <tr class="border-b border-sidebar-border hover:bg-sidebar-hover">
-            <td class="p-4 text-sm text-sidebar-text">#SRV-004</td>
-            <td class="p-4 text-sm text-sidebar-text">Emily Davis</td>
-            <td class="p-4 text-sm text-sidebar-text">Visitation</td>
-            <td class="p-4 text-sm text-sidebar-text">2023-08-25</td>
-            <td class="p-4 text-sm">
-              <span class="px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-500">Completed</span>
-            </td>
-            <td class="p-4 text-sm">
-              <button class="p-1.5 bg-blue-100 text-blue-600 rounded hover:bg-blue-200 transition-all" onclick="viewServiceDetails('SRV-004')">
-                <i class="fas fa-eye"></i>
-              </button>
-            </td>
-          </tr>
+        <tbody id="fullyPaidTableBody">
+          <?php
+          $fullyPaidQuery = "SELECT s.sales_id, s.fname, s.mname, s.lname, s.suffix, 
+                  s.fname_deceased, s.mname_deceased, s.lname_deceased, s.suffix_deceased,
+                  sv.service_name, s.date_of_burial, s.balance, s.status, s.payment_status
+                  FROM sales_tb s
+                  JOIN services_tb sv ON s.service_id = sv.service_id
+                  WHERE s.status = 'Completed' AND s.payment_status = 'Fully Paid' AND s.balance = 0 AND s.branch_id = ?
+                  LIMIT ?, ?";
+          $stmt = $conn->prepare($fullyPaidQuery);
+          $stmt->bind_param("iii", $branch, $offsetFullyPaid, $recordsPerPage);
+          $stmt->execute();
+          $fullyPaidResult = $stmt->get_result();
+
+          if ($fullyPaidResult->num_rows > 0) {
+            while($row = $fullyPaidResult->fetch_assoc()) {
+              $clientName = htmlspecialchars($row['fname'] . ' ' . 
+                          ($row['mname'] ? $row['mname'] . ' ' : '') . 
+                          $row['lname'] . 
+                          ($row['suffix'] ? ' ' . $row['suffix'] : ''));
+                          
+              $deceasedName = htmlspecialchars($row['fname_deceased'] . ' ' . 
+                              ($row['mname_deceased'] ? $row['mname_deceased'] . ' ' : '') . 
+                              $row['lname_deceased'] . 
+                              ($row['suffix_deceased'] ? ' ' . $row['suffix_deceased'] : ''));
+              ?>
+              <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
+                <td class="px-4 py-3.5 text-sm text-sidebar-text font-medium">#<?php echo $row['sales_id']; ?></td>
+                <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo $clientName; ?></td>
+                <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo $deceasedName; ?></td>
+                <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo htmlspecialchars($row['service_name']); ?></td>
+                <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo htmlspecialchars($row['date_of_burial']); ?></td>
+                <td class="px-4 py-3.5 text-sm">
+                  <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-500 border border-green-200">
+                    <i class="fas fa-check-circle mr-1"></i> <?php echo htmlspecialchars($row['status']); ?>
+                  </span>
+                </td>
+                <td class="px-4 py-3.5 text-sm">
+                  <div class="flex space-x-2">
+                    <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="View Details" onclick="viewServiceDetails('<?php echo $row['sales_id']; ?>')">
+                      <i class="fas fa-eye"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              <?php
+            }
+          } else {
+            ?>
+            <tr>
+              <td colspan="7" class="px-4 py-6 text-sm text-center">
+                <div class="flex flex-col items-center">
+                  <i class="fas fa-inbox text-gray-300 text-4xl mb-3"></i>
+                  <p class="text-gray-500">No fully paid past services found</p>
+                </div>
+              </td>
+            </tr>
+            <?php
+          }
+          $stmt->close();
+          ?>
         </tbody>
       </table>
     </div>
@@ -512,58 +573,119 @@ $user_id = $_SESSION['user_id'];
     <div class="overflow-x-auto scrollbar-thin">
       <table class="w-full">
         <thead>
-          <tr class="bg-sidebar-hover">
-            <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(0)">ID</th>
-            <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(1)">Client Name</th>
-            <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(2)">Service Type</th>
-            <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(3)">Date</th>
-            <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(4)">Status</th>
-            <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(5)">Outstanding Balance</th>
-            <th class="p-4 text-left text-sm font-medium text-sidebar-text">Actions</th>
+          <tr class="bg-gray-50 border-b border-sidebar-border">
+            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortOutstandingTable(0)">
+              <div class="flex items-center gap-1.5">
+                <i class="fas fa-hashtag text-sidebar-accent"></i> ID
+              </div>
+            </th>
+            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortOutstandingTable(1)">
+              <div class="flex items-center gap-1.5">
+                <i class="fas fa-user text-sidebar-accent"></i> Client
+              </div>
+            </th>
+            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortOutstandingTable(2)">
+              <div class="flex items-center gap-1.5">
+                <i class="fas fa-user-circle text-sidebar-accent"></i> Deceased
+              </div>
+            </th>
+            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortOutstandingTable(3)">
+              <div class="flex items-center gap-1.5">
+                <i class="fas fa-tag text-sidebar-accent"></i> Service Type
+              </div>
+            </th>
+            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortOutstandingTable(4)">
+              <div class="flex items-center gap-1.5">
+                <i class="fas fa-calendar text-sidebar-accent"></i> Date of Burial
+              </div>
+            </th>
+            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortOutstandingTable(5)">
+              <div class="flex items-center gap-1.5">
+                <i class="fas fa-toggle-on text-sidebar-accent"></i> Status
+              </div>
+            </th>
+            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortOutstandingTable(6)">
+              <div class="flex items-center gap-1.5">
+                <i class="fas fa-peso-sign text-sidebar-accent"></i> Outstanding Balance
+              </div>
+            </th>
+            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text whitespace-nowrap">
+              <div class="flex items-center gap-1.5">
+                <i class="fas fa-cogs text-sidebar-accent"></i> Actions
+              </div>
+            </th>
           </tr>
         </thead>
-        <tbody>
-          <tr class="border-b border-sidebar-border hover:bg-sidebar-hover">
-            <td class="p-4 text-sm text-sidebar-text">#SRV-005</td>
-            <td class="p-4 text-sm text-sidebar-text">Robert Johnson</td>
-            <td class="p-4 text-sm text-sidebar-text">Burial Service</td>
-            <td class="p-4 text-sm text-sidebar-text">2023-09-05</td>
-            <td class="p-4 text-sm">
-              <span class="px-2.5 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-500">Completed with Balance</span>
-            </td>
-            <td class="p-4 text-sm text-sidebar-text">₱350</td>
-            <td class="p-4 text-sm">
-              <button class="p-1.5 bg-blue-100 text-blue-600 rounded hover:bg-blue-200 transition-all" onclick="viewServiceDetails('SRV-005')">
-                <i class="fas fa-eye"></i>
-              </button>
-              <button class="p-1.5 bg-green-100 text-green-600 rounded hover:bg-green-200 transition-all" onclick="openRecordPaymentModal('SRV-005','Robert Johnson','350')">
-                <i class="fas fa-money-bill-wave"></i>
-              </button>
-            </td>
-          </tr>
-          <tr class="border-b border-sidebar-border hover:bg-sidebar-hover">
-            <td class="p-4 text-sm text-sidebar-text">#SRV-006</td>
-            <td class="p-4 text-sm text-sidebar-text">Sarah Wilson</td>
-            <td class="p-4 text-sm text-sidebar-text">Memorial Service</td>
-            <td class="p-4 text-sm text-sidebar-text">2023-08-15</td>
-            <td class="p-4 text-sm">
-              <span class="px-2.5 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-500">Completed with Balance</span>
-            </td>
-            <td class="p-4 text-sm text-sidebar-text">₱200</td>
-            <td class="p-4 text-sm">
-              <button class="p-1.5 bg-blue-100 text-blue-600 rounded hover:bg-blue-200 transition-all" onclick="viewServiceDetails('SRV-006')">
-                <i class="fas fa-eye"></i>
-              </button>
-              <button class="p-1.5 bg-green-100 text-green-600 rounded hover:bg-green-200 transition-all" onclick="openRecordPaymentModal('SRV-006','Sarah Wilson','200')">
-                <i class="fas fa-money-bill-wave"></i>
-              </button>
-            </td>
-          </tr>
+        <tbody id="outstandingTableBody">
+          <?php
+          $withBalanceQuery = "SELECT s.sales_id, s.fname, s.mname, s.lname, s.suffix, 
+                  s.fname_deceased, s.mname_deceased, s.lname_deceased, s.suffix_deceased,
+                  sv.service_name, s.date_of_burial, s.balance, s.status, s.payment_status
+                  FROM sales_tb s
+                  JOIN services_tb sv ON s.service_id = sv.service_id
+                  WHERE s.status = 'Completed' AND s.payment_status = 'With Balance' AND s.branch_id = ?
+                  LIMIT ?, ?";
+          $stmt = $conn->prepare($withBalanceQuery);
+          $stmt->bind_param("iii", $branch, $offsetOutstanding, $recordsPerPage);
+          $stmt->execute();
+          $withBalanceResult = $stmt->get_result();
+
+          if ($withBalanceResult->num_rows > 0) {
+            while($row = $withBalanceResult->fetch_assoc()) {
+              $clientName = htmlspecialchars($row['fname'] . ' ' . 
+                          ($row['mname'] ? $row['mname'] . ' ' : '') . 
+                          $row['lname'] . 
+                          ($row['suffix'] ? ' ' . $row['suffix'] : ''));
+                          
+              $deceasedName = htmlspecialchars($row['fname_deceased'] . ' ' . 
+                              ($row['mname_deceased'] ? $row['mname_deceased'] . ' ' : '') . 
+                              $row['lname_deceased'] . 
+                              ($row['suffix_deceased'] ? ' ' . $row['suffix_deceased'] : ''));
+              ?>
+              <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
+                <td class="px-4 py-4 text-sm text-sidebar-text font-medium">#<?php echo $row['sales_id']; ?></td>
+                <td class="px-4 py-4 text-sm text-sidebar-text"><?php echo $clientName; ?></td>
+                <td class="px-4 py-4 text-sm text-sidebar-text"><?php echo $deceasedName; ?></td>
+                <td class="px-4 py-4 text-sm text-sidebar-text"><?php echo htmlspecialchars($row['service_name']); ?></td>
+                <td class="px-4 py-4 text-sm text-sidebar-text"><?php echo htmlspecialchars($row['date_of_burial']); ?></td>
+                <td class="px-4 py-4 text-sm">
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-500 border border-yellow-200">
+                    <i class="fas fa-exclamation-circle mr-1"></i> <?php echo htmlspecialchars($row['payment_status']); ?>
+                  </span>
+                </td>
+                <td class="px-4 py-4 text-sm font-medium text-sidebar-text">₱<?php echo number_format($row['balance'], 2); ?></td>
+                <td class="px-4 py-4 text-sm">
+                  <div class="flex space-x-2">
+                    <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="View Details" onclick="viewServiceDetails('<?php echo $row['sales_id']; ?>')">
+                      <i class="fas fa-eye"></i>
+                    </button>
+                    <button class="p-2 bg-orange-100 text-orange-600 rounded-lg hover:bg-orange-200 transition-all tooltip" title="Record Payment" onclick="openRecordPaymentModal('<?php echo $row['sales_id']; ?>','<?php echo $clientName; ?>','<?php echo $row['balance']; ?>')">
+                      <i class="fas fa-money-bill-wave"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              <?php
+            }
+          } else {
+            ?>
+            <tr>
+              <td colspan="8" class="px-4 py-6 text-sm text-center">
+                <div class="flex flex-col items-center">
+                  <i class="fas fa-inbox text-gray-300 text-4xl mb-3"></i>
+                  <p class="text-gray-500">No past services with outstanding balance found</p>
+                </div>
+              </td>
+            </tr>
+            <?php
+          }
+          $stmt->close();
+          ?>
         </tbody>
       </table>
     </div>
   </div>
-</div>
+        </div>  
 
   <!-- Modal for Editing Service -->
 <div class="fixed top-0 left-0 w-full h-full bg-black bg-opacity-60 flex items-center justify-center z-50 hidden" id="editServiceModal">
