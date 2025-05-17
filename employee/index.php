@@ -94,7 +94,7 @@ $accrual_revenue = $accrual_data['accrual_revenue'] ? $accrual_data['accrual_rev
 // Ongoing services (status = 'Pending')
 $ongoing_query = "SELECT COUNT(*) as ongoing_count FROM sales_tb WHERE status = 'Pending' AND branch_id = ?";
 $stmt = $conn->prepare($ongoing_query);
-$stmt = bind_param("i",$branch);
+$stmt -> bind_param("i",$branch);
 $stmt->execute();
 $ongoing_result = $stmt->get_result();
 $ongoing_data = $ongoing_result->fetch_assoc();
