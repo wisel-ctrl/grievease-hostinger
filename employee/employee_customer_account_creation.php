@@ -1731,7 +1731,42 @@ function openEditCustomerAccountModal(userId) {
                 // Add modal to DOM
                 document.body.insertAdjacentHTML('beforeend', modalHTML);
 
-                
+                // Add event listeners for email and phone changes
+                const emailInput = document.querySelector('#editCustomerModal input[name="email"]');
+                emailInput.addEventListener('change', function() {
+                    emailChanged = this.value !== originalEmail;
+                });
+
+
+                // Add event listener for Escape key
+                document.addEventListener('keydown', function handleEscape(e) {
+                    if (e.key === 'Escape') {
+                        closeEditCustomerModal();
+                        document.removeEventListener('keydown', handleEscape);
+                    }
+                });
+            } else {
+                Swal.fire({
+                    title: 'Error!',
+                    text: data.message || 'Failed to fetch customer details',
+                    icon: 'error',
+                    confirmButtonColor: '#d33'
+                });
+            }
+        })
+        .catch(error => {
+            Swal.close();
+            Swal.fire({
+                title: 'Error!',
+                text: 'An error occurred while fetching customer details',
+                icon: 'error',
+                confirmButtonColor: '#d33'
+            });
+            console.error('Error:', error);
+        });
+}
+
+
     // Add event listeners for real-time validation in edit modal
 firstNameInput.addEventListener('input', function() {
     validateEditNameField(this, true);
@@ -1787,40 +1822,6 @@ phoneInput.addEventListener('paste', function(e) {
     pastedText = pastedText.replace(/\D/g, '');
     document.execCommand('insertText', false, pastedText);
 });
-
-                // Add event listeners for email and phone changes
-                const emailInput = document.querySelector('#editCustomerModal input[name="email"]');
-                emailInput.addEventListener('change', function() {
-                    emailChanged = this.value !== originalEmail;
-                });
-
-                // Add event listener for Escape key
-                document.addEventListener('keydown', function handleEscape(e) {
-                    if (e.key === 'Escape') {
-                        closeEditCustomerModal();
-                        document.removeEventListener('keydown', handleEscape);
-                    }
-                });
-            } else {
-                Swal.fire({
-                    title: 'Error!',
-                    text: data.message || 'Failed to fetch customer details',
-                    icon: 'error',
-                    confirmButtonColor: '#d33'
-                });
-            }
-        })
-        .catch(error => {
-            Swal.close();
-            Swal.fire({
-                title: 'Error!',
-                text: 'An error occurred while fetching customer details',
-                icon: 'error',
-                confirmButtonColor: '#d33'
-            });
-            console.error('Error:', error);
-        });
-}
 
 // Name field validation for edit modal
 function validateEditNameFields() {
