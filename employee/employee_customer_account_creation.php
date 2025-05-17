@@ -388,9 +388,10 @@ $user_id = $_SESSION['user_id'];
           First Name <span class="text-red-500">*</span>
         </label>
         <div class="relative">
-          <input type="text" id="firstName" name="firstName" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="First Name" required>
+          <input type="text" id="firstName" name="firstName" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="First Name" required
+                 oninput="validateName(this, 'firstNameError')">
         </div>
-        <p id="firstNameError" class="text-red-500 text-xs mt-1 hidden"></p>
+        <p id="firstNameError" class="text-red-500 text-xs mt-1 hidden">First name must be at least 2 letters</p>
       </div>
       
       <div>
@@ -398,9 +399,10 @@ $user_id = $_SESSION['user_id'];
           Last Name <span class="text-red-500">*</span>
         </label>
         <div class="relative">
-          <input type="text" id="lastName" name="lastName" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="Last Name" required>
+          <input type="text" id="lastName" name="lastName" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="Last Name" required
+                 oninput="validateName(this, 'lastNameError')">
         </div>
-        <p id="lastNameError" class="text-red-500 text-xs mt-1 hidden"></p>
+        <p id="lastNameError" class="text-red-500 text-xs mt-1 hidden">Last name must be at least 2 letters</p>
       </div>
       
       <div class="flex flex-col sm:flex-row gap-2 sm:gap-4">
@@ -409,7 +411,8 @@ $user_id = $_SESSION['user_id'];
             Middle Name
           </label>
           <div class="relative">
-            <input type="text" id="middleName" name="middleName" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="Middle Name">
+            <input type="text" id="middleName" name="middleName" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="Middle Name"
+                   oninput="validateName(this, 'middleNameError')">
           </div>
           <p id="middleNameError" class="text-red-500 text-xs mt-1 hidden"></p>
         </div>
@@ -440,9 +443,11 @@ $user_id = $_SESSION['user_id'];
         <div class="relative">
           <input type="date" id="birthdate" name="birthdate" 
             class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
-            max="<?php echo date('Y-m-d'); ?>" required>
+            max="<?php echo date('Y-m-d'); ?>" 
+            min="<?php echo date('Y-m-d', strtotime('-100 years')); ?>"
+            onchange="validateBirthdate(this)" required>
         </div>
-        <p id="birthdateError" class="text-red-500 text-xs mt-1 hidden"></p>
+        <p id="birthdateError" class="text-red-500 text-xs mt-1 hidden">Please enter a valid birthdate (must be between 100 years ago and today)</p>
       </div>
       
       <div>
@@ -450,7 +455,8 @@ $user_id = $_SESSION['user_id'];
           Branch Location <span class="text-red-500">*</span>
         </label>
         <div class="relative">
-          <select id="branchLocation" name="branchLocation" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
+          <select id="branchLocation" name="branchLocation" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required
+                  onchange="validateBranch(this)">
             <option value="">Select Branch</option>
             <!-- Branch options will be populated by AJAX -->
           </select>
@@ -464,9 +470,10 @@ $user_id = $_SESSION['user_id'];
           Email Address <span class="text-red-500">*</span>
         </label>
         <div class="relative">
-          <input type="email" id="customerEmail" name="customerEmail" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="example@email.com" required>
+          <input type="email" id="customerEmail" name="customerEmail" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="example@email.com" required
+                 oninput="validateEmail(this)">
         </div>
-        <p id="emailError" class="text-red-500 text-xs mt-1 hidden"></p>
+        <p id="emailError" class="text-red-500 text-xs mt-1 hidden">Please enter a valid email address</p>
       </div>
       
       <div>
@@ -474,9 +481,10 @@ $user_id = $_SESSION['user_id'];
           Phone Number <span class="text-red-500">*</span>
         </label>
         <div class="relative">
-          <input type="tel" id="customerPhone" name="customerPhone" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="Phone Number" required>
+          <input type="tel" id="customerPhone" name="customerPhone" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="Phone Number" required
+                 oninput="validatePhoneNumber(this)" maxlength="11">
         </div>
-        <p id="phoneError" class="text-red-500 text-xs mt-1 hidden"></p>
+        <p id="phoneError" class="text-red-500 text-xs mt-1 hidden">Please enter a valid Philippine phone number (09XXXXXXXXX)</p>
       </div>
       
       <div>
@@ -515,7 +523,7 @@ $user_id = $_SESSION['user_id'];
   
   <!-- Form Footer -->
   <div class="px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row sm:justify-end gap-2 sm:gap-4 border-t border-gray-200 bg-white rounded-b-xl">
-    <button class="w-full sm:w-auto px-5 sm:px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="confirmSubmitCustomerForm()">
+    <button class="w-full sm:w-auto px-5 sm:px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="validateAndSubmitForm()">
       Create Account
     </button>
   </div>
