@@ -3248,10 +3248,6 @@ if (zipCodeInput) {
     });
 }
 
-// Add this to your existing JavaScript code
-
-// Add this to your existing JavaScript code
-
 // Update the DOMContentLoaded event listener to include both notes fields
 document.addEventListener('DOMContentLoaded', function() {
     // Assign staff modal notes

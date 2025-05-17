@@ -48,7 +48,7 @@ header("Pragma: no-cache");
 // Database connection
 require_once '../db_connect.php';
 $user_id = $_SESSION['user_id'];
-  $query = "SELECT first_name , last_name , email , birthdate FROM users WHERE id = ?";
+  $query = "SELECT first_name , last_name , email , birthdate, branch_loc FROM users WHERE id = ?";
   $stmt = $conn->prepare($query);
   $stmt->bind_param("i", $user_id);
   $stmt->execute();
@@ -57,6 +57,7 @@ $user_id = $_SESSION['user_id'];
   $first_name = $row['first_name']; // We're confident user_id exists
   $last_name = $row['last_name'];
   $email = $row['email'];
+  $branch = $row['branch_loc'];
 
 ?>
 
@@ -315,59 +316,126 @@ $user_id = $_SESSION['user_id'];
     <div class="overflow-x-auto scrollbar-thin">
       <table class="w-full">
         <thead>
-          <tr class="bg-sidebar-hover">
-            <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(0)">ID</th>
-            <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(1)">Client Name</th>
-            <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(2)">Service Type</th>
-            <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(3)">Date</th>
-            <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(4)">Status</th>
-            <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(5)">Outstanding Balance</th>
-            <th class="p-4 text-left text-sm font-medium text-sidebar-text">Actions</th>
+          <tr class="bg-gray-50 border-b border-sidebar-border">
+            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(0)">
+              <div class="flex items-center gap-1.5">
+                <i class="fas fa-hashtag text-sidebar-accent"></i> ID 
+              </div>
+            </th>
+            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(1)">
+              <div class="flex items-center gap-1.5">
+                <i class="fas fa-user text-sidebar-accent"></i> Client 
+              </div>
+            </th>
+            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(2)">
+              <div class="flex items-center gap-1.5">
+                <i class="fas fa-user-alt text-sidebar-accent"></i> Deceased 
+              </div>
+            </th>
+            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(3)">
+              <div class="flex items-center gap-1.5">
+                <i class="fas fa-tag text-sidebar-accent"></i> Service Type 
+              </div>
+            </th>
+            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(4)">
+              <div class="flex items-center gap-1.5">
+                <i class="fas fa-calendar text-sidebar-accent"></i> Date of Burial 
+              </div>
+            </th>
+            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(5)">
+              <div class="flex items-center gap-1.5">
+                <i class="fas fa-toggle-on text-sidebar-accent"></i> Status 
+              </div>
+            </th>
+            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(6)">
+              <div class="flex items-center gap-1.5">
+                <i class="fas fa-peso-sign text-sidebar-accent"></i> Outstanding Balance 
+              </div>
+            </th>
+            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text whitespace-nowrap">
+              <div class="flex items-center gap-1.5">
+                <i class="fas fa-cogs text-sidebar-accent"></i> Actions
+              </div>
+            </th>
           </tr>
         </thead>
-        <tbody>
-          <tr class="border-b border-sidebar-border hover:bg-sidebar-hover">
-            <td class="p-4 text-sm text-sidebar-text">#SRV-001</td>
-            <td class="p-4 text-sm text-sidebar-text">John Doe</td>
-            <td class="p-4 text-sm text-sidebar-text">Memorial Service</td>
-            <td class="p-4 text-sm text-sidebar-text">2023-10-15</td>
-            <td class="p-4 text-sm">
-              <span class="px-2.5 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-500">Pending</span>
-            </td>
-            <td class="p-4 text-sm text-sidebar-text">₱500</td>
-            <td class="p-4 text-sm">
-              <button class="p-1.5 bg-blue-100 text-blue-600 rounded hover:bg-blue-200 transition-all" onclick="openEditServiceModal('SRV-001')">
-                <i class="fas fa-edit"></i>
-              </button>
-              <button class="p-1.5 bg-green-100 text-green-600 rounded hover:bg-green-200 transition-all" onclick="openAssignStaffModal('SRV-001')">
-                <i class="fas fa-users"></i>
-              </button>
-              <button class="p-1.5 bg-purple-100 text-purple-600 rounded hover:bg-purple-200 transition-all" onclick="openCompleteModal('SRV-001')">
-                <i class="fas fa-check"></i>
-              </button>
-            </td>
-          </tr>
-          <tr class="border-b border-sidebar-border hover:bg-sidebar-hover">
-            <td class="p-4 text-sm text-sidebar-text">#SRV-002</td>
-            <td class="p-4 text-sm text-sidebar-text">Jane Smith</td>
-            <td class="p-4 text-sm text-sidebar-text">Funeral Service</td>
-            <td class="p-4 text-sm text-sidebar-text">2023-10-20</td>
-            <td class="p-4 text-sm">
-              <span class="px-2.5 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-500">Pending</span>
-            </td>
-            <td class="p-4 text-sm text-sidebar-text">₱0</td>
-            <td class="p-4 text-sm">
-              <button class="p-1.5 bg-blue-100 text-blue-600 rounded hover:bg-blue-200 transition-all" onclick="openEditServiceModal('SRV-002')">
-                <i class="fas fa-edit"></i>
-              </button>
-              <button class="p-1.5 bg-green-100 text-green-600 rounded hover:bg-green-200 transition-all" onclick="openAssignStaffModal('SRV-002')">
-                <i class="fas fa-users"></i>
-              </button>
-              <button class="p-1.5 bg-purple-100 text-purple-600 rounded hover:bg-purple-200 transition-all" onclick="openCompleteModal('SRV-002')">
-                <i class="fas fa-check"></i>
-              </button>
-            </td>
-          </tr>
+        <tbody id="ongoingServiceTableBody">
+          <?php
+          $ongoingQuery = "SELECT s.sales_id, s.fname, s.mname, s.lname, s.suffix, 
+                  s.fname_deceased, s.mname_deceased, s.lname_deceased, s.suffix_deceased,
+                  sv.service_name, s.date_of_burial, s.balance, s.status, s.customerID, s.payment_status,
+                  (SELECT COUNT(*) FROM employee_service_payments esp WHERE esp.sales_id = s.sales_id) AS staff_assigned
+                  FROM sales_tb s
+                  JOIN services_tb sv ON s.service_id = sv.service_id
+                  WHERE s.status = 'Pending' AND s.branch_id = '$branch'
+                  LIMIT $offsetOngoing, $recordsPerPage";
+          $ongoingResult = $conn->query($ongoingQuery);
+          
+          if ($ongoingResult->num_rows > 0) {
+            while($row = $ongoingResult->fetch_assoc()) {
+              $clientName = htmlspecialchars($row['fname'] . ' ' . 
+                          ($row['mname'] ? $row['mname'] . ' ' : '') . 
+                          $row['lname'] . 
+                          ($row['suffix'] ? ' ' . $row['suffix'] : ''));
+                          
+              $deceasedName = htmlspecialchars($row['fname_deceased'] . ' ' . 
+                              ($row['mname_deceased'] ? $row['mname_deceased'] . ' ' : '') . 
+                              $row['lname_deceased'] . 
+                              ($row['suffix_deceased'] ? ' ' . $row['suffix_deceased'] : ''));
+              ?>
+              <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
+                <td class="px-4 py-3.5 text-sm text-sidebar-text font-medium">#<?php echo $row['sales_id']; ?></td>
+                <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo $clientName; ?></td>
+                <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo $deceasedName; ?></td>
+                <td class="px-4 py-3.5 text-sm text-sidebar-text">
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">
+                    <?php echo htmlspecialchars($row['service_name']); ?>
+                  </span>
+                </td>
+                <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo htmlspecialchars($row['date_of_burial']); ?></td>
+                <td class="px-4 py-3.5 text-sm">
+                  <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-500 border border-orange-200">
+                    <i class="fas fa-pause-circle mr-1"></i> <?php echo htmlspecialchars($row['status']); ?>
+                  </span>
+                </td>
+                <td class="px-4 py-3.5 text-sm font-medium text-sidebar-text">₱<?php echo number_format($row['balance'], 2); ?></td>
+                <td class="px-4 py-3.5 text-sm">
+                  <div class="flex space-x-2">
+                    <button class="p-2 bg-yellow-100 text-yellow-600 rounded-lg hover:bg-yellow-200 transition-all tooltip" title="Edit Service" onclick="openEditServiceModal('<?php echo $row['sales_id']; ?>')">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                    <?php if ($row['staff_assigned'] == 0): ?>
+                      <button class="p-2 bg-purple-100 text-purple-600 rounded-lg hover:bg-purple-200 transition-all tooltip assign-staff-btn" 
+                              title="Assign Staff"
+                              onclick="checkCustomerBeforeAssign('<?php echo $row['sales_id']; ?>', <?php echo $row['customerID'] ? 'true' : 'false'; ?>)"
+                              <?php echo !$row['customerID'] ? 'disabled' : ''; ?>>
+                        <i class="fas fa-users"></i>
+                      </button>
+                    <?php endif; ?>
+                    <button class="p-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition-all tooltip complete-btn" 
+                            title="Complete Service"
+                            onclick="checkCustomerBeforeComplete('<?php echo $row['sales_id']; ?>', <?php echo $row['customerID'] ? 'true' : 'false'; ?>)"
+                            <?php echo !$row['customerID'] ? 'disabled' : ''; ?>>
+                      <i class="fas fa-check"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              <?php
+            }
+          } else {
+            ?>
+            <tr>
+              <td colspan="8" class="p-6 text-sm text-center">
+                <div class="flex flex-col items-center">
+                  <i class="fas fa-inbox text-gray-300 text-4xl mb-3"></i>
+                  <p class="text-gray-500">No ongoing services found</p>
+                </div>
+              </td>
+            </tr>
+            <?php
+          }
+          ?>
         </tbody>
       </table>
     </div>
