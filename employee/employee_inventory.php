@@ -660,7 +660,11 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == 1) {
           <div class="relative">
             <input type="text" id="itemName" name="itemName" required 
                    class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
-                   placeholder="Item Name">
+                   placeholder="Item Name"
+                   minlength="2"
+                   oninput="validateNameInput(this)"
+                   onpaste="cleanPastedName(this)">
+            <div id="itemNameError" class="text-red-500 text-xs mt-1 hidden">Item name must contain only letters and spaces (minimum 2 characters)</div>
           </div>
         </div>
         
@@ -689,6 +693,7 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == 1) {
               }
               ?>
             </select>
+            <div id="categoryError" class="text-red-500 text-xs mt-1 hidden">Please select a category</div>
           </div>
         </div>
         
@@ -698,7 +703,11 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == 1) {
             Quantity <span class="text-red-500">*</span>
           </label>
           <div class="relative">
-            <input type="number" id="quantity" name="quantity" min="1" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="Quantity">
+            <input type="number" id="quantity" name="quantity" min="0" required 
+                   class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
+                   placeholder="Quantity"
+                   oninput="validateQuantity(this)">
+            <div id="quantityError" class="text-red-500 text-xs mt-1 hidden">Quantity must be 0 or more</div>
           </div>
         </div>
         
@@ -713,7 +722,9 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == 1) {
             </div>
             <input type="number" id="unitPrice" name="unitPrice" step="0.01" min="0" required 
                    class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
-                   placeholder="0.00">
+                   placeholder="0.00"
+                   oninput="validateUnitPrice(this)">
+            <div id="unitPriceError" class="text-red-500 text-xs mt-1 hidden">Price must be 0.00 or more</div>
           </div>
         </div>
         
@@ -731,23 +742,145 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == 1) {
                      class="w-full focus:outline-none"
                      onchange="previewImage(this)">
             </div>
+            <div id="imageError" class="text-red-500 text-xs mt-1 hidden">Please upload a valid image file</div>
           </div>
         </div>
- 
-    </div>
-    
-    <!-- Modal Footer --> 
+        
+        <!-- Modal Footer --> 
         <div class="px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row sm:justify-end gap-2 sm:gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
-            <button type="button" class="w-full sm:w-auto px-4 sm:px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center" onclick="closeAddInventoryModal()">
-                Cancel
-            </button>
-            <button type="submit" id="submitInventoryBtn" class="w-full sm:w-auto px-5 sm:px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center">
-                Add Item
-            </button>
+          <button type="button" class="w-full sm:w-auto px-4 sm:px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center" onclick="closeAddInventoryModal()">
+            Cancel
+          </button>
+          <button type="submit" id="submitInventoryBtn" class="w-full sm:w-auto px-5 sm:px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center">
+            Add Item
+          </button>
         </div>
-    </form>
+      </form>
+    </div>
   </div>
 </div>
+
+<script>
+// Validate name input (letters only, capitalize first letter, no multiple spaces)
+function validateNameInput(input) {
+  const errorElement = document.getElementById(input.id + 'Error');
+  let value = input.value;
+  
+  // Remove any numbers or special characters
+  value = value.replace(/[^a-zA-Z\s]/g, '');
+  
+  // Replace multiple spaces with single space
+  value = value.replace(/\s+/g, ' ');
+  
+  // Capitalize first letter of each word
+  value = value.replace(/\b\w/g, char => char.toUpperCase());
+  
+  // If user tries to start with space or add space before 2 characters
+  if ((value.startsWith(' ') || (value.includes(' ') && value.replace(/\s/g, '').length < 2))) {
+    value = value.trim();
+  }
+  
+  input.value = value;
+  
+  // Validate minimum length
+  if (input.required && value.trim().length < 2) {
+    errorElement.classList.remove('hidden');
+    return false;
+  } else {
+    errorElement.classList.add('hidden');
+    return true;
+  }
+}
+
+// Clean pasted text for name fields
+function cleanPastedName(input) {
+  setTimeout(() => {
+    validateNameInput(input);
+  }, 0);
+}
+
+// Validate quantity (must be 0 or more)
+function validateQuantity(input) {
+  const errorElement = document.getElementById(input.id + 'Error');
+  let value = parseFloat(input.value);
+  
+  if (isNaN(value) || value < 0) {
+    errorElement.classList.remove('hidden');
+    return false;
+  } else {
+    errorElement.classList.add('hidden');
+    return true;
+  }
+}
+
+// Validate unit price (must be 0.00 or more)
+function validateUnitPrice(input) {
+  const errorElement = document.getElementById(input.id + 'Error');
+  let value = parseFloat(input.value);
+  
+  if (isNaN(value) || value < 0) {
+    errorElement.classList.remove('hidden');
+    return false;
+  } else {
+    errorElement.classList.add('hidden');
+    return true;
+  }
+}
+
+// Validate the form before submission
+document.getElementById('addInventoryForm').addEventListener('submit', function(e) {
+  const itemNameValid = validateNameInput(document.getElementById('itemName'));
+  const categoryValid = document.getElementById('category_id').value !== '';
+  const quantityValid = validateQuantity(document.getElementById('quantity'));
+  const unitPriceValid = validateUnitPrice(document.getElementById('unitPrice'));
+  
+  // Show error if category not selected
+  if (!categoryValid) {
+    document.getElementById('categoryError').classList.remove('hidden');
+  } else {
+    document.getElementById('categoryError').classList.add('hidden');
+  }
+  
+  if (!itemNameValid || !categoryValid || !quantityValid || !unitPriceValid) {
+    e.preventDefault();
+    // Scroll to the first error
+    const firstError = document.querySelector('.text-red-500:not(.hidden)');
+    if (firstError) {
+      firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }
+});
+
+// Existing image preview function
+function previewImage(input) {
+  const errorElement = document.getElementById('imageError');
+  const previewContainer = document.getElementById('imagePreviewContainer');
+  const preview = document.getElementById('imagePreview');
+  
+  if (input.files && input.files[0]) {
+    const file = input.files[0];
+    const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    
+    if (validTypes.includes(file.type)) {
+      const reader = new FileReader();
+      
+      reader.onload = function(e) {
+        preview.src = e.target.result;
+        previewContainer.classList.remove('hidden');
+        errorElement.classList.add('hidden');
+      }
+      
+      reader.readAsDataURL(file);
+    } else {
+      errorElement.classList.remove('hidden');
+      previewContainer.classList.add('hidden');
+      input.value = '';
+    }
+  } else {
+    previewContainer.classList.add('hidden');
+  }
+}
+</script>
 
 <!-- Edit Inventory Modal -->
 <div id="editInventoryModal" class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto">
