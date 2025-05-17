@@ -485,70 +485,37 @@ $ongoing_services = $ongoing_data['ongoing_count'];
 
   <!-- Recent Inventory Activity -->
   <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 mb-8">
-    <div class="flex justify-between items-center p-5 border-b border-sidebar-border">
-      <h3 class="font-medium text-sidebar-text">Recent Inventory Activity</h3>
-      <button class="px-4 py-2 bg-sidebar-accent text-white rounded-md text-sm flex items-center hover:bg-darkgold transition-all duration-300">
-        <i class="fas fa-box mr-2"></i> Manage Inventory
-      </button>
-    </div>
-    <div class="overflow-x-auto scrollbar-thin">
-      <table class="w-full">
-        <thead>
-          <tr class="bg-sidebar-hover">
-            <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(0)">
-              <div class="flex items-center">
-                Item <i class="fas fa-sort ml-1 text-gray-400"></i>
-              </div>
-            </th>
-            <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(1)">
-              <div class="flex items-center">
-                Category <i class="fas fa-sort ml-1 text-gray-400"></i>
-              </div>
-            </th>
-            <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(2)">
-              <div class="flex items-center">
-                Action <i class="fas fa-sort ml-1 text-gray-400"></i>
-              </div>
-            </th>
-            <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(3)">
-              <div class="flex items-center">
-                Quantity <i class="fas fa-sort ml-1 text-gray-400"></i>
-              </div>
-            </th>
-            <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable(4)">
-              <div class="flex items-center">
-                Date <i class="fas fa-sort ml-1 text-gray-400"></i>
-              </div>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr class="border-b border-sidebar-border hover:bg-sidebar-hover">
-            <td class="p-4 text-sm text-sidebar-text">Oak Casket - Premium</td>
-            <td class="p-4 text-sm text-sidebar-text">Caskets</td>
-            <td class="p-4 text-sm text-sidebar-text">Stock Added</td>
-            <td class="p-4 text-sm text-sidebar-text">+5</td>
-            <td class="p-4 text-sm text-sidebar-text">Mar 5, 2025</td>
-          </tr>
-          <tr class="border-b border-sidebar-border hover:bg-sidebar-hover">
-            <td class="p-4 text-sm text-sidebar-text">Floral Arrangement - Classic</td>
-            <td class="p-4 text-sm text-sidebar-text">Flowers</td>
-            <td class="p-4 text-sm text-sidebar-text">Stock Removed</td>
-            <td class="p-4 text-sm text-sidebar-text">-3</td>
-            <td class="p-4 text-sm text-sidebar-text">Mar 4, 2025</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    <div class="p-4 border-t border-sidebar-border flex justify-between items-center">
-      <div class="text-sm text-gray-500">Showing 2 of 5 activities</div>
-      <div class="flex space-x-1">
-        <button class="px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">&laquo;</button>
-        <button class="px-3 py-1 bg-sidebar-accent text-white rounded text-sm">1</button>
-        <button class="px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">2</button>
-        <button class="px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">&raquo;</button>
+      <div class="flex justify-between items-center p-5 border-b border-sidebar-border">
+          <h3 class="font-medium text-sidebar-text">Recent Inventory Activity</h3>
+          <button class="px-4 py-2 bg-sidebar-accent text-white rounded-md text-sm flex items-center hover:bg-darkgold transition-all duration-300">
+              <i class="fas fa-box mr-2"></i> Manage Inventory
+          </button>
       </div>
-    </div>
+      <div class="overflow-x-auto scrollbar-thin">
+          <table class="w-full">
+              <thead>
+                  <tr class="bg-sidebar-hover">
+                      <th class="p-4 text-left text-sm font-medium text-sidebar-text">Item</th>
+                      <th class="p-4 text-left text-sm font-medium text-sidebar-text">ID</th>
+                      <th class="p-4 text-left text-sm font-medium text-sidebar-text">Action</th>
+                      <th class="p-4 text-left text-sm font-medium text-sidebar-text">Date</th>
+                      <th class="p-4 text-left text-sm font-medium text-sidebar-text">Quantity</th>
+                  </tr>
+              </thead>
+              <tbody id="inventoryLogsBody">
+                  <!-- Loading indicator row -->
+                  <tr id="inventoryLoadingIndicator" class="border-b border-sidebar-border">
+                      <td colspan="5" class="p-4 text-sm text-center text-sidebar-text">
+                          <i class="fas fa-circle-notch fa-spin mr-2"></i> Loading inventory activity...
+                      </td>
+                  </tr>
+              </tbody>
+          </table>
+      </div>
+      <div class="p-4 border-t border-sidebar-border flex justify-between items-center">
+          <div id="inventoryPaginationInfo" class="text-sm text-gray-500">Loading...</div>
+          <div id="paginationControls" class="flex space-x-1"></div>
+      </div>
   </div>
 
   <!-- Footer -->
@@ -595,6 +562,195 @@ $ongoing_services = $ongoing_data['ongoing_count'];
       dropdown.classList.add('hidden');
     }
   });
+</script>
+<script>
+// Load inventory logs when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    loadInventoryLogs(1);
+});
+
+function loadInventoryLogs(page = 1) {
+    const loadingIndicator = document.getElementById('inventoryLoadingIndicator');
+    const tableBody = document.getElementById('inventoryLogsBody');
+    const paginationInfo = document.getElementById('inventoryPaginationInfo');
+    const paginationControls = document.getElementById('paginationControls');
+    
+    loadingIndicator.classList.remove('hidden');
+    tableBody.innerHTML = '';
+    
+    fetch(`indexFunctions/fetch_inventory_logs.php?page=${page}&branch=<?php echo $branch; ?>`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Clear any existing rows
+                tableBody.innerHTML = '';
+                
+                // Populate table with logs
+                data.logs.forEach(log => {
+                    const branchName = log.branch_name
+                    ? log.branch_name.charAt(0).toUpperCase() + log.branch_name.slice(1)
+                    : 'N/A';
+                    const row = document.createElement('tr');
+                    row.className = 'border-b border-sidebar-border hover:bg-sidebar-hover transition-colors';
+                    
+                    // Determine badge styling
+                    const badgeStyles = {
+                        'Depleted': 'bg-red-100 text-red-600 border-red-200',
+                        'Low Stock': 'bg-yellow-100 text-yellow-600 border-yellow-200',
+                        'Restocked': 'bg-green-100 text-green-600 border-green-200',
+                        'Added': 'bg-green-100 text-green-600 border-green-200',
+                        'Removed': 'bg-orange-100 text-orange-600 border-orange-200',
+                        'Adjusted': 'bg-blue-100 text-blue-600 border-blue-200'
+                    };
+                    
+                    const badgeClass = badgeStyles[log.activity_type] || 'bg-gray-100 text-gray-600 border-gray-200';
+                    const badgeIcon = getActivityIcon(log.activity_type);
+                    
+                    // Format date
+                    const activityDate = new Date(log.activity_date);
+                    const formattedDate = activityDate.toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+                    
+                    // Format quantity
+                    const quantityDisplay = formatQuantityChange(log.quantity_change, log.old_quantity, log.new_quantity);
+
+                    row.innerHTML = `
+                        <td class="px-4 py-3.5 text-sm text-sidebar-text">${log.item_name}</td>
+                        <td class="px-4 py-3.5 text-sm text-sidebar-text">
+                            <span class="inline-block bg-gray-100 rounded-full px-2 py-1 text-xs font-medium">
+                                ID: ${log.inventory_id}
+                            </span>
+                        </td>
+                        <td class="px-4 py-3.5 text-sm">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${badgeClass} border">
+                                <i class="fas ${badgeIcon} mr-1"></i> ${log.activity_type}
+                            </span>
+                        </td>
+                        <td class="px-4 py-3.5 text-sm text-sidebar-text">${formattedDate}</td>
+                        <td class="px-4 py-3.5 text-sm font-medium text-sidebar-text">
+                            ${quantityDisplay}
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+                
+                // Update pagination info
+                updatePaginationInfo(paginationInfo, page, data.perPage, data.total);
+                
+                // Update pagination controls
+                updatePaginationControls(paginationControls, page, data.perPage, data.total, 'loadInventoryLogs');
+                
+            } else {
+                showError(tableBody, data.error);
+            }
+        })
+        .catch(error => {
+            showError(tableBody, error.message);
+        })
+        .finally(() => {
+            loadingIndicator.classList.add('hidden');
+        });
+}
+
+// Helper function to get appropriate icon for activity type
+function getActivityIcon(activityType) {
+    const icons = {
+        'Depleted': 'fa-exclamation-circle',
+        'Low Stock': 'fa-exclamation-triangle',
+        'Restocked': 'fa-boxes',
+        'Added': 'fa-plus-circle',
+        'Removed': 'fa-minus-circle',
+        'Adjusted': 'fa-adjust'
+    };
+    return icons[activityType] || 'fa-info-circle';
+}
+
+// Helper function to format quantity display
+function formatQuantityChange(change, oldQty, newQty) {
+    const changeSymbol = change > 0 ? '+' : '';
+    return `
+        <div class="flex flex-col">
+            <span class="font-medium ${change > 0 ? 'text-green-600' : change < 0 ? 'text-red-600' : 'text-gray-600'}">
+                ${changeSymbol}${change}
+            </span>
+            <span class="text-xs text-gray-500 mt-1">
+                ${oldQty} → ${newQty}
+            </span>
+        </div>
+    `;
+}
+
+// Helper function to update pagination info
+function updatePaginationInfo(element, currentPage, perPage, totalItems) {
+    const startItem = (currentPage - 1) * perPage + 1;
+    const endItem = Math.min(currentPage * perPage, totalItems);
+    element.innerHTML = `
+        Showing <span class="font-medium">${startItem}-${endItem}</span> of 
+        <span class="font-medium">${totalItems}</span> activities
+    `;
+}
+
+// Helper function to update pagination controls
+function updatePaginationControls(container, currentPage, perPage, totalItems, callbackFunction) {
+    const totalPages = Math.ceil(totalItems / perPage);
+    
+    let html = `
+        <button class="px-3.5 py-1.5 border rounded text-sm ${
+            currentPage <= 1 ? 'border-gray-300 text-gray-400 cursor-not-allowed' : 'border-sidebar-border hover:bg-sidebar-hover'
+        }" ${currentPage <= 1 ? 'disabled' : ''} onclick="${callbackFunction}(${currentPage - 1})">
+            &laquo;
+        </button>
+    `;
+    
+    // Show page numbers
+    for (let i = 1; i <= totalPages; i++) {
+        html += `
+            <button class="px-3.5 py-1.5 border rounded text-sm ${
+                i === currentPage ? 'bg-sidebar-accent text-white border-sidebar-accent' : 'border-sidebar-border hover:bg-sidebar-hover'
+            }" onclick="${callbackFunction}(${i})">
+                ${i}
+            </button>
+        `;
+    }
+    
+    html += `
+        <button class="px-3.5 py-1.5 border rounded text-sm ${
+            currentPage >= totalPages ? 'border-gray-300 text-gray-400 cursor-not-allowed' : 'border-sidebar-border hover:bg-sidebar-hover'
+        }" ${currentPage >= totalPages ? 'disabled' : ''} onclick="${callbackFunction}(${currentPage + 1})">
+            &raquo;
+        </button>
+    `;
+    
+    container.innerHTML = html;
+}
+
+// Helper function to show error message
+function showError(container, message) {
+    container.innerHTML = `
+        <tr>
+            <td colspan="5" class="px-4 py-3.5 text-sm text-center text-red-600">
+                <i class="fas fa-exclamation-circle mr-2"></i>
+                Error loading data: ${escapeHtml(message)}
+            </td>
+        </tr>
+    `;
+}
+
+// Helper function to escape HTML
+function escapeHtml(unsafe) {
+    if (!unsafe) return '';
+    return unsafe.toString()
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
 </script>
 </body>
 </html>
