@@ -80,50 +80,6 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == 1) {
     $currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
     $offset = ($currentPage - 1) * $itemsPerPage;
 
-    // Handle sorting
-    $sort = isset($_GET['sort']) ? $_GET['sort'] : 'default';
-    $orderBy = '';
-    switch ($sort) {
-        case 'inventory_id_asc':
-            $orderBy = 'i.inventory_id ASC';
-            break;
-        case 'inventory_id_desc':
-            $orderBy = 'i.inventory_id DESC';
-            break;
-        case 'item_name_asc':
-            $orderBy = 'i.item_name ASC';
-            break;
-        case 'item_name_desc':
-            $orderBy = 'i.item_name DESC';
-            break;
-        case 'category_asc':
-            $orderBy = 'ic.category_name ASC';
-            break;
-        case 'category_desc':
-            $orderBy = 'ic.category_name DESC';
-            break;
-        case 'quantity_asc':
-            $orderBy = 'i.quantity ASC';
-            break;
-        case 'quantity_desc':
-            $orderBy = 'i.quantity DESC';
-            break;
-        case 'price_asc':
-            $orderBy = 'i.price ASC';
-            break;
-        case 'price_desc':
-            $orderBy = 'i.price DESC';
-            break;
-        case 'total_value_asc':
-            $orderBy = 'i.total_value ASC';
-            break;
-        case 'total_value_desc':
-            $orderBy = 'i.total_value DESC';
-            break;
-        default:
-            $orderBy = 'i.inventory_id ASC'; // Default sort
-    }
-
     // Count total items
     $count_query = "SELECT COUNT(*) as total FROM inventory_tb WHERE branch_id = ?";
     $count_stmt = $conn->prepare($count_query);
@@ -133,14 +89,13 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == 1) {
     $totalItems = $count_result->fetch_assoc()['total'];
     $totalPages = ceil($totalItems / $itemsPerPage);
 
-    // Fetch inventory items for the employee's branch with pagination and sorting
+    // Fetch inventory items for the employee's branch with pagination
     $inventory_query = "SELECT i.inventory_id, i.item_name, ic.category_name as category, 
-                       i.quantity, i.price, i.total_value, i.status
-                       FROM inventory_tb i
-                       JOIN inventory_category ic ON i.category_id = ic.category_id
-                       WHERE i.branch_id = ? AND i.status = 1
-                       ORDER BY $orderBy
-                       LIMIT ? OFFSET ?";
+                   i.quantity, i.price, i.total_value, i.status
+                   FROM inventory_tb i
+                   JOIN inventory_category ic ON i.category_id = ic.category_id
+                   WHERE i.branch_id = ? AND i.status = 1
+                   LIMIT ? OFFSET ?";
     $inventory_stmt = $conn->prepare($inventory_query);
     $inventory_stmt->bind_param("iii", $branch_id, $itemsPerPage, $offset);
     $inventory_stmt->execute();
@@ -170,18 +125,18 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == 1) {
     // Generate pagination links
     $paginationLinks = '';
     if ($currentPage > 1) {
-        $paginationLinks .= '<a href="#" onclick="loadPage('.$branch_id.', '.($currentPage - 1).', \''.$sort.'\')" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">&laquo;</a>';
+        $paginationLinks .= '<a href="#" onclick="'.(isset($_GET['search']) ? "searchInventory($branch_id, '".addslashes($_GET['search'])."', " : "loadPage($branch_id, ").($currentPage - 1).')" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">&laquo;</a>';
     } else {
         $paginationLinks .= '<button disabled class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm opacity-50 cursor-not-allowed">&laquo;</button>';
     }
     
     for ($i = 1; $i <= $totalPages; $i++) {
         $activeClass = ($i == $currentPage) ? 'bg-sidebar-accent text-white' : '';
-        $paginationLinks .= '<a href="#" onclick="loadPage('.$branch_id.', '.$i.', \''.$sort.'\')" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover '.$activeClass.'">'.$i.'</a>';
+        $paginationLinks .= '<a href="#" onclick="'.(isset($_GET['search']) ? "searchInventory($branch_id, '".addslashes($_GET['search'])."', " : "loadPage($branch_id, ").$i.')" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover '.$activeClass.'">'.$i.'</a>';
     }
     
     if ($currentPage < $totalPages) {
-        $paginationLinks .= '<a href="#" onclick="loadPage('.$branch_id.', '.($currentPage + 1).', \''.$sort.'\')" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">&raquo;</a>';
+        $paginationLinks .= '<a href="#" onclick="'.(isset($_GET['search']) ? "searchInventory($branch_id, '".addslashes($_GET['search'])."', " : "loadPage($branch_id, ").($currentPage + 1).')" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">&raquo;</a>';
     } else {
         $paginationLinks .= '<button disabled class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm opacity-50 cursor-not-allowed">&raquo;</button>';
     }
@@ -195,6 +150,7 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == 1) {
     ]);
     exit();
 }
+
 // Regular page load - show full page
 ?>
 
@@ -448,62 +404,54 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == 1) {
         </div>
 
         <!-- Filter Dropdown -->
-        <div class="hidden lg:flex items-center gap-3">
+        <div class="relative filter-dropdown">
           <button id="filterButton_mobile<?php echo $branch_id; ?>" class="px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover">
             <i class="fas fa-filter text-sidebar-accent"></i>
             <span>Filters</span>
             <span id="filterIndicator_mobile<?php echo $branch_id; ?>" class="hidden h-2 w-2 bg-sidebar-accent rounded-full"></span>
           </button>
           
-          <!-- Desktop Filter Dropdown -->
-  <div class="relative hidden lg:block">
-    <button id="filterButton_desktop_<?php echo $branch_id; ?>" class="px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover">
-      <i class="fas fa-filter text-sidebar-accent"></i>
-      <span>Filters</span>
-      <span id="filterIndicator_desktop_<?php echo $branch_id; ?>" class="hidden h-2 w-2 bg-sidebar-accent rounded-full"></span>
-    </button>
-  
-  <!-- Desktop Filter Dropdown Content -->
-    <div id="filterDropdown_desktop_<?php echo $branch_id; ?>" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-4">
-    <div class="space-y-4">
-      <!-- Sort Options -->
-      <div>
-        <h5 class="text-sm font-medium text-sidebar-text mb-2">Sort By</h5>
-        <div class="space-y-1">
-          <div class="flex items-center cursor-pointer">
-            <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full" data-sort="default" data-branch="<?php echo $branch_id; ?>">
-              Default (Unsorted)
-            </span>
-          </div>
-          <div class="flex items-center cursor-pointer">
-            <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full" data-sort="price_asc" data-branch="<?php echo $branch_id; ?>">
-              Price: Low to High
-            </span>
-          </div>
-          <div class="flex items-center cursor-pointer">
-            <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full" data-sort="price_desc" data-branch="<?php echo $branch_id; ?>">
-              Price: High to Low
-            </span>
-          </div>
-          <div class="flex items-center cursor-pointer">
-            <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full" data-sort="quantity_asc" data-branch="<?php echo $branch_id; ?>">
-              Quantity: Low to High
-            </span>
-          </div>
-          <div class="flex items-center cursor-pointer">
-            <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full" data-sort="quantity_desc" data-branch="<?php echo $branch_id; ?>">
-              Quantity: High to Low
-            </span>
-          </div>
-          <div class="flex items-center cursor-pointer">
-            <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full" data-sort="item_name_asc" data-branch="<?php echo $branch_id; ?>">
-              Name: A to Z
-            </span>
-          </div>
-          <div class="flex items-center cursor-pointer">
-            <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full" data-sort="item_name_desc" data-branch="<?php echo $branch_id; ?>">
-              Name: Z to A
-            </span>
+          <!-- Filter Window -->
+          <div id="filterDropdown_mobile<?php echo $branch_id; ?>" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-4">
+            <div class="space-y-4">
+              <!-- Sort Options -->
+              <div>
+                <h5 class="text-sm font-medium text-sidebar-text mb-2">Sort By</h5>
+                <div class="space-y-1">
+                  <div class="flex items-center cursor-pointer">
+                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full" data-sort="default" data-branch="<?php echo $branch_id; ?>">
+                      Default (Unsorted)
+                    </span>
+                  </div>
+                  <div class="flex items-center cursor-pointer">
+                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full" data-sort="price_asc" data-branch="<?php echo $branch_id; ?>">
+                      Price: Low to High
+                    </span>
+                  </div>
+                  <div class="flex items-center cursor-pointer">
+                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full" data-sort="price_desc" data-branch="<?php echo $branch_id; ?>">
+                      Price: High to Low
+                    </span>
+                  </div>
+                  <div class="flex items-center cursor-pointer">
+                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full" data-sort="quantity_asc" data-branch="<?php echo $branch_id; ?>">
+                      Quantity: Low to High
+                    </span>
+                  </div>
+                  <div class="flex items-center cursor-pointer">
+                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full" data-sort="quantity_desc" data-branch="<?php echo $branch_id; ?>">
+                      Quantity: High to Low
+                    </span>
+                  </div>
+                  <div class="flex items-center cursor-pointer">
+                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full" data-sort="name_asc" data-branch="<?php echo $branch_id; ?>">
+                      Name: A to Z
+                    </span>
+                  </div>
+                  <div class="flex items-center cursor-pointer">
+                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full" data-sort="name_desc" data-branch="<?php echo $branch_id; ?>">
+                      Name: Z to A
+                    </span>
                   </div>
                 </div>
               </div>
@@ -525,9 +473,10 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == 1) {
       </div>
     </div>
     
-    <!-- Mobile Filter Button (hidden on desktop) -->
-<div class="lg:hidden w-full mt-4">
-  <div class="flex items-center w-full gap-3 mb-4">
+    <!-- Mobile/Tablet Controls - Only visible on smaller screens -->
+    <div class="lg:hidden w-full mt-4">
+      <!-- First row: Search bar with filter and archive icons on the right -->
+      <div class="flex items-center w-full gap-3 mb-4">
         <!-- Search Input - Takes most of the space -->
         <div class="relative flex-grow">
           <input type="text" id="inventorySearch" 
@@ -541,54 +490,56 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == 1) {
           </button>
         </div>
 
-        <!-- Mobile Filter Dropdown -->
-    <div class="relative lg:hidden">
-      <button id="filterButton_mobile_<?php echo $branch_id; ?>" class="w-10 h-10 flex items-center justify-center text-sidebar-accent">
-        <i class="fas fa-filter text-xl"></i>
-        <span id="filterIndicator_mobile_<?php echo $branch_id; ?>" class="hidden absolute top-1 right-1 h-2 w-2 bg-sidebar-accent rounded-full"></span>
-      </button>
-  
-  <!-- Mobile Filter Dropdown Content -->
-      <div id="filterDropdown_mobile_<?php echo $branch_id; ?>" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-4">
-    <div class="space-y-4">
-      <!-- Sort Options -->
-      <div>
-        <h5 class="text-sm font-medium text-sidebar-text mb-2">Sort By</h5>
-        <div class="space-y-2">
-          <div class="flex items-center cursor-pointer">
-            <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full" data-sort="default" data-branch="<?php echo $branch_id; ?>">
-              Default (Unsorted)
-            </span>
-          </div>
-          <div class="flex items-center cursor-pointer">
-            <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full" data-sort="price_asc" data-branch="<?php echo $branch_id; ?>">
-              Price: Low to High
-            </span>
-          </div>
-          <div class="flex items-center cursor-pointer">
-            <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full" data-sort="price_desc" data-branch="<?php echo $branch_id; ?>">
-              Price: High to Low
-            </span>
-          </div>
-          <div class="flex items-center cursor-pointer">
-            <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full" data-sort="quantity_asc" data-branch="<?php echo $branch_id; ?>">
-              Quantity: Low to High
-            </span>
-          </div>
-          <div class="flex items-center cursor-pointer">
-            <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full" data-sort="quantity_desc" data-branch="<?php echo $branch_id; ?>">
-              Quantity: High to Low
-            </span>
-          </div>
-          <div class="flex items-center cursor-pointer">
-            <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full" data-sort="item_name_asc" data-branch="<?php echo $branch_id; ?>">
-              Name: A to Z
-            </span>
-          </div>
-          <div class="flex items-center cursor-pointer">
-            <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full" data-sort="item_name_desc" data-branch="<?php echo $branch_id; ?>">
-              Name: Z to A
-            </span>
+        <!-- Icon-only buttons for filter and archive -->
+        <div class="flex items-center gap-3">
+          <!-- Filter Icon Button -->
+          <div class="relative filter-dropdown">
+            <button id="filterButton_<?php echo $branch_id; ?>" class="w-10 h-10 flex items-center justify-center text-sidebar-accent">
+              <i class="fas fa-filter text-xl"></i>
+              <span id="filterIndicator_<?php echo $branch_id; ?>" class="hidden absolute top-1 right-1 h-2 w-2 bg-sidebar-accent rounded-full"></span>
+            </button>
+            
+            <!-- Filter Window - Positioned below the icon -->
+            <div id="filterDropdown_<?php echo $branch_id; ?>" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-4">
+              <div class="space-y-4">
+                <!-- Sort Options -->
+                <div>
+                  <h5 class="text-sm font-medium text-sidebar-text mb-2">Sort By</h5>
+                  <div class="space-y-2">
+                    <div class="flex items-center cursor-pointer">
+                      <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full" data-sort="default" data-branch="<?php echo $branch_id; ?>">
+                        Default (Unsorted)
+                      </span>
+                    </div>
+                    <div class="flex items-center cursor-pointer">
+                      <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full" data-sort="price_asc" data-branch="<?php echo $branch_id; ?>">
+                        Price: Low to High
+                      </span>
+                    </div>
+                    <div class="flex items-center cursor-pointer">
+                      <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full" data-sort="price_desc" data-branch="<?php echo $branch_id; ?>">
+                        Price: High to Low
+                      </span>
+                    </div>
+                    <div class="flex items-center cursor-pointer">
+                      <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full" data-sort="quantity_asc" data-branch="<?php echo $branch_id; ?>">
+                        Quantity: Low to High
+                      </span>
+                    </div>
+                    <div class="flex items-center cursor-pointer">
+                      <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full" data-sort="quantity_desc" data-branch="<?php echo $branch_id; ?>">
+                        Quantity: High to Low
+                      </span>
+                    </div>
+                    <div class="flex items-center cursor-pointer">
+                      <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full" data-sort="name_asc" data-branch="<?php echo $branch_id; ?>">
+                        Name: A to Z
+                      </span>
+                    </div>
+                    <div class="flex items-center cursor-pointer">
+                      <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full" data-sort="name_desc" data-branch="<?php echo $branch_id; ?>">
+                        Name: Z to A
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -983,175 +934,47 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == 1) {
         loadPage(<?php echo $branch_id; ?>, 1);
     });
 
-    // Map column indices to sort parameters for table header clicks
-const columnSortMap = {
-    0: 'inventory_id', // ID
-    1: 'item_name',    // Item Name
-    2: 'category',     // Category
-    3: 'quantity',     // Quantity
-    4: 'price',        // Unit Price
-    5: 'total_value'   // Total Value
-};
+    // AJAX function to load page content
+    function loadPage(branchId, page) {
+        const tableContainer = document.getElementById(`tableContainer${branchId}`);
+        const loadingIndicator = document.getElementById(`loadingIndicator${branchId}`);
+        const inventoryTable = document.getElementById(`inventoryTable_${branchId}`);
+        const paginationInfo = document.getElementById(`paginationInfo_${branchId}`);
+        const paginationLinks = document.getElementById(`paginationLinks_${branchId}`);
 
-// Track current sort state
-let currentSort = 'default';
-let currentSortOrder = 'ASC';
+        // Show loading indicator
+        loadingIndicator.classList.remove('hidden');
+        tableContainer.style.opacity = '0.5';
 
-// AJAX function to load page content
-function loadPage(branchId, page, sort = 'default') {
-    const tableContainer = document.getElementById(`tableContainer${branchId}`);
-    const loadingIndicator = document.getElementById(`loadingIndicator${branchId}`);
-    const inventoryTable = document.getElementById(`inventoryTable_${branchId}`);
-    const paginationInfo = document.getElementById(`paginationInfo_${branchId}`);
-    const paginationLinks = document.getElementById(`paginationLinks_${branchId}`);
-
-    // Show loading indicator
-    loadingIndicator.classList.remove('hidden');
-    tableContainer.style.opacity = '0.5';
-
-    // Make AJAX request with sort parameter
-    fetch(`employee_inventory.php?ajax=1&page=${page}&branch_id=${branchId}&sort=${sort}`)
-        .then(response => response.json())
-        .then(data => {
-            // Update table content
-            inventoryTable.innerHTML = data.rows;
-            
-            // Update pagination info
-            paginationInfo.textContent = data.paginationInfo;
-            
-            // Update pagination links
-            paginationLinks.innerHTML = data.paginationLinks;
-            
-            // Hide loading indicator
-            loadingIndicator.classList.add('hidden');
-            tableContainer.style.opacity = '1';
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            loadingIndicator.classList.add('hidden');
-            tableContainer.style.opacity = '1';
-        });
-}
-
-// Function to handle table header sorting
-function sortTable(branchId, columnIndex) {
-    const sortKey = columnSortMap[columnIndex];
-    if (!sortKey) return;
-
-    // Toggle sort order if clicking the same column
-    if (currentSort === sortKey) {
-        currentSortOrder = currentSortOrder === 'ASC' ? 'DESC' : 'ASC';
-    } else {
-        currentSort = sortKey;
-        currentSortOrder = 'ASC';
-    }
-
-    const sortParam = `${currentSort}_${currentSortOrder.toLowerCase()}`;
-    loadPage(branchId, 1, sortParam);
-}
-
-// Function to handle filter dropdown selections
-document.addEventListener('DOMContentLoaded', function() {
-    // Add event listeners for filter options
-    document.querySelectorAll('.filter-option').forEach(option => {
-        option.addEventListener('click', function() {
-            const sort = this.getAttribute('data-sort');
-            const branchId = this.getAttribute('data-branch');
-
-            // Update current sort state
-            if (sort === 'default') {
-                currentSort = 'default';
-                currentSortOrder = 'ASC';
-            } else {
-                const [sortKey, sortOrder] = sort.split('_');
-                currentSort = sortKey;
-                currentSortOrder = sortOrder.toUpperCase();
-            }
-
-            // Update UI to indicate active filter
-            document.querySelectorAll(`.filter-option[data-branch="${branchId}"]`).forEach(opt => {
-                opt.classList.remove('bg-sidebar-accent', 'text-white');
+        // Make AJAX request
+        fetch(`employee_inventory.php?ajax=1&page=${page}&branch_id=${branchId}`)
+            .then(response => response.json())
+            .then(data => {
+                // Update table content
+                inventoryTable.innerHTML = data.rows;
+                
+                // Update pagination info
+                paginationInfo.textContent = data.paginationInfo;
+                
+                // Update pagination links
+                paginationLinks.innerHTML = data.paginationLinks;
+                
+                // Hide loading indicator
+                loadingIndicator.classList.add('hidden');
+                tableContainer.style.opacity = '1';
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                loadingIndicator.classList.add('hidden');
+                tableContainer.style.opacity = '1';
             });
-            this.classList.add('bg-sidebar-accent', 'text-white');
-
-            // Show filter indicator
-            const filterIndicator = document.getElementById(`filterIndicator_${branchId}`);
-            const filterIndicatorMobile = document.getElementById(`filterIndicator_mobile${branchId}`);
-            if (sort !== 'default') {
-                filterIndicator.classList.remove('hidden');
-                filterIndicatorMobile.classList.remove('hidden');
-            } else {
-                filterIndicator.classList.add('hidden');
-                filterIndicatorMobile.classList.add('hidden');
-            }
-
-            // Close dropdown
-            const dropdown = this.closest('.filter-dropdown').querySelector('.filter-dropdown > div');
-            dropdown.classList.add('hidden');
-
-            // Load page with selected sort
-            loadPage(branchId, 1, sort);
-        });
-    });
-
-    // Toggle filter dropdowns
-document.querySelectorAll('[id^="filterButton_"]').forEach(button => {
-    button.addEventListener('click', function() {
-        const isMobile = this.id.includes('mobile');
-        const branchId = this.id.replace('filterButton_mobile_', '').replace('filterButton_desktop_', '');
-        
-        // Close all other dropdowns first
-        document.querySelectorAll('.filter-dropdown > div').forEach(dropdown => {
-            dropdown.classList.add('hidden');
-        });
-        
-        // Toggle the correct dropdown
-        const dropdownId = isMobile ? `filterDropdown_mobile_${branchId}` : `filterDropdown_desktop_${branchId}`;
-        const dropdown = document.getElementById(dropdownId);
-        dropdown.classList.toggle('hidden');
-    });
-});
-
-// Close dropdowns when clicking outside
-document.addEventListener('click', function(e) {
-    if (!e.target.closest('[id^="filterButton_"]') && !e.target.closest('[id^="filterDropdown_"]')) {
-        document.querySelectorAll('[id^="filterDropdown_"]').forEach(dropdown => {
-            dropdown.classList.add('hidden');
-        });
     }
-});
 
-// Filter option selection (works for both mobile and desktop)
-document.querySelectorAll('.filter-option').forEach(option => {
-    option.addEventListener('click', function() {
-        const sort = this.getAttribute('data-sort');
-        const branchId = this.getAttribute('data-branch');
-
-        // Update indicators for both mobile and desktop
-        const indicators = [
-            document.getElementById(`filterIndicator_mobile_${branchId}`),
-            document.getElementById(`filterIndicator_desktop_${branchId}`)
-        ];
-        
-        indicators.forEach(indicator => {
-            if (indicator) {
-                if (sort !== 'default') {
-                    indicator.classList.remove('hidden');
-                } else {
-                    indicator.classList.add('hidden');
-                }
-            }
-        });
-
-        // Close all dropdowns
-        document.querySelectorAll('[id^="filterDropdown_"]').forEach(dropdown => {
-            dropdown.classList.add('hidden');
-        });
-
-        // Load page with selected sort
-        loadPage(branchId, 1, sort);
-    });
-});
+    function sortTable(branchId, columnIndex) {
+        // Implement your sorting logic here
+        console.log(`Sorting branch ${branchId} by column ${columnIndex}`);
+        // You can extend this to include sorting in your AJAX call
+    }
     
     // Add Inventory function
     // Function to open the add inventory modal
