@@ -102,7 +102,7 @@ if ($result && $result->num_rows > 0) {
                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <span class="text-dark-gold">₱</span>
                 </div>
-                <input type="text" id="total_value" name="total_value" class="pl-7 block w-full px-3 py-2 bg-white border border-gold rounded-md shadow-sm text-gray-700 focus:outline-none focus:ring-dark-gold focus:border-dark-gold font-medium" value="₱<?php echo number_format($item["total_value"], 2); ?>" readonly>
+                <input type="text" id="total_value" name="total_value" class="pl-7 block w-full px-3 py-2 bg-white border border-gold rounded-md shadow-sm text-gray-700 focus:outline-none focus:ring-dark-gold focus:border-dark-gold font-medium" value="₱<?php echo number_format($item["total_value"], 2); ?>" >
             </div>
         </div>
     </div>
