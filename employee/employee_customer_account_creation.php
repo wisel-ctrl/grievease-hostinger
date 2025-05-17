@@ -1590,6 +1590,62 @@ function openEditCustomerAccountModal(userId) {
         }
     });
 
+    // Add event listeners for real-time validation in edit modal
+firstNameInput.addEventListener('input', function() {
+    validateEditNameField(this, true);
+    // Only allow space after at least 2 characters
+    if (this.value.length < 2 && this.value.includes(' ')) {
+        this.value = this.value.replace(/\s/g, '');
+    }
+});
+
+lastNameInput.addEventListener('input', function() {
+    validateEditNameField(this, true);
+    // Only allow space after at least 2 characters
+    if (this.value.length < 2 && this.value.includes(' ')) {
+        this.value = this.value.replace(/\s/g, '');
+    }
+});
+
+middleNameInput.addEventListener('input', function() {
+    validateEditNameField(this, false);
+});
+
+emailInput.addEventListener('input', validateEditEmail);
+phoneInput.addEventListener('input', validateEditPhone);
+
+// Handle paste events to clean input
+[nameInput, middleNameInput, lastNameInput].forEach(input => {
+    input.addEventListener('paste', function(e) {
+        e.preventDefault();
+        let pastedText = (e.clipboardData || window.clipboardData).getData('text');
+        // Clean the pasted text
+        pastedText = pastedText.replace(/[^a-zA-Z\s]/g, ''); // Remove non-letters
+        pastedText = pastedText.replace(/\s{2,}/g, ' '); // Replace multiple spaces with single space
+        // Capitalize first letter of each word
+        pastedText = pastedText.toLowerCase().split(' ').map(word => {
+            return word.charAt(0).toUpperCase() + word.slice(1);
+        }).join(' ');
+        document.execCommand('insertText', false, pastedText);
+    });
+});
+
+emailInput.addEventListener('paste', function(e) {
+    e.preventDefault();
+    let pastedText = (e.clipboardData || window.clipboardData).getData('text');
+    // Remove spaces from pasted email
+    pastedText = pastedText.replace(/\s/g, '');
+    document.execCommand('insertText', false, pastedText);
+});
+
+phoneInput.addEventListener('paste', function(e) {
+    e.preventDefault();
+    let pastedText = (e.clipboardData || window.clipboardData).getData('text');
+    // Remove all non-digit characters
+    pastedText = pastedText.replace(/\D/g, '');
+    document.execCommand('insertText', false, pastedText);
+});
+
     // Fetch user details
     fetch(`accountManagement/fetch_customer_details.php?user_id=${userId}`)
         .then(response => response.json())
@@ -1765,6 +1821,100 @@ function openEditCustomerAccountModal(userId) {
         });
 }
 
+// Name field validation for edit modal
+function validateEditNameFields() {
+    const firstNameInput = document.querySelector('#editCustomerModal input[name="first_name"]');
+    const lastNameInput = document.querySelector('#editCustomerModal input[name="last_name"]');
+    const middleNameInput = document.querySelector('#editCustomerModal input[name="middle_name"]');
+    
+    // Validate first name
+    const firstNameValid = validateEditNameField(firstNameInput, true);
+    // Validate last name
+    const lastNameValid = validateEditNameField(lastNameInput, true);
+    // Validate middle name (not required)
+    const middleNameValid = validateEditNameField(middleNameInput, false);
+    
+    return firstNameValid && lastNameValid && middleNameValid;
+}
+
+function validateEditNameField(input, isRequired) {
+    if (!input) return true; // If field doesn't exist
+    
+    let value = input.value.trim();
+    const errorClass = 'border-red-500';
+    
+    // Check if required field is empty
+    if (isRequired && value === '') {
+        input.classList.add(errorClass);
+        return false;
+    }
+    
+    // Check minimum length for required fields
+    if (isRequired && value.length < 2) {
+        input.classList.add(errorClass);
+        return false;
+    }
+    
+    // Clean the input value
+    let cleanedValue = value.replace(/[^a-zA-Z\s]/g, ''); // Remove non-letters and non-spaces
+    cleanedValue = cleanedValue.replace(/\s{2,}/g, ' '); // Replace multiple spaces with single space
+    
+    // Capitalize first letter of each word
+    if (cleanedValue.length > 0) {
+        cleanedValue = cleanedValue.toLowerCase().split(' ').map(word => {
+            return word.charAt(0).toUpperCase() + word.slice(1);
+        }).join(' ');
+    }
+    
+    // If cleaned value is different from original, update the field
+    if (cleanedValue !== value) {
+        input.value = cleanedValue;
+    }
+    
+    input.classList.remove(errorClass);
+    return true;
+}
+
+// Email validation for edit modal
+function validateEditEmail() {
+    const emailInput = document.querySelector('#editCustomerModal input[name="email"]');
+    const value = emailInput.value.trim();
+    const errorClass = 'border-red-500';
+    
+    // Basic email validation
+    if (value === '' || !value.includes('@') || value.includes(' ')) {
+        emailInput.classList.add(errorClass);
+        return false;
+    }
+    
+    emailInput.classList.remove(errorClass);
+    return true;
+}
+
+// Phone number validation for edit modal
+function validateEditPhone() {
+    const phoneInput = document.querySelector('#editCustomerModal input[name="phone_number"]');
+    let value = phoneInput.value.trim();
+    const errorClass = 'border-red-500';
+    
+    // Clean the input - remove all non-digit characters
+    let cleanedValue = value.replace(/\D/g, '');
+    
+    // Check if it's a valid Philippine mobile number
+    if (cleanedValue.length !== 11 || !cleanedValue.startsWith('09')) {
+        phoneInput.classList.add(errorClass);
+        return false;
+    }
+    
+    // If cleaned value is different from original, update the field
+    if (cleanedValue !== value) {
+        phoneInput.value = cleanedValue;
+    }
+    
+    phoneInput.classList.remove(errorClass);
+    return true;
+}
+
 // Check if email is available
 function checkEmailAvailability(email) {
     const emailAvailability = document.getElementById('emailAvailability');
@@ -1853,6 +2003,21 @@ function checkPhoneAvailability(phone) {
 }
 
 function validateAndSaveCustomerChanges() {
+
+// Validate all fields
+    const nameValid = validateEditNameFields();
+    const emailValid = validateEditEmail();
+    const phoneValid = validateEditPhone();
+    
+    if (!nameValid || !emailValid || !phoneValid) {
+        Swal.fire({
+            title: 'Validation Error',
+            text: 'Please correct the highlighted fields',
+            icon: 'error',
+            confirmButtonColor: '#d33'
+        });
+        return;
+    }
     const form = document.getElementById('editCustomerForm');
     if (!form) return;
 
@@ -1860,6 +2025,7 @@ function validateAndSaveCustomerChanges() {
     const formData = new FormData(form);
     const newEmail = formData.get('email');
     const newPhone = formData.get('phone_number');
+    
 
     // Validate required fields
     const requiredFields = form.querySelectorAll('[required]');
