@@ -2001,6 +2001,14 @@ $lifeplanResult = $lifeplan_stmt->get_result();
   </div>
 </div>
 
+<!-- Add this image enlarger overlay (place it near the modal in your HTML) -->
+<div id="imageEnlargerOverlay" class="fixed inset-0 bg-black bg-opacity-90 z-[9999] hidden flex items-center justify-center p-4" onclick="closeEnlargedImage()">
+  <div class="max-w-full max-h-full flex flex-col items-center justify-center">
+    <img id="enlargedImage" class="max-w-full max-h-[90vh] object-contain" />
+    <button class="mt-4 text-white text-2xl hover:text-gray-300" onclick="closeEnlargedImage(event)">×</button>
+  </div>
+</div>
+
 <!-- Custom Payment Modal -->
 <div id="customPaymentModal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
   <!-- Modal Backdrop -->
@@ -2058,6 +2066,25 @@ $lifeplanResult = $lifeplan_stmt->get_result();
         <input type="hidden" id="customDeathCertUrl" name="deathcert_url">
         <input type="hidden" id="customWithCremateInput" name="with_cremate">
         
+       <!-- Add this payment proof display section -->
+        <div class="mb-4">
+          <h5 class="font-medium text-gray-700 mb-2 flex items-center">
+            <i class="fas fa-receipt text-sm mr-2 text-gray-500"></i>
+            Payment Proof
+          </h5>
+          <div class="border border-gray-200 rounded-lg overflow-hidden">
+            <div class="relative bg-gray-100 p-1">
+              <img id="customModalPaymentProofImage" alt="Payment Proof" class="mx-auto rounded-md max-h-48 object-contain cursor-zoom-in" onclick="enlargeImage(this)" />
+            </div>
+          </div>
+          <div id="customProcessingIndicator" class="text-center py-2">
+            <div class="inline-block animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-blue-500"></div>
+            <p class="text-gray-600 text-sm mt-1">Processing receipt for amount...</p>
+          </div>
+          <p id="customExtractionMessage" class="text-sm mt-1 hidden text-center"></p>
+        </div>
+        
+        <!-- Amount Paid Input -->
         <div class="mb-4">
           <label for="customAmountPaidInput" class="block text-sm font-medium text-gray-700 mb-1">Amount Paid</label>
           <div class="relative">
@@ -2070,6 +2097,7 @@ $lifeplanResult = $lifeplan_stmt->get_result();
           </div>
         </div>
         
+        <!-- Payment Method Select -->
         <div class="mb-4">
           <label for="customPaymentMethod" class="block text-sm font-medium text-gray-700 mb-1">Payment Method</label>
           <select id="customPaymentMethod" name="paymentMethod" 
@@ -2417,39 +2445,67 @@ $lifeplanResult = $lifeplan_stmt->get_result();
           <input type="hidden" id="lifeplanEndDate" name="end_date">
           <input type="hidden" id="withCremateInput" name="with_cremate">
           
+          <!-- Add this payment proof display section -->
           <div class="mb-4">
-              <label for="lifeplanAmountPaidInput" class="block text-sm font-medium text-gray-700 mb-1">Amount Paid</label>
-              <div class="relative">
-                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <span class="text-gray-500">₱</span>
-                  </div>
-                  <input type="number" step="0.01" id="lifeplanAmountPaidInput" name="amountPaid" 
-                        class="pl-8 block w-full rounded-md border-gray-300 shadow-sm focus:border-sidebar-accent focus:ring focus:ring-sidebar-accent focus:ring-opacity-50 py-2 px-3 border" 
-                        placeholder="0.00" required>
+            <h5 class="font-medium text-gray-700 mb-2 flex items-center">
+              <i class="fas fa-receipt text-sm mr-2 text-gray-500"></i>
+              Payment Proof
+            </h5>
+            <div class="border border-gray-200 rounded-lg overflow-hidden">
+              <div class="relative bg-gray-100 p-1">
+                <img id="modalLifeplanPaymentProofImage" alt="Payment Proof" class="mx-auto rounded-md max-h-48 object-contain cursor-zoom-in" onclick="enlargeImage(this)" />
               </div>
+            </div>
+            <div id="lifeplanProcessingIndicator" class="text-center py-2">
+              <div class="inline-block animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-blue-500"></div>
+              <p class="text-gray-600 text-sm mt-1">Processing receipt for amount...</p>
+            </div>
+            <p id="lifeplanExtractionMessage" class="text-sm mt-1 hidden text-center"></p>
           </div>
           
+          <!-- Amount Paid Input -->
           <div class="mb-4">
-              <label for="lifeplanPaymentMethod" class="block text-sm font-medium text-gray-700 mb-1">Payment Method</label>
-              <select id="lifeplanPaymentMethod" name="paymentMethod" 
-                      class="block w-full rounded-md border-gray-300 shadow-sm focus:border-sidebar-accent focus:ring focus:ring-sidebar-accent focus:ring-opacity-50 py-2 px-3 border" required>
-                  <option value="">Select payment method</option>
-                  <option value="Bank">Bank Transfer</option>
-                  <option value="GCash">GCash</option>
-                  <option value="Cash">Cash</option>
-              </select>
+            <label for="lifeplanAmountPaidInput" class="block text-sm font-medium text-gray-700 mb-1">Amount Paid</label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <span class="text-gray-500">₱</span>
+              </div>
+              <input type="number" step="0.01" id="lifeplanAmountPaidInput" name="amountPaid" 
+                    class="pl-8 block w-full rounded-md border-gray-300 shadow-sm focus:border-sidebar-accent focus:ring focus:ring-sidebar-accent focus:ring-opacity-50 py-2 px-3 border" 
+                    placeholder="0.00" required>
+            </div>
+          </div>
+          
+          <!-- Payment Method Select -->
+          <div class="mb-4">
+            <label for="lifeplanPaymentMethod" class="block text-sm font-medium text-gray-700 mb-1">Payment Method</label>
+            <select id="lifeplanPaymentMethod" name="paymentMethod" 
+                    class="block w-full rounded-md border-gray-300 shadow-sm focus:border-sidebar-accent focus:ring focus:ring-sidebar-accent focus:ring-opacity-50 py-2 px-3 border" required>
+              <option value="">Select payment method</option>
+              <option value="Bank">Bank Transfer</option>
+              <option value="GCash">GCash</option>
+              <option value="Cash">Cash</option>
+            </select>
           </div>
           
           <div class="flex justify-end gap-3 mt-6">
-              <button type="button" onclick="closeLifeplanPaymentModal()" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors">
-                  Cancel
-              </button>
-              <button type="submit" class="px-4 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg hover:shadow-md transition-all">
-                  Confirm Payment
-              </button>
+            <button type="button" onclick="closeLifeplanPaymentModal()" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors">
+              Cancel
+            </button>
+            <button type="submit" class="px-4 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg hover:shadow-md transition-all">
+              Confirm Payment
+            </button>
           </div>
       </form>
     </div>
+  </div>
+</div>
+
+<!-- Image enlarger overlay (can be shared with other modals) -->
+<div id="imageEnlargerOverlay" class="fixed inset-0 bg-black bg-opacity-90 z-[9999] hidden flex items-center justify-center p-4" onclick="closeEnlargedImage()">
+  <div class="max-w-full max-h-full flex flex-col items-center justify-center">
+    <img id="enlargedImage" class="max-w-full max-h-[90vh] object-contain" />
+    <button class="mt-4 text-white text-2xl hover:text-gray-300" onclick="closeEnlargedImage(event)">×</button>
   </div>
 </div>
 
@@ -3355,30 +3411,105 @@ function openCustomDetails(bookingId) {
 
       // Handle Payment Proof Image
       const paymentProofImage = document.getElementById('customPaymentProofImage');
+      const modalPaymentProofImage = document.getElementById('customModalPaymentProofImage');
       const paymentProofContainer = paymentProofImage.parentElement;
+      const modalPaymentProofContainer = modalPaymentProofImage.parentElement;
 
       if (data.payment_url && data.payment_url !== '') {
         const paymentProofPath = '../customer/booking/uploads/' + data.payment_url.replace(/^uploads\//, '');
+        console.log("Payment Proof Path:", paymentProofPath);
         
-        paymentProofImage.onerror = function() {
-          console.error("Failed to load payment proof image:", paymentProofPath);
-          const placeholderHTML = `
-            <div class="flex flex-col items-center justify-center py-8 px-4 bg-gray-50">
-              <i class="fas fa-exclamation-circle text-gray-400 text-3xl mb-2"></i>
-              <p class="text-gray-500 text-center">Image could not be loaded</p>
-            </div>`;
-          paymentProofContainer.innerHTML = placeholderHTML;
+       const errorHandler = function() {
+            console.error("Failed to load payment proof image:", paymentProofPath);
+            // Create a placeholder instead of loading another image
+            const placeholderHTML = `
+                <div class="flex flex-col items-center justify-center py-8 px-4 bg-gray-50">
+                    <i class="fas fa-exclamation-circle text-gray-400 text-3xl mb-2"></i>
+                    <p class="text-gray-500 text-center">Image could not be loaded</p>
+                </div>`;
+            paymentProofContainer.innerHTML = placeholderHTML;
+            modalPaymentProofContainer.innerHTML = placeholderHTML;
         };
         
+        paymentProofImage.onerror = errorHandler;
+        modalPaymentProofImage.onerror = errorHandler;
+        
+        // Set the source for both images
         paymentProofImage.src = paymentProofPath;
+        modalPaymentProofImage.src = paymentProofPath;
+        
+        // Initialize Tesseract OCR processing
+        processReceiptWithTesseract(paymentProofPath, 'custom');
       } else {
+        // Create a placeholder for when no payment proof exists
         const placeholderHTML = `
-          <div class="flex flex-col items-center justify-center py-8 px-4 bg-gray-50">
-            <i class="fas fa-exclamation-circle text-gray-400 text-3xl mb-2"></i>
-            <p class="text-gray-500 text-center">No payment proof provided</p>
-          </div>`;
+            <div class="flex flex-col items-center justify-center py-8 px-4 bg-gray-50">
+                <i class="fas fa-exclamation-circle text-gray-400 text-3xl mb-2"></i>
+                <p class="text-gray-500 text-center">No payment proof provided</p>
+            </div>`;
         paymentProofContainer.innerHTML = placeholderHTML;
+        modalPaymentProofContainer.innerHTML = placeholderHTML;
       }
+      
+      // Tesseract OCR processing function
+function processReceiptWithTesseract(imagePath, type = 'custom') {
+    const processingIndicator = document.getElementById(`${type}ProcessingIndicator`);
+    const extractionMessage = document.getElementById(`${type}ExtractionMessage`);
+    const amountInput = document.getElementById(`${type}AmountPaidInput`);
+    
+    // Show processing indicator
+    processingIndicator.classList.remove('hidden');
+    extractionMessage.classList.add('hidden');
+    
+    // Initialize Tesseract.js
+    Tesseract.recognize(
+        imagePath,
+        'eng',
+        {
+            logger: m => console.log(m),
+            tessedit_char_whitelist: '0123456789.,$₱Pp ',
+        }
+    ).then(({ data: { text } }) => {
+        console.log('OCR Result:', text);
+        
+        // Hide processing indicator
+        processingIndicator.classList.add('hidden');
+        
+        // Extract amount from text
+        const amountRegex = /(?:₱|P|p|\$)\s*(\d{1,3}(?:,\d{3})*(?:\.\d{2})?)|\d{1,3}(?:,\d{3})*(?:\.\d{2})/g;
+        const matches = text.match(amountRegex);
+        
+        if (matches && matches.length > 0) {
+            // Clean the amount (remove currency symbols and commas)
+            let extractedAmount = matches[0].replace(/[₱Pp$,]/g, '').trim();
+            
+            // If the amount ends with . or .0, add two zeros
+            if (extractedAmount.endsWith('.')) {
+                extractedAmount += '00';
+            } else if (extractedAmount.endsWith('.0')) {
+                extractedAmount += '0';
+            }
+            
+            // Set the extracted amount in the input field
+            if (amountInput) {
+                amountInput.value = parseFloat(extractedAmount).toFixed(2);
+                extractionMessage.textContent = `Extracted amount: ₱${parseFloat(extractedAmount).toFixed(2)}`;
+                extractionMessage.classList.remove('hidden');
+                extractionMessage.classList.add('text-green-600');
+            }
+        } else {
+            extractionMessage.textContent = 'No amount found in receipt. Please enter manually.';
+            extractionMessage.classList.remove('hidden');
+            extractionMessage.classList.add('text-yellow-600');
+        }
+    }).catch(err => {
+        console.error('OCR Error:', err);
+        processingIndicator.classList.add('hidden');
+        extractionMessage.textContent = 'Failed to process receipt. Please enter amount manually.';
+        extractionMessage.classList.remove('hidden');
+        extractionMessage.classList.add('text-red-600');
+    });
+}
       
       // Handle Casket Details
       if (data.casket_id && data.casket_name) {
@@ -3827,32 +3958,93 @@ function openLifeplanDetails(lifeplanId) {
         validIdNotAvailable.classList.remove('hidden');
       }
 
-      // Handle Payment Proof Image
-      const paymentProofImage = document.getElementById('lifeplanPaymentProofImage');
-      const paymentProofContainer = paymentProofImage.parentElement;
-
-      if (data.payment_url && data.payment_url !== '') {
-        const paymentProofPath = '../customer/booking/uploads/' + data.payment_url.replace(/^uploads\//, '');
-        
-        paymentProofImage.onerror = function() {
-          console.error("Failed to load payment proof image:", paymentProofPath);
-          const placeholderHTML = `
-            <div class="flex flex-col items-center justify-center py-8 px-4 bg-gray-50">
-              <i class="fas fa-exclamation-circle text-gray-400 text-3xl mb-2"></i>
-              <p class="text-gray-500 text-center">Image could not be loaded</p>
-            </div>`;
-          paymentProofContainer.innerHTML = placeholderHTML;
-        };
-        
-        paymentProofImage.src = paymentProofPath;
-      } else {
+      // Handle Payment Proof Image - Updated for Lifeplan
+    const paymentProofImage = document.getElementById('lifeplanPaymentProofImage');
+    const modalPaymentProofImage = document.getElementById('modalLifeplanPaymentProofImage');
+    const paymentProofContainer = paymentProofImage.parentElement;
+    const modalPaymentProofContainer = modalPaymentProofImage.parentElement;
+    
+    if (data.payment_url && data.payment_url !== '') {
+      // Use relative path with ../ to navigate up and then to the customer/booking/uploads folder
+      const paymentProofPath = '../customer/booking/uploads/' + data.payment_url.replace(/^uploads\//, '');
+      console.log("Payment Proof Path:", paymentProofPath);
+      
+      // Set error handler before setting src for both images
+      const errorHandler = function() {
+        console.error("Failed to load payment proof image:", paymentProofPath);
+        // Create a placeholder instead of loading another image
         const placeholderHTML = `
           <div class="flex flex-col items-center justify-center py-8 px-4 bg-gray-50">
             <i class="fas fa-exclamation-circle text-gray-400 text-3xl mb-2"></i>
-            <p class="text-gray-500 text-center">No payment proof provided</p>
+            <p class="text-gray-500 text-center">Image could not be loaded</p>
           </div>`;
         paymentProofContainer.innerHTML = placeholderHTML;
-      }
+        modalPaymentProofContainer.innerHTML = placeholderHTML;
+      };
+      
+      paymentProofImage.onerror = errorHandler;
+      modalPaymentProofImage.onerror = errorHandler;
+      
+      // Set the source for both images
+      paymentProofImage.src = paymentProofPath;
+      modalPaymentProofImage.src = paymentProofPath;
+      
+      // Initialize Tesseract OCR processing
+      processPaymentProofWithTesseract(paymentProofPath, 'lifeplan');
+    } else {
+      // Create a placeholder for when no payment proof exists
+      const placeholderHTML = `
+        <div class="flex flex-col items-center justify-center py-8 px-4 bg-gray-50">
+          <i class="fas fa-exclamation-circle text-gray-400 text-3xl mb-2"></i>
+          <p class="text-gray-500 text-center">No payment proof provided</p>
+        </div>`;
+      paymentProofContainer.innerHTML = placeholderHTML;
+      modalPaymentProofContainer.innerHTML = placeholderHTML;
+    }
+
+// Tesseract OCR processing function
+function processPaymentProofWithTesseract(imagePath, type = 'lifeplan') {
+  const processingIndicator = document.getElementById(`${type}ProcessingIndicator`);
+  const extractionMessage = document.getElementById(`${type}ExtractionMessage`);
+  const amountInput = document.getElementById(`${type}AmountPaidInput`);
+  
+  // Show processing indicator
+  processingIndicator.classList.remove('hidden');
+  
+  // Load Tesseract.js and process the image
+  Tesseract.recognize(
+    imagePath,
+    'eng',
+    { logger: m => console.log(m) }
+  ).then(({ data: { text } }) => {
+    console.log("OCR Result:", text);
+    
+    // Hide processing indicator
+    processingIndicator.classList.add('hidden');
+    
+    // Try to extract amount from the text
+    const amountRegex = /(?:₱|PHP|P|Php|Amount|Total)\s*[:=]?\s*([\d,]+\.\d{2})/i;
+    const match = text.match(amountRegex);
+    
+    if (match && match[1]) {
+      const extractedAmount = match[1].replace(/,/g, '');
+      amountInput.value = extractedAmount;
+      extractionMessage.textContent = `Detected amount: ₱${extractedAmount}`;
+      extractionMessage.classList.remove('hidden');
+      extractionMessage.classList.add('text-green-600');
+    } else {
+      extractionMessage.textContent = 'No amount detected in receipt. Please enter manually.';
+      extractionMessage.classList.remove('hidden');
+      extractionMessage.classList.add('text-yellow-600');
+    }
+  }).catch(err => {
+    console.error("OCR Error:", err);
+    processingIndicator.classList.add('hidden');
+    extractionMessage.textContent = 'Failed to process receipt. Please enter amount manually.';
+    extractionMessage.classList.remove('hidden');
+    extractionMessage.classList.add('text-red-600');
+  });
+}
             
       // Show the modal
       const modal = document.getElementById("lifeplanDetailsModal");
