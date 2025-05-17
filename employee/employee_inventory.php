@@ -448,23 +448,23 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == 1) {
         </div>
 
         <!-- Filter Dropdown -->
-        <div class="relative filter-dropdown">
+        <div class="hidden lg:flex items-center gap-3">
           <button id="filterButton_mobile<?php echo $branch_id; ?>" class="px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover">
             <i class="fas fa-filter text-sidebar-accent"></i>
             <span>Filters</span>
             <span id="filterIndicator_mobile<?php echo $branch_id; ?>" class="hidden h-2 w-2 bg-sidebar-accent rounded-full"></span>
           </button>
           
-          <!-- Filter Dropdown (Desktop) -->
-<div class="relative filter-dropdown">
-  <button id="filterButton_mobile<?php echo $branch_id; ?>" class="px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover">
-    <i class="fas fa-filter text-sidebar-accent"></i>
-    <span>Filters</span>
-    <span id="filterIndicator_mobile<?php echo $branch_id; ?>" class="hidden h-2 w-2 bg-sidebar-accent rounded-full"></span>
-  </button>
+          <!-- Desktop Filter Dropdown -->
+  <div class="relative hidden lg:block">
+    <button id="filterButton_desktop_<?php echo $branch_id; ?>" class="px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover">
+      <i class="fas fa-filter text-sidebar-accent"></i>
+      <span>Filters</span>
+      <span id="filterIndicator_desktop_<?php echo $branch_id; ?>" class="hidden h-2 w-2 bg-sidebar-accent rounded-full"></span>
+    </button>
   
-  <!-- Filter Window -->
-  <div id="filterDropdown_mobile<?php echo $branch_id; ?>" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-4">
+  <!-- Desktop Filter Dropdown Content -->
+    <div id="filterDropdown_desktop_<?php echo $branch_id; ?>" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-4">
     <div class="space-y-4">
       <!-- Sort Options -->
       <div>
@@ -525,10 +525,9 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == 1) {
       </div>
     </div>
     
-    <!-- Mobile/Tablet Controls - Only visible on smaller screens -->
-    <div class="lg:hidden w-full mt-4">
-      <!-- First row: Search bar with filter and archive icons on the right -->
-      <div class="flex items-center w-full gap-3 mb-4">
+    <!-- Mobile Filter Button (hidden on desktop) -->
+<div class="lg:hidden w-full mt-4">
+  <div class="flex items-center w-full gap-3 mb-4">
         <!-- Search Input - Takes most of the space -->
         <div class="relative flex-grow">
           <input type="text" id="inventorySearch" 
@@ -542,17 +541,15 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == 1) {
           </button>
         </div>
 
-        <!-- Icon-only buttons for filter and archive -->
-        <div class="flex items-center gap-3">
-          <!-- Filter Dropdown (Mobile/Tablet) -->
-<div class="relative filter-dropdown">
-  <button id="filterButton_<?php echo $branch_id; ?>" class="w-10 h-10 flex items-center justify-center text-sidebar-accent">
-    <i class="fas fa-filter text-xl"></i>
-    <span id="filterIndicator_<?php echo $branch_id; ?>" class="hidden absolute top-1 right-1 h-2 w-2 bg-sidebar-accent rounded-full"></span>
-  </button>
+        <!-- Mobile Filter Dropdown -->
+    <div class="relative lg:hidden">
+      <button id="filterButton_mobile_<?php echo $branch_id; ?>" class="w-10 h-10 flex items-center justify-center text-sidebar-accent">
+        <i class="fas fa-filter text-xl"></i>
+        <span id="filterIndicator_mobile_<?php echo $branch_id; ?>" class="hidden absolute top-1 right-1 h-2 w-2 bg-sidebar-accent rounded-full"></span>
+      </button>
   
-  <!-- Filter Window -->
-  <div id="filterDropdown_<?php echo $branch_id; ?>" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-4">
+  <!-- Mobile Filter Dropdown Content -->
+      <div id="filterDropdown_mobile_<?php echo $branch_id; ?>" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-4">
     <div class="space-y-4">
       <!-- Sort Options -->
       <div>
@@ -1097,17 +1094,63 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Toggle filter dropdown
-    document.querySelectorAll('[id^="filterButton_"]').forEach(button => {
-        button.addEventListener('click', function() {
-            const branchId = this.id.replace('filterButton_', '');
-            const dropdown = document.getElementById(`filterDropdown_${branchId}`);
-            dropdown.classList.toggle('hidden');
+    // Toggle filter dropdowns
+document.querySelectorAll('[id^="filterButton_"]').forEach(button => {
+    button.addEventListener('click', function() {
+        const isMobile = this.id.includes('mobile');
+        const branchId = this.id.replace('filterButton_mobile_', '').replace('filterButton_desktop_', '');
+        
+        // Close all other dropdowns first
+        document.querySelectorAll('.filter-dropdown > div').forEach(dropdown => {
+            dropdown.classList.add('hidden');
         });
+        
+        // Toggle the correct dropdown
+        const dropdownId = isMobile ? `filterDropdown_mobile_${branchId}` : `filterDropdown_desktop_${branchId}`;
+        const dropdown = document.getElementById(dropdownId);
+        dropdown.classList.toggle('hidden');
     });
+});
 
-    // Load initial page content
-    loadPage(<?php echo $branch_id; ?>, 1);
+// Close dropdowns when clicking outside
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('[id^="filterButton_"]') && !e.target.closest('[id^="filterDropdown_"]')) {
+        document.querySelectorAll('[id^="filterDropdown_"]').forEach(dropdown => {
+            dropdown.classList.add('hidden');
+        });
+    }
+});
+
+// Filter option selection (works for both mobile and desktop)
+document.querySelectorAll('.filter-option').forEach(option => {
+    option.addEventListener('click', function() {
+        const sort = this.getAttribute('data-sort');
+        const branchId = this.getAttribute('data-branch');
+
+        // Update indicators for both mobile and desktop
+        const indicators = [
+            document.getElementById(`filterIndicator_mobile_${branchId}`),
+            document.getElementById(`filterIndicator_desktop_${branchId}`)
+        ];
+        
+        indicators.forEach(indicator => {
+            if (indicator) {
+                if (sort !== 'default') {
+                    indicator.classList.remove('hidden');
+                } else {
+                    indicator.classList.add('hidden');
+                }
+            }
+        });
+
+        // Close all dropdowns
+        document.querySelectorAll('[id^="filterDropdown_"]').forEach(dropdown => {
+            dropdown.classList.add('hidden');
+        });
+
+        // Load page with selected sort
+        loadPage(branchId, 1, sort);
+    });
 });
     
     // Add Inventory function
