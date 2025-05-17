@@ -853,6 +853,7 @@ function validateUnitPrice(input) {
       <form id="editInventoryForm" class="space-y-3 sm:space-y-4" enctype="multipart/form-data">
         <input type="hidden" id="editInventoryId" name="editInventoryId">
         
+        <!-- Item Name -->
         <div>
           <label for="editItemName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
             Item Name <span class="text-red-500">*</span>
@@ -860,7 +861,11 @@ function validateUnitPrice(input) {
           <div class="relative">
             <input type="text" id="editItemName" name="editItemName" required 
                    class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
-                   placeholder="Item Name">
+                   placeholder="Item Name"
+                   minlength="2"
+                   oninput="validateNameInput(this)"
+                   onpaste="cleanPastedName(this)">
+            <div id="editItemNameError" class="text-red-500 text-xs mt-1 hidden">Item name must contain only letters and spaces (minimum 2 characters)</div>
           </div>
         </div>
         
@@ -886,6 +891,7 @@ function validateUnitPrice(input) {
               }
               ?>
             </select>
+            <div id="editCategoryError" class="text-red-500 text-xs mt-1 hidden">Please select a category</div>
           </div>
         </div>
         
@@ -895,7 +901,11 @@ function validateUnitPrice(input) {
             Quantity <span class="text-red-500">*</span>
           </label>
           <div class="relative">
-            <input type="number" id="editQuantity" name="editQuantity" min="1" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="Quantity">
+            <input type="number" id="editQuantity" name="editQuantity" min="0" required 
+                   class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
+                   placeholder="Quantity"
+                   oninput="validateQuantity(this)">
+            <div id="editQuantityError" class="text-red-500 text-xs mt-1 hidden">Quantity must be 0 or more</div>
           </div>
         </div>
         
@@ -910,7 +920,9 @@ function validateUnitPrice(input) {
             </div>
             <input type="number" id="editUnitPrice" name="editUnitPrice" step="0.01" min="0" required 
                    class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
-                   placeholder="0.00">
+                   placeholder="0.00"
+                   oninput="validateUnitPrice(this)">
+            <div id="editUnitPriceError" class="text-red-500 text-xs mt-1 hidden">Price must be 0.00 or more</div>
           </div>
         </div>
         
@@ -938,23 +950,79 @@ function validateUnitPrice(input) {
                      class="w-full focus:outline-none"
                      onchange="previewEditImage(this)">
             </div>
+            <div id="editImageError" class="text-red-500 text-xs mt-1 hidden">Please upload a valid image file</div>
           </div>
         </div>
+        
+        <!-- Modal Footer --> 
+        <div class="px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row sm:justify-end gap-2 sm:gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
+          <button type="button" class="w-full sm:w-auto px-4 sm:px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center" onclick="closeEditInventoryModal()">
+            Cancel
+          </button>
+          <button type="submit" id="submitEditInventoryBtn" class="w-full sm:w-auto px-5 sm:px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center">
+            Save Changes
+          </button>
+        </div>
       </form>
-    </div>
-    
-    <!-- Modal Footer --> 
-    <div class="px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row sm:justify-end gap-2 sm:gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
-      <button type="button" class="w-full sm:w-auto px-4 sm:px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center" onclick="closeEditInventoryModal()">
-        Cancel
-      </button>
-      <button type="submit" id="submitEditInventoryBtn" form="editInventoryForm" class="w-full sm:w-auto px-5 sm:px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center">
-        Save Changes
-      </button>
     </div>
   </div>
 </div>
 
+<script>
+// Edit Modal specific functions
+function previewEditImage(input) {
+  const errorElement = document.getElementById('editImageError');
+  const previewContainer = document.getElementById('editImagePreviewContainer');
+  const preview = document.getElementById('editImagePreview');
+  
+  if (input.files && input.files[0]) {
+    const file = input.files[0];
+    const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    
+    if (validTypes.includes(file.type)) {
+      const reader = new FileReader();
+      
+      reader.onload = function(e) {
+        preview.src = e.target.result;
+        previewContainer.classList.remove('hidden');
+        errorElement.classList.add('hidden');
+      }
+      
+      reader.readAsDataURL(file);
+    } else {
+      errorElement.classList.remove('hidden');
+      previewContainer.classList.add('hidden');
+      input.value = '';
+    }
+  } else {
+    previewContainer.classList.add('hidden');
+  }
+}
+
+// Validate the edit form before submission
+document.getElementById('editInventoryForm').addEventListener('submit', function(e) {
+  const itemNameValid = validateNameInput(document.getElementById('editItemName'));
+  const categoryValid = document.getElementById('editCategoryId').value !== '';
+  const quantityValid = validateQuantity(document.getElementById('editQuantity'));
+  const unitPriceValid = validateUnitPrice(document.getElementById('editUnitPrice'));
+  
+  // Show error if category not selected
+  if (!categoryValid) {
+    document.getElementById('editCategoryError').classList.remove('hidden');
+  } else {
+    document.getElementById('editCategoryError').classList.add('hidden');
+  }
+  
+  if (!itemNameValid || !categoryValid || !quantityValid || !unitPriceValid) {
+    e.preventDefault();
+    // Scroll to the first error
+    const firstError = document.querySelector('.text-red-500:not(.hidden)');
+    if (firstError) {
+      firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }
+});
+</script>
 <!-- Archived Items Modal -->
 <div id="archivedItemsModal" class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto">
   <!-- Modal Backdrop -->
