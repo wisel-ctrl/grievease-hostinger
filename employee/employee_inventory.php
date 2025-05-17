@@ -394,8 +394,13 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == 1) {
         <div class="relative">
           <input type="text" id="inventorySearch" 
                 placeholder="Search inventory..." 
-                class="pl-8 pr-3 py-2 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
-          <i class="fas fa-search absolute left-2.5 top-3 text-gray-400"></i>
+                class="pl-9 pr-8 py-2 border border-sidebar-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
+          <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+              <i class="fas fa-search text-gray-400"></i>
+          </div>
+          <button id="clearSearch" class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 hidden">
+              <i class="fas fa-times"></i>
+          </button>
         </div>
 
         <!-- Filter Dropdown -->
@@ -476,8 +481,13 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == 1) {
         <div class="relative flex-grow">
           <input type="text" id="inventorySearch" 
                   placeholder="Search inventory..." 
-                  class="pl-8 pr-3 py-2.5 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
-          <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                  class="pl-9 pr-8 py-2.5 w-full border border-sidebar-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
+          <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+              <i class="fas fa-search text-gray-400"></i>
+          </div>
+          <button id="clearSearch" class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 hidden">
+              <i class="fas fa-times"></i>
+          </button>
         </div>
 
         <!-- Icon-only buttons for filter and archive -->
