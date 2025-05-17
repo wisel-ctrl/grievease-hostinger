@@ -2089,23 +2089,24 @@ document.getElementById('beneficiaryDateOfBirth').addEventListener('change', fun
       }).format(service.selling_price);
       
       serviceCard.innerHTML = `
-        <div class="h-40 bg-gray-200 relative overflow-hidden">
-          <img src="${service.image_url ? '/admin/servicesManagement/' + service.image_url : '/api/placeholder/400/250'}" 
-             alt="${service.service_name}" 
-             class="w-full h-full object-cover">
-          <div class="absolute top-2 right-2 bg-yellow-500 text-white px-2 py-1 rounded-md text-sm font-semibold">
-            ${formattedPrice}
+        <div class="h-48 ${service.image_url ? 'bg-center bg-cover bg-no-repeat' : 'bg-gray-100'} flex items-center justify-center" 
+             ${service.image_url ? `style="background-image: url('/admin/servicesManagement/${service.image_url}');"` : ''}>
+          ${!service.image_url ? '<i class="fas fa-image text-4xl text-gray-300"></i>' : ''}
+          <div class="w-full h-full bg-gradient-to-t from-black/30 to-transparent flex items-end">
+            <div class="p-3 text-white">
+              <span class="text-xs font-medium bg-sidebar-accent/80 px-2 py-1 rounded-full">${service.service_category_name}</span>
+            </div>
           </div>
         </div>
-        <div class="p-4">
-          <h3 class="font-semibold text-sidebar-text mb-2">${service.service_name}</h3>
+        <div class="p-5 flex-grow flex flex-col">
+          <div class="text-lg font-bold mb-2 text-sidebar-text">${service.service_name}</div>
           <p class="text-sm text-gray-600 mb-3 line-clamp-2">${service.description}</p>
-          <div class="flex justify-between items-center">
-            <span class="text-xs bg-gray-100 px-2 py-1 rounded-full">${service.service_category_name}</span>
-            <button onclick="showServiceDetails(${service.service_id})" class="px-3 py-1 bg-sidebar-accent text-white rounded-md text-sm hover:bg-yellow-600 transition-all duration-300">
-              Select
-            </button>
-          </div>
+          <div class="text-lg font-bold text-sidebar-accent mt-auto">${formattedPrice}</div>
+        </div>
+        <div class="px-5 pb-5 flex justify-end">
+          <button onclick="showServiceDetails(${service.service_id})" class="text-white bg-sidebar-accent px-4 py-2 rounded-lg hover:bg-opacity-90 transition-all duration-300">
+            Select
+          </button>
         </div>
       `;
       
