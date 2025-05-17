@@ -73,9 +73,9 @@ $services_this_month = $services_data['service_count'];
 
 // Cash revenue (sum of amount_paid)
 $cash_query = "SELECT SUM(amount_paid) as cash_revenue FROM sales_tb 
-              WHERE MONTH(get_timestamp) = ? AND YEAR(get_timestamp) = ?";
+              WHERE MONTH(get_timestamp) = ? AND YEAR(get_timestamp) = ? AND branch_id = ?";
 $stmt = $conn->prepare($cash_query);
-$stmt->bind_param("ii", $current_month, $current_year);
+$stmt->bind_param("iii", $current_month, $current_year, $branch);
 $stmt->execute();
 $cash_result = $stmt->get_result();
 $cash_data = $cash_result->fetch_assoc();
@@ -83,17 +83,18 @@ $cash_revenue = $cash_data['cash_revenue'] ? $cash_data['cash_revenue'] : 0;
 
 // Accrual revenue (sum of discounted_price)
 $accrual_query = "SELECT SUM(discounted_price) as accrual_revenue FROM sales_tb 
-                WHERE MONTH(get_timestamp) = ? AND YEAR(get_timestamp) = ?";
+                WHERE MONTH(get_timestamp) = ? AND YEAR(get_timestamp) = ? AND branch_id = ?";
 $stmt = $conn->prepare($accrual_query);
-$stmt->bind_param("ii", $current_month, $current_year);
+$stmt->bind_param("iii", $current_month, $current_year, $branch);
 $stmt->execute();
 $accrual_result = $stmt->get_result();
 $accrual_data = $accrual_result->fetch_assoc();
 $accrual_revenue = $accrual_data['accrual_revenue'] ? $accrual_data['accrual_revenue'] : 0;
 
 // Ongoing services (status = 'Pending')
-$ongoing_query = "SELECT COUNT(*) as ongoing_count FROM sales_tb WHERE status = 'Pending'";
+$ongoing_query = "SELECT COUNT(*) as ongoing_count FROM sales_tb WHERE status = 'Pending' AND branch_id = ?";
 $stmt = $conn->prepare($ongoing_query);
+$stmt = bind_param("i",$branch);
 $stmt->execute();
 $ongoing_result = $stmt->get_result();
 $ongoing_data = $ongoing_result->fetch_assoc();
