@@ -487,248 +487,311 @@ $offsetOutstanding = ($pageOutstanding - 1) * $recordsPerPage;
 
   <!-- Past Services - Fully Paid Section -->
   <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 mb-8">
-    <div class="flex justify-between items-center p-5 border-b border-sidebar-border">
-      <h3 class="text-lg font-semibold text-sidebar-text">Past Services - Fully Paid</h3>
-      <div class="relative">
-        <input type="text" id="searchFullyPaid" placeholder="Search..." class="pl-9 pr-4 py-2 border border-sidebar-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
-        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-          <i class="fas fa-search text-gray-400"></i>
-        </div>
+      <div class="flex justify-between items-center p-5 border-b border-sidebar-border">
+          <h3 class="text-lg font-semibold text-sidebar-text">Past Services - Fully Paid</h3>
+          <div class="relative">
+              <input type="text" id="searchFullyPaid" placeholder="Search..." class="pl-9 pr-4 py-2 border border-sidebar-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
+              <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                  <i class="fas fa-search text-gray-400"></i>
+              </div>
+          </div>
       </div>
-    </div>
-    <div class="overflow-x-auto scrollbar-thin">
-      <table class="w-full">
-        <thead>
-          <tr class="bg-gray-50 border-b border-sidebar-border">
-            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(0)">
-              <div class="flex items-center gap-1.5">
-                <i class="fas fa-hashtag text-sidebar-accent"></i> ID
-              </div>
-            </th>
-            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(1)">
-              <div class="flex items-center gap-1.5">
-                <i class="fas fa-user text-sidebar-accent"></i> Client
-              </div>
-            </th>
-            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(2)">
-              <div class="flex items-center gap-1.5">
-                <i class="fas fa-user-alt text-sidebar-accent"></i> Deceased
-              </div>
-            </th>
-            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(3)">
-              <div class="flex items-center gap-1.5">
-                <i class="fas fa-tag text-sidebar-accent"></i> Service Type
-              </div>
-            </th>
-            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(4)">
-              <div class="flex items-center gap-1.5">
-                <i class="fas fa-calendar text-sidebar-accent"></i> Date of Burial
-              </div>
-            </th>
-            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(5)">
-              <div class="flex items-center gap-1.5">
-                <i class="fas fa-toggle-on text-sidebar-accent"></i> Status
-              </div>
-            </th>
-            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text whitespace-nowrap">
-              <div class="flex items-center gap-1.5">
-                <i class="fas fa-cogs text-sidebar-accent"></i> Actions
-              </div>
-            </th>
-          </tr>
-        </thead>
-        <tbody id="fullyPaidTableBody">
-          <?php
-          $fullyPaidQuery = "SELECT s.sales_id, s.fname, s.mname, s.lname, s.suffix, 
-                  s.fname_deceased, s.mname_deceased, s.lname_deceased, s.suffix_deceased,
-                  sv.service_name, s.date_of_burial, s.balance, s.status, s.payment_status
-                  FROM sales_tb s
-                  JOIN services_tb sv ON s.service_id = sv.service_id
-                  WHERE s.status = 'Completed' AND s.payment_status = 'Fully Paid' AND s.balance = 0 AND s.branch_id = ?
-                  LIMIT ?, ?";
-          $stmt = $conn->prepare($fullyPaidQuery);
-          $stmt->bind_param("iii", $branch, $offsetFullyPaid, $recordsPerPage);
-          $stmt->execute();
-          $fullyPaidResult = $stmt->get_result();
+      <div class="overflow-x-auto scrollbar-thin">
+          <table class="w-full">
+              <thead>
+                  <tr class="bg-gray-50 border-b border-sidebar-border">
+                      <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(0)">
+                          <div class="flex items-center gap-1.5">
+                              <i class="fas fa-hashtag text-sidebar-accent"></i> ID
+                          </div>
+                      </th>
+                      <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(1)">
+                          <div class="flex items-center gap-1.5">
+                              <i class="fas fa-user text-sidebar-accent"></i> Client
+                          </div>
+                      </th>
+                      <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(2)">
+                          <div class="flex items-center gap-1.5">
+                              <i class="fas fa-user-alt text-sidebar-accent"></i> Deceased
+                          </div>
+                      </th>
+                      <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(3)">
+                          <div class="flex items-center gap-1.5">
+                              <i class="fas fa-tag text-sidebar-accent"></i> Service Type
+                          </div>
+                      </th>
+                      <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(4)">
+                          <div class="flex items-center gap-1.5">
+                              <i class="fas fa-calendar text-sidebar-accent"></i> Date of Burial
+                          </div>
+                      </th>
+                      <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(5)">
+                          <div class="flex items-center gap-1.5">
+                              <i class="fas fa-toggle-on text-sidebar-accent"></i> Status
+                          </div>
+                      </th>
+                      <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text whitespace-nowrap">
+                          <div class="flex items-center gap-1.5">
+                              <i class="fas fa-cogs text-sidebar-accent"></i> Actions
+                          </div>
+                      </th>
+                  </tr>
+              </thead>
+              <tbody id="fullyPaidTableBody">
+                  <? pistol
+                  $fullyPaidQuery = "SELECT s.sales_id, s.fname, s.mname, s.lname, s.suffix, 
+                          s.fname_deceased, s.mname_deceased, s.lname_deceased, s.suffix_deceased,
+                          sv.service_name, s.date_of_burial, s.balance, s.status, s.payment_status
+                          FROM sales_tb s
+                          JOIN services_tb sv ON s.service_id = sv.service_id
+                          WHERE s.status = 'Completed' AND s.payment_status = 'Fully Paid' AND s.balance = 0 AND s.branch_id = ?
+                          LIMIT ?, ?";
+                  $stmt = $conn->prepare($fullyPaidQuery);
+                  $stmt->bind_param("iii", $branch, $offsetFullyPaid, $recordsPerPage);
+                  $stmt->execute();
+                  $fullyPaidResult = $stmt->get_result();
 
-          if ($fullyPaidResult->num_rows > 0) {
-            while($row = $fullyPaidResult->fetch_assoc()) {
-              $clientName = htmlspecialchars($row['fname'] . ' ' . 
-                          ($row['mname'] ? $row['mname'] . ' ' : '') . 
-                          $row['lname'] . 
-                          ($row['suffix'] ? ' ' . $row['suffix'] : ''));
-                          
-              $deceasedName = htmlspecialchars($row['fname_deceased'] . ' ' . 
-                              ($row['mname_deceased'] ? $row['mname_deceased'] . ' ' : '') . 
-                              $row['lname_deceased'] . 
-                              ($row['suffix_deceased'] ? ' ' . $row['suffix_deceased'] : ''));
-              ?>
-              <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
-                <td class="px-4 py-3.5 text-sm text-sidebar-text font-medium">#<?php echo $row['sales_id']; ?></td>
-                <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo $clientName; ?></td>
-                <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo $deceasedName; ?></td>
-                <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo htmlspecialchars($row['service_name']); ?></td>
-                <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo htmlspecialchars($row['date_of_burial']); ?></td>
-                <td class="px-4 py-3.5 text-sm">
-                  <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-500 border border-green-200">
-                    <i class="fas fa-check-circle mr-1"></i> <?php echo htmlspecialchars($row['status']); ?>
-                  </span>
-                </td>
-                <td class="px-4 py-3.5 text-sm">
-                  <div class="flex space-x-2">
-                    <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="View Details" onclick="viewServiceDetails('<?php echo $row['sales_id']; ?>')">
-                      <i class="fas fa-eye"></i>
-                    </button>
-                  </div>
-                </td>
-              </tr>
-              <?php
-            }
-          } else {
-            ?>
-            <tr>
-              <td colspan="7" class="px-4 py-6 text-sm text-center">
-                <div class="flex flex-col items-center">
-                  <i class="fas fa-inbox text-gray-300 text-4xl mb-3"></i>
-                  <p class="text-gray-500">No fully paid past services found</p>
-                </div>
-              </td>
-            </tr>
-            <?php
-          }
+                  if ($fullyPaidResult->num_rows > 0) {
+                      while($row = $fullyPaidResult->fetch_assoc()) {
+                          $clientName = htmlspecialchars($row['fname'] . ' ' . 
+                                      ($row['mname'] ? $row['mname'] . ' ' : '') . 
+                                      $row['lname'] . 
+                                      ($row['suffix'] ? ' ' . $row['suffix'] : ''));
+                                      
+                          $deceasedName = htmlspecialchars($row['fname_deceased'] . ' ' . 
+                                          ($row['mname_deceased'] ? $row['mname_deceased'] . ' ' : '') . 
+                                          $row['lname_deceased'] . 
+                                          ($row['suffix_deceased'] ? ' ' . $row['suffix_deceased'] : ''));
+                          ?>
+                          <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
+                              <td class="px-4 py-3.5 text-sm text-sidebar-text font-medium">#<?php echo $row['sales_id']; ?></td>
+                              <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo $clientName; ?></td>
+                              <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo $deceasedName; ?></td>
+                              <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo htmlspecialchars($row['service_name']); ?></td>
+                              <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo htmlspecialchars($row['date_of_burial']); ?></td>
+                              <td class="px-4 py-3.5 text-sm">
+                                  <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-500 border border-green-200">
+                                      <i class="fas fa-check-circle mr-1"></i> <?php echo htmlspecialchars($row['status']); ?>
+                                  </span>
+                              </td>
+                              <td class="px-4 py-3.5 text-sm">
+                                  <div class="flex space-x-2">
+                                      <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="View Details" onclick="viewServiceDetails('<?php echo $row['sales_id']; ?>')">
+                                          <i class="fas fa-eye"></i>
+                                      </button>
+                                  </div>
+                              </td>
+                          </tr>
+                          <?php
+                      }
+                  } else {
+                      ?>
+                      <tr>
+                          <td colspan="7" class="px-4 py-6 text-sm text-center">
+                              <div class="flex flex-col items-center">
+                                  <i class="fas fa-inbox text-gray-300 text-4xl mb-3"></i>
+                                  <p class="text-gray-500">No fully paid past services found</p>
+                              </div>
+                          </td>
+                      </tr>
+                      <?php
+                  }
+                  $stmt->close();
+                  ?>
+              </tbody>
+          </table>
+
+          <?php
+          // Count total records for Fully Paid Services
+          $countQueryFullyPaid = "SELECT COUNT(*) as total FROM sales_tb WHERE status = 'Completed' AND payment_status = 'Fully Paid' AND balance = 0 AND branch_id = ?";
+          $stmt = $conn->prepare($countQueryFullyPaid);
+          $stmt->bind_param("s", $branch);
+          $stmt->execute();
+          $countResult = $stmt->get_result();
+          $totalRecordsFullyPaid = $countResult->fetch_assoc()['total'];
+          $totalPagesFullyPaid = ceil($totalRecordsFullyPaid / $recordsPerPage);
           $stmt->close();
           ?>
-        </tbody>
-      </table>
-    </div>
+
+          <div class="flex justify-between items-center p-4">
+              <div>
+                  <p class="text-sm text-gray-600">
+                      Showing <?php echo $offsetFullyPaid + 1; ?> to <?php echo min($offsetFullyPaid + $recordsPerPage, $totalRecordsFullyPaid); ?> of <?php echo $totalRecordsFullyPaid; ?> entries
+                  </p>
+              </div>
+              <div class="flex space-x-2">
+                  <?php if ($pageFullyPaid > 1): ?>
+                      <a href="?page_fully_paid=<?php echo $pageFullyPaid - 1; ?>&page_ongoing=<?php echo $pageOngoing; ?>&page_outstanding=<?php echo $pageOutstanding; ?>" class="px-3 py-1 bg-sidebar-accent text-white rounded-md hover:bg-darkgold">Previous</a>
+                  <?php endif; ?>
+                  <?php for ($i = 1; $i <= $totalPagesFullyPaid; $i++): ?>
+                      <a href="?page_fully_paid=<?php echo $i; ?>&page_ongoing=<?php echo $pageOngoing; ?>&page_outstanding=<?php echo $pageOutstanding; ?>" class="px-3 py-1 <?php echo $i == $pageFullyPaid ? 'bg-sidebar-accent text-white' : 'bg-gray-200 text-gray-700'; ?> rounded-md hover:bg-darkgold hover:text-white"><?php echo $i; ?></a>
+                  <?php endfor; ?>
+                  <?php if ($pageFullyPaid < $totalPagesFullyPaid): ?>
+                      <a href="?page_fully_paid=<?php echo $pageFullyPaid + 1; ?>&page_ongoing=<?php echo $pageOngoing; ?>&page_outstanding=<?php echo $pageOutstanding; ?>" class="px-3 py-1 bg-sidebar-accent text-white rounded-md hover:bg-darkgold">Next</a>
+                  <?php endif; ?>
+              </div>
+          </div>
+      </div>
   </div>
 
   <!-- Past Services - With Outstanding Balance Section -->
   <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 mb-8">
-    <div class="flex justify-between items-center p-5 border-b border-sidebar-border">
-      <h3 class="text-lg font-semibold text-sidebar-text">Past Services - With Outstanding Balance</h3>
-      <div class="relative">
-        <input type="text" id="searchOutstanding" placeholder="Search..." class="pl-9 pr-4 py-2 border border-sidebar-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
-        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-          <i class="fas fa-search text-gray-400"></i>
-        </div>
+      <div class="flex justify-between items-center p-5 border-b border-sidebar-border">
+          <h3 class="text-lg font-semibold text-sidebar-text">Past Services - With Outstanding Balance</h3>
+          <div class="relative">
+              <input type="text" id="searchOutstanding" placeholder="Search..." class="pl-9 pr-4 py-2 border border-sidebar-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
+              <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                  <i class="fas fa-search text-gray-400"></i>
+              </div>
+          </div>
       </div>
-    </div>
-    <div class="overflow-x-auto scrollbar-thin">
-      <table class="w-full">
-        <thead>
-          <tr class="bg-gray-50 border-b border-sidebar-border">
-            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortOutstandingTable(0)">
-              <div class="flex items-center gap-1.5">
-                <i class="fas fa-hashtag text-sidebar-accent"></i> ID
-              </div>
-            </th>
-            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortOutstandingTable(1)">
-              <div class="flex items-center gap-1.5">
-                <i class="fas fa-user text-sidebar-accent"></i> Client
-              </div>
-            </th>
-            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortOutstandingTable(2)">
-              <div class="flex items-center gap-1.5">
-                <i class="fas fa-user-circle text-sidebar-accent"></i> Deceased
-              </div>
-            </th>
-            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortOutstandingTable(3)">
-              <div class="flex items-center gap-1.5">
-                <i class="fas fa-tag text-sidebar-accent"></i> Service Type
-              </div>
-            </th>
-            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortOutstandingTable(4)">
-              <div class="flex items-center gap-1.5">
-                <i class="fas fa-calendar text-sidebar-accent"></i> Date of Burial
-              </div>
-            </th>
-            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortOutstandingTable(5)">
-              <div class="flex items-center gap-1.5">
-                <i class="fas fa-toggle-on text-sidebar-accent"></i> Status
-              </div>
-            </th>
-            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortOutstandingTable(6)">
-              <div class="flex items-center gap-1.5">
-                <i class="fas fa-peso-sign text-sidebar-accent"></i> Outstanding Balance
-              </div>
-            </th>
-            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text whitespace-nowrap">
-              <div class="flex items-center gap-1.5">
-                <i class="fas fa-cogs text-sidebar-accent"></i> Actions
-              </div>
-            </th>
-          </tr>
-        </thead>
-        <tbody id="outstandingTableBody">
-          <?php
-          $withBalanceQuery = "SELECT s.sales_id, s.fname, s.mname, s.lname, s.suffix, 
-                  s.fname_deceased, s.mname_deceased, s.lname_deceased, s.suffix_deceased,
-                  sv.service_name, s.date_of_burial, s.balance, s.status, s.payment_status
-                  FROM sales_tb s
-                  JOIN services_tb sv ON s.service_id = sv.service_id
-                  WHERE s.status = 'Completed' AND s.payment_status = 'With Balance' AND s.branch_id = ?
-                  LIMIT ?, ?";
-          $stmt = $conn->prepare($withBalanceQuery);
-          $stmt->bind_param("iii", $branch, $offsetOutstanding, $recordsPerPage);
-          $stmt->execute();
-          $withBalanceResult = $stmt->get_result();
+      <div class="overflow-x-auto scrollbar-thin">
+          <table class="w-full">
+              <thead>
+                  <tr class="bg-gray-50 border-b border-sidebar-border">
+                      <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortOutstandingTable(0)">
+                          <div class="flex items-center gap-1.5">
+                              <i class="fas fa-hashtag text-sidebar-accent"></i> ID
+                          </div>
+                      </th>
+                      <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortOutstandingTable(1)">
+                          <div class="flex items-center gap-1.5">
+                              <i class="fas fa-user text-sidebar-accent"></i> Client
+                          </div>
+                      </th>
+                      <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortOutstandingTable(2)">
+                          <div class="flex items-center gap-1.5">
+                              <i class="fas fa-user-circle text-sidebar-accent"></i> Deceased
+                          </div>
+                      </th>
+                      <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortOutstandingTable(3)">
+                          <div class="flex items-center gap-1.5">
+                              <i class="fas fa-tag text-sidebar-accent"></i> Service Type
+                          </div>
+                      </th>
+                      <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortOutstandingTable(4)">
+                          <div class="flex items-center gap-1.5">
+                              <i class="fas fa-calendar text-sidebar-accent"></i> Date of Burial
+                          </div>
+                      </th>
+                      <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortOutstandingTable(5)">
+                          <div class="flex items-center gap-1.5">
+                              <i class="fas fa-toggle-on text-sidebar-accent"></i> Status
+                          </div>
+                      </th>
+                      <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortOutstandingTable(6)">
+                          <div class="flex items-center gap-1.5">
+                              <i class="fas fa-peso-sign text-sidebar-accent"></i> Outstanding Balance
+                          </div>
+                      </th>
+                      <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text whitespace-nowrap">
+                          <div class="flex items-center gap-1.5">
+                              <i class="fas fa-cogs text-sidebar-accent"></i> Actions
+                          </div>
+                      </th>
+                  </tr>
+              </thead>
+              <tbody id="outstandingTableBody">
+                  <?php
+                  $withBalanceQuery = "SELECT s.sales_id, s.fname, s.mname, s.lname, s.suffix, 
+                          s.fname_deceased, s.mname_deceased, s.lname_deceased, s.suffix_deceased,
+                          sv.service_name, s.date_of_burial, s.balance, s.status, s.payment_status
+                          FROM sales_tb s
+                          JOIN services_tb sv ON s.service_id = sv.service_id
+                          WHERE s.status = 'Completed' AND s.payment_status = 'With Balance' AND s.branch_id = ?
+                          LIMIT ?, ?";
+                  $stmt = $conn->prepare($withBalanceQuery);
+                  $stmt->bind_param("iii", $branch, $offsetOutstanding, $recordsPerPage);
+                  $stmt->execute();
+                  $withBalanceResult = $stmt->get_result();
 
-          if ($withBalanceResult->num_rows > 0) {
-            while($row = $withBalanceResult->fetch_assoc()) {
-              $clientName = htmlspecialchars($row['fname'] . ' ' . 
-                          ($row['mname'] ? $row['mname'] . ' ' : '') . 
-                          $row['lname'] . 
-                          ($row['suffix'] ? ' ' . $row['suffix'] : ''));
-                          
-              $deceasedName = htmlspecialchars($row['fname_deceased'] . ' ' . 
-                              ($row['mname_deceased'] ? $row['mname_deceased'] . ' ' : '') . 
-                              $row['lname_deceased'] . 
-                              ($row['suffix_deceased'] ? ' ' . $row['suffix_deceased'] : ''));
-              ?>
-              <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
-                <td class="px-4 py-4 text-sm text-sidebar-text font-medium">#<?php echo $row['sales_id']; ?></td>
-                <td class="px-4 py-4 text-sm text-sidebar-text"><?php echo $clientName; ?></td>
-                <td class="px-4 py-4 text-sm text-sidebar-text"><?php echo $deceasedName; ?></td>
-                <td class="px-4 py-4 text-sm text-sidebar-text"><?php echo htmlspecialchars($row['service_name']); ?></td>
-                <td class="px-4 py-4 text-sm text-sidebar-text"><?php echo htmlspecialchars($row['date_of_burial']); ?></td>
-                <td class="px-4 py-4 text-sm">
-                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-500 border border-yellow-200">
-                    <i class="fas fa-exclamation-circle mr-1"></i> <?php echo htmlspecialchars($row['payment_status']); ?>
-                  </span>
-                </td>
-                <td class="px-4 py-4 text-sm font-medium text-sidebar-text">₱<?php echo number_format($row['balance'], 2); ?></td>
-                <td class="px-4 py-4 text-sm">
-                  <div class="flex space-x-2">
-                    <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="View Details" onclick="viewServiceDetails('<?php echo $row['sales_id']; ?>')">
-                      <i class="fas fa-eye"></i>
-                    </button>
-                    <button class="p-2 bg-orange-100 text-orange-600 rounded-lg hover:bg-orange-200 transition-all tooltip" title="Record Payment" onclick="openRecordPaymentModal('<?php echo $row['sales_id']; ?>','<?php echo $clientName; ?>','<?php echo $row['balance']; ?>')">
-                      <i class="fas fa-money-bill-wave"></i>
-                    </button>
-                  </div>
-                </td>
-              </tr>
-              <?php
-            }
-          } else {
-            ?>
-            <tr>
-              <td colspan="8" class="px-4 py-6 text-sm text-center">
-                <div class="flex flex-col items-center">
-                  <i class="fas fa-inbox text-gray-300 text-4xl mb-3"></i>
-                  <p class="text-gray-500">No past services with outstanding balance found</p>
-                </div>
-              </td>
-            </tr>
-            <?php
-          }
+                  if ($withBalanceResult->num_rows > 0) {
+                      while($row = $withBalanceResult->fetch_assoc()) {
+                          $clientName = htmlspecialchars($row['fname'] . ' ' . 
+                                      ($row['mname'] ? $row['mname'] . ' ' : '') . 
+                                      $row['lname'] . 
+                                      ($row['suffix'] ? ' ' . $row['suffix'] : ''));
+                                      
+                          $deceasedName = htmlspecialchars($row['fname_deceased'] . ' ' . 
+                                          ($row['mname_deceased'] ? $row['mname_deceased'] . ' ' : '') . 
+                                          $row['lname_deceased'] . 
+                                          ($row['suffix_deceased'] ? ' ' . $row['suffix_deceased'] : ''));
+                          ?>
+                          <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
+                              <td class="px-4 py-4 text-sm text-sidebar-text font-medium">#<?php echo $row['sales_id']; ?></td>
+                              <td class="px-4 py-4 text-sm text-sidebar-text"><?php echo $clientName; ?></td>
+                              <td class="px-4 py-4 text-sm text-sidebar-text"><?php echo $deceasedName; ?></td>
+                              <td class="px-4 py-4 text-sm text-sidebar-text"><?php echo htmlspecialchars($row['service_name']); ?></td>
+                              <td class="px-4 py-4 text-sm text-sidebar-text"><?php echo htmlspecialchars($row['date_of_burial']); ?></td>
+                              <td class="px-4 py-4 text-sm">
+                                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-500 border border-yellow-200">
+                                      <i class="fas fa-exclamation-circle mr-1"></i> <?php echo htmlspecialchars($row['payment_status']); ?>
+                                  </span>
+                              </td>
+                              <td class="px-4 py-4 text-sm font-medium text-sidebar-text">₱<?php echo number_format($row['balance'], 2); ?></td>
+                              <td class="px-4 py-4 text-sm">
+                                  <div class="flex space-x-2">
+                                      <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="View Details" onclick="viewServiceDetails('<?php echo $row['sales_id']; ?>')">
+                                          <i class="fas fa-eye"></i>
+                                      </button>
+                                      <button class="p-2 bg-orange-100 text-orange-600 rounded-lg hover:bg-orange-200 transition-all tooltip" title="Record Payment" onclick="openRecordPaymentModal('<?php echo $row['sales_id']; ?>','<?php echo $clientName; ?>','<?php echo $row['balance']; ?>')">
+                                          <i class="fas fa-money-bill-wave"></i>
+                                      </button>
+                                  </div>
+                              </td>
+                          </tr>
+                          <?php
+                      }
+                  } else {
+                      ?>
+                      <tr>
+                          <td colspan="8" class="px-4 py-6 text-sm text-center">
+                              <div class="flex flex-col items-center">
+                                  <i class="fas fa-inbox text-gray-300 text-4xl mb-3"></i>
+                                  <p class="text-gray-500">No past services with outstanding balance found</p>
+                              </div>
+                          </td>
+                      </tr>
+                      <?php
+                  }
+                  $stmt->close();
+                  ?>
+              </tbody>
+          </table>
+
+          <?php
+          // Count total records for Outstanding Balance Services
+          $countQueryOutstanding = "SELECT COUNT(*) as total FROM sales_tb WHERE status = 'Completed' AND payment_status = 'With Balance' AND branch_id = ?";
+          $stmt = $conn->prepare($countQueryOutstanding);
+          $stmt->bind_param("s", $branch);
+          $stmt->execute();
+          $countResult = $stmt->get_result();
+          $totalRecordsOutstanding = $countResult->fetch_assoc()['total'];
+          $totalPagesOutstanding = ceil($totalRecordsOutstanding / $recordsPerPage);
           $stmt->close();
           ?>
-        </tbody>
-      </table>
-    </div>
+
+          <div class="flex justify-between items-center p-4">
+              <div>
+                  <p class="text-sm text-gray-600">
+                      Showing <?php echo $offsetOutstanding + 1; ?> to <?php echo min($offsetOutstanding + $recordsPerPage, $totalRecordsOutstanding); ?> of <?php echo $totalRecordsOutstanding; ?> entries
+                  </p>
+              </div>
+              <div class="flex space-x-2">
+                  <?php if ($pageOutstanding > 1): ?>
+                      <a href="?page_outstanding=<?php echo $pageOutstanding - 1; ?>&page_ongoing=<?php echo $pageOngoing; ?>&page_fully_paid=<?php echo $pageFullyPaid; ?>" class="px-3 py-1 bg-sidebar-accent text-white rounded-md hover:bg-darkgold">Previous</a>
+                  <?php endif; ?>
+                  <?php for ($i = 1; $i <= $totalPagesOutstanding; $i++): ?>
+                      <a href="?page_outstanding=<?php echo $i; ?>&page_ongoing=<?php echo $pageOngoing; ?>&page_fully_paid=<?php echo $pageFullyPaid; ?>" class="px-3 py-1 <?php echo $i == $pageOutstanding ? 'bg-sidebar-accent text-white' : 'bg-gray-200 text-gray-700'; ?> rounded-md hover:bg-darkgold hover:text-white"><?php echo $i; ?></a>
+                  <?php endfor; ?>
+                  <?php if ($pageOutstanding < $totalPagesOutstanding): ?>
+                      <a href="?page_outstanding=<?php echo $pageOutstanding + 1; ?>&page_ongoing=<?php echo $pageOngoing; ?>&page_fully_paid=<?php echo $pageFullyPaid; ?>" class="px-3 py-1 bg-sidebar-accent text-white rounded-md hover:bg-darkgold">Next</a>
+                  <?php endif; ?>
+              </div>
+          </div>
+      </div>
   </div>
+
         </div>  
 
   <!-- Modal for Editing Service -->
