@@ -60,8 +60,9 @@ if ($result && $result->num_rows > 0) {
         </div>
 
         <div>
-            <label for="item_name" class="block text-sm font-medium text-gold">Item Name</label>
-            <input type="text" id="item_name" name="item_name" class="mt-1 block w-full px-3 py-2 bg-white border border-gold rounded-md shadow-sm text-gray-700 focus:outline-none focus:ring-dark-gold focus:border-dark-gold" value="<?php echo htmlspecialchars($item["item_name"]); ?>">
+            <label for="item_name" class="block text-sm font-medium text-gold">Item Name <span class="text-red-500">*</span></label>
+            <input type="text" id="item_name" name="item_name" class="mt-1 block w-full px-3 py-2 bg-white border border-gold rounded-md shadow-sm text-gray-700 focus:outline-none focus:ring-dark-gold focus:border-dark-gold" value="<?php echo htmlspecialchars($item["item_name"]); ?>" required minlength="2" pattern="[A-Za-z ]+" title="Only letters and single spaces allowed">
+            <div id="item_name_error" class="text-red-500 text-xs mt-1 hidden">Please enter a valid item name (letters only, minimum 2 characters)</div>
         </div>
 
         <div>
@@ -80,7 +81,8 @@ if ($result && $result->num_rows > 0) {
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
         <div>
             <label for="quantity" class="block text-sm font-medium text-gold">Quantity</label>
-            <input type="number" id="quantity" name="quantity" class="mt-1 block w-full px-3 py-2 bg-white border border-gold rounded-md shadow-sm text-gray-700 focus:outline-none focus:ring-dark-gold focus:border-dark-gold" value="<?php echo $item["quantity"]; ?>">
+            <input type="number" id="quantity" name="quantity" min="0" class="mt-1 block w-full px-3 py-2 bg-white border border-gold rounded-md shadow-sm text-gray-700 focus:outline-none focus:ring-dark-gold focus:border-dark-gold" value="<?php echo $item["quantity"]; ?>">
+            <div id="quantity_error" class="text-red-500 text-xs mt-1 hidden">Quantity must be 0 or more</div>
         </div>
 
         <div>
@@ -89,8 +91,9 @@ if ($result && $result->num_rows > 0) {
                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <span class="text-dark-gold">₱</span>
                 </div>
-                <input type="text" id="price" name="price" class="pl-7 block w-full px-3 py-2 bg-white border border-gold rounded-md shadow-sm text-gray-700 focus:outline-none focus:ring-dark-gold focus:border-dark-gold" value="<?php echo number_format($item["price"], 2); ?>">
+                <input type="number" id="price" name="price" min="0" step="0.01" class="pl-7 block w-full px-3 py-2 bg-white border border-gold rounded-md shadow-sm text-gray-700 focus:outline-none focus:ring-dark-gold focus:border-dark-gold" value="<?php echo number_format($item["price"], 2); ?>">
             </div>
+            <div id="price_error" class="text-red-500 text-xs mt-1 hidden">Price must be 0.00 or more</div>
         </div>
 
         <div>
@@ -99,7 +102,7 @@ if ($result && $result->num_rows > 0) {
                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <span class="text-dark-gold">₱</span>
                 </div>
-                <input type="text" id="total_value" name="total_value" class="pl-7 block w-full px-3 py-2 bg-white border border-gold rounded-md shadow-sm text-gray-700 focus:outline-none focus:ring-dark-gold focus:border-dark-gold font-medium" value="<?php echo number_format($item["total_value"], 2); ?>">
+                <input type="number" id="total_value" name="total_value" min="0" step="0.01" class="pl-7 block w-full px-3 py-2 bg-white border border-gold rounded-md shadow-sm text-gray-700 focus:outline-none focus:ring-dark-gold focus:border-dark-gold font-medium" value="<?php echo number_format($item["total_value"], 2); ?>" readonly>
             </div>
         </div>
     </div>
@@ -113,7 +116,6 @@ if ($result && $result->num_rows > 0) {
     </div>
 
     <!-- Image Preview -->
-    <!-- Image Preview -->
     <div class="mt-6 flex flex-wrap gap-6 items-end">
         <div class="bg-dark-gold p-5 rounded-xl w-full md:w-auto">
             <div class="flex flex-col items-center space-y-3">
@@ -125,6 +127,104 @@ if ($result && $result->num_rows > 0) {
         </div>
     </div>
 </form>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Item Name validation
+    const itemNameInput = document.getElementById('item_name');
+    const itemNameError = document.getElementById('item_name_error');
+    
+    itemNameInput.addEventListener('input', function(e) {
+        // Clean input: remove numbers and symbols, allow only letters and single spaces
+        let value = e.target.value.replace(/[^a-zA-Z ]/g, '');
+        
+        // Capitalize first letter of each word
+        value = value.toLowerCase().replace(/(?:^|\s)\S/g, function(char) {
+            return char.toUpperCase();
+        });
+        
+        // Prevent multiple consecutive spaces
+        value = value.replace(/\s{2,}/g, ' ');
+        
+        // Don't allow space as first character or if less than 2 characters
+        if (value.length < 2 && value.includes(' ')) {
+            value = value.replace(/\s/g, '');
+        }
+        
+        e.target.value = value;
+        
+        // Validate
+        if (value.length < 2) {
+            itemNameError.classList.remove('hidden');
+        } else {
+            itemNameError.classList.add('hidden');
+        }
+    });
+    
+    // Handle paste event for item name
+    itemNameInput.addEventListener('paste', function(e) {
+        e.preventDefault();
+        let pastedText = (e.clipboardData || window.clipboardData).getData('text');
+        
+        // Clean pasted text
+        pastedText = pastedText.replace(/[^a-zA-Z ]/g, '');
+        pastedText = pastedText.toLowerCase().replace(/(?:^|\s)\S/g, function(char) {
+            return char.toUpperCase();
+        });
+        pastedText = pastedText.replace(/\s{2,}/g, ' ');
+        
+        // Insert cleaned text at cursor position
+        const startPos = e.target.selectionStart;
+        const endPos = e.target.selectionEnd;
+        const currentValue = e.target.value;
+        
+        e.target.value = currentValue.substring(0, startPos) + pastedText + currentValue.substring(endPos);
+        
+        // Trigger input event for validation
+        e.target.dispatchEvent(new Event('input'));
+    });
+    
+    // Quantity validation
+    const quantityInput = document.getElementById('quantity');
+    const quantityError = document.getElementById('quantity_error');
+    
+    quantityInput.addEventListener('change', function() {
+        if (parseFloat(this.value) < 0) {
+            quantityError.classList.remove('hidden');
+            this.value = 0;
+        } else {
+            quantityError.classList.add('hidden');
+        }
+    });
+    
+    // Price validation
+    const priceInput = document.getElementById('price');
+    const priceError = document.getElementById('price_error');
+    
+    priceInput.addEventListener('change', function() {
+        if (parseFloat(this.value) < 0) {
+            priceError.classList.remove('hidden');
+            this.value = 0.00;
+        } else {
+            priceError.classList.add('hidden');
+        }
+        
+        // Calculate total value
+        calculateTotalValue();
+    });
+    
+    // Calculate total value when quantity or price changes
+    quantityInput.addEventListener('input', calculateTotalValue);
+    priceInput.addEventListener('input', calculateTotalValue);
+    
+    function calculateTotalValue() {
+        const quantity = parseFloat(quantityInput.value) || 0;
+        const price = parseFloat(priceInput.value) || 0;
+        const totalValue = quantity * price;
+        document.getElementById('total_value').value = totalValue.toFixed(2);
+    }
+});
+</script>
 
   <?php
 } else {
