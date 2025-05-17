@@ -441,163 +441,315 @@ $pending_payments = $pending_result->fetch_assoc()['pending'];
     </div>
 
     <!-- Expenses Table Card -->
-    <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 mb-8">
-      <div class="flex justify-between items-center p-5 border-b border-sidebar-border">
-        <h3 class="font-medium text-sidebar-text">Expenses</h3>
-        <div class="flex items-center gap-3">
-          <form id="searchForm" method="GET" class="relative">
-            <input type="text" name="search" placeholder="Search..." 
-                   value="<?php echo htmlspecialchars($search); ?>" 
-                   class="pl-9 pr-4 py-2 border border-sidebar-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
-            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-              <i class="fas fa-search text-gray-400"></i>
+<div class="bg-white rounded-lg shadow-md mb-8 border border-sidebar-border overflow-hidden branch-expense-container">
+    <!-- Branch Header with Search and Filters - Made responsive with better stacking -->
+    <div class="bg-sidebar-hover p-4 border-b border-sidebar-border">
+        <!-- Desktop layout for big screens - Title on left, controls on right -->
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+            <!-- Title and Counter -->
+            <div class="flex items-center gap-3 mb-4 lg:mb-0">
+                <h4 class="text-lg font-bold text-sidebar-text whitespace-nowrap">Expenses</h4>
+                
+                <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
+                    <?php echo $total_items . ($total_items != 1 ? "" : ""); ?>
+                </span>
             </div>
-          </form>
-          <div class="relative">
-            <button class="filter-btn px-4 py-2 bg-white border border-sidebar-border rounded-md text-sm flex items-center hover:bg-sidebar-hover transition-all duration-300" onclick="toggleFilter()">
-              <i class="fas fa-filter mr-2 text-sidebar-accent"></i> Filter
-            </button>
-            <div id="filterDropdown" class="filter-content absolute right-0 mt-2 w-56 bg-white rounded-md shadow-lg z-10 border border-sidebar-border hidden">
-              <div class="p-4">
-                <div class="mb-3">
-                  <label class="block text-sm font-medium text-sidebar-text mb-1">Category</label>
-                  <select name="category" class="w-full px-3 py-2 border border-sidebar-border rounded-md text-sm">
-                    <option value="">All Categories</option>
-                    <option value="Supplies" <?php echo $category_filter === 'Supplies' ? 'selected' : ''; ?>>Supplies</option>
-                    <option value="Utilities" <?php echo $category_filter === 'Utilities' ? 'selected' : ''; ?>>Utilities</option>
-                    <option value="Salaries" <?php echo $category_filter === 'Salaries' ? 'selected' : ''; ?>>Salaries</option>
-                    <option value="Maintenance" <?php echo $category_filter === 'Maintenance' ? 'selected' : ''; ?>>Maintenance</option>
-                    <option value="Other" <?php echo $category_filter === 'Other' ? 'selected' : ''; ?>>Other</option>
-                  </select>
+            
+            <!-- Controls for big screens - aligned right -->
+            <div class="hidden lg:flex items-center gap-3">
+                <!-- Search Input -->
+                <div class="relative">
+                    <form id="searchForm" method="GET" class="relative">
+                        <input type="text" 
+                               name="search" 
+                               placeholder="Search expenses..." 
+                               value="<?php echo htmlspecialchars($search); ?>"
+                               class="pl-8 pr-3 py-2 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
+                        <div class="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none">
+                            <i class="fas fa-search text-gray-400"></i>
+                        </div>
+                    </form>
                 </div>
-                <div class="mb-3">
-                  <label class="block text-sm font-medium text-sidebar-text mb-1">Status</label>
-                  <select name="status" class="w-full px-3 py-2 border border-sidebar-border rounded-md text-sm">
-                    <option value="">All Statuses</option>
-                    <option value="Paid" <?php echo $status_filter === 'Paid' ? 'selected' : ''; ?>>Paid</option>
-                    <option value="Pending" <?php echo $status_filter === 'Pending' ? 'selected' : ''; ?>>Pending</option>
-                  </select>
-                </div>
-                <button type="button" onclick="applyFilters()" class="w-full px-4 py-2 bg-sidebar-accent text-white rounded-md text-sm hover:bg-darkgold transition-all duration-300">
-                  Apply Filters
-                </button>
-              </div>
-            </div>
-          </div>
-          <button class="px-4 py-2 bg-sidebar-accent text-white rounded-md text-sm flex items-center hover:bg-darkgold transition-all duration-300" onclick="openAddExpenseModal()">
-            <i class="fas fa-plus mr-2"></i> Add Expense
-          </button>
-        </div>
-      </div>
-      <div class="overflow-x-auto scrollbar-thin">
-        <table class="w-full">
-          <thead>
-            <tr class="bg-sidebar-hover">
-              <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable('expense_ID')">
-                <div class="flex items-center">
-                  ID <i class="fas fa-sort ml-1 text-gray-400"></i>
-                </div>
-              </th>
-              <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable('expense_name')">
-                <div class="flex items-center">
-                  Expense Name <i class="fas fa-sort ml-1 text-gray-400"></i>
-                </div>
-              </th>
-              <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable('category')">
-                <div class="flex items-center">
-                  Category <i class="fas fa-sort ml-1 text-gray-400"></i>
-                </div>
-              </th>
-              <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable('price')">
-                <div class="flex items-center">
-                  Amount <i class="fas fa-sort ml-1 text-gray-400"></i>
-                </div>
-              </th>
-              <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable('date')">
-                <div class="flex items-center">
-                  Date <i class="fas fa-sort ml-1 text-gray-400"></i>
-                </div>
-              </th>
-              <th class="p-4 text-left text-sm font-medium text-sidebar-text cursor-pointer" onclick="sortTable('status')">
-                <div class="flex items-center">
-                  Status <i class="fas fa-sort ml-1 text-gray-400"></i>
-                </div>
-              </th>
-              <th class="p-4 text-left text-sm font-medium text-sidebar-text">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <?php if (count($expenses) > 0): ?>
-              <?php foreach ($expenses as $expense): ?>
-                <tr class="border-b border-sidebar-border hover:bg-sidebar-hover">
-                  <td class="p-4 text-sm text-sidebar-text font-medium">#<?php echo htmlspecialchars($expense['expense_ID']); ?></td>
-                  <td class="p-4 text-sm text-sidebar-text"><?php echo htmlspecialchars($expense['expense_name']); ?></td>
-                  <td class="p-4 text-sm text-sidebar-text">
-                    <span class="px-2 py-1 <?php echo getCategoryColorClass($expense['category']); ?> rounded-full text-xs">
-                      <?php echo htmlspecialchars($expense['category']); ?>
-                    </span>
-                  </td>
-                  <td class="p-4 text-sm text-sidebar-text">₱<?php echo number_format($expense['price'], 2); ?></td>
-                  <td class="p-4 text-sm text-sidebar-text"><?php echo date('Y-m-d', strtotime($expense['date'])); ?></td>
-                  <td class="p-4 text-sm">
-                    <span class="px-2 py-1 <?php echo $expense['status'] === 'Paid' ? 'bg-green-100 text-green-800' : 'bg-orange-100 text-orange-800'; ?> rounded-full text-xs">
-                      <?php echo htmlspecialchars($expense['status']); ?>
-                    </span>
-                  </td>
-                  <td class="p-4 text-sm">
-                    <div class="flex space-x-2">
-                      <button class="p-1.5 bg-blue-100 text-blue-600 rounded hover:bg-blue-200 transition-all" 
-                              onclick="openEditExpenseModal(
-                                '<?php echo $expense['expense_ID']; ?>',
-                                '<?php echo addslashes($expense['expense_name']); ?>',
-                                '<?php echo $expense['category']; ?>',
-                                '<?php echo $expense['price']; ?>',
-                                '<?php echo $expense['date']; ?>',
-                                '<?php echo $expense['status']; ?>',
-                                '<?php echo addslashes($expense['notes']); ?>'
-                              )">
-                        <i class="fas fa-edit"></i>
-                      </button>
-                      <button class="p-1.5 bg-red-100 text-red-600 rounded hover:bg-red-200 transition-all" 
-                              onclick="confirmArchive('<?php echo $expense['expense_ID']; ?>')">
-                        <i class="fas fa-archive text-sidebar-accent"></i>
-                      </button>
+
+                <!-- Filter Dropdown -->
+                <div class="relative filter-dropdown">
+                    <button class="px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover"
+                            onclick="toggleFilter()">
+                        <i class="fas fa-filter text-sidebar-accent"></i>
+                        <span>Filters</span>
+                        <?php if($category_filter || $status_filter): ?>
+                            <span class="h-2 w-2 bg-sidebar-accent rounded-full"></span>
+                        <?php endif; ?>
+                    </button>
+                    
+                    <!-- Filter Window -->
+                    <div id="filterDropdown" class="filter-content absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10 border border-sidebar-border hidden p-4">
+                        <div class="space-y-4">
+                            <!-- Category Filter -->
+                            <div>
+                                <h5 class="text-sm font-medium text-sidebar-text mb-2">Category</h5>
+                                <select name="category" class="w-full px-3 py-2 border border-sidebar-border rounded-md text-sm">
+                                    <option value="">All Categories</option>
+                                    <option value="Supplies" <?php echo $category_filter === 'Supplies' ? 'selected' : ''; ?>>Supplies</option>
+                                    <option value="Utilities" <?php echo $category_filter === 'Utilities' ? 'selected' : ''; ?>>Utilities</option>
+                                    <option value="Salaries" <?php echo $category_filter === 'Salaries' ? 'selected' : ''; ?>>Salaries</option>
+                                    <option value="Maintenance" <?php echo $category_filter === 'Maintenance' ? 'selected' : ''; ?>>Maintenance</option>
+                                    <option value="Other" <?php echo $category_filter === 'Other' ? 'selected' : ''; ?>>Other</option>
+                                </select>
+                            </div>
+                            
+                            <!-- Status Filter -->
+                            <div>
+                                <h5 class="text-sm font-medium text-sidebar-text mb-2">Status</h5>
+                                <select name="status" class="w-full px-3 py-2 border border-sidebar-border rounded-md text-sm">
+                                    <option value="">All Statuses</option>
+                                    <option value="Paid" <?php echo $status_filter === 'Paid' ? 'selected' : ''; ?>>Paid</option>
+                                    <option value="Pending" <?php echo $status_filter === 'Pending' ? 'selected' : ''; ?>>Pending</option>
+                                </select>
+                            </div>
+                            
+                            <button type="button" onclick="applyFilters()" class="w-full px-4 py-2 bg-sidebar-accent text-white rounded-md text-sm hover:bg-darkgold transition-all duration-300">
+                                Apply Filters
+                            </button>
+                        </div>
                     </div>
-                  </td>
-                </tr>
-              <?php endforeach; ?>
-            <?php else: ?>
-              <tr>
-                <td colspan="7" class="p-4 text-center text-sm text-gray-500">No expenses found</td>
-              </tr>
-            <?php endif; ?>
-          </tbody>
-        </table>
-      </div>
-      <div class="p-4 border-t border-sidebar-border flex justify-between items-center">
-        <div class="text-sm text-gray-500">
-          Showing <?php echo count($expenses); ?> of <?php echo $total_items; ?> expenses
+                </div>
+
+                <!-- Add Expense Button -->
+                <button class="px-4 py-2 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm whitespace-nowrap" 
+                        onclick="openAddExpenseModal()">
+                    <i class="fas fa-plus mr-2"></i>
+                    <span>Add Expense</span>
+                </button>
+            </div>
         </div>
-        <div class="flex space-x-1">
-          <?php if ($current_page > 1): ?>
-            <a href="?page=<?php echo $current_page - 1; ?>&search=<?php echo urlencode($search); ?>&category=<?php echo urlencode($category_filter); ?>&status=<?php echo urlencode($status_filter); ?>&sort=<?php echo $sort_by; ?>&order=<?php echo $sort_order; ?>" 
-               class="px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">&laquo;</a>
-          <?php endif; ?>
-          
-          <?php for ($i = 1; $i <= $total_pages; $i++): ?>
-            <a href="?page=<?php echo $i; ?>&search=<?php echo urlencode($search); ?>&category=<?php echo urlencode($category_filter); ?>&status=<?php echo urlencode($status_filter); ?>&sort=<?php echo $sort_by; ?>&order=<?php echo $sort_order; ?>" 
-               class="px-3 py-1 border border-sidebar-border rounded text-sm <?php echo $i === $current_page ? 'bg-sidebar-accent text-white' : 'hover:bg-sidebar-hover'; ?>">
-              <?php echo $i; ?>
-            </a>
-          <?php endfor; ?>
-          
-          <?php if ($current_page < $total_pages): ?>
-            <a href="?page=<?php echo $current_page + 1; ?>&search=<?php echo urlencode($search); ?>&category=<?php echo urlencode($category_filter); ?>&status=<?php echo urlencode($status_filter); ?>&sort=<?php echo $sort_by; ?>&order=<?php echo $sort_order; ?>" 
-               class="px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">&raquo;</a>
-          <?php endif; ?>
+        
+        <!-- Mobile/Tablet Controls - Only visible on smaller screens -->
+        <div class="lg:hidden w-full mt-4">
+            <!-- First row: Search bar with filter icons on the right -->
+            <div class="flex items-center w-full gap-3 mb-4">
+                <!-- Search Input - Takes most of the space -->
+                <div class="relative flex-grow">
+                    <form id="mobileSearchForm" method="GET" class="relative w-full">
+                        <input type="text" 
+                               name="search" 
+                               placeholder="Search expenses..." 
+                               value="<?php echo htmlspecialchars($search); ?>"
+                               class="pl-8 pr-3 py-2 w-full border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent">
+                        <div class="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none">
+                            <i class="fas fa-search text-gray-400"></i>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Icon-only button for filter -->
+                <div class="flex items-center gap-3">
+                    <!-- Filter Icon Button -->
+                    <div class="relative filter-dropdown">
+                        <button class="w-10 h-10 flex items-center justify-center text-sidebar-accent" onclick="toggleFilter()">
+                            <i class="fas fa-filter text-xl"></i>
+                            <span class="<?php echo ($category_filter || $status_filter) ? '' : 'hidden'; ?> absolute top-1 right-1 h-2 w-2 bg-sidebar-accent rounded-full"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Second row: Add Expense Button - Full width -->
+            <div class="w-full">
+                <button class="px-4 py-2.5 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm whitespace-nowrap w-full justify-center" 
+                        onclick="openAddExpenseModal()">
+                    <i class="fas fa-plus mr-2"></i>
+                    <span>Add Expense</span>
+                </button>
+            </div>
         </div>
-      </div>
     </div>
+    
+    <!-- Responsive Table Container with improved spacing -->
+    <div class="overflow-x-auto scrollbar-thin">
+        <!-- Responsive Table with improved spacing and horizontal scroll for small screens -->
+        <div class="min-w-full">
+            <table class="w-full">
+                <thead>
+                    <tr class="bg-gray-50 border-b border-sidebar-border">
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable('expense_ID')">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fas fa-hashtag text-sidebar-accent"></i> ID 
+                                <i class="fas fa-sort ml-1 text-gray-400"></i>
+                            </div>
+                        </th>
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable('expense_name')">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fa-solid fa-file-invoice text-sidebar-accent"></i> Expense Name 
+                                <i class="fas fa-sort ml-1 text-gray-400"></i>
+                            </div>
+                        </th>
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable('category')">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fas fa-th-list text-sidebar-accent"></i> Category 
+                                <i class="fas fa-sort ml-1 text-gray-400"></i>
+                            </div>
+                        </th>
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable('price')">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fas fa-peso-sign text-sidebar-accent"></i> Amount 
+                                <i class="fas fa-sort ml-1 text-gray-400"></i>
+                            </div>
+                        </th>
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable('date')">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fas fa-calendar-alt text-sidebar-accent"></i> Date 
+                                <i class="fas fa-sort ml-1 text-gray-400"></i>
+                            </div>
+                        </th>
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable('status')">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fas fa-check-circle text-sidebar-accent"></i> Status 
+                                <i class="fas fa-sort ml-1 text-gray-400"></i>
+                            </div>
+                        </th>
+                        <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text whitespace-nowrap">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fas fa-cogs text-sidebar-accent"></i> Actions
+                            </div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php if (count($expenses) > 0): ?>
+                        <?php foreach ($expenses as $expense): ?>
+                            <?php
+                            $statusClass = $expense['status'] === 'Paid' 
+                                ? "bg-green-100 text-green-600 border border-green-200" 
+                                : "bg-orange-100 text-orange-500 border border-orange-200";
+                            $statusIcon = $expense['status'] === 'Paid' ? "fa-check-circle" : "fa-clock";
+                            ?>
+                            <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
+                                <td class="px-4 py-3.5 text-sm text-sidebar-text font-medium">#<?php echo htmlspecialchars($expense['expense_ID']); ?></td>
+                                <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo htmlspecialchars($expense['expense_name']); ?></td>
+                                <td class="px-4 py-3.5 text-sm text-sidebar-text">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">
+                                        <?php echo htmlspecialchars($expense['category']); ?>
+                                    </span>
+                                </td>
+                                <td class="px-4 py-3.5 text-sm font-medium text-sidebar-text">₱<?php echo number_format($expense['price'], 2); ?></td>
+                                <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo date('Y-m-d', strtotime($expense['date'])); ?></td>
+                                <td class="px-4 py-3.5 text-sm">
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium <?php echo $statusClass; ?>">
+                                        <i class="fas <?php echo $statusIcon; ?> mr-1"></i> <?php echo htmlspecialchars($expense['status']); ?>
+                                    </span>
+                                </td>
+                                <td class="px-4 py-3.5 text-sm">
+                                    <div class="flex space-x-2">
+                                        <button class="p-2 bg-yellow-100 text-yellow-600 rounded-lg hover:bg-yellow-200 transition-all tooltip" title="Edit Expense" 
+                                                onclick="openEditExpenseModal(
+                                                    '<?php echo $expense['expense_ID']; ?>',
+                                                    '<?php echo addslashes($expense['expense_name']); ?>',
+                                                    '<?php echo $expense['category']; ?>',
+                                                    '<?php echo $expense['price']; ?>',
+                                                    '<?php echo $expense['date']; ?>',
+                                                    '<?php echo $expense['status']; ?>',
+                                                    '<?php echo addslashes($expense['notes']); ?>'
+                                                )">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-all tooltip" title="Archive Expense" 
+                                                onclick="confirmArchive('<?php echo $expense['expense_ID']; ?>')">
+                                            <i class="fas fa-archive"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <tr>
+                            <td colspan="7" class="px-4 py-6 text-sm text-center">
+                                <div class="flex flex-col items-center">
+                                    <i class="fas fa-inbox text-gray-300 text-4xl mb-3"></i>
+                                    <p class="text-gray-500">No expenses found</p>
+                                </div>
+                            </td>
+                        </tr>
+                    <?php endif; ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <!-- Sticky Pagination Footer with improved spacing -->
+    <div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div class="text-sm text-gray-500 text-center sm:text-left">
+            Showing <?php echo count($expenses); ?> of <?php echo $total_items; ?> expenses
+        </div>
+        <div class="flex space-x-2">
+            <?php if ($total_pages > 1): ?>
+                <!-- First page button (double arrow) -->
+                <a href="?page=1&search=<?php echo urlencode($search); ?>&category=<?php echo urlencode($category_filter); ?>&status=<?php echo urlencode($status_filter); ?>&sort=<?php echo $sort_by; ?>&order=<?php echo $sort_order; ?>" 
+                   class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($current_page == 1) ? 'opacity-50 pointer-events-none' : ''; ?>">
+                    &laquo;
+                </a>
+                
+                <!-- Previous page button (single arrow) -->
+                <a href="?page=<?php echo max(1, $current_page - 1); ?>&search=<?php echo urlencode($search); ?>&category=<?php echo urlencode($category_filter); ?>&status=<?php echo urlencode($status_filter); ?>&sort=<?php echo $sort_by; ?>&order=<?php echo $sort_order; ?>" 
+                   class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($current_page == 1) ? 'opacity-50 pointer-events-none' : ''; ?>">
+                    &lsaquo;
+                </a>
+                
+                <?php
+                // Show exactly 3 page numbers
+                if ($total_pages <= 3) {
+                    // If total pages is 3 or less, show all pages
+                    $start_page = 1;
+                    $end_page = $total_pages;
+                } else {
+                    // With more than 3 pages, determine which 3 to show
+                    if ($current_page == 1) {
+                        // At the beginning, show first 3 pages
+                        $start_page = 1;
+                        $end_page = 3;
+                    } elseif ($current_page == $total_pages) {
+                        // At the end, show last 3 pages
+                        $start_page = $total_pages - 2;
+                        $end_page = $total_pages;
+                    } else {
+                        // In the middle, show current page with one before and after
+                        $start_page = $current_page - 1;
+                        $end_page = $current_page + 1;
+                        
+                        // Handle edge cases
+                        if ($start_page < 1) {
+                            $start_page = 1;
+                            $end_page = 3;
+                        }
+                        if ($end_page > $total_pages) {
+                            $end_page = $total_pages;
+                            $start_page = $total_pages - 2;
+                        }
+                    }
+                }
+                
+                // Generate the page buttons
+                for ($i = $start_page; $i <= $end_page; $i++) {
+                    $active_class = ($i == $current_page) ? 'bg-sidebar-accent text-white' : 'border border-sidebar-border hover:bg-sidebar-hover';
+                    echo '<a href="?page=' . $i . '&search=' . urlencode($search) . '&category=' . urlencode($category_filter) . '&status=' . urlencode($status_filter) . '&sort=' . $sort_by . '&order=' . $sort_order . '" class="px-3.5 py-1.5 rounded text-sm ' . $active_class . '">' . $i . '</a>';
+                }
+                ?>
+                
+                <!-- Next page button (single arrow) -->
+                <a href="?page=<?php echo min($total_pages, $current_page + 1); ?>&search=<?php echo urlencode($search); ?>&category=<?php echo urlencode($category_filter); ?>&status=<?php echo urlencode($status_filter); ?>&sort=<?php echo $sort_by; ?>&order=<?php echo $sort_order; ?>" 
+                   class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($current_page == $total_pages) ? 'opacity-50 pointer-events-none' : ''; ?>">
+                    &rsaquo;
+                </a>
+                
+                <!-- Last page button (double arrow) -->
+                <a href="?page=<?php echo $total_pages; ?>&search=<?php echo urlencode($search); ?>&category=<?php echo urlencode($category_filter); ?>&status=<?php echo urlencode($status_filter); ?>&sort=<?php echo $sort_by; ?>&order=<?php echo $sort_order; ?>" 
+                   class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($current_page == $total_pages) ? 'opacity-50 pointer-events-none' : ''; ?>">
+                    &raquo;
+                </a>
+            <?php endif; ?>
+        </div>
+    </div>
+</div>
 
           </div>
 
