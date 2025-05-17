@@ -530,6 +530,179 @@ $user_id = $_SESSION['user_id'];
 </div>
 </div>
 
+<script>
+// Name validation function
+function validateName(input, errorElementId) {
+  const errorElement = document.getElementById(errorElementId);
+  let value = input.value;
+  
+  // Clean pasted text: remove numbers and symbols, keep only letters and single spaces
+  let cleanedValue = value.replace(/[^a-zA-Z\s]/g, '');
+  
+  // Remove multiple consecutive spaces
+  cleanedValue = cleanedValue.replace(/\s+/g, ' ');
+  
+  // Capitalize first letter of each word
+  cleanedValue = cleanedValue.toLowerCase().replace(/(?:^|\s)\S/g, function(a) {
+    return a.toUpperCase();
+  });
+  
+  // If this is a required field (first or last name)
+  const isRequired = errorElementId === 'firstNameError' || errorElementId === 'lastNameError';
+  
+  // For required fields, don't allow space unless there are at least 2 characters
+  if (isRequired && cleanedValue.length === 1 && cleanedValue === ' ') {
+    cleanedValue = '';
+  }
+  
+  // Update the input value
+  input.value = cleanedValue;
+  
+  // Validate required fields
+  if (isRequired) {
+    if (cleanedValue.trim().length < 2) {
+      errorElement.classList.remove('hidden');
+      return false;
+    } else {
+      errorElement.classList.add('hidden');
+      return true;
+    }
+  }
+  
+  // For optional fields (middle name)
+  errorElement.classList.add('hidden');
+  return true;
+}
+
+// Email validation
+function validateEmail(input) {
+  const errorElement = document.getElementById('emailError');
+  const email = input.value.trim();
+  
+  // Basic email validation
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  
+  if (!emailRegex.test(email)) {
+    errorElement.classList.remove('hidden');
+    return false;
+  } else {
+    errorElement.classList.add('hidden');
+    return true;
+  }
+}
+
+// Phone number validation
+function validatePhoneNumber(input) {
+  const errorElement = document.getElementById('phoneError');
+  let phone = input.value.trim();
+  
+  // Remove any non-digit characters
+  phone = phone.replace(/\D/g, '');
+  
+  // Update the input value (only digits)
+  input.value = phone;
+  
+  // Validate Philippine phone number (09XXXXXXXXX)
+  if (phone.length > 0 && (phone.length !== 11 || !phone.startsWith('09'))) {
+    errorElement.classList.remove('hidden');
+    return false;
+  } else {
+    errorElement.classList.add('hidden');
+    return true;
+  }
+}
+
+// Birthdate validation
+function validateBirthdate(input) {
+  const errorElement = document.getElementById('birthdateError');
+  const selectedDate = new Date(input.value);
+  const today = new Date();
+  const hundredYearsAgo = new Date();
+  hundredYearsAgo.setFullYear(today.getFullYear() - 100);
+  
+  if (selectedDate > today || selectedDate < hundredYearsAgo) {
+    errorElement.classList.remove('hidden');
+    return false;
+  } else {
+    errorElement.classList.add('hidden');
+    return true;
+  }
+}
+
+// Branch validation
+function validateBranch(input) {
+  const errorElement = document.getElementById('branchError');
+  if (input.value === '') {
+    errorElement.classList.remove('hidden');
+    return false;
+  } else {
+    errorElement.classList.add('hidden');
+    return true;
+  }
+}
+
+// Form submission validation
+function validateAndSubmitForm() {
+  // Validate all fields
+  const isFirstNameValid = validateName(document.getElementById('firstName'), 'firstNameError');
+  const isLastNameValid = validateName(document.getElementById('lastName'), 'lastNameError');
+  const isBirthdateValid = validateBirthdate(document.getElementById('birthdate'));
+  const isBranchValid = validateBranch(document.getElementById('branchLocation'));
+  const isEmailValid = validateEmail(document.getElementById('customerEmail'));
+  const isPhoneValid = validatePhoneNumber(document.getElementById('customerPhone'));
+  
+  if (isFirstNameValid && isLastNameValid && isBirthdateValid && 
+      isBranchValid && isEmailValid && isPhoneValid) {
+    // Generate a random password if not already generated
+    if (!document.getElementById('generatedPassword').value) {
+      generatePassword();
+    }
+    
+    // Submit the form
+    document.getElementById('addCustomerAccountForm').submit();
+  } else {
+    // Scroll to the first error
+    const firstError = document.querySelector('.text-red-500:not(.hidden)');
+    if (firstError) {
+      firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }
+}
+
+// Generate password function
+function generatePassword() {
+  const length = 12;
+  const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+";
+  let password = "";
+  
+  for (let i = 0; i < length; i++) {
+    const randomIndex = Math.floor(Math.random() * charset.length);
+    password += charset[randomIndex];
+  }
+  
+  document.getElementById('generatedPassword').value = password;
+}
+
+// Toggle password visibility
+function togglePassword() {
+  const passwordInput = document.getElementById('generatedPassword');
+  const eyeIcon = document.getElementById('eyeIcon');
+  
+  if (passwordInput.type === 'password') {
+    passwordInput.type = 'text';
+    eyeIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12c1.292 4.338 5.31 7.5 10.066 7.5.709 0 1.4-.079 2.069-.227a10.45 10.45 0 003.238-1.525M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.774 3.162 10.066 7.5a10.523 10.523 0 01-4.064 5.942m-5.972-5.971" />';
+  } else {
+    passwordInput.type = 'password';
+    eyeIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M3.98 12s2.947-5.455 8.02-5.455S20.02 12 20.02 12s-2.947 5.455-8.02 5.455S3.98 12 3.98 12z" /><path stroke-linecap="round" stroke-linejoin="round" d="M12 15a3 3 0 100-6 3 3 0 000 6z" />';
+  }
+}
+
+// Generate password on page load
+window.onload = function() {
+  generatePassword();
+};
+</script>
+
 
 
   <!-- Manage Customer Accounts Section -->
