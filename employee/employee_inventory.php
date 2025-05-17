@@ -703,7 +703,7 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == 1) {
             Quantity <span class="text-red-500">*</span>
           </label>
           <div class="relative">
-            <input type="number" id="quantity" name="quantity" min="0" required 
+            <input type="number" id="quantity" name="quantity" min="1" required 
                    class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
                    placeholder="Quantity"
                    oninput="validateQuantity(this)">
@@ -720,7 +720,7 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == 1) {
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <span class="text-gray-500">₱</span>
             </div>
-            <input type="number" id="unitPrice" name="unitPrice" step="0.01" min="0" required 
+            <input type="number" id="unitPrice" name="unitPrice" step="0.01" min="0.01" required 
                    class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
                    placeholder="0.00"
                    oninput="validateUnitPrice(this)">
@@ -827,59 +827,6 @@ function validateUnitPrice(input) {
   }
 }
 
-// Validate the form before submission
-document.getElementById('addInventoryForm').addEventListener('submit', function(e) {
-  const itemNameValid = validateNameInput(document.getElementById('itemName'));
-  const categoryValid = document.getElementById('category_id').value !== '';
-  const quantityValid = validateQuantity(document.getElementById('quantity'));
-  const unitPriceValid = validateUnitPrice(document.getElementById('unitPrice'));
-  
-  // Show error if category not selected
-  if (!categoryValid) {
-    document.getElementById('categoryError').classList.remove('hidden');
-  } else {
-    document.getElementById('categoryError').classList.add('hidden');
-  }
-  
-  if (!itemNameValid || !categoryValid || !quantityValid || !unitPriceValid) {
-    e.preventDefault();
-    // Scroll to the first error
-    const firstError = document.querySelector('.text-red-500:not(.hidden)');
-    if (firstError) {
-      firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
-  }
-});
-
-// Existing image preview function
-function previewImage(input) {
-  const errorElement = document.getElementById('imageError');
-  const previewContainer = document.getElementById('imagePreviewContainer');
-  const preview = document.getElementById('imagePreview');
-  
-  if (input.files && input.files[0]) {
-    const file = input.files[0];
-    const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-    
-    if (validTypes.includes(file.type)) {
-      const reader = new FileReader();
-      
-      reader.onload = function(e) {
-        preview.src = e.target.result;
-        previewContainer.classList.remove('hidden');
-        errorElement.classList.add('hidden');
-      }
-      
-      reader.readAsDataURL(file);
-    } else {
-      errorElement.classList.remove('hidden');
-      previewContainer.classList.add('hidden');
-      input.value = '';
-    }
-  } else {
-    previewContainer.classList.add('hidden');
-  }
-}
 </script>
 
 <!-- Edit Inventory Modal -->
