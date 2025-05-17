@@ -753,70 +753,160 @@ $pending_payments = $pending_result->fetch_assoc()['pending'];
 
           </div>
 
-    <!-- Add Expense Modal (same as before) -->
     <!-- Add Expense Modal -->
-<div class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 hidden" id="addExpenseModal">
-  <div class="bg-white rounded-xl w-full max-w-lg mx-4 shadow-xl max-h-[90vh] overflow-y-auto">
+<div id="addExpenseModal" class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto">
+  <!-- Modal Backdrop -->
+  <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+  
+  <!-- Modal Content -->
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] flex flex-col">
+    <!-- Close Button -->
+    <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeAddExpenseModal()">
+      <i class="fas fa-times"></i>
+    </button>
+    
     <!-- Modal Header -->
-    <div class="bg-gradient-to-r from-sidebar-accent to-white flex justify-between items-center p-6 flex-shrink-0">
-      <h3 class="text-xl font-bold text-white">Add New Expense</h3>
-      <button class="bg-black bg-opacity-20 hover:bg-opacity-30 rounded-full p-2 text-white hover:text-white transition-all duration-200" onclick="closeAddExpenseModal()">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-          <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-        </svg>
-      </button>
+    <div class="px-4 sm:px-6 py-4 sm:py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
+      <h3 class="text-lg sm:text-xl font-bold text-white flex items-center">
+        Add New Expense
+      </h3>
     </div>
-
+    
     <!-- Modal Body -->
-    <div class="p-6">
-      <form id="expenseForm">
-        <div class="mb-5">
-          <input type="hidden" id="expenseBranch" name="branch_id" value="<?php echo $branch?>">
-          <label for="expenseDescription" class="block mb-2 font-medium text-gray-700">Name</label>
-          <input type="text" id="expenseDescription" name="expenseDescription" placeholder="Enter expense description" class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent" required>
+    <div class="px-4 sm:px-6 py-4 sm:py-5 overflow-y-auto modal-scroll-container">
+      <form id="expenseForm" class="space-y-3 sm:space-y-4">
+        <input type="hidden" id="expenseBranch" name="branch_id" value="<?php echo $branch?>">
+        
+        <!-- Basic Information -->
+        <div>
+          <label for="expenseDescription" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            Expense Name
+          </label>
+          <div class="relative">
+            <select id="expenseNameDropdown" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" onchange="handleExpenseNameChange(this)">
+              <option value="" disabled selected>Select common expense</option>
+              <option value="Rent">Rent</option>
+              <option value="Electricity">Electricity</option>
+              <option value="Water">Water</option>
+              <option value="Internet">Internet</option>
+              <option value="Salaries">Salaries</option>
+              <option value="Office Supplies">Office Supplies</option>
+              <option value="Maintenance">Maintenance</option>
+              <option value="Marketing">Marketing</option>
+              <option value="Insurance">Insurance</option>
+              <option value="Taxes">Taxes</option>
+              <option value="Other">Other (specify)</option>
+            </select>
+            <input type="text" id="expenseDescription" name="expenseDescription" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200 mt-2 hidden" 
+                   oninput="formatExpenseName(this)" 
+                   onkeydown="preventDoubleSpace(event)" 
+                   placeholder="Enter expense description"
+                   required>
+          </div>
         </div>
-        <div class="mb-5">
-          <label for="expenseCategory" class="block mb-2 font-medium text-gray-700">Category</label>
-          <select id="expenseCategory" name="expenseCategory" class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent" required>
-            <option value="">Select a category</option>
-            <option value="Supplies">Supplies</option>
-            <option value="Utilities">Utilities</option>
-            <option value="Salaries">Salaries</option>
-            <option value="Maintenance">Maintenance</option>
-            <option value="Other">Other</option>
-          </select>
+        
+        <div class="flex flex-col sm:flex-row gap-2 sm:gap-4">
+          <div class="w-full sm:flex-1">
+            <label for="expenseCategory" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+              Category
+            </label>
+            <div class="relative">
+              <select id="expenseCategory" name="expenseCategory" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
+                <option value="" disabled selected>Select category</option>
+                <option value="Supplies">Supplies</option>
+                <option value="Utilities">Utilities</option>
+                <option value="Salaries">Salaries</option>
+                <option value="Maintenance">Maintenance</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="w-full sm:flex-1">
+            <label for="expenseDate" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+              Date
+            </label>
+            <div class="relative">
+              <input type="date" id="expenseDate" name="expenseDate" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
+            </div>
+          </div>
         </div>
-        <div class="mb-5">
-          <label for="expenseAmount" class="block mb-2 font-medium text-gray-700">Amount (₱)</label>
+        
+        <div>
+          <label for="expenseAmount" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            Amount
+          </label>
           <div class="relative">
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <span class="text-gray-500">₱</span>
-              </div>
-            <input type="number" id="expenseAmount" name="expenseAmount" placeholder="0.00" step="0.01" min="0" class="w-full pl-8 px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent" required>
+            </div>
+            <input type="number" id="expenseAmount" name="expenseAmount" min="0.01" step="0.01" placeholder="0.00" class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
           </div>
         </div>
-        <div class="mb-5">
-          <label for="expenseDate" class="block mb-2 font-medium text-gray-700">Date</label>
-          <input type="date" id="expenseDate" name="expenseDate" class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent" required>
+        
+        <!-- Status -->
+        <div class="bg-gray-50 p-3 sm:p-4 rounded-lg border border-gray-200">
+          <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            Status
+          </label>
+          <div class="grid grid-cols-2 gap-2">
+            <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
+              <input type="radio" id="statusPaid" name="expenseStatus" value="paid" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent" checked onchange="updateDateLimits()">
+              Paid
+            </label>
+            <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
+              <input type="radio" id="statusToBePaid" name="expenseStatus" value="To be paid" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent" onchange="updateDateLimits()">
+              To Be Paid
+            </label>
+          </div>
         </div>
-        <div class="mb-5">
-          <label for="expenseStatus" class="block mb-2 font-medium text-gray-700">Status</label>
-          <select id="expenseStatus" name="expenseStatus" class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent" required>
-            <option value="paid">Paid</option>
-            <option value="To be paid">To be Paid</option>
-          </select>
+        
+        <!-- Payment Method - adding this from first code -->
+        <div class="bg-gray-50 p-3 sm:p-4 rounded-lg border border-gray-200">
+          <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            Payment Method
+          </label>
+          <div class="grid grid-cols-2 gap-2">
+            <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
+              <input type="radio" id="methodCash" name="paymentMethod" value="cash" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent" checked>
+              Cash
+            </label>
+            <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
+              <input type="radio" id="methodCredit" name="paymentMethod" value="credit" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
+              Credit Card
+            </label>
+            <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
+              <input type="radio" id="methodTransfer" name="paymentMethod" value="transfer" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
+              Bank Transfer
+            </label>
+            <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
+              <input type="radio" id="methodOther" name="paymentMethod" value="other" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
+              Other
+            </label>
           </div>
-        <div class="mb-5">
-          <label for="expenseNotes" class="block mb-2 font-medium text-gray-700">Notes <span class="text-xs text-gray-500">(Optional)</span></label>
-          <textarea id="expenseNotes" name="expenseNotes" rows="3" placeholder="Add any additional details here" class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent"></textarea>
+        </div>
+        
+        <!-- Note -->
+        <div>
+          <label for="expenseNotes" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            Note <span class="text-xs text-gray-500">(Optional)</span>
+          </label>
+          <div class="relative">
+            <textarea id="expenseNotes" name="expenseNotes" rows="3" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                      oninput="formatNote(this)" 
+                      onkeydown="preventDoubleSpace(event)"
+                      placeholder="Add any additional details here"></textarea>
           </div>
+        </div>
       </form>
     </div>
     
     <!-- Modal Footer -->
-    <div class="p-6 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
-      <button class="px-5 py-3 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-semibold hover:bg-navy transition-colors" onclick="closeAddExpenseModal()">Cancel</button>
-      <button class="px-6 py-3 bg-sidebar-accent text-white rounded-lg font-semibold hover:bg-darkgold transition-colors flex items-center" onclick="addExpense()">
+    <div class="px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row sm:justify-end gap-2 sm:gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
+      <button type="button" class="w-full sm:w-auto px-4 sm:px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center" onclick="closeAddExpenseModal()">
+        Cancel
+      </button>
+      <button type="button" class="w-full sm:w-auto px-5 sm:px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="addExpense()">
         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
           <path d="M12 5v14"></path>
           <path d="M5 12h14"></path>
