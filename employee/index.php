@@ -45,7 +45,7 @@ header("Cache-Control: post-check=0, pre-check=0", false);
 header("Pragma: no-cache");
 
 require_once '../db_connect.php';
-$user_id = $_SESSION['user_id'];
+  $user_id = $_SESSION['user_id'];
   $query = "SELECT first_name , last_name , email , birthdate FROM users WHERE id = ?";
   $stmt = $conn->prepare($query);
   $stmt->bind_param("i", $user_id);
@@ -55,6 +55,49 @@ $user_id = $_SESSION['user_id'];
   $first_name = $row['first_name']; // We're confident user_id exists
   $last_name = $row['last_name'];
   $email = $row['email'];
+
+// Calculate quick stats
+$current_month = date('m');
+$current_year = date('Y');
+
+// Services this month
+$services_query = "SELECT COUNT(*) as service_count FROM sales_tb 
+                  WHERE MONTH(get_timestamp) = ? AND YEAR(get_timestamp) = ?";
+$stmt = $conn->prepare($services_query);
+$stmt->bind_param("ii", $current_month, $current_year);
+$stmt->execute();
+$services_result = $stmt->get_result();
+$services_data = $services_result->fetch_assoc();
+$services_this_month = $services_data['service_count'];
+
+// Cash revenue (sum of amount_paid)
+$cash_query = "SELECT SUM(amount_paid) as cash_revenue FROM sales_tb 
+              WHERE MONTH(get_timestamp) = ? AND YEAR(get_timestamp) = ?";
+$stmt = $conn->prepare($cash_query);
+$stmt->bind_param("ii", $current_month, $current_year);
+$stmt->execute();
+$cash_result = $stmt->get_result();
+$cash_data = $cash_result->fetch_assoc();
+$cash_revenue = $cash_data['cash_revenue'] ? $cash_data['cash_revenue'] : 0;
+
+// Accrual revenue (sum of discounted_price)
+$accrual_query = "SELECT SUM(discounted_price) as accrual_revenue FROM sales_tb 
+                WHERE MONTH(get_timestamp) = ? AND YEAR(get_timestamp) = ?";
+$stmt = $conn->prepare($accrual_query);
+$stmt->bind_param("ii", $current_month, $current_year);
+$stmt->execute();
+$accrual_result = $stmt->get_result();
+$accrual_data = $accrual_result->fetch_assoc();
+$accrual_revenue = $accrual_data['accrual_revenue'] ? $accrual_data['accrual_revenue'] : 0;
+
+// Ongoing services (status = 'Pending')
+$ongoing_query = "SELECT COUNT(*) as ongoing_count FROM sales_tb WHERE status = 'Pending'";
+$stmt = $conn->prepare($ongoing_query);
+$stmt->execute();
+$ongoing_result = $stmt->get_result();
+$ongoing_data = $ongoing_result->fetch_assoc();
+$ongoing_services = $ongoing_data['ongoing_count'];
+
 
 ?>
 
@@ -297,8 +340,9 @@ $user_id = $_SESSION['user_id'];
   </div>
 
   <!-- Quick Stats -->
-  <div class="mb-8">
+    <div class="mb-8">
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+      <!-- Services this Month -->
       <div class="bg-white rounded-lg shadow-sidebar p-5 border border-sidebar-border hover:shadow-card transition-all duration-300">
         <div class="flex items-center mb-3">
           <div class="w-12 h-12 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center mr-3">
@@ -306,25 +350,40 @@ $user_id = $_SESSION['user_id'];
           </div>
           <span class="text-sidebar-text font-medium">Services this Month</span>
         </div>
-        <div class="text-3xl font-bold mb-2 text-sidebar-text">5</div>
+        <div class="text-3xl font-bold mb-2 text-sidebar-text"><?php echo $services_this_month; ?></div>
         <div class="text-sm text-green-600 flex items-center">
           <i class="fas fa-arrow-up mr-1"></i> 2% from last week
         </div>
       </div>
       
+      <!-- Monthly Revenue with Toggle -->
       <div class="bg-white rounded-lg shadow-sidebar p-5 border border-sidebar-border hover:shadow-card transition-all duration-300">
-        <div class="flex items-center mb-3">
-          <div class="w-12 h-12 rounded-lg bg-green-100 text-green-600 flex items-center justify-center mr-3">
-            <i class="fas fa-peso-sign text-lg"></i>
+        <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center">
+            <div class="w-12 h-12 rounded-lg bg-green-100 text-green-600 flex items-center justify-center mr-3">
+              <i class="fas fa-peso-sign text-lg"></i>
+            </div>
+            <span class="text-sidebar-text font-medium">Monthly Revenue</span>
           </div>
-          <span class="text-sidebar-text font-medium">Monthly Revenue</span>
+          <div class="relative">
+            <button id="revenue-toggle" class="p-1 bg-gray-100 rounded-full flex items-center">
+              <span id="revenue-type" class="text-xs px-2">Cash</span>
+              <i class="fas fa-chevron-down text-xs mr-1"></i>
+            </button>
+            <div id="revenue-dropdown" class="absolute right-0 mt-1 w-24 bg-white rounded-md shadow-lg hidden z-10">
+              <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="toggleRevenue('cash')">Cash</button>
+              <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="toggleRevenue('accrual')">Accrual</button>
+            </div>
+          </div>
         </div>
-        <div class="text-3xl font-bold mb-2 text-sidebar-text">₱1,200</div>
+        <div id="cash-revenue" class="text-3xl font-bold mb-2 text-sidebar-text">₱<?php echo number_format($cash_revenue, 2); ?></div>
+        <div id="accrual-revenue" class="text-3xl font-bold mb-2 text-sidebar-text hidden">₱<?php echo number_format($accrual_revenue, 2); ?></div>
         <div class="text-sm text-green-600 flex items-center">
           <i class="fas fa-arrow-up mr-1"></i> 5% from yesterday
         </div>
       </div>
       
+      <!-- Ongoing Services -->
       <div class="bg-white rounded-lg shadow-sidebar p-5 border border-sidebar-border hover:shadow-card transition-all duration-300">
         <div class="flex items-center mb-3">
           <div class="w-12 h-12 rounded-lg bg-orange-100 text-orange-600 flex items-center justify-center mr-3">
@@ -332,7 +391,7 @@ $user_id = $_SESSION['user_id'];
           </div>
           <span class="text-sidebar-text font-medium">Ongoing Services</span>
         </div>
-        <div class="text-3xl font-bold mb-2 text-sidebar-text">3</div>
+        <div class="text-3xl font-bold mb-2 text-sidebar-text"><?php echo $ongoing_services; ?></div>
         <div class="text-sm text-red-600 flex items-center">
           <i class="fas fa-arrow-down mr-1"></i> 1 task added
         </div>
@@ -340,10 +399,10 @@ $user_id = $_SESSION['user_id'];
     </div>
   </div>
 
-  <!-- Upcoming Services Table -->
+  <!-- Pending Bookings Table -->
   <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 mb-8">
     <div class="flex justify-between items-center p-5 border-b border-sidebar-border">
-      <h3 class="font-medium text-sidebar-text">Upcoming Services</h3>
+      <h3 class="font-medium text-sidebar-text">Pending Bookings</h3>
       
     </div>
     <div class="overflow-x-auto scrollbar-thin">
@@ -487,5 +546,41 @@ $user_id = $_SESSION['user_id'];
 
   <script src="sidebar.js"></script>
   <script src="tailwind.js"></script>
+<script>
+    // Revenue Toggle Functionality
+  document.getElementById('revenue-toggle').addEventListener('click', function() {
+    const dropdown = document.getElementById('revenue-dropdown');
+    dropdown.classList.toggle('hidden');
+  });
+
+  function toggleRevenue(type) {
+    const cashElement = document.getElementById('cash-revenue');
+    const accrualElement = document.getElementById('accrual-revenue');
+    const typeElement = document.getElementById('revenue-type');
+    const dropdown = document.getElementById('revenue-dropdown');
+    
+    if (type === 'cash') {
+      cashElement.classList.remove('hidden');
+      accrualElement.classList.add('hidden');
+      typeElement.textContent = 'Cash';
+    } else {
+      cashElement.classList.add('hidden');
+      accrualElement.classList.remove('hidden');
+      typeElement.textContent = 'Accrual';
+    }
+    
+    dropdown.classList.add('hidden');
+  }
+
+  // Close dropdown when clicking outside
+  document.addEventListener('click', function(event) {
+    const dropdown = document.getElementById('revenue-dropdown');
+    const toggle = document.getElementById('revenue-toggle');
+    
+    if (!toggle.contains(event.target) && !dropdown.contains(event.target)) {
+      dropdown.classList.add('hidden');
+    }
+  });
+</script>
 </body>
 </html>
