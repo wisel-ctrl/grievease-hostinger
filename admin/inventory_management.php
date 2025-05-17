@@ -1095,93 +1095,115 @@ document.getElementById('addInventoryForm').addEventListener('submit', function(
     <!-- Modal Body -->
     <div class="px-4 sm:px-6 py-4 sm:py-5">
       <form id="editInventoryForm" class="space-y-3 sm:space-y-4">
-        <div>
-          <label for="editItemId" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            Item ID
-          </label>
-          <input type="text" id="editItemId" name="editItemId" value="<?php echo $item_id; ?>" class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100 cursor-not-allowed" readonly>
-        </div>
+  <!-- Item ID (readonly, no validation needed) -->
+  <div>
+    <label for="editItemId" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+      Item ID
+    </label>
+    <input type="text" id="editItemId" name="editItemId" value="<?php echo $item_id; ?>" class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100 cursor-not-allowed" readonly>
+  </div>
 
-        <div>
-          <label for="editItemName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            Item Name <span class="text-red-500">*</span>
-          </label>
-          <div class="relative">
-            <input type="text" id="editItemName" name="editItemName" value="<?php echo $item_name; ?>" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="Item Name">
-          </div>
-        </div>
+  <!-- Item Name -->
+  <div>
+    <label for="editItemName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+      Item Name <span class="text-red-500">*</span>
+    </label>
+    <div class="relative">
+      <input type="text" id="editItemName" name="editItemName" value="<?php echo $item_name; ?>" required 
+             class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
+             placeholder="Item Name"
+             minlength="2"
+             oninput="validateNameInput(this)"
+             onpaste="handleNamePaste(event)">
+      <div id="editItemNameError" class="text-red-500 text-xs mt-1 hidden">Please enter a valid name (letters only, min 2 chars)</div>
+    </div>
+  </div>
 
-        <!-- Category Dropdown -->
-        <div>
-          <label for="category" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            Category <span class="text-red-500">*</span>
-          </label>
-          <div class="relative">
-            <select id="category" name="category" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
-              <option value="" disabled>Select a Category</option>
-              <?php
-              // Fetch categories again
-              include '../db_connect.php';
-              $sql = "SELECT category_id, category_name FROM inventory_category";
-              $result = $conn->query($sql);
-              if ($result->num_rows > 0) {
-                  while ($row = $result->fetch_assoc()) {
-                      $selected = ($row['category_id'] == $category_id) ? 'selected' : '';
-                      echo '<option value="' . $row['category_id'] . '" ' . $selected . '>' . htmlspecialchars($row['category_name']) . '</option>';
-                  }
-              } else {
-                  echo '<option value="" disabled>No Categories Available</option>';
-              }
-              ?>
-            </select>
-          </div>
-        </div>
+  <!-- Category Dropdown -->
+  <div>
+    <label for="category" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+      Category <span class="text-red-500">*</span>
+    </label>
+    <div class="relative">
+      <select id="category" name="category" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+        <option value="" disabled>Select a Category</option>
+        <?php
+        // Fetch categories again
+        include '../db_connect.php';
+        $sql = "SELECT category_id, category_name FROM inventory_category";
+        $result = $conn->query($sql);
+        if ($result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                $selected = ($row['category_id'] == $category_id) ? 'selected' : '';
+                echo '<option value="' . $row['category_id'] . '" ' . $selected . '>' . htmlspecialchars($row['category_name']) . '</option>';
+            }
+        } else {
+            echo '<option value="" disabled>No Categories Available</option>';
+        }
+        ?>
+      </select>
+      <div id="categoryError" class="text-red-500 text-xs mt-1 hidden">Please select a category</div>
+    </div>
+  </div>
 
-        <div>
-          <label for="editQuantity" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            Quantity <span class="text-red-500">*</span>
-          </label>
-          <div class="relative">
-            <input type="number" id="editQuantity" name="editQuantity" value="<?php echo $quantity; ?>" min="1" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="Quantity">
-          </div>
-        </div>
+  <!-- Quantity -->
+  <div>
+    <label for="editQuantity" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+      Quantity <span class="text-red-500">*</span>
+    </label>
+    <div class="relative">
+      <input type="number" id="editQuantity" name="editQuantity" value="<?php echo $quantity; ?>" min="0" required 
+             class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
+             placeholder="Quantity"
+             oninput="validateQuantity(this)">
+      <div id="editQuantityError" class="text-red-500 text-xs mt-1 hidden">Please enter a valid quantity (min 0)</div>
+    </div>
+  </div>
 
-        <div>
-          <label for="editUnitPrice" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            Unit Price <span class="text-red-500">*</span>
-          </label>
-          <div class="relative">
-            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <span class="text-gray-500">₱</span>
-            </div>
-            <input type="number" id="editUnitPrice" name="editUnitPrice" value="<?php echo $unit_price; ?>" step="0.01" required class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" placeholder="0.00">
-          </div>
-        </div>
+  <!-- Unit Price -->
+  <div>
+    <label for="editUnitPrice" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+      Unit Price <span class="text-red-500">*</span>
+    </label>
+    <div class="relative">
+      <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+        <span class="text-gray-500">₱</span>
+      </div>
+      <input type="number" id="editUnitPrice" name="editUnitPrice" value="<?php echo $unit_price; ?>" step="0.01" min="0" required 
+             class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
+             placeholder="0.00"
+             oninput="validateUnitPrice(this)">
+      <div id="editUnitPriceError" class="text-red-500 text-xs mt-1 hidden">Please enter a valid price (min 0.00)</div>
+    </div>
+  </div>
 
-        <!-- Current Image Preview -->
-        <div class="bg-navy p-3 sm:p-4 rounded-lg">
-          <div class="flex flex-col items-center space-y-2 sm:space-y-3">
-            <div class="w-full h-32 bg-center bg-cover rounded-lg shadow-md" style="background-image: url('<?php echo $inventory_img; ?>');"></div>
-            <span class="text-xs sm:text-sm text-gray-600">Current Image</span>
-          </div>
-        </div>
+  <!-- Current Image Preview -->
+  <div class="bg-navy p-3 sm:p-4 rounded-lg">
+    <div class="flex flex-col items-center space-y-2 sm:space-y-3">
+      <div class="w-full h-32 bg-center bg-cover rounded-lg shadow-md" style="background-image: url('<?php echo $inventory_img; ?>');"></div>
+      <span class="text-xs sm:text-sm text-gray-600">Current Image</span>
+    </div>
+  </div>
 
-        <!-- File Upload -->
-        <div class="bg-gray-50 p-3 sm:p-4 rounded-lg">
-          <label for="editItemImage" class="block text-xs font-medium text-gray-700 mb-2 sm:mb-3 flex items-center">Upload New Image</label>
-          <div class="relative">
-            <input type="file" id="editItemImage" name="editItemImage" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20">
-            <div class="w-full px-3 py-2 border border-dashed border-gray-300 rounded-lg bg-gray-50 text-gray-500 text-xs sm:text-sm flex items-center justify-center">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 text-sidebar-accent">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                <polyline points="17 8 12 3 7 8"></polyline>
-                <line x1="12" y1="3" x2="12" y2="15"></line>
-              </svg>
-              Choose file or drag here
-            </div>
-          </div>
-        </div>
-      </form>
+  <!-- File Upload -->
+  <div class="bg-gray-50 p-3 sm:p-4 rounded-lg">
+    <label for="editItemImage" class="block text-xs font-medium text-gray-700 mb-2 sm:mb-3 flex items-center">Upload New Image</label>
+    <div class="relative">
+      <input type="file" id="editItemImage" name="editItemImage" accept="image/*" 
+             class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20"
+             onchange="validateImage(this)">
+      <div class="w-full px-3 py-2 border border-dashed border-gray-300 rounded-lg bg-gray-50 text-gray-500 text-xs sm:text-sm flex items-center justify-center">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 text-sidebar-accent">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="17 8 12 3 7 8"></polyline>
+          <line x1="12" y1="3" x2="12" y2="15"></line>
+        </svg>
+        Choose file or drag here
+      </div>
+      <div id="editItemImageError" class="text-red-500 text-xs mt-1 hidden">Please select a valid image file</div>
+    </div>
+  </div>
+</form>
     </div>
   
     <!-- Modal Footer -->
@@ -1200,6 +1222,140 @@ document.getElementById('addInventoryForm').addEventListener('submit', function(
     </div>
   </div>
 </div>
+
+<script>
+// Name validation functions
+function validateNameInput(input) {
+  const errorElement = document.getElementById(input.id + 'Error');
+  let value = input.value;
+  
+  // Remove any numbers or special characters (except spaces)
+  value = value.replace(/[^a-zA-Z\s]/g, '');
+  
+  // Prevent multiple consecutive spaces
+  value = value.replace(/\s{2,}/g, ' ');
+  
+  // Capitalize first letter of each word
+  value = value.toLowerCase().replace(/(?:^|\s)\S/g, function(char) {
+    return char.toUpperCase();
+  });
+  
+  // Don't allow space as first character or if length < 2
+  if (value.length < 2 && value.includes(' ')) {
+    value = value.replace(/\s/g, '');
+  }
+  
+  input.value = value;
+  
+  // Validate
+  if (input.required && (value.length < 2 || !/^[A-Za-z\s]+$/.test(value))) {
+    input.classList.add('border-red-500');
+    errorElement.classList.remove('hidden');
+    return false;
+  } else {
+    input.classList.remove('border-red-500');
+    errorElement.classList.add('hidden');
+    return true;
+  }
+}
+
+function handleNamePaste(event) {
+  // Allow the paste to happen first
+  setTimeout(() => {
+    const input = event.target;
+    validateNameInput(input);
+  }, 0);
+}
+
+// Quantity validation
+function validateQuantity(input) {
+  const errorElement = document.getElementById(input.id + 'Error');
+  let value = parseFloat(input.value);
+  
+  if (isNaN(value) || value < 0) {
+    input.classList.add('border-red-500');
+    errorElement.classList.remove('hidden');
+    return false;
+  } else {
+    input.classList.remove('border-red-500');
+    errorElement.classList.add('hidden');
+    return true;
+  }
+}
+
+// Unit Price validation
+function validateUnitPrice(input) {
+  const errorElement = document.getElementById(input.id + 'Error');
+  let value = parseFloat(input.value);
+  
+  if (isNaN(value) || value < 0) {
+    input.value = '0.00';
+    input.classList.add('border-red-500');
+    errorElement.classList.remove('hidden');
+    return false;
+  } else {
+    // Format to 2 decimal places
+    input.value = value.toFixed(2);
+    input.classList.remove('border-red-500');
+    errorElement.classList.add('hidden');
+    return true;
+  }
+}
+
+// Image validation
+function validateImage(input) {
+  const errorElement = document.getElementById(input.id + 'Error');
+  const file = input.files[0];
+  
+  if (input.files.length > 0) {
+    const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    if (!validTypes.includes(file.type)) {
+      input.value = '';
+      input.classList.add('border-red-500');
+      errorElement.textContent = 'Please select a valid image (JPEG, PNG, GIF, WEBP)';
+      errorElement.classList.remove('hidden');
+      return false;
+    } else {
+      input.classList.remove('border-red-500');
+      errorElement.classList.add('hidden');
+      return true;
+    }
+  }
+  // Not required, so no error if empty
+  return true;
+}
+
+// Form submission validation
+document.getElementById('editInventoryForm').addEventListener('submit', function(event) {
+  const nameValid = validateNameInput(document.getElementById('editItemName'));
+  const categoryValid = document.getElementById('category').value !== '';
+  const quantityValid = validateQuantity(document.getElementById('editQuantity'));
+  const priceValid = validateUnitPrice(document.getElementById('editUnitPrice'));
+  
+  if (!nameValid || !categoryValid || !quantityValid || !priceValid) {
+    event.preventDefault();
+    
+    // Show category error if needed
+    const categoryError = document.getElementById('categoryError');
+    if (!categoryValid) {
+      categoryError.classList.remove('hidden');
+    } else {
+      categoryError.classList.add('hidden');
+    }
+    
+    // Focus on first invalid field
+    if (!nameValid) {
+      document.getElementById('editItemName').focus();
+    } else if (!categoryValid) {
+      document.getElementById('category').focus();
+    } else if (!quantityValid) {
+      document.getElementById('editQuantity').focus();
+    } else {
+      document.getElementById('editUnitPrice').focus();
+    }
+  }
+});
+</script>
 
 <!-- Archived Items Modal -->
 <div class="fixed inset-0 z-50 flex items-center justify-center hidden" id="archivedItemsModal">
