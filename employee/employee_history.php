@@ -59,6 +59,18 @@ $user_id = $_SESSION['user_id'];
   $email = $row['email'];
   $branch = $row['branch_loc'];
 
+  $recordsPerPage = 10; // Number of records to display per page
+
+// Initialize page variables
+$pageOngoing = isset($_GET['page_ongoing']) ? (int)$_GET['page_ongoing'] : 1;
+$pageFullyPaid = isset($_GET['page_fully_paid']) ? (int)$_GET['page_fully_paid'] : 1;
+$pageOutstanding = isset($_GET['page_outstanding']) ? (int)$_GET['page_outstanding'] : 1;
+
+// Calculate offsets
+$offsetOngoing = ($pageOngoing - 1) * $recordsPerPage;
+$offsetFullyPaid = ($pageFullyPaid - 1) * $recordsPerPage;
+$offsetOutstanding = ($pageOutstanding - 1) * $recordsPerPage;
+
 ?>
 
 <!DOCTYPE html>
@@ -438,6 +450,38 @@ $user_id = $_SESSION['user_id'];
           ?>
         </tbody>
       </table>
+
+          <?php
+          // Count total records for Ongoing Services
+          $countQuery = "SELECT COUNT(*) as total FROM sales_tb WHERE status = 'Pending' AND branch_id = ?";
+          $stmt = $conn->prepare($countQuery);
+          $stmt->bind_param("s", $branch);
+          $stmt->execute();
+          $countResult = $stmt->get_result();
+          $totalRecords = $countResult->fetch_assoc()['total'];
+          $totalPages = ceil($totalRecords / $recordsPerPage);
+          $stmt->close();
+          ?>
+
+          <div class="flex justify-between items-center p-4">
+            <div>
+              <p class="text-sm text-gray-600">
+                Showing <?php echo $offsetOngoing + 1; ?> to <?php echo min($offsetOngoing + $recordsPerPage, $totalRecords); ?> of <?php echo $totalRecords; ?> entries
+              </p>
+            </div>
+            <div class="flex space-x-2">
+              <?php if ($pageOngoing > 1): ?>
+                <a href="?page_ongoing=<?php echo $pageOngoing - 1; ?>" class="px-3 py-1 bg-sidebar-accent text-white rounded-md hover:bg-darkgold">Previous</a>
+              <?php endif; ?>
+              <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                <a href="?page_ongoing=<?php echo $i; ?>" class="px-3 py-1 <?php echo $i == $pageOngoing ? 'bg-sidebar-accent text-white' : 'bg-gray-200 text-gray-700'; ?> rounded-md hover:bg-darkgold hover:text-white"><?php echo $i; ?></a>
+              <?php endfor; ?>
+              <?php if ($pageOngoing < $totalPages): ?>
+                <a href="?page_ongoing=<?php echo $pageOngoing + 1; ?>" class="px-3 py-1 bg-sidebar-accent text-white rounded-md hover:bg-darkgold">Next</a>
+              <?php endif; ?>
+            </div>
+          </div>
+
     </div>
   </div>
 
