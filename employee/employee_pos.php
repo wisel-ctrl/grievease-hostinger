@@ -564,36 +564,50 @@ $servicesJson = json_encode($allServices);
             <div class="grid grid-cols-1 md:grid-cols-4 gap-2 sm:gap-4">
               <div>
                 <label for="clientFirstName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                  First Name
+                  First Name <span class="text-red-500">*</span>
                 </label>
-                <input type="text" id="clientFirstName" name="clientFirstName" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+                <input type="text" id="clientFirstName" name="clientFirstName" required 
+                       class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                       minlength="2" 
+                       oninput="validateName(this)"
+                       onpaste="handleNamePaste(event)">
+                <div class="text-xs text-red-500 mt-1 hidden" id="clientFirstName-error">Please enter a valid first name (letters only, min 2 characters)</div>
               </div>
               <div>
                 <label for="clientMiddleName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
                   Middle Name <span class="text-xs text-gray-500">(Optional)</span>
                 </label>
-                <input type="text" id="clientMiddleName" name="clientMiddleName" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+                <input type="text" id="clientMiddleName" name="clientMiddleName" 
+                       class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                       oninput="validateName(this)"
+                       onpaste="handleNamePaste(event)">
+                <div class="text-xs text-red-500 mt-1 hidden" id="clientMiddleName-error">Please enter a valid middle name (letters only)</div>
               </div>
               <div>
                 <label for="clientLastName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                  Last Name
+                  Last Name <span class="text-red-500">*</span>
                 </label>
-                <input type="text" id="clientLastName" name="clientLastName" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+                <input type="text" id="clientLastName" name="clientLastName" required 
+                       class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                       minlength="2"
+                       oninput="validateName(this)"
+                       onpaste="handleNamePaste(event)">
+                <div class="text-xs text-red-500 mt-1 hidden" id="clientLastName-error">Please enter a valid last name (letters only, min 2 characters)</div>
               </div>
               <div>
                 <label for="clientSuffix" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
                   Suffix <span class="text-xs text-gray-500">(Optional)</span>
                 </label>
                 <select id="clientSuffix" name="clientSuffix" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
-                                    <option value="">None</option>
-                                    <option value="Jr.">Jr.</option>
-                                    <option value="Sr.">Sr.</option>
-                                    <option value="I">I</option>
-                                    <option value="II">II</option>
-                                    <option value="III">III</option>
-                                    <option value="IV">IV</option>
-                                    <option value="V">V</option>
-                                </select>
+                  <option value="">None</option>
+                  <option value="Jr.">Jr.</option>
+                  <option value="Sr.">Sr.</option>
+                  <option value="I">I</option>
+                  <option value="II">II</option>
+                  <option value="III">III</option>
+                  <option value="IV">IV</option>
+                  <option value="V">V</option>
+                </select>
               </div>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-4">
@@ -601,13 +615,22 @@ $servicesJson = json_encode($allServices);
                 <label for="clientPhone" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
                   Phone Number <span class="text-red-500">*</span>
                 </label>
-                <input type="tel" id="clientPhone" name="clientPhone" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+                <input type="tel" id="clientPhone" name="clientPhone" required 
+                       class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                       pattern="^09[0-9]{9}$"
+                       maxlength="11"
+                       oninput="validatePhone(this)"
+                       onpaste="handlePhonePaste(event)">
+                <div class="text-xs text-red-500 mt-1 hidden" id="clientPhone-error">Please enter a valid Philippine phone number (09XXXXXXXXX)</div>
               </div>
               <div>
                 <label for="clientEmail" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
                   Email Address <span class="text-xs text-gray-500">(Optional)</span>
                 </label>
-                <input type="email" id="clientEmail" name="clientEmail" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+                <input type="email" id="clientEmail" name="clientEmail" 
+                       class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                       oninput="validateEmail(this)">
+                <div class="text-xs text-red-500 mt-1 hidden" id="clientEmail-error">Please enter a valid email address</div>
               </div>
             </div>
           </div>
@@ -622,36 +645,50 @@ $servicesJson = json_encode($allServices);
             <div class="grid grid-cols-1 md:grid-cols-4 gap-2 sm:gap-4">
               <div>
                 <label for="deceasedFirstName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                  First Name
+                  First Name <span class="text-red-500">*</span>
                 </label>
-                <input type="text" id="deceasedFirstName" name="deceasedFirstName" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+                <input type="text" id="deceasedFirstName" name="deceasedFirstName" required 
+                       class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                       minlength="2"
+                       oninput="validateName(this)"
+                       onpaste="handleNamePaste(event)">
+                <div class="text-xs text-red-500 mt-1 hidden" id="deceasedFirstName-error">Please enter a valid first name (letters only, min 2 characters)</div>
               </div>
               <div>
                 <label for="deceasedMiddleName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
                   Middle Name <span class="text-xs text-gray-500">(Optional)</span>
                 </label>
-                <input type="text" id="deceasedMiddleName" name="deceasedMiddleName" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+                <input type="text" id="deceasedMiddleName" name="deceasedMiddleName" 
+                       class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                       oninput="validateName(this)"
+                       onpaste="handleNamePaste(event)">
+                <div class="text-xs text-red-500 mt-1 hidden" id="deceasedMiddleName-error">Please enter a valid middle name (letters only)</div>
               </div>
               <div>
                 <label for="deceasedLastName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                  Last Name
+                  Last Name <span class="text-red-500">*</span>
                 </label>
-                <input type="text" id="deceasedLastName" name="deceasedLastName" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+                <input type="text" id="deceasedLastName" name="deceasedLastName" required 
+                       class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                       minlength="2"
+                       oninput="validateName(this)"
+                       onpaste="handleNamePaste(event)">
+                <div class="text-xs text-red-500 mt-1 hidden" id="deceasedLastName-error">Please enter a valid last name (letters only, min 2 characters)</div>
               </div>
               <div>
                 <label for="deceasedSuffix" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
                   Suffix <span class="text-xs text-gray-500">(Optional)</span>
                 </label>
                 <select id="traditionalDeceasedSuffix" name="traditionalDeceasedSuffix" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
-                                    <option value="">None</option>
-                                    <option value="Jr.">Jr.</option>
-                                    <option value="Sr.">Sr.</option>
-                                    <option value="I">I</option>
-                                    <option value="II">II</option>
-                                    <option value="III">III</option>
-                                    <option value="IV">IV</option>
-                                    <option value="V">V</option>
-                                </select>
+                  <option value="">None</option>
+                  <option value="Jr.">Jr.</option>
+                  <option value="Sr.">Sr.</option>
+                  <option value="I">I</option>
+                  <option value="II">II</option>
+                  <option value="III">III</option>
+                  <option value="IV">IV</option>
+                  <option value="V">V</option>
+                </select>
               </div>
             </div>
             
@@ -660,104 +697,124 @@ $servicesJson = json_encode($allServices);
                 <label for="dateOfBirth" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
                   Date of Birth <span class="text-xs text-gray-500">(Optional)</span>
                 </label>
-                <input type="date" id="dateOfBirth" name="dateOfBirth" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+                <input type="date" id="dateOfBirth" name="dateOfBirth" 
+                       class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                       max="<?php echo date('Y-m-d'); ?>"
+                       onchange="validateDates()">
+                <div class="text-xs text-red-500 mt-1 hidden" id="dateOfBirth-error">Date of birth must be in the past (max 100 years)</div>
               </div>
               <div>
                 <label for="dateOfDeath" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
                   Date of Death <span class="text-red-500">*</span>
                 </label>
-                <input type="date" id="dateOfDeath" name="dateOfDeath" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+                <input type="date" id="dateOfDeath" name="dateOfDeath" required 
+                       class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                       max="<?php echo date('Y-m-d'); ?>"
+                       onchange="validateDates()">
+                <div class="text-xs text-red-500 mt-1 hidden" id="dateOfDeath-error">Date of death must be after birth date and before today</div>
               </div>
               <div>
                 <label for="dateOfBurial" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
                   Date of Burial/Cremation <span class="text-xs text-gray-500">(Optional)</span>
                 </label>
-                <input type="date" id="dateOfBurial" name="dateOfBurial" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+                <input type="date" id="dateOfBurial" name="dateOfBurial" 
+                       class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                       min="<?php echo date('Y-m-d', strtotime('+1 day')); ?>"
+                       onchange="validateDates()">
+                <div class="text-xs text-red-500 mt-1 hidden" id="dateOfBurial-error">Date of burial must be after date of death and at least tomorrow</div>
               </div>
             </div>
+            
             <!-- New Address Dropdown Hierarchy -->
-    <div class="space-y-3">
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-2 sm:gap-4">
-        <div>
-          <label for="deceasedRegion" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            Region <span class="text-red-500">*</span>
-          </label>
-          <select id="deceasedRegion" name="deceasedRegion" required 
-                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
-            <option value="" disabled selected>Select Region</option>
-            <?php foreach ($regions as $region): ?>
-              <option value="<?php echo $region['region_code']; ?>"><?php echo $region['region_name']; ?></option>
-            <?php endforeach; ?>
-          </select>
-        </div>
-        <div>
-          <label for="deceasedProvince" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            Province <span class="text-red-500">*</span>
-          </label>
-          <select id="deceasedProvince" name="deceasedProvince" required disabled
-                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
-            <option value="" disabled selected>Select Province</option>
-          </select>
-        </div>
-        <div>
-          <label for="deceasedCity" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            City/Municipality <span class="text-red-500">*</span>
-          </label>
-          <select id="deceasedCity" name="deceasedCity" required disabled
-                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
-            <option value="" disabled selected>Select City/Municipality</option>
-          </select>
-        </div>
-        <div>
-          <label for="deceasedBarangay" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            Barangay <span class="text-red-500">*</span>
-          </label>
-          <select id="deceasedBarangay" name="deceasedBarangay" required disabled
-                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
-            <option value="" disabled selected>Select Barangay</option>
-          </select>
-        </div>
-      </div>
-      
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-2 sm:gap-4">
-        <div class="md:col-span-2">
-          <label for="deceasedStreet" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            Street Address <span class="text-red-500">*</span>
-          </label>
-          <input type="text" id="deceasedStreet" name="deceasedStreet" required 
-                 class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
-        </div>
-        <div>
-          <label for="deceasedZip" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-            ZIP Code <span class="text-red-500">*</span>
-          </label>
-          <input type="text" id="deceasedZip" name="deceasedZip" required 
-                 class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
-        </div>
-      </div>
-    </div>
-    
-    <div>
-      <label for="deathCertificate" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-        Death Certificate <span class="text-xs text-gray-500">(If available)</span>
-      </label>
-      <div class="relative">
-        <div class="flex items-center border border-gray-300 rounded-lg px-3 py-2 focus-within:ring-1 focus-within:ring-sidebar-accent focus-within:border-sidebar-accent transition-all duration-200">
-          <input type="file" id="deathCertificate" name="deathCertificate" accept="image/*,.pdf" class="w-full focus:outline-none">
-        </div>
-        <!-- Image preview container -->
-        <div id="deathCertificatePreview" class="mt-2 hidden">
-          <div class="relative inline-block">
-            <img id="previewImage" src="#" alt="Death Certificate Preview" class="max-h-40 rounded-lg border border-gray-200">
-            <button type="button" id="removeImageBtn" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600 transition-colors">
-              <i class="fas fa-times text-xs"></i>
-            </button>
+            <div class="space-y-3">
+              <div class="grid grid-cols-1 md:grid-cols-4 gap-2 sm:gap-4">
+                <div>
+                  <label for="deceasedRegion" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                    Region <span class="text-red-500">*</span>
+                  </label>
+                  <select id="deceasedRegion" name="deceasedRegion" required 
+                          class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+                    <option value="" disabled selected>Select Region</option>
+                    <?php foreach ($regions as $region): ?>
+                      <option value="<?php echo $region['region_code']; ?>"><?php echo $region['region_name']; ?></option>
+                    <?php endforeach; ?>
+                  </select>
+                </div>
+                <div>
+                  <label for="deceasedProvince" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                    Province <span class="text-red-500">*</span>
+                  </label>
+                  <select id="deceasedProvince" name="deceasedProvince" required disabled
+                          class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+                    <option value="" disabled selected>Select Province</option>
+                  </select>
+                </div>
+                <div>
+                  <label for="deceasedCity" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                    City/Municipality <span class="text-red-500">*</span>
+                  </label>
+                  <select id="deceasedCity" name="deceasedCity" required disabled
+                          class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+                    <option value="" disabled selected>Select City/Municipality</option>
+                  </select>
+                </div>
+                <div>
+                  <label for="deceasedBarangay" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                    Barangay <span class="text-red-500">*</span>
+                  </label>
+                  <select id="deceasedBarangay" name="deceasedBarangay" required disabled
+                          class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+                    <option value="" disabled selected>Select Barangay</option>
+                  </select>
+                </div>
+              </div>
+              
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-2 sm:gap-4">
+                <div class="md:col-span-2">
+                  <label for="deceasedStreet" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                    Street Address <span class="text-red-500">*</span>
+                  </label>
+                  <input type="text" id="deceasedStreet" name="deceasedStreet" required 
+                         class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                         oninput="validateStreet(this)">
+                  <div class="text-xs text-red-500 mt-1 hidden" id="deceasedStreet-error">Please enter a valid street address</div>
+                </div>
+                <div>
+                  <label for="deceasedZip" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                    ZIP Code <span class="text-red-500">*</span>
+                  </label>
+                  <input type="text" id="deceasedZip" name="deceasedZip" required 
+                         class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                         minlength="4" maxlength="10"
+                         oninput="validateZipCode(this)">
+                  <div class="text-xs text-red-500 mt-1 hidden" id="deceasedZip-error">Please enter a valid ZIP code (4-10 digits)</div>
+                </div>
+              </div>
+            </div>
+            
+            <div>
+              <label for="deathCertificate" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                Death Certificate <span class="text-xs text-gray-500">(If available)</span>
+              </label>
+              <div class="relative">
+                <div class="flex items-center border border-gray-300 rounded-lg px-3 py-2 focus-within:ring-1 focus-within:ring-sidebar-accent focus-within:border-sidebar-accent transition-all duration-200">
+                  <input type="file" id="deathCertificate" name="deathCertificate" accept="image/*,.pdf" 
+                         onchange="validateDeathCertificate(this)">
+                </div>
+                <div class="text-xs text-red-500 mt-1 hidden" id="deathCertificate-error">Please upload a valid file (JPG, JPEG, PNG, PDF)</div>
+                <!-- Image preview container -->
+                <div id="deathCertificatePreview" class="mt-2 hidden">
+                  <div class="relative inline-block">
+                    <img id="previewImage" src="#" alt="Death Certificate Preview" class="max-h-40 rounded-lg border border-gray-200">
+                    <button type="button" id="removeImageBtn" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600 transition-colors">
+                      <i class="fas fa-times text-xs"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
-  </div>
-</div>
   
         <!-- Payment Information -->
         <div class="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-200">
@@ -767,7 +824,7 @@ $servicesJson = json_encode($allServices);
           <div class="space-y-3 sm:space-y-4">
             <div>
               <label for="paymentMethod" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                Method of Payment
+                Method of Payment <span class="text-red-500">*</span>
               </label>
               <select id="paymentMethod" name="paymentMethod" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
                 <option value="" disabled selected>Select payment method</option>
@@ -786,18 +843,26 @@ $servicesJson = json_encode($allServices);
                   <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <span class="text-gray-500">₱</span>
                   </div>
-                  <input type="number" id="totalPrice" name="totalPrice" class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+                  <input type="number" id="totalPrice" name="totalPrice" 
+                         class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                         min="0.01" step="0.01"
+                         oninput="validatePrice(this)">
+                  <div class="text-xs text-red-500 mt-1 hidden" id="totalPrice-error">Please enter a valid amount (minimum ₱0.01)</div>
                 </div>
               </div>
               <div>
                 <label for="amountPaid" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                  Amount Paid
+                  Amount Paid <span class="text-red-500">*</span>
                 </label>
                 <div class="relative">
                   <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <span class="text-gray-500">₱</span>
                   </div>
-                  <input type="number" id="amountPaid" name="amountPaid" required class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+                  <input type="number" id="amountPaid" name="amountPaid" required 
+                         class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                         min="0.01" step="0.01"
+                         oninput="validatePrice(this)">
+                  <div class="text-xs text-red-500 mt-1 hidden" id="amountPaid-error">Please enter a valid amount (minimum ₱0.01)</div>
                 </div>
               </div>
             </div>
@@ -836,6 +901,347 @@ $servicesJson = json_encode($allServices);
     </div>
   </div>
 </div>
+
+<script>
+// Name validation
+function validateName(input) {
+  const errorElement = document.getElementById(`${input.id}-error`);
+  const value = input.value.trim();
+  
+  // Only allow letters and single spaces between words
+  let cleanedValue = value.replace(/[^a-zA-Z\s]/g, '');
+  cleanedValue = cleanedValue.replace(/\s+/g, ' '); // Replace multiple spaces with single space
+  
+  // Capitalize first letter of each word
+  if (cleanedValue.length > 0) {
+    cleanedValue = cleanedValue.toLowerCase().split(' ').map(word => {
+      return word.charAt(0).toUpperCase() + word.slice(1);
+    }).join(' ');
+  }
+  
+  // Don't allow space unless we have at least 2 characters
+  if (cleanedValue.length === 1 && cleanedValue === ' ') {
+    cleanedValue = '';
+  }
+  
+  input.value = cleanedValue;
+  
+  // For required fields, check minimum length
+  if (input.required && cleanedValue.length < 2) {
+    errorElement.classList.remove('hidden');
+    return false;
+  } else {
+    errorElement.classList.add('hidden');
+    return true;
+  }
+}
+
+function handleNamePaste(event) {
+  event.preventDefault();
+  const text = (event.clipboardData || window.clipboardData).getData('text');
+  const cleanedText = text.replace(/[^a-zA-Z\s]/g, '').replace(/\s+/g, ' ');
+  
+  // Insert the cleaned text
+  document.execCommand('insertText', false, cleanedText);
+  
+  // Trigger validation
+  validateName(event.target);
+}
+
+// Phone validation
+function validatePhone(input) {
+  const errorElement = document.getElementById(`${input.id}-error`);
+  const value = input.value.trim();
+  
+  // Only allow numbers and limit to 11 digits
+  let cleanedValue = value.replace(/\D/g, '').substring(0, 11);
+  
+  // Must start with 09
+  if (cleanedValue.length > 0 && !cleanedValue.startsWith('09')) {
+    cleanedValue = '09' + cleanedValue.substring(2);
+  }
+  
+  input.value = cleanedValue;
+  
+  // Validate Philippine phone number
+  const isValid = /^09\d{9}$/.test(cleanedValue);
+  
+  if (!isValid) {
+    errorElement.classList.remove('hidden');
+    return false;
+  } else {
+    errorElement.classList.add('hidden');
+    return true;
+  }
+}
+
+function handlePhonePaste(event) {
+  event.preventDefault();
+  const text = (event.clipboardData || window.clipboardData).getData('text');
+  const cleanedText = text.replace(/\D/g, '').substring(0, 11);
+  
+  // Insert the cleaned text
+  document.execCommand('insertText', false, cleanedText);
+  
+  // Trigger validation
+  validatePhone(event.target);
+}
+
+// Email validation
+function validateEmail(input) {
+  const errorElement = document.getElementById(`${input.id}-error`);
+  const value = input.value.trim();
+  
+  // Basic email validation
+  const isValid = value === '' || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+  
+  if (!isValid) {
+    errorElement.classList.remove('hidden');
+    return false;
+  } else {
+    errorElement.classList.add('hidden');
+    return true;
+  }
+}
+
+// Date validation
+function validateDates() {
+  const dob = document.getElementById('dateOfBirth').value;
+  const dod = document.getElementById('dateOfDeath').value;
+  const dobError = document.getElementById('dateOfBirth-error');
+  const dodError = document.getElementById('dateOfDeath-error');
+  const burialError = document.getElementById('dateOfBurial-error');
+  
+  const today = new Date().toISOString().split('T')[0];
+  const hundredYearsAgo = new Date();
+  hundredYearsAgo.setFullYear(hundredYearsAgo.getFullYear() - 100);
+  const minDob = hundredYearsAgo.toISOString().split('T')[0];
+  
+  let isValid = true;
+  
+  // Validate Date of Birth
+  if (dob) {
+    if (dob > today || dob < minDob) {
+      dobError.classList.remove('hidden');
+      isValid = false;
+    } else {
+      dobError.classList.add('hidden');
+    }
+  }
+  
+  // Validate Date of Death
+  if (dod) {
+    let minDod = dob || minDob;
+    let maxDod = today;
+    
+    if (dod < minDod || dod > maxDod) {
+      dodError.classList.remove('hidden');
+      isValid = false;
+    } else {
+      dodError.classList.add('hidden');
+    }
+  }
+  
+  // Validate Date of Burial
+  const burial = document.getElementById('dateOfBurial').value;
+  if (burial) {
+    let minBurial = new Date();
+    minBurial.setDate(minBurial.getDate() + 1);
+    minBurial = minBurial.toISOString().split('T')[0];
+    
+    if (dod && burial < dod) {
+      burialError.textContent = 'Date of burial must be after date of death';
+      burialError.classList.remove('hidden');
+      isValid = false;
+    } else if (burial < minBurial) {
+      burialError.textContent = 'Date of burial must be at least tomorrow';
+      burialError.classList.remove('hidden');
+      isValid = false;
+    } else {
+      burialError.classList.add('hidden');
+    }
+  }
+  
+  return isValid;
+}
+
+// Street address validation
+function validateStreet(input) {
+  const errorElement = document.getElementById(`${input.id}-error`);
+  const value = input.value.trim();
+  
+  // Capitalize first letter
+  let cleanedValue = value.charAt(0).toUpperCase() + value.slice(1);
+  
+  // Don't allow multiple consecutive spaces
+  cleanedValue = cleanedValue.replace(/\s+/g, ' ');
+  
+  // Don't allow space unless we have at least 2 characters
+  if (cleanedValue.length === 1 && cleanedValue === ' ') {
+    cleanedValue = '';
+  }
+  
+  input.value = cleanedValue;
+  
+  // For required fields, check minimum length
+  if (input.required && cleanedValue.length < 2) {
+    errorElement.classList.remove('hidden');
+    return false;
+  } else {
+    errorElement.classList.add('hidden');
+    return true;
+  }
+}
+
+// ZIP code validation
+function validateZipCode(input) {
+  const errorElement = document.getElementById(`${input.id}-error`);
+  const value = input.value.trim();
+  
+  // Only allow numbers
+  let cleanedValue = value.replace(/\D/g, '');
+  
+  // Limit length
+  cleanedValue = cleanedValue.substring(0, 10);
+  
+  input.value = cleanedValue;
+  
+  // Validate length
+  const isValid = cleanedValue.length >= 4 && cleanedValue.length <= 10;
+  
+  if (!isValid) {
+    errorElement.classList.remove('hidden');
+    return false;
+  } else {
+    errorElement.classList.add('hidden');
+    return true;
+  }
+}
+
+// Death certificate validation
+function validateDeathCertificate(input) {
+  const errorElement = document.getElementById(`${input.id}-error`);
+  const file = input.files[0];
+  
+  if (!file) {
+    errorElement.classList.add('hidden');
+    return true;
+  }
+  
+  const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf'];
+  const isValid = validTypes.includes(file.type);
+  
+  if (!isValid) {
+    errorElement.classList.remove('hidden');
+    return false;
+  } else {
+    errorElement.classList.add('hidden');
+    
+    // Show preview if image
+    if (file.type.startsWith('image/')) {
+      const preview = document.getElementById('deathCertificatePreview');
+      const previewImage = document.getElementById('previewImage');
+      const reader = new FileReader();
+      
+      reader.onload = function(e) {
+        previewImage.src = e.target.result;
+        preview.classList.remove('hidden');
+      }
+      
+      reader.readAsDataURL(file);
+    }
+    
+    return true;
+  }
+}
+
+// Price validation
+function validatePrice(input) {
+  const errorElement = document.getElementById(`${input.id}-error`);
+  const value = parseFloat(input.value);
+  
+  const isValid = !isNaN(value) && value >= 0.01;
+  
+  if (!isValid) {
+    errorElement.classList.remove('hidden');
+    return false;
+  } else {
+    errorElement.classList.add('hidden');
+    return true;
+  }
+}
+
+// Form submission validation
+function validateForm() {
+  let isValid = true;
+  
+  // Validate all required name fields
+  const nameFields = ['clientFirstName', 'clientLastName', 'deceasedFirstName', 'deceasedLastName'];
+  nameFields.forEach(field => {
+    const input = document.getElementById(field);
+    if (!validateName(input)) isValid = false;
+  });
+  
+  // Validate optional name fields
+  const optionalNameFields = ['clientMiddleName', 'deceasedMiddleName'];
+  optionalNameFields.forEach(field => {
+    const input = document.getElementById(field);
+    if (input.value.trim() !== '' && !validateName(input)) isValid = false;
+  });
+  
+  // Validate phone
+  if (!validatePhone(document.getElementById('clientPhone'))) isValid = false;
+  
+  // Validate email if provided
+  const email = document.getElementById('clientEmail');
+  if (email.value.trim() !== '' && !validateEmail(email)) isValid = false;
+  
+  // Validate dates
+  if (!validateDates()) isValid = false;
+  
+  // Validate address fields
+  if (!validateStreet(document.getElementById('deceasedStreet'))) isValid = false;
+  if (!validateZipCode(document.getElementById('deceasedZip'))) isValid = false;
+  
+  // Validate death certificate if provided
+  const deathCert = document.getElementById('deathCertificate');
+  if (deathCert.files.length > 0 && !validateDeathCertificate(deathCert)) isValid = false;
+  
+  // Validate prices
+  if (!validatePrice(document.getElementById('totalPrice'))) isValid = false;
+  if (!validatePrice(document.getElementById('amountPaid'))) isValid = false;
+  
+  // Validate required selects
+  const requiredSelects = ['deceasedRegion', 'deceasedProvince', 'deceasedCity', 'deceasedBarangay', 'paymentMethod'];
+  requiredSelects.forEach(select => {
+    const element = document.getElementById(select);
+    if (element.value === '') {
+      isValid = false;
+      // You might want to add error display for these as well
+    }
+  });
+  
+  return isValid;
+}
+
+function confirmCheckout() {
+  if (validateForm()) {
+    // Proceed with form submission
+    console.log('Form is valid, submitting...');
+    // document.getElementById('checkoutForm').submit();
+  } else {
+    // Show general error message
+    alert('Please fix all errors before submitting the form.');
+  }
+}
+
+// Initialize event listeners for address hierarchy
+document.getElementById('deceasedRegion').addEventListener('change', function() {
+  // Your existing code to load provinces
+});
+
+// Similar for other address fields
+</script>
 
 <!-- Service Type Selection Modal -->
 <div id="serviceTypeModal" class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto">
