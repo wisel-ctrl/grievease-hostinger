@@ -91,7 +91,7 @@ if ($result && $result->num_rows > 0) {
                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <span class="text-dark-gold">₱</span>
                 </div>
-                <input type="number" id="price" name="price" min="0" step="0.01" class="pl-7 block w-full px-3 py-2 bg-white border border-gold rounded-md shadow-sm text-gray-700 focus:outline-none focus:ring-dark-gold focus:border-dark-gold" value="<?php echo number_format($item["price"], 2); ?>">
+                <input type="number" id="price" name="price" min="0" step="0.01" class="pl-7 block w-full px-3 py-2 bg-white border border-gold rounded-md shadow-sm text-gray-700 focus:outline-none focus:ring-dark-gold focus:border-dark-gold" value="<?php echo $item["price"]; ?>">
             </div>
             <div id="price_error" class="text-red-500 text-xs mt-1 hidden">Price must be 0.00 or more</div>
         </div>
@@ -102,7 +102,7 @@ if ($result && $result->num_rows > 0) {
                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <span class="text-dark-gold">₱</span>
                 </div>
-                <input type="number" id="total_value" name="total_value" min="0" step="0.01" class="pl-7 block w-full px-3 py-2 bg-white border border-gold rounded-md shadow-sm text-gray-700 focus:outline-none focus:ring-dark-gold focus:border-dark-gold font-medium" value="<?php echo number_format($item["total_value"], 2); ?>" readonly>
+                <input type="text" id="total_value" name="total_value" class="pl-7 block w-full px-3 py-2 bg-white border border-gold rounded-md shadow-sm text-gray-700 focus:outline-none focus:ring-dark-gold focus:border-dark-gold font-medium" value="₱<?php echo number_format($item["total_value"], 2); ?>" readonly>
             </div>
         </div>
     </div>
@@ -195,6 +195,7 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             quantityError.classList.add('hidden');
         }
+        calculateTotalValue();
     });
     
     // Price validation
@@ -208,8 +209,6 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             priceError.classList.add('hidden');
         }
-        
-        // Calculate total value
         calculateTotalValue();
     });
     
@@ -221,8 +220,13 @@ document.addEventListener('DOMContentLoaded', function() {
         const quantity = parseFloat(quantityInput.value) || 0;
         const price = parseFloat(priceInput.value) || 0;
         const totalValue = quantity * price;
-        document.getElementById('total_value').value = totalValue.toFixed(2);
+        
+        // Format the total value with currency symbol and 2 decimal places
+        document.getElementById('total_value').value = '₱' + totalValue.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     }
+    
+    // Initialize total value on page load
+    calculateTotalValue();
 });
 </script>
 
