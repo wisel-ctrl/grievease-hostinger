@@ -46,7 +46,7 @@ header("Pragma: no-cache");
 
 require_once '../db_connect.php';
   $user_id = $_SESSION['user_id'];
-  $query = "SELECT first_name , last_name , email , birthdate FROM users WHERE id = ?";
+  $query = "SELECT first_name , last_name , email , birthdate, branch_loc FROM users WHERE id = ?";
   $stmt = $conn->prepare($query);
   $stmt->bind_param("i", $user_id);
   $stmt->execute();
@@ -55,6 +55,7 @@ require_once '../db_connect.php';
   $first_name = $row['first_name']; // We're confident user_id exists
   $last_name = $row['last_name'];
   $email = $row['email'];
+  $branch = $row['branch_loc'];
 
 // Calculate quick stats
 $current_month = date('m');
@@ -62,9 +63,9 @@ $current_year = date('Y');
 
 // Services this month
 $services_query = "SELECT COUNT(*) as service_count FROM sales_tb 
-                  WHERE MONTH(get_timestamp) = ? AND YEAR(get_timestamp) = ?";
+                  WHERE MONTH(get_timestamp) = ? AND YEAR(get_timestamp) = ? AND branch_id = ?";
 $stmt = $conn->prepare($services_query);
-$stmt->bind_param("ii", $current_month, $current_year);
+$stmt->bind_param("iii", $current_month, $current_year, $branch);
 $stmt->execute();
 $services_result = $stmt->get_result();
 $services_data = $services_result->fetch_assoc();
