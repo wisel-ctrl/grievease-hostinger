@@ -575,18 +575,22 @@ function validateName(input, errorElementId) {
 }
 
 // Email validation
-function validateEmail(input) {
-  const errorElement = document.getElementById('emailError');
-  const email = input.value.trim();
-  
-  // Basic email validation
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  
-  if (!emailRegex.test(email)) {
-    errorElement.classList.remove('hidden');
+function validateEmail() {
+  const emailInput = document.getElementById('customerEmail');
+  const emailError = document.getElementById('emailError');
+  const email = emailInput.value.trim();
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  if (email === '') {
+    emailError.textContent = 'Email is required';
+    emailError.classList.remove('hidden');
+    return false;
+  } else if (!emailPattern.test(email)) {
+    emailError.textContent = 'Please enter a valid email address';
+    emailError.classList.remove('hidden');
     return false;
   } else {
-    errorElement.classList.add('hidden');
+    emailError.classList.add('hidden');
     return true;
   }
 }
