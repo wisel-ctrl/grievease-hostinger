@@ -1590,62 +1590,6 @@ function openEditCustomerAccountModal(userId) {
         }
     });
 
-    // Add event listeners for real-time validation in edit modal
-firstNameInput.addEventListener('input', function() {
-    validateEditNameField(this, true);
-    // Only allow space after at least 2 characters
-    if (this.value.length < 2 && this.value.includes(' ')) {
-        this.value = this.value.replace(/\s/g, '');
-    }
-});
-
-lastNameInput.addEventListener('input', function() {
-    validateEditNameField(this, true);
-    // Only allow space after at least 2 characters
-    if (this.value.length < 2 && this.value.includes(' ')) {
-        this.value = this.value.replace(/\s/g, '');
-    }
-});
-
-middleNameInput.addEventListener('input', function() {
-    validateEditNameField(this, false);
-});
-
-emailInput.addEventListener('input', validateEditEmail);
-phoneInput.addEventListener('input', validateEditPhone);
-
-// Handle paste events to clean input
-[nameInput, middleNameInput, lastNameInput].forEach(input => {
-    input.addEventListener('paste', function(e) {
-        e.preventDefault();
-        let pastedText = (e.clipboardData || window.clipboardData).getData('text');
-        // Clean the pasted text
-        pastedText = pastedText.replace(/[^a-zA-Z\s]/g, ''); // Remove non-letters
-        pastedText = pastedText.replace(/\s{2,}/g, ' '); // Replace multiple spaces with single space
-        // Capitalize first letter of each word
-        pastedText = pastedText.toLowerCase().split(' ').map(word => {
-            return word.charAt(0).toUpperCase() + word.slice(1);
-        }).join(' ');
-        document.execCommand('insertText', false, pastedText);
-    });
-});
-
-emailInput.addEventListener('paste', function(e) {
-    e.preventDefault();
-    let pastedText = (e.clipboardData || window.clipboardData).getData('text');
-    // Remove spaces from pasted email
-    pastedText = pastedText.replace(/\s/g, '');
-    document.execCommand('insertText', false, pastedText);
-});
-
-phoneInput.addEventListener('paste', function(e) {
-    e.preventDefault();
-    let pastedText = (e.clipboardData || window.clipboardData).getData('text');
-    // Remove all non-digit characters
-    pastedText = pastedText.replace(/\D/g, '');
-    document.execCommand('insertText', false, pastedText);
-});
-
     // Fetch user details
     fetch(`accountManagement/fetch_customer_details.php?user_id=${userId}`)
         .then(response => response.json())
@@ -1786,6 +1730,63 @@ phoneInput.addEventListener('paste', function(e) {
                 </div>`;
                 // Add modal to DOM
                 document.body.insertAdjacentHTML('beforeend', modalHTML);
+
+                
+    // Add event listeners for real-time validation in edit modal
+firstNameInput.addEventListener('input', function() {
+    validateEditNameField(this, true);
+    // Only allow space after at least 2 characters
+    if (this.value.length < 2 && this.value.includes(' ')) {
+        this.value = this.value.replace(/\s/g, '');
+    }
+});
+
+lastNameInput.addEventListener('input', function() {
+    validateEditNameField(this, true);
+    // Only allow space after at least 2 characters
+    if (this.value.length < 2 && this.value.includes(' ')) {
+        this.value = this.value.replace(/\s/g, '');
+    }
+});
+
+middleNameInput.addEventListener('input', function() {
+    validateEditNameField(this, false);
+});
+
+emailInput.addEventListener('input', validateEditEmail);
+phoneInput.addEventListener('input', validateEditPhone);
+
+// Handle paste events to clean input
+[nameInput, middleNameInput, lastNameInput].forEach(input => {
+    input.addEventListener('paste', function(e) {
+        e.preventDefault();
+        let pastedText = (e.clipboardData || window.clipboardData).getData('text');
+        // Clean the pasted text
+        pastedText = pastedText.replace(/[^a-zA-Z\s]/g, ''); // Remove non-letters
+        pastedText = pastedText.replace(/\s{2,}/g, ' '); // Replace multiple spaces with single space
+        // Capitalize first letter of each word
+        pastedText = pastedText.toLowerCase().split(' ').map(word => {
+            return word.charAt(0).toUpperCase() + word.slice(1);
+        }).join(' ');
+        document.execCommand('insertText', false, pastedText);
+    });
+});
+
+emailInput.addEventListener('paste', function(e) {
+    e.preventDefault();
+    let pastedText = (e.clipboardData || window.clipboardData).getData('text');
+    // Remove spaces from pasted email
+    pastedText = pastedText.replace(/\s/g, '');
+    document.execCommand('insertText', false, pastedText);
+});
+
+phoneInput.addEventListener('paste', function(e) {
+    e.preventDefault();
+    let pastedText = (e.clipboardData || window.clipboardData).getData('text');
+    // Remove all non-digit characters
+    pastedText = pastedText.replace(/\D/g, '');
+    document.execCommand('insertText', false, pastedText);
+});
 
                 // Add event listeners for email and phone changes
                 const emailInput = document.querySelector('#editCustomerModal input[name="email"]');
