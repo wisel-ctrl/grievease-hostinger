@@ -2664,6 +2664,7 @@ if (data.payment_url && data.payment_url !== '') {
       console.error('Error:', error);
       alert('Failed to load booking details. Please try again.');
     });
+    
 }
 
 // Function to add click handlers to the magnify buttons
@@ -2679,7 +2680,32 @@ function addImageViewerListeners() {
   });
 }
 
-// Function to show full-size image
+// Add this to your script section
+function setupImageViewerListeners(modalId) {
+  const modal = document.getElementById(modalId);
+  if (!modal) return;
+
+  // Add click handlers to all "View Full Size" buttons in this modal
+  modal.querySelectorAll('button[title="View Full Size"]').forEach(button => {
+    button.addEventListener('click', function() {
+      const imageElement = this.closest('.relative').querySelector('img');
+      if (imageElement && imageElement.src) {
+        viewFullSizeImage(imageElement.src);
+      }
+    });
+  });
+
+  // Make the main images clickable too
+  modal.querySelectorAll('img[id$="Image"]').forEach(img => {
+    img.style.cursor = 'zoom-in';
+    img.addEventListener('click', function() {
+      if (this.src) {
+        viewFullSizeImage(this.src);
+      }
+    });
+  });
+}
+
 function viewFullSizeImage(imageSrc) {
   const fullSizeModal = document.createElement('div');
   fullSizeModal.className = 'fixed inset-0 bg-black bg-opacity-90 z-[60] flex items-center justify-center p-4';
@@ -2704,7 +2730,6 @@ function viewFullSizeImage(imageSrc) {
     }
   });
 }
-
 function closeModal() {
     const modal = document.getElementById("bookingDetailsModal");
     if (modal) {
@@ -3452,64 +3477,64 @@ function openCustomDetails(bookingId) {
       }
       
       // Tesseract OCR processing function
-function processReceiptWithTesseract(imagePath, type = 'custom') {
-    const processingIndicator = document.getElementById(`${type}ProcessingIndicator`);
-    const extractionMessage = document.getElementById(`${type}ExtractionMessage`);
-    const amountInput = document.getElementById(`${type}AmountPaidInput`);
-    
-    // Show processing indicator
-    processingIndicator.classList.remove('hidden');
-    extractionMessage.classList.add('hidden');
-    
-    // Initialize Tesseract.js
-    Tesseract.recognize(
-        imagePath,
-        'eng',
-        {
-            logger: m => console.log(m),
-            tessedit_char_whitelist: '0123456789.,$₱Pp ',
-        }
-    ).then(({ data: { text } }) => {
-        console.log('OCR Result:', text);
-        
-        // Hide processing indicator
-        processingIndicator.classList.add('hidden');
-        
-        // Extract amount from text
-        const amountRegex = /(?:₱|P|p|\$)\s*(\d{1,3}(?:,\d{3})*(?:\.\d{2})?)|\d{1,3}(?:,\d{3})*(?:\.\d{2})/g;
-        const matches = text.match(amountRegex);
-        
-        if (matches && matches.length > 0) {
-            // Clean the amount (remove currency symbols and commas)
-            let extractedAmount = matches[0].replace(/[₱Pp$,]/g, '').trim();
+        function processReceiptWithTesseract(imagePath, type = 'custom') {
+            const processingIndicator = document.getElementById(`${type}ProcessingIndicator`);
+            const extractionMessage = document.getElementById(`${type}ExtractionMessage`);
+            const amountInput = document.getElementById(`${type}AmountPaidInput`);
             
-            // If the amount ends with . or .0, add two zeros
-            if (extractedAmount.endsWith('.')) {
-                extractedAmount += '00';
-            } else if (extractedAmount.endsWith('.0')) {
-                extractedAmount += '0';
-            }
+            // Show processing indicator
+            processingIndicator.classList.remove('hidden');
+            extractionMessage.classList.add('hidden');
             
-            // Set the extracted amount in the input field
-            if (amountInput) {
-                amountInput.value = parseFloat(extractedAmount).toFixed(2);
-                extractionMessage.textContent = `Extracted amount: ₱${parseFloat(extractedAmount).toFixed(2)}`;
+            // Initialize Tesseract.js
+            Tesseract.recognize(
+                imagePath,
+                'eng',
+                {
+                    logger: m => console.log(m),
+                    tessedit_char_whitelist: '0123456789.,$₱Pp ',
+                }
+            ).then(({ data: { text } }) => {
+                console.log('OCR Result:', text);
+                
+                // Hide processing indicator
+                processingIndicator.classList.add('hidden');
+                
+                // Extract amount from text
+                const amountRegex = /(?:₱|P|p|\$)\s*(\d{1,3}(?:,\d{3})*(?:\.\d{2})?)|\d{1,3}(?:,\d{3})*(?:\.\d{2})/g;
+                const matches = text.match(amountRegex);
+                
+                if (matches && matches.length > 0) {
+                    // Clean the amount (remove currency symbols and commas)
+                    let extractedAmount = matches[0].replace(/[₱Pp$,]/g, '').trim();
+                    
+                    // If the amount ends with . or .0, add two zeros
+                    if (extractedAmount.endsWith('.')) {
+                        extractedAmount += '00';
+                    } else if (extractedAmount.endsWith('.0')) {
+                        extractedAmount += '0';
+                    }
+                    
+                    // Set the extracted amount in the input field
+                    if (amountInput) {
+                        amountInput.value = parseFloat(extractedAmount).toFixed(2);
+                        extractionMessage.textContent = `Extracted amount: ₱${parseFloat(extractedAmount).toFixed(2)}`;
+                        extractionMessage.classList.remove('hidden');
+                        extractionMessage.classList.add('text-green-600');
+                    }
+                } else {
+                    extractionMessage.textContent = 'No amount found in receipt. Please enter manually.';
+                    extractionMessage.classList.remove('hidden');
+                    extractionMessage.classList.add('text-yellow-600');
+                }
+            }).catch(err => {
+                console.error('OCR Error:', err);
+                processingIndicator.classList.add('hidden');
+                extractionMessage.textContent = 'Failed to process receipt. Please enter amount manually.';
                 extractionMessage.classList.remove('hidden');
-                extractionMessage.classList.add('text-green-600');
-            }
-        } else {
-            extractionMessage.textContent = 'No amount found in receipt. Please enter manually.';
-            extractionMessage.classList.remove('hidden');
-            extractionMessage.classList.add('text-yellow-600');
+                extractionMessage.classList.add('text-red-600');
+            });
         }
-    }).catch(err => {
-        console.error('OCR Error:', err);
-        processingIndicator.classList.add('hidden');
-        extractionMessage.textContent = 'Failed to process receipt. Please enter amount manually.';
-        extractionMessage.classList.remove('hidden');
-        extractionMessage.classList.add('text-red-600');
-    });
-}
       
       // Handle Casket Details
       if (data.casket_id && data.casket_name) {
@@ -3598,6 +3623,8 @@ function processReceiptWithTesseract(imagePath, type = 'custom') {
         text: 'Failed to load custom booking details. Please try again.',
       });
     });
+    // Set up image viewer listeners for this modal
+setupImageViewerListeners('customDetailsModal');
 }
 
 function closeCustomModal() {
@@ -4063,6 +4090,9 @@ function processPaymentProofWithTesseract(imagePath, type = 'lifeplan') {
         text: 'Failed to load lifeplan details. Please try again.',
       });
     });
+    
+    // Set up image viewer listeners for this modal
+setupImageViewerListeners('lifeplanDetailsModal');
 }
 
 function closeLifeplanModal() {
