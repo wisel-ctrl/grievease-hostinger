@@ -1327,48 +1327,34 @@ document.getElementById('deceasedRegion').addEventListener('change', function() 
                 <label for="lp-clientFirstName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
                   First Name
                 </label>
-                <input type="text" id="lp-clientFirstName" name="lp-FirstName" required 
-                       class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                       pattern="[A-Za-z ]{2,}" 
-                       oninput="validateNameInput(this)"
-                       onpaste="handleNamePaste(event)">
-                <div class="text-xs text-red-500 mt-1 hidden" id="lp-clientFirstName-error">Please enter a valid first name (letters only, min 2 characters)</div>
+                <input type="text" id="lp-clientFirstName" name="lp-FirstName" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
               </div>
               <div>
                 <label for="lp-clientMiddleName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
                   Middle Name <span class="text-xs text-gray-500">(Optional)</span>
                 </label>
-                <input type="text" id="lp-clientMiddleName" name="lp-MiddleName" 
-                       class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                       oninput="validateNameInput(this, false)"
-                       onpaste="handleNamePaste(event)">
-                <div class="text-xs text-red-500 mt-1 hidden" id="lp-clientMiddleName-error">Please enter valid middle name (letters only)</div>
+                <input type="text" id="lp-clientMiddleName" name="lp-MiddleName" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
               </div>
               <div>
                 <label for="lp-clientLastName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
                   Last Name
                 </label>
-                <input type="text" id="lp-clientLastName" name="lp-LastName" required 
-                       class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                       pattern="[A-Za-z ]{2,}"
-                       oninput="validateNameInput(this)"
-                       onpaste="handleNamePaste(event)">
-                <div class="text-xs text-red-500 mt-1 hidden" id="lp-clientLastName-error">Please enter a valid last name (letters only, min 2 characters)</div>
+                <input type="text" id="lp-clientLastName" name="lp-LastName" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
               </div>
               <div>
                 <label for="lp-clientSuffix" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
                   Suffix <span class="text-xs text-gray-500">(Optional)</span>
                 </label>
                 <select id="lp-clientSuffix" name="lp-Suffix" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
-                  <option value="">None</option>
-                  <option value="Jr.">Jr.</option>
-                  <option value="Sr.">Sr.</option>
-                  <option value="I">I</option>
-                  <option value="II">II</option>
-                  <option value="III">III</option>
-                  <option value="IV">IV</option>
-                  <option value="V">V</option>
-                </select>
+                                    <option value="">None</option>
+                                    <option value="Jr.">Jr.</option>
+                                    <option value="Sr.">Sr.</option>
+                                    <option value="I">I</option>
+                                    <option value="II">II</option>
+                                    <option value="III">III</option>
+                                    <option value="IV">IV</option>
+                                    <option value="V">V</option>
+                                </select>
               </div>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-4">
@@ -1376,22 +1362,13 @@ document.getElementById('deceasedRegion').addEventListener('change', function() 
                 <label for="lp-clientPhone" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
                   Phone Number
                 </label>
-                <input type="tel" id="lp-clientPhone" name="lp-Phone" required 
-                       class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
-                       minlength="11" maxlength="11" pattern="09[0-9]{9}"
-                       oninput="validatePhoneInput(this)"
-                       onpaste="handlePhonePaste(event)">
-                <div class="text-xs text-red-500 mt-1 hidden" id="lp-clientPhone-error">Please enter a valid Philippine phone number (09XXXXXXXXX)</div>
+                <input type="tel" id="lp-clientPhone" name="lp-Phone" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" minlength="11" maxlength="11">
               </div>
               <div>
                 <label for="lp-clientEmail" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
                   Email Address <span class="text-xs text-gray-500">(Optional)</span>
                 </label>
-                <input type="email" id="lp-clientEmail" name="lp-Email" 
-                       class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                       oninput="validateEmailInput(this)"
-                       onpaste="handleEmailPaste(event)">
-                <div class="text-xs text-red-500 mt-1 hidden" id="lp-clientEmail-error">Please enter a valid email address</div>
+                <input type="email" id="lp-clientEmail" name="lp-Email" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
               </div>
             </div>
           </div>
@@ -1408,48 +1385,34 @@ document.getElementById('deceasedRegion').addEventListener('change', function() 
                 <label for="beneficiaryFirstName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
                   First Name
                 </label>
-                <input type="text" id="beneficiaryFirstName" name="beneficiaryFirstName" required 
-                       class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                       pattern="[A-Za-z ]{2,}"
-                       oninput="validateNameInput(this)"
-                       onpaste="handleNamePaste(event)">
-                <div class="text-xs text-red-500 mt-1 hidden" id="beneficiaryFirstName-error">Please enter a valid first name (letters only, min 2 characters)</div>
+                <input type="text" id="beneficiaryFirstName" name="beneficiaryFirstName" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
               </div>
               <div>
                 <label for="beneficiaryMiddleName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
                   Middle Name <span class="text-xs text-gray-500">(Optional)</span>
                 </label>
-                <input type="text" id="beneficiaryMiddleName" name="beneficiaryMiddleName" 
-                       class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                       oninput="validateNameInput(this, false)"
-                       onpaste="handleNamePaste(event)">
-                <div class="text-xs text-red-500 mt-1 hidden" id="beneficiaryMiddleName-error">Please enter valid middle name (letters only)</div>
+                <input type="text" id="beneficiaryMiddleName" name="beneficiaryMiddleName" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
               </div>
               <div>
                 <label for="beneficiaryLastName" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
                   Last Name
                 </label>
-                <input type="text" id="beneficiaryLastName" name="beneficiaryLastName" required 
-                       class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                       pattern="[A-Za-z ]{2,}"
-                       oninput="validateNameInput(this)"
-                       onpaste="handleNamePaste(event)">
-                <div class="text-xs text-red-500 mt-1 hidden" id="beneficiaryLastName-error">Please enter a valid last name (letters only, min 2 characters)</div>
+                <input type="text" id="beneficiaryLastName" name="beneficiaryLastName" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
               </div>
               <div>
                 <label for="beneficiarySuffix" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
                   Suffix <span class="text-xs text-gray-500">(Optional)</span>
                 </label>
                 <select id="beneficiarySuffix" name="beneficiarySuffix" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
-                  <option value="">None</option>
-                  <option value="Jr.">Jr.</option>
-                  <option value="Sr.">Sr.</option>
-                  <option value="I">I</option>
-                  <option value="II">II</option>
-                  <option value="III">III</option>
-                  <option value="IV">IV</option>
-                  <option value="V">V</option>
-                </select>
+                                    <option value="">None</option>
+                                    <option value="Jr.">Jr.</option>
+                                    <option value="Sr.">Sr.</option>
+                                    <option value="I">I</option>
+                                    <option value="II">II</option>
+                                    <option value="III">III</option>
+                                    <option value="IV">IV</option>
+                                    <option value="V">V</option>
+                                </select>
               </div>
             </div>
             
@@ -1457,95 +1420,75 @@ document.getElementById('deceasedRegion').addEventListener('change', function() 
               <label for="beneficiaryDateOfBirth" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
                 Date of Birth
               </label>
-              <input type="date" id="beneficiaryDateOfBirth" name="beneficiaryDateOfBirth" 
-                     class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                     max="<?php echo date('Y-m-d'); ?>"
-                     min="<?php echo date('Y-m-d', strtotime('-100 years')); ?>">
-              <div class="text-xs text-red-500 mt-1 hidden" id="beneficiaryDateOfBirth-error">Please select a valid date of birth (past 100 years only)</div>
+              <input type="date" id="beneficiaryDateOfBirth" name="beneficiaryDateOfBirth" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
             </div>
-            
             <!-- New Address Dropdown Hierarchy -->
-            <div class="space-y-3">
-              <div class="grid grid-cols-1 md:grid-cols-4 gap-2 sm:gap-4">
-                <div>
-                  <label for="beneficiaryRegion" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                    Region <span class="text-red-500">*</span>
-                  </label>
-                  <select id="beneficiaryRegion" name="beneficiaryRegion" required 
-                          class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
-                    <option value="" disabled selected>Select Region</option>
-                    <?php foreach ($regions as $region): ?>
-                      <option value="<?php echo $region['region_code']; ?>"><?php echo $region['region_name']; ?></option>
-                    <?php endforeach; ?>
-                  </select>
-                  <div class="text-xs text-red-500 mt-1 hidden" id="beneficiaryRegion-error">Please select a region</div>
-                </div>
-                <div>
-                  <label for="beneficiaryProvince" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                    Province <span class="text-red-500">*</span>
-                  </label>
-                  <select id="beneficiaryProvince" name="beneficiaryProvince" required disabled
-                          class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
-                    <option value="" disabled selected>Select Province</option>
-                  </select>
-                  <div class="text-xs text-red-500 mt-1 hidden" id="beneficiaryProvince-error">Please select a province</div>
-                </div>
-                <div>
-                  <label for="beneficiaryCity" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                    City/Municipality <span class="text-red-500">*</span>
-                  </label>
-                  <select id="beneficiaryCity" name="beneficiaryCity" required disabled
-                          class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
-                    <option value="" disabled selected>Select City/Municipality</option>
-                  </select>
-                  <div class="text-xs text-red-500 mt-1 hidden" id="beneficiaryCity-error">Please select a city/municipality</div>
-                </div>
-                <div>
-                  <label for="beneficiaryBarangay" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                    Barangay <span class="text-red-500">*</span>
-                  </label>
-                  <select id="beneficiaryBarangay" name="beneficiaryBarangay" required disabled
-                          class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
-                    <option value="" disabled selected>Select Barangay</option>
-                  </select>
-                  <div class="text-xs text-red-500 mt-1 hidden" id="beneficiaryBarangay-error">Please select a barangay</div>
-                </div>
-              </div>
-              
-              <div class="grid grid-cols-1 md:grid-cols-3 gap-2 sm:gap-4">
-                <div class="md:col-span-2">
-                  <label for="beneficiaryStreet" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                    Street Address <span class="text-red-500">*</span>
-                  </label>
-                  <input type="text" id="beneficiaryStreet" name="beneficiaryAddress" required 
-                         class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                         oninput="validateStreetInput(this)"
-                         onpaste="handleStreetPaste(event)">
-                  <div class="text-xs text-red-500 mt-1 hidden" id="beneficiaryStreet-error">Please enter a valid street address</div>
-                </div>
-                <div>
-                  <label for="beneficiaryZip" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                    ZIP Code <span class="text-red-500">*</span>
-                  </label>
-                  <input type="text" id="beneficiaryZip" name="beneficiaryZip" required 
-                         class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                         minlength="4" maxlength="10" pattern="[0-9]+"
-                         oninput="validateZipInput(this)"
-                         onpaste="handleZipPaste(event)">
-                  <div class="text-xs text-red-500 mt-1 hidden" id="beneficiaryZip-error">Please enter a valid ZIP code (4-10 digits)</div>
-                </div>
-              </div>
-            </div>
-            
+    <div class="space-y-3">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-2 sm:gap-4">
+        <div>
+          <label for="beneficiaryRegion" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            Region <span class="text-red-500">*</span>
+          </label>
+          <select id="beneficiaryRegion" name="beneficiaryRegion" required 
+                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+            <option value="" disabled selected>Select Region</option>
+            <?php foreach ($regions as $region): ?>
+              <option value="<?php echo $region['region_code']; ?>"><?php echo $region['region_name']; ?></option>
+            <?php endforeach; ?>
+          </select>
+        </div>
+        <div>
+          <label for="beneficiaryProvince" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            Province <span class="text-red-500">*</span>
+          </label>
+          <select id="beneficiaryProvince" name="beneficiaryProvince" required disabled
+                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+            <option value="" disabled selected>Select Province</option>
+          </select>
+        </div>
+        <div>
+          <label for="beneficiaryCity" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            City/Municipality <span class="text-red-500">*</span>
+          </label>
+          <select id="beneficiaryCity" name="beneficiaryCity" required disabled
+                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+            <option value="" disabled selected>Select City/Municipality</option>
+          </select>
+        </div>
+        <div>
+          <label for="beneficiaryBarangay" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            Barangay <span class="text-red-500">*</span>
+          </label>
+          <select id="beneficiaryBarangay" name="beneficiaryBarangay" required disabled
+                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+            <option value="" disabled selected>Select Barangay</option>
+          </select>
+        </div>
+      </div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-2 sm:gap-4">
+        <div class="md:col-span-2">
+          <label for="beneficiaryStreet" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            Street Address <span class="text-red-500">*</span>
+          </label>
+          <input type="text" id="beneficiaryStreet" name="beneficiaryAddress" required 
+                 class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+        </div>
+        <div>
+          <label for="beneficiaryZip" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+            ZIP Code <span class="text-red-500">*</span>
+          </label>
+          <input type="text" id="beneficiaryZip" name="beneficiaryZip" required 
+                 class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+        </div>
+      </div>
+    </div>
+    
             <div>
               <label for="beneficiaryRelationship" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
                 Relationship to Client
               </label>
-              <input type="text" id="beneficiaryRelationship" name="beneficiaryRelationship" required 
-                     class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                     oninput="validateRelationshipInput(this)"
-                     onpaste="handleRelationshipPaste(event)">
-              <div class="text-xs text-red-500 mt-1 hidden" id="beneficiaryRelationship-error">Please enter a valid relationship</div>
+              <input type="text" id="beneficiaryRelationship" name="beneficiaryRelationship" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
             </div>
           </div>
         </div>
@@ -1560,22 +1503,19 @@ document.getElementById('deceasedRegion').addEventListener('change', function() 
               <label for="lp-paymentMethod" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
                 Method of Payment
               </label>
-              <select id="lp-paymentMethod" name="paymentMethod" required 
-                      class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+              <select id="lp-paymentMethod" name="paymentMethod" required class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
                 <option value="" disabled selected>Select payment method</option>
                 <option value="Cash">Cash</option>
                 <option value="G-Cash">G-Cash</option>
                 <option value="Bank Transfer">Bank Transfer</option>
               </select>
-              <div class="text-xs text-red-500 mt-1 hidden" id="lp-paymentMethod-error">Please select a payment method</div>
             </div>
 
             <div>
               <label for="lp-paymentTerm" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
                 Payment Term
               </label>
-              <select id="lp-paymentTerm" name="paymentTerm" 
-                      class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
+              <select id="lp-paymentTerm" name="paymentTerm" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
                 <option value="1">1 Year (Full Payment)</option>
                 <option value="2">2 Years</option>
                 <option value="3">3 Years</option>
@@ -1596,11 +1536,7 @@ document.getElementById('deceasedRegion').addEventListener('change', function() 
                   <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <span class="text-gray-500">₱</span>
                   </div>
-                  <input type="number" id="lp-totalPrice" name="totalPrice" 
-                         class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                         min="0.01" step="0.01"
-                         oninput="validatePriceInput(this)">
-                  <div class="text-xs text-red-500 mt-1 hidden" id="lp-totalPrice-error">Please enter a valid amount (minimum ₱0.01)</div>
+                  <input type="number" id="lp-totalPrice" name="totalPrice" class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
                 </div>
               </div>
               <div>
@@ -1611,11 +1547,7 @@ document.getElementById('deceasedRegion').addEventListener('change', function() 
                   <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <span class="text-gray-500">₱</span>
                   </div>
-                  <input type="number" id="lp-amountPaid" name="amountPaid" required 
-                         class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                         min="0.01" step="0.01"
-                         oninput="validatePriceInput(this)">
-                  <div class="text-xs text-red-500 mt-1 hidden" id="lp-amountPaid-error">Please enter a valid amount (minimum ₱0.01)</div>
+                  <input type="number" id="lp-amountPaid" name="amountPaid" required class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
                 </div>
               </div>
             </div>
@@ -1654,436 +1586,6 @@ document.getElementById('deceasedRegion').addEventListener('change', function() 
     </div>
   </div>
 </div>
-
-
-<script>
-// Validation functions
-function validateNameInput(input, isRequired = true) {
-  const errorId = input.id + '-error';
-  const errorElement = document.getElementById(errorId);
-  
-  // Remove any non-letter characters except single spaces between words
-  let value = input.value.replace(/[^A-Za-z ]/g, '');
-  
-  // Replace multiple spaces with single space
-  value = value.replace(/\s+/g, ' ');
-  
-  // Capitalize first letter of each word
-  value = value.toLowerCase().replace(/\b\w/g, char => char.toUpperCase());
-  
-  // If field is required and has less than 2 characters, show error
-  if (isRequired && value.trim().length < 2) {
-    input.classList.add('border-red-500');
-    errorElement.classList.remove('hidden');
-    return false;
-  }
-  
-  // Update the input value
-  input.value = value;
-  input.classList.remove('border-red-500');
-  errorElement.classList.add('hidden');
-  return true;
-}
-
-function handleNamePaste(event) {
-  const input = event.target;
-  // Get pasted data
-  const pastedData = (event.clipboardData || window.clipboardData).getData('text');
-  
-  // Process pasted data
-  let cleanedData = pastedData.replace(/[^A-Za-z ]/g, '') // Remove non-letters
-                             .replace(/\s+/g, ' ')        // Replace multiple spaces with single space
-                             .toLowerCase()
-                             .replace(/\b\w/g, char => char.toUpperCase()); // Capitalize words
-  
-  // Prevent default paste and insert cleaned data
-  event.preventDefault();
-  const startPos = input.selectionStart;
-  const endPos = input.selectionEnd;
-  input.value = input.value.substring(0, startPos) + cleanedData + input.value.substring(endPos);
-  
-  // Set cursor position
-  setTimeout(() => {
-    input.selectionStart = input.selectionEnd = startPos + cleanedData.length;
-    validateNameInput(input, input.required);
-  }, 0);
-}
-
-function validatePhoneInput(input) {
-  const errorId = input.id + '-error';
-  const errorElement = document.getElementById(errorId);
-  
-  // Remove any non-digit characters
-  let value = input.value.replace(/\D/g, '');
-  
-  // Limit to 11 characters
-  value = value.substring(0, 11);
-  
-  // Ensure it starts with 09
-  if (value.length > 0 && !value.startsWith('09')) {
-    value = '09' + value.substring(2);
-  }
-  
-  // Update the input value
-  input.value = value;
-  
-  // Validate
-  if (value.length !== 11 || !value.startsWith('09')) {
-    input.classList.add('border-red-500');
-    errorElement.classList.remove('hidden');
-    return false;
-  }
-  
-  input.classList.remove('border-red-500');
-  errorElement.classList.add('hidden');
-  return true;
-}
-
-function handlePhonePaste(event) {
-  const input = event.target;
-  // Get pasted data
-  const pastedData = (event.clipboardData || window.clipboardData).getData('text');
-  
-  // Process pasted data - keep only digits
-  let cleanedData = pastedData.replace(/\D/g, '');
-  
-  // Ensure it starts with 09 and limit to 11 digits
-  if (cleanedData.length > 0 && !cleanedData.startsWith('09')) {
-    cleanedData = '09' + cleanedData.substring(2);
-  }
-  cleanedData = cleanedData.substring(0, 11);
-  
-  // Prevent default paste and insert cleaned data
-  event.preventDefault();
-  const startPos = input.selectionStart;
-  const endPos = input.selectionEnd;
-  input.value = input.value.substring(0, startPos) + cleanedData + input.value.substring(endPos);
-  
-  // Set cursor position
-  setTimeout(() => {
-    input.selectionStart = input.selectionEnd = startPos + cleanedData.length;
-    validatePhoneInput(input);
-  }, 0);
-}
-
-function validateEmailInput(input) {
-  const errorId = input.id + '-error';
-  const errorElement = document.getElementById(errorId);
-  
-  // Remove any spaces
-  let value = input.value.replace(/\s/g, '');
-  
-  // Basic email validation
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  
-  // If email is provided but invalid, show error
-  if (value && !emailRegex.test(value)) {
-    input.classList.add('border-red-500');
-    errorElement.classList.remove('hidden');
-    return false;
-  }
-  
-  // Update the input value
-  input.value = value;
-  input.classList.remove('border-red-500');
-  errorElement.classList.add('hidden');
-  return true;
-}
-
-function handleEmailPaste(event) {
-  const input = event.target;
-  // Get pasted data
-  const pastedData = (event.clipboardData || window.clipboardData).getData('text');
-  
-  // Remove spaces from pasted data
-  const cleanedData = pastedData.replace(/\s/g, '');
-  
-  // Prevent default paste and insert cleaned data
-  event.preventDefault();
-  const startPos = input.selectionStart;
-  const endPos = input.selectionEnd;
-  input.value = input.value.substring(0, startPos) + cleanedData + input.value.substring(endPos);
-  
-  // Set cursor position
-  setTimeout(() => {
-    input.selectionStart = input.selectionEnd = startPos + cleanedData.length;
-    validateEmailInput(input);
-  }, 0);
-}
-
-function validateStreetInput(input) {
-  const errorId = input.id + '-error';
-  const errorElement = document.getElementById(errorId);
-  
-  // Remove special characters except letters, numbers, spaces, commas, periods
-  let value = input.value.replace(/[^A-Za-z0-9 ,.-]/g, '');
-  
-  // Replace multiple spaces with single space
-  value = value.replace(/\s+/g, ' ');
-  
-  // Capitalize first letter
-  if (value.length > 0) {
-    value = value.charAt(0).toUpperCase() + value.slice(1);
-  }
-  
-  // Update the input value
-  input.value = value;
-  
-  // Validate
-  if (value.trim().length < 2) {
-    input.classList.add('border-red-500');
-    errorElement.classList.remove('hidden');
-    return false;
-  }
-  
-  input.classList.remove('border-red-500');
-  errorElement.classList.add('hidden');
-  return true;
-}
-
-function handleStreetPaste(event) {
-  const input = event.target;
-  // Get pasted data
-  const pastedData = (event.clipboardData || window.clipboardData).getData('text');
-  
-  // Process pasted data
-  let cleanedData = pastedData.replace(/[^A-Za-z0-9 ,.-]/g, '') // Remove special chars
-                             .replace(/\s+/g, ' ');              // Replace multiple spaces
-  
-  // Capitalize first letter
-  if (cleanedData.length > 0) {
-    cleanedData = cleanedData.charAt(0).toUpperCase() + cleanedData.slice(1);
-  }
-  
-  // Prevent default paste and insert cleaned data
-  event.preventDefault();
-  const startPos = input.selectionStart;
-  const endPos = input.selectionEnd;
-  input.value = input.value.substring(0, startPos) + cleanedData + input.value.substring(endPos);
-  
-  // Set cursor position
-  setTimeout(() => {
-    input.selectionStart = input.selectionEnd = startPos + cleanedData.length;
-    validateStreetInput(input);
-  }, 0);
-}
-
-function validateZipInput(input) {
-  const errorId = input.id + '-error';
-  const errorElement = document.getElementById(errorId);
-  
-  // Remove any non-digit characters
-  let value = input.value.replace(/\D/g, '');
-  
-  // Limit to 10 characters
-  value = value.substring(0, 10);
-  
-  // Update the input value
-  input.value = value;
-  
-  // Validate
-  if (value.length < 4 || value.length > 10) {
-    input.classList.add('border-red-500');
-    errorElement.classList.remove('hidden');
-    return false;
-  }
-  
-  input.classList.remove('border-red-500');
-  errorElement.classList.add('hidden');
-  return true;
-}
-
-function handleZipPaste(event) {
-  const input = event.target;
-  // Get pasted data
-  const pastedData = (event.clipboardData || window.clipboardData).getData('text');
-  
-  // Process pasted data - keep only digits
-  const cleanedData = pastedData.replace(/\D/g, '').substring(0, 10);
-  
-  // Prevent default paste and insert cleaned data
-  event.preventDefault();
-  const startPos = input.selectionStart;
-  const endPos = input.selectionEnd;
-  input.value = input.value.substring(0, startPos) + cleanedData + input.value.substring(endPos);
-  
-  // Set cursor position
-  setTimeout(() => {
-    input.selectionStart = input.selectionEnd = startPos + cleanedData.length;
-    validateZipInput(input);
-  }, 0);
-}
-
-function validateRelationshipInput(input) {
-  const errorId = input.id + '-error';
-  const errorElement = document.getElementById(errorId);
-  
-  // Remove special characters except letters and spaces
-  let value = input.value.replace(/[^A-Za-z ]/g, '');
-  
-  // Replace multiple spaces with single space
-  value = value.replace(/\s+/g, ' ');
-  
-  // Capitalize first letter
-  if (value.length > 0) {
-    value = value.charAt(0).toUpperCase() + value.slice(1);
-  }
-  
-  // Update the input value
-  input.value = value;
-  
-  // Validate
-  if (value.trim().length < 2) {
-    input.classList.add('border-red-500');
-    errorElement.classList.remove('hidden');
-    return false;
-  }
-  
-  input.classList.remove('border-red-500');
-  errorElement.classList.add('hidden');
-  return true;
-}
-
-function handleRelationshipPaste(event) {
-  const input = event.target;
-  // Get pasted data
-  const pastedData = (event.clipboardData || window.clipboardData).getData('text');
-  
-  // Process pasted data
-  let cleanedData = pastedData.replace(/[^A-Za-z ]/g, '') // Remove special chars
-                             .replace(/\s+/g, ' ');        // Replace multiple spaces
-  
-  // Capitalize first letter
-  if (cleanedData.length > 0) {
-    cleanedData = cleanedData.charAt(0).toUpperCase() + cleanedData.slice(1);
-  }
-  
-  // Prevent default paste and insert cleaned data
-  event.preventDefault();
-  const startPos = input.selectionStart;
-  const endPos = input.selectionEnd;
-  input.value = input.value.substring(0, startPos) + cleanedData + input.value.substring(endPos);
-  
-  // Set cursor position
-  setTimeout(() => {
-    input.selectionStart = input.selectionEnd = startPos + cleanedData.length;
-    validateRelationshipInput(input);
-  }, 0);
-}
-
-function validatePriceInput(input) {
-  const errorId = input.id + '-error';
-  const errorElement = document.getElementById(errorId);
-  
-  // Get value and parse as float
-  const value = parseFloat(input.value);
-  
-  // Validate
-  if (isNaN(value)) {
-    input.value = '';
-    input.classList.add('border-red-500');
-    errorElement.classList.remove('hidden');
-    return false;
-  }
-  
-  // Ensure minimum value is 0.01
-  if (value < 0.01) {
-    input.value = '0.01';
-    input.classList.add('border-red-500');
-    errorElement.classList.remove('hidden');
-    return false;
-  }
-  
-  input.classList.remove('border-red-500');
-  errorElement.classList.add('hidden');
-  return true;
-}
-
-// Date validation functions
-function validateDateOfBirth(input) {
-  const errorId = input.id + '-error';
-  const errorElement = document.getElementById(errorId);
-  const selectedDate = new Date(input.value);
-  const today = new Date();
-  const hundredYearsAgo = new Date();
-  hundredYearsAgo.setFullYear(today.getFullYear() - 100);
-  
-  if (selectedDate > today || selectedDate <script hundredYearsAgo) {
-    input.classList.add('border-red-500');
-    errorElement.classList.remove('hidden');
-    return false;
-  }
-  
-  input.classList.remove('border-red-500');
-  errorElement.classList.add('hidden');
-  return true;
-}
-
-// Add event listeners for date fields
-document.getElementById('beneficiaryDateOfBirth').addEventListener('change', function() {
-  validateDateOfBirth(this);
-});
-
-// Form validation before submission
-function validateLifeplanCheckoutForm() {
-  let isValid = true;
-  
-  // Validate required name fields
-  isValid = validateNameInput(document.getElementById('lp-clientFirstName')) && isValid;
-  isValid = validateNameInput(document.getElementById('lp-clientLastName')) && isValid;
-  isValid = validateNameInput(document.getElementById('beneficiaryFirstName')) && isValid;
-  isValid = validateNameInput(document.getElementById('beneficiaryLastName')) && isValid;
-  
-  // Validate phone
-  isValid = validatePhoneInput(document.getElementById('lp-clientPhone')) && isValid;
-  
-  // Validate email if provided
-  const emailInput = document.getElementById('lp-clientEmail');
-  if (emailInput.value) {
-    isValid = validateEmailInput(emailInput) && isValid;
-  }
-  
-  // Validate date of birth
-  isValid = validateDateOfBirth(document.getElementById('beneficiaryDateOfBirth')) && isValid;
-  
-  // Validate address fields
-  const regionSelect = document.getElementById('beneficiaryRegion');
-  if (!regionSelect.value) {
-    regionSelect.classList.add('border-red-500');
-    document.getElementById('beneficiaryRegion-error').classList.remove('hidden');
-    isValid = false;
-  } else {
-    regionSelect.classList.remove('border-red-500');
-    document.getElementById('beneficiaryRegion-error').classList.add('hidden');
-  }
-  
-  // Validate street address
-  isValid = validateStreetInput(document.getElementById('beneficiaryStreet')) && isValid;
-  
-  // Validate zip code
-  isValid = validateZipInput(document.getElementById('beneficiaryZip')) && isValid;
-  
-  // Validate relationship
-  isValid = validateRelationshipInput(document.getElementById('beneficiaryRelationship')) && isValid;
-  
-  // Validate payment method
-  const paymentMethodSelect = document.getElementById('lp-paymentMethod');
-  if (!paymentMethodSelect.value) {
-    paymentMethodSelect.classList.add('border-red-500');
-    document.getElementById('lp-paymentMethod-error').classList.remove('hidden');
-    isValid = false;
-  } else {
-    paymentMethodSelect.classList.remove('border-red-500');
-    document.getElementById('lp-paymentMethod-error').classList.add('hidden');
-  }
-  
-  // Validate prices
-  isValid = validatePriceInput(document.getElementById('lp-totalPrice')) && isValid;
-  isValid = validatePriceInput(document.getElementById('lp-amountPaid')) && isValid;
-  
-  return isValid;
-}
-</script>
 
     <!-- Order Confirmation Modal -->
 <div id="confirmation-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
