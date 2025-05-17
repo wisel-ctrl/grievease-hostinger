@@ -616,95 +616,35 @@ function validatePhoneNumber(input) {
   }
 }
 
-// Birthdate validation
-function validateBirthdate(input) {
-  const errorElement = document.getElementById('birthdateError');
-  const selectedDate = new Date(input.value);
+function validateBirthdate() {
+  const birthdateInput = document.getElementById('birthdate');
+  const birthdateError = document.getElementById('birthdateError');
+  const birthdate = birthdateInput.value;
+
+  if (birthdate === '') {
+    birthdateError.textContent = 'Birthdate is required';
+    birthdateError.classList.remove('hidden');
+    return false;
+  } 
+
   const today = new Date();
-  const hundredYearsAgo = new Date();
-  hundredYearsAgo.setFullYear(today.getFullYear() - 100);
+  const birthdateObj = new Date(birthdate);
+  let age = today.getFullYear() - birthdateObj.getFullYear();
+  const monthDiff = today.getMonth() - birthdateObj.getMonth();
   
-  if (selectedDate > today || selectedDate < hundredYearsAgo) {
-    errorElement.classList.remove('hidden');
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthdateObj.getDate())) {
+    age--;
+  }
+  
+  if (age < 18) {
+    birthdateError.textContent = 'You must be at least 18 years old';
+    birthdateError.classList.remove('hidden');
     return false;
   } else {
-    errorElement.classList.add('hidden');
+    birthdateError.classList.add('hidden');
     return true;
   }
 }
-
-// Branch validation
-function validateBranch(input) {
-  const errorElement = document.getElementById('branchError');
-  if (input.value === '') {
-    errorElement.classList.remove('hidden');
-    return false;
-  } else {
-    errorElement.classList.add('hidden');
-    return true;
-  }
-}
-
-// Form submission validation
-function validateAndSubmitForm() {
-  // Validate all fields
-  const isFirstNameValid = validateName(document.getElementById('firstName'), 'firstNameError');
-  const isLastNameValid = validateName(document.getElementById('lastName'), 'lastNameError');
-  const isBirthdateValid = validateBirthdate(document.getElementById('birthdate'));
-  const isBranchValid = validateBranch(document.getElementById('branchLocation'));
-  const isEmailValid = validateEmail(document.getElementById('customerEmail'));
-  const isPhoneValid = validatePhoneNumber(document.getElementById('customerPhone'));
-  
-  if (isFirstNameValid && isLastNameValid && isBirthdateValid && 
-      isBranchValid && isEmailValid && isPhoneValid) {
-    // Generate a random password if not already generated
-    if (!document.getElementById('generatedPassword').value) {
-      generatePassword();
-    }
-    
-    // Submit the form
-    document.getElementById('addCustomerAccountForm').submit();
-  } else {
-    // Scroll to the first error
-    const firstError = document.querySelector('.text-red-500:not(.hidden)');
-    if (firstError) {
-      firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
-  }
-}
-
-// Generate password function
-function generatePassword() {
-  const length = 12;
-  const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+";
-  let password = "";
-  
-  for (let i = 0; i < length; i++) {
-    const randomIndex = Math.floor(Math.random() * charset.length);
-    password += charset[randomIndex];
-  }
-  
-  document.getElementById('generatedPassword').value = password;
-}
-
-// Toggle password visibility
-function togglePassword() {
-  const passwordInput = document.getElementById('generatedPassword');
-  const eyeIcon = document.getElementById('eyeIcon');
-  
-  if (passwordInput.type === 'password') {
-    passwordInput.type = 'text';
-    eyeIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12c1.292 4.338 5.31 7.5 10.066 7.5.709 0 1.4-.079 2.069-.227a10.45 10.45 0 003.238-1.525M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.774 3.162 10.066 7.5a10.523 10.523 0 01-4.064 5.942m-5.972-5.971" />';
-  } else {
-    passwordInput.type = 'password';
-    eyeIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M3.98 12s2.947-5.455 8.02-5.455S20.02 12 20.02 12s-2.947 5.455-8.02 5.455S3.98 12 3.98 12z" /><path stroke-linecap="round" stroke-linejoin="round" d="M12 15a3 3 0 100-6 3 3 0 000 6z" />';
-  }
-}
-
-// Generate password on page load
-window.onload = function() {
-  generatePassword();
-};
 </script>
 
 
