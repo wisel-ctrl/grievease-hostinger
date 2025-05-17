@@ -27,24 +27,6 @@ if ($_SESSION['user_type'] != 2) {
     exit();
 }
 
-// Optional: Check for session timeout (30 minutes)
-$session_timeout = 1800; // 30 minutes in seconds
-if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > $session_timeout)) {
-    // Session has expired
-    session_unset();
-    session_destroy();
-    header("Location: ../Landing_Page/login.php?timeout=1");
-    exit();
-}
-
-// Update last activity time
-$_SESSION['last_activity'] = time();
-
-// Prevent caching for authenticated pages
-header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
-header("Cache-Control: post-check=0, pre-check=0", false);
-header("Pragma: no-cache");
-
 // Database connection
 require_once '../db_connect.php';
 
@@ -55,18 +37,6 @@ $stmt = $conn->prepare($query);
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
 $result = $stmt->get_result();
-
-$user_id = $_SESSION['user_id'];
-  $query = "SELECT first_name , last_name , email , birthdate FROM users WHERE id = ?";
-  $stmt = $conn->prepare($query);
-  $stmt->bind_param("i", $user_id);
-  $stmt->execute();
-  $result = $stmt->get_result();
-  $row = $result->fetch_assoc();
-  $first_name = $row['first_name']; // We're confident user_id exists
-  $last_name = $row['last_name'];
-  $email = $row['email'];
-
 
 if ($result->num_rows === 0) {
     // Employee not found or not valid
@@ -190,7 +160,6 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == 1) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GrievEase - Inventory</title>
-  <?php include 'faviconLogo.php'; ?>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -293,9 +262,7 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == 1) {
         <i class="fas fa-user text-white"></i>
       </div>
       <div class="ml-3">
-        <div class="text-sm font-medium text-sidebar-text">
-          <?php echo htmlspecialchars($first_name . ' ' . $last_name); ?>
-        </div>
+        <div class="text-sm font-medium text-sidebar-text">John Doe</div>
         <div class="text-xs text-sidebar-text opacity-70">Employee</div>
       </div>
       <div class="ml-auto">
@@ -348,7 +315,7 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == 1) {
           </a>
         </li>
         <li>
-          <a href="employee_history.php" class="sidebar-link flex items-center px-5 py-3 text-sidebar-text opacity-80 hover:opacity-100 no-underline transition-all duration-300 hover:bg-sidebar-hover">
+          <a href="history.php" class="sidebar-link flex items-center px-5 py-3 text-sidebar-text opacity-80 hover:opacity-100 no-underline transition-all duration-300 hover:bg-sidebar-hover">
             <i class="fas fa-history w-5 text-center mr-3 text-sidebar-accent"></i>
             <span>Service History</span>
           </a>
@@ -399,269 +366,107 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == 1) {
       <div>
         <h1 class="text-2xl font-bold text-sidebar-text">View Inventory</h1>
       </div>
+      <div class="flex space-x-3">
+        <button class="p-2 bg-white border border-sidebar-border rounded-lg shadow-input text-sidebar-text hover:bg-sidebar-hover transition-all duration-300">
+          <i class="fas fa-bell"></i>
+        </button>
+      </div>
     </div>
 
     <!-- Inventory Table -->
-<div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 mb-8">
-  <!-- Branch Header with Search and Filters -->
-  <div class="bg-sidebar-hover p-4 border-b border-sidebar-border">
-    <!-- Desktop layout for big screens - Title on left, controls on right -->
-    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
-      <!-- Title and Counter -->
-      <div class="flex items-center gap-3 mb-4 lg:mb-0">
-        <h3 class="text-lg font-bold text-sidebar-text whitespace-nowrap">
-          Inventory Items
-        </h3>
-      </div>
-      
-      <!-- Controls for big screens - aligned right -->
-      <div class="hidden lg:flex items-center gap-3">
-        <!-- Search Input -->
-        <div class="relative">
-          <input type="text" id="inventorySearch" 
-                placeholder="Search inventory..." 
-                class="pl-9 pr-8 py-2 border border-sidebar-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
-          <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-            <i class="fas fa-search text-gray-400"></i>
-          </div>
-          <button id="clearSearch" class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 hidden">
-            <i class="fas fa-times"></i>
-          </button>
-        </div>
-
-        <!-- Filter Dropdown -->
-        <div class="relative filter-dropdown">
-          <button id="filterButton_<?php echo $branch_id; ?>" class="px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover">
-            <i class="fas fa-filter text-sidebar-accent"></i>
-            <span>Filters</span>
-            <span id="filterIndicator_<?php echo $branch_id; ?>" class="hidden h-2 w-2 bg-sidebar-accent rounded-full"></span>
-          </button>
-          
-          <!-- Filter Window -->
-          <div id="filterDropdown_<?php echo $branch_id; ?>" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-4">
-            <div class="space-y-4">
-              <!-- Sort Options -->
-              <div>
-                <h5 class="text-sm font-medium text-sidebar-text mb-2">Sort By</h5>
-                <div class="space-y-1">
-                  <div class="flex items-center cursor-pointer">
-                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full" data-sort="default" data-branch="<?php echo $branch_id; ?>">
-                      Default (Unsorted)
-                    </span>
-                  </div>
-                  <div class="flex items-center cursor-pointer">
-                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full" data-sort="price_asc" data-branch="<?php echo $branch_id; ?>">
-                      Price: Low to High
-                    </span>
-                  </div>
-                  <div class="flex items-center cursor-pointer">
-                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full" data-sort="price_desc" data-branch="<?php echo $branch_id; ?>">
-                      Price: High to Low
-                    </span>
-                  </div>
-                  <div class="flex items-center cursor-pointer">
-                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full" data-sort="quantity_asc" data-branch="<?php echo $branch_id; ?>">
-                      Quantity: Low to High
-                    </span>
-                  </div>
-                  <div class="flex items-center cursor-pointer">
-                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full" data-sort="quantity_desc" data-branch="<?php echo $branch_id; ?>">
-                      Quantity: High to Low
-                    </span>
-                  </div>
-                  <div class="flex items-center cursor-pointer">
-                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full" data-sort="name_asc" data-branch="<?php echo $branch_id; ?>">
-                      Name: A to Z
-                    </span>
-                  </div>
-                  <div class="flex items-center cursor-pointer">
-                    <span class="filter-option hover:bg-sidebar-hover px-2 py-1 rounded text-sm w-full" data-sort="name_desc" data-branch="<?php echo $branch_id; ?>">
-                      Name: Z to A
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Archive Button -->
-        <button class="px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover whitespace-nowrap"
-                onclick="openArchivedModal()">
-          <i class="fas fa-archive text-sidebar-accent"></i>
-          <span>Archived</span>
-        </button>
-
-        <!-- Add Item Button -->
-        <button class="px-4 py-2 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm whitespace-nowrap"
-                onclick="openAddInventoryModal()"> 
-          <i class="fas fa-plus mr-2"></i> Add Item
-        </button>
-      </div>
-    </div>
-    
-    <!-- Mobile/Tablet Controls - Only visible on smaller screens -->
-    <div class="lg:hidden w-full mt-4">
-      <!-- First row: Search bar with filter and archive icons on the right -->
-      <div class="flex items-center w-full gap-3 mb-4">
-        <!-- Search Input - Takes most of the space -->
-        <div class="relative flex-grow">
-          <input type="text" id="inventorySearch" 
-                 placeholder="Search inventory..." 
-                 class="pl-9 pr-8 py-2 border border-sidebar-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
-          <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-            <i class="fas fa-search text-gray-400"></i>
-          </div>
-          <button id="clearSearch" class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 hidden">
-            <i class="fas fa-times"></i>
-          </button>
-        </div>
-
-        <!-- Icon-only buttons for filter and archive -->
+    <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 mb-8">
+      <div class="flex justify-between items-center p-5 border-b border-sidebar-border">
+        <h3 class="font-medium text-sidebar-text">Inventory Items</h3>
         <div class="flex items-center gap-3">
-          <!-- Filter Icon Button -->
-          <div class="relative filter-dropdown">
-            <button id="filterButton_<?php echo $branch_id; ?>" class="w-10 h-10 flex items-center justify-center text-sidebar-accent">
-              <i class="fas fa-filter text-xl"></i>
-              <span id="filterIndicator_<?php echo $branch_id; ?>" class="hidden absolute top-1 right-1 h-2 w-2 bg-sidebar-accent rounded-full"></span>
+            <!-- Add this button -->
+            <button onclick="openArchivedModal()" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-md text-sm flex items-center hover:bg-gray-300 transition-all duration-300">
+                <i class="fas fa-archive mr-2"></i> View Archived
             </button>
             
-            <!-- Filter Window - Positioned below the icon -->
-            <div id="filterDropdown_<?php echo $branch_id; ?>" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10 border border-sidebar-border p-4">
-              <div class="space-y-4">
-                <!-- Sort Options -->
-                <div>
-                  <h5 class="text-sm font-medium text-sidebar-text mb-2">Sort By</h5>
-                  <div class="space-y-2">
-                    <div class="flex items-center cursor-pointer">
-                      <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full" data-sort="default" data-branch="<?php echo $branch_id; ?>">
-                        Default (Unsorted)
-                      </span>
-                    </div>
-                    <div class="flex items-center cursor-pointer">
-                      <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full" data-sort="price_asc" data-branch="<?php echo $branch_id; ?>">
-                        Price: Low to High
-                      </span>
-                    </div>
-                    <div class="flex items-center cursor-pointer">
-                      <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full" data-sort="price_desc" data-branch="<?php echo $branch_id; ?>">
-                        Price: High to Low
-                      </span>
-                    </div>
-                    <div class="flex items-center cursor-pointer">
-                      <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full" data-sort="quantity_asc" data-branch="<?php echo $branch_id; ?>">
-                        Quantity: Low to High
-                      </span>
-                    </div>
-                    <div class="flex items-center cursor-pointer">
-                      <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full" data-sort="quantity_desc" data-branch="<?php echo $branch_id; ?>">
-                        Quantity: High to Low
-                      </span>
-                    </div>
-                    <div class="flex items-center cursor-pointer">
-                      <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full" data-sort="name_asc" data-branch="<?php echo $branch_id; ?>">
-                        Name: A to Z
-                      </span>
-                    </div>
-                    <div class="flex items-center cursor-pointer">
-                      <span class="filter-option hover:bg-sidebar-hover px-3 py-1.5 rounded text-sm w-full" data-sort="name_desc" data-branch="<?php echo $branch_id; ?>">
-                        Name: Z to A
-                      </span>
-                    </div>
-                  </div>
+            <!-- Existing search and add item buttons -->
+            <div class="relative">
+                <input type="text" id="inventorySearch" placeholder="Search inventory..." 
+                       class="pl-9 pr-8 py-2 border border-sidebar-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
+                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                    <i class="fas fa-search text-gray-400"></i>
                 </div>
-              </div>
+                <button id="clearSearch" class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 hidden">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
-          </div>
-
-          <!-- Archive Icon Button -->
-          <button class="w-10 h-10 flex items-center justify-center text-sidebar-accent" onclick="openArchivedModal()">
-            <i class="fas fa-archive text-xl"></i>
-          </button>
+            <button onclick="openAddInventoryModal()" class="px-4 py-2 bg-sidebar-accent text-white rounded-md text-sm flex items-center hover:bg-darkgold transition-all duration-300">
+                <i class="fas fa-plus mr-2"></i> Add Item
+            </button>
         </div>
       </div>
 
-      <!-- Second row: Add Item Button - Full width -->
-      <div class="w-full">
-        <button class="px-4 py-2.5 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm whitespace-nowrap w-full justify-center" 
-                onclick="openAddInventoryModal()">
-          <i class="fas fa-plus mr-2"></i> Add Item
-        </button>
+      <!-- Responsive Table Container with improved spacing -->
+      <div class="overflow-x-auto scrollbar-thin relative" id="tableContainer<?php echo $branch_id; ?>">
+        <div id="loadingIndicator<?php echo $branch_id; ?>" class="hidden absolute inset-0 bg-white bg-opacity-50 flex items-center justify-center z-10">
+          <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-sidebar-accent"></div>
+     
+        </div>
+
+        <!-- Table will be loaded via AJAX -->
+        <div class="min-w-full">
+          <table class="w-full">
+            <thead>
+              <tr class="bg-gray-50 border-b border-sidebar-border">
+                <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(<?php echo $branch_id; ?>, 0)">
+                  <div class="flex items-center gap-1.5">
+                    <i class="fas fa-hashtag text-sidebar-accent"></i> ID 
+        
+                  </div>
+                </th>
+                <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(<?php echo $branch_id; ?>, 1)">
+                  <div class="flex items-center gap-1.5">
+                    <i class="fas fa-box text-sidebar-accent"></i> Item Name
+                  </div>
+                </th>
+                <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(<?php echo $branch_id; ?>, 2)">
+                  <div class="flex items-center gap-1.5">
+                    <i class="fas fa-th-list text-sidebar-accent"></i> Category 
+                  </div>
+                </th>
+                <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(<?php echo $branch_id; ?>, 3)">
+                  <div class="flex items-center gap-1.5">
+                    <i class="fas fa-cubes text-sidebar-accent"></i> Quantity 
+                  </div>
+                </th>
+                <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(<?php echo $branch_id; ?>, 4)">
+                  <div class="flex items-center gap-1.5">
+                    <i class="fas fa-tag text-sidebar-accent"></i> Unit Price 
+                  </div>
+                </th>
+                <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(<?php echo $branch_id; ?>, 5)">
+                  <div class="flex items-center gap-1.5">
+                    <i class="fas fa-peso-sign text-sidebar-accent"></i> Total Value 
+                  </div>
+                </th>
+                <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text whitespace-nowrap">
+                  <div class="flex items-center gap-1.5">
+                    <i class="fas fa-cogs text-sidebar-accent"></i> Actions
+                  </div>
+                </th>
+              </tr>
+            </thead>
+            <tbody id="inventoryTable_<?php echo $branch_id; ?>">
+              <!-- Content will be loaded via AJAX -->
+            </tbody>
+          </table>
+      </div>
+      
+      <!-- Sticky Pagination Footer -->
+      <div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div id="paginationInfo_<?php echo $branch_id; ?>" class="text-sm text-gray-500 text-center sm:text-left">
+          <!-- Will be updated via AJAX -->
+        </div>
+        <div id="paginationLinks_<?php echo $branch_id; ?>" class="flex space-x-2">
+          <!-- Will be updated via AJAX -->
+        </div>
       </div>
     </div>
   </div>
-  
-  <!-- Responsive Table Container with improved spacing -->
-  <div class="overflow-x-auto scrollbar-thin relative" id="tableContainer<?php echo $branch_id; ?>">
-    <div id="loadingIndicator<?php echo $branch_id; ?>" class="hidden absolute inset-0 bg-white bg-opacity-50 flex items-center justify-center z-10">
-      <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-sidebar-accent"></div>
-    </div>
-
-    <!-- Responsive Table with improved spacing and horizontal scroll for small screens -->
-    <div class="min-w-full">
-      <table class="w-full">
-        <thead>
-          <tr class="bg-gray-50 border-b border-sidebar-border">
-            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(<?php echo $branch_id; ?>, 0)">
-              <div class="flex items-center gap-1.5">
-                <i class="fas fa-hashtag text-sidebar-accent"></i> ID 
-                 
-              </div>
-            </th>
-            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(<?php echo $branch_id; ?>, 1)">
-              <div class="flex items-center gap-1.5">
-                <i class="fas fa-box text-sidebar-accent"></i> Item Name 
-                 
-              </div>
-            </th>
-            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(<?php echo $branch_id; ?>, 2)">
-              <div class="flex items-center gap-1.5">
-                <i class="fas fa-th-list text-sidebar-accent"></i> Category 
-                 
-              </div>
-            </th>
-            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(<?php echo $branch_id; ?>, 3)">
-              <div class="flex items-center gap-1.5">
-                <i class="fas fa-cubes text-sidebar-accent"></i> Quantity 
-                 
-              </div>
-            </th>
-            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(<?php echo $branch_id; ?>, 4)">
-              <div class="flex items-center gap-1.5">
-                <i class="fas fa-tag text-sidebar-accent"></i> Unit Price 
-                 
-              </div>
-            </th>
-            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortTable(<?php echo $branch_id; ?>, 5)">
-              <div class="flex items-center gap-1.5">
-                <i class="fas fa-peso-sign text-sidebar-accent"></i> Total Value 
-                 
-              </div>
-            </th>
-            <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text whitespace-nowrap">
-              <div class="flex items-center gap-1.5">
-                <i class="fas fa-cogs text-sidebar-accent"></i> Actions
-              </div>
-            </th>
-          </tr>
-        </thead>
-        <tbody id="inventoryTable_<?php echo $branch_id; ?>">
-          <!-- Content will be loaded via AJAX -->
-        </tbody>
-      </table>
-    </div>
-  </div>
-  
-  <!-- Sticky Pagination Footer with improved spacing -->
-  <div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
-    <div id="paginationInfo_<?php echo $branch_id; ?>" class="text-sm text-gray-500 text-center sm:text-left">
-      <!-- Will be updated via AJAX -->
-    </div>
-    <div id="paginationLinks_<?php echo $branch_id; ?>" class="flex space-x-2">
-      <!-- Will be updated via AJAX -->
-    </div>
-  </div>
-</div>
 
 
 <!-- Add Inventory Modal -->
