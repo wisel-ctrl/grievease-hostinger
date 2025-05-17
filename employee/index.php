@@ -405,7 +405,6 @@ $ongoing_services = $ongoing_data['ongoing_count'];
   <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 mb-8">
     <div class="flex justify-between items-center p-5 border-b border-sidebar-border">
       <h3 class="font-medium text-sidebar-text">Pending Bookings</h3>
-      
     </div>
     <div class="overflow-x-auto scrollbar-thin">
       <table class="w-full">
@@ -439,34 +438,47 @@ $ongoing_services = $ongoing_data['ongoing_count'];
           </tr>
         </thead>
         <tbody>
-          <tr class="border-b border-sidebar-border hover:bg-sidebar-hover">
-            <td class="p-4 text-sm text-sidebar-text">Robert Johnson</td>
-            <td class="p-4 text-sm text-sidebar-text">Memorial Service</td>
-            <td class="p-4 text-sm text-sidebar-text">Mar 8, 2025</td>
-            <td class="p-4 text-sm text-sidebar-text">St. Mary's Chapel</td>
-            <td class="p-4 text-sm">
-              <span class="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs">Pending</span>
-            </td>
-          </tr>
-          <tr class="border-b border-sidebar-border hover:bg-sidebar-hover">
-            <td class="p-4 text-sm text-sidebar-text">Emily Williams</td>
-            <td class="p-4 text-sm text-sidebar-text">Funeral Service</td>
-            <td class="p-4 text-sm text-sidebar-text">Mar 10, 2025</td>
-            <td class="p-4 text-sm text-sidebar-text">Oak Hill Cemetery</td>
-            <td class="p-4 text-sm">
-              <span class="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs">Pending</span>
-            </td>
-          </tr>
+          <?php
+          // Execute the pending bookings query
+          $pending_query = "SELECT 
+                              b.booking_id,
+                              COALESCE(s.service_name, 'Custom Package') AS service_name,
+                              CONCAT(u.first_name, ' ', u.middle_name, ' ', u.last_name, ' ', u.suffix) AS full_name,
+                              b.booking_date,
+                              b.deceased_address
+                            FROM booking_tb AS b
+                            JOIN users AS u ON b.customerID = u.id
+                            LEFT JOIN services_tb AS s ON b.service_id = s.service_id 
+                            WHERE b.status='Pending'";
+          
+          $stmt = $conn->prepare($pending_query);
+          $stmt->execute();
+          $pending_result = $stmt->get_result();
+          
+          if ($pending_result->num_rows > 0) {
+            while ($booking = $pending_result->fetch_assoc()) {
+              echo '<tr class="border-b border-sidebar-border hover:bg-sidebar-hover">';
+              echo '<td class="p-4 text-sm text-sidebar-text">' . htmlspecialchars($booking['full_name']) . '</td>';
+              echo '<td class="p-4 text-sm text-sidebar-text">' . htmlspecialchars($booking['service_name']) . '</td>';
+              echo '<td class="p-4 text-sm text-sidebar-text">' . date('M j, Y', strtotime($booking['booking_date'])) . '</td>';
+              echo '<td class="p-4 text-sm text-sidebar-text">' . htmlspecialchars($booking['deceased_address']) . '</td>';
+              echo '<td class="p-4 text-sm">';
+              echo '<span class="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs">Pending</span>';
+              echo '</td>';
+              echo '</tr>';
+            }
+          } else {
+            echo '<tr class="border-b border-sidebar-border hover:bg-sidebar-hover">';
+            echo '<td colspan="5" class="p-4 text-sm text-sidebar-text text-center">No pending bookings found</td>';
+            echo '</tr>';
+          }
+          ?>
         </tbody>
       </table>
     </div>
     <div class="p-4 border-t border-sidebar-border flex justify-between items-center">
-      <div class="text-sm text-gray-500">Showing 2 of 5 services</div>
-      <div class="flex space-x-1">
-        <button class="px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">&laquo;</button>
-        <button class="px-3 py-1 bg-sidebar-accent text-white rounded text-sm">1</button>
-        <button class="px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">2</button>
-        <button class="px-3 py-1 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover">&raquo;</button>
+      <div class="text-sm text-gray-500">
+        Showing <?php echo $pending_result->num_rows; ?> pending bookings
       </div>
     </div>
   </div>
