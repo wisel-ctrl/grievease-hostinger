@@ -1012,6 +1012,117 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == 1) {
         }
     }
 
+    // Function to handle filter selection
+function handleFilterSelection(sortOption, branchId) {
+    // Show loading indicator
+    const loadingIndicator = document.getElementById(`loadingIndicator${branchId}`);
+    const inventoryTable = document.getElementById(`inventoryTable_${branchId}`);
+    loadingIndicator.classList.remove('hidden');
+    
+    // Close the filter dropdown
+    document.getElementById(`filterDropdown_${branchId}`).classList.add('hidden');
+    document.getElementById(`filterDropdown_mobile${branchId}`).classList.add('hidden');
+    
+    // Make AJAX request with the sort option
+    fetch(`inventory/filter_inventory.php?sort=${sortOption}&branch_id=${branchId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Update table with filtered results
+                inventoryTable.innerHTML = data.rows;
+                
+                // Update pagination info if available
+                if (data.paginationInfo) {
+                    document.getElementById(`paginationInfo_${branchId}`).textContent = data.paginationInfo;
+                }
+                
+                // Update pagination links if available
+                if (data.paginationLinks) {
+                    document.getElementById(`paginationLinks_${branchId}`).innerHTML = data.paginationLinks;
+                }
+                
+                // Show active filter indicator
+                document.getElementById(`filterIndicator_${branchId}`).classList.remove('hidden');
+                document.getElementById(`filterIndicator_mobile${branchId}`).classList.remove('hidden');
+            } else {
+                throw new Error(data.message || 'Filter failed');
+            }
+        })
+        .catch(error => {
+            console.error('Filter error:', error);
+            inventoryTable.innerHTML = `
+                <tr>
+                    <td colspan="7" class="p-6 text-sm text-center text-red-500">
+                        Error: ${error.message || 'Failed to apply filter'}
+                    </td>
+                </tr>
+            `;
+        })
+        .finally(() => {
+            loadingIndicator.classList.add('hidden');
+        });
+}
+
+// Function to setup filter dropdowns
+function setupFilterDropdowns(branchId) {
+    // Desktop filter button
+    const filterButton = document.getElementById(`filterButton_${branchId}`);
+    const filterDropdown = document.getElementById(`filterDropdown_${branchId}`);
+    
+    // Mobile filter button
+    const filterButtonMobile = document.getElementById(`filterButton_mobile${branchId}`);
+    const filterDropdownMobile = document.getElementById(`filterDropdown_mobile${branchId}`);
+    
+    // Toggle dropdown for desktop
+    if (filterButton && filterDropdown) {
+        filterButton.addEventListener('click', function(e) {
+            e.stopPropagation();
+            filterDropdown.classList.toggle('hidden');
+        });
+    }
+    
+    // Toggle dropdown for mobile
+    if (filterButtonMobile && filterDropdownMobile) {
+        filterButtonMobile.addEventListener('click', function(e) {
+            e.stopPropagation();
+            filterDropdownMobile.classList.toggle('hidden');
+        });
+    }
+    
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function() {
+        if (filterDropdown) filterDropdown.classList.add('hidden');
+        if (filterDropdownMobile) filterDropdownMobile.classList.add('hidden');
+    });
+    
+    // Prevent dropdown from closing when clicking inside
+    if (filterDropdown) {
+        filterDropdown.addEventListener('click', function(e) {
+            e.stopPropagation();
+        });
+    }
+    
+    if (filterDropdownMobile) {
+        filterDropdownMobile.addEventListener('click', function(e) {
+            e.stopPropagation();
+        });
+    }
+    
+    // Add event listeners to filter options
+    document.querySelectorAll('.filter-option').forEach(option => {
+        option.addEventListener('click', function() {
+            const sortOption = this.getAttribute('data-sort');
+            const branchId = this.getAttribute('data-branch');
+            handleFilterSelection(sortOption, branchId);
+        });
+    });
+}
+
+// Initialize the filter dropdowns when the page loads
+document.addEventListener('DOMContentLoaded', function() {
+    setupFilterDropdowns(<?php echo $branch_id; ?>);
+});
+
     // FIXED Form submission handler
 // Update the form submission handler
 document.addEventListener('DOMContentLoaded', function() {
