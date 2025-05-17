@@ -60,10 +60,10 @@ if ($result && $result->num_rows > 0) {
         </div>
 
         <div>
-            <label for="item_name" class="block text-sm font-medium text-gold">Item Name <span class="text-red-500">*</span></label>
-            <input type="text" id="item_name" name="item_name" class="mt-1 block w-full px-3 py-2 bg-white border border-gold rounded-md shadow-sm text-gray-700 focus:outline-none focus:ring-dark-gold focus:border-dark-gold" value="<?php echo htmlspecialchars($item["item_name"]); ?>" required minlength="2" pattern="[A-Za-z ]+" title="Only letters and single spaces allowed">
-            <div id="item_name_error" class="text-red-500 text-xs mt-1 hidden">Please enter a valid item name (letters only, minimum 2 characters)</div>
-        </div>
+        <label for="item_name" class="block text-sm font-medium text-gold">Item Name <span class="text-red-500">*</span></label>
+        <input type="text" id="item_name" name="item_name" class="mt-1 block w-full px-3 py-2 bg-white border border-gold rounded-md shadow-sm text-gray-700 focus:outline-none focus:ring-dark-gold focus:border-dark-gold" value="<?php echo htmlspecialchars($item["item_name"]); ?>" required>
+        <div id="item_name_error" class="text-red-500 text-xs mt-1 hidden">Please enter a valid name (letters only, 2+ characters, no consecutive spaces)</div>
+    </div>
 
         <div>
             <label for="category_id" class="block text-sm font-medium text-gold">Category</label>
@@ -130,59 +130,105 @@ if ($result && $result->num_rows > 0) {
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Item Name validation
+    // Item Name validation - strict version
     const itemNameInput = document.getElementById('item_name');
     const itemNameError = document.getElementById('item_name_error');
+    let lastValidValue = itemNameInput.value;
     
     itemNameInput.addEventListener('input', function(e) {
-        // Clean input: remove numbers and symbols, allow only letters and single spaces
-        let value = e.target.value.replace(/[^a-zA-Z ]/g, '');
+        const originalValue = e.target.value;
+        let newValue = originalValue;
         
-        // Capitalize first letter of each word
-        value = value.toLowerCase().replace(/(?:^|\s)\S/g, function(char) {
+        // 1. Remove all numbers and special characters (keep only letters and spaces)
+        newValue = newValue.replace(/[^a-zA-Z ]/g, '');
+        
+        // 2. Prevent consecutive spaces
+        newValue = newValue.replace(/\s{2,}/g, ' ');
+        
+        // 3. Capitalize first letter of each word
+        newValue = newValue.toLowerCase().replace(/(?:^|\s)\S/g, function(char) {
             return char.toUpperCase();
         });
         
-        // Prevent multiple consecutive spaces
-        value = value.replace(/\s{2,}/g, ' ');
-        
-        // Don't allow space as first character or if less than 2 characters
-        if (value.length < 2 && value.includes(' ')) {
-            value = value.replace(/\s/g, '');
+        // 4. Prevent space as first character
+        if (newValue.startsWith(' ')) {
+            newValue = newValue.substring(1);
         }
         
-        e.target.value = value;
+        // 5. Don't allow space if less than 2 characters
+        if (newValue.length < 2 && newValue.includes(' ')) {
+            newValue = newValue.replace(/\s/g, '');
+        }
         
-        // Validate
-        if (value.length < 2) {
+        // Update the field if we made changes
+        if (newValue !== originalValue) {
+            e.target.value = newValue;
+        }
+        
+        // Validate the final value
+        const isValid = validateItemName(newValue);
+        if (!isValid) {
             itemNameError.classList.remove('hidden');
         } else {
             itemNameError.classList.add('hidden');
+            lastValidValue = newValue;
         }
     });
     
-    // Handle paste event for item name
+    // Handle paste event - clean the pasted text
     itemNameInput.addEventListener('paste', function(e) {
         e.preventDefault();
-        let pastedText = (e.clipboardData || window.clipboardData).getData('text');
+        const pastedText = (e.clipboardData || window.clipboardData).getData('text');
         
-        // Clean pasted text
-        pastedText = pastedText.replace(/[^a-zA-Z ]/g, '');
-        pastedText = pastedText.toLowerCase().replace(/(?:^|\s)\S/g, function(char) {
-            return char.toUpperCase();
-        });
-        pastedText = pastedText.replace(/\s{2,}/g, ' ');
+        // Clean the pasted text using same rules as input
+        let cleanedText = pastedText.replace(/[^a-zA-Z ]/g, '')
+                                   .replace(/\s{2,}/g, ' ')
+                                   .toLowerCase()
+                                   .replace(/(?:^|\s)\S/g, char => char.toUpperCase());
         
-        // Insert cleaned text at cursor position
+        if (cleanedText.startsWith(' ')) cleanedText = cleanedText.substring(1);
+        if (cleanedText.length < 2 && cleanedText.includes(' ')) {
+            cleanedText = cleanedText.replace(/\s/g, '');
+        }
+        
+        // Insert at cursor position
         const startPos = e.target.selectionStart;
         const endPos = e.target.selectionEnd;
         const currentValue = e.target.value;
         
-        e.target.value = currentValue.substring(0, startPos) + pastedText + currentValue.substring(endPos);
+        const newValue = currentValue.substring(0, startPos) + cleanedText + currentValue.substring(endPos);
+        e.target.value = newValue;
         
-        // Trigger input event for validation
-        e.target.dispatchEvent(new Event('input'));
+        // Trigger validation
+        const isValid = validateItemName(newValue);
+        if (!isValid) {
+            itemNameError.classList.remove('hidden');
+        } else {
+            itemNameError.classList.add('hidden');
+            lastValidValue = newValue;
+        }
     });
+    
+    // Validate on blur (when field loses focus)
+    itemNameInput.addEventListener('blur', function() {
+        if (!validateItemName(this.value)) {
+            this.value = lastValidValue;
+            itemNameError.classList.add('hidden');
+        }
+    });
+    
+    // Validation function
+    function validateItemName(value) {
+        // Must be at least 2 characters
+        if (value.length < 2) return false;
+        
+        // Must contain only letters and single spaces
+        if (!/^[A-Za-z]+(?: [A-Za-z]+)*$/.test(value)) return false;
+        
+        // No consecutive spaces (handled by input cleaning)
+        // First letter of each word capitalized (handled by input cleaning)
+        return true;
+    }
     
     // Quantity validation
     const quantityInput = document.getElementById('quantity');
