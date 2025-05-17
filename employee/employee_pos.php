@@ -2150,38 +2150,60 @@ document.getElementById('beneficiaryDateOfBirth').addEventListener('change', fun
       '/admin/servicesManagement/' + serviceData.image_url : '';
 
     document.getElementById('modal-content').innerHTML = `
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-        <div class="${imageUrl ? 'h-64 bg-center bg-cover bg-no-repeat rounded-lg' : 'h-64 bg-gray-100 flex items-center justify-center rounded-lg'}" 
-               ${imageUrl ? `style="background-image: url('${imageUrl}');"` : ''}>
-            ${!imageUrl ? '<i class="fas fa-image text-5xl text-gray-300"></i>' : ''}
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+    <!-- Image Container with improved accessibility -->
+    <div class="${imageUrl ? 'h-64 bg-center bg-cover bg-no-repeat rounded-lg shadow-sm' : 'h-64 bg-gray-100 flex items-center justify-center rounded-lg shadow-sm'}" 
+         ${imageUrl ? `style="background-image: url('${imageUrl}');" aria-label="Service image for ${serviceData.service_name}"` : ''}>
+      ${!imageUrl ? '<i class="fas fa-image text-5xl text-gray-300" aria-label="No image available"></i>' : ''}
+    </div>
+    
+    <!-- Service Information Container -->
+    <div class="flex flex-col">
+      <!-- Service Title with better spacing -->
+      <h2 class="text-xl font-bold mb-3 text-sidebar-text">${serviceData.service_name}</h2>
+      
+      <!-- Location and Category with better spacing and clarity -->
+      <div class="flex flex-wrap items-center mb-4">
+        <span class="text-gray-500 text-sm mr-4 mb-1">
+          <i class="fas fa-map-marker-alt mr-1.5"></i> 
+          <span class="font-medium">Location:</span> ${serviceData.branch_name}
+        </span>
+        <span class="text-gray-500 text-sm mb-1">
+          <i class="fas fa-tag mr-1.5"></i> 
+          <span class="font-medium">Category:</span> ${serviceData.service_category_name}
+        </span>
+      </div>
+      
+      <!-- Price with enhanced visibility -->
+      <div class="text-xl font-bold text-sidebar-accent mb-4">
+        ₱${parseFloat(serviceData.selling_price).toLocaleString('en-PH', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+      </div>
+
+      <!-- Service details in a consistent format -->
+      <div class="space-y-3 text-gray-700 text-sm">
+        <!-- Description section (only shows if available) -->
+        ${serviceData.description ? `
+          <div class="pb-2">
+            <h3 class="font-bold mb-1">Description:</h3>
+            <p>${serviceData.description}</p>
           </div>
+        ` : ''}
+
+        <!-- Flower Replacements section -->
+        <div class="pb-2">
+          <h3 class="font-bold mb-1">Flower Replacements:</h3>
+          <p>${serviceData.flower_design}</p>
+        </div>
+        
+        <!-- Inclusions section -->
         <div>
-          <div class="text-lg font-bold mb-2.5 text-sidebar-text">${serviceData.service_name}</div>
-          <div class="flex items-center mb-4">
-            <span class="text-gray-500 text-sm mr-3"><i class="fas fa-map-marker-alt mr-1"></i> ${serviceData.branch_name}</span>
-            <span class="text-gray-500 text-sm"><i class="fas fa-tag mr-1"></i> ${serviceData.service_category_name}</span>
-          </div>
-          <div class="text-lg font-bold text-sidebar-accent mb-4">₱${parseFloat(serviceData.selling_price).toLocaleString('en-PH', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
-
-          <!-- Add the description here -->
-          ${serviceData.description ? `
-            <div class="text-gray-700 text-sm mb-3">
-              <strong>Description:</strong>
-              <p class="mt-1">${serviceData.description}</p>
-            </div>
-          ` : ''}
-
-          <div class="text-gray-700 text-sm mb-3">
-            <strong>Flower Replacements:</strong>
-            ${serviceData.flower_design}
-          </div>
-          <div class="text-gray-700 text-sm mb-3">
-            <strong>Inclusions:</strong>
-            ${inclusionsDisplay}
-          </div>
+          <h3 class="font-bold mb-1">Inclusions:</h3>
+          <p>${inclusionsDisplay}</p>
         </div>
       </div>
-    `;
+    </div>
+  </div>
+`;
     document.getElementById('package-modal').classList.remove('hidden');
   } catch (error) {
     console.error('Error fetching service details:', error);
