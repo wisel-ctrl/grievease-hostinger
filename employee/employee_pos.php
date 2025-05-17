@@ -2089,22 +2089,22 @@ document.getElementById('beneficiaryDateOfBirth').addEventListener('change', fun
       }).format(service.selling_price);
       
       serviceCard.innerHTML = `
-        <div class="h-48 ${service.image_url ? 'bg-center bg-cover bg-no-repeat' : 'bg-gray-100'} flex items-center justify-center" 
-             ${service.image_url ? `style="background-image: url('/admin/servicesManagement/${service.image_url}');"` : ''}>
-          ${!service.image_url ? '<i class="fas fa-image text-4xl text-gray-300"></i>' : ''}
-          <div class="w-full h-full bg-gradient-to-t from-black/30 to-transparent flex items-end">
-            <div class="p-3 text-white">
-              <span class="text-xs font-medium bg-sidebar-accent/80 px-2 py-1 rounded-full">${service.service_category_name}</span>
+        <div class="relative h-full flex flex-col">
+          <div class="h-48 ${service.image_url ? 'bg-center bg-cover bg-no-repeat' : 'bg-gray-100'} flex items-center justify-center" 
+               ${service.image_url ? `style="background-image: url('/admin/servicesManagement/${service.image_url}');"` : ''}>
+            ${!service.image_url ? '<i class="fas fa-image text-4xl text-gray-300"></i>' : ''}
+            <div class="w-full h-full bg-gradient-to-t from-black/30 to-transparent flex items-end">
+              <div class="p-3 text-white">
+                <span class="text-xs font-medium bg-sidebar-accent/80 px-2 py-1 rounded-full">${service.service_category_name}</span>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="p-5 flex-grow flex flex-col">
-          <div class="text-lg font-bold mb-2 text-sidebar-text">${service.service_name}</div>
-          <p class="text-sm text-gray-600 mb-3 line-clamp-2">${service.description}</p>
-          <div class="text-lg font-bold text-sidebar-accent mt-auto">${formattedPrice}</div>
-        </div>
-        <div class="px-5 pb-5 flex justify-end">
-          <button onclick="showServiceDetails(${service.service_id})" class="text-white bg-sidebar-accent px-4 py-2 rounded-lg hover:bg-opacity-90 transition-all duration-300">
+          <div class="p-5 pb-16 flex-grow flex flex-col">
+            <div class="text-lg font-bold mb-2 text-sidebar-text">${service.service_name}</div>
+            <p class="text-sm text-gray-600 mb-3 line-clamp-2">${service.description}</p>
+            <div class="text-lg font-bold text-sidebar-accent mt-auto">${formattedPrice}</div>
+          </div>
+          <button onclick="showServiceDetails(${service.service_id})" class="absolute bottom-4 right-4 text-white bg-sidebar-accent px-4 py-2 rounded-lg hover:bg-opacity-90 transition-all duration-300">
             Select
           </button>
         </div>
