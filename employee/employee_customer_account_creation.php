@@ -1601,133 +1601,199 @@ function openEditCustomerAccountModal(userId) {
                 
                 // Create modal HTML with validation indicators
                 const modalHTML = `
-                <div id="editCustomerModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto">
-                    <!-- Modal Backdrop -->
-                    <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
-                    
-                    <!-- Modal Content -->
-                    <div class="relative bg-white rounded-xl shadow-card w-full max-w-xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] flex flex-col">
-                        <!-- Close Button -->
-                        <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeEditCustomerModal()">
-                            <i class="fas fa-times"></i>
-                        </button>
-                        
-                        <!-- Modal Header -->
-                        <div class="px-4 sm:px-6 py-4 sm:py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
-                            <h3 class="text-lg sm:text-xl font-bold text-white flex items-center">
-                                Edit Customer Account
-                            </h3>
-                        </div>
-                        
-                        <!-- Modal Body -->
-                        <div class="px-4 sm:px-6 py-4 sm:py-5 overflow-y-auto modal-scroll-container">
-                            <form id="editCustomerForm" class="space-y-3 sm:space-y-4">
-                                <input type="hidden" name="user_id" value="${data.user.id}">
-                                
-                                <div>
-                                    <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">Customer ID</label>
-                                    <div class="relative">
-                                        <input type="text" value="#CUST-${String(data.user.id).padStart(3, '0')}" 
-                                               class="w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" readonly>
-                                    </div>
-                                </div>
-                                
-                                <div>
-                                    <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                                        First Name <span class="text-red-500">*</span>
-                                    </label>
-                                    <div class="relative">
-                                        <input type="text" name="first_name" value="${data.user.first_name || ''}" 
-                                               class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
-                                    </div>
-                                </div>
-                                
-                                <div>
-                                    <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                                        Last Name <span class="text-red-500">*</span>
-                                    </label>
-                                    <div class="relative">
-                                        <input type="text" name="last_name" value="${data.user.last_name || ''}" 
-                                               class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
-                                    </div>
-                                </div>
-                                
-                                <div>
-                                    <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">Middle Name</label>
-                                    <div class="relative">
-                                        <input type="text" name="middle_name" value="${data.user.middle_name || ''}" 
-                                               class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200">
-                                    </div>
-                                </div>
-                                
-                                <div>
-                                    <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                                        Email Address <span class="text-red-500">*</span>
-                                    </label>
-                                    <div class="relative">
-                                        <input type="email" name="email" value="${data.user.email || ''}" 
-                                               class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
-                                               required oninput="checkEmailAvailability(this.value)">
-                                        <div id="emailAvailability" class="absolute right-2 top-1/2 transform -translate-y-1/2 text-xs hidden">
-                                            <i class="fas fa-check-circle text-green-500"></i>
-                                            <span class="ml-1">Available</span>
-                                        </div>
-                                        <div id="emailUnavailable" class="absolute right-2 top-1/2 transform -translate-y-1/2 text-xs hidden">
-                                            <i class="fas fa-times-circle text-red-500"></i>
-                                            <span class="ml-1">In use</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div>
-                                    <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                                        Phone Number <span class="text-red-500">*</span>
-                                    </label>
-                                    <div class="relative">
-                                        <input type="text" name="phone_number" value="${data.user.phone_number || ''}"
-                                               class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                                               inputmode="numeric" pattern="[0-9]*" maxlength="15"
-                                               required oninput="this.value = this.value.replace(/[^0-9]/g, ''); checkPhoneAvailability(this.value)">
-                                        <div id="phoneAvailability" class="absolute right-2 top-1/2 transform -translate-y-1/2 text-xs hidden">
-                                            <i class="fas fa-check-circle text-green-500"></i>
-                                            <span class="ml-1">Available</span>
-                                        </div>
-                                        <div id="phoneUnavailable" class="absolute right-2 top-1/2 transform -translate-y-1/2 text-xs hidden">
-                                            <i class="fas fa-times-circle text-red-500"></i>
-                                            <span class="ml-1">In use</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div>
-                                    <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                                        Branch Location <span class="text-red-500">*</span>
-                                    </label>
-                                    <div class="relative">
-                                        <select name="branch_loc" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
-                                            <option value="">-- Select Branch --</option>
-                                            ${data.branches.map(branch => `
-                                                <option value="${branch.branch_id}" ${data.user.branch_loc == branch.branch_id ? 'selected' : ''}>
-                                                    ${branch.branch_name}
-                                                </option>
-                                            `).join('')}
-                                        </select>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-                        
-                        <!-- Modal Footer -->
-                        <div class="px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row sm:justify-end gap-2 sm:gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
-                            <button type="button" class="w-full sm:w-auto px-4 sm:px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center" onclick="closeEditCustomerModal()">
-                                Cancel
-                            </button>
-                            <button type="button" class="w-full sm:w-auto px-5 sm:px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="validateAndSaveCustomerChanges()">
-                                Save Changes
-                            </button>
-                        </div>
+<div id="editCustomerModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto">
+    <!-- Modal Backdrop -->
+    <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+    
+    <!-- Modal Content -->
+    <div class="relative bg-white rounded-xl shadow-card w-full max-w-xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] flex flex-col">
+        <!-- Close Button -->
+        <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeEditCustomerModal()">
+            <i class="fas fa-times"></i>
+        </button>
+        
+        <!-- Modal Header -->
+        <div class="px-4 sm:px-6 py-4 sm:py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
+            <h3 class="text-lg sm:text-xl font-bold text-white flex items-center">
+                Edit Customer Account
+            </h3>
+        </div>
+        
+        <!-- Modal Body -->
+        <div class="px-4 sm:px-6 py-4 sm:py-5 overflow-y-auto modal-scroll-container">
+            <form id="editCustomerForm" class="space-y-3 sm:space-y-4">
+                <input type="hidden" name="user_id" value="${data.user.id}">
+                
+                <div>
+                    <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">Customer ID</label>
+                    <div class="relative">
+                        <input type="text" value="#CUST-${String(data.user.id).padStart(3, '0')}" 
+                               class="w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" readonly>
                     </div>
-                </div>`;
+                </div>
+                
+                <div>
+                    <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                        First Name <span class="text-red-500">*</span>
+                    </label>
+                    <div class="relative">
+                        <input type="text" name="first_name" value="${data.user.first_name || ''}" 
+                               class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
+                               required
+                               minlength="2"
+                               oninput="this.value = this.value.replace(/[^A-Za-z ]/g, '').replace(/\s{2,}/g, ' '); 
+                                        if(this.value.length > 1 && this.value.includes(' ')) {
+                                            this.value = this.value.substring(0, this.value.indexOf(' '));
+                                        }
+                                        this.value = this.value.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ');"
+                               onpaste="const text = event.clipboardData.getData('text/plain').replace(/[^A-Za-z ]/g, '').replace(/\s{2,}/g, ' ');
+                                        event.preventDefault();
+                                        const selection = window.getSelection();
+                                        if (!selection.rangeCount) return;
+                                        selection.deleteFromDocument();
+                                        selection.getRangeAt(0).insertNode(document.createTextNode(text));">
+                        <div class="text-xs text-red-500 mt-1 hidden" id="firstNameError">Minimum 2 characters required</div>
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                        Last Name <span class="text-red-500">*</span>
+                    </label>
+                    <div class="relative">
+                        <input type="text" name="last_name" value="${data.user.last_name || ''}" 
+                               class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
+                               required
+                               minlength="2"
+                               oninput="this.value = this.value.replace(/[^A-Za-z ]/g, '').replace(/\s{2,}/g, ' '); 
+                                        if(this.value.length > 1 && this.value.includes(' ')) {
+                                            this.value = this.value.substring(0, this.value.indexOf(' '));
+                                        }
+                                        this.value = this.value.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ');"
+                               onpaste="const text = event.clipboardData.getData('text/plain').replace(/[^A-Za-z ]/g, '').replace(/\s{2,}/g, ' ');
+                                        event.preventDefault();
+                                        const selection = window.getSelection();
+                                        if (!selection.rangeCount) return;
+                                        selection.deleteFromDocument();
+                                        selection.getRangeAt(0).insertNode(document.createTextNode(text));">
+                        <div class="text-xs text-red-500 mt-1 hidden" id="lastNameError">Minimum 2 characters required</div>
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">Middle Name</label>
+                    <div class="relative">
+                        <input type="text" name="middle_name" value="${data.user.middle_name || ''}" 
+                               class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                               oninput="this.value = this.value.replace(/[^A-Za-z ]/g, '').replace(/\s{2,}/g, ' ');
+                                        this.value = this.value.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ');"
+                               onpaste="const text = event.clipboardData.getData('text/plain').replace(/[^A-Za-z ]/g, '').replace(/\s{2,}/g, ' ');
+                                        event.preventDefault();
+                                        const selection = window.getSelection();
+                                        if (!selection.rangeCount) return;
+                                        selection.deleteFromDocument();
+                                        selection.getRangeAt(0).insertNode(document.createTextNode(text));">
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                        Email Address <span class="text-red-500">*</span>
+                    </label>
+                    <div class="relative">
+                        <input type="email" name="email" value="${data.user.email || ''}" 
+                               class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
+                               required 
+                               oninput="this.value = this.value.replace(/\s/g, ''); checkEmailAvailability(this.value)"
+                               onkeydown="if (event.key === ' ') event.preventDefault();"
+                               onpaste="const text = event.clipboardData.getData('text/plain').replace(/\s/g, '');
+                                        event.preventDefault();
+                                        const selection = window.getSelection();
+                                        if (!selection.rangeCount) return;
+                                        selection.deleteFromDocument();
+                                        selection.getRangeAt(0).insertNode(document.createTextNode(text));">
+                        <div id="emailAvailability" class="absolute right-2 top-1/2 transform -translate-y-1/2 text-xs hidden">
+                            <i class="fas fa-check-circle text-green-500"></i>
+                            <span class="ml-1">Available</span>
+                        </div>
+                        <div id="emailUnavailable" class="absolute right-2 top-1/2 transform -translate-y-1/2 text-xs hidden">
+                            <i class="fas fa-times-circle text-red-500"></i>
+                            <span class="ml-1">In use</span>
+                        </div>
+                        <div class="text-xs text-red-500 mt-1 hidden" id="emailError">Valid email with @ symbol required</div>
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                        Phone Number <span class="text-red-500">*</span>
+                    </label>
+                    <div class="relative">
+                        <input type="text" name="phone_number" value="${data.user.phone_number || ''}"
+                               class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                               inputmode="numeric" 
+                               pattern="09[0-9]{9}" 
+                               maxlength="11"
+                               required 
+                               oninput="this.value = this.value.replace(/[^0-9]/g, ''); 
+                                        if(this.value.length > 0 && !this.value.startsWith('09')) {
+                                            this.value = '09' + this.value.substring(2);
+                                        }
+                                        if(this.value.length > 11) {
+                                            this.value = this.value.substring(0, 11);
+                                        }
+                                        checkPhoneAvailability(this.value)"
+                               onpaste="const text = event.clipboardData.getData('text/plain').replace(/[^0-9]/g, '');
+                                        event.preventDefault();
+                                        let pastedValue = text.substring(0, 11);
+                                        if(pastedValue.length > 0 && !pastedValue.startsWith('09')) {
+                                            pastedValue = '09' + pastedValue.substring(2);
+                                        }
+                                        const selection = window.getSelection();
+                                        if (!selection.rangeCount) return;
+                                        selection.deleteFromDocument();
+                                        selection.getRangeAt(0).insertNode(document.createTextNode(pastedValue));">
+                        <div id="phoneAvailability" class="absolute right-2 top-1/2 transform -translate-y-1/2 text-xs hidden">
+                            <i class="fas fa-check-circle text-green-500"></i>
+                            <span class="ml-1">Available</span>
+                        </div>
+                        <div id="phoneUnavailable" class="absolute right-2 top-1/2 transform -translate-y-1/2 text-xs hidden">
+                            <i class="fas fa-times-circle text-red-500"></i>
+                            <span class="ml-1">In use</span>
+                        </div>
+                        <div class="text-xs text-red-500 mt-1 hidden" id="phoneError">Valid Philippine number starting with 09 (11 digits)</div>
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                        Branch Location <span class="text-red-500">*</span>
+                    </label>
+                    <div class="relative">
+                        <select name="branch_loc" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
+                            <option value="">-- Select Branch --</option>
+                            ${data.branches.map(branch => `
+                                <option value="${branch.branch_id}" ${data.user.branch_loc == branch.branch_id ? 'selected' : ''}>
+                                    ${branch.branch_name}
+                                </option>
+                            `).join('')}
+                        </select>
+                    </div>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Modal Footer -->
+        <div class="px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row sm:justify-end gap-2 sm:gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
+            <button type="button" class="w-full sm:w-auto px-4 sm:px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center" onclick="closeEditCustomerModal()">
+                Cancel
+            </button>
+            <button type="button" class="w-full sm:w-auto px-5 sm:px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="validateAndSaveCustomerChanges()">
+                Save Changes
+            </button>
+        </div>
+    </div>
+</div>`;
                 // Add modal to DOM
                 document.body.insertAdjacentHTML('beforeend', modalHTML);
 
