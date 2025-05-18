@@ -418,9 +418,76 @@ foreach ($serviceData as $service => $branches) {
 
     </div>
     <div class="flex space-x-3">
-      <button class="p-2 bg-white border border-sidebar-border rounded-lg shadow-input text-sidebar-text hover:bg-sidebar-hover transition-all duration-300">
-        <i class="fas fa-bell"></i>
-      </button>
+      <div class="relative">
+        <button id="notificationButton" class="p-2 bg-white border border-sidebar-border rounded-lg shadow-input text-sidebar-text hover:bg-sidebar-hover transition-all duration-300 relative">
+          <i class="fas fa-bell"></i>
+          <!-- Notification Badge -->
+          <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">3</span>
+        </button>
+
+        <!-- Notification Dropdown Panel -->
+        <div id="notificationPanel" class="hidden absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
+          <!-- Header -->
+          <div class="px-4 py-3 border-b border-gray-200">
+            <div class="flex justify-between items-center">
+              <h3 class="text-lg font-semibold text-gray-800">Notifications</h3>
+              <button class="text-blue-600 text-sm hover:text-blue-800">Mark all as read</button>
+            </div>
+          </div>
+
+          <!-- Notification List -->
+          <div class="max-h-96 overflow-y-auto">
+            <!-- Unread Notification -->
+            <a href="#" class="block p-4 hover:bg-gray-50 transition-colors bg-blue-50">
+              <div class="flex items-start space-x-3">
+                <div class="flex-shrink-0 h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
+                  <i class="fas fa-box text-blue-500"></i>
+                </div>
+                <div class="flex-1">
+                  <p class="text-sm text-gray-800 font-medium">New inventory alert</p>
+                  <p class="text-xs text-gray-600 mt-1">Stock for "Shampoo" is running low. Current quantity: 5 units</p>
+                  <p class="text-xs text-gray-400 mt-1">2 minutes ago</p>
+                </div>
+                <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
+              </div>
+            </a>
+
+            <!-- Read Notification -->
+            <a href="#" class="block p-4 hover:bg-gray-50 transition-colors">
+              <div class="flex items-start space-x-3">
+                <div class="flex-shrink-0 h-8 w-8 rounded-full bg-green-100 flex items-center justify-center">
+                  <i class="fas fa-check text-green-500"></i>
+                </div>
+                <div class="flex-1">
+                  <p class="text-sm text-gray-800">Service completed</p>
+                  <p class="text-xs text-gray-600 mt-1">Service #1234 has been marked as completed</p>
+                  <p class="text-xs text-gray-400 mt-1">1 hour ago</p>
+                </div>
+              </div>
+            </a>
+
+            <!-- Another Unread Notification -->
+            <a href="#" class="block p-4 hover:bg-gray-50 transition-colors bg-blue-50">
+              <div class="flex items-start space-x-3">
+                <div class="flex-shrink-0 h-8 w-8 rounded-full bg-purple-100 flex items-center justify-center">
+                  <i class="fas fa-user text-purple-500"></i>
+                </div>
+                <div class="flex-1">
+                  <p class="text-sm text-gray-800 font-medium">New customer registration</p>
+                  <p class="text-xs text-gray-600 mt-1">John Doe has registered as a new customer</p>
+                  <p class="text-xs text-gray-400 mt-1">3 hours ago</p>
+                </div>
+                <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
+              </div>
+            </a>
+          </div>
+
+          <!-- Footer -->
+          <div class="px-4 py-3 border-t border-gray-200 text-center">
+            <a href="#" class="text-blue-600 text-sm hover:text-blue-800">View all notifications</a>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -1639,5 +1706,4 @@ branchRevenueChart.render();
 var branchServicesChart = new ApexCharts(document.querySelector("#branchServicesChart"), branchServicesOptions);
 branchServicesChart.render();
 </script>
-  </body>
-</html>
+    <script>// Notification dropdown functionalitydocument.addEventListener('DOMContentLoaded', function() {    const notificationButton = document.getElementById('notificationButton');    const notificationPanel = document.getElementById('notificationPanel');    let isNotificationOpen = false;    // Toggle notification panel    notificationButton.addEventListener('click', function(e) {        e.stopPropagation();        isNotificationOpen = !isNotificationOpen;        notificationPanel.classList.toggle('hidden');                // Add animation classes        if (!notificationPanel.classList.contains('hidden')) {            notificationPanel.classList.add('animate-fade-in-down');        } else {            notificationPanel.classList.remove('animate-fade-in-down');        }    });    // Close notification panel when clicking outside    document.addEventListener('click', function(e) {        if (isNotificationOpen && !notificationPanel.contains(e.target)) {            notificationPanel.classList.add('hidden');            isNotificationOpen = false;        }    });    // Prevent panel close when clicking inside    notificationPanel.addEventListener('click', function(e) {        e.stopPropagation();    });});// Add this to your existing Tailwind configtailwind.config = {    theme: {        extend: {            keyframes: {                'fade-in-down': {                    '0%': {                        opacity: '0',                        transform: 'translateY(-10px)'                    },                    '100%': {                        opacity: '1',                        transform: 'translateY(0)'                    },                }            },            animation: {                'fade-in-down': 'fade-in-down 0.2s ease-out'            }        }    }}</script>  </body></html>
