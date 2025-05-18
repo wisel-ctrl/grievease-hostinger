@@ -827,8 +827,8 @@ $pending_payments = $pending_result->fetch_assoc()['pending'];
     <!-- Sticky Pagination Footer with improved spacing -->
     <div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
         <div class="text-sm text-gray-500 text-center sm:text-left">
-            Showing <?php echo count($expenses); ?> of <?php echo $total_items; ?> expenses
-        </div>
+    Showing <?php echo ($offset + 1) . ' to ' . min($offset + $items_per_page, $total_items); ?> of <?php echo $total_items; ?> expenses
+</div>
         <div class="flex space-x-2">
             <?php if ($total_pages > 1): ?>
                 <!-- First page button (double arrow) -->
