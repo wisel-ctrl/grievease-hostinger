@@ -800,18 +800,7 @@ $pending_payments = $pending_result->fetch_assoc()['pending'];
                                 </td>
                                 <td class="px-4 py-3.5 text-sm">
                                     <div class="flex space-x-2">
-                                        <button class="p-2 bg-yellow-100 text-yellow-600 rounded-lg hover:bg-yellow-200 transition-all tooltip" title="Edit Expense" 
-                                                onclick="openEditExpenseModal(
-                                                    '<?php echo $expense['expense_ID']; ?>',
-                                                    '<?php echo addslashes($expense['expense_name']); ?>',
-                                                    '<?php echo $expense['category']; ?>',
-                                                    '<?php echo $expense['price']; ?>',
-                                                    '<?php echo $expense['date']; ?>',
-                                                    '<?php echo $expense['status']; ?>',
-                                                    '<?php echo addslashes($expense['notes']); ?>'
-                                                )">
-                                            <i class="fas fa-edit"></i>
-                                        </button>
+                                                                                <button class="p-2 bg-yellow-100 text-yellow-600 rounded-lg hover:bg-yellow-200 transition-all tooltip" title="Edit Expense"                                                 onclick="openEditExpenseModal(                                                    '<?php echo htmlspecialchars($expense['expense_ID']); ?>',                                                    '<?php echo htmlspecialchars(addslashes($expense['expense_name'])); ?>',                                                    '<?php echo htmlspecialchars($expense['category']); ?>',                                                    '<?php echo htmlspecialchars($expense['price']); ?>',                                                    '<?php echo htmlspecialchars($expense['date']); ?>',                                                    '<?php echo htmlspecialchars($expense['status']); ?>',                                                    '<?php echo htmlspecialchars(addslashes($expense['notes'] ?? '')); ?>'                                                )">                                            <i class="fas fa-edit"></i>                                        </button>
                                         <button class="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-all tooltip" title="Archive Expense" 
                                                 onclick="confirmArchive('<?php echo $expense['expense_ID']; ?>')">
                                             <i class="fas fa-archive"></i>
@@ -1368,15 +1357,43 @@ $pending_payments = $pending_result->fetch_assoc()['pending'];
       // Function to open the Edit Expense Modal
       function openEditExpenseModal(id, description, category, amount, date, status, notes) {
         document.getElementById('editExpenseId').value = id;
-        document.getElementById('editExpenseDescription').value = description;
+        
+        // Handle expense name - check if it's in the dropdown
+        const dropdown = document.getElementById('editExpenseNameDropdown');
+        const expenseInput = document.getElementById('editExpenseDescription');
+        let foundInDropdown = false;
+        
+        for (let i = 0; i < dropdown.options.length; i++) {
+            if (dropdown.options[i].value === description) {
+                dropdown.selectedIndex = i;
+                expenseInput.classList.add('hidden');
+                expenseInput.value = description;
+                foundInDropdown = true;
+                break;
+            }
+        }
+        
+        if (!foundInDropdown) {
+            dropdown.value = 'Other';
+            expenseInput.classList.remove('hidden');
+            expenseInput.value = description;
+        }
+        
         document.getElementById('editExpenseCategory').value = category;
         document.getElementById('editExpenseAmount').value = amount;
         document.getElementById('editExpenseDate').value = date;
-        document.getElementById('editExpenseStatus').value = status;
+        
+        // Set status radio button
+        if (status.toLowerCase() === 'paid') {
+            document.getElementById('editStatusPaid').checked = true;
+        } else {
+            document.getElementById('editStatusToBePaid').checked = true;
+        }
+        
         document.getElementById('editExpenseNotes').value = notes || '';
         
+        // Show the modal
         document.getElementById('editExpenseModal').style.display = 'flex';
-        document.getElementById('editExpenseDescription').focus();
       }
 
       // Function to close the Edit Expense Modal
