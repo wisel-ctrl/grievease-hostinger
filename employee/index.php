@@ -334,85 +334,112 @@ $ongoing_services = $ongoing_data['ongoing_count'];
       <p class="text-sm text-gray-500">Welcome back, </p>
     </div>
     <div class="flex space-x-3">
-    <div class="relative">
-  <button id="notification-bell" class="p-2 bg-white border border-sidebar-border rounded-lg shadow-input text-sidebar-text hover:bg-sidebar-hover transition-all duration-300">
+    <!-- Notification Bell Button with improved styling -->
+<div class="relative">
+  <button id="notification-bell" class="p-2 rounded-full bg-white border border-sidebar-border shadow-input text-sidebar-text hover:bg-sidebar-hover transition-all duration-300 relative">
     <i class="fas fa-bell"></i>
-    <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">3</span>
+    <span class="absolute -top-1 -right-1 bg-error text-white text-xs rounded-full h-5 w-5 flex items-center justify-center transform transition-all duration-300 scale-100 origin-center shadow-sm">3</span>
   </button>
   
-  <!-- Notification Dropdown -->
-  <div id="notifications-dropdown" class="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg border border-sidebar-border z-50 hidden">
-    <!-- Notifications Header -->
-    <div class="px-4 py-3 border-b border-sidebar-border flex justify-between items-center">
-      <h3 class="font-medium text-sidebar-text">Notifications</h3>
+  <!-- Improved Notification Dropdown -->
+  <div id="notifications-dropdown" class="absolute right-0 mt-3 w-96 bg-white rounded-lg shadow-card border border-sidebar-border z-50 hidden transform transition-all duration-300 opacity-0 translate-y-2" style="max-height: 85vh;">
+    <!-- Notifications Header with improved styling -->
+    <div class="px-5 py-4 border-b border-sidebar-border flex justify-between items-center bg-gradient-to-r from-gray-50 to-white rounded-t-lg">
+      <div class="flex items-center">
+        <div class="w-8 h-8 rounded-full bg-sidebar-accent bg-opacity-10 text-sidebar-accent flex items-center justify-center mr-3">
+          <i class="fas fa-bell"></i>
+        </div>
+        <h3 class="font-medium text-sidebar-text">Notifications</h3>
+        <span class="ml-2 bg-error text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">3</span>
+      </div>
       <div class="flex space-x-2">
-        <button class="text-xs text-blue-600 hover:text-blue-800">Mark all as read</button>
+        <button class="text-xs text-sidebar-accent hover:text-darkgold transition-colors font-medium flex items-center">
+          <i class="fas fa-check-double mr-1"></i> Mark all as read
+        </button>
       </div>
     </div>
     
-    <!-- Notifications List -->
-    <div class="max-h-96 overflow-y-auto scrollbar-thin">
+    <!-- Notifications List with improved styling -->
+    <div class="max-h-[60vh] overflow-y-auto scrollbar-thin">
       <!-- New booking notification -->
-      <a href="#" class="block px-4 py-3 border-b border-sidebar-border hover:bg-sidebar-hover transition-all duration-300 flex items-start">
-        <div class="flex-shrink-0 bg-blue-100 rounded-full p-2 mr-3">
+      <a href="#" class="block px-5 py-4 border-b border-sidebar-border hover:bg-sidebar-hover transition-all duration-300 flex items-start relative">
+        <div class="absolute left-0 top-0 bottom-0 w-1 bg-blue-500 rounded-r"></div>
+        <div class="flex-shrink-0 bg-blue-100 rounded-full p-2.5 mr-4">
           <i class="fas fa-calendar-alt text-blue-600"></i>
         </div>
         <div class="flex-grow">
-          <p class="text-sm font-medium text-sidebar-text">New booking request</p>
-          <p class="text-xs text-gray-500">Maria Santos requested a funeral service</p>
-          <p class="text-xs text-gray-400 mt-1">10 minutes ago</p>
-        </div>
-        <div class="flex-shrink-0">
-          <span class="h-2 w-2 bg-blue-600 rounded-full block"></span>
+          <div class="flex justify-between items-start">
+            <p class="text-sm font-semibold text-sidebar-text">New booking request</p>
+            <span class="h-2.5 w-2.5 bg-blue-600 rounded-full block flex-shrink-0 ml-2 mt-1"></span>
+          </div>
+          <p class="text-sm text-gray-600 mt-1">Maria Santos requested a funeral service</p>
+          <div class="flex items-center mt-2 text-xs text-gray-400">
+            <i class="far fa-clock mr-1.5"></i>
+            <span>10 minutes ago</span>
+          </div>
         </div>
       </a>
       
       <!-- Low Inventory notification -->
-      <a href="#" class="block px-4 py-3 border-b border-sidebar-border hover:bg-sidebar-hover transition-all duration-300 flex items-start">
-        <div class="flex-shrink-0 bg-yellow-100 rounded-full p-2 mr-3">
+      <a href="#" class="block px-5 py-4 border-b border-sidebar-border hover:bg-sidebar-hover transition-all duration-300 flex items-start relative">
+        <div class="absolute left-0 top-0 bottom-0 w-1 bg-yellow-500 rounded-r"></div>
+        <div class="flex-shrink-0 bg-yellow-100 rounded-full p-2.5 mr-4">
           <i class="fas fa-exclamation-triangle text-yellow-600"></i>
         </div>
         <div class="flex-grow">
-          <p class="text-sm font-medium text-sidebar-text">Low inventory alert</p>
-          <p class="text-xs text-gray-500">Casket Model C102 is running low (2 remaining)</p>
-          <p class="text-xs text-gray-400 mt-1">1 hour ago</p>
-        </div>
-        <div class="flex-shrink-0">
-          <span class="h-2 w-2 bg-blue-600 rounded-full block"></span>
+          <div class="flex justify-between items-start">
+            <p class="text-sm font-semibold text-sidebar-text">Low inventory alert</p>
+            <span class="h-2.5 w-2.5 bg-yellow-600 rounded-full block flex-shrink-0 ml-2 mt-1"></span>
+          </div>
+          <p class="text-sm text-gray-600 mt-1">Casket Model C102 is running low (2 remaining)</p>
+          <div class="flex items-center mt-2 text-xs text-gray-400">
+            <i class="far fa-clock mr-1.5"></i>
+            <span>1 hour ago</span>
+          </div>
         </div>
       </a>
       
       <!-- Payment notification -->
-      <a href="#" class="block px-4 py-3 border-b border-sidebar-border hover:bg-sidebar-hover transition-all duration-300 flex items-start">
-        <div class="flex-shrink-0 bg-green-100 rounded-full p-2 mr-3">
+      <a href="#" class="block px-5 py-4 border-b border-sidebar-border hover:bg-sidebar-hover transition-all duration-300 flex items-start relative">
+        <div class="absolute left-0 top-0 bottom-0 w-1 bg-green-500 rounded-r"></div>
+        <div class="flex-shrink-0 bg-green-100 rounded-full p-2.5 mr-4">
           <i class="fas fa-peso-sign text-green-600"></i>
         </div>
         <div class="flex-grow">
-          <p class="text-sm font-medium text-sidebar-text">Payment received</p>
-          <p class="text-xs text-gray-500">P15,000 payment from Juan Cruz (ID: 2450)</p>
-          <p class="text-xs text-gray-400 mt-1">Yesterday</p>
-        </div>
-        <div class="flex-shrink-0">
-          <span class="h-2 w-2 bg-blue-600 rounded-full block"></span>
+          <div class="flex justify-between items-start">
+            <p class="text-sm font-semibold text-sidebar-text">Payment received</p>
+            <span class="h-2.5 w-2.5 bg-green-600 rounded-full block flex-shrink-0 ml-2 mt-1"></span>
+          </div>
+          <p class="text-sm text-gray-600 mt-1">₱15,000 payment from Juan Cruz (ID: 2450)</p>
+          <div class="flex items-center mt-2 text-xs text-gray-400">
+            <i class="far fa-clock mr-1.5"></i>
+            <span>Yesterday</span>
+          </div>
         </div>
       </a>
       
-      <!-- Read notification example -->
-      <a href="#" class="block px-4 py-3 border-b border-sidebar-border hover:bg-sidebar-hover transition-all duration-300 flex items-start bg-gray-50">
-        <div class="flex-shrink-0 bg-gray-100 rounded-full p-2 mr-3">
-          <i class="fas fa-user-check text-gray-600"></i>
+      <!-- Read notification example with improved styling -->
+      <a href="#" class="block px-5 py-4 border-b border-sidebar-border hover:bg-sidebar-hover transition-all duration-300 flex items-start relative bg-gray-50">
+        <div class="flex-shrink-0 bg-gray-100 rounded-full p-2.5 mr-4">
+          <i class="fas fa-user-check text-gray-500"></i>
         </div>
         <div class="flex-grow">
           <p class="text-sm font-medium text-gray-600">Customer account created</p>
-          <p class="text-xs text-gray-500">New customer account for Pedro Reyes created</p>
-          <p class="text-xs text-gray-400 mt-1">3 days ago</p>
+          <p class="text-sm text-gray-500 mt-1">New customer account for Pedro Reyes created</p>
+          <div class="flex items-center mt-2 text-xs text-gray-400">
+            <i class="far fa-clock mr-1.5"></i>
+            <span>3 days ago</span>
+          </div>
         </div>
       </a>
     </div>
     
-    <!-- Notifications Footer -->
-    <div class="px-4 py-2 text-center border-t border-sidebar-border">
-      <a href="#" class="text-sm text-blue-600 hover:text-blue-800">View all notifications</a>
+    <!-- Notifications Footer with improved styling -->
+    <div class="px-5 py-3 text-center border-t border-sidebar-border bg-gradient-to-r from-gray-50 to-white rounded-b-lg">
+      <a href="#" class="text-sm text-sidebar-accent hover:text-darkgold transition-colors font-medium inline-flex items-center">
+        View all notifications
+        <i class="fas fa-chevron-right ml-1 text-xs"></i>
+      </a>
     </div>
   </div>
 </div>
@@ -829,72 +856,81 @@ function escapeHtml(unsafe) {
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#039;");
         }
+</script>
 
-        // Revenue Toggle Functionality
-document.getElementById('revenue-toggle').addEventListener('click', function() {
-  const dropdown = document.getElementById('revenue-dropdown');
-  dropdown.classList.toggle('hidden');
-});
-
-function toggleRevenue(type) {
-  const cashElement = document.getElementById('cash-revenue');
-  const accrualElement = document.getElementById('accrual-revenue');
-  const typeElement = document.getElementById('revenue-type');
-  const dropdown = document.getElementById('revenue-dropdown');
-  
-  if (type === 'cash') {
-    cashElement.classList.remove('hidden');
-    accrualElement.classList.add('hidden');
-    typeElement.textContent = 'Cash';
-  } else {
-    cashElement.classList.add('hidden');
-    accrualElement.classList.remove('hidden');
-    typeElement.textContent = 'Accrual';
-  }
-  
-  dropdown.classList.add('hidden');
-}
-
-// Notification Bell Toggle
+<!-- Add this to your existing JavaScript at the bottom of the file -->
+<script>
+// Improved notification bell functionality
 document.getElementById('notification-bell').addEventListener('click', function(event) {
   event.stopPropagation();
   const dropdown = document.getElementById('notifications-dropdown');
-  dropdown.classList.toggle('hidden');
+  
+  if (dropdown.classList.contains('hidden')) {
+    // Show dropdown with animation
+    dropdown.classList.remove('hidden');
+    setTimeout(() => {
+      dropdown.classList.remove('opacity-0', 'translate-y-2');
+    }, 10);
+  } else {
+    // Hide dropdown with animation
+    dropdown.classList.add('opacity-0', 'translate-y-2');
+    setTimeout(() => {
+      dropdown.classList.add('hidden');
+    }, 300);
+  }
   
   // If showing notifications, mark as read (update counter)
   if (!dropdown.classList.contains('hidden')) {
+    const notificationCounter = document.querySelector('#notification-bell > span');
+    
+    // Add a slight delay before animating the counter
     setTimeout(() => {
-      const notificationCounter = document.querySelector('#notification-bell span');
-      // Animate the counter change
-      notificationCounter.classList.add('scale-0');
+      notificationCounter.classList.add('scale-75', 'opacity-50');
+      
       setTimeout(() => {
         notificationCounter.textContent = '0';
-        notificationCounter.classList.remove('scale-0');
-      }, 300);
-    }, 1500);
+        notificationCounter.classList.add('scale-0');
+        
+        setTimeout(() => {
+          if (notificationCounter.textContent === '0') {
+            notificationCounter.classList.add('hidden');
+          }
+        }, 300);
+      }, 500);
+    }, 2000);
   }
 });
 
-// Close dropdowns when clicking outside
+// Close notification dropdown when clicking outside
 document.addEventListener('click', function(event) {
-  // Revenue dropdown
-  const revenueDropdown = document.getElementById('revenue-dropdown');
-  const revenueToggle = document.getElementById('revenue-toggle');
-  if (revenueDropdown && revenueToggle && !revenueToggle.contains(event.target) && !revenueDropdown.contains(event.target)) {
-    revenueDropdown.classList.add('hidden');
-  }
-  
-  // Notifications dropdown
   const notificationsDropdown = document.getElementById('notifications-dropdown');
   const notificationBell = document.getElementById('notification-bell');
+  
   if (notificationsDropdown && notificationBell && !notificationBell.contains(event.target) && !notificationsDropdown.contains(event.target)) {
-    notificationsDropdown.classList.add('hidden');
+    // Hide with animation
+    notificationsDropdown.classList.add('opacity-0', 'translate-y-2');
+    setTimeout(() => {
+      notificationsDropdown.classList.add('hidden');
+    }, 300);
   }
 });
 
-// Add animation to notification counter
-document.querySelector('#notification-bell span').classList.add('transition-transform', 'duration-300');
+// Add smooth transitions for notification counter badge
+document.querySelector('#notification-bell > span').classList.add('transition-all', 'duration-300');
 
+// Add animation to new notifications - subtle pulse effect
+document.addEventListener('DOMContentLoaded', function() {
+  const unreadIndicators = document.querySelectorAll('#notifications-dropdown .bg-blue-600, #notifications-dropdown .bg-yellow-600, #notifications-dropdown .bg-green-600');
+  
+  unreadIndicators.forEach(indicator => {
+    setInterval(() => {
+      indicator.classList.add('scale-125', 'opacity-70');
+      setTimeout(() => {
+        indicator.classList.remove('scale-125', 'opacity-70');
+      }, 500);
+    }, 3000);
+  });
+});
 </script>
 </body>
 </html>
