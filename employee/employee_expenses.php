@@ -805,10 +805,10 @@ $pending_payments = $pending_result->fetch_assoc()['pending'];
                                                     '<?php echo $expense['expense_ID']; ?>',
                                                     '<?php echo addslashes($expense['expense_name']); ?>',
                                                     '<?php echo $expense['category']; ?>',
-                                                    '<?php echo $expense['price']; ?>',
+                                                    <?php echo $expense['price']; ?>,
                                                     '<?php echo $expense['date']; ?>',
                                                     '<?php echo $expense['status']; ?>',
-                                                    '<?php echo addslashes($expense['notes']); ?>'
+                                                    '<?php echo addslashes($expense['notes'] ?? ''); ?>'
                                                 )">
                                             <i class="fas fa-edit"></i>
                                         </button>
@@ -1367,16 +1367,42 @@ $pending_payments = $pending_result->fetch_assoc()['pending'];
 
       // Function to open the Edit Expense Modal
       function openEditExpenseModal(id, description, category, amount, date, status, notes) {
+        // Handle expense name - check if it's in the dropdown
+        const dropdown = document.getElementById('editExpenseNameDropdown');
+        const expenseInput = document.getElementById('editExpenseDescription');
+        let foundInDropdown = false;
+        
+        for (let i = 0; i < dropdown.options.length; i++) {
+            if (dropdown.options[i].value === description) {
+                dropdown.selectedIndex = i;
+                expenseInput.classList.add('hidden');
+                foundInDropdown = true;
+                break;
+            }
+        }
+        
+        if (!foundInDropdown) {
+            dropdown.value = 'Other';
+            expenseInput.value = description;
+            expenseInput.classList.remove('hidden');
+        }
+        
+        // Set form values
         document.getElementById('editExpenseId').value = id;
-        document.getElementById('editExpenseDescription').value = description;
         document.getElementById('editExpenseCategory').value = category;
         document.getElementById('editExpenseAmount').value = amount;
         document.getElementById('editExpenseDate').value = date;
-        document.getElementById('editExpenseStatus').value = status;
         document.getElementById('editExpenseNotes').value = notes || '';
         
+        // Set status
+        if (status) {
+            const statusValue = status.toLowerCase() === 'paid' ? 'paid' : 'to be paid';
+            document.querySelector(`input[name="editExpenseStatus"][value="${statusValue}"]`).checked = true;
+            updateEditDateLimits(); // Update date limits based on status
+        }
+        
+        // Show the modal
         document.getElementById('editExpenseModal').style.display = 'flex';
-        document.getElementById('editExpenseDescription').focus();
       }
 
       // Function to close the Edit Expense Modal
