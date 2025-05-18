@@ -333,6 +333,7 @@ $ongoing_services = $ongoing_data['ongoing_count'];
       <h1 class="text-2xl font-bold text-sidebar-text">Employee Dashboard</h1>
       <p class="text-sm text-gray-500">Welcome back, </p>
     </div>
+    <div class="flex space-x-3">
     <div class="relative">
   <button id="notification-bell" class="p-2 bg-white border border-sidebar-border rounded-lg shadow-input text-sidebar-text hover:bg-sidebar-hover transition-all duration-300">
     <i class="fas fa-bell"></i>
