@@ -373,6 +373,144 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == 1) {
       </div>
     </div>
 
+    <!-- Inventory Overview Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <?php
+        // Get total items count
+        $totalItemsQuery = "SELECT COUNT(*) as total_items FROM inventory_tb WHERE branch_id = ? AND status = 1";
+        $totalItemsStmt = $conn->prepare($totalItemsQuery);
+        $totalItemsStmt->bind_param("i", $branch_id);
+        $totalItemsStmt->execute();
+        $totalItems = $totalItemsStmt->get_result()->fetch_assoc()['total_items'];
+        
+        // Get total inventory value
+        $totalValueQuery = "SELECT SUM(quantity * price) as total_value FROM inventory_tb WHERE branch_id = ? AND status = 1";
+        $totalValueStmt = $conn->prepare($totalValueQuery);
+        $totalValueStmt->bind_param("i", $branch_id);
+        $totalValueStmt->execute();
+        $totalValue = $totalValueStmt->get_result()->fetch_assoc()['total_value'];
+        
+        // Get low stock items (let's define low stock as quantity < 5)
+        $lowStockQuery = "SELECT COUNT(*) as low_stock FROM inventory_tb WHERE branch_id = ? AND quantity < 5 AND status = 1";
+        $lowStockStmt = $conn->prepare($lowStockQuery);
+        $lowStockStmt->bind_param("i", $branch_id);
+        $lowStockStmt->execute();
+        $lowStock = $lowStockStmt->get_result()->fetch_assoc()['low_stock'];
+        
+        // Calculate turnover rate (simplified - could be based on historical data)
+        $turnoverQuery = "SELECT 
+                            (SUM(CASE WHEN quantity < 10 THEN 1 ELSE 0 END) / COUNT(*)) * 100 as turnover_rate 
+                          FROM inventory_tb 
+                          WHERE branch_id = ? AND status = 1";
+        $turnoverStmt = $conn->prepare($turnoverQuery);
+        $turnoverStmt->bind_param("i", $branch_id);
+        $turnoverStmt->execute();
+        $turnoverRate = $turnoverStmt->get_result()->fetch_assoc()['turnover_rate'];
+        $turnoverRate = number_format($turnoverRate, 1);
+        
+        // Get comparison data from last month
+        $lastMonthQuery = "SELECT 
+                            COUNT(*) as last_month_items,
+                            SUM(quantity * price) as last_month_value,
+                            SUM(CASE WHEN quantity < 5 THEN 1 ELSE 0 END) as last_month_low_stock
+                          FROM inventory_tb 
+                          WHERE branch_id = ? 
+                          AND status = 1 
+                          AND updated_at >= DATE_SUB(CURRENT_DATE(), INTERVAL 2 MONTH) 
+                          AND updated_at < DATE_SUB(CURRENT_DATE(), INTERVAL 1 MONTH)";
+        $lastMonthStmt = $conn->prepare($lastMonthQuery);
+        $lastMonthStmt->bind_param("i", $branch_id);
+        $lastMonthStmt->execute();
+        $lastMonthData = $lastMonthStmt->get_result()->fetch_assoc();
+        
+        // Calculate percentage changes
+        $itemsChange = $lastMonthData['last_month_items'] > 0 ? 
+                      (($totalItems - $lastMonthData['last_month_items']) / $lastMonthData['last_month_items']) * 100 : 0;
+        $valueChange = $lastMonthData['last_month_value'] > 0 ? 
+                      (($totalValue - $lastMonthData['last_month_value']) / $lastMonthData['last_month_value']) * 100 : 0;
+        $lowStockChange = $lastMonthData['last_month_low_stock'] > 0 ? 
+                         (($lowStock - $lastMonthData['last_month_low_stock']) / $lastMonthData['last_month_low_stock']) * 100 : 0;
+        
+        // Card data array
+        $cards = [
+            [
+                'title' => 'Total Items',
+                'value' => $totalItems,
+                'change' => $itemsChange,
+                'icon' => 'boxes',
+                'color' => 'blue',
+                'prefix' => ''
+            ],
+            [
+                'title' => 'Total Value',
+                'value' => number_format($totalValue, 2),
+                'change' => $valueChange,
+                'icon' => 'peso-sign',
+                'color' => 'green',
+                'prefix' => '₱'
+            ],
+            [
+                'title' => 'Low Stock Items',
+                'value' => $lowStock,
+                'change' => $lowStockChange,
+                'icon' => 'exclamation-triangle',
+                'color' => 'orange',
+                'prefix' => '',
+                'inverse_change' => true // For low stock, increasing is bad
+            ],
+            [
+                'title' => 'Turnover Rate',
+                'value' => $turnoverRate,
+                'change' => 3, // Hardcoded as in original
+                'icon' => 'sync-alt',
+                'color' => 'purple',
+                'prefix' => '',
+                'suffix' => '%'
+            ]
+        ];
+        
+        foreach ($cards as $card) {
+            // Determine if change is positive (for display)
+            $isPositive = isset($card['inverse_change']) && $card['inverse_change'] ? 
+                        $card['change'] < 0 : $card['change'] >= 0;
+            
+            // Set color class for change indicator
+            $changeColorClass = $isPositive ? 'text-emerald-600' : 'text-rose-600';
+            
+            // Format the change value
+            $changeValue = abs(round($card['change']));
+            
+            // Set suffix if present
+            $suffix = isset($card['suffix']) ? $card['suffix'] : '';
+        ?>
+        
+        <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
+            <!-- Card header with brighter gradient background -->
+            <div class="bg-gradient-to-r from-<?php echo $card['color']; ?>-100 to-<?php echo $card['color']; ?>-200 px-6 py-4">
+                <div class="flex items-center justify-between mb-1">
+                    <h3 class="text-sm font-medium text-gray-700"><?php echo $card['title']; ?></h3>
+                    <div class="w-10 h-10 rounded-full bg-white/90 text-<?php echo $card['color']; ?>-600 flex items-center justify-center">
+                        <i class="fas fa-<?php echo $card['icon']; ?>"></i>
+                    </div>
+                </div>
+                <div class="flex items-end">
+                    <span class="text-2xl md:text-3xl font-bold text-gray-800"><?php echo $card['prefix'] . $card['value'] . $suffix; ?></span>
+                </div>
+            </div>
+            
+            <!-- Card footer with change indicator -->
+            <div class="px-6 py-3 bg-white border-t border-gray-100">
+                <div class="flex items-center <?php echo $changeColorClass; ?>">
+                    <i class="fas fa-arrow-<?php echo $isPositive ? 'up' : 'down'; ?> mr-1.5 text-xs"></i>
+                    <span class="font-medium text-xs"><?php echo $changeValue; ?>% </span>
+                    <span class="text-xs text-gray-500 ml-1">from last month</span>
+                </div>
+            </div>
+        </div>
+        
+        <?php } ?>
+    </div>
+
     <!-- Inventory Table -->
 <div class="bg-white rounded-lg shadow-sidebar border border-sidebar-border hover:shadow-card transition-all duration-300 mb-8">
   <!-- Branch Header with Search and Filters -->
