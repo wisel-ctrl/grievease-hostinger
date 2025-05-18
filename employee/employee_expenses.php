@@ -643,35 +643,35 @@ $pending_payments = $pending_result->fetch_assoc()['pending'];
                     
                     <!-- Filter Window -->
                     <div id="filterDropdown" class="filter-content absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10 border border-sidebar-border hidden p-4">
-                        <div class="space-y-4">
-                            <!-- Category Filter -->
-                            <div>
-                                <h5 class="text-sm font-medium text-sidebar-text mb-2">Category</h5>
-                                <select name="category" class="w-full px-3 py-2 border border-sidebar-border rounded-md text-sm">
-                                    <option value="">All Categories</option>
-                                    <option value="Supplies" <?php echo $category_filter === 'Supplies' ? 'selected' : ''; ?>>Supplies</option>
-                                    <option value="Utilities" <?php echo $category_filter === 'Utilities' ? 'selected' : ''; ?>>Utilities</option>
-                                    <option value="Salaries" <?php echo $category_filter === 'Salaries' ? 'selected' : ''; ?>>Salaries</option>
-                                    <option value="Maintenance" <?php echo $category_filter === 'Maintenance' ? 'selected' : ''; ?>>Maintenance</option>
-                                    <option value="Other" <?php echo $category_filter === 'Other' ? 'selected' : ''; ?>>Other</option>
-                                </select>
-                            </div>
-                            
-                            <!-- Status Filter -->
-                            <div>
-                                <h5 class="text-sm font-medium text-sidebar-text mb-2">Status</h5>
-                                <select name="status" class="w-full px-3 py-2 border border-sidebar-border rounded-md text-sm">
-                                    <option value="">All Statuses</option>
-                                    <option value="Paid" <?php echo $status_filter === 'Paid' ? 'selected' : ''; ?>>Paid</option>
-                                    <option value="Pending" <?php echo $status_filter === 'Pending' ? 'selected' : ''; ?>>Pending</option>
-                                </select>
-                            </div>
-                            
-                            <button type="button" onclick="applyFilters()" class="w-full px-4 py-2 bg-sidebar-accent text-white rounded-md text-sm hover:bg-darkgold transition-all duration-300">
-                                Apply Filters
-                            </button>
-                        </div>
-                    </div>
+    <div class="space-y-4">
+        <!-- Category Filter -->
+        <div>
+            <h5 class="text-sm font-medium text-sidebar-text mb-2">Category</h5>
+            <select name="category" class="w-full px-3 py-2 border border-sidebar-border rounded-md text-sm">
+                <option value="">All Categories</option>
+                <option value="Supplies" <?php echo $category_filter === 'Supplies' ? 'selected' : ''; ?>>Supplies</option>
+                <option value="Utilities" <?php echo $category_filter === 'Utilities' ? 'selected' : ''; ?>>Utilities</option>
+                <option value="Salaries" <?php echo $category_filter === 'Salaries' ? 'selected' : ''; ?>>Salaries</option>
+                <option value="Maintenance" <?php echo $category_filter === 'Maintenance' ? 'selected' : ''; ?>>Maintenance</option>
+                <option value="Other" <?php echo $category_filter === 'Other' ? 'selected' : ''; ?>>Other</option>
+            </select>
+        </div>
+        
+        <!-- Status Filter -->
+        <div>
+            <h5 class="text-sm font-medium text-sidebar-text mb-2">Status</h5>
+            <select name="status" class="w-full px-3 py-2 border border-sidebar-border rounded-md text-sm">
+                <option value="">All Statuses</option>
+                <option value="Paid" <?php echo $status_filter === 'Paid' ? 'selected' : ''; ?>>Paid</option>
+                <option value="Pending" <?php echo $status_filter === 'Pending' ? 'selected' : ''; ?>>Pending</option>
+            </select>
+        </div>
+        
+        <button type="button" onclick="applyFilters()" class="w-full px-4 py-2 bg-sidebar-accent text-white rounded-md text-sm hover:bg-darkgold transition-all duration-300">
+            Apply Filters
+        </button>
+    </div>
+</div>
                 </div>
 
                 <!-- Add Expense Button -->
@@ -1291,10 +1291,9 @@ $pending_payments = $pending_result->fetch_assoc()['pending'];
         document.getElementById('filterDropdown').classList.toggle('hidden');
       }
       
-      // Function to apply filters
       function applyFilters() {
-        document.getElementById('searchForm').submit();
-      }
+    submitSearch();
+}
 
       // Function to sort table
       function sortTable(column) {
@@ -1353,6 +1352,70 @@ $pending_payments = $pending_result->fetch_assoc()['pending'];
               form.reportValidity();
           }
       }
+
+      // Add this to your script section
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle search form submission
+    const searchForm = document.getElementById('searchForm');
+    const mobileSearchForm = document.getElementById('mobileSearchForm');
+    
+    if (searchForm) {
+        searchForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            submitSearch();
+        });
+    }
+    
+    if (mobileSearchForm) {
+        mobileSearchForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            submitSearch();
+        });
+    }
+    
+    // Add event listener for search input changes with debounce
+    const searchInput = document.querySelector('input[name="search"]');
+    if (searchInput) {
+        let searchTimeout;
+        searchInput.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                submitSearch();
+            }, 500); // 500ms debounce
+        });
+    }
+});
+
+function submitSearch() {
+    const url = new URL(window.location.href);
+    const searchInput = document.querySelector('input[name="search"]');
+    const categoryFilter = document.querySelector('select[name="category"]');
+    const statusFilter = document.querySelector('select[name="status"]');
+    
+    // Update URL parameters
+    if (searchInput && searchInput.value) {
+        url.searchParams.set('search', searchInput.value);
+    } else {
+        url.searchParams.delete('search');
+    }
+    
+    if (categoryFilter && categoryFilter.value) {
+        url.searchParams.set('category', categoryFilter.value);
+    } else {
+        url.searchParams.delete('category');
+    }
+    
+    if (statusFilter && statusFilter.value) {
+        url.searchParams.set('status', statusFilter.value);
+    } else {
+        url.searchParams.delete('status');
+    }
+    
+    // Reset to page 1 when searching
+    url.searchParams.set('page', '1');
+    
+    window.location.href = url.toString();
+}
 
       // Function to open the Edit Expense Modal
       function openEditExpenseModal(id, description, category, amount, date, status, notes) {
