@@ -212,57 +212,171 @@ $pending_payments = $pending_result->fetch_assoc()['pending'];
           background-color: #CA8A04;
         }
         
-        /* Animate the sidebar
-        @keyframes slideIn {
-          from { transform: translateX(-100%); opacity: 0; }
-          to { transform: translateX(0); opacity: 1; }
-        }
-        
-        .animate-sidebar {
-          animation: slideIn 0.3s ease forwards;
-        } */
 
         /* Gradient background for menu section headers */
         .menu-header {
           background: linear-gradient(to right, rgba(202, 138, 4, 0.1), transparent);
         }
+
+        .main-content {
+          margin-left: 16rem; /* Adjust this value to match the width of your sidebar */
+          width: calc(100% - 16rem); /* Ensure the main content takes up the remaining width */
+          z-index: 1; /* Ensure the main content is above the sidebar */
+        }
+
+        .sidebar {
+          z-index: 10; /* Ensure the sidebar is below the main content */
+        }
+
         /* Add this to your existing styles */
-    .main-content {
-      margin-left: 16rem; /* Adjust this value to match the width of your sidebar */
-      width: calc(100% - 16rem); /* Ensure the main content takes up the remaining width */
-      z-index: 1; /* Ensure the main content is above the sidebar */
-    }
+        #sidebar {
+          transition: width 0.3s ease, opacity 0.3s ease, visibility 0.3s ease;
+        }
 
-    .sidebar {
-      z-index: 10; /* Ensure the sidebar is below the main content */
-    }
-    /* Add this to your existing styles */
-    #sidebar {
-      transition: width 0.3s ease, opacity 0.3s ease, visibility 0.3s ease;
-    }
+        #main-content {
+          transition: margin-left 0.3s ease;
+        }
 
-    #main-content {
-      transition: margin-left 0.3s ease;
-    }
+        .w-0 {
+          width: 0;
+        }
 
-    .w-0 {
-      width: 0;
-    }
+        .opacity-0 {
+          opacity: 0;
+        }
 
-    .opacity-0 {
-      opacity: 0;
-    }
+        .invisible {
+          visibility: hidden;
+        }
 
-    .invisible {
-      visibility: hidden;
-    }
-    .w-\[calc\(100\%-16rem\)\] {
-      width: calc(100% - 16rem);
-    }
+        .w-\[calc\(100\%-16rem\)\] {
+          width: calc(100% - 16rem);
+        }
 
-    .w-\[calc\(100\%-4rem\)\] {
-      width: calc(100% - 4rem);
-    }
+        .w-\[calc\(100\%-4rem\)\] {
+          width: calc(100% - 4rem);
+        }
+
+        /* Modal scroll container styles */
+        .modal-scroll-container {
+          scrollbar-width: thin;
+          scrollbar-color: #d4a933 #f5f5f5;
+        }
+
+        .modal-scroll-container::-webkit-scrollbar {
+          width: 8px;
+        }
+
+        .modal-scroll-container::-webkit-scrollbar-track {
+          background: #f5f5f5;
+        }
+
+        .modal-scroll-container::-webkit-scrollbar-thumb {
+          background-color: #d4a933;
+          border-radius: 6px;
+        }
+
+        /* Filter dropdown styles */
+        .filter-dropdown {
+          position: relative;
+          display: inline-block;
+        }
+
+        .filter-window {
+          position: absolute;
+          right: 0;
+          z-index: 10;
+          margin-top: 0.5rem;
+          width: 16rem;
+          border-radius: 0.375rem;
+          background-color: white;
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+          border: 1px solid #e5e7eb;
+        }
+
+        .filter-option {
+          transition: all 0.2s ease;
+        }
+
+        .filter-option:hover {
+          background-color: #f3f4f6;
+        }
+
+        /* Card styles */
+        .card-gradient {
+          background: linear-gradient(to right, var(--tw-gradient-from), var(--tw-gradient-to));
+        }
+
+        .card-hover {
+          transition: all 0.3s ease;
+        }
+
+        .card-hover:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        /* Table styles */
+        .table-hover tr:hover {
+          background-color: rgba(202, 138, 4, 0.05);
+        }
+
+        .table-striped tr:nth-child(even) {
+          background-color: rgba(249, 250, 251, 0.5);
+        }
+
+        /* Status badge styles */
+        .status-badge {
+          display: inline-flex;
+          align-items: center;
+          padding: 0.25rem 0.75rem;
+          border-radius: 9999px;
+          font-size: 0.75rem;
+          font-weight: 500;
+          line-height: 1;
+        }
+
+        .status-badge i {
+          margin-right: 0.375rem;
+        }
+
+        /* Action button styles */
+        .action-button {
+          padding: 0.5rem;
+          border-radius: 0.5rem;
+          transition: all 0.2s ease;
+        }
+
+        .action-button:hover {
+          transform: translateY(-1px);
+        }
+
+        /* Tooltip styles */
+        .tooltip {
+          position: relative;
+        }
+
+        .tooltip:before {
+          content: attr(title);
+          position: absolute;
+          bottom: 100%;
+          left: 50%;
+          transform: translateX(-50%);
+          padding: 0.25rem 0.5rem;
+          background-color: rgba(0, 0, 0, 0.8);
+          color: white;
+          font-size: 0.75rem;
+          border-radius: 0.25rem;
+          white-space: nowrap;
+          opacity: 0;
+          visibility: hidden;
+          transition: all 0.2s ease;
+        }
+
+        .tooltip:hover:before {
+          opacity: 1;
+          visibility: visible;
+        }
   </style>
 </head>
 <body class="flex bg-gray-50">
@@ -396,48 +510,91 @@ $pending_payments = $pending_result->fetch_assoc()['pending'];
       </div>
     </div>
 
-    <!-- Analytics Cards -->
-    <div class="mb-8">
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-        <div class="bg-white rounded-lg shadow-sidebar p-5 border border-sidebar-border hover:shadow-card transition-all duration-300">
-          <div class="flex items-center mb-3">
-            <div class="w-12 h-12 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center mr-3">
-              <i class="fas fa-peso-sign text-lg"></i>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <?php
+        // Card data array for consistent styling
+        $cards = [
+            [
+                'title' => 'Total Expenses',
+                'value' => number_format($total_expenses, 2),
+                'change' => '8% from last month',
+                'change_class' => 'text-green-600',
+                'change_icon' => 'fa-arrow-up',
+                'icon' => 'peso-sign',
+                'color' => 'blue',
+                'prefix' => '₱',
+                'suffix' => '',
+                'extra_content' => ''
+            ],
+            [
+                'title' => 'This Month',
+                'value' => number_format($monthly_expenses, 2),
+                'change' => '12% from last month',
+                'change_class' => 'text-green-600',
+                'change_icon' => 'fa-arrow-up',
+                'icon' => 'chart-line',
+                'color' => 'green',
+                'prefix' => '₱',
+                'suffix' => '',
+                'extra_content' => ''
+            ],
+            [
+                'title' => 'Pending Payments',
+                'value' => $pending_payments,
+                'change' => '3% from last month',
+                'change_class' => 'text-red-600',
+                'change_icon' => 'fa-arrow-down',
+                'icon' => 'exclamation-triangle',
+                'color' => 'orange',
+                'prefix' => '',
+                'suffix' => '',
+                'extra_content' => ''
+            ]
+        ];
+        // Render cards
+        foreach ($cards as $card) {
+        ?>
+        
+        <div class="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
+            <!-- Card header with gradient background -->
+            <div class="bg-gradient-to-r from-<?php echo $card['color']; ?>-100 to-<?php echo $card['color']; ?>-200 p-3">
+                <div class="flex items-center justify-between mb-1">
+                    <div class="flex-grow">
+                        <h3 class="text-sm font-medium text-gray-700"><?php echo $card['title']; ?></h3>
+                        <?php if (isset($card['sub_text']) && !empty($card['sub_text'])): ?>
+                        <div class="text-xs text-gray-500"><?php echo $card['sub_text']; ?></div>
+                        <?php endif; ?>
+                    </div>
+                    <div class="w-8 h-8 rounded-full bg-white/90 text-<?php echo $card['color']; ?>-600 flex items-center justify-center ml-2 flex-shrink-0">
+                        <i class="fas fa-<?php echo $card['icon']; ?> text-sm"></i>
+                    </div>
+                </div>
+                <div class="flex items-end">
+                    <span class="text-xl md:text-2xl font-bold <?php echo isset($card['warning_class']) ? $card['warning_class'] : 'text-gray-800'; ?>">
+                        <?php echo $card['prefix'] . $card['value'] . $card['suffix']; ?>
+                    </span>
+                </div>
             </div>
-            <span class="text-sidebar-text font-medium">Total Expenses</span>
-          </div>
-          <div class="text-3xl font-bold mb-2 text-sidebar-text">₱<?php echo number_format($total_expenses, 2); ?></div>
-          <div class="text-sm text-green-600 flex items-center">
-            <i class="fas fa-arrow-up mr-1"></i> 8% from last month
-          </div>
+            
+            <!-- Extra content if any -->
+            <?php if (!empty($card['extra_content'])): ?>
+            <div class="px-3 py-2 bg-white border-t border-gray-50">
+                <?php echo $card['extra_content']; ?>
+            </div>
+            <?php endif; ?>
+            
+            <!-- Card footer with change indicator -->
+            <?php if (isset($card['change']) && !empty($card['change'])): ?>
+            <div class="px-3 py-2 bg-white border-t border-gray-50 text-xs">
+                <div class="flex items-center <?php echo $card['change_class']; ?>">
+                    <i class="fas <?php echo $card['change_icon']; ?> mr-1"></i>
+                    <span><?php echo $card['change']; ?></span>
+                </div>
+            </div>
+            <?php endif; ?>
         </div>
         
-        <div class="bg-white rounded-lg shadow-sidebar p-5 border border-sidebar-border hover:shadow-card transition-all duration-300">
-          <div class="flex items-center mb-3">
-            <div class="w-12 h-12 rounded-lg bg-green-100 text-green-600 flex items-center justify-center mr-3">
-              <i class="fas fa-chart-line text-lg"></i>
-            </div>
-            <span class="text-sidebar-text font-medium">This Month</span>
-          </div>
-          <div class="text-3xl font-bold mb-2 text-sidebar-text">₱<?php echo number_format($monthly_expenses, 2); ?></div>
-          <div class="text-sm text-green-600 flex items-center">
-            <i class="fas fa-arrow-up mr-1"></i> 12% from last month
-          </div>
-        </div>
-        
-        <div class="bg-white rounded-lg shadow-sidebar p-5 border border-sidebar-border hover:shadow-card transition-all duration-300">
-          <div class="flex items-center mb-3">
-            <div class="w-12 h-12 rounded-lg bg-orange-100 text-orange-600 flex items-center justify-center mr-3">
-              <i class="fas fa-exclamation-triangle text-lg"></i>
-            </div>
-            <span class="text-sidebar-text font-medium">Pending Payments</span>
-          </div>
-          <div class="text-3xl font-bold mb-2 text-sidebar-text"><?php echo $pending_payments; ?></div>
-          <div class="text-sm text-red-600 flex items-center">
-            <i class="fas fa-arrow-down mr-1"></i> 3% from last month
-          </div>
-        </div>
-      </div>
+        <?php } ?>
     </div>
 
     <!-- Expenses Table Card -->
@@ -451,7 +608,7 @@ $pending_payments = $pending_result->fetch_assoc()['pending'];
                 <h4 class="text-lg font-bold text-sidebar-text whitespace-nowrap">Expenses</h4>
                 
                 <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
-                    <?php echo $total_items . ($total_items != 1 ? "" : ""); ?>
+                    <?php echo $total_items . ($total_items != 1 ? " items" : " item"); ?>
                 </span>
             </div>
             
