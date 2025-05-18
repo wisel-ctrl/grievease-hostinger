@@ -510,10 +510,7 @@ $pending_payments = $pending_result->fetch_assoc()['pending'];
       </div>
     </div>
 
-    <!-- Analytics Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <?php
-        // Card data array for consistent styling
+        <!-- Analytics Cards -->    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8 px-1">        <?php        // Card data array for consistent styling
         $cards = [
             [
                 'title' => 'Total Expenses',
@@ -557,26 +554,7 @@ $pending_payments = $pending_result->fetch_assoc()['pending'];
         foreach ($cards as $card) {
         ?>
         
-        <div class="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
-            <!-- Card header with gradient background -->
-            <div class="bg-gradient-to-r from-<?php echo $card['color']; ?>-100 to-<?php echo $card['color']; ?>-200 p-3">
-                <div class="flex items-center justify-between mb-1">
-                    <div class="flex-grow">
-                        <h3 class="text-sm font-medium text-gray-700"><?php echo $card['title']; ?></h3>
-                        <?php if (isset($card['sub_text']) && !empty($card['sub_text'])): ?>
-                        <div class="text-xs text-gray-500"><?php echo $card['sub_text']; ?></div>
-                        <?php endif; ?>
-                    </div>
-                    <div class="w-8 h-8 rounded-full bg-white/90 text-<?php echo $card['color']; ?>-600 flex items-center justify-center ml-2 flex-shrink-0">
-                        <i class="fas fa-<?php echo $card['icon']; ?> text-sm"></i>
-                    </div>
-                </div>
-                <div class="flex items-end">
-                    <span class="text-xl md:text-2xl font-bold <?php echo isset($card['warning_class']) ? $card['warning_class'] : 'text-gray-800'; ?>">
-                        <?php echo $card['prefix'] . $card['value'] . $card['suffix']; ?>
-                    </span>
-                </div>
-            </div>
+                <div class="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden transform hover:-translate-y-1">            <!-- Card header with gradient background -->            <div class="bg-gradient-to-r from-<?php echo $card['color']; ?>-100 to-<?php echo $card['color']; ?>-200 p-5">                <div class="flex items-center justify-between mb-3">                    <div class="flex-grow">                        <h3 class="text-base font-semibold text-gray-700"><?php echo $card['title']; ?></h3>                        <?php if (isset($card['sub_text']) && !empty($card['sub_text'])): ?>                        <div class="text-sm text-gray-500 mt-1"><?php echo $card['sub_text']; ?></div>                        <?php endif; ?>                    </div>                    <div class="w-10 h-10 rounded-full bg-white/90 text-<?php echo $card['color']; ?>-600 flex items-center justify-center ml-3 flex-shrink-0 shadow-md">                        <i class="fas fa-<?php echo $card['icon']; ?> text-lg"></i>                    </div>                </div>                <div class="flex items-end mt-2">                    <span class="text-2xl md:text-3xl font-bold <?php echo isset($card['warning_class']) ? $card['warning_class'] : 'text-gray-800'; ?>">                        <?php echo $card['prefix'] . $card['value'] . $card['suffix']; ?>                    </span>                </div>            </div>
             
             <!-- Extra content if any -->
             <?php if (!empty($card['extra_content'])): ?>
