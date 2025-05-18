@@ -1732,7 +1732,7 @@ function openEditServiceModal(serviceId) {
 
 // Function to load services for a specific branch
 function loadServicesForBranch(branchId, currentServiceId) {
-  fetch(`get_services_for_branch.php?branch_id=${branchId}`)
+  fetch(`../admin/get_services_for_branch.php?branch_id=${branchId}`)
     .then(response => response.json())
     .then(data => {
       if (data.success) {
