@@ -956,10 +956,15 @@ $pending_payments = $pending_result->fetch_assoc()['pending'];
               <option value="Taxes">Taxes</option>
               <option value="Other">Other (specify)</option>
             </select>
-            <input type="text" id="expenseDescription" name="expenseDescription" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200 mt-2 hidden" 
+            <input type="text" id="expenseDescription" name="expenseDescription" 
+                   class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200 mt-2 hidden" 
                    oninput="formatExpenseName(this)" 
                    onkeydown="preventDoubleSpace(event)" 
                    placeholder="Enter expense description"
+                   minlength="3"
+                   maxlength="50"
+                   pattern="^[A-Za-z0-9\s-]+$"
+                   title="Expense name must be between 3-50 characters and can only contain letters, numbers, spaces, and hyphens"
                    required>
           </div>
         </div>
@@ -999,7 +1004,14 @@ $pending_payments = $pending_result->fetch_assoc()['pending'];
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <span class="text-gray-500">₱</span>
             </div>
-            <input type="number" id="expenseAmount" name="expenseAmount" min="0.01" step="0.01" placeholder="0.00" class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
+            <input type="number" id="expenseAmount" name="expenseAmount" 
+                   min="0.01" 
+                   max="10000000" 
+                   step="0.01" 
+                   placeholder="0.00" 
+                   class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
+                   title="Amount must be between ₱0.01 and ₱10,000,000"
+                   required>
           </div>
         </div>
         
@@ -1051,10 +1063,13 @@ $pending_payments = $pending_result->fetch_assoc()['pending'];
             Note <span class="text-xs text-gray-500">(Optional)</span>
           </label>
           <div class="relative">
-            <textarea id="expenseNotes" name="expenseNotes" rows="3" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+            <textarea id="expenseNotes" name="expenseNotes" 
+                      rows="3" 
+                      maxlength="500"
+                      class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
                       oninput="formatNote(this)" 
                       onkeydown="preventDoubleSpace(event)"
-                      placeholder="Add any additional details here"></textarea>
+                      placeholder="Add any additional details here (max 500 characters)"></textarea>
           </div>
         </div>
       </form>
@@ -1120,10 +1135,15 @@ $pending_payments = $pending_result->fetch_assoc()['pending'];
                   <option value="Taxes">Taxes</option>
                   <option value="Other">Other (specify)</option>
                 </select>
-                <input type="text" id="editExpenseDescription" name="editExpenseDescription" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200 mt-2 hidden" 
+                <input type="text" id="editExpenseDescription" name="editExpenseDescription" 
+                       class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200 mt-2 hidden" 
                        oninput="formatExpenseName(this)" 
                        onkeydown="preventDoubleSpace(event)" 
                        placeholder="Enter expense description"
+                       minlength="3"
+                       maxlength="50"
+                       pattern="^[A-Za-z0-9\s-]+$"
+                       title="Expense name must be between 3-50 characters and can only contain letters, numbers, spaces, and hyphens"
                        required>
               </div>
             </div>
@@ -1162,7 +1182,14 @@ $pending_payments = $pending_result->fetch_assoc()['pending'];
                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <span class="text-gray-500">₱</span>
                 </div>
-                <input type="number" id="editExpenseAmount" name="editExpenseAmount" min="0.01" step="0.01" placeholder="0.00" class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
+                <input type="number" id="editExpenseAmount" name="editExpenseAmount" 
+                       min="0.01" 
+                       max="10000000" 
+                       step="0.01" 
+                       placeholder="0.00" 
+                       class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" 
+                       title="Amount must be between ₱0.01 and ₱10,000,000"
+                       required>
               </div>
             </div>
             
@@ -1189,10 +1216,13 @@ $pending_payments = $pending_result->fetch_assoc()['pending'];
                 Note <span class="text-xs text-gray-500">(Optional)</span>
               </label>
               <div class="relative">
-                <textarea id="editExpenseNotes" name="editExpenseNotes" rows="3" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                <textarea id="editExpenseNotes" name="editExpenseNotes" 
+                          rows="3" 
+                          maxlength="500"
+                          class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
                           oninput="formatNote(this)" 
                           onkeydown="preventDoubleSpace(event)"
-                          placeholder="Add any additional details here"></textarea>
+                          placeholder="Add any additional details here (max 500 characters)"></textarea>
               </div>
             </div>
           </form>
@@ -1593,4 +1623,262 @@ function getCategoryColorClass($category) {
       return 'bg-gray-100 text-gray-800';
   }
 }
+
+// Input Validation Functions
+function validateExpenseName(name) {
+    // Remove extra spaces and special characters
+    name = name.trim().replace(/[^\w\s-]/g, '');
+    
+    // Check length (3-50 characters)
+    if (name.length < 3 || name.length > 50) {
+        showNotification('Expense name must be between 3 and 50 characters', false);
+        return false;
+    }
+    
+    // Check if it contains at least one letter
+    if (!/[a-zA-Z]/.test(name)) {
+        showNotification('Expense name must contain at least one letter', false);
+        return false;
+    }
+    
+    return true;
+}
+
+function validateAmount(amount) {
+    // Convert to number and check if it's valid
+    amount = parseFloat(amount);
+    
+    if (isNaN(amount)) {
+        showNotification('Please enter a valid amount', false);
+        return false;
+    }
+    
+    // Check minimum amount (0.01)
+    if (amount < 0.01) {
+        showNotification('Amount must be at least ₱0.01', false);
+        return false;
+    }
+    
+    // Check maximum amount (10 million)
+    if (amount > 10000000) {
+        showNotification('Amount cannot exceed ₱10,000,000', false);
+        return false;
+    }
+    
+    return true;
+}
+
+function validateDate(date, status) {
+    const selectedDate = new Date(date);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    // Check if it's a valid date
+    if (isNaN(selectedDate.getTime())) {
+        showNotification('Please enter a valid date', false);
+        return false;
+    }
+    
+    // For paid expenses, date cannot be in the future
+    if (status === 'paid' && selectedDate > today) {
+        showNotification('Paid expenses cannot have a future date', false);
+        return false;
+    }
+    
+    // Date cannot be too far in the past (e.g., more than 5 years)
+    const fiveYearsAgo = new Date();
+    fiveYearsAgo.setFullYear(fiveYearsAgo.getFullYear() - 5);
+    if (selectedDate < fiveYearsAgo) {
+        showNotification('Date cannot be more than 5 years in the past', false);
+        return false;
+    }
+    
+    // For future expenses (to be paid), limit to 1 year in the future
+    const oneYearFromNow = new Date();
+    oneYearFromNow.setFullYear(oneYearFromNow.getFullYear() + 1);
+    if (status === 'to be paid' && selectedDate > oneYearFromNow) {
+        showNotification('Future expenses cannot be more than 1 year ahead', false);
+        return false;
+    }
+    
+    return true;
+}
+
+function validateNotes(notes) {
+    if (!notes) return true; // Notes are optional
+    
+    // Remove extra spaces and special characters
+    notes = notes.trim();
+    
+    // Check length (max 500 characters)
+    if (notes.length > 500) {
+        showNotification('Notes cannot exceed 500 characters', false);
+        return false;
+    }
+    
+    return true;
+}
+
+// Update the addExpense function with validations
+function addExpense() {
+    const form = document.getElementById('expenseForm');
+    if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+    }
+    
+    // Get form values
+    const expenseName = document.getElementById('expenseDescription').value;
+    const amount = document.getElementById('expenseAmount').value;
+    const date = document.getElementById('expenseDate').value;
+    const status = document.querySelector('input[name="expenseStatus"]:checked').value;
+    const notes = document.getElementById('expenseNotes').value;
+    
+    // Validate all inputs
+    if (!validateExpenseName(expenseName) ||
+        !validateAmount(amount) ||
+        !validateDate(date, status) ||
+        !validateNotes(notes)) {
+        return;
+    }
+    
+    // Create FormData and sanitize inputs
+    const formData = new FormData(form);
+    formData.set('expenseDescription', expenseName.trim());
+    formData.set('expenseAmount', parseFloat(amount).toFixed(2));
+    formData.set('expenseNotes', notes.trim());
+    
+    // Submit the form via AJAX
+    fetch('expenses/add_expense_handler.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.text())
+    .then(() => {
+        showNotification('Expense added successfully!');
+        closeAddExpenseModal();
+        setTimeout(() => {
+            window.location.reload();
+        }, 1500);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showNotification('Error adding expense. Please try again.', false);
+    });
+}
+
+// Update the saveExpenseChanges function with validations
+function saveExpenseChanges() {
+    const form = document.getElementById('editExpenseForm');
+    if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+    }
+    
+    // Get form values
+    const expenseName = document.getElementById('editExpenseDescription').value;
+    const amount = document.getElementById('editExpenseAmount').value;
+    const date = document.getElementById('editExpenseDate').value;
+    const status = document.querySelector('input[name="editExpenseStatus"]:checked').value;
+    const notes = document.getElementById('editExpenseNotes').value;
+    
+    // Validate all inputs
+    if (!validateExpenseName(expenseName) ||
+        !validateAmount(amount) ||
+        !validateDate(date, status) ||
+        !validateNotes(notes)) {
+        return;
+    }
+    
+    // Create FormData and sanitize inputs
+    const formData = new FormData(form);
+    formData.set('editExpenseDescription', expenseName.trim());
+    formData.set('editExpenseAmount', parseFloat(amount).toFixed(2));
+    formData.set('editExpenseNotes', notes.trim());
+    
+    // Submit the form via AJAX
+    fetch('expenses/save_expense_changes_handler.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showNotification(data.message);
+            closeEditExpenseModal();
+            setTimeout(() => {
+                window.location.reload();
+            }, 1500);
+        } else {
+            showNotification(data.message, false);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showNotification('Error updating expense. Please try again.', false);
+    });
+}
+
+// Add real-time validation for amount input
+function formatAmount(input) {
+    // Remove any non-numeric characters except decimal point
+    let value = input.value.replace(/[^\d.]/g, '');
+    
+    // Ensure only one decimal point
+    const parts = value.split('.');
+    if (parts.length > 2) {
+        value = parts[0] + '.' + parts.slice(1).join('');
+    }
+    
+    // Limit to 2 decimal places
+    if (parts.length > 1) {
+        value = parts[0] + '.' + parts[1].slice(0, 2);
+    }
+    
+    // Update input value
+    input.value = value;
+}
+
+// Add event listeners for real-time validation
+document.addEventListener('DOMContentLoaded', function() {
+    // Add Expense Modal
+    const expenseAmount = document.getElementById('expenseAmount');
+    const editExpenseAmount = document.getElementById('editExpenseAmount');
+    
+    expenseAmount.addEventListener('input', function() {
+        formatAmount(this);
+    });
+    
+    editExpenseAmount.addEventListener('input', function() {
+        formatAmount(this);
+    });
+    
+    // Add validation for expense name inputs
+    const expenseDescription = document.getElementById('expenseDescription');
+    const editExpenseDescription = document.getElementById('editExpenseDescription');
+    
+    expenseDescription.addEventListener('input', function() {
+        this.value = this.value.replace(/[^\w\s-]/g, '');
+    });
+    
+    editExpenseDescription.addEventListener('input', function() {
+        this.value = this.value.replace(/[^\w\s-]/g, '');
+    });
+    
+    // Add validation for notes
+    const expenseNotes = document.getElementById('expenseNotes');
+    const editExpenseNotes = document.getElementById('editExpenseNotes');
+    
+    expenseNotes.addEventListener('input', function() {
+        if (this.value.length > 500) {
+            this.value = this.value.slice(0, 500);
+        }
+    });
+    
+    editExpenseNotes.addEventListener('input', function() {
+        if (this.value.length > 500) {
+            this.value = this.value.slice(0, 500);
+        }
+    });
+});
 ?>
