@@ -67,31 +67,8 @@ $expense_query = "SELECT expense_ID, category, expense_name, date, branch_id, st
 
 // Count total expenses for pagination
 $count_query = "SELECT COUNT(*) as total FROM expense_tb WHERE branch_id = ? AND appearance = 'visible'";
-$count_params = [$branch];
-$count_types = "s";
-
-if (!empty($search)) {
-    $count_query .= " AND (expense_name LIKE ? OR notes LIKE ?)";
-    $search_term = "%$search%";
-    $count_params[] = $search_term;
-    $count_params[] = $search_term;
-    $count_types .= "ss";
-}
-
-if (!empty($category_filter)) {
-    $count_query .= " AND category = ?";
-    $count_params[] = $category_filter;
-    $count_types .= "s";
-}
-
-if (!empty($status_filter)) {
-    $count_query .= " AND status = ?";
-    $count_params[] = $status_filter;
-    $count_types .= "s";
-}
-
 $count_stmt = $conn->prepare($count_query);
-$count_stmt->bind_param($count_types, ...$count_params);
+$count_stmt->bind_param("s", $branch);
 $count_stmt->execute();
 $count_result = $count_stmt->get_result();
 $total_items = $count_result->fetch_assoc()['total'];
@@ -886,17 +863,17 @@ $pending_payments = $pending_result->fetch_assoc()['pending'];
                         // In the middle, show current page with one before and after
                         $start_page = $current_page - 1;
                         $end_page = $current_page + 1;
+                        
+                        // Handle edge cases
+                        if ($start_page < 1) {
+                            $start_page = 1;
+                            $end_page = 3;
+                        }
+                        if ($end_page > $total_pages) {
+                            $end_page = $total_pages;
+                            $start_page = $total_pages - 2;
+                        }
                     }
-                }
-                
-                // Handle edge cases
-                if ($start_page < 1) {
-                    $start_page = 1;
-                    $end_page = min(3, $total_pages);
-                }
-                if ($end_page > $total_pages) {
-                    $end_page = $total_pages;
-                    $start_page = max(1, $total_pages - 2);
                 }
                 
                 // Generate the page buttons
