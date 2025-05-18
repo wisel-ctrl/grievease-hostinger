@@ -124,32 +124,244 @@ $expense_stmt->execute();
 $expense_result = $expense_stmt->get_result();
 $expenses = $expense_result->fetch_all(MYSQLI_ASSOC);
 
-// Calculate totals
-$total_expenses_query = "SELECT SUM(price) as total FROM expense_tb WHERE branch_id = ? AND appearance = 'visible'";
-$total_stmt = $conn->prepare($total_expenses_query);
-$total_stmt->bind_param("s", $branch);
-$total_stmt->execute();
-$total_result = $total_stmt->get_result();
-$total_expenses = $total_result->fetch_assoc()['total'] ?? 0;
+// Calculate total expenses
+$totalExpenseQuery = "SELECT SUM(price) as total FROM expense_tb WHERE branch_id = ? AND appearance = 'visible'";
+$totalExpenseStmt = $conn->prepare($totalExpenseQuery);
+$totalExpenseStmt->bind_param("i", $branch);
+$totalExpenseStmt->execute();
+$totalExpense = $totalExpenseStmt->get_result()->fetch_assoc();
+$totalAmount = number_format($totalExpense['total'] ?? 0, 2);
 
-// 2. Monthly expenses query (filtering by current month)
-$current_month_start = date('Y-m-01'); // First day of current month
-$next_month_start = date('Y-m-01', strtotime('+1 month')); // First day of next month
+// Calculate percentage change from last month
+$lastMonthQuery = "SELECT 
+    SUM(CASE WHEN MONTH(date) = MONTH(CURRENT_DATE()) AND YEAR(date) = YEAR(CURRENT_DATE()) THEN price ELSE 0 END) as current_month,
+    SUM(CASE WHEN MONTH(date) = MONTH(CURRENT_DATE() - INTERVAL 1 MONTH) AND YEAR(date) = YEAR(CURRENT_DATE() - INTERVAL 1 MONTH) THEN price ELSE 0 END) as last_month
+    FROM expense_tb WHERE branch_id = ? AND appearance = 'visible'";
 
-$monthly_expenses_query = "
-    SELECT SUM(price) as total 
-    FROM expense_tb 
-    WHERE branch_id = ? 
-      AND appearance = 'visible' 
-      AND date >= ? 
-      AND date < ?
-";
+$lastMonthStmt = $conn->prepare($lastMonthQuery);
+$lastMonthStmt->bind_param("i", $branch);
+$lastMonthStmt->execute();
+$monthData = $lastMonthStmt->get_result()->fetch_assoc();
 
-$monthly_stmt = $conn->prepare($monthly_expenses_query);
-$monthly_stmt->bind_param("iss", $branch, $current_month_start, $next_month_start);
-$monthly_stmt->execute();
-$monthly_result = $monthly_stmt->get_result();
-$monthly_expenses = $monthly_result->fetch_assoc()['total'] ?? 0;
+$currentMonth = $monthData['current_month'] ?? 0;
+$lastMonth = $monthData['last_month'] ?? 0;
+
+if ($lastMonth > 0) {
+    $percentageChange = (($currentMonth - $lastMonth) / $lastMonth) * 100;
+    $trendIcon = $percentageChange >= 0 ? 'fa-arrow-up' : 'fa-arrow-down';
+    $trendClass = $percentageChange >= 0 ? 'text-green-600' : 'text-red-600';
+    $trendText = abs(round($percentageChange)) . '% from last month';
+} else {
+    $trendIcon = 'fa-equals';
+    $trendClass = 'text-gray-600';
+    $trendText = 'No previous data';
+}
+
+// Calculate Monthly Budget Status
+$monthlyBudget = 50000; // Set default monthly budget
+$currentSpend = $currentMonth;
+$percentageUsed = ($monthlyBudget > 0) ? min(($currentSpend / $monthlyBudget) * 100, 100) : 0;
+$warningLevel = ($percentageUsed >= 90) ? 'text-red-600' : (($percentageUsed >= 75) ? 'text-yellow-600' : 'text-green-600');
+
+// Calculate days remaining in month
+$today = new DateTime();
+$lastDayOfMonth = new DateTime('last day of this month');
+$daysLeft = $today->diff($lastDayOfMonth)->days;
+$daysLeftClass = ($daysLeft > 5) ? 'text-green-600' : 'text-red-600';
+
+// Calculate daily rate and projected spend
+$daysPassed = date('j');
+$dailyRate = ($daysPassed > 0) ? $currentSpend / $daysPassed : 0;
+$projectedSpend = $dailyRate * date('t');
+$projectionClass = ($projectedSpend > $monthlyBudget) ? 'text-red-600' : 'text-green-600';
+
+// Calculate overdue payments
+$overdueQuery = "SELECT COUNT(*) as count, SUM(price) as total 
+                FROM expense_tb 
+                WHERE branch_id = ? 
+                AND appearance = 'visible' 
+                AND status = 'To be paid' 
+                AND date < CURDATE()";
+$overdueStmt = $conn->prepare($overdueQuery);
+$overdueStmt->bind_param("i", $branch);
+$overdueStmt->execute();
+$overdueData = $overdueStmt->get_result()->fetch_assoc();
+$overdueCount = $overdueData['count'] ?? 0;
+$overdueAmount = $overdueData['total'] ?? 0;
+
+// Get urgency level
+$urgencyQuery = "SELECT 
+                SUM(CASE WHEN DATEDIFF(CURDATE(), date) > 30 THEN 1 ELSE 0 END) as critical,
+                SUM(CASE WHEN DATEDIFF(CURDATE(), date) BETWEEN 15 AND 30 THEN 1 ELSE 0 END) as high,
+                SUM(CASE WHEN DATEDIFF(CURDATE(), date) BETWEEN 7 AND 14 THEN 1 ELSE 0 END) as medium,
+                SUM(CASE WHEN DATEDIFF(CURDATE(), date) BETWEEN 1 AND 6 THEN 1 ELSE 0 END) as low
+                FROM expense_tb 
+                WHERE branch_id = ? 
+                AND appearance = 'visible' 
+                AND status = 'To be paid' 
+                AND date < CURDATE()";
+$urgencyStmt = $conn->prepare($urgencyQuery);
+$urgencyStmt->bind_param("i", $branch);
+$urgencyStmt->execute();
+$urgencyData = $urgencyStmt->get_result()->fetch_assoc();
+
+// Calculate upcoming payments
+$upcomingQuery = "SELECT COUNT(*) as count 
+                FROM expense_tb 
+                WHERE branch_id = ? 
+                AND appearance = 'visible' 
+                AND status = 'To be paid' 
+                AND date > CURDATE()";
+$upcomingStmt = $conn->prepare($upcomingQuery);
+$upcomingStmt->bind_param("i", $branch);
+$upcomingStmt->execute();
+$upcomingCount = $upcomingStmt->get_result()->fetch_assoc()['count'] ?? 0;
+
+// Get nearest upcoming payment date
+$nearestQuery = "SELECT MIN(date) as nearest_date 
+                FROM expense_tb 
+                WHERE branch_id = ? 
+                AND appearance = 'visible' 
+                AND status = 'To be paid' 
+                AND date > CURDATE()";
+$nearestStmt = $conn->prepare($nearestQuery);
+$nearestStmt->bind_param("i", $branch);
+$nearestStmt->execute();
+$nearestDate = $nearestStmt->get_result()->fetch_assoc()['nearest_date'];
+
+// Card data array for consistent styling
+$cards = [
+    [
+        'title' => 'Total Expenses',
+        'value' => $totalAmount,
+        'change' => isset($trendText) ? $trendText : '0% from last month',
+        'change_class' => isset($trendClass) ? $trendClass : 'text-gray-600',
+        'change_icon' => isset($trendIcon) ? $trendIcon : 'fa-equals',
+        'icon' => 'peso-sign',
+        'color' => 'blue',
+        'prefix' => '₱',
+        'suffix' => '',
+        'extra_content' => ''
+    ],
+    [
+        'title' => 'Monthly Budget Status',
+        'value' => number_format($currentSpend, 2),
+        'sub_text' => 'of ₱' . number_format($monthlyBudget, 2) . ' budget',
+        'icon' => 'wallet',
+        'color' => 'yellow',
+        'prefix' => '₱',
+        'suffix' => '',
+        'warning_class' => $warningLevel,
+        'extra_content' => '
+            <div class="w-full bg-gray-200 rounded-full h-2 mb-1.5">
+                <div class="bg-yellow-500 h-2 rounded-full" style="width: ' . $percentageUsed . '%"></div>
+            </div>
+            <div class="flex justify-between items-center text-xs mb-1">
+                <div class="' . $daysLeftClass . ' flex items-center">
+                    <i class="fas fa-clock mr-1"></i> ' . $daysLeft . ' days left
+                </div>
+                <div class="' . $warningLevel . '">
+                    ' . round($percentageUsed) . '% used
+                </div>
+            </div>
+            ' . ($percentageUsed >= 90 ? '
+            <div class="text-xs bg-' . ($percentageUsed >= 100 ? 'red' : 'yellow') . '-100 text-' . ($percentageUsed >= 100 ? 'red' : 'yellow') . '-800 py-0.5 px-1 rounded text-center">
+                <i class="fas fa-' . ($percentageUsed >= 100 ? 'exclamation-circle' : 'exclamation-triangle') . ' mr-1"></i> ' .
+                ($percentageUsed >= 100 ? 'Budget exceeded!' : 'Approaching limit') . '
+            </div>
+            ' : '') . '
+            <div class="text-xs text-gray-500 mt-1 flex justify-between items-center">
+                <span>Daily: ₱' . number_format($dailyRate, 0) . '</span>
+                <span>Projected: <span class="' . $projectionClass . '">₱' . number_format($projectedSpend, 0) . '</span></span>
+            </div>'
+    ],
+    [
+        'title' => 'Overdue Payments',
+        'value' => $overdueCount,
+        'sub_text' => 'Total: ₱' . number_format($overdueAmount, 2),
+        'icon' => 'exclamation-triangle',
+        'color' => 'orange',
+        'prefix' => '',
+        'suffix' => '',
+        'extra_content' => '
+            <div class="grid grid-cols-4 gap-1 text-xs">
+                <div class="text-center">
+                    <div class="text-red-600 font-medium">' . ($urgencyData['critical'] ?? 0) . '</div>
+                    <div class="text-gray-500 text-xs">30d+</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-orange-500 font-medium">' . ($urgencyData['high'] ?? 0) . '</div>
+                    <div class="text-gray-500 text-xs">15-30d</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-yellow-500 font-medium">' . ($urgencyData['medium'] ?? 0) . '</div>
+                    <div class="text-gray-500 text-xs">7-14d</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-blue-500 font-medium">' . ($urgencyData['low'] ?? 0) . '</div>
+                    <div class="text-gray-500 text-xs">1-6d</div>
+                </div>
+            </div>'
+    ],
+    [
+        'title' => 'Upcoming Payments',
+        'value' => $upcomingCount,
+        'sub_text' => $nearestDate ? 'Next due: ' . date('M j', strtotime($nearestDate)) : '',
+        'icon' => 'calendar-alt',
+        'color' => 'purple',
+        'prefix' => '',
+        'suffix' => '',
+        'change' => $trendText,
+        'change_class' => $trendClass,
+        'change_icon' => $trendIcon,
+        'extra_content' => ''
+    ]
+];
+
+// Render cards
+foreach ($cards as $card) {
+?>
+
+<div class="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
+    <!-- Card header with gradient background -->
+    <div class="bg-gradient-to-r from-<?php echo $card['color']; ?>-100 to-<?php echo $card['color']; ?>-200 p-3">
+        <div class="flex items-center justify-between mb-1">
+            <div class="flex-grow">
+                <h3 class="text-sm font-medium text-gray-700"><?php echo $card['title']; ?></h3>
+                <?php if (isset($card['sub_text']) && !empty($card['sub_text'])): ?>
+                <div class="text-xs text-gray-500"><?php echo $card['sub_text']; ?></div>
+                <?php endif; ?>
+            </div>
+            <div class="w-8 h-8 rounded-full bg-white/90 text-<?php echo $card['color']; ?>-600 flex items-center justify-center ml-2 flex-shrink-0">
+                <i class="fas fa-<?php echo $card['icon']; ?> text-sm"></i>
+            </div>
+        </div>
+        <div class="flex items-end">
+            <span class="text-xl md:text-2xl font-bold <?php echo isset($card['warning_class']) ? $card['warning_class'] : 'text-gray-800'; ?>">
+                <?php echo $card['prefix'] . $card['value'] . $card['suffix']; ?>
+            </span>
+        </div>
+    </div>
+    
+    <!-- Extra content if any -->
+    <?php if (!empty($card['extra_content'])): ?>
+    <div class="px-3 py-2 bg-white border-t border-gray-50">
+        <?php echo $card['extra_content']; ?>
+    </div>
+    <?php endif; ?>
+    
+    <!-- Card footer with change indicator -->
+    <?php if (isset($card['change']) && !empty($card['change'])): ?>
+    <div class="px-3 py-2 bg-white border-t border-gray-50 text-xs">
+        <div class="flex items-center <?php echo $card['change_class']; ?>">
+            <i class="fas <?php echo $card['change_icon']; ?> mr-1"></i>
+            <span><?php echo $card['change']; ?></span>
+        </div>
+    </div>
+    <?php endif; ?>
+</div>
+
+<?php } ?>
 
 
 // Get pending payments count
@@ -1226,3 +1438,6 @@ function getCategoryColorClass($category) {
   }
 }
 ?>
+
+
+</script>
