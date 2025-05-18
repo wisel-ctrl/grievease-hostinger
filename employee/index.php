@@ -341,125 +341,123 @@ $ongoing_services = $ongoing_data['ongoing_count'];
     <span class="absolute -top-1 -right-1 bg-error text-white text-xs rounded-full h-5 w-5 flex items-center justify-center transform transition-transform duration-300 scale-100">3</span>
   </button>
   
-  <!-- Redesigned Notification Dropdown -->
-  <div id="notifications-dropdown" class="absolute right-0 mt-3 w-96 bg-white rounded-lg shadow-card border border-sidebar-border z-50 hidden opacity-0 transform -translate-y-2 transition-all duration-300">
-    <!-- Arrow indicator at the top -->
-    <div class="absolute -top-2 right-4 w-4 h-4 bg-white transform rotate-45 border-t border-l border-sidebar-border"></div>
-    
-    <!-- Notifications Header -->
-    <div class="px-5 py-4 border-b border-sidebar-border flex justify-between items-center">
-      <h3 class="font-medium text-sidebar-text text-base">Notifications</h3>
-      <div class="flex space-x-2">
-        <button class="text-xs text-sidebar-accent hover:text-darkgold transition-colors duration-200 flex items-center">
-          <i class="fas fa-check-double mr-1"></i>
-          Mark all as read
-        </button>
-      </div>
-    </div>
-    
-    <!-- Notifications Filter -->
-    <div class="flex px-4 py-2 border-b border-sidebar-border">
-      <button class="px-3 py-1.5 text-xs font-medium rounded-full bg-sidebar-accent text-white mr-2">All</button>
-      <button class="px-3 py-1.5 text-xs font-medium rounded-full bg-sidebar-hover text-sidebar-text hover:bg-gray-200 transition-colors mr-2">Unread</button>
-      <button class="px-3 py-1.5 text-xs font-medium rounded-full bg-sidebar-hover text-sidebar-text hover:bg-gray-200 transition-colors">Important</button>
-    </div>
-    
-    <!-- Notifications List with improved styling -->
-    <div class="max-h-96 overflow-y-auto scrollbar-thin">
-      <!-- New booking notification -->
-      <a href="#" class="block px-5 py-4 border-b border-sidebar-border hover:bg-sidebar-hover transition-all duration-300 flex items-start relative">
-        <div class="absolute left-0 top-0 bottom-0 w-1 bg-blue-500 rounded-r"></div>
-        <div class="flex-shrink-0 bg-blue-100 rounded-full p-2.5 mr-4">
-          <i class="fas fa-calendar-alt text-blue-600"></i>
-        </div>
-        <div class="flex-grow">
-          <div class="flex justify-between items-start">
-            <p class="text-sm font-semibold text-sidebar-text">New booking request</p>
-            <span class="bg-blue-100 text-blue-600 text-xs px-2 py-0.5 rounded-full">New</span>
-          </div>
-          <p class="text-sm text-gray-500 mt-1">Maria Santos requested a funeral service</p>
-          <div class="flex items-center mt-2">
-            <i class="fas fa-clock text-gray-400 text-xs mr-1.5"></i>
-            <p class="text-xs text-gray-400">10 minutes ago</p>
-          </div>
-        </div>
-      </a>
-      
-      <!-- Low Inventory notification -->
-      <a href="#" class="block px-5 py-4 border-b border-sidebar-border hover:bg-sidebar-hover transition-all duration-300 flex items-start relative">
-        <div class="absolute left-0 top-0 bottom-0 w-1 bg-yellow-500 rounded-r"></div>
-        <div class="flex-shrink-0 bg-yellow-100 rounded-full p-2.5 mr-4">
-          <i class="fas fa-exclamation-triangle text-yellow-600"></i>
-        </div>
-        <div class="flex-grow">
-          <div class="flex justify-between items-start">
-            <p class="text-sm font-semibold text-sidebar-text">Low inventory alert</p>
-            <span class="bg-yellow-100 text-yellow-600 text-xs px-2 py-0.5 rounded-full">Warning</span>
-          </div>
-          <p class="text-sm text-gray-500 mt-1">Casket Model C102 is running low (2 remaining)</p>
-          <div class="flex items-center mt-2">
-            <i class="fas fa-clock text-gray-400 text-xs mr-1.5"></i>
-            <p class="text-xs text-gray-400">1 hour ago</p>
-          </div>
-        </div>
-      </a>
-      
-      <!-- Payment notification -->
-      <a href="#" class="block px-5 py-4 border-b border-sidebar-border hover:bg-sidebar-hover transition-all duration-300 flex items-start relative">
-        <div class="absolute left-0 top-0 bottom-0 w-1 bg-green-500 rounded-r"></div>
-        <div class="flex-shrink-0 bg-green-100 rounded-full p-2.5 mr-4">
-          <i class="fas fa-peso-sign text-green-600"></i>
-        </div>
-        <div class="flex-grow">
-          <div class="flex justify-between items-start">
-            <p class="text-sm font-semibold text-sidebar-text">Payment received</p>
-            <span class="bg-green-100 text-green-600 text-xs px-2 py-0.5 rounded-full">Payment</span>
-          </div>
-          <p class="text-sm text-gray-500 mt-1">₱15,000 payment from Juan Cruz (ID: 2450)</p>
-          <div class="flex items-center mt-2">
-            <i class="fas fa-clock text-gray-400 text-xs mr-1.5"></i>
-            <p class="text-xs text-gray-400">Yesterday</p>
-          </div>
-        </div>
-      </a>
-      
-      <!-- Read notification example -->
-      <a href="#" class="block px-5 py-4 border-b border-sidebar-border hover:bg-sidebar-hover transition-all duration-300 flex items-start bg-gray-50">
-        <div class="flex-shrink-0 bg-gray-100 rounded-full p-2.5 mr-4">
-          <i class="fas fa-user-check text-gray-600"></i>
-        </div>
-        <div class="flex-grow">
-          <div class="flex justify-between items-start">
-            <p class="text-sm font-semibold text-gray-600">Customer account created</p>
-            <span class="bg-gray-100 text-gray-500 text-xs px-2 py-0.5 rounded-full">Read</span>
-          </div>
-          <p class="text-sm text-gray-500 mt-1">New customer account for Pedro Reyes created</p>
-          <div class="flex items-center mt-2">
-            <i class="fas fa-clock text-gray-400 text-xs mr-1.5"></i>
-            <p class="text-xs text-gray-400">3 days ago</p>
-          </div>
-        </div>
-      </a>
-      
-      <!-- Empty state (shown when no notifications) -->
-      <div class="hidden p-8 text-center">
-        <div class="mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-          <i class="fas fa-bell-slash text-gray-400 text-xl"></i>
-        </div>
-        <p class="text-sm text-gray-600 font-medium">No notifications yet</p>
-        <p class="text-xs text-gray-400 mt-1">We'll notify you when something new arrives</p>
-      </div>
-    </div>
-    
-    <!-- Notifications Footer -->
-    <div class="px-5 py-3 text-center border-t border-sidebar-border bg-sidebar-hover">
-      <a href="#" class="text-sm text-sidebar-accent hover:text-darkgold transition-colors font-medium flex items-center justify-center">
-        View all notifications
-        <i class="fas fa-arrow-right ml-2 text-xs"></i>
-      </a>
+  <!-- Redesigned Notification Dropdown with improved color contrast -->
+<div id="notifications-dropdown" class="absolute right-0 mt-3 w-96 bg-white rounded-lg shadow-card border border-sidebar-border z-50 hidden opacity-0 transform -translate-y-2 transition-all duration-300">
+  <!-- Arrow indicator at the top -->
+  <div class="absolute -top-2 right-4 w-4 h-4 bg-white transform rotate-45 border-t border-l border-sidebar-border"></div>
+  
+  <!-- Notifications Header -->
+  <div class="px-5 py-4 border-b border-sidebar-border flex justify-between items-center bg-sidebar-bg">
+    <h3 class="font-medium text-sidebar-text text-base">Notifications</h3>
+    <div class="flex space-x-2">
+      <button class="text-xs text-sidebar-accent hover:text-darkgold transition-colors duration-200 flex items-center">
+        <i class="fas fa-check-double mr-1"></i>
+        Mark all as read
+      </button>
     </div>
   </div>
-</div>
+  
+  <!-- Notifications Filter -->
+  <div class="flex px-4 py-2 border-b border-sidebar-border bg-cream">
+    <button class="px-3 py-1.5 text-xs font-medium rounded-full bg-sidebar-accent text-white mr-2">All</button>
+    <button class="px-3 py-1.5 text-xs font-medium rounded-full bg-navy text-sidebar-text hover:bg-gray-200 transition-colors mr-2">Unread</button>
+    <button class="px-3 py-1.5 text-xs font-medium rounded-full bg-navy text-sidebar-text hover:bg-gray-200 transition-colors">Important</button>
+  </div>
+  
+  <!-- Notifications List with improved styling -->
+  <div class="max-h-96 overflow-y-auto scrollbar-thin">
+    <!-- New booking notification -->
+    <a href="#" class="block px-5 py-4 border-b border-sidebar-border hover:bg-sidebar-hover transition-all duration-300 flex items-start relative">
+      <div class="absolute left-0 top-0 bottom-0 w-1 bg-blue-500 rounded-r"></div>
+      <div class="flex-shrink-0 bg-blue-100 rounded-full p-2.5 mr-4">
+        <i class="fas fa-calendar-alt text-blue-600"></i>
+      </div>
+      <div class="flex-grow">
+        <div class="flex justify-between items-start">
+          <p class="text-sm font-semibold text-sidebar-text">New booking request</p>
+          <span class="bg-blue-100 text-blue-600 text-xs px-2 py-0.5 rounded-full">New</span>
+        </div>
+        <p class="text-sm text-gray-500 mt-1">Maria Santos requested a funeral service</p>
+        <div class="flex items-center mt-2">
+          <i class="fas fa-clock text-gray-400 text-xs mr-1.5"></i>
+          <p class="text-xs text-gray-400">10 minutes ago</p>
+        </div>
+      </div>
+    </a>
+    
+    <!-- Low Inventory notification -->
+    <a href="#" class="block px-5 py-4 border-b border-sidebar-border hover:bg-sidebar-hover transition-all duration-300 flex items-start relative bg-cream">
+      <div class="absolute left-0 top-0 bottom-0 w-1 bg-yellow-500 rounded-r"></div>
+      <div class="flex-shrink-0 bg-yellow-100 rounded-full p-2.5 mr-4">
+        <i class="fas fa-exclamation-triangle text-yellow-600"></i>
+      </div>
+      <div class="flex-grow">
+        <div class="flex justify-between items-start">
+          <p class="text-sm font-semibold text-sidebar-text">Low inventory alert</p>
+          <span class="bg-yellow-100 text-yellow-600 text-xs px-2 py-0.5 rounded-full">Warning</span>
+        </div>
+        <p class="text-sm text-gray-500 mt-1">Casket Model C102 is running low (2 remaining)</p>
+        <div class="flex items-center mt-2">
+          <i class="fas fa-clock text-gray-400 text-xs mr-1.5"></i>
+          <p class="text-xs text-gray-400">1 hour ago</p>
+        </div>
+      </div>
+    </a>
+    
+    <!-- Payment notification -->
+    <a href="#" class="block px-5 py-4 border-b border-sidebar-border hover:bg-sidebar-hover transition-all duration-300 flex items-start relative">
+      <div class="absolute left-0 top-0 bottom-0 w-1 bg-green-500 rounded-r"></div>
+      <div class="flex-shrink-0 bg-green-100 rounded-full p-2.5 mr-4">
+        <i class="fas fa-peso-sign text-green-600"></i>
+      </div>
+      <div class="flex-grow">
+        <div class="flex justify-between items-start">
+          <p class="text-sm font-semibold text-sidebar-text">Payment received</p>
+          <span class="bg-green-100 text-green-600 text-xs px-2 py-0.5 rounded-full">Payment</span>
+        </div>
+        <p class="text-sm text-gray-500 mt-1">₱15,000 payment from Juan Cruz (ID: 2450)</p>
+        <div class="flex items-center mt-2">
+          <i class="fas fa-clock text-gray-400 text-xs mr-1.5"></i>
+          <p class="text-xs text-gray-400">Yesterday</p>
+        </div>
+      </div>
+    </a>
+    
+    <!-- Read notification example -->
+    <a href="#" class="block px-5 py-4 border-b border-sidebar-border hover:bg-sidebar-hover transition-all duration-300 flex items-start bg-navy">
+      <div class="flex-shrink-0 bg-gray-100 rounded-full p-2.5 mr-4">
+        <i class="fas fa-user-check text-gray-600"></i>
+      </div>
+      <div class="flex-grow">
+        <div class="flex justify-between items-start">
+          <p class="text-sm font-semibold text-sidebar-text">Customer account created</p>
+          <span class="bg-gray-100 text-gray-500 text-xs px-2 py-0.5 rounded-full">Read</span>
+        </div>
+        <p class="text-sm text-gray-500 mt-1">New customer account for Pedro Reyes created</p>
+        <div class="flex items-center mt-2">
+          <i class="fas fa-clock text-gray-400 text-xs mr-1.5"></i>
+          <p class="text-xs text-gray-400">3 days ago</p>
+        </div>
+      </div>
+    </a>
+    
+    <!-- Empty state (shown when no notifications) -->
+    <div class="hidden p-8 text-center">
+      <div class="mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+        <i class="fas fa-bell-slash text-gray-400 text-xl"></i>
+      </div>
+      <p class="text-sm text-gray-600 font-medium">No notifications yet</p>
+      <p class="text-xs text-gray-400 mt-1">We'll notify you when something new arrives</p>
+    </div>
+  </div>
+  
+  <!-- Notifications Footer -->
+  <div class="px-5 py-3 text-center border-t border-sidebar-border bg-cream">
+    <a href="#" class="text-sm text-sidebar-accent hover:text-darkgold transition-colors font-medium flex items-center justify-center">
+      View all notifications
+      <i class="fas fa-arrow-right ml-2 text-xs"></i>
+    </a>
+  </div>
 </div>
 </div>
 
