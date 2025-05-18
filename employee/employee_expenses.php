@@ -212,171 +212,57 @@ $pending_payments = $pending_result->fetch_assoc()['pending'];
           background-color: #CA8A04;
         }
         
+        /* Animate the sidebar
+        @keyframes slideIn {
+          from { transform: translateX(-100%); opacity: 0; }
+          to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .animate-sidebar {
+          animation: slideIn 0.3s ease forwards;
+        } */
+
         /* Gradient background for menu section headers */
         .menu-header {
           background: linear-gradient(to right, rgba(202, 138, 4, 0.1), transparent);
         }
-
         /* Add this to your existing styles */
-        .main-content {
-          margin-left: 16rem; /* Adjust this value to match the width of your sidebar */
-          width: calc(100% - 16rem); /* Ensure the main content takes up the remaining width */
-          z-index: 1; /* Ensure the main content is above the sidebar */
-        }
+    .main-content {
+      margin-left: 16rem; /* Adjust this value to match the width of your sidebar */
+      width: calc(100% - 16rem); /* Ensure the main content takes up the remaining width */
+      z-index: 1; /* Ensure the main content is above the sidebar */
+    }
 
-        .sidebar {
-          z-index: 10; /* Ensure the sidebar is below the main content */
-        }
+    .sidebar {
+      z-index: 10; /* Ensure the sidebar is below the main content */
+    }
+    /* Add this to your existing styles */
+    #sidebar {
+      transition: width 0.3s ease, opacity 0.3s ease, visibility 0.3s ease;
+    }
 
-        /* Add this to your existing styles */
-        #sidebar {
-          transition: width 0.3s ease, opacity 0.3s ease, visibility 0.3s ease;
-        }
+    #main-content {
+      transition: margin-left 0.3s ease;
+    }
 
-        #main-content {
-          transition: margin-left 0.3s ease;
-        }
+    .w-0 {
+      width: 0;
+    }
 
-        .w-0 {
-          width: 0;
-        }
+    .opacity-0 {
+      opacity: 0;
+    }
 
-        .opacity-0 {
-          opacity: 0;
-        }
+    .invisible {
+      visibility: hidden;
+    }
+    .w-\[calc\(100\%-16rem\)\] {
+      width: calc(100% - 16rem);
+    }
 
-        .invisible {
-          visibility: hidden;
-        }
-
-        .w-\[calc\(100\%-16rem\)\] {
-          width: calc(100% - 16rem);
-        }
-
-        .w-\[calc\(100\%-4rem\)\] {
-          width: calc(100% - 4rem);
-        }
-
-        /* Modal scroll container styles */
-        .modal-scroll-container {
-          scrollbar-width: thin;
-          scrollbar-color: #d4a933 #f5f5f5;
-        }
-
-        .modal-scroll-container::-webkit-scrollbar {
-          width: 8px;
-        }
-
-        .modal-scroll-container::-webkit-scrollbar-track {
-          background: #f5f5f5;
-        }
-
-        .modal-scroll-container::-webkit-scrollbar-thumb {
-          background-color: #d4a933;
-          border-radius: 6px;
-        }
-
-        /* Filter dropdown styles */
-        .filter-dropdown {
-          position: relative;
-          display: inline-block;
-        }
-
-        .filter-window {
-          position: absolute;
-          right: 0;
-          z-index: 10;
-          margin-top: 0.5rem;
-          width: 16rem;
-          border-radius: 0.375rem;
-          background-color: white;
-          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-          border: 1px solid #e5e7eb;
-        }
-
-        .filter-option {
-          transition: all 0.2s ease;
-        }
-
-        .filter-option:hover {
-          background-color: #f3f4f6;
-        }
-
-        /* Card styles */
-        .card-gradient {
-          background: linear-gradient(to right, var(--tw-gradient-from), var(--tw-gradient-to));
-        }
-
-        .card-hover {
-          transition: all 0.3s ease;
-        }
-
-        .card-hover:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-        }
-
-        /* Table styles */
-        .table-hover tr:hover {
-          background-color: rgba(202, 138, 4, 0.05);
-        }
-
-        .table-striped tr:nth-child(even) {
-          background-color: rgba(249, 250, 251, 0.5);
-        }
-
-        /* Status badge styles */
-        .status-badge {
-          display: inline-flex;
-          align-items: center;
-          padding: 0.25rem 0.75rem;
-          border-radius: 9999px;
-          font-size: 0.75rem;
-          font-weight: 500;
-          line-height: 1;
-        }
-
-        .status-badge i {
-          margin-right: 0.375rem;
-        }
-
-        /* Action button styles */
-        .action-button {
-          padding: 0.5rem;
-          border-radius: 0.5rem;
-          transition: all 0.2s ease;
-        }
-
-        .action-button:hover {
-          transform: translateY(-1px);
-        }
-
-        /* Tooltip styles */
-        .tooltip {
-          position: relative;
-        }
-
-        .tooltip:before {
-          content: attr(title);
-          position: absolute;
-          bottom: 100%;
-          left: 50%;
-          transform: translateX(-50%);
-          padding: 0.25rem 0.5rem;
-          background-color: rgba(0, 0, 0, 0.8);
-          color: white;
-          font-size: 0.75rem;
-          border-radius: 0.25rem;
-          white-space: nowrap;
-          opacity: 0;
-          visibility: hidden;
-          transition: all 0.2s ease;
-        }
-
-        .tooltip:hover:before {
-          opacity: 1;
-          visibility: visible;
-        }
+    .w-\[calc\(100\%-4rem\)\] {
+      width: calc(100% - 4rem);
+    }
   </style>
 </head>
 <body class="flex bg-gray-50">
@@ -511,92 +397,47 @@ $pending_payments = $pending_result->fetch_assoc()['pending'];
     </div>
 
     <!-- Analytics Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <?php
-        // Card data array for consistent styling
-        $cards = [
-            [
-                'title' => 'Total Expenses',
-                'value' => number_format($total_expenses, 2),
-                'change' => '8% from last month',
-                'change_class' => 'text-green-600',
-                'change_icon' => 'fa-arrow-up',
-                'icon' => 'peso-sign',
-                'color' => 'blue',
-                'prefix' => '₱',
-                'suffix' => '',
-                'extra_content' => ''
-            ],
-            [
-                'title' => 'This Month',
-                'value' => number_format($monthly_expenses, 2),
-                'change' => '12% from last month',
-                'change_class' => 'text-green-600',
-                'change_icon' => 'fa-arrow-up',
-                'icon' => 'chart-line',
-                'color' => 'green',
-                'prefix' => '₱',
-                'suffix' => '',
-                'extra_content' => ''
-            ],
-            [
-                'title' => 'Pending Payments',
-                'value' => $pending_payments,
-                'change' => '3% from last month',
-                'change_class' => 'text-red-600',
-                'change_icon' => 'fa-arrow-down',
-                'icon' => 'exclamation-triangle',
-                'color' => 'orange',
-                'prefix' => '',
-                'suffix' => '',
-                'extra_content' => ''
-            ]
-        ];
-        
-        // Render cards
-        foreach ($cards as $card) {
-        ?>
-        
-        <div class="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
-            <!-- Card header with gradient background -->
-            <div class="bg-gradient-to-r from-<?php echo $card['color']; ?>-100 to-<?php echo $card['color']; ?>-200 p-3">
-                <div class="flex items-center justify-between mb-1">
-                    <div class="flex-grow">
-                        <h3 class="text-sm font-medium text-gray-700"><?php echo $card['title']; ?></h3>
-                        <?php if (isset($card['sub_text']) && !empty($card['sub_text'])): ?>
-                        <div class="text-xs text-gray-500"><?php echo $card['sub_text']; ?></div>
-                        <?php endif; ?>
-                    </div>
-                    <div class="w-8 h-8 rounded-full bg-white/90 text-<?php echo $card['color']; ?>-600 flex items-center justify-center ml-2 flex-shrink-0">
-                        <i class="fas fa-<?php echo $card['icon']; ?> text-sm"></i>
-                    </div>
-                </div>
-                <div class="flex items-end">
-                    <span class="text-xl md:text-2xl font-bold <?php echo isset($card['warning_class']) ? $card['warning_class'] : 'text-gray-800'; ?>">
-                        <?php echo $card['prefix'] . $card['value'] . $card['suffix']; ?>
-                    </span>
-                </div>
+    <div class="mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div class="bg-white rounded-lg shadow-sidebar p-5 border border-sidebar-border hover:shadow-card transition-all duration-300">
+          <div class="flex items-center mb-3">
+            <div class="w-12 h-12 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center mr-3">
+              <i class="fas fa-peso-sign text-lg"></i>
             </div>
-            
-            <!-- Extra content if any -->
-            <?php if (!empty($card['extra_content'])): ?>
-            <div class="px-3 py-2 bg-white border-t border-gray-50">
-                <?php echo $card['extra_content']; ?>
-            </div>
-            <?php endif; ?>
-            
-            <!-- Card footer with change indicator -->
-            <?php if (isset($card['change']) && !empty($card['change'])): ?>
-            <div class="px-3 py-2 bg-white border-t border-gray-50 text-xs">
-                <div class="flex items-center <?php echo $card['change_class']; ?>">
-                    <i class="fas <?php echo $card['change_icon']; ?> mr-1"></i>
-                    <span><?php echo $card['change']; ?></span>
-                </div>
-            </div>
-            <?php endif; ?>
+            <span class="text-sidebar-text font-medium">Total Expenses</span>
+          </div>
+          <div class="text-3xl font-bold mb-2 text-sidebar-text">₱<?php echo number_format($total_expenses, 2); ?></div>
+          <div class="text-sm text-green-600 flex items-center">
+            <i class="fas fa-arrow-up mr-1"></i> 8% from last month
+          </div>
         </div>
         
-        <?php } ?>
+        <div class="bg-white rounded-lg shadow-sidebar p-5 border border-sidebar-border hover:shadow-card transition-all duration-300">
+          <div class="flex items-center mb-3">
+            <div class="w-12 h-12 rounded-lg bg-green-100 text-green-600 flex items-center justify-center mr-3">
+              <i class="fas fa-chart-line text-lg"></i>
+            </div>
+            <span class="text-sidebar-text font-medium">This Month</span>
+          </div>
+          <div class="text-3xl font-bold mb-2 text-sidebar-text">₱<?php echo number_format($monthly_expenses, 2); ?></div>
+          <div class="text-sm text-green-600 flex items-center">
+            <i class="fas fa-arrow-up mr-1"></i> 12% from last month
+          </div>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow-sidebar p-5 border border-sidebar-border hover:shadow-card transition-all duration-300">
+          <div class="flex items-center mb-3">
+            <div class="w-12 h-12 rounded-lg bg-orange-100 text-orange-600 flex items-center justify-center mr-3">
+              <i class="fas fa-exclamation-triangle text-lg"></i>
+            </div>
+            <span class="text-sidebar-text font-medium">Pending Payments</span>
+          </div>
+          <div class="text-3xl font-bold mb-2 text-sidebar-text"><?php echo $pending_payments; ?></div>
+          <div class="text-sm text-red-600 flex items-center">
+            <i class="fas fa-arrow-down mr-1"></i> 3% from last month
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Expenses Table Card -->
@@ -610,7 +451,7 @@ $pending_payments = $pending_result->fetch_assoc()['pending'];
                 <h4 class="text-lg font-bold text-sidebar-text whitespace-nowrap">Expenses</h4>
                 
                 <span class="bg-sidebar-accent bg-opacity-10 text-sidebar-accent px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
-                    <?php echo $total_items . ($total_items != 1 ? " items" : " item"); ?>
+                    <?php echo $total_items . ($total_items != 1 ? "" : ""); ?>
                 </span>
             </div>
             
@@ -805,10 +646,10 @@ $pending_payments = $pending_result->fetch_assoc()['pending'];
                                                     '<?php echo $expense['expense_ID']; ?>',
                                                     '<?php echo addslashes($expense['expense_name']); ?>',
                                                     '<?php echo $expense['category']; ?>',
-                                                    <?php echo $expense['price']; ?>,
+                                                    '<?php echo $expense['price']; ?>',
                                                     '<?php echo $expense['date']; ?>',
                                                     '<?php echo $expense['status']; ?>',
-                                                    '<?php echo addslashes($expense['notes'] ?? ''); ?>'
+                                                    '<?php echo addslashes($expense['notes']); ?>'
                                                 )">
                                             <i class="fas fa-edit"></i>
                                         </button>
@@ -1020,7 +861,7 @@ $pending_payments = $pending_result->fetch_assoc()['pending'];
           </div>
         </div>
         
-        <!-- Payment Method -->
+        <!-- Payment Method - adding this from first code -->
         <div class="bg-gray-50 p-3 sm:p-4 rounded-lg border border-gray-200">
           <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
             Payment Method
@@ -1077,186 +918,71 @@ $pending_payments = $pending_result->fetch_assoc()['pending'];
 </div>
 
     <!-- Edit Expense Modal -->
-    <div id="editExpenseModal" class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto">
-      <!-- Modal Backdrop -->
-      <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
-      
-      <!-- Modal Content -->
-      <div class="relative bg-white rounded-xl shadow-card w-full max-w-xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] flex flex-col">
-        <!-- Close Button -->
-        <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeEditExpenseModal()">
-          <i class="fas fa-times"></i>
-        </button>
-        
+    <div class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 hidden" id="editExpenseModal">
+      <div class="bg-white rounded-xl w-full max-w-lg mx-4 shadow-xl max-h-[90vh] overflow-y-auto">
         <!-- Modal Header -->
-        <div class="px-4 sm:px-6 py-4 sm:py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
-          <h3 class="text-lg sm:text-xl font-bold text-white flex items-center">
-            Edit Expense
-          </h3>
+        <div class="bg-gradient-to-r from-sidebar-accent to-white flex justify-between items-center p-6 flex-shrink-0">
+          <h3 class="text-xl font-bold text-white">Edit Expense</h3>
+          <button class="bg-black bg-opacity-20 hover:bg-opacity-30 rounded-full p-2 text-white hover:text-white transition-all duration-200" onclick="closeEditExpenseModal()">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+            </svg>
+          </button>
         </div>
         
         <!-- Modal Body -->
-        <div class="px-4 sm:px-6 py-4 sm:py-5 overflow-y-auto modal-scroll-container">
-          <form id="editExpenseForm" class="space-y-3 sm:space-y-4">
+        <div class="p-6">
+          <form id="editExpenseForm">
             <input type="hidden" id="editExpenseId" name="editExpenseId">
-            
-            <!-- Expense Name -->
-            <div>
-              <label for="editExpenseDescription" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                Expense Name
-              </label>
-              <div class="relative">
-                <select id="editExpenseNameDropdown" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" onchange="handleEditExpenseNameChange(this)">
-                  <option value="" disabled selected>Select common expense</option>
-                  <option value="Rent">Rent</option>
-                  <option value="Electricity">Electricity</option>
-                  <option value="Water">Water</option>
-                  <option value="Internet">Internet</option>
-                  <option value="Salaries">Salaries</option>
-                  <option value="Office Supplies">Office Supplies</option>
-                  <option value="Maintenance">Maintenance</option>
-                  <option value="Marketing">Marketing</option>
-                  <option value="Insurance">Insurance</option>
-                  <option value="Taxes">Taxes</option>
-                  <option value="Other">Other (specify)</option>
-                </select>
-                <input type="text" id="editExpenseDescription" name="editExpenseDescription" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200 mt-2 hidden" 
-                       oninput="formatExpenseName(this)" 
-                       onkeydown="preventDoubleSpace(event)" 
-                       placeholder="Enter expense description"
-                       required>
-              </div>
+            <div class="mb-5">
+              <label for="editExpenseDescription" class="block mb-2 font-medium text-gray-700">Description</label>
+              <input type="text" id="editExpenseDescription" name="editExpenseDescription" placeholder="Enter expense description" class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent" required>
             </div>
-            
-            <div class="flex flex-col sm:flex-row gap-2 sm:gap-4">
-              <div class="w-full sm:flex-1">
-                <label for="editExpenseCategory" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                  Category
-                </label>
-                <div class="relative">
-                  <select id="editExpenseCategory" name="editExpenseCategory" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
-                    <option value="Supplies">Supplies</option>
-                    <option value="Utilities">Utilities</option>
-                    <option value="Salaries">Salaries</option>
-                    <option value="Maintenance">Maintenance</option>
-                    <option value="Other">Other</option>
-                  </select>
-                </div>
-              </div>
-              
-              <div class="w-full sm:flex-1">
-                <label for="editExpenseDate" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                  Date
-                </label>
-                <div class="relative">
-                  <input type="date" id="editExpenseDate" name="editExpenseDate" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
-                </div>
-              </div>
+            <div class="mb-5">
+              <label for="editExpenseCategory" class="block mb-2 font-medium text-gray-700">Category</label>
+              <select id="editExpenseCategory" name="editExpenseCategory" class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent" required>
+                <option value="Supplies">Supplies</option>
+                <option value="Utilities">Utilities</option>
+                <option value="Salaries">Salaries</option>
+                <option value="Maintenance">Maintenance</option>
+                <option value="Other">Other</option>
+              </select>
             </div>
-            
-            <div>
-              <label for="editExpenseAmount" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                Amount
-              </label>
+            <div class="mb-5">
+              <label for="editExpenseAmount" class="block mb-2 font-medium text-gray-700">Amount (₱)</label>
               <div class="relative">
                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <span class="text-gray-500">₱</span>
                 </div>
-                <input type="number" id="editExpenseAmount" name="editExpenseAmount" min="0.01" step="0.01" placeholder="0.00" class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200" required>
+                <input type="number" id="editExpenseAmount" name="editExpenseAmount" placeholder="0.00" step="0.01" min="0" class="w-full pl-8 px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent" required>
               </div>
             </div>
-            
-            <!-- Status -->
-            <div class="bg-gray-50 p-3 sm:p-4 rounded-lg border border-gray-200">
-              <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                Status
-              </label>
-              <div class="grid grid-cols-2 gap-2">
-                <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
-                  <input type="radio" id="editStatusPaid" name="editExpenseStatus" value="paid" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent" onchange="updateEditDateLimits()">
-                  Paid
-                </label>
-                <label class="flex items-center bg-white p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200">
-                  <input type="radio" id="editStatusToBePaid" name="editExpenseStatus" value="To be paid" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent" onchange="updateEditDateLimits()">
-                  To Be Paid
-                </label>
-              </div>
+            <div class="mb-5">
+              <label for="editExpenseDate" class="block mb-2 font-medium text-gray-700">Date</label>
+              <input type="date" id="editExpenseDate" name="editExpenseDate" class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent" required>
             </div>
-            
-            <!-- Note -->
-            <div>
-              <label for="editExpenseNotes" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                Note <span class="text-xs text-gray-500">(Optional)</span>
-              </label>
-              <div class="relative">
-                <textarea id="editExpenseNotes" name="editExpenseNotes" rows="3" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                          oninput="formatNote(this)" 
-                          onkeydown="preventDoubleSpace(event)"
-                          placeholder="Add any additional details here"></textarea>
-              </div>
+            <div class="mb-5">
+              <label for="editExpenseStatus" class="block mb-2 font-medium text-gray-700">Status</label>
+              <select id="editExpenseStatus" name="editExpenseStatus" class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent" required>
+                <option value="paid">Paid</option>
+                <option value="To be paid">To Be Paid</option>
+              </select>
+            </div>
+            <div class="mb-5">
+              <label for="editExpenseNotes" class="block mb-2 font-medium text-gray-700">Notes <span class="text-xs text-gray-500">(Optional)</span></label>
+              <textarea id="editExpenseNotes" name="editExpenseNotes" rows="3" placeholder="Add any additional details here" class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent"></textarea>
             </div>
           </form>
         </div>
         
         <!-- Modal Footer -->
-        <div class="px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row sm:justify-end gap-2 sm:gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
-          <button type="button" class="w-full sm:w-auto px-4 sm:px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center" onclick="closeEditExpenseModal()">
-            Cancel
-          </button>
-          <button type="button" class="w-full sm:w-auto px-5 sm:px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="saveExpenseChanges()">
+        <div class="p-6 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
+          <button class="px-5 py-3 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-semibold hover:bg-navy transition-colors" onclick="closeEditExpenseModal()">Cancel</button>
+          <button class="px-6 py-3 bg-sidebar-accent text-white rounded-lg font-semibold hover:bg-darkgold transition-colors flex items-center" onclick="saveExpenseChanges()">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
               <polyline points="20 6 9 17 4 12"></polyline>
             </svg>
             Save Changes
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Archive Modal -->
-    <div id="archiveModal" class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto">
-      <!-- Modal Backdrop -->
-      <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
-      
-      <!-- Modal Content -->
-      <div class="relative bg-white rounded-xl shadow-card w-full max-w-4xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] flex flex-col">
-        <!-- Close Button -->
-        <button type="button" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 transition-colors" onclick="closeArchiveModal()">
-          <i class="fas fa-times"></i>
-        </button>
-        
-        <!-- Modal Header -->
-        <div class="px-4 sm:px-6 py-4 sm:py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
-          <h3 class="text-lg sm:text-xl font-bold text-white flex items-center">
-            <i class="fas fa-archive mr-2"></i> Archived Expenses
-          </h3>
-        </div>
-        
-        <!-- Modal Body -->
-        <div class="px-4 sm:px-6 py-4 sm:py-5 overflow-y-auto modal-scroll-container">
-          <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200">
-              <thead class="bg-gray-50">
-                <tr>
-                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Expense Name</th>
-                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
-                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
-                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                </tr>
-              </thead>
-              <tbody id="archivedExpensesTableBody" class="bg-white divide-y divide-gray-200">
-                <!-- Archived expenses will be loaded here -->
-              </tbody>
-            </table>
-          </div>
-        </div>
-        
-        <!-- Modal Footer -->
-        <div class="px-4 sm:px-6 py-3 sm:py-4 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
-          <button type="button" class="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors" onclick="closeArchiveModal()">
-            Close
           </button>
         </div>
       </div>
@@ -1367,42 +1093,16 @@ $pending_payments = $pending_result->fetch_assoc()['pending'];
 
       // Function to open the Edit Expense Modal
       function openEditExpenseModal(id, description, category, amount, date, status, notes) {
-        // Handle expense name - check if it's in the dropdown
-        const dropdown = document.getElementById('editExpenseNameDropdown');
-        const expenseInput = document.getElementById('editExpenseDescription');
-        let foundInDropdown = false;
-        
-        for (let i = 0; i < dropdown.options.length; i++) {
-            if (dropdown.options[i].value === description) {
-                dropdown.selectedIndex = i;
-                expenseInput.classList.add('hidden');
-                foundInDropdown = true;
-                break;
-            }
-        }
-        
-        if (!foundInDropdown) {
-            dropdown.value = 'Other';
-            expenseInput.value = description;
-            expenseInput.classList.remove('hidden');
-        }
-        
-        // Set form values
         document.getElementById('editExpenseId').value = id;
+        document.getElementById('editExpenseDescription').value = description;
         document.getElementById('editExpenseCategory').value = category;
         document.getElementById('editExpenseAmount').value = amount;
         document.getElementById('editExpenseDate').value = date;
+        document.getElementById('editExpenseStatus').value = status;
         document.getElementById('editExpenseNotes').value = notes || '';
         
-        // Set status
-        if (status) {
-            const statusValue = status.toLowerCase() === 'paid' ? 'paid' : 'to be paid';
-            document.querySelector(`input[name="editExpenseStatus"][value="${statusValue}"]`).checked = true;
-            updateEditDateLimits(); // Update date limits based on status
-        }
-        
-        // Show the modal
         document.getElementById('editExpenseModal').style.display = 'flex';
+        document.getElementById('editExpenseDescription').focus();
       }
 
       // Function to close the Edit Expense Modal
@@ -1499,74 +1199,6 @@ $pending_payments = $pending_result->fetch_assoc()['pending'];
           position: 'top-end',
           showConfirmButton: false
         });
-      }
-
-      // Function to handle expense name dropdown change
-      function handleExpenseNameChange(select) {
-          const expenseInput = document.getElementById('expenseDescription');
-          if (select.value === 'Other') {
-              expenseInput.classList.remove('hidden');
-              expenseInput.value = '';
-              expenseInput.focus();
-          } else {
-              expenseInput.classList.add('hidden');
-              expenseInput.value = select.value;
-          }
-      }
-
-      // Function to handle edit expense name dropdown change
-      function handleEditExpenseNameChange(select) {
-          const expenseInput = document.getElementById('editExpenseDescription');
-          if (select.value === 'Other') {
-              expenseInput.classList.remove('hidden');
-              expenseInput.value = '';
-              expenseInput.focus();
-          } else {
-              expenseInput.classList.add('hidden');
-              expenseInput.value = select.value;
-          }
-      }
-
-      // Function to format expense name (capitalize first letter)
-      function formatExpenseName(input) {
-          input.value = input.value.replace(/[^a-zA-Z0-9\s]/g, '');
-          input.value = input.value.charAt(0).toUpperCase() + input.value.slice(1);
-      }
-
-      // Function to format note
-      function formatNote(textarea) {
-          textarea.value = textarea.value.replace(/[^a-zA-Z0-9\s.,!?-]/g, '');
-      }
-
-      // Function to prevent double spaces
-      function preventDoubleSpace(event) {
-          if (event.key === ' ' && event.target.value.slice(-1) === ' ') {
-              event.preventDefault();
-          }
-      }
-
-      // Function to update date limits based on status
-      function updateDateLimits() {
-          const dateInput = document.getElementById('expenseDate');
-          const statusPaid = document.getElementById('statusPaid').checked;
-          
-          if (statusPaid) {
-              dateInput.max = new Date().toISOString().split('T')[0];
-          } else {
-              dateInput.removeAttribute('max');
-          }
-      }
-
-      // Function to update edit date limits based on status
-      function updateEditDateLimits() {
-          const dateInput = document.getElementById('editExpenseDate');
-          const statusPaid = document.getElementById('editStatusPaid').checked;
-          
-          if (statusPaid) {
-              dateInput.max = new Date().toISOString().split('T')[0];
-          } else {
-              dateInput.removeAttribute('max');
-          }
       }
     </script>
     <script src="tailwind.js"></script>
