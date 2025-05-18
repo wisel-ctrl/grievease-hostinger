@@ -428,7 +428,8 @@ foreach ($serviceData as $service => $branches) {
               <p class="text-sm font-medium text-navy">Notifications</p>                
             </div>                
             <div class="max-h-64 overflow-y-auto">                    
-              <?php if ($notifications_count['total'] > 0): ?>                        <div class="py-2">                            
+              <?php if ($notifications_count['total'] > 0): ?>                        
+                <div class="py-2">                            
                 <?php if ($notifications_count['pending'] > 0): ?>                                
                 <a href="notification.php" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">                                    
                   <i class="fas fa-clock text-yellow-600 mr-2"></i>                                    
@@ -438,12 +439,16 @@ foreach ($serviceData as $service => $branches) {
                 <?php if ($notifications_count['accepted'] > 0): ?>                                
                   <a href="notification.php" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">                                    
                     <i class="fas fa-check-circle text-green-600 mr-2"></i>                                    
-                    <?php echo $notifications_count['accepted']; ?> Accepted Requests                                </a>                            
+                    <?php echo $notifications_count['accepted']; ?> Accepted Requests                                
+                  </a>                            
                     <?php endif; ?>                            
                     <?php if ($notifications_count['declined'] > 0): ?>                                
-                      <a href="notification.php" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">                                    <i class="fas fa-times-circle text-red-600 mr-2"></i>                                    
-                      <?php echo $notifications_count['declined']; ?> Declined Requests                                </a>                            
-                      <?php endif; ?>                        </div>                    
+                      <a href="notification.php" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">                                    
+                        <i class="fas fa-times-circle text-red-600 mr-2"></i>                                    
+                      <?php echo $notifications_count['declined']; ?> Declined Requests                                
+                    </a>                            
+                      <?php endif; ?>                        
+                    </div>                    
                       <?php else: ?>                        
                         <div class="px-4 py-3 text-sm text-gray-500 text-center">                            No new notifications                        
 
@@ -451,7 +456,10 @@ foreach ($serviceData as $service => $branches) {
                         <?php endif; ?>                
                       </div>                
                       <div class="p-2 border-t border-gray-100 bg-gray-50">                    
-                        <a href="notification.php" class="block text-center text-sm text-yellow-600 hover:text-yellow-700">View All Notifications</a>                </div>            </div>        </div>
+                        <a href="notification.php" class="block text-center text-sm text-yellow-600 hover:text-yellow-700">View All Notifications</a>                
+                      </div>            
+                    </div>        
+                      </div></div>
       </button>
     </div>
   </div>
