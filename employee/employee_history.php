@@ -795,50 +795,401 @@ $offsetOutstanding = ($pageOutstanding - 1) * $recordsPerPage;
         </div>  
 
   <!-- Modal for Editing Service -->
-<div class="fixed top-0 left-0 w-full h-full bg-black bg-opacity-60 flex items-center justify-center z-50 hidden" id="editServiceModal">
-  <div class="bg-white rounded-xl w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-xl">
+<div class="fixed inset-0 z-50 flex items-center justify-center hidden" id="editServiceModal">
+  <!-- Modal Backdrop -->
+  <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+  
+  <!-- Modal Content -->
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] flex flex-col">
+    <!-- Close Button -->
+    <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeEditServiceModal()">
+      <i class="fas fa-times"></i>
+    </button>
+    
     <!-- Modal Header -->
-    <div class="bg-gradient-to-r from-sidebar-accent to-white flex justify-between items-center p-6 flex-shrink-0">
-      <h3 class="text-xl font-bold text-white">Edit Service</h3>
-      <button class="bg-black bg-opacity-20 hover:bg-opacity-30 rounded-full p-2 text-white hover:text-white transition-all duration-200" onclick="closeEditServiceModal()">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-          <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-        </svg>
-      </button>
+    <div class="px-4 sm:px-6 py-4 sm:py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
+      <h3 class="text-lg sm:text-xl font-bold text-white flex items-center">
+        Edit Service
+      </h3>
     </div>
     
-    <!-- Modal Body -->
-    <div class="p-6">
-      <form id="editServiceForm" class="space-y-4">
-        <div>
-          <label for="editClientName" class="block text-sm font-medium text-gray-700 mb-1">Client Name</label>
-          <input type="text" id="editClientName" name="editClientName" required class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
+    <!-- Modal Body - Single Column Layout -->
+    <div class="px-4 sm:px-6 py-4 sm:py-5 overflow-y-auto modal-scroll-container">
+      <form id="editServiceForm" class="space-y-3 sm:space-y-6">
+        <input type="hidden" id="salesId" name="sales_id">
+        
+        <!-- Customer Information Section -->
+        <div class="pb-4 border-b border-gray-200">
+          <h4 class="text-lg font-semibold flex items-center text-gray-800 mb-4">
+            Customer Information
+          </h4>
+
+          <!-- Customer Selection -->
+          <div class="form-group mb-4">
+            <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+              Search Customer
+            </label>
+            <div class="relative">
+              <input 
+                type="text" 
+                id="editCustomerSearch" 
+                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                placeholder="Type customer name..."
+                autocomplete="off"
+              >
+              <div id="editCustomerResults" class="absolute z-10 mt-1 w-full bg-white shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto hidden">
+                <!-- Results will appear here -->
+              </div>
+            </div>
+            <input type="hidden" id="editSelectedCustomerId" name="customer_id">
+          </div>
+
+          <!-- Customer Name Fields - 2x2 grid -->
+          <div class="grid grid-cols-2 gap-4 mb-4">
+            <div class="form-group">
+              <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                First Name
+              </label>
+              <input 
+                type="text" 
+                id="editFirstName" 
+                name="editFirstName"
+                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                placeholder="First Name"
+              >
+            </div>
+            <div class="form-group">
+              <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                Last Name
+              </label>
+              <input 
+                type="text" 
+                id="editLastName" 
+                name="editLastName"
+                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                placeholder="Last Name"
+              >
+            </div>
+            <div class="form-group">
+              <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                Middle Name
+              </label>
+              <input 
+                type="text" 
+                id="editMiddleName" 
+                name="editMiddleName"
+                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                placeholder="Middle Name"
+              >
+            </div>
+            <div class="form-group">
+              <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                Suffix
+              </label>
+              <select id="editNameSuffix" name="editNameSuffix" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                <option value="">None</option>
+                <option value="Jr.">Jr.</option>
+                <option value="Sr.">Sr.</option>
+                <option value="I">I</option>
+                <option value="II">II</option>
+                <option value="III">III</option>
+                <option value="IV">IV</option>
+                <option value="V">V</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Contact Information - 2 columns -->
+          <div class="grid grid-cols-2 gap-4 mb-4">
+            <div class="form-group">
+              <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                Email
+              </label>
+              <input 
+                type="email" 
+                id="editEmail" 
+                name="editEmail"
+                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                placeholder="Enter Email"
+              >
+            </div>
+            <div class="form-group">
+              <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                Phone
+              </label>
+              <input 
+                type="tel" 
+                id="editPhone" 
+                name="editPhone"
+                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                placeholder="Enter Phone Number"
+              >
+            </div>
+          </div>
+
+          <!-- Service Selection & Price - 2 columns -->
+          <div class="grid grid-cols-2 gap-4 mb-4">
+            <div class="form-group">
+              <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                Service Type
+              </label>
+              <select 
+                id="editServiceType" 
+                name="editServiceType"
+                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+              >
+                <option value="">Choose Service</option>
+                <option value="Memorial Service">Memorial Service</option>
+                <option value="Funeral Service">Funeral Service</option>
+                <option value="Cremation Service">Cremation Service</option>
+                <option value="Visitation">Visitation</option>
+                <option value="Burial Service">Burial Service</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                Outstanding Balance
+              </label>
+              <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <span class="text-gray-500">₱</span>
+                </div>
+                <input 
+                  type="number" 
+                  id="editOutstandingBalance" 
+                  name="editOutstandingBalance"
+                  class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                  placeholder="Enter Outstanding Balance"
+                >
+              </div>
+            </div>
+          </div>
         </div>
-        <div>
-          <label for="editServiceType" class="block text-sm font-medium text-gray-700 mb-1">Service Type</label>
-          <select id="editServiceType" name="editServiceType" required class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
-            <option value="Memorial Service">Memorial Service</option>
-            <option value="Funeral Service">Funeral Service</option>
-            <option value="Cremation Service">Cremation Service</option>
-            <option value="Visitation">Visitation</option>
-            <option value="Burial Service">Burial Service</option>
-          </select>
-        </div>
-        <div>
-          <label for="editServiceDate" class="block text-sm font-medium text-gray-700 mb-1">Date</label>
-          <input type="date" id="editServiceDate" name="editServiceDate" required class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
-        </div>
-        <div>
-          <label for="editOutstandingBalance" class="block text-sm font-medium text-gray-700 mb-1">Outstanding Balance</label>
-          <input type="number" id="editOutstandingBalance" name="editOutstandingBalance" required class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent">
+        
+        <!-- Deceased Information Section -->
+        <div class="pt-2">
+          <h4 class="text-lg font-semibold flex items-center text-gray-800 mb-4">
+            Deceased Information
+          </h4>
+          
+          <!-- Deceased Name Fields - 2x2 grid -->
+          <div class="grid grid-cols-2 gap-4 mb-4">
+            <div class="form-group">
+              <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                First Name
+              </label>
+              <input 
+                type="text" 
+                id="editDeceasedFirstName" 
+                name="editDeceasedFirstName"
+                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                placeholder="First Name"
+              >
+            </div>
+            <div class="form-group">
+              <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                Last Name
+              </label>
+              <input 
+                type="text" 
+                id="editDeceasedLastName" 
+                name="editDeceasedLastName"
+                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                placeholder="Last Name"
+              >
+            </div>
+            <div class="form-group">
+              <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                Middle Name
+              </label>
+              <input 
+                type="text" 
+                id="editDeceasedMiddleName" 
+                name="editDeceasedMiddleName"
+                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                placeholder="Middle Name"
+              >
+            </div>
+            <div class="form-group">
+              <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                Suffix
+              </label>
+              <select id="editDeceasedSuffix" name="editDeceasedSuffix" class="w-full px-3 py-2 border border-input-border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                <option value="">None</option>
+                <option value="Jr.">Jr.</option>
+                <option value="Sr.">Sr.</option>
+                <option value="I">I</option>
+                <option value="II">II</option>
+                <option value="III">III</option>
+                <option value="IV">IV</option>
+                <option value="V">V</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Deceased Address - Dropdown System -->
+          <div class="form-group mb-4">
+            <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+              Deceased Address
+            </label>
+            
+            <!-- Region Dropdown -->
+            <div class="mb-3">
+              <label class="block text-xs font-medium text-gray-500 mb-1">Region</label>
+              <select 
+                id="editRegionSelect" 
+                name="editRegionSelect"
+                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                onchange="loadProvinces('edit')"
+              >
+                <option value="">Select Region</option>
+                <!-- Regions will be loaded dynamically -->
+              </select>
+            </div>
+            
+            <!-- Province Dropdown -->
+            <div class="mb-3">
+              <label class="block text-xs font-medium text-gray-500 mb-1">Province</label>
+              <select 
+                id="editProvinceSelect" 
+                name="editProvinceSelect"
+                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                disabled
+                onchange="loadCities('edit')"
+              >
+                <option value="">Select Province</option>
+                <!-- Provinces will be loaded dynamically -->
+              </select>
+            </div>
+            
+            <!-- City/Municipality Dropdown -->
+            <div class="mb-3">
+              <label class="block text-xs font-medium text-gray-500 mb-1">City/Municipality</label>
+              <select 
+                id="editCitySelect" 
+                name="editCitySelect"
+                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                disabled
+                onchange="loadBarangays('edit')"
+              >
+                <option value="">Select City/Municipality</option>
+                <!-- Cities will be loaded dynamically -->
+              </select>
+            </div>
+            
+            <!-- Barangay Dropdown -->
+            <div class="mb-3">
+              <label class="block text-xs font-medium text-gray-500 mb-1">Barangay</label>
+              <select 
+                id="editBarangaySelect" 
+                name="editBarangaySelect"
+                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                disabled
+              >
+                <option value="">Select Barangay</option>
+                <!-- Barangays will be loaded dynamically -->
+              </select>
+            </div>
+            
+            <!-- Street and Zip Code -->
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-medium text-gray-500 mb-1">Street</label>
+                <input 
+                  type="text" 
+                  id="editStreetInput" 
+                  name="editStreetInput"
+                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                  placeholder="Street name, building, etc."
+                >
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-gray-500 mb-1">Zip Code</label>
+                <input 
+                  type="text" 
+                  id="editZipCodeInput" 
+                  name="editZipCodeInput"
+                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                  placeholder="Zip Code"
+                >
+              </div>
+            </div>
+          </div>
+
+          <!-- Deceased Dates - 3 columns for dates -->
+          <div class="grid grid-cols-3 gap-4 mb-4">
+            <div class="form-group">
+              <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                Birth Date
+              </label>
+              <input 
+                type="date" 
+                id="editBirthDate" 
+                name="editBirthDate"
+                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+              >
+            </div>
+            <div class="form-group">
+              <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                Date of Death
+              </label>
+              <input 
+                type="date" 
+                id="editDeathDate" 
+                name="editDeathDate"
+                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+              >
+            </div>
+            <div class="form-group">
+              <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                Date of Burial
+              </label>
+              <input 
+                type="date" 
+                id="editBurialDate" 
+                name="editBurialDate"
+                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+              >
+            </div>
+          </div>
+
+          <!-- Death Certificate Upload -->
+          <div class="form-group mt-4">
+            <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+              Death Certificate
+            </label>
+            <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg">
+              <div class="space-y-1 text-center">
+                <div class="flex text-sm text-gray-600">
+                  <label for="editDeathCertificate" class="relative cursor-pointer bg-white rounded-md font-medium text-sidebar-accent hover:text-opacity-80 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-sidebar-accent">
+                    <span>Upload a file</span>
+                    <input 
+                      id="editDeathCertificate" 
+                      name="editDeathCertificate" 
+                      type="file" 
+                      class="sr-only"
+                      accept=".pdf,.jpg,.jpeg,.png"
+                    >
+                  </label>
+                  <p class="pl-1">or drag and drop</p>
+                </div>
+                <p class="text-xs text-gray-500">PNG, JPG, PDF up to 10MB</p>
+              </div>
+            </div>
+            <p id="edit-file-name" class="mt-2 text-sm text-gray-500"></p>
+          </div>
         </div>
       </form>
     </div>
     
     <!-- Modal Footer -->
-    <div class="p-6 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
-      <button class="px-5 py-3 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-semibold hover:bg-navy transition-colors" onclick="closeEditServiceModal()">Cancel</button>
-      <button class="px-6 py-3 bg-sidebar-accent text-white rounded-lg font-semibold hover:bg-darkgold transition-colors" onclick="saveServiceChanges()">Save Changes</button>
+    <div class="px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row sm:justify-end gap-2 sm:gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
+      <button type="button" class="w-full sm:w-auto px-4 sm:px-5 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center" onclick="closeEditServiceModal()">
+        Cancel
+      </button>
+      <button type="button" class="w-full sm:w-auto px-5 sm:px-6 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="saveServiceChanges()">
+        Save Changes
+      </button>
     </div>
   </div>
 </div>
