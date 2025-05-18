@@ -948,7 +948,7 @@ $offsetOutstanding = ($pageOutstanding - 1) * $recordsPerPage;
             </div>
             <div class="form-group">
               <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                Outstanding Balance
+                Service Price
               </label>
               <div class="relative">
                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -956,10 +956,10 @@ $offsetOutstanding = ($pageOutstanding - 1) * $recordsPerPage;
                 </div>
                 <input 
                   type="number" 
-                  id="editOutstandingBalance" 
-                  name="editOutstandingBalance"
+                  id="editServicePrice" 
+                  name="editServicePrice"
                   class="w-full pl-8 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                  placeholder="Enter Outstanding Balance"
+                  placeholder="Enter Service Price"
                 >
               </div>
             </div>
@@ -1675,27 +1675,162 @@ function toggleBodyScroll(isOpen) {
 }
 
 // Function to open the Edit Service Modal
+// Function to open the Edit Service Modal and populate with service details
 function openEditServiceModal(serviceId) {
-  // Fetch service details and populate the form
-  document.getElementById('editServiceModal').style.display = 'flex';
-  toggleBodyScroll(true);
+  // Fetch service details via AJAX
+  fetch(`../admin/get_service_details.php?sales_id=${serviceId}`)
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        // Populate the form fields with the service details
+        document.getElementById('salesId').value = data.sales_id;
+        
+        // Customer Information
+        document.getElementById('editFirstName').value = data.fname || '';
+        document.getElementById('editMiddleName').value = data.mname || '';
+        document.getElementById('editLastName').value = data.lname || '';
+        document.getElementById('editNameSuffix').value = data.suffix || '';
+        document.getElementById('editEmail').value = data.email || '';
+        document.getElementById('editPhone').value = data.phone || '';
+        
+        // Service Information
+        document.getElementById('editServiceType').value = data.service_name || '';
+        document.getElementById('editServicePrice').value = data.discounted_price || '';
+        
+        // Deceased Information
+        document.getElementById('editDeceasedFirstName').value = data.fname_deceased || '';
+        document.getElementById('editDeceasedMiddleName').value = data.mname_deceased || '';
+        document.getElementById('editDeceasedLastName').value = data.lname_deceased || '';
+        document.getElementById('editDeceasedSuffix').value = data.suffix_deceased || '';
+        document.getElementById('editBirthDate').value = data.date_of_birth || '';
+        document.getElementById('editDeathDate').value = data.date_of_death || '';
+        document.getElementById('editBurialDate').value = data.date_of_burial || '';
+        
+        // Address Information - You'll need to implement the address loading functions
+        // For now, we'll just set the street input
+        document.getElementById('editStreetInput').value = data.deceased_address || '';
+        
+        // Show the modal
+        document.getElementById('editServiceModal').classList.remove('hidden');
+        toggleBodyScroll(true);
+        
+        // Load services for this branch
+        loadServicesForBranch(data.branch_id, data.service_id);
+        
+        // Load address dropdowns if needed
+        // loadAddressDropdowns(data.region, data.province, data.city, data.barangay);
+        
+      } else {
+        alert('Failed to fetch service details: ' + data.message);
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('An error occurred while fetching service details');
+    });
 }
 
-// Function to close the Edit Service Modal
-function closeEditServiceModal() {
-  document.getElementById('editServiceModal').style.display = 'none';
-  toggleBodyScroll(false);
+// Function to load services for a specific branch
+function loadServicesForBranch(branchId, currentServiceId) {
+  fetch(`get_services_for_branch.php?branch_id=${branchId}`)
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        const serviceSelect = document.getElementById('editServiceType');
+        serviceSelect.innerHTML = '<option value="">Choose Service</option>';
+        
+        data.services.forEach(service => {
+          const option = document.createElement('option');
+          option.value = service.service_id;
+          option.textContent = service.service_name;
+          if (service.service_id == currentServiceId) {
+            option.selected = true;
+          }
+          serviceSelect.appendChild(option);
+        });
+      } else {
+        console.error('Failed to fetch services:', data.message);
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
 }
 
 // Function to save changes to a service
 function saveServiceChanges() {
-  const form = document.getElementById('editServiceForm');
-  if (form.checkValidity()) {
-    // Save changes logic here
-    alert('Service updated successfully!');
-    closeEditServiceModal();
+  // Get all form values
+  const formData = {
+    sales_id: document.getElementById('salesId').value,
+    customer_id: document.getElementById('editSelectedCustomerId').value,
+    service_id: document.getElementById('editServiceType').value,
+    service_price: document.getElementById('editServicePrice').value,
+    firstName: document.getElementById('editFirstName').value,
+    middleName: document.getElementById('editMiddleName').value,
+    lastName: document.getElementById('editLastName').value,
+    nameSuffix: document.getElementById('editNameSuffix').value,
+    email: document.getElementById('editEmail').value,
+    phone: document.getElementById('editPhone').value,
+    deceasedFirstName: document.getElementById('editDeceasedFirstName').value,
+    deceasedMiddleName: document.getElementById('editDeceasedMiddleName').value,
+    deceasedLastName: document.getElementById('editDeceasedLastName').value,
+    deceasedSuffix: document.getElementById('editDeceasedSuffix').value,
+    birthDate: document.getElementById('editBirthDate').value,
+    deathDate: document.getElementById('editDeathDate').value,
+    burialDate: document.getElementById('editBurialDate').value,
+    streetInput: document.getElementById('editStreetInput').value,
+    region: document.getElementById('editRegionSelect').value,
+    province: document.getElementById('editProvinceSelect').value,
+    city: document.getElementById('editCitySelect').value,
+    barangay: document.getElementById('editBarangaySelect').value,
+    zipCode: document.getElementById('editZipCodeInput').value,
+    deathCertificate: document.getElementById('editDeathCertificate').files[0]?.name || ''
+  };
+
+  // Validate required fields
+  if (!formData.firstName || !formData.lastName || !formData.deceasedFirstName || 
+      !formData.deceasedLastName || !formData.burialDate || !formData.service_id) {
+    alert('Please fill in all required fields');
+    return;
+  }
+
+  // Send data to server
+  fetch('update_history_sales.php', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(formData)
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      alert('Service updated successfully!');
+      closeEditServiceModal();
+      // Optionally refresh the page or update the table
+      location.reload();
+    } else {
+      alert('Error: ' + data.message);
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    alert('An error occurred while updating the service');
+  });
+}
+
+// Function to close the Edit Service Modal
+function closeEditServiceModal() {
+  document.getElementById('editServiceModal').classList.add('hidden');
+  toggleBodyScroll(false);
+}
+
+// Function to toggle body scroll when modal is open
+function toggleBodyScroll(isOpen) {
+  if (isOpen) {
+    document.body.style.overflow = 'hidden';
   } else {
-    form.reportValidity();
+    document.body.style.overflow = '';
   }
 }
 
