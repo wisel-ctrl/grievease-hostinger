@@ -333,12 +333,89 @@ $ongoing_services = $ongoing_data['ongoing_count'];
       <h1 class="text-2xl font-bold text-sidebar-text">Employee Dashboard</h1>
       <p class="text-sm text-gray-500">Welcome back, </p>
     </div>
-    <div class="flex space-x-3">
-      <button class="p-2 bg-white border border-sidebar-border rounded-lg shadow-input text-sidebar-text hover:bg-sidebar-hover transition-all duration-300">
-        <i class="fas fa-bell"></i>
-      </button>
-       
+    <div class="relative">
+  <button id="notification-bell" class="p-2 bg-white border border-sidebar-border rounded-lg shadow-input text-sidebar-text hover:bg-sidebar-hover transition-all duration-300">
+    <i class="fas fa-bell"></i>
+    <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">3</span>
+  </button>
+  
+  <!-- Notification Dropdown -->
+  <div id="notifications-dropdown" class="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg border border-sidebar-border z-50 hidden">
+    <!-- Notifications Header -->
+    <div class="px-4 py-3 border-b border-sidebar-border flex justify-between items-center">
+      <h3 class="font-medium text-sidebar-text">Notifications</h3>
+      <div class="flex space-x-2">
+        <button class="text-xs text-blue-600 hover:text-blue-800">Mark all as read</button>
+        <button class="text-xs text-gray-500 hover:text-gray-700">Settings</button>
+      </div>
     </div>
+    
+    <!-- Notifications List -->
+    <div class="max-h-96 overflow-y-auto scrollbar-thin">
+      <!-- New booking notification -->
+      <a href="#" class="block px-4 py-3 border-b border-sidebar-border hover:bg-sidebar-hover transition-all duration-300 flex items-start">
+        <div class="flex-shrink-0 bg-blue-100 rounded-full p-2 mr-3">
+          <i class="fas fa-calendar-alt text-blue-600"></i>
+        </div>
+        <div class="flex-grow">
+          <p class="text-sm font-medium text-sidebar-text">New booking request</p>
+          <p class="text-xs text-gray-500">Maria Santos requested a funeral service</p>
+          <p class="text-xs text-gray-400 mt-1">10 minutes ago</p>
+        </div>
+        <div class="flex-shrink-0">
+          <span class="h-2 w-2 bg-blue-600 rounded-full block"></span>
+        </div>
+      </a>
+      
+      <!-- Low Inventory notification -->
+      <a href="#" class="block px-4 py-3 border-b border-sidebar-border hover:bg-sidebar-hover transition-all duration-300 flex items-start">
+        <div class="flex-shrink-0 bg-yellow-100 rounded-full p-2 mr-3">
+          <i class="fas fa-exclamation-triangle text-yellow-600"></i>
+        </div>
+        <div class="flex-grow">
+          <p class="text-sm font-medium text-sidebar-text">Low inventory alert</p>
+          <p class="text-xs text-gray-500">Casket Model C102 is running low (2 remaining)</p>
+          <p class="text-xs text-gray-400 mt-1">1 hour ago</p>
+        </div>
+        <div class="flex-shrink-0">
+          <span class="h-2 w-2 bg-blue-600 rounded-full block"></span>
+        </div>
+      </a>
+      
+      <!-- Payment notification -->
+      <a href="#" class="block px-4 py-3 border-b border-sidebar-border hover:bg-sidebar-hover transition-all duration-300 flex items-start">
+        <div class="flex-shrink-0 bg-green-100 rounded-full p-2 mr-3">
+          <i class="fas fa-peso-sign text-green-600"></i>
+        </div>
+        <div class="flex-grow">
+          <p class="text-sm font-medium text-sidebar-text">Payment received</p>
+          <p class="text-xs text-gray-500">P15,000 payment from Juan Cruz (ID: 2450)</p>
+          <p class="text-xs text-gray-400 mt-1">Yesterday</p>
+        </div>
+        <div class="flex-shrink-0">
+          <span class="h-2 w-2 bg-blue-600 rounded-full block"></span>
+        </div>
+      </a>
+      
+      <!-- Read notification example -->
+      <a href="#" class="block px-4 py-3 border-b border-sidebar-border hover:bg-sidebar-hover transition-all duration-300 flex items-start bg-gray-50">
+        <div class="flex-shrink-0 bg-gray-100 rounded-full p-2 mr-3">
+          <i class="fas fa-user-check text-gray-600"></i>
+        </div>
+        <div class="flex-grow">
+          <p class="text-sm font-medium text-gray-600">Customer account created</p>
+          <p class="text-xs text-gray-500">New customer account for Pedro Reyes created</p>
+          <p class="text-xs text-gray-400 mt-1">3 days ago</p>
+        </div>
+      </a>
+    </div>
+    
+    <!-- Notifications Footer -->
+    <div class="px-4 py-2 text-center border-t border-sidebar-border">
+      <a href="#" class="text-sm text-blue-600 hover:text-blue-800">View all notifications</a>
+    </div>
+  </div>
+</div>
   </div>
 
   <!-- Quick Stats -->
@@ -750,6 +827,71 @@ function escapeHtml(unsafe) {
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#039;");
+
+        // Revenue Toggle Functionality
+document.getElementById('revenue-toggle').addEventListener('click', function() {
+  const dropdown = document.getElementById('revenue-dropdown');
+  dropdown.classList.toggle('hidden');
+});
+
+function toggleRevenue(type) {
+  const cashElement = document.getElementById('cash-revenue');
+  const accrualElement = document.getElementById('accrual-revenue');
+  const typeElement = document.getElementById('revenue-type');
+  const dropdown = document.getElementById('revenue-dropdown');
+  
+  if (type === 'cash') {
+    cashElement.classList.remove('hidden');
+    accrualElement.classList.add('hidden');
+    typeElement.textContent = 'Cash';
+  } else {
+    cashElement.classList.add('hidden');
+    accrualElement.classList.remove('hidden');
+    typeElement.textContent = 'Accrual';
+  }
+  
+  dropdown.classList.add('hidden');
+}
+
+// Notification Bell Toggle
+document.getElementById('notification-bell').addEventListener('click', function(event) {
+  event.stopPropagation();
+  const dropdown = document.getElementById('notifications-dropdown');
+  dropdown.classList.toggle('hidden');
+  
+  // If showing notifications, mark as read (update counter)
+  if (!dropdown.classList.contains('hidden')) {
+    setTimeout(() => {
+      const notificationCounter = document.querySelector('#notification-bell span');
+      // Animate the counter change
+      notificationCounter.classList.add('scale-0');
+      setTimeout(() => {
+        notificationCounter.textContent = '0';
+        notificationCounter.classList.remove('scale-0');
+      }, 300);
+    }, 1500);
+  }
+});
+
+// Close dropdowns when clicking outside
+document.addEventListener('click', function(event) {
+  // Revenue dropdown
+  const revenueDropdown = document.getElementById('revenue-dropdown');
+  const revenueToggle = document.getElementById('revenue-toggle');
+  if (revenueDropdown && revenueToggle && !revenueToggle.contains(event.target) && !revenueDropdown.contains(event.target)) {
+    revenueDropdown.classList.add('hidden');
+  }
+  
+  // Notifications dropdown
+  const notificationsDropdown = document.getElementById('notifications-dropdown');
+  const notificationBell = document.getElementById('notification-bell');
+  if (notificationsDropdown && notificationBell && !notificationBell.contains(event.target) && !notificationsDropdown.contains(event.target)) {
+    notificationsDropdown.classList.add('hidden');
+  }
+});
+
+// Add animation to notification counter
+document.querySelector('#notification-bell span').classList.add('transition-transform', 'duration-300');
 }
 </script>
 </body>
