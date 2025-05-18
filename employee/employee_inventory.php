@@ -50,11 +50,40 @@ $branch_id = $employee['branch_loc'];
 
 // Function to generate table row
 function generateInventoryRow($row) {
+    // Determine quantity cell class based on stock level
+    $quantity = $row["quantity"];
+    
+    // Simplified stock level visualization with just three levels using text color
+    if ($quantity <= 2) { // Critical stock
+        $quantityClass = 'quantity-cell quantity-critical';
+        $quantityText = $quantity . ' <span class="text-xs ml-1">(Critical)</span>';
+        $stockIcon = '<i class="fas fa-exclamation-triangle mr-1"></i>';
+    } elseif ($quantity <= 5) { // Low stock
+        $quantityClass = 'quantity-cell quantity-warning';
+        $quantityText = $quantity . ' <span class="text-xs ml-1">(Low)</span>';
+        $stockIcon = '<i class="fas fa-arrow-down mr-1"></i>';
+    } elseif ($quantity <= 10) { // Normal stock
+        $quantityClass = 'quantity-cell quantity-normal';
+        $quantityText = $quantity;
+        $stockIcon = '';
+    } else { // High stock
+        $quantityClass = 'quantity-cell quantity-high';
+        $quantityText = $quantity;
+        $stockIcon = '';
+    }
+
     $html = '<tr class="border-b border-sidebar-border hover:bg-sidebar-hover">';
     $html .= '<td class="px-4 py-3.5 text-sm text-sidebar-text font-medium whitespace-nowrap">#INV-'.$row['inventory_id'].'</td>';
     $html .= '<td class="px-4 py-3.5 text-sm text-sidebar-text font-medium whitespace-nowrap">'.htmlspecialchars($row['item_name']).'</td>';
     $html .= '<td class="px-4 py-3.5 text-sm text-sidebar-text whitespace-nowrap">'.htmlspecialchars($row['category']).'</td>';
-    $html .= '<td class="px-4 py-3.5 text-sm text-sidebar-text whitespace-nowrap">'.$row['quantity'].'</td>';
+    
+    // Enhanced quantity cell with visual indicators and proper padding
+    $html .= '<td class="p-0 text-sm">';
+    $html .= '<div class="' . $quantityClass . ' px-3 py-2 rounded-lg flex items-center justify-center">';
+    $html .= $stockIcon . $quantityText;
+    $html .= '</div>';
+    $html .= '</td>';
+    
     $html .= '<td class="px-4 py-3.5 text-sm text-sidebar-text whitespace-nowrap">₱'.number_format($row['price'], 2).'</td>';
     $html .= '<td class="px-4 py-3.5 text-sm text-sidebar-text whitespace-nowrap">₱'.number_format($row['total_value'], 2).'</td>';
     $html .= '<td class="px-4 py-3.5 text-sm whitespace-nowrap">';
@@ -241,6 +270,35 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == 1) {
 
     .w-\[calc\(100\%-4rem\)\] {
       width: calc(100% - 4rem);
+    }
+
+    /* Heatmap color scale */
+    .quantity-cell {
+      border-radius: 0.5rem;
+      padding: 0.5rem 1rem;
+      text-align: center;
+    }
+    
+    .quantity-critical {
+      background-color: #fee2e2; /* red-100 */
+      color: #b91c1c; /* red-800 */
+      font-weight: 600;
+    }
+    
+    .quantity-warning {
+      background-color: #fef3c7; /* amber-100 */
+      color: #92400e; /* amber-800 */
+      font-weight: 500;
+    }
+    
+    .quantity-normal {
+      background-color: #dcfce7; /* green-100 */
+      color: #166534; /* green-800 */
+    }
+    
+    .quantity-high {
+      background-color: #f0fdf4; /* emerald-50 */
+      color: #064e3b; /* emerald-900 */
     }
   </style>
 </head>
