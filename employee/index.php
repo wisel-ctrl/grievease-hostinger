@@ -827,6 +827,7 @@ function escapeHtml(unsafe) {
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#039;");
+        }
 
         // Revenue Toggle Functionality
 document.getElementById('revenue-toggle').addEventListener('click', function() {
@@ -892,7 +893,7 @@ document.addEventListener('click', function(event) {
 
 // Add animation to notification counter
 document.querySelector('#notification-bell span').classList.add('transition-transform', 'duration-300');
-}
+
 </script>
 </body>
 </html>
