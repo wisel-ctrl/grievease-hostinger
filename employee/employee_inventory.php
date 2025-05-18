@@ -55,27 +55,26 @@ function generateInventoryRow($row) {
     
     // Simplified stock level visualization with just three levels using text color
     if ($quantity <= 2) { // Critical stock
-        $quantityClass = 'quantity-cell quantity-critical';
+        $quantityClass = 'quantity-cell text-red-600 font-bold';
         $quantityText = $quantity . ' <span class="text-xs ml-1">(Critical)</span>';
         $stockIcon = '<i class="fas fa-exclamation-triangle mr-1"></i>';
     } elseif ($quantity <= 5) { // Low stock
-        $quantityClass = 'quantity-cell quantity-warning';
+        $quantityClass = 'quantity-cell text-yellow-600 font-medium';
         $quantityText = $quantity . ' <span class="text-xs ml-1">(Low)</span>';
         $stockIcon = '<i class="fas fa-arrow-down mr-1"></i>';
-    } elseif ($quantity <= 10) { // Normal stock
-        $quantityClass = 'quantity-cell quantity-normal';
-        $quantityText = $quantity;
-        $stockIcon = '';
-    } else { // High stock
-        $quantityClass = 'quantity-cell quantity-high';
+    } else { // Normal stock
+        $quantityClass = 'quantity-cell text-green-600';
         $quantityText = $quantity;
         $stockIcon = '';
     }
 
-    $html = '<tr class="border-b border-sidebar-border hover:bg-sidebar-hover">';
-    $html .= '<td class="px-4 py-3.5 text-sm text-sidebar-text font-medium whitespace-nowrap">#INV-'.$row['inventory_id'].'</td>';
-    $html .= '<td class="px-4 py-3.5 text-sm text-sidebar-text font-medium whitespace-nowrap">'.htmlspecialchars($row['item_name']).'</td>';
-    $html .= '<td class="px-4 py-3.5 text-sm text-sidebar-text whitespace-nowrap">'.htmlspecialchars($row['category']).'</td>';
+    $html = '<tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">';
+    $html .= '<td class="p-4 text-sm text-sidebar-text font-medium">#INV-' . str_pad($row["inventory_id"], 3, '0', STR_PAD_LEFT) . '</td>';
+    $html .= '<td class="p-4 text-sm text-sidebar-text">' . htmlspecialchars($row["item_name"]) . '</td>';
+    $html .= '<td class="p-4 text-sm text-sidebar-text">';
+    $html .= '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">';
+    $html .= htmlspecialchars($row["category"]) . '</span>';
+    $html .= '</td>';
     
     // Enhanced quantity cell with visual indicators and proper padding
     $html .= '<td class="p-0 text-sm">';
@@ -84,14 +83,14 @@ function generateInventoryRow($row) {
     $html .= '</div>';
     $html .= '</td>';
     
-    $html .= '<td class="px-4 py-3.5 text-sm text-sidebar-text whitespace-nowrap">₱'.number_format($row['price'], 2).'</td>';
-    $html .= '<td class="px-4 py-3.5 text-sm text-sidebar-text whitespace-nowrap">₱'.number_format($row['total_value'], 2).'</td>';
-    $html .= '<td class="px-4 py-3.5 text-sm whitespace-nowrap">';
-    $html .= '<div class="flex items-center gap-2">';
-    $html .= '<button class="p-1.5 bg-blue-100 text-blue-600 rounded hover:bg-blue-200 transition-all edit-btn" data-id="'.$row['inventory_id'].'">';
+    $html .= '<td class="p-4 text-sm font-medium text-sidebar-text" data-sort-value="' . $row["price"] . '">₱' . number_format($row["price"], 2) . '</td>';
+    $html .= '<td class="p-4 text-sm font-medium text-sidebar-text" data-sort-value="' . $row["total_value"] . '">₱' . number_format($row["total_value"], 2) . '</td>';
+    $html .= '<td class="p-4 text-sm">';
+    $html .= '<div class="flex space-x-2">';
+    $html .= '<button class="p-1.5 bg-blue-100 text-blue-600 rounded hover:bg-blue-200 transition-all edit-btn" data-id="' . $row['inventory_id'] . '">';
     $html .= '<i class="fas fa-edit"></i>';
     $html .= '</button>';
-    $html .= '<button class="p-1.5 bg-red-100 text-red-600 rounded hover:bg-red-200 transition-all archive-btn" data-id="'.$row['inventory_id'].'" data-name="'.htmlspecialchars($row['item_name']).'">';
+    $html .= '<button class="p-1.5 bg-red-100 text-red-600 rounded hover:bg-red-200 transition-all archive-btn" data-id="' . $row['inventory_id'] . '" data-name="' . htmlspecialchars($row['item_name']) . '">';
     $html .= '<i class="fas fa-archive"></i>';
     $html .= '</button>';
     $html .= '</div>';
