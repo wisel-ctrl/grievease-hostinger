@@ -460,6 +460,7 @@ $ongoing_services = $ongoing_data['ongoing_count'];
   </div>
 </div>
 </div>
+</div>
 
   <!-- Quick Stats -->
     <div class="mb-8">
