@@ -873,38 +873,29 @@ function escapeHtml(unsafe) {
         .replace(/'/g, "&#039;");
         }
 
-        // Revenue Toggle Functionality
-document.getElementById('revenue-toggle').addEventListener('click', function() {
-  const dropdown = document.getElementById('revenue-dropdown');
-  dropdown.classList.toggle('hidden');
-});
+</script>
 
-function toggleRevenue(type) {
-  const cashElement = document.getElementById('cash-revenue');
-  const accrualElement = document.getElementById('accrual-revenue');
-  const typeElement = document.getElementById('revenue-type');
-  const dropdown = document.getElementById('revenue-dropdown');
-  
-  if (type === 'cash') {
-    cashElement.classList.remove('hidden');
-    accrualElement.classList.add('hidden');
-    typeElement.textContent = 'Cash';
-  } else {
-    cashElement.classList.add('hidden');
-    accrualElement.classList.remove('hidden');
-    typeElement.textContent = 'Accrual';
-  }
-  
-  dropdown.classList.add('hidden');
-}
-
-// Notification Bell Toggle
+<script>
+// Notification Bell Toggle with animations
 document.getElementById('notification-bell').addEventListener('click', function(event) {
   event.stopPropagation();
   const dropdown = document.getElementById('notifications-dropdown');
-  dropdown.classList.toggle('hidden');
   
-  // If showing notifications, mark as read (update counter)
+  if(dropdown.classList.contains('hidden')) {
+    // Show dropdown with animation
+    dropdown.classList.remove('hidden');
+    setTimeout(() => {
+      dropdown.classList.remove('opacity-0', '-translate-y-2');
+    }, 10);
+  } else {
+    // Hide dropdown with animation
+    dropdown.classList.add('opacity-0', '-translate-y-2');
+    setTimeout(() => {
+      dropdown.classList.add('hidden');
+    }, 300);
+  }
+  
+  // If showing notifications, mark as read (update counter) with animation
   if (!dropdown.classList.contains('hidden')) {
     setTimeout(() => {
       const notificationCounter = document.querySelector('#notification-bell span');
@@ -914,30 +905,59 @@ document.getElementById('notification-bell').addEventListener('click', function(
         notificationCounter.textContent = '0';
         notificationCounter.classList.remove('scale-0');
       }, 300);
-    }, 1500);
+    }, 2000);
   }
 });
 
 // Close dropdowns when clicking outside
 document.addEventListener('click', function(event) {
-  // Revenue dropdown
-  const revenueDropdown = document.getElementById('revenue-dropdown');
-  const revenueToggle = document.getElementById('revenue-toggle');
-  if (revenueDropdown && revenueToggle && !revenueToggle.contains(event.target) && !revenueDropdown.contains(event.target)) {
-    revenueDropdown.classList.add('hidden');
-  }
-  
   // Notifications dropdown
   const notificationsDropdown = document.getElementById('notifications-dropdown');
   const notificationBell = document.getElementById('notification-bell');
-  if (notificationsDropdown && notificationBell && !notificationBell.contains(event.target) && !notificationsDropdown.contains(event.target)) {
-    notificationsDropdown.classList.add('hidden');
+  
+  if (notificationsDropdown && notificationBell && 
+      !notificationBell.contains(event.target) && 
+      !notificationsDropdown.contains(event.target)) {
+    // Hide with animation
+    notificationsDropdown.classList.add('opacity-0', '-translate-y-2');
+    setTimeout(() => {
+      notificationsDropdown.classList.add('hidden');
+    }, 300);
   }
 });
 
-// Add animation to notification counter
-document.querySelector('#notification-bell span').classList.add('transition-transform', 'duration-300');
-
+// Add the ability to dismiss individual notifications
+document.querySelectorAll('.notification-dismiss').forEach(button => {
+  button.addEventListener('click', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    const notification = this.closest('.notification-item');
+    notification.style.height = notification.offsetHeight + 'px';
+    notification.classList.add('opacity-0');
+    
+    setTimeout(() => {
+      notification.style.height = '0';
+      notification.style.padding = '0';
+      notification.style.margin = '0';
+      notification.style.borderWidth = '0';
+      
+      setTimeout(() => {
+        notification.remove();
+        
+        // Update counter
+        const counter = document.querySelector('#notification-bell span');
+        const currentCount = parseInt(counter.textContent);
+        if(currentCount > 0) {
+          counter.textContent = (currentCount - 1).toString();
+          if(currentCount - 1 === 0) {
+            counter.classList.add('scale-0');
+          }
+        }
+      }, 300);
+    }, 100);
+  });
+});
 </script>
 </body>
 </html>
