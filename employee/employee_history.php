@@ -2090,6 +2090,36 @@ function openEditServiceModal(serviceId) {
     .then(data => {
       if (data.success) {
         // Populate the form fields with the service details
+        const customerSearch = document.getElementById('customerSearch');
+        const selectedCustomerId = document.getElementById('selectedCustomerId');
+
+        if (customerSearch && selectedCustomerId) {
+          if (data.customerID) {
+            const customer = customers.find(c => c.id == data.customerID);
+            if (customer) {
+              customerSearch.value = customer.full_name;
+              selectedCustomerId.value = customer.id;
+            }
+          } else {
+            // Explicitly clear if customerID is null or undefined
+            customerSearch.value = '';
+            selectedCustomerId.value = '';
+          }
+        }
+
+        // Populate the form fields with the service details
+        if (data.customerID) {
+          const customer = customers.find(c => c.id == data.customerID);
+          if (customer) {
+            document.getElementById('customerSearch').value = customer.full_name;
+            document.getElementById('selectedCustomerId').value = customer.id;
+          }
+        } else {
+          // Explicitly clear if customerID is null or undefined
+          document.getElementById('customerSearch').value = '';
+          document.getElementById('selectedCustomerId').value = '';
+        }
+
         document.getElementById('salesId').value = data.sales_id;
         
         // Customer Information
