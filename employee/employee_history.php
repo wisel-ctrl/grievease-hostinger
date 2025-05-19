@@ -333,9 +333,7 @@ $offsetOutstanding = ($pageOutstanding - 1) * $recordsPerPage;
                 <i class="fas fa-search text-gray-400"></i>
               </div>
             </div>
-            <button class="px-4 py-2 bg-sidebar-accent text-white rounded-md text-sm flex items-center hover:bg-darkgold transition-all duration-300" onclick="openAddServiceModal()">
-              <i class="fas fa-plus mr-2"></i> Add Service
-            </button>
+            
           </div>
         </div>
         <div class="overflow-x-auto scrollbar-thin">
@@ -2449,13 +2447,7 @@ function filterTable(table, searchTerm) {
   });
 }
 
-// Function to open the Add Service Modal (kept from original)
-function openAddServiceModal() {
-  // Clear the form and open the modal
-  document.getElementById('editServiceForm').reset();
-  document.getElementById('editServiceModal').style.display = 'flex';
-  toggleBodyScroll(true);
-}
+
 </script>
 <script src="tailwind.js"></script>
 <Script src="sidebar.js"></Script>
