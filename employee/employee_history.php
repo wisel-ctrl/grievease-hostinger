@@ -2090,8 +2090,8 @@ function openEditServiceModal(serviceId) {
     .then(data => {
       if (data.success) {
         // Populate the form fields with the service details
-        const customerSearch = document.getElementById('customerSearch');
-        const selectedCustomerId = document.getElementById('selectedCustomerId');
+        const customerSearch = document.getElementById('editCustomerSearch');
+        const selectedCustomerId = document.getElementById('editCustomerResults');
 
         if (customerSearch && selectedCustomerId) {
           if (data.customerID) {
@@ -2111,13 +2111,13 @@ function openEditServiceModal(serviceId) {
         if (data.customerID) {
           const customer = customers.find(c => c.id == data.customerID);
           if (customer) {
-            document.getElementById('customerSearch').value = customer.full_name;
-            document.getElementById('selectedCustomerId').value = customer.id;
+            document.getElementById('editCustomerSearch').value = customer.full_name;
+            document.getElementById('editCustomerResults').value = customer.id;
           }
         } else {
           // Explicitly clear if customerID is null or undefined
-          document.getElementById('customerSearch').value = '';
-          document.getElementById('selectedCustomerId').value = '';
+          document.getElementById('editCustomerSearch').value = '';
+          document.getElementById('editCustomerResults').value = '';
         }
 
         document.getElementById('salesId').value = data.sales_id;
