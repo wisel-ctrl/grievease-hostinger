@@ -71,6 +71,16 @@ $offsetOngoing = ($pageOngoing - 1) * $recordsPerPage;
 $offsetFullyPaid = ($pageFullyPaid - 1) * $recordsPerPage;
 $offsetOutstanding = ($pageOutstanding - 1) * $recordsPerPage;
 
+$customer_query = "SELECT id, CONCAT(first_name, ' ', COALESCE(middle_name, ''), ' ', last_name) AS full_name 
+                  FROM users 
+                  WHERE user_type = 3 
+                  ORDER BY last_name, first_name";
+$customer_result = mysqli_query($conn, $customer_query);
+$customers = [];
+while ($row = mysqli_fetch_assoc($customer_result)) {
+    $customers[] = $row;
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -1978,6 +1988,7 @@ $offsetOutstanding = ($pageOutstanding - 1) * $recordsPerPage;
     }
   </script>
   <script>
+    const customers = <?php echo json_encode($customers); ?>;
     // Function to open the modal and populate fields with service data
 function openRecordPaymentModal(serviceId, clientName, balance) {
   // Get the modal element
