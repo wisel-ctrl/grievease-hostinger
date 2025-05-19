@@ -1400,53 +1400,144 @@ $offsetOutstanding = ($pageOutstanding - 1) * $recordsPerPage;
 </div>
 
 <!-- Modal for Viewing Service Details -->
-<div class="fixed top-0 left-0 w-full h-full bg-black bg-opacity-60 flex items-center justify-center z-50 hidden" id="viewServiceModal">
-  <div class="bg-white rounded-xl w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-xl">
+<div class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto" id="viewServiceModal">
+  <!-- Modal Backdrop -->
+  <div class="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm"></div>
+  
+  <!-- Modal Content -->
+  <div class="relative bg-white rounded-xl shadow-xl w-full max-w-xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] flex flex-col">
+    <!-- Close Button -->
+    <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeViewServiceModal()">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+      </svg>
+    </button>
+    
     <!-- Modal Header -->
-    <div class="bg-gradient-to-r from-sidebar-accent to-white flex justify-between items-center p-6 flex-shrink-0">
-      <h3 class="text-xl font-bold text-white">Service Details</h3>
-      <button class="bg-black bg-opacity-20 hover:bg-opacity-30 rounded-full p-2 text-white hover:text-white transition-all duration-200" onclick="closeViewServiceModal()">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-          <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-        </svg>
-      </button>
+    <div class="px-5 sm:px-6 py-4 sm:py-5 border-b bg-gradient-to-r from-sidebar-accent to-white border-gray-200">
+      <h3 class="text-lg sm:text-xl font-bold text-white flex items-center">
+        Service Details
+      </h3>
     </div>
     
     <!-- Modal Body -->
-    <div class="p-6">
-      <div class="bg-gray-50 p-5 rounded-xl">
-        <div class="space-y-3">
-          <p class="flex justify-between">
-            <span class="font-medium text-gray-700">ID:</span>
-            <span id="serviceId" class="text-gray-800"></span>
-          </p>
-          <p class="flex justify-between">
-            <span class="font-medium text-gray-700">Client Name:</span>
-            <span id="serviceClientName" class="text-gray-800"></span>
-          </p>
-          <p class="flex justify-between">
-            <span class="font-medium text-gray-700">Service Type:</span>
-            <span id="serviceServiceType" class="text-gray-800"></span>
-          </p>
-          <p class="flex justify-between">
-            <span class="font-medium text-gray-700">Date:</span>
-            <span id="serviceDate" class="text-gray-800"></span>
-          </p>
-          <p class="flex justify-between">
-            <span class="font-medium text-gray-700">Status:</span>
-            <span id="serviceStatus" class="text-gray-800"></span>
-          </p>
-          <p class="flex justify-between">
-            <span class="font-medium text-gray-700">Outstanding Balance:</span>
-            <span id="serviceOutstandingBalance" class="text-gray-800 font-bold text-sidebar-accent"></span>
-          </p>
+    <div class="px-5 sm:px-6 py-4 sm:py-5 overflow-y-auto">
+      <!-- Basic Information Section -->
+      <div class="rounded-lg border border-gray-200 overflow-hidden mb-5">
+        <div class="bg-gray-50 px-4 py-2 border-b border-gray-200">
+          <h4 class="font-medium text-gray-700">Basic Information</h4>
+        </div>
+        <div class="p-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="space-y-1">
+              <label class="block text-xs font-medium text-gray-500">ID</label>
+              <div id="serviceId" class="text-sm font-medium text-gray-800">-</div>
+            </div>
+            
+            <div class="space-y-1">
+              <label class="block text-xs font-medium text-gray-500">Client Name</label>
+              <div id="serviceClientName" class="text-sm font-medium text-gray-800">-</div>
+            </div>
+            
+            <div class="space-y-1">
+              <label class="block text-xs font-medium text-gray-500">Service Type</label>
+              <div id="serviceServiceType" class="text-sm font-medium text-gray-800">-</div>
+            </div>
+            
+            <div class="space-y-1">
+              <label class="block text-xs font-medium text-gray-500">Branch</label>
+              <div id="branchName" class="text-sm font-medium text-gray-800">-</div>
+            </div>
+            
+            <div class="space-y-1">
+              <label class="block text-xs font-medium text-gray-500">Date</label>
+              <div id="serviceDate" class="text-sm font-medium text-gray-800">-</div>
+            </div>
+            
+            <div class="space-y-1">
+              <label class="block text-xs font-medium text-gray-500">Status</label>
+              <div id="serviceStatus" class="text-sm font-medium text-gray-800">-</div>
+            </div>
+            
+            <div class="space-y-1 col-span-1 sm:col-span-2">
+              <label class="block text-xs font-medium text-gray-500">Outstanding Balance</label>
+              <div id="serviceOutstandingBalance" class="text-base font-bold text-sidebar-accent">-</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Initial Staff Section -->
+      <div class="rounded-lg border border-gray-200 overflow-hidden mb-5">
+        <div class="bg-gray-50 px-4 py-2 border-b border-gray-200">
+          <h4 class="font-medium text-gray-700">Initial Staff</h4>
+        </div>
+        <div class="p-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="space-y-1">
+              <label class="block text-xs font-medium text-gray-500">Date</label>
+              <div id="initialDate" class="text-sm font-medium text-gray-800">-</div>
+            </div>
+            
+            <div class="space-y-1">
+              <label class="block text-xs font-medium text-gray-500">Embalmers</label>
+              <div id="initialEmbalmers" class="text-sm font-medium text-gray-800">-</div>
+            </div>
+            
+            <div class="space-y-1">
+              <label class="block text-xs font-medium text-gray-500">Drivers</label>
+              <div id="initialDrivers" class="text-sm font-medium text-gray-800">-</div>
+            </div>
+            
+            <div class="space-y-1">
+              <label class="block text-xs font-medium text-gray-500">Personnel</label>
+              <div id="initialPersonnel" class="text-sm font-medium text-gray-800">-</div>
+            </div>
+            
+            <div class="space-y-1 col-span-1 sm:col-span-2">
+              <label class="block text-xs font-medium text-gray-500">Notes</label>
+              <div id="initialNotes" class="text-sm font-medium text-gray-800 whitespace-pre-line">-</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Burial Staff Section -->
+      <div class="rounded-lg border border-gray-200 overflow-hidden">
+        <div class="bg-gray-50 px-4 py-2 border-b border-gray-200">
+          <h4 class="font-medium text-gray-700">Burial Staff</h4>
+        </div>
+        <div class="p-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="space-y-1">
+              <label class="block text-xs font-medium text-gray-500">Date</label>
+              <div id="burialDate1" class="text-sm font-medium text-gray-800">-</div>
+            </div>
+            
+            <div class="space-y-1">
+              <label class="block text-xs font-medium text-gray-500">Drivers</label>
+              <div id="burialDrivers" class="text-sm font-medium text-gray-800">-</div>
+            </div>
+            
+            <div class="space-y-1">
+              <label class="block text-xs font-medium text-gray-500">Personnel</label>
+              <div id="burialPersonnel" class="text-sm font-medium text-gray-800">-</div>
+            </div>
+            
+            <div class="space-y-1 col-span-1 sm:col-span-2">
+              <label class="block text-xs font-medium text-gray-500">Notes</label>
+              <div id="burialNotes" class="text-sm font-medium text-gray-800 whitespace-pre-line">-</div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
     
     <!-- Modal Footer -->
-    <div class="p-6 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
-      <button class="px-5 py-3 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-semibold hover:bg-navy transition-colors" onclick="closeViewServiceModal()">Close</button>
+    <div class="px-5 sm:px-6 py-4 sm:py-5 flex flex-col sm:flex-row sm:justify-end gap-3 sm:gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
+      <button class="w-full sm:w-auto px-5 sm:px-6 py-2.5 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center" onclick="closeViewServiceModal()">
+        Close
+      </button>
     </div>
   </div>
 </div>
