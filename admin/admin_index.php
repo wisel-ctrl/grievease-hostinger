@@ -417,117 +417,226 @@ foreach ($serviceData as $service => $branches) {
   </p>
 
     </div>
-    <div class="flex space-x-3">
+<div class="flex space-x-3">
     <!-- Notification Bell Button with improved styling -->
-<div class="relative">
-  <button id="notification-bell" class="p-2 rounded-full bg-white border border-sidebar-border shadow-input text-sidebar-text hover:bg-sidebar-hover transition-all duration-300 relative">
-    <i class="fas fa-bell"></i>
-    <span class="absolute -top-1 -right-1 bg-error text-white text-xs rounded-full h-5 w-5 flex items-center justify-center transform transition-all duration-300 scale-100 origin-center shadow-sm">3</span>
-  </button>
-  
-  <!-- Improved Notification Dropdown -->
-  <div id="notifications-dropdown" class="absolute right-0 mt-3 w-96 bg-white rounded-lg shadow-card border border-sidebar-border z-50 hidden transform transition-all duration-300 opacity-0 translate-y-2" style="max-height: 85vh;">
-    <!-- Notifications Header with improved styling -->
-    <div class="px-5 py-4 border-b border-sidebar-border flex justify-between items-center bg-gradient-to-r from-gray-50 to-white rounded-t-lg">
-      <div class="flex items-center">
-        <div class="w-8 h-8 rounded-full bg-sidebar-accent bg-opacity-10 text-sidebar-accent flex items-center justify-center mr-3">
-          <i class="fas fa-bell"></i>
-        </div>
-        <h3 class="font-medium text-sidebar-text">Notifications</h3>
-        <span class="ml-2 bg-error text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">3</span>
-      </div>
-      <div class="flex space-x-2">
-        <button class="text-xs text-sidebar-accent hover:text-darkgold transition-colors font-medium flex items-center">
-          <i class="fas fa-check-double mr-1"></i> Mark all as read
+    <div class="relative">
+        <?php
+        // Include database connection
+        require_once '../db_connect.php';
+        
+        // Query for pending funeral bookings
+        $funeralQuery = "SELECT 
+                            b.booking_id,
+                            CONCAT(b.deceased_lname, ', ', b.deceased_fname, ' ', IFNULL(b.deceased_midname, '')) AS deceased_name,
+                            b.booking_date AS notification_date,
+                            IFNULL(s.service_name, 'Custom Package') AS service_name,
+                            'funeral' AS notification_type,
+                            'Booking_acceptance.php' AS link_base
+                         FROM booking_tb b
+                         LEFT JOIN services_tb s ON b.service_id = s.service_id
+                         WHERE b.status = 'Pending'
+                         ORDER BY b.booking_date DESC";
+        
+        // Query for pending life plan bookings
+        $lifeplanQuery = "SELECT 
+                            lb.lpbooking_id AS booking_id,
+                            CONCAT(lb.benefeciary_lname, ', ', lb.benefeciary_fname, ' ', IFNULL(lb.benefeciary_mname, '')) AS deceased_name,
+                            lb.initial_date AS notification_date,
+                            s.service_name,
+                            'lifeplan' AS notification_type,
+                            'Booking_acceptance.php' AS link_base
+                          FROM lifeplan_booking_tb lb
+                          JOIN services_tb s ON lb.service_id = s.service_id
+                          WHERE lb.booking_status = 'pending'
+                          ORDER BY lb.initial_date DESC";
+        
+        // Query for pending ID validations
+        $idValidationQuery = "SELECT 
+                                id AS booking_id,
+                                '' AS deceased_name,
+                                upload_at AS notification_date,
+                                'ID Validation' AS service_name,
+                                'id_validation' AS notification_type,
+                                'id_confirmation.php' AS link_base
+                             FROM valid_id_tb
+                             WHERE is_validated = 'no'
+                             ORDER BY upload_at DESC";
+        
+        // Execute all queries
+        $funeralResult = $conn->query($funeralQuery);
+        $lifeplanResult = $conn->query($lifeplanQuery);
+        $idValidationResult = $conn->query($idValidationQuery);
+        
+        // Combine all results into a single array
+        $allNotifications = [];
+        
+        if ($funeralResult && $funeralResult->num_rows > 0) {
+            while ($row = $funeralResult->fetch_assoc()) {
+                $allNotifications[] = $row;
+            }
+        }
+        
+        if ($lifeplanResult && $lifeplanResult->num_rows > 0) {
+            while ($row = $lifeplanResult->fetch_assoc()) {
+                $allNotifications[] = $row;
+            }
+        }
+        
+        if ($idValidationResult && $idValidationResult->num_rows > 0) {
+            while ($row = $idValidationResult->fetch_assoc()) {
+                $allNotifications[] = $row;
+            }
+        }
+        
+        // Sort all notifications by date (newest first)
+        usort($allNotifications, function($a, $b) {
+            return strtotime($b['notification_date']) - strtotime($a['notification_date']);
+        });
+        
+        $totalPending = count($allNotifications);
+        ?>
+        
+        <button id="notification-bell" class="p-2 rounded-full bg-white border border-sidebar-border shadow-input text-sidebar-text hover:bg-sidebar-hover transition-all duration-300 relative">
+            <i class="fas fa-bell"></i>
+            <?php if ($totalPending > 0): ?>
+            <span class="absolute -top-1 -right-1 bg-error text-white text-xs rounded-full h-5 w-5 flex items-center justify-center transform transition-all duration-300 scale-100 origin-center shadow-sm"><?php echo $totalPending; ?></span>
+            <?php endif; ?>
         </button>
-      </div>
+        
+        <!-- Improved Notification Dropdown -->
+        <div id="notifications-dropdown" class="absolute right-0 mt-3 w-96 bg-white rounded-lg shadow-card border border-sidebar-border z-50 hidden transform transition-all duration-300 opacity-0 translate-y-2" style="max-height: 85vh;">
+            <!-- Notifications Header with improved styling -->
+            <div class="px-5 py-4 border-b border-sidebar-border flex justify-between items-center bg-gradient-to-r from-gray-50 to-white rounded-t-lg">
+                <div class="flex items-center">
+                    <div class="w-8 h-8 rounded-full bg-sidebar-accent bg-opacity-10 text-sidebar-accent flex items-center justify-center mr-3">
+                        <i class="fas fa-bell"></i>
+                    </div>
+                    <h3 class="font-medium text-sidebar-text">Notifications</h3>
+                    <?php if ($totalPending > 0): ?>
+                    <span class="ml-2 bg-error text-white text-xs rounded-full h-5 w-5 flex items-center justify-center"><?php echo $totalPending; ?></span>
+                    <?php endif; ?>
+                </div>
+                <div class="flex space-x-2">
+                    <button class="text-xs text-sidebar-accent hover:text-darkgold transition-colors font-medium flex items-center">
+                        <i class="fas fa-check-double mr-1"></i> Mark all as read
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Notifications List with improved styling -->
+            <div class="max-h-[60vh] overflow-y-auto scrollbar-thin">
+                <?php
+                if ($totalPending > 0) {
+                    foreach ($allNotifications as $notification) {
+                        $timeAgo = time_elapsed_string($notification['notification_date']);
+                        
+                        // Determine styling based on notification type
+                        if ($notification['notification_type'] === 'funeral') {
+                            $color = 'blue';
+                            $icon = 'fas fa-cross';
+                            $title = 'New funeral booking request';
+                        } elseif ($notification['notification_type'] === 'lifeplan') {
+                            $color = 'purple';
+                            $icon = 'fas fa-heart';
+                            $title = 'New life plan booking request';
+                        } else { // id_validation
+                            $color = 'amber';
+                            $icon = 'fas fa-id-card';
+                            $title = 'New ID validation request';
+                        }
+                        ?>
+                        <a href="<?php echo $notification['link_base']; ?>" class="block px-5 py-4 border-b border-sidebar-border hover:bg-sidebar-hover transition-all duration-300 flex items-start relative">
+                            <div class="absolute left-0 top-0 bottom-0 w-1 bg-<?php echo $color; ?>-500 rounded-r"></div>
+                            <div class="flex-shrink-0 bg-<?php echo $color; ?>-100 rounded-full p-2.5 mr-4">
+                                <i class="<?php echo $icon; ?> text-<?php echo $color; ?>-600"></i>
+                            </div>
+                            <div class="flex-grow">
+                                <div class="flex justify-between items-start">
+                                    <p class="text-sm font-semibold text-sidebar-text"><?php echo $title; ?></p>
+                                    <span class="h-2.5 w-2.5 bg-<?php echo $color; ?>-600 rounded-full block flex-shrink-0 ml-2 mt-1"></span>
+                                </div>
+                                <p class="text-sm text-gray-600 mt-1">
+                                    <?php 
+                                    if ($notification['notification_type'] === 'id_validation') {
+                                        echo 'ID image uploaded and awaiting validation';
+                                    } else {
+                                        echo htmlspecialchars($notification['deceased_name']) . ' - ' . htmlspecialchars($notification['service_name']);
+                                    }
+                                    ?>
+                                </p>
+                                <div class="flex items-center mt-2 text-xs text-gray-400">
+                                    <i class="far fa-clock mr-1.5"></i>
+                                    <span><?php echo $timeAgo; ?></span>
+                                </div>
+                            </div>
+                        </a>
+                        <?php
+                    }
+                } else {
+                    ?>
+                    <div class="px-5 py-4 text-center text-gray-500">
+                        <i class="fas fa-check-circle text-green-500 text-2xl mb-2"></i>
+                        <p>No pending notifications</p>
+                    </div>
+                    <?php
+                }
+                ?>
+            </div>
+            
+            <!-- Notifications Footer with improved styling -->
+            <div class="px-5 py-3 text-center border-t border-sidebar-border bg-gradient-to-r from-gray-50 to-white rounded-b-lg">
+                <a href="#" class="text-sm text-sidebar-accent hover:text-darkgold transition-colors font-medium inline-flex items-center">
+                    View all notifications
+                    <i class="fas fa-chevron-right ml-1 text-xs"></i>
+                </a>
+            </div>
+        </div>
     </div>
-    
-    <!-- Notifications List with improved styling -->
-    <div class="max-h-[60vh] overflow-y-auto scrollbar-thin">
-      <!-- New booking notification -->
-      <a href="#" class="block px-5 py-4 border-b border-sidebar-border hover:bg-sidebar-hover transition-all duration-300 flex items-start relative">
-        <div class="absolute left-0 top-0 bottom-0 w-1 bg-blue-500 rounded-r"></div>
-        <div class="flex-shrink-0 bg-blue-100 rounded-full p-2.5 mr-4">
-          <i class="fas fa-calendar-alt text-blue-600"></i>
-        </div>
-        <div class="flex-grow">
-          <div class="flex justify-between items-start">
-            <p class="text-sm font-semibold text-sidebar-text">New booking request</p>
-            <span class="h-2.5 w-2.5 bg-blue-600 rounded-full block flex-shrink-0 ml-2 mt-1"></span>
-          </div>
-          <p class="text-sm text-gray-600 mt-1">Maria Santos requested a funeral service</p>
-          <div class="flex items-center mt-2 text-xs text-gray-400">
-            <i class="far fa-clock mr-1.5"></i>
-            <span>10 minutes ago</span>
-          </div>
-        </div>
-      </a>
-      
-      <!-- Low Inventory notification -->
-      <a href="#" class="block px-5 py-4 border-b border-sidebar-border hover:bg-sidebar-hover transition-all duration-300 flex items-start relative">
-        <div class="absolute left-0 top-0 bottom-0 w-1 bg-yellow-500 rounded-r"></div>
-        <div class="flex-shrink-0 bg-yellow-100 rounded-full p-2.5 mr-4">
-          <i class="fas fa-exclamation-triangle text-yellow-600"></i>
-        </div>
-        <div class="flex-grow">
-          <div class="flex justify-between items-start">
-            <p class="text-sm font-semibold text-sidebar-text">Low inventory alert</p>
-            <span class="h-2.5 w-2.5 bg-yellow-600 rounded-full block flex-shrink-0 ml-2 mt-1"></span>
-          </div>
-          <p class="text-sm text-gray-600 mt-1">Casket Model C102 is running low (2 remaining)</p>
-          <div class="flex items-center mt-2 text-xs text-gray-400">
-            <i class="far fa-clock mr-1.5"></i>
-            <span>1 hour ago</span>
-          </div>
-        </div>
-      </a>
-      
-      <!-- Payment notification -->
-      <a href="#" class="block px-5 py-4 border-b border-sidebar-border hover:bg-sidebar-hover transition-all duration-300 flex items-start relative">
-        <div class="absolute left-0 top-0 bottom-0 w-1 bg-green-500 rounded-r"></div>
-        <div class="flex-shrink-0 bg-green-100 rounded-full p-2.5 mr-4">
-          <i class="fas fa-peso-sign text-green-600"></i>
-        </div>
-        <div class="flex-grow">
-          <div class="flex justify-between items-start">
-            <p class="text-sm font-semibold text-sidebar-text">Payment received</p>
-            <span class="h-2.5 w-2.5 bg-green-600 rounded-full block flex-shrink-0 ml-2 mt-1"></span>
-          </div>
-          <p class="text-sm text-gray-600 mt-1">₱15,000 payment from Juan Cruz (ID: 2450)</p>
-          <div class="flex items-center mt-2 text-xs text-gray-400">
-            <i class="far fa-clock mr-1.5"></i>
-            <span>Yesterday</span>
-          </div>
-        </div>
-      </a>
-      
-      <!-- Read notification example with improved styling -->
-      <a href="#" class="block px-5 py-4 border-b border-sidebar-border hover:bg-sidebar-hover transition-all duration-300 flex items-start relative bg-gray-50">
-        <div class="flex-shrink-0 bg-gray-100 rounded-full p-2.5 mr-4">
-          <i class="fas fa-user-check text-gray-500"></i>
-        </div>
-        <div class="flex-grow">
-          <p class="text-sm font-medium text-gray-600">Customer account created</p>
-          <p class="text-sm text-gray-500 mt-1">New customer account for Pedro Reyes created</p>
-          <div class="flex items-center mt-2 text-xs text-gray-400">
-            <i class="far fa-clock mr-1.5"></i>
-            <span>3 days ago</span>
-          </div>
-        </div>
-      </a>
-    </div>
-    
-    <!-- Notifications Footer with improved styling -->
-    <div class="px-5 py-3 text-center border-t border-sidebar-border bg-gradient-to-r from-gray-50 to-white rounded-b-lg">
-      <a href="#" class="text-sm text-sidebar-accent hover:text-darkgold transition-colors font-medium inline-flex items-center">
-        View all notifications
-        <i class="fas fa-chevron-right ml-1 text-xs"></i>
-      </a>
-    </div>
-  </div>
 </div>
-    </div>
+<?php
+// Function to calculate time ago
+// Function to calculate time ago
+function time_elapsed_string($datetime, $full = false) {
+    $now = new DateTime;
+    $ago = new DateTime($datetime);
+    $diff = $now->diff($ago);
+
+    // Calculate weeks separately without adding to the DateInterval object
+    $weeks = floor($diff->d / 7);
+    $days = $diff->d % 7;
+
+    $string = array(
+        'y' => 'year',
+        'm' => 'month',
+        'w' => 'week',
+        'd' => 'day',
+        'h' => 'hour',
+        'i' => 'minute',
+        's' => 'second',
+    );
+    
+    // Replace days with the remainder days
+    $diff->d = $days;
+    
+    foreach ($string as $k => &$v) {
+        if ($k === 'w') {
+            // Handle weeks separately
+            if ($weeks) {
+                $v = $weeks . ' ' . $v . ($weeks > 1 ? 's' : '');
+            } else {
+                unset($string[$k]);
+            }
+        } elseif ($diff->$k) {
+            $v = $diff->$k . ' ' . $v . ($diff->$k > 1 ? 's' : '');
+        } else {
+            unset($string[$k]);
+        }
+    }
+
+    if (!$full) $string = array_slice($string, 0, 1);
+    return $string ? implode(', ', $string) . ' ago' : 'just now';
+}
+?>
   </div>
 
   <!-- Analytics Cards -->
