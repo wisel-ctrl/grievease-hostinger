@@ -90,7 +90,7 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GrievEase - History</title>
   <?php include 'faviconLogo.php'; ?>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
@@ -2618,7 +2618,13 @@ function filterTable(table, searchTerm) {
 // Function to check customer before assigning staff
 function checkCustomerBeforeAssign(serviceId, hasCustomer) {
     if (!hasCustomer) {
-        alert('Please assign a customer to this service before assigning staff.');
+        Swal.fire({
+            icon: 'warning',
+            title: 'Customer Required',
+            text: 'Please enter a customer account first by clicking the edit button',
+            confirmButtonColor: '#3085d6',
+            confirmButtonText: 'OK'
+        });
         return;
     }
     openAssignStaffModal(serviceId);
@@ -2627,7 +2633,13 @@ function checkCustomerBeforeAssign(serviceId, hasCustomer) {
 // Function to check customer before completing service
 function checkCustomerBeforeComplete(serviceId, hasCustomer) {
     if (!hasCustomer) {
-        alert('Please assign a customer to this service before completing it.');
+        Swal.fire({
+            icon: 'warning',
+            title: 'Customer Required',
+            text: 'Please enter a customer account first by clicking the edit button',
+            confirmButtonColor: '#3085d6',
+            confirmButtonText: 'OK'
+        });
         return;
     }
     openCompleteModal(serviceId);
