@@ -1991,7 +1991,6 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
 
 
 
-  <script src="script.js"></script>
   <script>
     function showTab(tabName) {
       // Get tab content elements
