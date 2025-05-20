@@ -2615,6 +2615,23 @@ function filterTable(table, searchTerm) {
   });
 }
 
+// Function to check customer before assigning staff
+function checkCustomerBeforeAssign(serviceId, hasCustomer) {
+    if (!hasCustomer) {
+        alert('Please assign a customer to this service before assigning staff.');
+        return;
+    }
+    openAssignStaffModal(serviceId);
+}
+
+// Function to check customer before completing service
+function checkCustomerBeforeComplete(serviceId, hasCustomer) {
+    if (!hasCustomer) {
+        alert('Please assign a customer to this service before completing it.');
+        return;
+    }
+    openCompleteModal(serviceId);
+}
 
 </script>
 <script src="tailwind.js"></script>
