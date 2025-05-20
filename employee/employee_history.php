@@ -2617,7 +2617,7 @@ function filterTable(table, searchTerm) {
 
 // Function to check customer before assigning staff
 function checkCustomerBeforeAssign(serviceId, hasCustomer) {
-    if (!hasCustomer) {
+    if (hasCustomer==0) {
         Swal.fire({
             icon: 'warning',
             title: 'Customer Required',
