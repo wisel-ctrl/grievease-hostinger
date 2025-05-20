@@ -71,7 +71,7 @@ $offsetOngoing = ($pageOngoing - 1) * $recordsPerPage;
 $offsetFullyPaid = ($pageFullyPaid - 1) * $recordsPerPage;
 $offsetOutstanding = ($pageOutstanding - 1) * $recordsPerPage;
 
-$customer_query = "SELECT id, CONCAT(first_name, ' ', COALESCE(middle_name, ''), ' ', last_name) AS full_name 
+$customer_query = "SELECT id, CONCAT(first_name, ' ', COALESCE(middle_name, ''), ' ', last_name, COALESCE(suffix, '')) AS full_name 
                   FROM users 
                   WHERE user_type = 3 
                   ORDER BY last_name, first_name";
@@ -1989,6 +1989,82 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
   </script>
   <script>
     const customers = <?php echo json_encode($customers); ?>;
+    // Customer search functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const customerSearch = document.getElementById('editCustomerSearch');
+    const customerResults = document.getElementById('editCustomerResults');
+    const selectedCustomerId = document.getElementById('editSelectedCustomerId');
+    
+    if (customerSearch && customerResults && selectedCustomerId) {
+        // Handle input events on the customer search field
+        customerSearch.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            
+            // Clear previous results
+            customerResults.innerHTML = '';
+            
+            // If search term is empty, hide results and return
+            if (searchTerm.trim() === '') {
+                customerResults.classList.add('hidden');
+                selectedCustomerId.value = '';
+                return;
+            }
+            
+            // Filter customers based on search term
+            const filteredCustomers = customers.filter(customer => 
+                customer.full_name.toLowerCase().includes(searchTerm)
+            );
+            
+            // Display results
+            if (filteredCustomers.length > 0) {
+                filteredCustomers.forEach(customer => {
+                    const div = document.createElement('div');
+                    div.className = 'px-4 py-2 hover:bg-gray-100 cursor-pointer';
+                    div.textContent = customer.full_name;
+                    div.addEventListener('click', function() {
+                        customerSearch.value = customer.full_name;
+                        selectedCustomerId.value = customer.id;
+                        customerResults.classList.add('hidden');
+                        
+                        // You can also populate other customer fields here if needed
+                        // populateCustomerDetails(customer.id);
+                    });
+                    customerResults.appendChild(div);
+                });
+                customerResults.classList.remove('hidden');
+            } else {
+                const div = document.createElement('div');
+                div.className = 'px-4 py-2 text-gray-500';
+                div.textContent = 'No customers found';
+                customerResults.appendChild(div);
+                customerResults.classList.remove('hidden');
+                selectedCustomerId.value = '';
+            }
+        });
+        
+        // Hide results when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!customerSearch.contains(e.target) {
+                customerResults.classList.add('hidden');
+            }
+        });
+    }
+});
+
+// Optional: Function to populate customer details if needed
+function populateCustomerDetails(customerId) {
+    // Find the customer in the customers array
+    const customer = customers.find(c => c.id == customerId);
+    
+    if (customer) {
+        // You would need to fetch additional customer details via AJAX
+        // or have them already in your customers array
+        // Example:
+        // document.getElementById('editFirstName').value = customer.first_name || '';
+        // document.getElementById('editLastName').value = customer.last_name || '';
+        // etc.
+    }
+}
     // Function to open the modal and populate fields with service data
 function openRecordPaymentModal(serviceId, clientName, balance) {
   // Get the modal element
