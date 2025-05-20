@@ -16,6 +16,17 @@
   ?>
 
 <?php
+// Get count of unvalidated IDs
+$id_validation_count = 0;
+$count_query3 = "SELECT COUNT(*) AS validation_count FROM valid_id_tb WHERE is_validated = 'no'";
+$count_stmt3 = $conn->prepare($count_query3);
+$count_stmt3->execute();
+$result3 = $count_stmt3->get_result();
+if ($result3->num_rows > 0) {
+    $row3 = $result3->fetch_assoc();
+    $id_validation_count = $row3['validation_count'];
+}
+
 // First, get the count of pending bookings
 $pending_count = 0;
 
@@ -300,10 +311,12 @@ if ($count_result->num_rows > 0) {
           <a href="id_confirmation.php" class="sidebar-link flex items-center px-5 py-3 text-sidebar-text opacity-80 hover:opacity-100 no-underline transition-all duration-300 hover:bg-sidebar-hover relative">
             <i class="fas fa-id-card w-5 text-center mr-3 text-sidebar-accent"></i>
             <span>ID Confirmation</span>
-            <!-- Notification Badge (optional) -->
-            <span id="id-badge" class="absolute right-4 bg-red-500 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full hidden">
-              0
+            <!-- Notification Badge - Only show if there are unvalidated IDs -->
+            <?php if ($id_validation_count > 0): ?>
+            <span id="id-badge" class="absolute right-4 bg-red-500 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full">
+              <?php echo $id_validation_count; ?>
             </span>
+            <?php endif; ?>
           </a>
         </li>
         <li>
