@@ -456,57 +456,46 @@ $lifeplan_offset = ($lifeplan_current_page - 1) * $lifeplan_bookings_per_page;
     </div>
     
     <!-- Sticky Pagination Footer with improved spacing -->
-<!-- Sticky Pagination Footer with improved spacing -->
 <div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
     <div id="paginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
-    <?php 
-        // Get the number of bookings on the current page
-        $current_page_bookings = $result->num_rows;
-
+        <?php 
         if ($total_bookings > 0) {
             $start = $offset + 1;
             $end = $offset + $result->num_rows;
-        
             echo "Showing {$start} - {$end} of {$total_bookings} bookings";
         } else {
             echo "No bookings found";
         }
         ?>
     </div>
-    <div id="paginationContainer"class="flex space-x-2">
+    <div id="paginationContainer" class="flex space-x-2">
         <?php if ($total_pages > 1): ?>
             <!-- First page button (double arrow) -->
-            <a href="?page=1" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($current_page == 1) ? 'opacity-50 pointer-events-none' : ''; ?>">
+            <button onclick="loadBookings(1)" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($current_page == 1) ? 'opacity-50 pointer-events-none' : ''; ?>">
                 &laquo;
-            </a>
+            </button>
             
             <!-- Previous page button (single arrow) -->
-            <a href="<?php echo '?page=' . max(1, $current_page - 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($current_page == 1) ? 'opacity-50 pointer-events-none' : ''; ?>">
+            <button onclick="loadBookings(<?php echo max(1, $current_page - 1); ?>)" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($current_page == 1) ? 'opacity-50 pointer-events-none' : ''; ?>">
                 &lsaquo;
-            </a>
+            </button>
             
             <?php
             // Show exactly 3 page numbers
             if ($total_pages <= 3) {
-                // If total pages is 3 or less, show all pages
                 $start_page = 1;
                 $end_page = $total_pages;
             } else {
-                // With more than 3 pages, determine which 3 to show
                 if ($current_page == 1) {
-                    // At the beginning, show first 3 pages
                     $start_page = 1;
                     $end_page = 3;
                 } elseif ($current_page == $total_pages) {
-                    // At the end, show last 3 pages
                     $start_page = $total_pages - 2;
                     $end_page = $total_pages;
                 } else {
-                    // In the middle, show current page with one before and after
                     $start_page = $current_page - 1;
                     $end_page = $current_page + 1;
                     
-                    // Handle edge cases
                     if ($start_page < 1) {
                         $start_page = 1;
                         $end_page = 3;
@@ -518,22 +507,21 @@ $lifeplan_offset = ($lifeplan_current_page - 1) * $lifeplan_bookings_per_page;
                 }
             }
             
-            // Generate the page buttons
             for ($i = $start_page; $i <= $end_page; $i++) {
                 $active_class = ($i == $current_page) ? 'bg-sidebar-accent text-white' : 'border border-sidebar-border hover:bg-sidebar-hover';
-                echo '<a href="?page=' . $i . '" class="px-3.5 py-1.5 rounded text-sm ' . $active_class . '">' . $i . '</a>';
+                echo '<button onclick="loadBookings(' . $i . ')" class="px-3.5 py-1.5 rounded text-sm ' . $active_class . '">' . $i . '</button>';
             }
             ?>
             
             <!-- Next page button (single arrow) -->
-            <a href="<?php echo '?page=' . min($total_pages, $current_page + 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($current_page == $total_pages) ? 'opacity-50 pointer-events-none' : ''; ?>">
+            <button onclick="loadBookings(<?php echo min($total_pages, $current_page + 1); ?>)" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($current_page == $total_pages) ? 'opacity-50 pointer-events-none' : ''; ?>">
                 &rsaquo;
-            </a>
+            </button>
             
             <!-- Last page button (double arrow) -->
-            <a href="<?php echo '?page=' . $total_pages; ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($current_page == $total_pages) ? 'opacity-50 pointer-events-none' : ''; ?>">
+            <button onclick="loadBookings(<?php echo $total_pages; ?>)" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($current_page == $total_pages) ? 'opacity-50 pointer-events-none' : ''; ?>">
                 &raquo;
-            </a>
+            </button>
         <?php endif; ?>
     </div>
 </div>
@@ -815,14 +803,10 @@ $lifeplan_offset = ($lifeplan_current_page - 1) * $lifeplan_bookings_per_page;
     <!-- Sticky Pagination Footer with improved spacing -->
 <div class="sticky bottom-0 left-0 right-0 px-4 py-3.5 border-t border-sidebar-border bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
     <div id="customPaginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
-    <?php 
-        // Get the number of bookings on the current page
-        $current_page_custom_bookings = $custom_result->num_rows;
-
+        <?php 
         if ($total_custom_bookings > 0) {
             $custom_start = $custom_offset + 1;
-            $custom_end = $custom_offset + $current_page_custom_bookings;
-        
+            $custom_end = $custom_offset + $custom_result->num_rows;
             echo "Showing {$custom_start} - {$custom_end} of {$total_custom_bookings} " . ($total_custom_bookings != 1 ? "bookings" : "booking");
         } else {
             echo "No custom bookings found";
@@ -832,37 +816,31 @@ $lifeplan_offset = ($lifeplan_current_page - 1) * $lifeplan_bookings_per_page;
     <div id="customPaginationContainer" class="flex space-x-2">
         <?php if ($total_custom_pages > 1): ?>
             <!-- First page button (double arrow) -->
-            <a href="?custom_page=1" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($custom_current_page == 1) ? 'opacity-50 pointer-events-none' : ''; ?>">
+            <button onclick="loadCustomBookings(1)" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($custom_current_page == 1) ? 'opacity-50 pointer-events-none' : ''; ?>">
                 &laquo;
-            </a>
+            </button>
             
             <!-- Previous page button (single arrow) -->
-            <a href="<?php echo '?custom_page=' . max(1, $custom_current_page - 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($custom_current_page == 1) ? 'opacity-50 pointer-events-none' : ''; ?>">
+            <button onclick="loadCustomBookings(<?php echo max(1, $custom_current_page - 1); ?>)" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($custom_current_page == 1) ? 'opacity-50 pointer-events-none' : ''; ?>">
                 &lsaquo;
-            </a>
+            </button>
             
             <?php
             // Show exactly 3 page numbers
             if ($total_custom_pages <= 3) {
-                // If total pages is 3 or less, show all pages
                 $custom_start_page = 1;
                 $custom_end_page = $total_custom_pages;
             } else {
-                // With more than 3 pages, determine which 3 to show
                 if ($custom_current_page == 1) {
-                    // At the beginning, show first 3 pages
                     $custom_start_page = 1;
                     $custom_end_page = 3;
                 } elseif ($custom_current_page == $total_custom_pages) {
-                    // At the end, show last 3 pages
                     $custom_start_page = $total_custom_pages - 2;
                     $custom_end_page = $total_custom_pages;
                 } else {
-                    // In the middle, show current page with one before and after
                     $custom_start_page = $custom_current_page - 1;
                     $custom_end_page = $custom_current_page + 1;
                     
-                    // Handle edge cases
                     if ($custom_start_page < 1) {
                         $custom_start_page = 1;
                         $custom_end_page = 3;
@@ -874,26 +852,25 @@ $lifeplan_offset = ($lifeplan_current_page - 1) * $lifeplan_bookings_per_page;
                 }
             }
             
-            // Generate the page buttons
             for ($i = $custom_start_page; $i <= $custom_end_page; $i++) {
                 $active_class = ($i == $custom_current_page) ? 'bg-sidebar-accent text-white' : 'border border-sidebar-border hover:bg-sidebar-hover';
-                echo '<a href="?custom_page=' . $i . '" class="px-3.5 py-1.5 rounded text-sm ' . $active_class . '">' . $i . '</a>';
+                echo '<button onclick="loadCustomBookings(' . $i . ')" class="px-3.5 py-1.5 rounded text-sm ' . $active_class . '">' . $i . '</button>';
             }
             ?>
             
             <!-- Next page button (single arrow) -->
-            <a href="<?php echo '?custom_page=' . min($total_custom_pages, $custom_current_page + 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($custom_current_page == $total_custom_pages) ? 'opacity-50 pointer-events-none' : ''; ?>">
+            <button onclick="loadCustomBookings(<?php echo min($total_custom_pages, $custom_current_page + 1); ?>)" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($custom_current_page == $total_custom_pages) ? 'opacity-50 pointer-events-none' : ''; ?>">
                 &rsaquo;
-            </a>
+            </button>
             
             <!-- Last page button (double arrow) -->
-            <a href="<?php echo '?custom_page=' . $total_custom_pages; ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($custom_current_page == $total_custom_pages) ? 'opacity-50 pointer-events-none' : ''; ?>">
+            <button onclick="loadCustomBookings(<?php echo $total_custom_pages; ?>)" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($custom_current_page == $total_custom_pages) ? 'opacity-50 pointer-events-none' : ''; ?>">
                 &raquo;
-            </a>
+            </button>
         <?php endif; ?>
     </div>
 </div>
-          </div>
+</div>
 
 
 <!-- LifePlan Bookings List -->
@@ -1088,88 +1065,101 @@ $lifeplan_offset = ($lifeplan_current_page - 1) * $lifeplan_bookings_per_page;
                         </th>
                     </tr>
                 </thead>
-                <tbody id="lifeplanBookingTableBody">
-                    <?php
-                    // Query to get lifeplan bookings
-                    // Replace the existing lifeplanQuery with this:
-$lifeplanQuery = "SELECT lb.*, 
-CONCAT(
-    UPPER(LEFT(u.first_name, 1)), LOWER(SUBSTRING(u.first_name, 2)), ' ',
-    UPPER(LEFT(COALESCE(u.middle_name, ''), 1)), LOWER(SUBSTRING(COALESCE(u.middle_name, ''), 2)), ' ',
-    UPPER(LEFT(u.last_name, 1)), LOWER(SUBSTRING(u.last_name, 2)), ' ',
-    UPPER(LEFT(COALESCE(u.suffix, ''), 1)), LOWER(SUBSTRING(COALESCE(u.suffix, ''), 2))
-) AS customer_name,
-s.service_name
-FROM lifeplan_booking_tb lb
-JOIN users u ON lb.customer_id = u.id
-LEFT JOIN services_tb s ON lb.service_id = s.service_id
-WHERE lb.booking_status = 'pending'
-ORDER BY lb.lpbooking_id DESC
-LIMIT ?, ?";
+<?php
+// Ensure these variables are defined before the table
+$lifeplan_bookings_per_page = 5;
+$lifeplan_current_page = isset($_GET['lifeplan_page']) ? max(1, (int)$_GET['lifeplan_page']) : 1;
+$lifeplan_offset = ($lifeplan_current_page - 1) * $lifeplan_bookings_per_page;
 
-$lifeplan_stmt = $conn->prepare($lifeplanQuery);
-$lifeplan_stmt->bind_param("ii", $lifeplan_offset, $lifeplan_bookings_per_page);
-$lifeplan_stmt->execute();
-$lifeplanResult = $lifeplan_stmt->get_result();
-                    
-                    if ($lifeplanResult->num_rows > 0) {
-                        while ($row = $lifeplanResult->fetch_assoc()) {
-                            // Format booking ID
-                            $bookingId = "#LP-" . date('Y') . "-" . str_pad($row['lpbooking_id'], 3, '0', STR_PAD_LEFT);
-                            
-                            // Status badge class
-                            $statusClass = "bg-yellow-100 text-yellow-800 border border-yellow-200";
-                            $statusIcon = "fa-clock";
-                            if ($row['booking_status'] == 'Confirmed') {
-                                $statusClass = "bg-green-100 text-green-600 border border-green-200";
-                                $statusIcon = "fa-check-circle";
-                            } elseif ($row['booking_status'] == 'Cancelled') {
-                                $statusClass = "bg-red-100 text-red-600 border border-red-200";
-                                $statusIcon = "fa-times-circle";
-                            }
-                    ?>
-                            <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
-                                <td class="px-4 py-3.5 text-sm text-sidebar-text font-medium"><?php echo htmlspecialchars($bookingId); ?></td>
-                                <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo htmlspecialchars($row['customer_name']); ?></td>
-                                <td class="px-4 py-3.5 text-sm text-sidebar-text">
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-50 text-purple-700 border border-purple-100">
-                                        <?php echo htmlspecialchars($row['service_name'] ?: 'Custom LifePlan'); ?>
-                                    </span>
-                                </td>
-                                <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo htmlspecialchars($row['initial_date']); ?></td>
-                                <td class="px-4 py-3.5 text-sm text-sidebar-text">₱<?php echo number_format($row['package_price'], 2); ?></td>
-                                <td class="px-4 py-3.5 text-sm">
-                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium <?php echo $statusClass; ?>">
-                                        <i class="fas <?php echo $statusIcon; ?> mr-1"></i> <?php echo htmlspecialchars($row['booking_status']); ?>
-                                    </span>
-                                </td>
-                                <td class="px-4 py-3.5 text-sm">
-                                    <div class="flex space-x-2">
-                                        <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" 
-                                                title="View Details" 
-                                                onclick="openLifeplanDetails(<?php echo $row['lpbooking_id']; ?>)">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                    <?php
-                        }
-                    } else {
-                    ?>
-                        <tr>
-                            <td colspan="7" class="px-4 py-6 text-sm text-center">
-                                <div class="flex flex-col items-center">
-                                    <i class="fas fa-inbox text-gray-300 text-4xl mb-3"></i>
-                                    <p class="text-gray-500">No lifeplan bookings found</p>
-                                </div>
-                            </td>
-                        </tr>
-                    <?php
-                    }
-                    ?>
-                </tbody>
-            </table>
+// Count total bookings for pagination
+$total_lifeplan_query = "SELECT COUNT(*) as total 
+                        FROM lifeplan_booking_tb 
+                        WHERE booking_status = 'pending'";
+$total_lifeplan_stmt = $conn->prepare($total_lifeplan_query);
+$total_lifeplan_stmt->execute();
+$total_lifeplan_result = $total_lifeplan_stmt->get_result();
+$total_lifeplan_bookings = $total_lifeplan_result->fetch_assoc()['total'];
+$total_lifeplan_pages = ceil($total_lifeplan_bookings / $lifeplan_bookings_per_page);
+?>
+
+<tbody id="lifeplanBookingTableBody">
+    <?php
+    // Initial query for first page load
+    $lifeplanQuery = "SELECT lb.*, 
+        CONCAT(
+            UPPER(LEFT(u.first_name, 1)), LOWER(SUBSTRING(u.first_name, 2)), ' ',
+            UPPER(LEFT(COALESCE(u.middle_name, ''), 1)), LOWER(SUBSTRING(COALESCE(u.middle_name, ''), 2)), ' ',
+            UPPER(LEFT(u.last_name, 1)), LOWER(SUBSTRING(u.last_name, 2)), ' ',
+            UPPER(LEFT(COALESCE(u.suffix, ''), 1)), LOWER(SUBSTRING(COALESCE(u.suffix, ''), 2))
+        ) AS customer_name,
+        s.service_name
+        FROM lifeplan_booking_tb lb
+        JOIN users u ON lb.customer_id = u.id
+        LEFT JOIN services_tb s ON lb.service_id = s.service_id
+        WHERE lb.booking_status = 'pending'
+        ORDER BY lb.lpbooking_id DESC
+        LIMIT ?, ?";
+
+    $lifeplan_stmt = $conn->prepare($lifeplanQuery);
+    $lifeplan_stmt->bind_param("ii", $lifeplan_offset, $lifeplan_bookings_per_page);
+    $lifeplan_stmt->execute();
+    $lifeplanResult = $lifeplan_stmt->get_result();
+    
+    if ($lifeplanResult->num_rows > 0) {
+        while ($row = $lifeplanResult->fetch_assoc()) {
+            $bookingId = "#LP-" . date('Y') . "-" . str_pad($row['lpbooking_id'], 3, '0', STR_PAD_LEFT);
+            $statusClass = "bg-yellow-100 text-yellow-800 border border-yellow-200";
+            $statusIcon = "fa-clock";
+            if ($row['booking_status'] == 'Confirmed') {
+                $statusClass = "bg-green-100 text-green-600 border border-green-200";
+                $statusIcon = "fa-check-circle";
+            } elseif ($row['booking_status'] == 'Cancelled') {
+                $statusClass = "bg-red-100 text-red-600 border border-red-200";
+                $statusIcon = "fa-times-circle";
+            }
+    ?>
+            <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
+                <td class="px-4 py-3.5 text-sm text-sidebar-text font-medium"><?php echo htmlspecialchars($bookingId); ?></td>
+                <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo htmlspecialchars($row['customer_name']); ?></td>
+                <td class="px-4 py-3.5 text-sm text-sidebar-text">
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-50 text-purple-700 border border-purple-100">
+                        <?php echo htmlspecialchars($row['service_name'] ?: 'Custom LifePlan'); ?>
+                    </span>
+                </td>
+                <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo htmlspecialchars($row['initial_date']); ?></td>
+                <td class="px-4 py-3.5 text-sm text-sidebar-text">₱<?php echo number_format($row['package_price'], 2); ?></td>
+                <td class="px-4 py-3.5 text-sm">
+                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium <?php echo $statusClass; ?>">
+                        <i class="fas <?php echo $statusIcon; ?> mr-1"></i> <?php echo htmlspecialchars($row['booking_status']); ?>
+                    </span>
+                </td>
+                <td class="px-4 py-3.5 text-sm">
+                    <div class="flex space-x-2">
+                        <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" 
+                                title="View Details" 
+                                onclick="openLifeplanDetails(<?php echo $row['lpbooking_id']; ?>)">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+    <?php
+        }
+    } else {
+    ?>
+        <tr>
+            <td colspan="7" class="px-4 py-6 text-sm text-center">
+                <div class="flex flex-col items-center">
+                    <i class="fas fa-inbox text-gray-300 text-4xl mb-3"></i>
+                    <p class="text-gray-500">No lifeplan bookings found</p>
+                </div>
+            </td>
+        </tr>
+    <?php
+    }
+    ?>
+</tbody>
+</table>
         </div>
     </div>
     
@@ -1178,13 +1168,10 @@ $lifeplanResult = $lifeplan_stmt->get_result();
     <div id="lifeplanPaginationInfo" class="text-sm text-gray-500 text-center sm:text-left">
         <?php 
         $current_page_lifeplan_bookings = $lifeplanResult->num_rows;
-        
         if ($total_lifeplan_bookings > 0) {
             $lifeplan_start = $lifeplan_offset + 1;
             $lifeplan_end = $lifeplan_offset + $current_page_lifeplan_bookings;
-        
-            echo "Showing {$lifeplan_start} - {$lifeplan_end} of {$total_lifeplan_bookings} " . 
-                 ($total_lifeplan_bookings != 1 ? "lifeplan bookings" : "lifeplan booking");
+            echo "Showing {$lifeplan_start} - {$lifeplan_end} of {$total_lifeplan_bookings} lifeplan bookings";
         } else {
             echo "No lifeplan bookings found";
         }
@@ -1193,37 +1180,29 @@ $lifeplanResult = $lifeplan_stmt->get_result();
     <div id="lifeplanPaginationContainer" class="flex space-x-2">
         <?php if ($total_lifeplan_pages > 1): ?>
             <!-- First page button (double arrow) -->
-            <a href="?lifeplan_page=1" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($lifeplan_current_page == 1) ? 'opacity-50 pointer-events-none' : ''; ?>">
-                &laquo;
-            </a>
+            <button onclick="loadLifeplanBookings(1)" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($lifeplan_current_page == 1) ? 'opacity-50 pointer-events-none' : ''; ?>">
+                «
+            </button>
             
             <!-- Previous page button (single arrow) -->
-            <a href="<?php echo '?lifeplan_page=' . max(1, $lifeplan_current_page - 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($lifeplan_current_page == 1) ? 'opacity-50 pointer-events-none' : ''; ?>">
-                &lsaquo;
-            </a>
+            <button onclick="loadLifeplanBookings(<?php echo max(1, $lifeplan_current_page - 1); ?>)" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($lifeplan_current_page == 1) ? 'opacity-50 pointer-events-none' : ''; ?>">
+                ‹
+            </button>
             
             <?php
-            // Show exactly 3 page numbers
             if ($total_lifeplan_pages <= 3) {
-                // If total pages is 3 or less, show all pages
                 $lifeplan_start_page = 1;
                 $lifeplan_end_page = $total_lifeplan_pages;
             } else {
-                // With more than 3 pages, determine which 3 to show
                 if ($lifeplan_current_page == 1) {
-                    // At the beginning, show first 3 pages
                     $lifeplan_start_page = 1;
                     $lifeplan_end_page = 3;
                 } elseif ($lifeplan_current_page == $total_lifeplan_pages) {
-                    // At the end, show last 3 pages
                     $lifeplan_start_page = $total_lifeplan_pages - 2;
                     $lifeplan_end_page = $total_lifeplan_pages;
                 } else {
-                    // In the middle, show current page with one before and after
                     $lifeplan_start_page = $lifeplan_current_page - 1;
                     $lifeplan_end_page = $lifeplan_current_page + 1;
-                    
-                    // Handle edge cases
                     if ($lifeplan_start_page < 1) {
                         $lifeplan_start_page = 1;
                         $lifeplan_end_page = 3;
@@ -1235,22 +1214,21 @@ $lifeplanResult = $lifeplan_stmt->get_result();
                 }
             }
             
-            // Generate the page buttons
             for ($i = $lifeplan_start_page; $i <= $lifeplan_end_page; $i++) {
                 $active_class = ($i == $lifeplan_current_page) ? 'bg-sidebar-accent text-white' : 'border border-sidebar-border hover:bg-sidebar-hover';
-                echo '<a href="?lifeplan_page=' . $i . '" class="px-3.5 py-1.5 rounded text-sm ' . $active_class . '">' . $i . '</a>';
+                echo '<button onclick="loadLifeplanBookings(' . $i . ')" class="px-3.5 py-1.5 rounded text-sm ' . $active_class . '">' . $i . '</button>';
             }
             ?>
             
             <!-- Next page button (single arrow) -->
-            <a href="<?php echo '?lifeplan_page=' . min($total_lifeplan_pages, $lifeplan_current_page + 1); ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($lifeplan_current_page == $total_lifeplan_pages) ? 'opacity-50 pointer-events-none' : ''; ?>">
-                &rsaquo;
-            </a>
+            <button onclick="loadLifeplanBookings(<?php echo min($total_lifeplan_pages, $lifeplan_current_page + 1); ?>)" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($lifeplan_current_page == $total_lifeplan_pages) ? 'opacity-50 pointer-events-none' : ''; ?>">
+                ›
+            </button>
             
             <!-- Last page button (double arrow) -->
-            <a href="<?php echo '?lifeplan_page=' . $total_lifeplan_pages; ?>" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($lifeplan_current_page == $total_lifeplan_pages) ? 'opacity-50 pointer-events-none' : ''; ?>">
-                &raquo;
-            </a>
+            <button onclick="loadLifeplanBookings(<?php echo $total_lifeplan_pages; ?>)" class="px-3.5 py-1.5 border border-sidebar-border rounded text-sm hover:bg-sidebar-hover <?php echo ($lifeplan_current_page == $total_lifeplan_pages) ? 'opacity-50 pointer-events-none' : ''; ?>">
+                »
+            </button>
         <?php endif; ?>
     </div>
 </div>
@@ -3166,6 +3144,191 @@ document.getElementById('paymentForm').addEventListener('submit', function(e) {
     });
 });
     </script>
+    
+    <script>
+// Function to initialize all filter functionality
+function initializeAllFilters() {
+    // Initialize filters for each table type
+    initializeTableFilters('booking', '#bookingTableBody', '#totalBookings', '#paginationInfo');
+    initializeTableFilters('custom', '#customBookingTableBody', '#totalCustomBookings', '#customPaginationInfo');
+    initializeTableFilters('lifeplan', '#lifeplanBookingTableBody', '#totalLifeplanBookings', '#lifeplanPaginationInfo');
+}
+
+// Generic function to initialize filters for a table
+function initializeTableFilters(tableType, tableBodySelector, totalCountSelector, paginationInfoSelector) {
+    // Mobile filter toggle
+    const mobileFilterToggle = document.getElementById(`${tableType}BookingFilterToggleMobile`);
+    const mobileFilterDropdown = document.getElementById(`${tableType}BookingFilterDropdownMobile`);
+    
+    if (mobileFilterToggle && mobileFilterDropdown) {
+        mobileFilterToggle.addEventListener('click', function(e) {
+            e.stopPropagation();
+            mobileFilterDropdown.classList.toggle('hidden');
+        });
+    }
+    
+    // Desktop filter toggle
+    const desktopFilterToggle = document.getElementById(`${tableType}BookingFilterToggle`);
+    const desktopFilterDropdown = document.getElementById(`${tableType}BookingFilterDropdown`);
+    
+    if (desktopFilterToggle && desktopFilterDropdown) {
+        desktopFilterToggle.addEventListener('click', function(e) {
+            e.stopPropagation();
+            desktopFilterDropdown.classList.toggle('hidden');
+        });
+    }
+    
+    // Handle search functionality
+    const desktopSearchInput = document.getElementById(`${tableType}BookingSearchInput`);
+    const mobileSearchInput = document.getElementById(`${tableType}BookingSearchInputMobile`);
+    
+    if (desktopSearchInput && mobileSearchInput) {
+        desktopSearchInput.addEventListener('input', function() {
+            mobileSearchInput.value = this.value;
+            filterTable(tableType, tableBodySelector, totalCountSelector, paginationInfoSelector);
+        });
+        
+        mobileSearchInput.addEventListener('input', function() {
+            desktopSearchInput.value = this.value;
+            filterTable(tableType, tableBodySelector, totalCountSelector, paginationInfoSelector);
+        });
+    }
+    
+    // Handle filter options (both mobile and desktop)
+    document.querySelectorAll(`.${tableType}-filter-option, .${tableType}-filter-option-mobile`).forEach(option => {
+        option.addEventListener('click', function() {
+            const sortValue = this.getAttribute('data-sort');
+            
+            // Update UI to show active filter
+            document.querySelectorAll(`.${tableType}-filter-option, .${tableType}-filter-option-mobile`).forEach(opt => {
+                opt.classList.remove('bg-sidebar-hover');
+            });
+            this.classList.add('bg-sidebar-hover');
+            
+            // Show filter indicator
+            document.getElementById(`${tableType}FilterIndicator`).classList.remove('hidden');
+            document.getElementById(`${tableType}FilterIndicatorMobile`).classList.remove('hidden');
+            
+            // Apply sorting
+            sortTable(tableType, sortValue, tableBodySelector);
+            
+            // Close dropdowns
+            if (mobileFilterDropdown) mobileFilterDropdown.classList.add('hidden');
+            if (desktopFilterDropdown) desktopFilterDropdown.classList.add('hidden');
+        });
+    });
+}
+
+// Function to filter table based on search input
+function filterTable(tableType, tableBodySelector, totalCountSelector, paginationInfoSelector) {
+    const searchValue = (document.getElementById(`${tableType}BookingSearchInput`).value || '').toLowerCase();
+    const rows = document.querySelectorAll(`${tableBodySelector} tr`);
+    
+    let visibleCount = 0;
+    
+    rows.forEach(row => {
+        // Get all cells that should be searchable (adjust indexes as needed)
+        const cells = row.cells;
+        let matchesSearch = false;
+        
+        // Check each cell for a match
+        for (let i = 0; i < cells.length - 1; i++) { // Skip last cell (actions)
+            const cellText = cells[i]?.textContent?.toLowerCase() || '';
+            if (cellText.includes(searchValue)) {
+                matchesSearch = true;
+                break;
+            }
+        }
+        
+        if (matchesSearch) {
+            row.style.display = '';
+            visibleCount++;
+        } else {
+            row.style.display = 'none';
+        }
+    });
+    
+    // Update total count display
+    if (totalCountSelector) {
+        const totalElement = document.querySelector(totalCountSelector);
+        if (totalElement) {
+            if (visibleCount === 0) {
+                totalElement.textContent = "No bookings";
+            } else {
+                totalElement.textContent = visibleCount;
+            }
+        }
+    }
+    
+    // Update pagination info
+    if (paginationInfoSelector) {
+        const totalRows = document.querySelectorAll(`${tableBodySelector} tr`).length;
+        const paginationInfo = document.querySelector(paginationInfoSelector);
+        if (paginationInfo) {
+            paginationInfo.textContent = `Showing ${visibleCount} of ${totalRows} bookings`;
+        }
+    }
+}
+
+// Function to sort table
+function sortTable(tableType, sortValue, tableBodySelector) {
+    const rows = Array.from(document.querySelectorAll(`${tableBodySelector} tr:not([style*="display: none"])`));
+    const tbody = document.querySelector(tableBodySelector);
+    
+    // Clear the table
+    tbody.innerHTML = '';
+    
+    // Sort the rows based on the selected option
+    rows.sort((a, b) => {
+        const aId = parseInt(a.cells[0].textContent.split('-')[2]);
+        const bId = parseInt(b.cells[0].textContent.split('-')[2]);
+        
+        const aCustomer = a.cells[1].textContent.toLowerCase();
+        const bCustomer = b.cells[1].textContent.toLowerCase();
+        
+        // For custom bookings, the date is in cell 3 (index 3)
+        // For lifeplan bookings, the date might be in a different cell
+        const dateCellIndex = tableType === 'lifeplan' ? 3 : 3; // Adjust as needed
+        const aDate = new Date(a.cells[dateCellIndex].textContent);
+        const bDate = new Date(b.cells[dateCellIndex].textContent);
+        
+        switch(sortValue) {
+            case 'id_asc':
+                return aId - bId;
+            case 'id_desc':
+                return bId - aId;
+            case 'customer_asc':
+                return aCustomer.localeCompare(bCustomer);
+            case 'customer_desc':
+                return bCustomer.localeCompare(aCustomer);
+            case 'newest':
+                return bDate - aDate;
+            case 'oldest':
+                return aDate - bDate;
+            default:
+                return 0;
+        }
+    });
+    
+    // Re-append the sorted rows
+    rows.forEach(row => tbody.appendChild(row));
+}
+
+// Initialize all filters when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    initializeAllFilters();
+    
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', function(event) {
+        // Close booking filter dropdowns
+        if (!event.target.closest('.filter-dropdown')) {
+            document.querySelectorAll('[id$="BookingFilterDropdown"], [id$="BookingFilterDropdownMobile"]').forEach(dropdown => {
+                dropdown.classList.add('hidden');
+            });
+        }
+    });
+});
+</script>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -4462,6 +4625,311 @@ function enlargeImage(imgElement) {
       closeEnlargedImage();
     }
   });
+
+
+// Function to load bookings via AJAX
+function loadBookings(page) {
+    // Show loading indicator
+    document.getElementById('loadingIndicator').classList.remove('hidden');
+    
+    // Get current search and filter values
+    const searchQuery = document.getElementById('bookingSearchInput').value || 
+                       document.getElementById('bookingSearchInputMobile').value || '';
+    const sortBy = document.querySelector('.filter-option.active')?.dataset.sort || 
+                  document.querySelector('.filter-option-mobile.active')?.dataset.sort || 'newest';
+    
+    // Create AJAX request
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', 'bookingpage/ajax_pagination_pending_table.php', true);
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    
+    xhr.onload = function() {
+        if (this.status === 200) {
+            try {
+                const response = JSON.parse(this.responseText);
+                
+                // Update table body
+                document.getElementById('bookingTableBody').innerHTML = response.html;
+                
+                // Update pagination info
+                document.getElementById('paginationInfo').textContent = response.paginationInfo;
+                
+                // Update active page buttons
+                const pageButtons = document.querySelectorAll('#paginationContainer button');
+                pageButtons.forEach(button => {
+                    const pageNum = parseInt(button.textContent);
+                    if (!isNaN(pageNum) && pageNum === response.currentPage) {
+                        button.classList.add('bg-sidebar-accent', 'text-white');
+                        button.classList.remove('border', 'border-sidebar-border', 'hover:bg-sidebar-hover');
+                    } else if (!isNaN(pageNum)) {
+                        button.classList.remove('bg-sidebar-accent', 'text-white');
+                        button.classList.add('border', 'border-sidebar-border', 'hover:bg-sidebar-hover');
+                    }
+                });
+                
+                // Update booking counter
+                document.getElementById('totalBookings').textContent = response.totalBookings > 0 ? 
+                    response.totalBookings : "No bookings";
+                
+            } catch (e) {
+                console.error('Error parsing response:', e);
+            }
+        } else {
+            console.error('Request failed. Status:', this.status);
+        }
+        
+        // Hide loading indicator
+        document.getElementById('loadingIndicator').classList.add('hidden');
+    };
+    
+    xhr.onerror = function() {
+        console.error('Request failed');
+        document.getElementById('loadingIndicator').classList.add('hidden');
+    };
+    
+    // Send request with parameters
+    xhr.send(`page=${page}&search=${encodeURIComponent(searchQuery)}&sort=${sortBy}`);
+}
+
+// Add event listeners for filter options
+document.querySelectorAll('.filter-option, .filter-option-mobile').forEach(option => {
+    option.addEventListener('click', function() {
+        // Remove active class from all options
+        document.querySelectorAll('.filter-option, .filter-option-mobile').forEach(el => {
+            el.classList.remove('active');
+        });
+        
+        // Add active class to clicked option
+        this.classList.add('active');
+        
+        // Show filter indicator
+        document.getElementById('filterIndicator').classList.remove('hidden');
+        document.getElementById('filterIndicatorMobile').classList.remove('hidden');
+        
+        // Reload bookings with new filter
+        loadBookings(1);
+    });
+});
+
+// Add event listeners for search inputs
+const searchInputs = ['bookingSearchInput', 'bookingSearchInputMobile'];
+searchInputs.forEach(id => {
+    const input = document.getElementById(id);
+    if (input) {
+        let searchTimeout;
+        input.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                loadBookings(1);
+            }, 500);
+        });
+    }
+});
+
+function loadCustomBookings(page) {
+    // Show loading indicator
+    document.getElementById('loadingIndicator').classList.remove('hidden');
+    
+    // Get current search and filter values
+    const searchQuery = document.getElementById('customBookingSearchInput').value || 
+                       document.getElementById('customBookingSearchInputMobile').value || '';
+    const sortBy = document.querySelector('.custom-filter-option.active')?.dataset.sort || 
+                  document.querySelector('.custom-filter-option-mobile.active')?.dataset.sort || 'newest';
+    
+    // Create AJAX request
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', 'bookingpage/ajax_pagination_custom_table.php', true);
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    
+    xhr.onload = function() {
+        if (this.status === 200) {
+            try {
+                const response = JSON.parse(this.responseText);
+                
+                // Update table body
+                document.getElementById('customBookingTableBody').innerHTML = response.html;
+                
+                // Update pagination info
+                document.getElementById('customPaginationInfo').textContent = response.paginationInfo;
+                
+                // Update active page buttons
+                const pageButtons = document.querySelectorAll('#customPaginationContainer button');
+                pageButtons.forEach(button => {
+                    const pageNum = parseInt(button.textContent);
+                    if (!isNaN(pageNum)) {
+                        if (pageNum === response.currentPage) {
+                            button.classList.add('bg-sidebar-accent', 'text-white');
+                            button.classList.remove('border', 'border-sidebar-border', 'hover:bg-sidebar-hover');
+                        } else {
+                            button.classList.remove('bg-sidebar-accent', 'text-white');
+                            button.classList.add('border', 'border-sidebar-border', 'hover:bg-sidebar-hover');
+                        }
+                    }
+                });
+                
+                // Update booking counter if needed
+                if (document.getElementById('totalCustomBookings')) {
+                    document.getElementById('totalCustomBookings').textContent = response.totalBookings > 0 ? 
+                        response.totalBookings : "No bookings";
+                }
+                
+            } catch (e) {
+                console.error('Error parsing response:', e);
+            }
+        } else {
+            console.error('Request failed. Status:', this.status);
+        }
+        
+        // Hide loading indicator
+        document.getElementById('loadingIndicator').classList.add('hidden');
+    };
+    
+    xhr.onerror = function() {
+        console.error('Request failed');
+        document.getElementById('loadingIndicator').classList.add('hidden');
+    };
+    
+    // Send request with parameters
+    xhr.send(`page=${page}&search=${encodeURIComponent(searchQuery)}&sort=${sortBy}`);
+}
+
+// Add event listeners for filter options if they exist
+document.querySelectorAll('.custom-filter-option, .custom-filter-option-mobile').forEach(option => {
+    option.addEventListener('click', function() {
+        // Remove active class from all options
+        document.querySelectorAll('.custom-filter-option, .custom-filter-option-mobile').forEach(el => {
+            el.classList.remove('active');
+        });
+        
+        // Add active class to clicked option
+        this.classList.add('active');
+        
+        // Show filter indicator if needed
+        if (document.getElementById('customFilterIndicator')) {
+            document.getElementById('customFilterIndicator').classList.remove('hidden');
+        }
+        if (document.getElementById('customFilterIndicatorMobile')) {
+            document.getElementById('customFilterIndicatorMobile').classList.remove('hidden');
+        }
+        
+        // Reload bookings with new filter
+        loadCustomBookings(1);
+    });
+});
+
+// Add event listeners for search inputs
+const customSearchInputs = ['customBookingSearchInput', 'customBookingSearchInputMobile'];
+customSearchInputs.forEach(id => {
+    const input = document.getElementById(id);
+    if (input) {
+        let searchTimeout;
+        input.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                loadCustomBookings(1);
+            }, 500);
+        });
+    }
+});
+
+
+function loadLifeplanBookings(page) {
+    // Show loading indicator
+    document.getElementById('loadingIndicator').classList.remove('hidden');
+    
+    // Get current search and filter values
+    const searchQuery = document.getElementById('lifeplanSearchInput')?.value || 
+                       document.getElementById('lifeplanSearchInputMobile')?.value || '';
+    const sortBy = document.querySelector('.lifeplan-filter-option.active')?.dataset.sort || 
+                  document.querySelector('.lifeplan-filter-option-mobile.active')?.dataset.sort || 'newest';
+    
+    // Create AJAX request
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', 'bookingpage/ajax_pagination_lifeplan_table.php', true);
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    
+    xhr.onload = function() {
+        if (this.status === 200) {
+            try {
+                const response = JSON.parse(this.responseText);
+                
+                // Update table body
+                document.getElementById('lifeplanBookingTableBody').innerHTML = response.html;
+                
+                // Update pagination info
+                document.getElementById('lifeplanPaginationInfo').textContent = response.paginationInfo;
+                
+                // Update active page buttons
+                const pageButtons = document.querySelectorAll('#lifeplanPaginationContainer button');
+                pageButtons.forEach(button => {
+                    const pageNum = parseInt(button.textContent);
+                    if (!isNaN(pageNum) && pageNum === response.currentPage) {
+                        button.classList.add('bg-sidebar-accent', 'text-white');
+                        button.classList.remove('border', 'border-sidebar-border', 'hover:bg-sidebar-hover');
+                    } else if (!isNaN(pageNum)) {
+                        button.classList.remove('bg-sidebar-accent', 'text-white');
+                        button.classList.add('border', 'border-sidebar-border', 'hover:bg-sidebar-hover');
+                    }
+                });
+                
+                // Update booking counter
+                document.getElementById('totalLifeplanBookings').textContent = response.totalBookings > 0 ? 
+                    response.totalBookings : "No lifeplan bookings";
+                
+            } catch (e) {
+                console.error('Error parsing response:', e);
+            }
+        } else {
+            console.error('Request failed. Status:', this.status);
+        }
+        
+        // Hide loading indicator
+        document.getElementById('loadingIndicator').classList.add('hidden');
+    };
+    
+    xhr.onerror = function() {
+        console.error('Request failed');
+        document.getElementById('loadingIndicator').classList.add('hidden');
+    };
+    
+    // Send request with parameters
+    xhr.send(`page=${page}&search=${encodeURIComponent(searchQuery)}&sort=${sortBy}`);
+}
+
+// Add event listeners for filter options
+document.querySelectorAll('.lifeplan-filter-option, .lifeplan-filter-option-mobile').forEach(option => {
+    option.addEventListener('click', function() {
+        // Remove active class from all options
+        document.querySelectorAll('.lifeplan-filter-option, .lifeplan-filter-option-mobile').forEach(el => {
+            el.classList.remove('active');
+        });
+        
+        // Add active class to clicked option
+        this.classList.add('active');
+        
+        // Show filter indicator
+        document.getElementById('lifeplanFilterIndicator')?.classList.remove('hidden');
+        document.getElementById('lifeplanFilterIndicatorMobile')?.classList.remove('hidden');
+        
+        // Reload bookings with new filter
+        loadLifeplanBookings(1);
+    });
+});
+
+// Add event listeners for search inputs
+const lifeplanSearchInputs = ['lifeplanSearchInput', 'lifeplanSearchInputMobile'];
+lifeplanSearchInputs.forEach(id => {
+    const input = document.getElementById(id);
+    if (input) {
+        let searchTimeout;
+        input.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                loadLifeplanBookings(1);
+            }, 500);
+        });
+    }
+});
 
 </script>
 
