@@ -2044,7 +2044,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Hide results when clicking outside
         document.addEventListener('click', function(e) {
-            if (!customerSearch.contains(e.target) {
+            if (!customerSearch.contains(e.target)) {
                 customerResults.classList.add('hidden');
             }
         });
