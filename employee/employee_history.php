@@ -71,7 +71,7 @@ $offsetOngoing = ($pageOngoing - 1) * $recordsPerPage;
 $offsetFullyPaid = ($pageFullyPaid - 1) * $recordsPerPage;
 $offsetOutstanding = ($pageOutstanding - 1) * $recordsPerPage;
 
-$customer_query = "SELECT id, CONCAT(first_name, ' ', COALESCE(middle_name, ''), ' ', last_name, COALESCE(suffix, '')) AS full_name, first_name, middle_name, last_name, suffix 
+$customer_query = "SELECT id, CONCAT(first_name, ' ', COALESCE(middle_name, ''), ' ', last_name, ' ',COALESCE(suffix, '')) AS full_name, first_name, middle_name, last_name, suffix 
                   FROM users 
                   WHERE user_type = 3 
                   ORDER BY last_name, first_name";
