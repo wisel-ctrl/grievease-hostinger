@@ -1333,85 +1333,116 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
               Deceased Address
             </label>
             
-            <!-- Region Dropdown -->
-            <div class="mb-3">
-              <label class="block text-xs font-medium text-gray-500 mb-1">Region</label>
-              <select 
-                id="editRegionSelect" 
-                name="editRegionSelect"
-                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                onchange="loadProvinces('edit')"
+            <!-- Current Address Display (readonly) -->
+            <div class="mb-4 p-3 bg-gray-50 rounded-lg border border-gray-200">
+              <label class="block text-xs font-medium text-gray-500 mb-1">Current Address</label>
+              <input 
+                type="text" 
+                id="currentAddressDisplay" 
+                class="w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                readonly
               >
-                <option value="">Select Region</option>
-                <!-- Regions will be loaded dynamically -->
-              </select>
+              <button 
+                type="button" 
+                class="mt-2 text-xs text-sidebar-accent hover:text-darkgold transition-colors"
+                onclick="toggleAddressChange()"
+              >
+                Change Address
+              </button>
             </div>
             
-            <!-- Province Dropdown -->
-            <div class="mb-3">
-              <label class="block text-xs font-medium text-gray-500 mb-1">Province</label>
-              <select 
-                id="editProvinceSelect" 
-                name="editProvinceSelect"
-                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                disabled
-                onchange="loadCities('edit')"
-              >
-                <option value="">Select Province</option>
-                <!-- Provinces will be loaded dynamically -->
-              </select>
-            </div>
-            
-            <!-- City/Municipality Dropdown -->
-            <div class="mb-3">
-              <label class="block text-xs font-medium text-gray-500 mb-1">City/Municipality</label>
-              <select 
-                id="editCitySelect" 
-                name="editCitySelect"
-                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                disabled
-                onchange="loadBarangays('edit')"
-              >
-                <option value="">Select City/Municipality</option>
-                <!-- Cities will be loaded dynamically -->
-              </select>
-            </div>
-            
-            <!-- Barangay Dropdown -->
-            <div class="mb-3">
-              <label class="block text-xs font-medium text-gray-500 mb-1">Barangay</label>
-              <select 
-                id="editBarangaySelect" 
-                name="editBarangaySelect"
-                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                disabled
-              >
-                <option value="">Select Barangay</option>
-                <!-- Barangays will be loaded dynamically -->
-              </select>
-            </div>
-            
-            <!-- Street and Zip Code -->
-            <div class="grid grid-cols-2 gap-4">
-              <div>
-                <label class="block text-xs font-medium text-gray-500 mb-1">Street</label>
-                <input 
-                  type="text" 
-                  id="editStreetInput" 
-                  name="editStreetInput"
+            <!-- Address Change Section (initially hidden) -->
+            <div id="addressChangeSection" class="hidden">
+              <!-- Region Dropdown -->
+              <div class="mb-3">
+                <label class="block text-xs font-medium text-gray-500 mb-1">Region</label>
+                <select 
+                  id="editRegionSelect" 
+                  name="editRegionSelect"
                   class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                  placeholder="Street name, building, etc."
+                  onchange="loadProvinces('edit')"
                 >
+                  <option value="">Select Region</option>
+                  <!-- Regions will be loaded dynamically -->
+                </select>
               </div>
-              <div>
-                <label class="block text-xs font-medium text-gray-500 mb-1">Zip Code</label>
-                <input 
-                  type="text" 
-                  id="editZipCodeInput" 
-                  name="editZipCodeInput"
+              
+              <!-- Province Dropdown -->
+              <div class="mb-3">
+                <label class="block text-xs font-medium text-gray-500 mb-1">Province</label>
+                <select 
+                  id="editProvinceSelect" 
+                  name="editProvinceSelect"
                   class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-                  placeholder="Zip Code"
+                  disabled
+                  onchange="loadCities('edit')"
                 >
+                  <option value="">Select Province</option>
+                  <!-- Provinces will be loaded dynamically -->
+                </select>
+              </div>
+              
+              <!-- City/Municipality Dropdown -->
+              <div class="mb-3">
+                <label class="block text-xs font-medium text-gray-500 mb-1">City/Municipality</label>
+                <select 
+                  id="editCitySelect" 
+                  name="editCitySelect"
+                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                  disabled
+                  onchange="loadBarangays('edit')"
+                >
+                  <option value="">Select City/Municipality</option>
+                  <!-- Cities will be loaded dynamically -->
+                </select>
+              </div>
+              
+              <!-- Barangay Dropdown -->
+              <div class="mb-3">
+                <label class="block text-xs font-medium text-gray-500 mb-1">Barangay</label>
+                <select 
+                  id="editBarangaySelect" 
+                  name="editBarangaySelect"
+                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                  disabled
+                >
+                  <option value="">Select Barangay</option>
+                  <!-- Barangays will be loaded dynamically -->
+                </select>
+              </div>
+              
+              <!-- Street and Zip Code -->
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-xs font-medium text-gray-500 mb-1">Street</label>
+                  <input 
+                    type="text" 
+                    id="editStreetInput" 
+                    name="editStreetInput"
+                    class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                    placeholder="Street name, building, etc."
+                  >
+                </div>
+                <div>
+                  <label class="block text-xs font-medium text-gray-500 mb-1">Zip Code</label>
+                  <input 
+                    type="text" 
+                    id="editZipCodeInput" 
+                    name="editZipCodeInput"
+                    class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                    placeholder="Zip Code"
+                  >
+                </div>
+              </div>
+              
+              <div class="flex justify-end mt-3">
+                <button 
+                  type="button" 
+                  class="text-xs text-gray-500 hover:text-gray-700 transition-colors"
+                  onclick="cancelAddressChange()"
+                >
+                  Cancel
+                </button>
               </div>
             </div>
           </div>
@@ -2173,6 +2204,19 @@ function toggleBodyScroll(isOpen) {
   }
 }
 
+// Function to toggle address change section
+function toggleAddressChange() {
+  const addressChangeSection = document.getElementById('addressChangeSection');
+  addressChangeSection.classList.toggle('hidden');
+}
+
+// Function to cancel address change
+function cancelAddressChange() {
+  document.getElementById('addressChangeSection').classList.add('hidden');
+  // Optionally reset the dropdowns if you want
+  // resetAddressDropdowns();
+}
+
 // Function to open the Edit Service Modal
 // Function to open the Edit Service Modal and populate with service details
 function openEditServiceModal(serviceId) {
@@ -2237,7 +2281,9 @@ function openEditServiceModal(serviceId) {
         
         // Address Information - You'll need to implement the address loading functions
         // For now, we'll just set the street input
-        document.getElementById('editStreetInput').value = data.deceased_address || '';
+        if (data.deceased_address) {
+          document.getElementById('currentAddressDisplay').value = data.deceased_address;
+        }
         
         // Show the modal
         document.getElementById('editServiceModal').classList.remove('hidden');
