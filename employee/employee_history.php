@@ -2616,6 +2616,7 @@ function filterTable(table, searchTerm) {
 
 // Function to check customer before assigning staff
 function checkCustomerBeforeAssign(serviceId, hasCustomer) {
+  console.log(serviceId, hasCustomer);
     if (hasCustomer==0) {
         Swal.fire({
             icon: 'warning',
@@ -2631,6 +2632,7 @@ function checkCustomerBeforeAssign(serviceId, hasCustomer) {
 
 // Function to check customer before completing service
 function checkCustomerBeforeComplete(serviceId, hasCustomer) {
+  console.log(serviceId, hasCustomer);
     if (!hasCustomer) {
         Swal.fire({
             icon: 'warning',
