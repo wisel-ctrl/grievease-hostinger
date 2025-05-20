@@ -441,14 +441,14 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
                           <button class="p-2 bg-purple-100 text-purple-600 rounded-lg hover:bg-purple-200 transition-all tooltip assign-staff-btn" 
                                   title="Assign Staff"
                                   onclick="checkCustomerBeforeAssign('<?php echo $row['sales_id']; ?>', <?php echo $row['customerID'] ? 'true' : 'false'; ?>)"
-                                  <?php echo !$row['customerID'] ? 'disabled' : ''; ?>>
+                                  data-has-customer="<?php echo $row['customerID'] ? 'true' : 'false'; ?>">
                             <i class="fas fa-users"></i>
                           </button>
                         <?php endif; ?>
                         <button class="p-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition-all tooltip complete-btn" 
                                 title="Complete Service"
                                 onclick="checkCustomerBeforeComplete('<?php echo $row['sales_id']; ?>', <?php echo $row['customerID'] ? 'true' : 'false'; ?>)"
-                                <?php echo !$row['customerID'] ? 'disabled' : ''; ?>>
+                                data-has-customer="<?php echo $row['customerID'] ? 'true' : 'false'; ?>">
                           <i class="fas fa-check"></i>
                         </button>
                       </div>
@@ -2616,35 +2616,54 @@ function filterTable(table, searchTerm) {
 
 // Function to check customer before assigning staff
 function checkCustomerBeforeAssign(serviceId, hasCustomer) {
-  console.log(serviceId, hasCustomer);
-    if (hasCustomer==0) {
-        Swal.fire({
-            icon: 'warning',
-            title: 'Customer Required',
-            text: 'Please enter a customer account first by clicking the edit button',
-            confirmButtonColor: '#3085d6',
-            confirmButtonText: 'OK'
-        });
-        return;
+    if (hasCustomer) {
+        openAssignStaffModal(serviceId);
     }
-    openAssignStaffModal(serviceId);
 }
 
 // Function to check customer before completing service
 function checkCustomerBeforeComplete(serviceId, hasCustomer) {
-  console.log(serviceId, hasCustomer);
-    if (!hasCustomer) {
-        Swal.fire({
-            icon: 'warning',
-            title: 'Customer Required',
-            text: 'Please enter a customer account first by clicking the edit button',
-            confirmButtonColor: '#3085d6',
-            confirmButtonText: 'OK'
-        });
-        return;
+    if (hasCustomer) {
+        openCompleteModal(serviceId);
     }
-    openCompleteModal(serviceId);
 }
+
+// Add event listeners for disabled buttons
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle assign staff buttons
+    document.querySelectorAll('.assign-staff-btn').forEach(button => {
+        button.addEventListener('click', function(e) {
+            const hasCustomer = this.getAttribute('data-has-customer') === 'true';
+            if (!hasCustomer) {
+                e.preventDefault();
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Customer Required',
+                    text: 'Please enter a customer account first by clicking the edit button',
+                    confirmButtonColor: '#3085d6',
+                    confirmButtonText: 'OK'
+                });
+            }
+        });
+    });
+
+    // Handle complete service buttons
+    document.querySelectorAll('.complete-btn').forEach(button => {
+        button.addEventListener('click', function(e) {
+            const hasCustomer = this.getAttribute('data-has-customer') === 'true';
+            if (!hasCustomer) {
+                e.preventDefault();
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Customer Required',
+                    text: 'Please enter a customer account first by clicking the edit button',
+                    confirmButtonColor: '#3085d6',
+                    confirmButtonText: 'OK'
+                });
+            }
+        });
+    });
+});
 
 </script>
 <script src="tailwind.js"></script>
