@@ -71,7 +71,7 @@ $offsetOngoing = ($pageOngoing - 1) * $recordsPerPage;
 $offsetFullyPaid = ($pageFullyPaid - 1) * $recordsPerPage;
 $offsetOutstanding = ($pageOutstanding - 1) * $recordsPerPage;
 
-$customer_query = "SELECT id, CONCAT(first_name, ' ', COALESCE(middle_name, ''), ' ', last_name, COALESCE(suffix, '')) AS full_name 
+$customer_query = "SELECT id, CONCAT(first_name, ' ', COALESCE(middle_name, ''), ' ', last_name, COALESCE(suffix, '')) AS full_name, first_name, middle_name, last_name, suffix 
                   FROM users 
                   WHERE user_type = 3 
                   ORDER BY last_name, first_name";
@@ -2027,7 +2027,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         customerResults.classList.add('hidden');
                         
                         // You can also populate other customer fields here if needed
-                        // populateCustomerDetails(customer.id);
+                        populateCustomerDetails(customer.id);
                     });
                     customerResults.appendChild(div);
                 });
@@ -2060,8 +2060,10 @@ function populateCustomerDetails(customerId) {
         // You would need to fetch additional customer details via AJAX
         // or have them already in your customers array
         // Example:
-        // document.getElementById('editFirstName').value = customer.first_name || '';
-        // document.getElementById('editLastName').value = customer.last_name || '';
+        document.getElementById('editFirstName').value = customer.first_name || '';
+        document.getElementById('editLastName').value = customer.last_name || ''; 
+        document.getElementById('editMiddleName').value = customer.middle_name || '';
+        document.getElementById('editNameSuffix').value = customer.suffix || '';
         // etc.
     }
 }
