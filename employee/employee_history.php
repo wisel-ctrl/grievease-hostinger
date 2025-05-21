@@ -2352,12 +2352,7 @@ function saveServiceChanges() {
     birthDate: document.getElementById('editBirthDate').value,
     deathDate: document.getElementById('editDeathDate').value,
     burialDate: document.getElementById('editBurialDate').value,
-    streetInput: document.getElementById('editStreetInput').value,
-    region: document.getElementById('editRegionSelect').value,
-    province: document.getElementById('editProvinceSelect').value,
-    city: document.getElementById('editCitySelect').value,
-    barangay: document.getElementById('editBarangaySelect').value,
-    zipCode: document.getElementById('editZipCodeInput').value,
+    deceased_address: document.getElementById('currentAddressDisplay').value,
     deathCertificate: document.getElementById('editDeathCertificate').files[0]?.name || ''
   };
 
@@ -2369,7 +2364,7 @@ function saveServiceChanges() {
   }
 
   // Send data to server
-  fetch('update_history_sales.php', {
+  fetch('historyAPI/update_history_sales.php', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
