@@ -2675,6 +2675,10 @@ function loadRegions() {
     fetch('historyAPI/addressDB.php?action=getRegions')
         .then(response => response.json())
         .then(data => {
+            if (data.error) {
+                console.error('Error:', data.error);
+                return;
+            }
             data.forEach(region => {
                 const option = document.createElement('option');
                 option.value = region.region_id;
@@ -2687,6 +2691,7 @@ function loadRegions() {
 
 // Function to load provinces based on selected region
 function loadProvinces(regionId) {
+    console.log('Loading provinces for region:', regionId);
     const provinceSelect = document.getElementById('editProvinceSelect');
     provinceSelect.innerHTML = '<option value="">Select Province</option>';
     
@@ -2695,6 +2700,11 @@ function loadProvinces(regionId) {
     fetch(`historyAPI/addressDB.php?action=getProvinces&region_id=${regionId}`)
         .then(response => response.json())
         .then(data => {
+            if (data.error) {
+                console.error('Error:', data.error);
+                return;
+            }
+            console.log('Provinces data:', data);
             data.forEach(province => {
                 const option = document.createElement('option');
                 option.value = province.province_id;
@@ -2707,6 +2717,7 @@ function loadProvinces(regionId) {
 
 // Function to load municipalities based on selected province
 function loadMunicipalities(provinceId) {
+    console.log('Loading municipalities for province:', provinceId);
     const citySelect = document.getElementById('editCitySelect');
     citySelect.innerHTML = '<option value="">Select City/Municipality</option>';
     
@@ -2715,6 +2726,11 @@ function loadMunicipalities(provinceId) {
     fetch(`historyAPI/addressDB.php?action=getMunicipalities&province_id=${provinceId}`)
         .then(response => response.json())
         .then(data => {
+            if (data.error) {
+                console.error('Error:', data.error);
+                return;
+            }
+            console.log('Municipalities data:', data);
             data.forEach(municipality => {
                 const option = document.createElement('option');
                 option.value = municipality.municipality_id;
@@ -2727,6 +2743,7 @@ function loadMunicipalities(provinceId) {
 
 // Function to load barangays based on selected municipality
 function loadBarangays(municipalityId) {
+    console.log('Loading barangays for municipality:', municipalityId);
     const barangaySelect = document.getElementById('editBarangaySelect');
     barangaySelect.innerHTML = '<option value="">Select Barangay</option>';
     
@@ -2735,6 +2752,11 @@ function loadBarangays(municipalityId) {
     fetch(`historyAPI/addressDB.php?action=getBarangays&municipality_id=${municipalityId}`)
         .then(response => response.json())
         .then(data => {
+            if (data.error) {
+                console.error('Error:', data.error);
+                return;
+            }
+            console.log('Barangays data:', data);
             data.forEach(barangay => {
                 const option = document.createElement('option');
                 option.value = barangay.barangay_id;
@@ -2751,26 +2773,44 @@ document.addEventListener('DOMContentLoaded', function() {
     loadRegions();
     
     // Add change event listeners for cascading dropdowns
-    document.getElementById('editRegionSelect').addEventListener('change', function() {
-        loadProvinces(this.value);
-        document.getElementById('editCitySelect').innerHTML = '<option value="">Select City/Municipality</option>';
-        document.getElementById('editBarangaySelect').innerHTML = '<option value="">Select Barangay</option>';
-    });
+    const regionSelect = document.getElementById('editRegionSelect');
+    const provinceSelect = document.getElementById('editProvinceSelect');
+    const citySelect = document.getElementById('editCitySelect');
+    const barangaySelect = document.getElementById('editBarangaySelect');
     
-    document.getElementById('editProvinceSelect').addEventListener('change', function() {
-        loadMunicipalities(this.value);
-        document.getElementById('editBarangaySelect').innerHTML = '<option value="">Select Barangay</option>';
-    });
+    if (regionSelect) {
+        regionSelect.addEventListener('change', function() {
+            console.log('Region changed:', this.value);
+            loadProvinces(this.value);
+            citySelect.innerHTML = '<option value="">Select City/Municipality</option>';
+            barangaySelect.innerHTML = '<option value="">Select Barangay</option>';
+            updateCurrentAddress();
+        });
+    }
     
-    document.getElementById('editCitySelect').addEventListener('change', function() {
-        loadBarangays(this.value);
-    });
+    if (provinceSelect) {
+        provinceSelect.addEventListener('change', function() {
+            console.log('Province changed:', this.value);
+            loadMunicipalities(this.value);
+            barangaySelect.innerHTML = '<option value="">Select Barangay</option>';
+            updateCurrentAddress();
+        });
+    }
     
-    // Update currentAddressDisplay when any address field changes
-    const addressFields = ['editRegionSelect', 'editProvinceSelect', 'editCitySelect', 'editBarangaySelect'];
-    addressFields.forEach(fieldId => {
-        document.getElementById(fieldId).addEventListener('change', updateCurrentAddress);
-    });
+    if (citySelect) {
+        citySelect.addEventListener('change', function() {
+            console.log('City changed:', this.value);
+            loadBarangays(this.value);
+            updateCurrentAddress();
+        });
+    }
+    
+    if (barangaySelect) {
+        barangaySelect.addEventListener('change', function() {
+            console.log('Barangay changed:', this.value);
+            updateCurrentAddress();
+        });
+    }
 });
 
 // Function to update the currentAddressDisplay
@@ -2781,12 +2821,26 @@ function updateCurrentAddress() {
     const barangay = document.getElementById('editBarangaySelect');
     
     let address = '';
-    if (barangay.value) address += barangay.options[barangay.selectedIndex].text;
-    if (city.value) address += ', ' + city.options[city.selectedIndex].text;
-    if (province.value) address += ', ' + province.options[province.selectedIndex].text;
-    if (region.value) address += ', ' + region.options[region.selectedIndex].text;
+    if (barangay && barangay.value) {
+        address += barangay.options[barangay.selectedIndex].text;
+    }
+    if (city && city.value) {
+        if (address) address += ', ';
+        address += city.options[city.selectedIndex].text;
+    }
+    if (province && province.value) {
+        if (address) address += ', ';
+        address += province.options[province.selectedIndex].text;
+    }
+    if (region && region.value) {
+        if (address) address += ', ';
+        address += region.options[region.selectedIndex].text;
+    }
     
-    document.getElementById('currentAddressDisplay').value = address;
+    const currentAddressDisplay = document.getElementById('currentAddressDisplay');
+    if (currentAddressDisplay) {
+        currentAddressDisplay.value = address;
+    }
 }
 </script>
 </body> 
