@@ -2726,6 +2726,9 @@ function loadProvinces(regionId) {
                 provinceSelect.appendChild(option);
             });
             console.log('Provinces loaded:', provinceSelect.options.length);
+            
+            // Enable the province select after loading options
+            provinceSelect.disabled = false;
         })
         .catch(error => console.error('Error loading provinces:', error));
 }
@@ -2759,6 +2762,9 @@ function loadMunicipalities(provinceId) {
                 citySelect.appendChild(option);
             });
             console.log('Municipalities loaded:', citySelect.options.length);
+            
+            // Enable the city select after loading options
+            citySelect.disabled = false;
         })
         .catch(error => console.error('Error loading municipalities:', error));
 }
@@ -2812,28 +2818,54 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
     
+    // Initially disable dependent dropdowns
+    provinceSelect.disabled = true;
+    citySelect.disabled = true;
+    barangaySelect.disabled = true;
+    
     // Load initial regions
     loadRegions();
     
     // Add change event listeners for cascading dropdowns
     regionSelect.addEventListener('change', function() {
         console.log('Region changed:', this.value);
-        loadProvinces(this.value);
+        if (this.value) {
+            loadProvinces(this.value);
+            provinceSelect.disabled = false;
+        } else {
+            provinceSelect.innerHTML = '<option value="">Select Province</option>';
+            provinceSelect.disabled = true;
+        }
         citySelect.innerHTML = '<option value="">Select City/Municipality</option>';
+        citySelect.disabled = true;
         barangaySelect.innerHTML = '<option value="">Select Barangay</option>';
+        barangaySelect.disabled = true;
         updateCurrentAddress();
     });
     
     provinceSelect.addEventListener('change', function() {
         console.log('Province changed:', this.value);
-        loadMunicipalities(this.value);
+        if (this.value) {
+            loadMunicipalities(this.value);
+            citySelect.disabled = false;
+        } else {
+            citySelect.innerHTML = '<option value="">Select City/Municipality</option>';
+            citySelect.disabled = true;
+        }
         barangaySelect.innerHTML = '<option value="">Select Barangay</option>';
+        barangaySelect.disabled = true;
         updateCurrentAddress();
     });
     
     citySelect.addEventListener('change', function() {
         console.log('City changed:', this.value);
-        loadBarangays(this.value);
+        if (this.value) {
+            loadBarangays(this.value);
+            barangaySelect.disabled = false;
+        } else {
+            barangaySelect.innerHTML = '<option value="">Select Barangay</option>';
+            barangaySelect.disabled = true;
+        }
         updateCurrentAddress();
     });
     
