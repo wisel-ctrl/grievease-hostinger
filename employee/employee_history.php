@@ -2663,5 +2663,131 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 <script src="tailwind.js"></script>
 <Script src="sidebar.js"></Script>
+<script>
+// Include the address database file
+<?php include '../../addressDB.php'; ?>
+
+// Function to load regions
+function loadRegions() {
+    const regionSelect = document.getElementById('editRegionSelect');
+    regionSelect.innerHTML = '<option value="">Select Region</option>';
+    
+    fetch('historyAPI/addressDB.php?action=getRegions')
+        .then(response => response.json())
+        .then(data => {
+            data.forEach(region => {
+                const option = document.createElement('option');
+                option.value = region.region_id;
+                option.textContent = region.region_name;
+                regionSelect.appendChild(option);
+            });
+        })
+        .catch(error => console.error('Error loading regions:', error));
+}
+
+// Function to load provinces based on selected region
+function loadProvinces(regionId) {
+    const provinceSelect = document.getElementById('editProvinceSelect');
+    provinceSelect.innerHTML = '<option value="">Select Province</option>';
+    
+    if (!regionId) return;
+    
+    fetch(`historyAPI/addressDB.php?action=getProvinces&region_id=${regionId}`)
+        .then(response => response.json())
+        .then(data => {
+            data.forEach(province => {
+                const option = document.createElement('option');
+                option.value = province.province_id;
+                option.textContent = province.province_name;
+                provinceSelect.appendChild(option);
+            });
+        })
+        .catch(error => console.error('Error loading provinces:', error));
+}
+
+// Function to load municipalities based on selected province
+function loadMunicipalities(provinceId) {
+    const citySelect = document.getElementById('editCitySelect');
+    citySelect.innerHTML = '<option value="">Select City/Municipality</option>';
+    
+    if (!provinceId) return;
+    
+    fetch(`historyAPI/addressDB.php?action=getMunicipalities&province_id=${provinceId}`)
+        .then(response => response.json())
+        .then(data => {
+            data.forEach(municipality => {
+                const option = document.createElement('option');
+                option.value = municipality.municipality_id;
+                option.textContent = municipality.municipality_name;
+                citySelect.appendChild(option);
+            });
+        })
+        .catch(error => console.error('Error loading municipalities:', error));
+}
+
+// Function to load barangays based on selected municipality
+function loadBarangays(municipalityId) {
+    const barangaySelect = document.getElementById('editBarangaySelect');
+    barangaySelect.innerHTML = '<option value="">Select Barangay</option>';
+    
+    if (!municipalityId) return;
+    
+    fetch(`historyAPI/addressDB.php?action=getBarangays&municipality_id=${municipalityId}`)
+        .then(response => response.json())
+        .then(data => {
+            data.forEach(barangay => {
+                const option = document.createElement('option');
+                option.value = barangay.barangay_id;
+                option.textContent = barangay.barangay_name;
+                barangaySelect.appendChild(option);
+            });
+        })
+        .catch(error => console.error('Error loading barangays:', error));
+}
+
+// Add event listeners when the document is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    // Load initial regions
+    loadRegions();
+    
+    // Add change event listeners for cascading dropdowns
+    document.getElementById('editRegionSelect').addEventListener('change', function() {
+        loadProvinces(this.value);
+        document.getElementById('editCitySelect').innerHTML = '<option value="">Select City/Municipality</option>';
+        document.getElementById('editBarangaySelect').innerHTML = '<option value="">Select Barangay</option>';
+    });
+    
+    document.getElementById('editProvinceSelect').addEventListener('change', function() {
+        loadMunicipalities(this.value);
+        document.getElementById('editBarangaySelect').innerHTML = '<option value="">Select Barangay</option>';
+    });
+    
+    document.getElementById('editCitySelect').addEventListener('change', function() {
+        loadBarangays(this.value);
+    });
+    
+    // Update currentAddressDisplay when any address field changes
+    const addressFields = ['editRegionSelect', 'editProvinceSelect', 'editCitySelect', 'editBarangaySelect'];
+    addressFields.forEach(fieldId => {
+        document.getElementById(fieldId).addEventListener('change', updateCurrentAddress);
+    });
+});
+
+// Function to update the currentAddressDisplay
+function updateCurrentAddress() {
+    const region = document.getElementById('editRegionSelect');
+    const province = document.getElementById('editProvinceSelect');
+    const city = document.getElementById('editCitySelect');
+    const barangay = document.getElementById('editBarangaySelect');
+    
+    let address = '';
+    if (barangay.value) address += barangay.options[barangay.selectedIndex].text;
+    if (city.value) address += ', ' + city.options[city.selectedIndex].text;
+    if (province.value) address += ', ' + province.options[province.selectedIndex].text;
+    if (region.value) address += ', ' + region.options[region.selectedIndex].text;
+    
+    document.getElementById('currentAddressDisplay').value = address;
+}
+</script>
 </body> 
 </html>
