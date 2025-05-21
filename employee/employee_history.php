@@ -2665,7 +2665,7 @@ document.addEventListener('DOMContentLoaded', function() {
 <Script src="sidebar.js"></Script>
 <script>
 // Include the address database file
-<?php include '../../addressDB.php'; ?>
+<?php include '../addressDB.php'; ?>
 
 // Function to load regions
 function loadRegions() {
