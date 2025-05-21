@@ -1667,6 +1667,7 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
       <form id="completeServiceForm" class="space-y-6">
         <input type="hidden" id="completeServiceId">
         
+        <!-- Drivers Section -->
         <div class="bg-gray-50 p-5 rounded-xl">
           <h4 class="text-lg font-bold mb-4 text-gray-700 flex items-center">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 text-sidebar-accent">
@@ -1675,24 +1676,55 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
               <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
               <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
             </svg>
-            Assign Additional Staff for Burial
+            Assign Drivers
           </h4>
           <div class="grid grid-cols-2 gap-4">
             <div class="flex items-center">
-              <input type="checkbox" id="burial1" class="mr-2">
-              <label for="burial1" class="text-gray-700">Javier Lopez (Grave Digger)</label>
+              <input type="checkbox" id="driver1" class="mr-2">
+              <label for="driver1" class="text-gray-700">John Smith (Lead Driver)</label>
             </div>
             <div class="flex items-center">
-              <input type="checkbox" id="burial2" class="mr-2">
-              <label for="burial2" class="text-gray-700">Fernando Cruz (Helper)</label>
+              <input type="checkbox" id="driver2" class="mr-2">
+              <label for="driver2" class="text-gray-700">Michael Brown (Driver)</label>
             </div>
             <div class="flex items-center">
-              <input type="checkbox" id="burial3" class="mr-2">
-              <label for="burial3" class="text-gray-700">Tomas Santos (Helper)</label>
+              <input type="checkbox" id="driver3" class="mr-2">
+              <label for="driver3" class="text-gray-700">Robert Wilson (Driver)</label>
             </div>
             <div class="flex items-center">
-              <input type="checkbox" id="burial4" class="mr-2">
-              <label for="burial4" class="text-gray-700">Victor Reyes (Coordinator)</label>
+              <input type="checkbox" id="driver4" class="mr-2">
+              <label for="driver4" class="text-gray-700">David Lee (Driver)</label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Personnel Section -->
+        <div class="bg-gray-50 p-5 rounded-xl">
+          <h4 class="text-lg font-bold mb-4 text-gray-700 flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 text-sidebar-accent">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+              <circle cx="9" cy="7" r="4"></circle>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+            </svg>
+            Assign Personnel
+          </h4>
+          <div class="grid grid-cols-2 gap-4">
+            <div class="flex items-center">
+              <input type="checkbox" id="personnel1" class="mr-2">
+              <label for="personnel1" class="text-gray-700">Javier Lopez (Grave Digger)</label>
+            </div>
+            <div class="flex items-center">
+              <input type="checkbox" id="personnel2" class="mr-2">
+              <label for="personnel2" class="text-gray-700">Fernando Cruz (Helper)</label>
+            </div>
+            <div class="flex items-center">
+              <input type="checkbox" id="personnel3" class="mr-2">
+              <label for="personnel3" class="text-gray-700">Tomas Santos (Helper)</label>
+            </div>
+            <div class="flex items-center">
+              <input type="checkbox" id="personnel4" class="mr-2">
+              <label for="personnel4" class="text-gray-700">Victor Reyes (Coordinator)</label>
             </div>
           </div>
         </div>
