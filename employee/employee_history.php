@@ -2802,19 +2802,81 @@ function loadBarangays(municipalityId) {
         .catch(error => console.error('Error loading barangays:', error));
 }
 
+// Function to update the currentAddressDisplay
+function updateCurrentAddress() {
+    const region = document.getElementById('editRegionSelect');
+    const province = document.getElementById('editProvinceSelect');
+    const city = document.getElementById('editCitySelect');
+    const barangay = document.getElementById('editBarangaySelect');
+    const street = document.getElementById('editStreetInput');
+    const zipcode = document.getElementById('editZipCodeInput');
+    
+    if (!region || !province || !city || !barangay || !street || !zipcode) {
+        console.error('One or more address elements not found');
+        return;
+    }
+    
+    let address = '';
+    
+    // Add street if available
+    if (street.value.trim()) {
+        address += street.value.trim();
+    }
+    
+    // Add barangay if selected
+    if (barangay.value) {
+        if (address) address += ', ';
+        address += barangay.options[barangay.selectedIndex].text;
+    }
+    
+    // Add city if selected
+    if (city.value) {
+        if (address) address += ', ';
+        address += city.options[city.selectedIndex].text;
+    }
+    
+    // Add province if selected
+    if (province.value) {
+        if (address) address += ', ';
+        address += province.options[province.selectedIndex].text;
+    }
+    
+    // Add region if selected
+    if (region.value) {
+        if (address) address += ', ';
+        address += region.options[region.selectedIndex].text;
+    }
+    
+    // Add zipcode if available
+    if (zipcode.value.trim()) {
+        if (address) address += ' ';
+        address += zipcode.value.trim();
+    }
+    
+    const currentAddressDisplay = document.getElementById('currentAddressDisplay');
+    if (currentAddressDisplay) {
+        currentAddressDisplay.value = address;
+        console.log('Updated address:', address);
+    } else {
+        console.error('Current address display element not found');
+    }
+}
+
 // Add event listeners when the document is loaded
 document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM loaded, initializing address dropdowns');
     
-    // Get all select elements
+    // Get all select elements and input fields
     const regionSelect = document.getElementById('editRegionSelect');
     const provinceSelect = document.getElementById('editProvinceSelect');
     const citySelect = document.getElementById('editCitySelect');
     const barangaySelect = document.getElementById('editBarangaySelect');
+    const streetInput = document.getElementById('editStreetInput');
+    const zipcodeInput = document.getElementById('editZipCodeInput');
     
     // Verify all elements exist
-    if (!regionSelect || !provinceSelect || !citySelect || !barangaySelect) {
-        console.error('One or more select elements not found');
+    if (!regionSelect || !provinceSelect || !citySelect || !barangaySelect || !streetInput || !zipcodeInput) {
+        console.error('One or more address elements not found');
         return;
     }
     
@@ -2873,45 +2935,18 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('Barangay changed:', this.value);
         updateCurrentAddress();
     });
+    
+    // Add input event listeners for street and zipcode
+    streetInput.addEventListener('input', function() {
+        console.log('Street changed:', this.value);
+        updateCurrentAddress();
+    });
+    
+    zipcodeInput.addEventListener('input', function() {
+        console.log('Zipcode changed:', this.value);
+        updateCurrentAddress();
+    });
 });
-
-// Function to update the currentAddressDisplay
-function updateCurrentAddress() {
-    const region = document.getElementById('editRegionSelect');
-    const province = document.getElementById('editProvinceSelect');
-    const city = document.getElementById('editCitySelect');
-    const barangay = document.getElementById('editBarangaySelect');
-    
-    if (!region || !province || !city || !barangay) {
-        console.error('One or more address elements not found');
-        return;
-    }
-    
-    let address = '';
-    if (barangay.value) {
-        address += barangay.options[barangay.selectedIndex].text;
-    }
-    if (city.value) {
-        if (address) address += ', ';
-        address += city.options[city.selectedIndex].text;
-    }
-    if (province.value) {
-        if (address) address += ', ';
-        address += province.options[province.selectedIndex].text;
-    }
-    if (region.value) {
-        if (address) address += ', ';
-        address += region.options[region.selectedIndex].text;
-    }
-    
-    const currentAddressDisplay = document.getElementById('currentAddressDisplay');
-    if (currentAddressDisplay) {
-        currentAddressDisplay.value = address;
-        console.log('Updated address:', address);
-    } else {
-        console.error('Current address display element not found');
-    }
-}
 </script>
 </body> 
 </html>
