@@ -2226,7 +2226,7 @@ function openEditServiceModal(serviceId) {
       if (data.success) {
         // Populate the form fields with the service details
         const customerSearch = document.getElementById('editCustomerSearch');
-        const selectedCustomerId = document.getElementById('editCustomerResults');
+        const selectedCustomerId = document.getElementById('editSelectedCustomerId');
 
         if (customerSearch && selectedCustomerId) {
           if (data.customerID) {
@@ -2240,19 +2240,6 @@ function openEditServiceModal(serviceId) {
             customerSearch.value = '';
             selectedCustomerId.value = '';
           }
-        }
-
-        // Populate the form fields with the service details
-        if (data.customerID) {
-          const customer = customers.find(c => c.id == data.customerID);
-          if (customer) {
-            document.getElementById('editCustomerSearch').value = customer.full_name;
-            document.getElementById('editCustomerResults').value = customer.id;
-          }
-        } else {
-          // Explicitly clear if customerID is null or undefined
-          document.getElementById('editCustomerSearch').value = '';
-          document.getElementById('editCustomerResults').value = '';
         }
 
         document.getElementById('salesId').value = data.sales_id;
@@ -2278,8 +2265,7 @@ function openEditServiceModal(serviceId) {
         document.getElementById('editDeathDate').value = data.date_of_death || '';
         document.getElementById('editBurialDate').value = data.date_of_burial || '';
         
-        // Address Information - You'll need to implement the address loading functions
-        // For now, we'll just set the street input
+        // Address Information
         if (data.deceased_address) {
           document.getElementById('currentAddressDisplay').value = data.deceased_address;
         }
@@ -2290,9 +2276,6 @@ function openEditServiceModal(serviceId) {
         
         // Load services for this branch
         loadServicesForBranch(data.branch_id, data.service_id);
-        
-        // Load address dropdowns if needed
-        // loadAddressDropdowns(data.region, data.province, data.city, data.barangay);
         
       } else {
         alert('Failed to fetch service details: ' + data.message);
@@ -2333,59 +2316,61 @@ function loadServicesForBranch(branchId, currentServiceId) {
 
 // Function to save changes to a service
 function saveServiceChanges() {
-  // Get all form values
-  const formData = {
-    sales_id: document.getElementById('salesId').value,
-    customer_id: document.getElementById('editSelectedCustomerId').value,
-    service_id: document.getElementById('editServiceType').value,
-    service_price: document.getElementById('editServicePrice').value,
-    firstName: document.getElementById('editFirstName').value,
-    middleName: document.getElementById('editMiddleName').value,
-    lastName: document.getElementById('editLastName').value,
-    nameSuffix: document.getElementById('editNameSuffix').value,
-    email: document.getElementById('editEmail').value,
-    phone: document.getElementById('editPhone').value,
-    deceasedFirstName: document.getElementById('editDeceasedFirstName').value,
-    deceasedMiddleName: document.getElementById('editDeceasedMiddleName').value,
-    deceasedLastName: document.getElementById('editDeceasedLastName').value,
-    deceasedSuffix: document.getElementById('editDeceasedSuffix').value,
-    birthDate: document.getElementById('editBirthDate').value,
-    deathDate: document.getElementById('editDeathDate').value,
-    burialDate: document.getElementById('editBurialDate').value,
-    deceased_address: document.getElementById('currentAddressDisplay').value,
-    deathCertificate: document.getElementById('editDeathCertificate').files[0]?.name || ''
-  };
+    // Get all form values
+    const formData = {
+        sales_id: document.getElementById('salesId').value,
+        customer_id: document.getElementById('editSelectedCustomerId').value || null,
+        service_id: document.getElementById('editServiceType').value,
+        service_price: document.getElementById('editServicePrice').value,
+        firstName: document.getElementById('editFirstName').value,
+        middleName: document.getElementById('editMiddleName').value,
+        lastName: document.getElementById('editLastName').value,
+        nameSuffix: document.getElementById('editNameSuffix').value,
+        email: document.getElementById('editEmail').value,
+        phone: document.getElementById('editPhone').value,
+        deceasedFirstName: document.getElementById('editDeceasedFirstName').value,
+        deceasedMiddleName: document.getElementById('editDeceasedMiddleName').value,
+        deceasedLastName: document.getElementById('editDeceasedLastName').value,
+        deceasedSuffix: document.getElementById('editDeceasedSuffix').value,
+        birthDate: document.getElementById('editBirthDate').value,
+        deathDate: document.getElementById('editDeathDate').value,
+        burialDate: document.getElementById('editBurialDate').value,
+        deceased_address: document.getElementById('currentAddressDisplay').value,
+        deathCertificate: document.getElementById('editDeathCertificate').files[0]?.name || ''
+    };
 
-  // Validate required fields
-  if (!formData.firstName || !formData.lastName || !formData.deceasedFirstName || 
-      !formData.deceasedLastName || !formData.burialDate || !formData.service_id) {
-    alert('Please fill in all required fields');
-    return;
-  }
+    console.log('Saving service changes with data:', formData);
 
-  // Send data to server
-  fetch('historyAPI/update_history_sales.php', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(formData)
-  })
-  .then(response => response.json())
-  .then(data => {
-    if (data.success) {
-      alert('Service updated successfully!');
-      closeEditServiceModal();
-      // Optionally refresh the page or update the table
-      location.reload();
-    } else {
-      alert('Error: ' + data.message);
+    // Validate required fields
+    if (!formData.firstName || !formData.lastName || !formData.deceasedFirstName || 
+        !formData.deceasedLastName || !formData.burialDate || !formData.service_id) {
+        alert('Please fill in all required fields');
+        return;
     }
-  })
-  .catch(error => {
-    console.error('Error:', error);
-    alert('An error occurred while updating the service');
-  });
+
+    // Send data to server
+    fetch('historyAPI/update_history_sales.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Service updated successfully!');
+            closeEditServiceModal();
+            // Optionally refresh the page or update the table
+            location.reload();
+        } else {
+            alert('Error: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while updating the service');
+    });
 }
 
 // Function to close the Edit Service Modal
