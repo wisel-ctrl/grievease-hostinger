@@ -668,20 +668,11 @@ document.getElementById('share-messenger').addEventListener('click', function() 
         const shareText = `In loving memory of ${lastDedication.name}\n\n"${lastDedication.message}"\n\nDedicated by ${lastDedication.dedicatedBy} on ${lastDedication.date}`;
         const shareUrl = window.location.href;
         
-        // Create Facebook Messenger share URL
-        const messengerUrl = `https://www.facebook.com/dialog/send?link=${encodeURIComponent(shareUrl)}&app_id=1097671002177530&redirect_uri=${encodeURIComponent(window.location.href)}&quote=${encodeURIComponent(shareText)}`;
+        // Create Facebook Messenger share URL using the direct message link
+        const messengerUrl = `https://www.messenger.com/share?link=${encodeURIComponent(shareUrl)}&description=${encodeURIComponent(shareText)}`;
         
-        // Open Facebook Messenger dialog in a popup window
-        const width = 600;
-        const height = 400;
-        const left = (window.innerWidth - width) / 2;
-        const top = (window.innerHeight - height) / 2;
-        
-        window.open(
-            messengerUrl,
-            'facebook-messenger-dialog',
-            `width=${width},height=${height},left=${left},top=${top},toolbar=0,status=0,menubar=0`
-        );
+        // Open Facebook Messenger in a new tab (this is more reliable than a popup)
+        window.open(messengerUrl, '_blank');
         
         showNotification('Opening Facebook Messenger...');
     } catch (error) {
