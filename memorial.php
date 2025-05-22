@@ -249,9 +249,22 @@ function toggleMenu() {
                     <div class="grid grid-cols-3 gap-2 sm:gap-3">
                         <button id="new-dedication" class="bg-gray-800 hover:bg-gray-700 text-white py-1.5 sm:py-2 rounded-lg shadow transition-colors text-xs sm:text-sm">Create Another</button>
                         <button id="view-dedications" class="bg-transparent hover:bg-gray-800/50 text-white/80 hover:text-white py-1.5 sm:py-2 rounded-lg transition-colors text-xs sm:text-sm">View All</button>
-                        <button id="share-facebook" class="bg-[#1877F2] hover:bg-[#0d6efd] text-white py-1.5 sm:py-2 rounded-lg shadow transition-colors text-xs sm:text-sm flex items-center justify-center gap-2">
+                        <button id="share-facebook" class="relative bg-[#1877F2] hover:bg-[#0d6efd] text-white py-1.5 sm:py-2 rounded-lg shadow transition-colors text-xs sm:text-sm flex items-center justify-center gap-2">
                             <i class="fab fa-facebook-f"></i>
                             <span>Share</span>
+                            <!-- Dropdown Menu -->
+                            <div id="share-dropdown" class="hidden absolute top-full right-0 mt-2 w-48 bg-white rounded-lg shadow-xl z-50">
+                                <div class="py-1">
+                                    <button id="share-timeline" class="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100 flex items-center">
+                                        <i class="fas fa-share-alt mr-2"></i>
+                                        Share on Timeline
+                                    </button>
+                                    <button id="share-messenger" class="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100 flex items-center">
+                                        <i class="fab fa-facebook-messenger mr-2"></i>
+                                        Send via Messenger
+                                    </button>
+                                </div>
+                            </div>
                         </button>
                     </div>
                 </div>
@@ -599,8 +612,20 @@ viewDedications.addEventListener('click', () => {
     }, 500);
 });
 
-// Simplified Facebook sharing functionality
-document.getElementById('share-facebook').addEventListener('click', function() {
+// Update the Facebook sharing functionality
+document.getElementById('share-facebook').addEventListener('click', function(e) {
+    e.stopPropagation();
+    const dropdown = document.getElementById('share-dropdown');
+    dropdown.classList.toggle('hidden');
+});
+
+// Close dropdown when clicking outside
+document.addEventListener('click', function() {
+    document.getElementById('share-dropdown').classList.add('hidden');
+});
+
+// Share on Timeline
+document.getElementById('share-timeline').addEventListener('click', function() {
     if (!lastDedication) {
         showNotification('No dedication available to share');
         return;
@@ -631,6 +656,60 @@ document.getElementById('share-facebook').addEventListener('click', function() {
         showNotification('An error occurred while sharing. Please try again.');
     }
 });
+
+// Send via Messenger
+document.getElementById('share-messenger').addEventListener('click', function() {
+    if (!lastDedication) {
+        showNotification('No dedication available to share');
+        return;
+    }
+
+    try {
+        const shareText = `In loving memory of ${lastDedication.name}\n\n"${lastDedication.message}"\n\nDedicated by ${lastDedication.dedicatedBy} on ${lastDedication.date}`;
+        const shareUrl = window.location.href;
+        
+        // Create Facebook Messenger share URL
+        const messengerUrl = `https://www.facebook.com/dialog/send?link=${encodeURIComponent(shareUrl)}&app_id=1097671002177530&redirect_uri=${encodeURIComponent(window.location.href)}&quote=${encodeURIComponent(shareText)}`;
+        
+        // Open Facebook Messenger dialog in a popup window
+        const width = 600;
+        const height = 400;
+        const left = (window.innerWidth - width) / 2;
+        const top = (window.innerHeight - height) / 2;
+        
+        window.open(
+            messengerUrl,
+            'facebook-messenger-dialog',
+            `width=${width},height=${height},left=${left},top=${top},toolbar=0,status=0,menubar=0`
+        );
+        
+        showNotification('Opening Facebook Messenger...');
+    } catch (error) {
+        console.error('Sharing error:', error);
+        showNotification('An error occurred while sharing. Please try again.');
+    }
+});
+
+// Add styles for the dropdown
+if (!document.getElementById('share-dropdown-styles')) {
+    document.head.insertAdjacentHTML('beforeend', `
+        <style id="share-dropdown-styles">
+            #share-dropdown {
+                transform-origin: top right;
+                transition: all 0.2s ease-in-out;
+            }
+            #share-dropdown.hidden {
+                opacity: 0;
+                transform: scale(0.95);
+                pointer-events: none;
+            }
+            #share-dropdown:not(.hidden) {
+                opacity: 1;
+                transform: scale(1);
+            }
+        </style>
+    `);
+}
 
 // Notification function
 function showNotification(message) {
