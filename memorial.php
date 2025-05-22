@@ -18,26 +18,6 @@
     <meta property="og:title" content="GrievEase - Memorial Dedications" />
     <meta property="og:description" content="Honor and remember loved ones with virtual candle dedications" />
     
-    <!-- Facebook SDK -->
-    <div id="fb-root"></div>
-    <script>
-        window.fbAsyncInit = function() {
-            FB.init({
-                appId: '1097671002177530',
-                xfbml: true,
-                version: 'v18.0'
-            });
-        };
-
-        (function(d, s, id) {
-            var js, fjs = d.getElementsByTagName(s)[0];
-            if (d.getElementById(id)) return;
-            js = d.createElement(s); js.id = id;
-            js.src = "https://connect.facebook.net/en_US/sdk.js";
-            fjs.parentNode.insertBefore(js, fjs);
-        }(document, 'script', 'facebook-jssdk'));
-    </script>
-    
     <style>
         .text-shadow-sm {
             text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
@@ -122,6 +102,45 @@
 .from-white { --tw-gradient-from: #ffffff; }
 .to-gray-100 { --tw-gradient-to: #f3f4f6; }
 .to-gray-300 { --tw-gradient-to: #d1d5db; }
+
+/* Add styles for copy link tooltip */
+.tooltip {
+    position: relative;
+    display: inline-block;
+}
+
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 140px;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px;
+    position: absolute;
+    z-index: 1;
+    bottom: 150%;
+    left: 50%;
+    margin-left: -70px;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.tooltip .tooltiptext::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: rgba(0, 0, 0, 0.8) transparent transparent transparent;
+}
+
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
+}
     </style>
     <script>
         // Function to toggle the mobile menu
@@ -266,26 +285,20 @@ function toggleMenu() {
                             <p class="text-white/80 text-xs mt-1">Thank you for honoring your loved one's memory.</p>
                         </div>
                     </div>
-                    <div class="grid grid-cols-3 gap-2 sm:gap-3">
-                        <button id="new-dedication" class="bg-gray-800 hover:bg-gray-700 text-white py-1.5 sm:py-2 rounded-lg shadow transition-colors text-xs sm:text-sm">Create Another</button>
-                        <button id="view-dedications" class="bg-transparent hover:bg-gray-800/50 text-white/80 hover:text-white py-1.5 sm:py-2 rounded-lg transition-colors text-xs sm:text-sm">View All</button>
-                        <button id="share-facebook" class="relative bg-[#1877F2] hover:bg-[#0d6efd] text-white py-1.5 sm:py-2 rounded-lg shadow transition-colors text-xs sm:text-sm flex items-center justify-center gap-2">
-                            <i class="fab fa-facebook-f"></i>
-                            <span>Share</span>
-                            <!-- Dropdown Menu -->
-                            <div id="share-dropdown" class="hidden absolute top-full right-0 mt-2 w-48 bg-white rounded-lg shadow-xl z-50">
-                                <div class="py-1">
-                                    <button id="share-timeline" class="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100 flex items-center">
-                                        <i class="fas fa-share-alt mr-2"></i>
-                                        Share on Timeline
-                                    </button>
-                                    <button id="share-messenger" class="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100 flex items-center">
-                                        <i class="fab fa-facebook-messenger mr-2"></i>
-                                        Send via Messenger
-                                    </button>
-                                </div>
+                    <div class="grid grid-cols-1 gap-2 sm:gap-3">
+                        <div class="bg-gray-800/50 p-2 rounded-lg">
+                            <div class="flex items-center gap-2">
+                                <input type="text" id="dedication-link" readonly class="flex-1 bg-gray-900 text-white text-xs sm:text-sm px-3 py-2 rounded-lg focus:outline-none focus:ring-1 focus:ring-yellow-600" />
+                                <button id="copy-link" class="tooltip bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-2 rounded-lg transition-colors">
+                                    <i class="fas fa-copy"></i>
+                                    <span class="tooltiptext">Copy Link</span>
+                                </button>
                             </div>
-                        </button>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <button id="new-dedication" class="bg-gray-800 hover:bg-gray-700 text-white py-1.5 sm:py-2 rounded-lg shadow transition-colors text-xs sm:text-sm">Create Another</button>
+                            <button id="view-dedications" class="bg-transparent hover:bg-gray-800/50 text-white/80 hover:text-white py-1.5 sm:py-2 rounded-lg transition-colors text-xs sm:text-sm">View All</button>
+                        </div>
                     </div>
                 </div>
                 
@@ -470,6 +483,39 @@ document.addEventListener('DOMContentLoaded', setInitialCandleColor);
 // Store the last dedication
 let lastDedication = null;
 
+// Function to create shareable link
+function createShareableLink(dedication) {
+    const baseUrl = window.location.origin + window.location.pathname;
+    const params = new URLSearchParams({
+        name: dedication.name,
+        message: dedication.message,
+        by: dedication.dedicatedBy,
+        date: dedication.date
+    });
+    return `${baseUrl}?${params.toString()}`;
+}
+
+// Function to copy text to clipboard
+async function copyToClipboard(text) {
+    try {
+        await navigator.clipboard.writeText(text);
+        showNotification('Link copied to clipboard!');
+    } catch (err) {
+        // Fallback for older browsers
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        document.body.appendChild(textArea);
+        textArea.select();
+        try {
+            document.execCommand('copy');
+            showNotification('Link copied to clipboard!');
+        } catch (err) {
+            showNotification('Failed to copy link. Please try again.');
+        }
+        document.body.removeChild(textArea);
+    }
+}
+
 // Update the submit dedication handler
 submitDedication.addEventListener('click', (e) => {
     e.preventDefault();
@@ -503,20 +549,16 @@ submitDedication.addEventListener('click', (e) => {
         date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
     };
     
-    // Create a new dedication object (all dedications are now public)
-    const newDedication = {
-        name: inMemoryOf,
-        message: message,
-        dedicatedBy: dedicatedBy,
-        date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
-    };
+    // Create and display the shareable link
+    const shareableLink = createShareableLink(lastDedication);
+    document.getElementById('dedication-link').value = shareableLink;
     
     // Add the new dedication to the grid
-    addDedicationToGrid(newDedication, 0);
+    addDedicationToGrid(lastDedication, 0);
     
     // Store in local storage to persist between page loads
     const storedDedications = JSON.parse(localStorage.getItem('userDedications') || '[]');
-    storedDedications.push(newDedication);
+    storedDedications.push(lastDedication);
     localStorage.setItem('userDedications', JSON.stringify(storedDedications));
     
     // Show confirmation
@@ -525,6 +567,12 @@ submitDedication.addEventListener('click', (e) => {
     
     // Show notification
     showNotification('Your dedication has been added successfully.');
+});
+
+// Add copy link functionality
+document.getElementById('copy-link').addEventListener('click', function() {
+    const linkInput = document.getElementById('dedication-link');
+    copyToClipboard(linkInput.value);
 });
 
 function addDedicationToGrid(dedication, index) {
@@ -632,100 +680,35 @@ viewDedications.addEventListener('click', () => {
     }, 500);
 });
 
-// Update the Facebook sharing functionality
-document.getElementById('share-facebook').addEventListener('click', function(e) {
-    e.stopPropagation();
-    const dropdown = document.getElementById('share-dropdown');
-    dropdown.classList.toggle('hidden');
-});
-
-// Close dropdown when clicking outside
-document.addEventListener('click', function() {
-    document.getElementById('share-dropdown').classList.add('hidden');
-});
-
-// Share on Timeline
-document.getElementById('share-timeline').addEventListener('click', function() {
-    if (!lastDedication) {
-        showNotification('No dedication available to share');
-        return;
-    }
-
-    try {
-        const shareText = `In loving memory of ${lastDedication.name}\n\n"${lastDedication.message}"\n\nDedicated by ${lastDedication.dedicatedBy} on ${lastDedication.date}`;
-        const shareUrl = window.location.href;
+// Function to load dedication from URL parameters
+function loadDedicationFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    if (params.has('name')) {
+        const dedication = {
+            name: params.get('name'),
+            message: params.get('message'),
+            dedicatedBy: params.get('by'),
+            date: params.get('date')
+        };
         
-        // Create Facebook share URL
-        const fbShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(shareText)}`;
+        // Add the dedication to the grid
+        addDedicationToGrid(dedication, 0);
         
-        // Open Facebook share dialog in a popup window
-        const width = 600;
-        const height = 400;
-        const left = (window.innerWidth - width) / 2;
-        const top = (window.innerHeight - height) / 2;
-        
-        window.open(
-            fbShareUrl,
-            'facebook-share-dialog',
-            `width=${width},height=${height},left=${left},top=${top},toolbar=0,status=0,menubar=0`
-        );
-        
-        showNotification('Opening Facebook share window...');
-    } catch (error) {
-        console.error('Sharing error:', error);
-        showNotification('An error occurred while sharing. Please try again.');
+        // Scroll to the dedication
+        setTimeout(() => {
+            window.scrollTo({
+                top: document.getElementById('dedication-grid').offsetTop - 100,
+                behavior: 'smooth'
+            });
+        }, 500);
     }
-});
-
-// Send via Messenger
-document.getElementById('share-messenger').addEventListener('click', function() {
-    if (!lastDedication) {
-        showNotification('No dedication available to share');
-        return;
-    }
-
-    try {
-        const shareText = `In loving memory of ${lastDedication.name}\n\n"${lastDedication.message}"\n\nDedicated by ${lastDedication.dedicatedBy} on ${lastDedication.date}`;
-        const shareUrl = window.location.href;
-
-        FB.ui({
-            method: 'send',
-            link: shareUrl,
-            quote: shareText,
-        }, function(response) {
-            if (response && !response.error_code) {
-                showNotification('Message sent successfully!');
-            } else {
-                showNotification('Could not send message. Please try again.');
-            }
-        });
-
-    } catch (error) {
-        console.error('Sharing error:', error);
-        showNotification('An error occurred while sharing. Please try again.');
-    }
-});
-
-// Add styles for the dropdown
-if (!document.getElementById('share-dropdown-styles')) {
-    document.head.insertAdjacentHTML('beforeend', `
-        <style id="share-dropdown-styles">
-            #share-dropdown {
-                transform-origin: top right;
-                transition: all 0.2s ease-in-out;
-            }
-            #share-dropdown.hidden {
-                opacity: 0;
-                transform: scale(0.95);
-                pointer-events: none;
-            }
-            #share-dropdown:not(.hidden) {
-                opacity: 1;
-                transform: scale(1);
-            }
-        </style>
-    `);
 }
+
+// Load dedication from URL when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    // ... existing DOMContentLoaded code ...
+    loadDedicationFromUrl();
+});
 
 // Notification function
 function showNotification(message) {
