@@ -1526,84 +1526,105 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
 </div>
 
 <!-- Assign Staff Modal -->
-<div class="fixed top-0 left-0 w-full h-full bg-black bg-opacity-60 flex items-center justify-center z-50 hidden" id="assignStaffModal">
-  <div class="bg-white rounded-xl w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-xl">
+<div id="assignStaffModal" class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto">
+  <!-- Modal Backdrop -->
+  <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+  
+  <!-- Modal Content -->
+  <div class="relative bg-white rounded-xl shadow-card w-full max-w-xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] flex flex-col">
     <!-- Modal Header -->
-    <div class="bg-gradient-to-r from-sidebar-accent to-white flex justify-between items-center p-6 flex-shrink-0">
-      <h3 class="text-xl font-bold text-white">Assign Staff to Service</h3>
-      <button class="bg-black bg-opacity-20 hover:bg-opacity-30 rounded-full p-2 text-white hover:text-white transition-all duration-200" onclick="closeAssignStaffModal()">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-          <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-        </svg>
-      </button>
+    <div class="px-4 sm:px-6 py-4 sm:py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
+      <div class="flex justify-between items-center">
+        <h3 class="text-lg sm:text-xl font-bold text-white flex items-center">
+          Assign Staff to Service
+        </h3>
+        <button type="button" class="text-white hover:text-gray-200 transition-colors" onclick="closeAssignStaffModal()">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
     </div>
     
     <!-- Modal Body -->
-    <div class="p-6">
-      <form id="assignStaffForm" class="space-y-6">
+    <div class="px-4 sm:px-6 py-4 sm:py-5 overflow-y-auto modal-scroll-container">
+      <form id="assignStaffForm" class="space-y-4">
         <input type="hidden" id="assignServiceId">
         
-        <div class="bg-gray-50 p-5 rounded-xl">
-          <h4 class="text-lg font-bold mb-4 text-gray-700 flex items-center">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 text-sidebar-accent">
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-              <circle cx="9" cy="7" r="4"></circle>
-              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-            </svg>
-            Embalmers
-          </h4>
-          <div id="embalmersAssignSection" class="grid grid-cols-2 gap-4">
-            
+        <!-- Staff Sections -->
+        <div class="space-y-4">
+          <!-- Embalmers Section -->
+          <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+            <h4 class="text-lg font-bold mb-3 text-gray-700 flex items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 text-sidebar-accent">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+              </svg>
+              Embalmers
+            </h4>
+            <div id="embalmersSection" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <!-- Will be populated by JavaScript -->
+            </div>
           </div>
-        </div>
-        
-        <div class="bg-gray-50 p-5 rounded-xl">
-          <h4 class="text-lg font-bold mb-4 text-gray-700 flex items-center">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 text-sidebar-accent">
-              <rect x="1" y="3" width="15" height="13"></rect>
-              <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
-              <circle cx="5.5" cy="18.5" r="2.5"></circle>
-              <circle cx="18.5" cy="18.5" r="2.5"></circle>
-            </svg>
-            Drivers
-          </h4>
-          <div id="driversAssignSection" class="grid grid-cols-2 gap-4">
-            
+          
+          <!-- Drivers Section -->
+          <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+            <h4 class="text-lg font-bold mb-3 text-gray-700 flex items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 text-sidebar-accent">
+                <rect x="1" y="3" width="15" height="13"></rect>
+                <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
+                <circle cx="5.5" cy="18.5" r="2.5"></circle>
+                <circle cx="18.5" cy="18.5" r="2.5"></circle>
+              </svg>
+              Drivers
+            </h4>
+            <div id="driversSection" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <!-- Will be populated by JavaScript -->
+            </div>
           </div>
-        </div>
-        
-        <div class="bg-gray-50 p-5 rounded-xl">
-          <h4 class="text-lg font-bold mb-4 text-gray-700 flex items-center">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 text-sidebar-accent">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-              <circle cx="12" cy="7" r="4"></circle>
-            </svg>
-            Other Staff
-          </h4>
-          <div id="personnelAssignSection" class="grid grid-cols-2 gap-4">
-            
+          
+          <!-- Other Staff Section -->
+          <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+            <h4 class="text-lg font-bold mb-3 text-gray-700 flex items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 text-sidebar-accent">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+              Other Staff
+            </h4>
+            <div id="personnelSection" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <!-- Will be populated by JavaScript -->
+            </div>
           </div>
-        </div>
-        
-        <div>
-          <label for="assignmentNotes" class="block text-sm font-medium text-gray-700 mb-1">Notes</label>
-          <textarea id="assignmentNotes" rows="3" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar-accent focus:border-transparent"></textarea>
+          
+          <!-- Notes Section -->
+          <div>
+            <label for="assignmentNotes" class="block text-sm font-medium text-gray-700 mb-2">
+              Notes
+            </label>
+            <textarea id="assignmentNotes" rows="3" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-sidebar-accent focus:border-transparent outline-none transition-all duration-200"></textarea>
+          </div>
         </div>
       </form>
     </div>
     
     <!-- Modal Footer -->
-    <div class="p-6 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
-      <button class="px-5 py-3 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-semibold hover:bg-navy transition-colors" onclick="closeAssignStaffModal()">Cancel</button>
-      <button class="px-6 py-3 bg-sidebar-accent text-white rounded-lg font-semibold hover:bg-darkgold transition-colors flex items-center" onclick="saveStaffAssignment()">
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
-          <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
-          <polyline points="17 21 17 13 7 13 7 21"></polyline>
-          <polyline points="7 3 7 8 15 8"></polyline>
-        </svg>
-        Save Assignment
-      </button>
+    <div class="px-4 sm:px-6 py-4 border-t border-gray-200 bg-white">
+      <div class="flex flex-col sm:flex-row justify-end gap-3">
+        <button type="button" class="w-full sm:w-auto px-4 py-2 bg-white border border-sidebar-accent text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200" onclick="closeAssignStaffModal()">
+          Cancel
+        </button>
+        <button type="button" class="w-full sm:w-auto px-5 py-2 bg-gradient-to-r from-sidebar-accent to-darkgold text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center" onclick="saveStaffAssignment()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
+            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+            <polyline points="17 21 17 13 7 13 7 21"></polyline>
+            <polyline points="7 3 7 8 15 8"></polyline>
+          </svg>
+          Save Assignment
+        </button>
+      </div>
     </div>
   </div>
 </div>
@@ -2381,24 +2402,27 @@ function toggleBodyScroll(isOpen) {
 
 // Function to open the Assign Staff Modal
 function openAssignStaffModal(serviceId) {
-    document.getElementById('assignStaffModal').classList.remove('hidden');
+    // Set the service ID in the form
     document.getElementById('assignServiceId').value = serviceId;
+    
+    // Show the modal
+    const modal = document.getElementById('assignStaffModal');
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
     
     // Fetch employees for each position
     fetch(`get_employees.php?service_id=${serviceId}`)
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
         .then(data => {
-            // Populate embalmers section
-            const embalmersSection = document.getElementById('embalmersAssignSection');
-            embalmersSection.innerHTML = generateEmployeeSection('Embalmer', data.embalmers);
-            
-            // Populate drivers section
-            const driversSection = document.getElementById('driversAssignSection');
-            driversSection.innerHTML = generateEmployeeSection('Driver', data.drivers);
-            
-            // Populate personnel section
-            const personnelSection = document.getElementById('personnelAssignSection');
-            personnelSection.innerHTML = generateEmployeeSection('Personnel', data.personnel);
+            // Populate each section
+            populateEmployeeSection('embalmersSection', 'Embalmer', data.embalmers || []);
+            populateEmployeeSection('driversSection', 'Driver', data.drivers || []);
+            populateEmployeeSection('personnelSection', 'Personnel', data.personnel || []);
         })
         .catch(error => {
             console.error('Error fetching employees:', error);
@@ -2406,76 +2430,97 @@ function openAssignStaffModal(serviceId) {
                 icon: 'error',
                 title: 'Error',
                 text: 'Failed to load employees. Please try again.',
-                confirmButtonColor: '#3085d6',
-                confirmButtonText: 'OK'
+                confirmButtonColor: '#3085d6'
             });
+            closeAssignStaffModal();
         });
 }
 
-function generateEmployeeSection(position, employees) {
+function populateEmployeeSection(sectionId, position, employees) {
+    const section = document.getElementById(sectionId);
     const positionLower = position.toLowerCase();
-    let icon = '';
-    let iconClass = 'mr-2 text-sidebar-accent';
     
-    if (positionLower === 'embalmer') {
-        icon = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="'+iconClass+'"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>';
-    } else if (positionLower === 'driver') {
-        icon = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="'+iconClass+'"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>';
-    } else {
-        icon = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="'+iconClass+'"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>';
-    }
-    
-    let html = `
-        <h4 class="text-sm sm:text-lg font-bold mb-3 sm:mb-4 text-gray-700 flex items-center">
-            ${icon}${position}s
-        </h4>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-    `;
+    let html = '';
     
     if (employees && employees.length > 0) {
         employees.forEach((employee, index) => {
-            const fullName = `${employee.fname} ${employee.mname} ${employee.lname}`;
+            // Format name parts
+            const formatName = (name) => {
+                if (!name || name.toLowerCase() === 'null') return '';
+                return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+            };
+
+            const firstName = formatName(employee.fname);
+            const middleName = formatName(employee.mname);
+            const lastName = formatName(employee.lname);
+
+            // Combine names with proper spacing
+            const fullName = [firstName, middleName, lastName]
+                .filter(name => name && name.trim() !== '')
+                .join(' ');
+            
+            const checkboxId = `${positionLower}${index + 1}`;
+            
             html += `
                 <div class="flex items-center">
-                    <input type="checkbox" id="${positionLower}${index}" name="assigned_staff[]" value="${employee.employee_id}" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
-                    <label for="${positionLower}${index}" class="text-gray-700">${fullName}</label>
+                    <input type="checkbox" 
+                           id="${checkboxId}" 
+                           name="assigned_staff[]" 
+                           value="${employee.employee_id}" 
+                           class="w-4 h-4 text-sidebar-accent border-gray-300 rounded focus:ring-sidebar-accent">
+                    <label for="${checkboxId}" class="ml-2 text-sm text-gray-700">${fullName}</label>
                 </div>
             `;
         });
     } else {
-        html += `<p class="text-gray-500 col-span-2">No ${positionLower}s available</p>`;
+        html = `<p class="text-gray-500 col-span-2">No ${positionLower}s available</p>`;
     }
     
-    html += '</div>';
-    return html;
+    section.innerHTML = html;
 }
 
 function closeAssignStaffModal() {
-    document.getElementById('assignStaffModal').classList.add('hidden');
+    const modal = document.getElementById('assignStaffModal');
+    modal.classList.add('hidden');
+    document.body.style.overflow = '';
     document.getElementById('assignStaffForm').reset();
 }
 
 function saveStaffAssignment() {
     const serviceId = document.getElementById('assignServiceId').value;
-    const assignedStaff = Array.from(document.querySelectorAll('input[name="assigned_staff[]"]:checked')).map(cb => cb.value);
     const notes = document.getElementById('assignmentNotes').value;
+    
+    // Get all checked checkboxes
+    const checkboxes = document.querySelectorAll('#assignStaffModal input[name="assigned_staff[]"]:checked');
+    const assignedStaff = Array.from(checkboxes).map(cb => cb.value);
     
     if (assignedStaff.length === 0) {
         Swal.fire({
             icon: 'warning',
             title: 'No Staff Selected',
             text: 'Please select at least one staff member to assign.',
-            confirmButtonColor: '#3085d6',
-            confirmButtonText: 'OK'
+            confirmButtonColor: '#3085d6'
         });
         return;
     }
     
+    // Show loading state
+    Swal.fire({
+        title: 'Saving Assignment',
+        text: 'Please wait...',
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+    
+    // Prepare form data
     const formData = new FormData();
     formData.append('service_id', serviceId);
     formData.append('assigned_staff', JSON.stringify(assignedStaff));
     formData.append('notes', notes);
     
+    // Send request
     fetch('assign_staff.php', {
         method: 'POST',
         body: formData
@@ -2487,11 +2532,10 @@ function saveStaffAssignment() {
                 icon: 'success',
                 title: 'Success',
                 text: 'Staff assigned successfully!',
-                confirmButtonColor: '#3085d6',
-                confirmButtonText: 'OK'
+                confirmButtonColor: '#3085d6'
             }).then(() => {
                 closeAssignStaffModal();
-                location.reload(); // Refresh the page to show updated assignments
+                location.reload();
             });
         } else {
             throw new Error(data.message || 'Failed to assign staff');
@@ -2503,8 +2547,7 @@ function saveStaffAssignment() {
             icon: 'error',
             title: 'Error',
             text: error.message || 'Failed to assign staff. Please try again.',
-            confirmButtonColor: '#3085d6',
-            confirmButtonText: 'OK'
+            confirmButtonColor: '#3085d6'
         });
     });
 }
