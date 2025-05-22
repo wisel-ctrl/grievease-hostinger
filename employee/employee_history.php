@@ -2422,41 +2422,132 @@ function toggleBodyScroll(isOpen) {
 
 // Function to open the Assign Staff Modal
 function openAssignStaffModal(serviceId) {
-  // Fetch current assignments if any and populate the form
-  document.getElementById('assignServiceId').value = serviceId;
-  
-  // Reset checkboxes (in a real app, you would pre-select based on existing assignments)
-  const checkboxes = document.querySelectorAll('#assignStaffForm input[type="checkbox"]');
-  checkboxes.forEach(checkbox => checkbox.checked = false);
-  
-  document.getElementById('assignmentNotes').value = '';
-  document.getElementById('assignStaffModal').style.display = 'flex';
-  toggleBodyScroll(true);
+    document.getElementById('assignStaffModal').classList.remove('hidden');
+    document.getElementById('assignServiceId').value = serviceId;
+    
+    // Fetch employees for each position
+    fetch(`get_employees.php?service_id=${serviceId}`)
+        .then(response => response.json())
+        .then(data => {
+            // Populate embalmers section
+            const embalmersSection = document.getElementById('embalmersSection');
+            embalmersSection.innerHTML = generateEmployeeSection('Embalmer', data.embalmers);
+            
+            // Populate drivers section
+            const driversSection = document.getElementById('driversSection');
+            driversSection.innerHTML = generateEmployeeSection('Driver', data.drivers);
+            
+            // Populate personnel section
+            const personnelSection = document.getElementById('personnelSection');
+            personnelSection.innerHTML = generateEmployeeSection('Personnel', data.personnel);
+        })
+        .catch(error => {
+            console.error('Error fetching employees:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Failed to load employees. Please try again.',
+                confirmButtonColor: '#3085d6',
+                confirmButtonText: 'OK'
+            });
+        });
 }
 
-// Function to close the Assign Staff Modal
+function generateEmployeeSection(position, employees) {
+    const positionLower = position.toLowerCase();
+    let icon = '';
+    let iconClass = 'mr-2 text-sidebar-accent';
+    
+    if (positionLower === 'embalmer') {
+        icon = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="'+iconClass+'"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>';
+    } else if (positionLower === 'driver') {
+        icon = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="'+iconClass+'"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>';
+    } else {
+        icon = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="'+iconClass+'"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>';
+    }
+    
+    let html = `
+        <h4 class="text-sm sm:text-lg font-bold mb-3 sm:mb-4 text-gray-700 flex items-center">
+            ${icon}${position}s
+        </h4>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+    `;
+    
+    if (employees && employees.length > 0) {
+        employees.forEach((employee, index) => {
+            const fullName = `${employee.fname} ${employee.mname} ${employee.lname}`;
+            html += `
+                <div class="flex items-center">
+                    <input type="checkbox" id="${positionLower}${index}" name="assigned_staff[]" value="${employee.employee_id}" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
+                    <label for="${positionLower}${index}" class="text-gray-700">${fullName}</label>
+                </div>
+            `;
+        });
+    } else {
+        html += `<p class="text-gray-500 col-span-2">No ${positionLower}s available</p>`;
+    }
+    
+    html += '</div>';
+    return html;
+}
+
 function closeAssignStaffModal() {
-  document.getElementById('assignStaffModal').style.display = 'none';
-  toggleBodyScroll(false);
+    document.getElementById('assignStaffModal').classList.add('hidden');
+    document.getElementById('assignStaffForm').reset();
 }
 
-// Function to save staff assignments
 function saveStaffAssignment() {
-  const form = document.getElementById('assignStaffForm');
-  const serviceId = document.getElementById('assignServiceId').value;
-  
-  // Collect selected staff
-  const selectedStaff = [];
-  const checkboxes = document.querySelectorAll('#assignStaffForm input[type="checkbox"]:checked');
-  checkboxes.forEach(checkbox => {
-    selectedStaff.push(checkbox.id);
-  });
-  
-  // In a real application, you would save this data to your database
-  console.log(`Assigned staff for service ${serviceId}:`, selectedStaff);
-  alert(`Staff assigned successfully to service ${serviceId}!`);
-  
-  closeAssignStaffModal();
+    const serviceId = document.getElementById('assignServiceId').value;
+    const assignedStaff = Array.from(document.querySelectorAll('input[name="assigned_staff[]"]:checked')).map(cb => cb.value);
+    const notes = document.getElementById('assignmentNotes').value;
+    
+    if (assignedStaff.length === 0) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'No Staff Selected',
+            text: 'Please select at least one staff member to assign.',
+            confirmButtonColor: '#3085d6',
+            confirmButtonText: 'OK'
+        });
+        return;
+    }
+    
+    const formData = new FormData();
+    formData.append('service_id', serviceId);
+    formData.append('assigned_staff', JSON.stringify(assignedStaff));
+    formData.append('notes', notes);
+    
+    fetch('assign_staff.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: 'Staff assigned successfully!',
+                confirmButtonColor: '#3085d6',
+                confirmButtonText: 'OK'
+            }).then(() => {
+                closeAssignStaffModal();
+                location.reload(); // Refresh the page to show updated assignments
+            });
+        } else {
+            throw new Error(data.message || 'Failed to assign staff');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: error.message || 'Failed to assign staff. Please try again.',
+            confirmButtonColor: '#3085d6',
+            confirmButtonText: 'OK'
+        });
+    });
 }
 
 // Function to open the Complete Service Modal
