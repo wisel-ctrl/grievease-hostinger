@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Notifications - Funeral Service Management</title>
+    <title>GrievEase - Notification</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Alex+Brush&family=Inter:wght@300;400;500;600;700&family=Cinzel:wght@400;500;600&family=Hedvig+Letters+Serif:opsz,wght@12..24,400&display=swap" rel="stylesheet">
+    
     
     <script>
         tailwind.config = {
@@ -112,7 +113,9 @@
         }
     </style>
 </head>
+
 <body class="bg-primary font-inter">
+    <?php include 'admin_sidebar.php'; ?>
     <!-- Header -->
     <header class="bg-sidebar-bg shadow-sidebar border-b border-sidebar-border sticky top-0 z-40">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
