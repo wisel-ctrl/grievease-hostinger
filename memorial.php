@@ -12,32 +12,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Hedvig+Letters+Serif:wght@400;500&display=swap" rel="stylesheet">
     <script src="tailwind.js"></script>
     
-    <!-- Facebook Meta Tags -->
-    <meta property="og:url" content="https://grievease.com/memorial.php" />
+    <!-- Facebook Meta Tags for better sharing preview -->
+    <meta property="og:url" content="<?php echo (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']; ?>" />
     <meta property="og:type" content="website" />
     <meta property="og:title" content="GrievEase - Memorial Dedications" />
     <meta property="og:description" content="Honor and remember loved ones with virtual candle dedications" />
-    <meta property="og:image" content="https://grievease.com/path/to/your/image.jpg" />
-    
-    <!-- Facebook SDK -->
-    <script>
-    window.fbAsyncInit = function() {
-        FB.init({
-            appId: 'your-app-id', // Replace with your Facebook App ID
-            xfbml: true,
-            version: 'v18.0'
-        });
-    };
-
-    (function(d, s, id) {
-        var js, fjs = d.getElementsByTagName(s)[0];
-        if (d.getElementById(id)) return;
-        js = d.createElement(s);
-        js.id = id;
-        js.src = "https://connect.facebook.net/en_US/sdk.js";
-        fjs.parentNode.insertBefore(js, fjs);
-    }(document, 'script', 'facebook-jssdk'));
-    </script>
     
     <style>
         .text-shadow-sm {
@@ -620,7 +599,7 @@ viewDedications.addEventListener('click', () => {
     }, 500);
 });
 
-// Facebook sharing functionality
+// Simplified Facebook sharing functionality
 document.getElementById('share-facebook').addEventListener('click', function() {
     if (!lastDedication) {
         showNotification('No dedication available to share');
@@ -628,43 +607,25 @@ document.getElementById('share-facebook').addEventListener('click', function() {
     }
 
     try {
-        const shareUrl = window.location.href;
         const shareText = `In loving memory of ${lastDedication.name}\n\n"${lastDedication.message}"\n\nDedicated by ${lastDedication.dedicatedBy} on ${lastDedication.date}`;
+        const shareUrl = window.location.href;
         
-        // Fallback to Web Share API if FB SDK fails
-        if (typeof FB === 'undefined') {
-            if (navigator.share) {
-                navigator.share({
-                    title: 'Memorial Dedication',
-                    text: shareText,
-                    url: shareUrl
-                }).then(() => {
-                    showNotification('Successfully shared dedication');
-                }).catch(() => {
-                    // Open in new window as last resort
-                    const fbShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(shareText)}`;
-                    window.open(fbShareUrl, '_blank', 'width=600,height=400');
-                });
-            } else {
-                // Fallback to direct Facebook share URL
-                const fbShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(shareText)}`;
-                window.open(fbShareUrl, '_blank', 'width=600,height=400');
-            }
-            return;
-        }
-
-        // Use Facebook SDK if available
-        FB.ui({
-            method: 'share',
-            href: shareUrl,
-            quote: shareText,
-        }, function(response) {
-            if (response && !response.error_message) {
-                showNotification('Successfully shared to Facebook');
-            } else {
-                showNotification('Could not share to Facebook. Please try again.');
-            }
-        });
+        // Create Facebook share URL
+        const fbShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(shareText)}`;
+        
+        // Open Facebook share dialog in a popup window
+        const width = 600;
+        const height = 400;
+        const left = (window.innerWidth - width) / 2;
+        const top = (window.innerHeight - height) / 2;
+        
+        window.open(
+            fbShareUrl,
+            'facebook-share-dialog',
+            `width=${width},height=${height},left=${left},top=${top},toolbar=0,status=0,menubar=0`
+        );
+        
+        showNotification('Opening Facebook share window...');
     } catch (error) {
         console.error('Sharing error:', error);
         showNotification('An error occurred while sharing. Please try again.');
