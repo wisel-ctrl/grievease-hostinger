@@ -33,12 +33,6 @@ try {
 
     $conn->begin_transaction();
 
-    // First, remove existing assignments for this service
-    $deleteQuery = "DELETE FROM service_staff_tb WHERE service_id = ?";
-    $deleteStmt = $conn->prepare($deleteQuery);
-    $deleteStmt->bind_param("i", $data['sales_id']);
-    $deleteStmt->execute();
-
     // Use a single prepared statement and execute multiple times
     $stmt = $conn->prepare("INSERT INTO employee_service_payments 
                            (sales_id, employeeID, service_stage, income, notes, payment_date) 
@@ -75,12 +69,6 @@ try {
     if ($successful_inserts === 0) {
         throw new Exception('No records were inserted');
     }
-
-    // Update service status to indicate staff has been assigned
-    $updateQuery = "UPDATE service_tb SET status = 'Assigned' WHERE service_id = ?";
-    $updateStmt = $conn->prepare($updateQuery);
-    $updateStmt->bind_param("i", $data['sales_id']);
-    $updateStmt->execute();
 
     $conn->commit();
     $response['success'] = true;
