@@ -104,7 +104,7 @@ function getAllEmployeesByPosition($conn, $position) {
 
 // Get employees by position with branch restriction
 function getEmployeesByPosition($conn, $branchId, $position) {
-    $query = "SELECT employee_id, fname, mname, lname 
+    $query = "SELECT employeeID, fname, mname, lname 
               FROM employee_tb 
               WHERE branch_id = ? AND position = ? 
               ORDER BY lname, fname";
