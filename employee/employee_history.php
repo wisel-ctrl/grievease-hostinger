@@ -1553,23 +1553,8 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
             </svg>
             Embalmers
           </h4>
-          <div class="grid grid-cols-2 gap-4">
-            <div class="flex items-center">
-              <input type="checkbox" id="embalmer1" class="mr-2">
-              <label for="embalmer1" class="text-gray-700">Juan Dela Cruz</label>
-            </div>
-            <div class="flex items-center">
-              <input type="checkbox" id="embalmer2" class="mr-2">
-              <label for="embalmer2" class="text-gray-700">Pedro Santos</label>
-            </div>
-            <div class="flex items-center">
-              <input type="checkbox" id="embalmer3" class="mr-2">
-              <label for="embalmer3" class="text-gray-700">Maria Lopez</label>
-            </div>
-            <div class="flex items-center">
-              <input type="checkbox" id="embalmer4" class="mr-2">
-              <label for="embalmer4" class="text-gray-700">Roberto Garcia</label>
-            </div>
+          <div id="embalmersAssignSection" class="grid grid-cols-2 gap-4">
+            
           </div>
         </div>
         
@@ -1583,19 +1568,8 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
             </svg>
             Drivers
           </h4>
-          <div class="grid grid-cols-2 gap-4">
-            <div class="flex items-center">
-              <input type="checkbox" id="driver1" class="mr-2">
-              <label for="driver1" class="text-gray-700">Carlos Reyes</label>
-            </div>
-            <div class="flex items-center">
-              <input type="checkbox" id="driver2" class="mr-2">
-              <label for="driver2" class="text-gray-700">Ricardo Lim</label>
-            </div>
-            <div class="flex items-center">
-              <input type="checkbox" id="driver3" class="mr-2">
-              <label for="driver3" class="text-gray-700">Eduardo Torres</label>
-            </div>
+          <div id="driversAssignSection" class="grid grid-cols-2 gap-4">
+            
           </div>
         </div>
         
@@ -1607,23 +1581,8 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
             </svg>
             Other Staff
           </h4>
-          <div class="grid grid-cols-2 gap-4">
-            <div class="flex items-center">
-              <input type="checkbox" id="staff1" class="mr-2">
-              <label for="staff1" class="text-gray-700">Ana Gonzales (Receptionist)</label>
-            </div>
-            <div class="flex items-center">
-              <input type="checkbox" id="staff2" class="mr-2">
-              <label for="staff2" class="text-gray-700">Miguel Ramos (Assistant)</label>
-            </div>
-            <div class="flex items-center">
-              <input type="checkbox" id="staff3" class="mr-2">
-              <label for="staff3" class="text-gray-700">Luisa Rivera (Coordinator)</label>
-            </div>
-            <div class="flex items-center">
-              <input type="checkbox" id="staff4" class="mr-2">
-              <label for="staff4" class="text-gray-700">Paolo Mendoza (Helper)</label>
-            </div>
+          <div id="personnelAssignSection" class="grid grid-cols-2 gap-4">
+            
           </div>
         </div>
         
@@ -2430,15 +2389,15 @@ function openAssignStaffModal(serviceId) {
         .then(response => response.json())
         .then(data => {
             // Populate embalmers section
-            const embalmersSection = document.getElementById('embalmersSection');
+            const embalmersSection = document.getElementById('embalmersAssignSection');
             embalmersSection.innerHTML = generateEmployeeSection('Embalmer', data.embalmers);
             
             // Populate drivers section
-            const driversSection = document.getElementById('driversSection');
+            const driversSection = document.getElementById('driversAssignSection');
             driversSection.innerHTML = generateEmployeeSection('Driver', data.drivers);
             
             // Populate personnel section
-            const personnelSection = document.getElementById('personnelSection');
+            const personnelSection = document.getElementById('personnelAssignSection');
             personnelSection.innerHTML = generateEmployeeSection('Personnel', data.personnel);
         })
         .catch(error => {
