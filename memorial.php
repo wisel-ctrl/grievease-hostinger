@@ -18,6 +18,26 @@
     <meta property="og:title" content="GrievEase - Memorial Dedications" />
     <meta property="og:description" content="Honor and remember loved ones with virtual candle dedications" />
     
+    <!-- Facebook SDK -->
+    <div id="fb-root"></div>
+    <script>
+        window.fbAsyncInit = function() {
+            FB.init({
+                appId: '1097671002177530',
+                xfbml: true,
+                version: 'v18.0'
+            });
+        };
+
+        (function(d, s, id) {
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) return;
+            js = d.createElement(s); js.id = id;
+            js.src = "https://connect.facebook.net/en_US/sdk.js";
+            fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));
+    </script>
+    
     <style>
         .text-shadow-sm {
             text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
@@ -667,14 +687,19 @@ document.getElementById('share-messenger').addEventListener('click', function() 
     try {
         const shareText = `In loving memory of ${lastDedication.name}\n\n"${lastDedication.message}"\n\nDedicated by ${lastDedication.dedicatedBy} on ${lastDedication.date}`;
         const shareUrl = window.location.href;
-        
-        // Create Facebook Messenger share URL using the direct message link
-        const messengerUrl = `https://www.messenger.com/share?link=${encodeURIComponent(shareUrl)}&description=${encodeURIComponent(shareText)}`;
-        
-        // Open Facebook Messenger in a new tab (this is more reliable than a popup)
-        window.open(messengerUrl, '_blank');
-        
-        showNotification('Opening Facebook Messenger...');
+
+        FB.ui({
+            method: 'send',
+            link: shareUrl,
+            quote: shareText,
+        }, function(response) {
+            if (response && !response.error_code) {
+                showNotification('Message sent successfully!');
+            } else {
+                showNotification('Could not send message. Please try again.');
+            }
+        });
+
     } catch (error) {
         console.error('Sharing error:', error);
         showNotification('An error occurred while sharing. Please try again.');
