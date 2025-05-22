@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,6 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GrievEase - Memorials</title>
     <?php include 'faviconLogo.php'; ?>
+    <!-- Add Facebook SDK -->
+    <div id="fb-root"></div>
+    <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v18.0" nonce="random_nonce"></script>
+    <script>
+        window.fbAsyncInit = function() {
+            FB.init({
+                appId: '1097671002177530', // You'll need to replace this with your Facebook App ID
+                autoLogAppEvents: true,
+                xfbml: true,
+                version: 'v18.0'
+            });
+        };
+    </script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&display=swap" rel="stylesheet">
@@ -240,9 +252,12 @@ function toggleMenu() {
                             <p class="text-white/80 text-xs mt-1">Thank you for honoring your loved one's memory.</p>
                         </div>
                     </div>
-                    <div class="grid grid-cols-2 gap-2 sm:gap-3">
+                    <div class="grid grid-cols-3 gap-2 sm:gap-3">
                         <button id="new-dedication" class="bg-gray-800 hover:bg-gray-700 text-white py-1.5 sm:py-2 rounded-lg shadow transition-colors text-xs sm:text-sm">Create Another</button>
-                        <button id="view-dedications" class="bg-transparent hover:bg-gray-800/50 text-white/80 hover:text-white py-1.5 sm:py-2 rounded-lg transition-colors text-xs sm:text-sm">View All Dedications</button>
+                        <button id="view-dedications" class="bg-transparent hover:bg-gray-800/50 text-white/80 hover:text-white py-1.5 sm:py-2 rounded-lg transition-colors text-xs sm:text-sm">View All</button>
+                        <button id="share-facebook" class="bg-blue-600 hover:bg-blue-700 text-white py-1.5 sm:py-2 rounded-lg shadow transition-colors text-xs sm:text-sm">
+                            <i class="fab fa-facebook-f mr-1"></i> Share
+                        </button>
                     </div>
                 </div>
                 
@@ -425,7 +440,6 @@ candleTypeRadios.forEach(radio => {
 document.addEventListener('DOMContentLoaded', setInitialCandleColor);
 
 // Form submission handling
-// Form submission handling
 submitDedication.addEventListener('click', (e) => {
     e.preventDefault();
 
@@ -450,7 +464,7 @@ submitDedication.addEventListener('click', (e) => {
         return;
     }
     
-    // Create a new dedication object (all dedications are now public)
+    // Create a new dedication object
     const newDedication = {
         name: inMemoryOf,
         message: message,
@@ -461,7 +475,7 @@ submitDedication.addEventListener('click', (e) => {
     // Add the new dedication to the grid
     addDedicationToGrid(newDedication, 0);
     
-    // Store in local storage to persist between page loads
+    // Store in local storage
     const storedDedications = JSON.parse(localStorage.getItem('userDedications') || '[]');
     storedDedications.push(newDedication);
     localStorage.setItem('userDedications', JSON.stringify(storedDedications));
@@ -472,6 +486,21 @@ submitDedication.addEventListener('click', (e) => {
     
     // Show notification
     showNotification('Your dedication has been added successfully.');
+
+    // Share to Facebook
+    const shareText = `A candle has been lit in memory of ${inMemoryOf}\n\n"${message}"\n\nDedicated by: ${dedicatedBy}`;
+    
+    FB.ui({
+        method: 'share',
+        href: window.location.href,
+        quote: shareText,
+    }, function(response){
+        if (response && !response.error_message) {
+            showNotification('Successfully shared to Facebook');
+        } else {
+            showNotification('Error sharing to Facebook');
+        }
+    });
 });
 
 function addDedicationToGrid(dedication, index) {
@@ -687,6 +716,44 @@ document.addEventListener('DOMContentLoaded', function() {
         // Add the card to the grid
         dedicationGrid.appendChild(card);
     });
+});
+
+// Add a Share button to the dedication confirmation section
+document.getElementById('dedication-confirmation').innerHTML = `
+    <div class="bg-yellow-600/20 border border-yellow-600/50 rounded-lg p-2 sm:p-3 mb-2 sm:mb-3">
+        <div class="text-center">
+            <i class="fas fa-heart text-yellow-600 text-base sm:text-lg mb-1"></i>
+            <p class="text-white text-xs sm:text-sm">Your dedication has been submitted.</p>
+            <p class="text-white/80 text-xs mt-1">Thank you for honoring your loved one's memory.</p>
+        </div>
+    </div>
+    <div class="grid grid-cols-3 gap-2 sm:gap-3">
+        <button id="new-dedication" class="bg-gray-800 hover:bg-gray-700 text-white py-1.5 sm:py-2 rounded-lg shadow transition-colors text-xs sm:text-sm">Create Another</button>
+        <button id="view-dedications" class="bg-transparent hover:bg-gray-800/50 text-white/80 hover:text-white py-1.5 sm:py-2 rounded-lg transition-colors text-xs sm:text-sm">View All</button>
+        <button id="share-facebook" class="bg-blue-600 hover:bg-blue-700 text-white py-1.5 sm:py-2 rounded-lg shadow transition-colors text-xs sm:text-sm">
+            <i class="fab fa-facebook-f mr-1"></i> Share
+        </button>
+    </div>
+`;
+
+// Add event listener for the new share button
+document.getElementById('share-facebook').addEventListener('click', function() {
+    const lastDedication = JSON.parse(localStorage.getItem('userDedications') || '[]').pop();
+    if (lastDedication) {
+        const shareText = `A candle has been lit in memory of ${lastDedication.name}\n\n"${lastDedication.message}"\n\nDedicated by: ${lastDedication.dedicatedBy}`;
+        
+        FB.ui({
+            method: 'share',
+            href: window.location.href,
+            quote: shareText,
+        }, function(response){
+            if (response && !response.error_message) {
+                showNotification('Successfully shared to Facebook');
+            } else {
+                showNotification('Error sharing to Facebook');
+            }
+        });
+    }
 });
     </script>
     <!-- Loading Animation Overlay -->
