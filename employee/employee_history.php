@@ -2466,7 +2466,7 @@ function populateEmployeeSection(sectionId, position, employees) {
                     <input type="checkbox" 
                            id="${checkboxId}" 
                            name="assigned_staff[]" 
-                           value="${employee.employee_id}" 
+                           value="${employee.employeeID}" 
                            class="w-4 h-4 text-sidebar-accent border-gray-300 rounded focus:ring-sidebar-accent">
                     <label for="${checkboxId}" class="ml-2 text-sm text-gray-700">${fullName}</label>
                 </div>
