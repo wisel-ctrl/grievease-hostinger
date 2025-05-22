@@ -585,7 +585,7 @@ foreach ($serviceData as $service => $branches) {
             
             <!-- Notifications Footer with improved styling -->
             <div class="px-5 py-3 text-center border-t border-sidebar-border bg-gradient-to-r from-gray-50 to-white rounded-b-lg">
-                <a href="#" class="text-sm text-sidebar-accent hover:text-darkgold transition-colors font-medium inline-flex items-center">
+                <a href="notification.php" class="text-sm text-sidebar-accent hover:text-darkgold transition-colors font-medium inline-flex items-center">
                     View all notifications
                     <i class="fas fa-chevron-right ml-1 text-xs"></i>
                 </a>
