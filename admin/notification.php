@@ -295,74 +295,74 @@
         </div>
 
         <!-- Notifications List -->
-        <div id="notifications-container" class="space-y-4">
+        <div id="notifications-container" class="space-y-2">
             <!-- High Priority Funeral Booking -->
             <div class="notification-item funeral notification-priority-high bg-sidebar-bg rounded-lg shadow-card border border-sidebar-border overflow-hidden hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1" data-priority="high" data-timestamp="1710504000">
-                <div class="flex items-start p-6">
+                <div class="flex items-start p-4">
                     <div class="absolute left-0 top-0 bottom-0 w-1 bg-red-500"></div>
-                    <div class="flex-shrink-0 bg-red-100 rounded-full p-3 mr-4">
-                        <i class="fas fa-cross text-red-600 text-lg" aria-hidden="true"></i>
+                    <div class="flex-shrink-0 bg-red-100 rounded-full p-2 mr-3">
+                        <i class="fas fa-cross text-red-600" aria-hidden="true"></i>
                     </div>
                     <div class="flex-grow">
-                        <div class="flex justify-between items-start mb-2">
+                        <div class="flex justify-between items-start mb-1.5">
                             <div class="flex-grow">
-                                <div class="flex items-center gap-2 mb-2">
-                                    <h3 class="text-lg font-semibold text-sidebar-text">URGENT: Funeral Booking Request</h3>
-                                    <span class="bg-red-100 text-red-800 text-xs font-medium px-2 py-1 rounded-full">High Priority</span>
+                                <div class="flex items-center gap-2 mb-1">
+                                    <h3 class="text-base font-semibold text-sidebar-text">URGENT: Funeral Booking Request</h3>
+                                    <span class="bg-red-100 text-red-800 text-xs font-medium px-2 py-0.5 rounded-full">High Priority</span>
                                 </div>
-                                <p class="text-sidebar-text">Smith, John Michael - Premium Funeral Package</p>
-                                <p class="text-sm text-gray-600 mt-1">Requires immediate attention due to service date proximity</p>
+                                <p class="text-sm text-sidebar-text">Smith, John Michael - Premium Funeral Package</p>
+                                <p class="text-xs text-gray-600 mt-0.5">Requires immediate attention due to service date proximity</p>
                             </div>
                             <div class="flex items-center space-x-2 ml-4">
-                                <span class="h-3 w-3 bg-red-600 rounded-full animate-pulse" aria-label="Unread notification"></span>
+                                <span class="h-2.5 w-2.5 bg-red-600 rounded-full animate-pulse" aria-label="Unread notification"></span>
                                 <span class="text-xs text-gray-500">Unread</span>
                             </div>
                         </div>
-                        <div class="flex flex-wrap items-center text-sm text-gray-600 mb-4 gap-4">
+                        <div class="flex flex-wrap items-center text-xs text-gray-600 mb-2 gap-3">
                             <div class="flex items-center">
-                                <i class="far fa-clock mr-2" aria-hidden="true"></i>
+                                <i class="far fa-clock mr-1.5" aria-hidden="true"></i>
                                 <span>2 hours ago</span>
                             </div>
                             <div class="flex items-center">
-                                <i class="fas fa-calendar mr-2" aria-hidden="true"></i>
+                                <i class="fas fa-calendar mr-1.5" aria-hidden="true"></i>
                                 <span>Service Date: March 15, 2025</span>
                             </div>
                             <div class="flex items-center">
-                                <i class="fas fa-user mr-2" aria-hidden="true"></i>
+                                <i class="fas fa-user mr-1.5" aria-hidden="true"></i>
                                 <span>Contact: (555) 123-4567</span>
                             </div>
                         </div>
-                        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                            <div class="flex flex-wrap gap-2">
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                            <div class="flex flex-wrap gap-1.5">
                                 <button 
                                     onclick="viewBooking('funeral', 1)" 
-                                    class="ripple-effect px-4 py-2 bg-sidebar-accent text-white rounded-lg hover:bg-darkgold transition-all duration-200 text-sm font-medium transform hover:scale-105 focus-visible:focus"
+                                    class="ripple-effect px-3 py-1.5 bg-sidebar-accent text-white rounded-lg hover:bg-darkgold transition-all duration-200 text-xs font-medium transform hover:scale-105 focus-visible:focus"
                                     title="View detailed booking information"
                                 >
-                                    <i class="fas fa-eye mr-2" aria-hidden="true"></i>View Details
+                                    <i class="fas fa-eye mr-1.5" aria-hidden="true"></i>View Details
                                 </button>
                                 <button 
                                     onclick="approveBooking('funeral', 1, this)" 
-                                    class="ripple-effect px-4 py-2 bg-success text-white rounded-lg hover:bg-green-600 transition-all duration-200 text-sm font-medium transform hover:scale-105 focus-visible:focus"
+                                    class="ripple-effect px-3 py-1.5 bg-success text-white rounded-lg hover:bg-green-600 transition-all duration-200 text-xs font-medium transform hover:scale-105 focus-visible:focus"
                                     title="Approve this booking"
                                 >
-                                    <i class="fas fa-check mr-2" aria-hidden="true"></i>Approve
+                                    <i class="fas fa-check mr-1.5" aria-hidden="true"></i>Approve
                                 </button>
                                 <button 
                                     onclick="rejectBooking('funeral', 1, this)" 
-                                    class="ripple-effect px-4 py-2 bg-error text-white rounded-lg hover:bg-red-600 transition-all duration-200 text-sm font-medium transform hover:scale-105 focus-visible:focus"
+                                    class="ripple-effect px-3 py-1.5 bg-error text-white rounded-lg hover:bg-red-600 transition-all duration-200 text-xs font-medium transform hover:scale-105 focus-visible:focus"
                                     title="Decline this booking"
                                 >
-                                    <i class="fas fa-times mr-2" aria-hidden="true"></i>Decline
+                                    <i class="fas fa-times mr-1.5" aria-hidden="true"></i>Decline
                                 </button>
                             </div>
                             <button 
                                 onclick="markAsRead(this)" 
-                                class="text-gray-400 hover:text-sidebar-accent transition-colors p-2 rounded focus-visible:focus"
+                                class="text-gray-400 hover:text-sidebar-accent transition-colors p-1.5 rounded focus-visible:focus"
                                 title="Mark as read"
                                 aria-label="Mark notification as read"
                             >
-                                <i class="fas fa-check-circle text-lg" aria-hidden="true"></i>
+                                <i class="fas fa-check-circle" aria-hidden="true"></i>
                             </button>
                         </div>
                     </div>
