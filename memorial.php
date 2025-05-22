@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,6 +11,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Hedvig+Letters+Serif:wght@400;500&display=swap" rel="stylesheet">
     <script src="tailwind.js"></script>
+    <!-- Facebook SDK -->
+    <div id="fb-root"></div>
+    <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v18.0" nonce="random_nonce"></script>
     <style>
         .text-shadow-sm {
             text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
@@ -240,9 +242,12 @@ function toggleMenu() {
                             <p class="text-white/80 text-xs mt-1">Thank you for honoring your loved one's memory.</p>
                         </div>
                     </div>
-                    <div class="grid grid-cols-2 gap-2 sm:gap-3">
+                    <div class="grid grid-cols-3 gap-2 sm:gap-3">
                         <button id="new-dedication" class="bg-gray-800 hover:bg-gray-700 text-white py-1.5 sm:py-2 rounded-lg shadow transition-colors text-xs sm:text-sm">Create Another</button>
-                        <button id="view-dedications" class="bg-transparent hover:bg-gray-800/50 text-white/80 hover:text-white py-1.5 sm:py-2 rounded-lg transition-colors text-xs sm:text-sm">View All Dedications</button>
+                        <button id="view-dedications" class="bg-transparent hover:bg-gray-800/50 text-white/80 hover:text-white py-1.5 sm:py-2 rounded-lg transition-colors text-xs sm:text-sm">View All</button>
+                        <button id="share-facebook" class="bg-[#1877F2] hover:bg-[#0d6efd] text-white py-1.5 sm:py-2 rounded-lg shadow transition-colors text-xs sm:text-sm flex items-center justify-center">
+                            <i class="fab fa-facebook-f mr-2"></i>Share
+                        </button>
                     </div>
                 </div>
                 
@@ -425,7 +430,8 @@ candleTypeRadios.forEach(radio => {
 document.addEventListener('DOMContentLoaded', setInitialCandleColor);
 
 // Form submission handling
-// Form submission handling
+let lastDedication = null; // Store the last dedication for sharing
+
 submitDedication.addEventListener('click', (e) => {
     e.preventDefault();
 
@@ -449,6 +455,14 @@ submitDedication.addEventListener('click', (e) => {
         showNotification('Please enter a meaningful message (at least 2 characters)');
         return;
     }
+    
+    // Store the dedication for sharing
+    lastDedication = {
+        name: inMemoryOf,
+        message: message,
+        dedicatedBy: dedicatedBy,
+        date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+    };
     
     // Create a new dedication object (all dedications are now public)
     const newDedication = {
@@ -577,6 +591,26 @@ viewDedications.addEventListener('click', () => {
             behavior: 'smooth'
         });
     }, 500);
+});
+
+// Add Facebook sharing functionality
+document.getElementById('share-facebook').addEventListener('click', function() {
+    if (lastDedication) {
+        const shareUrl = window.location.href;
+        const shareText = `In loving memory of ${lastDedication.name}\n\n"${lastDedication.message}"\n\nDedicated by ${lastDedication.dedicatedBy} on ${lastDedication.date}`;
+        
+        FB.ui({
+            method: 'share',
+            href: shareUrl,
+            quote: shareText,
+        }, function(response){
+            if (response && !response.error_message) {
+                showNotification('Successfully shared to Facebook');
+            } else {
+                showNotification('Could not share to Facebook. Please try again.');
+            }
+        });
+    }
 });
 
 // Notification function
