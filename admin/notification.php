@@ -115,7 +115,7 @@
 </head>
 
 <body class="bg-primary font-inter">
-    <?php include 'admin_sidebar.php'; ?>
+    
     <!-- Header -->
     <header class="bg-sidebar-bg shadow-sidebar border-b border-sidebar-border sticky top-0 z-40">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
