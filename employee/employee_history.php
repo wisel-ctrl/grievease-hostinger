@@ -2520,7 +2520,7 @@ function saveStaffAssignment() {
     });
 
     // Get base salaries for selected employees
-    fetch('get_employee_salaries.php?employee_ids=' + assignedStaff.join(','))
+    fetch('historyAPI/get_employee_salaries.php?employee_ids=' + assignedStaff.join(','))
         .then(response => response.json())
         .then(salaries => {
             // Prepare the data to send
@@ -2536,7 +2536,7 @@ function saveStaffAssignment() {
             console.log('Sending assignment data:', assignmentData);
             
             // Send data to server
-            return fetch('assign_staff.php', {
+            return fetch('historyAPI/assign_staff.php', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
