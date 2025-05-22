@@ -2411,7 +2411,7 @@ function openAssignStaffModal(serviceId) {
     document.body.style.overflow = 'hidden';
     
     // Fetch employees for each position
-    fetch(`get_employees.php?service_id=${serviceId}`)
+    fetch(`historyAPI/get_employees.php?service_id=${serviceId}`)
         .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
@@ -2487,13 +2487,18 @@ function closeAssignStaffModal() {
 }
 
 function saveStaffAssignment() {
-    const serviceId = document.getElementById('assignServiceId').value;
+    const salesId = document.getElementById('assignServiceId').value;
     const notes = document.getElementById('assignmentNotes').value;
     
-    // Get all checked checkboxes
-    const checkboxes = document.querySelectorAll('#assignStaffModal input[name="assigned_staff[]"]:checked');
-    const assignedStaff = Array.from(checkboxes).map(cb => cb.value);
+    // Get all checked checkboxes within the assignStaffModal
+    const modal = document.getElementById('assignStaffModal');
+    const checkboxes = modal.querySelectorAll('input[name="assigned_staff[]"]:checked');
     
+    // Extract the employee IDs from the checkboxes
+    const assignedStaff = Array.from(checkboxes).map(checkbox => {
+        return checkbox.value;
+    }).filter(id => id); // Filter out any undefined/empty values
+
     if (assignedStaff.length === 0) {
         Swal.fire({
             icon: 'warning',
@@ -2503,7 +2508,7 @@ function saveStaffAssignment() {
         });
         return;
     }
-    
+
     // Show loading state
     Swal.fire({
         title: 'Saving Assignment',
@@ -2513,43 +2518,65 @@ function saveStaffAssignment() {
             Swal.showLoading();
         }
     });
-    
-    // Prepare form data
-    const formData = new FormData();
-    formData.append('service_id', serviceId);
-    formData.append('assigned_staff', JSON.stringify(assignedStaff));
-    formData.append('notes', notes);
-    
-    // Send request
-    fetch('assign_staff.php', {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            Swal.fire({
-                icon: 'success',
-                title: 'Success',
-                text: 'Staff assigned successfully!',
-                confirmButtonColor: '#3085d6'
-            }).then(() => {
-                closeAssignStaffModal();
-                location.reload();
+
+    // Get base salaries for selected employees
+    fetch('get_employee_salaries.php?employee_ids=' + assignedStaff.join(','))
+        .then(response => response.json())
+        .then(salaries => {
+            // Prepare the data to send
+            const assignmentData = {
+                sales_id: salesId,
+                staff_data: assignedStaff.map(employeeId => ({
+                    employee_id: employeeId,
+                    salary: salaries[employeeId] || 0 // Default to 0 if salary not found
+                })),
+                notes: notes
+            };
+
+            console.log('Sending assignment data:', assignmentData);
+            
+            // Send data to server
+            return fetch('assign_staff.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(assignmentData)
             });
-        } else {
-            throw new Error(data.message || 'Failed to assign staff');
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: error.message || 'Failed to assign staff. Please try again.',
-            confirmButtonColor: '#3085d6'
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.text().then(text => {
+                    console.error('Server response:', text);
+                    throw new Error('Server error: ' + response.status);
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: data.message || 'Staff assigned successfully!',
+                    confirmButtonColor: '#3085d6'
+                }).then(() => {
+                    closeAssignStaffModal();
+                    location.reload();
+                });
+            } else {
+                throw new Error(data.message || 'Failed to assign staff');
+            }
+        })
+        .catch(error => {
+            console.error('Error details:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: error.message || 'An error occurred while saving the assignment. Please try again.',
+                confirmButtonColor: '#3085d6'
+            });
         });
-    });
 }
 
 // Function to open the Complete Service Modal

@@ -1,53 +1,106 @@
 <?php
+ini_set('display_errors', 0);
+error_reporting(E_ALL);
+
+function exception_error_handler($severity, $message, $file, $line) {
+    error_log("Error: $message in $file on line $line");
+    return true;
+}
+set_error_handler("exception_error_handler");
+header('Content-Type: application/json');
 require_once '../db_connect.php';
 
-header('Content-Type: application/json');
+$response = ['success' => false, 'message' => ''];
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $serviceId = $_POST['service_id'] ?? null;
-    $assignedStaff = json_decode($_POST['assigned_staff'] ?? '[]', true);
-    $notes = $_POST['notes'] ?? '';
-    
-    if (!$serviceId || empty($assignedStaff)) {
-        echo json_encode(['success' => false, 'message' => 'Missing required data']);
-        exit;
+try {
+    $json = file_get_contents('php://input');
+    if ($json === false) {
+        throw new Exception('Failed to read input data');
     }
     
-    try {
-        // Start transaction
-        $conn->begin_transaction();
-        
-        // First, remove existing assignments for this service
-        $deleteQuery = "DELETE FROM service_staff_tb WHERE service_id = ?";
-        $deleteStmt = $conn->prepare($deleteQuery);
-        $deleteStmt->bind_param("i", $serviceId);
-        $deleteStmt->execute();
-        
-        // Insert new assignments
-        $insertQuery = "INSERT INTO service_staff_tb (service_id, employee_id, notes) VALUES (?, ?, ?)";
-        $insertStmt = $conn->prepare($insertQuery);
-        
-        foreach ($assignedStaff as $employeeId) {
-            $insertStmt->bind_param("iis", $serviceId, $employeeId, $notes);
-            $insertStmt->execute();
+    $data = json_decode($json, true);
+    if ($data === null) {
+        throw new Exception('Invalid JSON data');
+    }
+
+    if (empty($data['sales_id'])) {
+        throw new Exception('Sales ID is required');
+    }
+    
+    if (empty($data['staff_data']) || !is_array($data['staff_data'])) {
+        throw new Exception('No staff data provided');
+    }
+
+    $conn->begin_transaction();
+
+    // First, remove existing assignments for this service
+    $deleteQuery = "DELETE FROM service_staff_tb WHERE service_id = ?";
+    $deleteStmt = $conn->prepare($deleteQuery);
+    $deleteStmt->bind_param("i", $data['sales_id']);
+    $deleteStmt->execute();
+
+    // Use a single prepared statement and execute multiple times
+    $stmt = $conn->prepare("INSERT INTO employee_service_payments 
+                           (sales_id, employeeID, service_stage, income, notes, payment_date) 
+                           VALUES (?, ?, ?, ?, ?, NOW())");
+    
+    if ($stmt === false) {
+        throw new Exception('Failed to prepare SQL statement: ' . $conn->error);
+    }
+
+    $successful_inserts = 0;
+    foreach ($data['staff_data'] as $staff) {
+        if (empty($staff['employee_id']) || empty($staff['salary'])) {
+            continue; // Skip invalid entries instead of failing the whole operation
         }
         
-        // Update service status to indicate staff has been assigned
-        $updateQuery = "UPDATE service_tb SET status = 'Assigned' WHERE service_id = ?";
-        $updateStmt = $conn->prepare($updateQuery);
-        $updateStmt->bind_param("i", $serviceId);
-        $updateStmt->execute();
+        $service_stage = 'initial';
+        $notes = $data['notes'] ?? '';
         
-        // Commit transaction
-        $conn->commit();
+        $stmt->bind_param("iisds", 
+            $data['sales_id'],
+            $staff['employee_id'],
+            $service_stage,
+            $staff['salary'],
+            $notes
+        );
         
-        echo json_encode(['success' => true]);
-    } catch (Exception $e) {
-        // Rollback transaction on error
-        $conn->rollback();
-        echo json_encode(['success' => false, 'message' => 'Database error: ' . $e->getMessage()]);
+        if ($stmt->execute()) {
+            $successful_inserts++;
+        } else {
+            error_log("Failed to insert record for employee ID {$staff['employee_id']}: " . $stmt->error);
+        }
     }
-} else {
-    echo json_encode(['success' => false, 'message' => 'Invalid request method']);
+
+    if ($successful_inserts === 0) {
+        throw new Exception('No records were inserted');
+    }
+
+    // Update service status to indicate staff has been assigned
+    $updateQuery = "UPDATE service_tb SET status = 'Assigned' WHERE service_id = ?";
+    $updateStmt = $conn->prepare($updateQuery);
+    $updateStmt->bind_param("i", $data['sales_id']);
+    $updateStmt->execute();
+
+    $conn->commit();
+    $response['success'] = true;
+    $response['message'] = "$successful_inserts staff assignments saved successfully";
+
+} catch (Exception $e) {
+    if (isset($conn) && method_exists($conn, 'rollback')) {
+        $conn->rollback();
+    }
+    $response['message'] = $e->getMessage();
+    http_response_code(400);
+} finally {
+    if (isset($stmt) && $stmt instanceof mysqli_stmt) {
+        $stmt->close();
+    }
+    if (isset($conn) && $conn instanceof mysqli) {
+        $conn->close();
+    }
 }
+
+echo json_encode($response);
+exit;
 ?> 
