@@ -11,9 +11,34 @@
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Hedvig+Letters+Serif:wght@400;500&display=swap" rel="stylesheet">
     <script src="tailwind.js"></script>
+    
+    <!-- Facebook Meta Tags -->
+    <meta property="og:url" content="https://grievease.com/memorial.php" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="GrievEase - Memorial Dedications" />
+    <meta property="og:description" content="Honor and remember loved ones with virtual candle dedications" />
+    <meta property="og:image" content="https://grievease.com/path/to/your/image.jpg" />
+    
     <!-- Facebook SDK -->
-    <div id="fb-root"></div>
-    <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v18.0" nonce="random_nonce"></script>
+    <script>
+    window.fbAsyncInit = function() {
+        FB.init({
+            appId: 'your-app-id', // Replace with your Facebook App ID
+            xfbml: true,
+            version: 'v18.0'
+        });
+    };
+
+    (function(d, s, id) {
+        var js, fjs = d.getElementsByTagName(s)[0];
+        if (d.getElementById(id)) return;
+        js = d.createElement(s);
+        js.id = id;
+        js.src = "https://connect.facebook.net/en_US/sdk.js";
+        fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));
+    </script>
+    
     <style>
         .text-shadow-sm {
             text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
@@ -245,8 +270,9 @@ function toggleMenu() {
                     <div class="grid grid-cols-3 gap-2 sm:gap-3">
                         <button id="new-dedication" class="bg-gray-800 hover:bg-gray-700 text-white py-1.5 sm:py-2 rounded-lg shadow transition-colors text-xs sm:text-sm">Create Another</button>
                         <button id="view-dedications" class="bg-transparent hover:bg-gray-800/50 text-white/80 hover:text-white py-1.5 sm:py-2 rounded-lg transition-colors text-xs sm:text-sm">View All</button>
-                        <button id="share-facebook" class="bg-[#1877F2] hover:bg-[#0d6efd] text-white py-1.5 sm:py-2 rounded-lg shadow transition-colors text-xs sm:text-sm flex items-center justify-center">
-                            <i class="fab fa-facebook-f mr-2"></i>Share
+                        <button id="share-facebook" class="bg-[#1877F2] hover:bg-[#0d6efd] text-white py-1.5 sm:py-2 rounded-lg shadow transition-colors text-xs sm:text-sm flex items-center justify-center gap-2">
+                            <i class="fab fa-facebook-f"></i>
+                            <span>Share</span>
                         </button>
                     </div>
                 </div>
@@ -429,9 +455,10 @@ candleTypeRadios.forEach(radio => {
 // Set initial candle color when page loads
 document.addEventListener('DOMContentLoaded', setInitialCandleColor);
 
-// Form submission handling
-let lastDedication = null; // Store the last dedication for sharing
+// Store the last dedication
+let lastDedication = null;
 
+// Update the submit dedication handler
 submitDedication.addEventListener('click', (e) => {
     e.preventDefault();
 
@@ -593,23 +620,54 @@ viewDedications.addEventListener('click', () => {
     }, 500);
 });
 
-// Add Facebook sharing functionality
+// Facebook sharing functionality
 document.getElementById('share-facebook').addEventListener('click', function() {
-    if (lastDedication) {
+    if (!lastDedication) {
+        showNotification('No dedication available to share');
+        return;
+    }
+
+    try {
         const shareUrl = window.location.href;
         const shareText = `In loving memory of ${lastDedication.name}\n\n"${lastDedication.message}"\n\nDedicated by ${lastDedication.dedicatedBy} on ${lastDedication.date}`;
         
+        // Fallback to Web Share API if FB SDK fails
+        if (typeof FB === 'undefined') {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Memorial Dedication',
+                    text: shareText,
+                    url: shareUrl
+                }).then(() => {
+                    showNotification('Successfully shared dedication');
+                }).catch(() => {
+                    // Open in new window as last resort
+                    const fbShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(shareText)}`;
+                    window.open(fbShareUrl, '_blank', 'width=600,height=400');
+                });
+            } else {
+                // Fallback to direct Facebook share URL
+                const fbShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(shareText)}`;
+                window.open(fbShareUrl, '_blank', 'width=600,height=400');
+            }
+            return;
+        }
+
+        // Use Facebook SDK if available
         FB.ui({
             method: 'share',
             href: shareUrl,
             quote: shareText,
-        }, function(response){
+        }, function(response) {
             if (response && !response.error_message) {
                 showNotification('Successfully shared to Facebook');
             } else {
                 showNotification('Could not share to Facebook. Please try again.');
             }
         });
+    } catch (error) {
+        console.error('Sharing error:', error);
+        showNotification('An error occurred while sharing. Please try again.');
     }
 });
 
