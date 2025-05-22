@@ -182,14 +182,7 @@
                         <i class="fas fa-sync-alt mr-2" aria-hidden="true"></i>
                         Refresh
                     </button>
-                    <button 
-                        onclick="exportNotifications()" 
-                        class="ripple-effect flex items-center px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all duration-200 text-sm font-medium transform hover:scale-105 focus-visible:focus"
-                        title="Export notifications to CSV"
-                    >
-                        <i class="fas fa-download mr-2" aria-hidden="true"></i>
-                        Export
-                    </button>
+                    
                 </div>
                 <div class="flex items-center space-x-3">
                     <label for="sort-select" class="text-sm text-gray-600 font-medium">Sort by:</label>
@@ -1240,18 +1233,7 @@
             }, 2000);
         }
 
-        function exportNotifications() {
-            showLoading();
-            setTimeout(() => {
-                hideLoading();
-                showToast('Notifications exported to CSV successfully');
-                // Simulate file download
-                const link = document.createElement('a');
-                link.href = 'data:text/csv;charset=utf-8,Notification Type,Title,Date,Status\nFuneral,New Booking,2025-03-15,Unread';
-                link.download = 'notifications_export.csv';
-                link.click();
-            }, 2000);
-        }
+        
 
         function resetFilters() {
             // Reset all filter states
