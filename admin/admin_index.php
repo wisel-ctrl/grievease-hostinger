@@ -1874,87 +1874,27 @@ document.getElementById('notification-bell').addEventListener('click', function(
       dropdown.classList.add('hidden');
     }, 300);
   }
-});
-
-// Add mark all as read functionality
-document.querySelector('#notifications-dropdown button').addEventListener('click', function() {
-  fetch('mark_notifications_read.php', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  })
-  .then(response => response.json())
-  .then(data => {
-    if (data.success) {
-      // Update UI to show all notifications as read
-      const notificationCounter = document.querySelector('#notification-bell > span');
-      const dropdownCounter = document.querySelector('#notifications-dropdown .bg-error');
-      const unreadIndicators = document.querySelectorAll('#notifications-dropdown .bg-blue-600, #notifications-dropdown .bg-yellow-600, #notifications-dropdown .bg-green-600');
+  
+  // If showing notifications, mark as read (update counter)
+  if (!dropdown.classList.contains('hidden')) {
+    const notificationCounter = document.querySelector('#notification-bell > span');
+    
+    // Add a slight delay before animating the counter
+    setTimeout(() => {
+      notificationCounter.classList.add('scale-75', 'opacity-50');
       
-      // Animate and hide notification counters
-      [notificationCounter, dropdownCounter].forEach(counter => {
-        if (counter) {
-          counter.classList.add('scale-75', 'opacity-50');
-          setTimeout(() => {
-            counter.classList.add('scale-0');
-            setTimeout(() => {
-              counter.classList.add('hidden');
-            }, 300);
-          }, 200);
-        }
-      });
-
-      // Remove unread indicators with animation
-      unreadIndicators.forEach(indicator => {
-        indicator.classList.add('opacity-0', 'scale-0');
-        setTimeout(() => {
-          indicator.remove();
-        }, 300);
-      });
-
-      // Show success message
-      const successMessage = document.createElement('div');
-      successMessage.className = 'fixed top-4 right-4 bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded shadow-md transform transition-all duration-300';
-      successMessage.innerHTML = `
-        <div class="flex items-center">
-          <i class="fas fa-check-circle mr-2"></i>
-          <p>All notifications marked as read</p>
-        </div>
-      `;
-      document.body.appendChild(successMessage);
-
-      // Remove success message after 3 seconds
       setTimeout(() => {
-        successMessage.classList.add('opacity-0', 'translate-y-[-1rem]');
+        notificationCounter.textContent = '0';
+        notificationCounter.classList.add('scale-0');
+        
         setTimeout(() => {
-          successMessage.remove();
+          if (notificationCounter.textContent === '0') {
+            notificationCounter.classList.add('hidden');
+          }
         }, 300);
-      }, 3000);
-    } else {
-      // Show error message if the operation failed
-      const errorMessage = document.createElement('div');
-      errorMessage.className = 'fixed top-4 right-4 bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded shadow-md transform transition-all duration-300';
-      errorMessage.innerHTML = `
-        <div class="flex items-center">
-          <i class="fas fa-exclamation-circle mr-2"></i>
-          <p>Failed to mark notifications as read</p>
-        </div>
-      `;
-      document.body.appendChild(errorMessage);
-
-      // Remove error message after 3 seconds
-      setTimeout(() => {
-        errorMessage.classList.add('opacity-0', 'translate-y-[-1rem]');
-        setTimeout(() => {
-          errorMessage.remove();
-        }, 300);
-      }, 3000);
-    }
-  })
-  .catch(error => {
-    console.error('Error:', error);
-  });
+      }, 500);
+    }, 2000);
+  }
 });
 
 // Close notification dropdown when clicking outside
