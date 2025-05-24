@@ -12,7 +12,7 @@ function exception_error_handler($severity, $message, $file, $line) {
 }
 set_error_handler("exception_error_handler");
 header('Content-Type: application/json');
-require_once '../db_connect.php';
+require_once '../../db_connect.php';
 
 $response = ['success' => false, 'message' => ''];
 
