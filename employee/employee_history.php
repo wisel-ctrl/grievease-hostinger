@@ -2700,15 +2700,80 @@ function finalizeServiceCompletion() {
 
 // Function to view service details (kept from original)
 function viewServiceDetails(serviceId) {
-  document.getElementById('serviceId').textContent = serviceId;
-  document.getElementById('serviceClientName').textContent = 'John Doe';
-  document.getElementById('serviceServiceType').textContent = 'Memorial Service';
-  document.getElementById('serviceDate').textContent = '2023-10-15';
-  document.getElementById('serviceStatus').textContent = 'Completed';
-  document.getElementById('serviceOutstandingBalance').textContent = '₱0';
+  // Show loading state
+  document.getElementById('serviceId').textContent = 'Loading...';
+  
+  // Fetch service details from server
+  fetch(`historyAPI/get_service_full_details.php?sales_id=${serviceId}`)
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        // Populate basic service info
+        document.getElementById('serviceId').textContent = data.sales_id;
+        document.getElementById('serviceClientName').textContent = 
+          `${data.fname} ${data.mname ? data.mname + ' ' : ''}${data.lname}${data.suffix ? ' ' + data.suffix : ''}`;
+        document.getElementById('serviceServiceType').textContent = data.service_name || 'N/A';
+        document.getElementById('branchName').textContent = data.branch_name || 'N/A';
+        document.getElementById('serviceDate').textContent = data.date_of_burial ? formatDate(data.date_of_burial) : 'N/A';
+        document.getElementById('serviceStatus').textContent = data.status || 'N/A';
+        document.getElementById('serviceOutstandingBalance').textContent = 
+          data.balance ? `₱${parseFloat(data.balance).toFixed(2)}` : '₱0.00';
 
-  document.getElementById('viewServiceModal').style.display = 'flex';
-  toggleBodyScroll(true);
+        // Populate initial staff section
+        if (data.initial_staff) {
+          document.getElementById('initialDate').textContent = 
+            data.initial_staff.date ? formatDate(data.initial_staff.date) : 'N/A';
+          document.getElementById('initialEmbalmers').textContent = 
+            data.initial_staff.embalmers.length > 0 ? data.initial_staff.embalmers.join(', ') : 'None';
+          document.getElementById('initialDrivers').textContent = 
+            data.initial_staff.drivers.length > 0 ? data.initial_staff.drivers.join(', ') : 'None';
+          document.getElementById('initialPersonnel').textContent = 
+            data.initial_staff.personnel.length > 0 ? data.initial_staff.personnel.join(', ') : 'None';
+          document.getElementById('initialNotes').textContent = 
+            data.initial_staff.notes || 'None';
+        }
+
+        // Populate burial staff section
+        if (data.burial_staff) {
+          // Use the burial date from sales_tb if available, otherwise from payment records
+          document.getElementById('burialDate1').textContent = 
+          data.burial_staff.date ? formatDate(data.burial_staff.date) : 'N/A';
+          document.getElementById('burialDrivers').textContent = 
+            data.burial_staff.drivers.length > 0 ? data.burial_staff.drivers.join(', ') : 'None';
+          document.getElementById('burialPersonnel').textContent = 
+            data.burial_staff.personnel.length > 0 ? data.burial_staff.personnel.join(', ') : 'None';
+          document.getElementById('burialNotes').textContent = 
+            data.burial_staff.notes || 'None';
+        }
+
+        // Show the modal
+        document.getElementById('viewServiceModal').style.display = 'flex';
+        toggleBodyScroll(true);
+      } else {
+        alert('Failed to fetch service details: ' + data.message);
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('An error occurred while fetching service details');
+    });
+}
+
+// Helper function to format dates consistently
+function formatDate(dateString) {
+  if (!dateString) return 'N/A';
+  
+  try {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  } catch (e) {
+    console.error('Error formatting date:', e);
+    return dateString; // Return the raw string if formatting fails
+  }
 }
 
 // Function to close the View Service Modal (kept from original)
