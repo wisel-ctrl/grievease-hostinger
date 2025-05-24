@@ -2656,40 +2656,46 @@ function finalizeServiceCompletion() {
     return checkbox.value;
   }).filter(id => id); // Filter out any undefined/empty values
 
-  // Prepare the data to send
-  const completionData = {
-    sales_id: serviceId,
-    staff_data: assignedStaff.map(employeeId => ({
-      employee_id: employeeId
-    })),
-    notes: completionNotes,
-    service_stage: 'completion',
-    completion_date: completionDateTime,
-    balance_settled: balanceSettled
-  };
+  // First get the salaries for the selected employees
+  fetch('historyAPI/get_employee_salaries.php?employee_ids=' + assignedStaff.join(','))
+    .then(response => response.json())
+    .then(salaries => {
+      // Prepare the data to send with salary information
+      const completionData = {
+        sales_id: serviceId,
+        staff_data: assignedStaff.map(employeeId => ({
+          employee_id: employeeId,
+          salary: salaries[employeeId] || 0 // Default to 0 if salary not found
+        })),
+        notes: completionNotes,
+        service_stage: 'completion',
+        completion_date: completionDateTime,
+        balance_settled: balanceSettled
+      };
 
-  // Send data to server
-  fetch('historyAPI/save_service_completion.php', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(completionData)
-  })
-  .then(response => response.json())
-  .then(data => {
-    if (data.success) {
-      alert('Service completed successfully!');
-      closeCompleteModal();
-      location.reload();
-    } else {
-      alert('Error: ' + data.message);
-    }
-  })
-  .catch(error => {
-    console.error('Error:', error);
-    alert('An error occurred while completing the service');
-  });
+      // Send data to server
+      return fetch('historyAPI/save_service_completion.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(completionData)
+      });
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        alert('Service completed successfully!');
+        closeCompleteModal();
+        location.reload();
+      } else {
+        alert('Error: ' + data.message);
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('An error occurred while completing the service');
+    });
 }
 
 // Function to view service details (kept from original)
