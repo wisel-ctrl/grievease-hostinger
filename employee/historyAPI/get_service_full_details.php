@@ -18,7 +18,7 @@ try {
                      sv.service_name
               FROM sales_tb s
               LEFT JOIN users u ON s.customer_id = u.id
-              LEFT JOIN branches b ON s.branch_id = b.id
+              LEFT JOIN branch_tb b ON s.branch_id = b.id
               LEFT JOIN services sv ON s.service_id = sv.id
               WHERE s.id = ?";
     
