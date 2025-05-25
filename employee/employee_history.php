@@ -2181,6 +2181,8 @@ function savePayment() {
     return;
   }
   
+  const newBalance = currentBalance - paymentAmount;
+
   // Create payment data object
   const paymentData = {
     sales_id: serviceId,
