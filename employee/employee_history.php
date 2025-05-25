@@ -2160,6 +2160,8 @@ function closeRecordPaymentModal() {
 function savePayment() {
   // Get form values
   const serviceId = document.getElementById('paymentServiceId').value;
+  const customerID = document.getElementById('customerID').value;
+  const branchID = document.getElementById('branchID').value;
   const clientName = document.getElementById('paymentClientName').value;
   const currentBalance = document.getElementById('currentBalance').value.replace('$', '');
   const paymentAmount = document.getElementById('paymentAmount').value;
@@ -2172,46 +2174,65 @@ function savePayment() {
     alert('Please enter a valid payment amount.');
     return;
   }
+
+  // Validate required fields
+  if (!customerID || !branchID) {
+    alert('Missing required information. Please try again.');
+    return;
+  }
   
   // Create payment data object
   const paymentData = {
-    serviceId,
-    clientName,
-    paymentAmount: parseFloat(paymentAmount),
-    paymentMethod,
-    paymentDate,
-    notes,
-    newBalance: (parseFloat(currentBalance) - parseFloat(paymentAmount)).toFixed(2)
+    sales_id: serviceId,
+    customerID: customerID,
+    branch_id: branchID,
+    client_name: clientName,
+    before_balance: currentBalance,
+    after_payment_balance: newBalance,
+    payment_amount: paymentAmount,
+    method_of_payment: paymentMethod,
+    notes: notes
   };
   
-  // Here you would typically send this data to your server
-  console.log('Payment recorded:', paymentData);
+  // Show loading state
+  const saveBtn = document.querySelector('#recordPaymentModal button[onclick="savePayment()"]');
+  const originalBtnText = saveBtn.innerHTML;
+  saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+  saveBtn.disabled = true;
   
-  // Example of API call (uncomment and modify as needed)
-  /*
-  fetch('/api/payments', {
+  // Send data to server
+  fetch('historyAPI/record_payment.php', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(paymentData)
   })
-  .then(response => response.json())
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    return response.json();
+  })
   .then(data => {
-    console.log('Success:', data);
-    closeRecordPaymentModal();
-    // Optionally refresh the page or update UI
-    // location.reload();
+    if (data.success) {
+      alert(`Payment recorded successfully! Total paid: ₱${data.new_amount_paid.toFixed(2)}`);
+      closeRecordPaymentModal();
+      // Refresh the page to show updated values
+      location.reload();
+    } else {
+      throw new Error(data.message || 'Failed to record payment');
+    }
   })
   .catch(error => {
     console.error('Error:', error);
-    alert('Failed to record payment. Please try again.');
+    alert('Error: ' + error.message);
+  })
+  .finally(() => {
+    // Restore button state
+    saveBtn.innerHTML = originalBtnText;
+    saveBtn.disabled = false;
   });
-  */
-  
-  // For demo purposes, just close the modal
-  alert('Payment of $' + paymentAmount + ' recorded successfully!');
-  closeRecordPaymentModal();
 }
     // Function to toggle body scroll when modal is open
 function toggleBodyScroll(isOpen) {
