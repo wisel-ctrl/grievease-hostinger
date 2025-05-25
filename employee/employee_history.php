@@ -911,7 +911,7 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
                 <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo htmlspecialchars($row['deceased_name']); ?></td>
                 <td class="px-4 py-3.5 text-sm text-sidebar-text">
                   <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">
-                    <?php echo htmlspecialchars($row['discounted_price']); ?>
+                    <?php echo '₱' . number_format($row['discounted_price'], 2); ?>
                   </span>
                 </td>
                 <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo htmlspecialchars($row['date_of_burial']); ?></td>
