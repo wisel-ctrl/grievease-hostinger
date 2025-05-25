@@ -1206,42 +1206,113 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
               </tr>
             </thead>
             <tbody id="customOutstandingTableBody">
-              <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
-                <td class="px-4 py-4 text-sm text-sidebar-text font-medium">#1003</td>
-                <td class="px-4 py-4 text-sm text-sidebar-text">Alice Brown</td>
-                <td class="px-4 py-4 text-sm text-sidebar-text">James Brown</td>
-                <td class="px-4 py-4 text-sm text-sidebar-text">₱60,000.00</td>
-                <td class="px-4 py-4 text-sm text-sidebar-text">2025-03-10</td>
-                <td class="px-4 py-4 text-sm">
-                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-500 border border-yellow-200">
-                    <i class="fas fa-exclamation-circle mr-1"></i> With Balance
-                  </span>
-                </td>
-                <td class="px-4 py-4 text-sm font-medium text-sidebar-text">₱30,000.00</td>
-                <td class="px-4 py-4 text-sm">
-                  <div class="flex space-x-2">
-                    <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="View Details" onclick="viewServiceDetails('1003')">
-                      <i class="fas fa-eye"></i>
-                    </button>
-                    <button class="p-2 bg-orange-100 text-orange-600 rounded-lg hover:bg-orange-200 transition-all tooltip" title="Record Payment" onclick="openRecordPaymentModal('1003','Alice Brown','30000')">
-                      <i class="fas fa-money-bill-wave"></i>
-                    </button>
-                  </div>
-                </td>
-              </tr>
+              <?php
+              // Query for Custom With Outstanding Balance Services
+              $customOutstandingQuery = "SELECT 
+                cs.customsales_id,
+                CONCAT_WS(' ', 
+                  u.first_name, 
+                  COALESCE(u.middle_name, ''), 
+                  u.last_name, 
+                  COALESCE(u.suffix, '')
+                ) AS client_name,
+                CONCAT_WS(' ', 
+                  cs.fname_deceased, 
+                  COALESCE(cs.mname_deceased, ''), 
+                  cs.lname_deceased, 
+                  COALESCE(cs.suffix_deceased, '')
+                ) AS deceased_name,
+                cs.discounted_price,
+                cs.date_of_burial,
+                cs.status,
+                cs.payment_status,
+                cs.balance
+              FROM customsales_tb AS cs
+              JOIN users AS u ON cs.customer_id = u.id
+              WHERE cs.branch_id = ? AND cs.status = 'Completed' AND cs.payment_status = 'With Balance'
+              LIMIT ?, ?";
+              $stmt = $conn->prepare($customOutstandingQuery);
+              $stmt->bind_param("iii", $branch, $offsetCustomOutstanding, $recordsPerPage);
+              $stmt->execute();
+              $customOutstandingResult = $stmt->get_result();
+
+              if ($customOutstandingResult->num_rows > 0) {
+                while($row = $customOutstandingResult->fetch_assoc()) {
+                  ?>
+                  <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
+                    <td class="px-4 py-4 text-sm text-sidebar-text font-medium">#<?php echo $row['customsales_id']; ?></td>
+                    <td class="px-4 py-4 text-sm text-sidebar-text"><?php echo htmlspecialchars($row['client_name']); ?></td>
+                    <td class="px-4 py-4 text-sm text-sidebar-text"><?php echo htmlspecialchars($row['deceased_name']); ?></td>
+                    <td class="px-4 py-4 text-sm text-sidebar-text"><?php echo '₱' . number_format($row['discounted_price'], 2); ?></td>
+                    <td class="px-4 py-4 text-sm text-sidebar-text"><?php echo htmlspecialchars($row['date_of_burial']); ?></td>
+                    <td class="px-4 py-4 text-sm">
+                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-500 border border-yellow-200">
+                        <i class="fas fa-exclamation-circle mr-1"></i> <?php echo htmlspecialchars($row['payment_status']); ?>
+                      </span>
+                    </td>
+                    <td class="px-4 py-4 text-sm font-medium text-sidebar-text">₱<?php echo number_format($row['balance'], 2); ?></td>
+                    <td class="px-4 py-4 text-sm">
+                      <div class="flex space-x-2">
+                        <button class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all tooltip" title="View Details" onclick="viewServiceDetails('<?php echo $row['customsales_id']; ?>', 'custom')">
+                          <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="p-2 bg-orange-100 text-orange-600 rounded-lg hover:bg-orange-200 transition-all tooltip" title="Record Payment" onclick="openRecordPaymentModal('<?php echo $row['customsales_id']; ?>','<?php echo htmlspecialchars($row['client_name']); ?>','<?php echo $row['balance']; ?>')">
+                          <i class="fas fa-money-bill-wave"></i>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                  <?php
+                }
+              } else {
+                ?>
+                <tr>
+                  <td colspan="8" class="px-4 py-6 text-sm text-center">
+                    <div class="flex flex-col items-center">
+                      <i class="fas fa-inbox text-gray-300 text-4xl mb-3"></i>
+                      <p class="text-gray-500">No custom services with outstanding balance found</p>
+                    </div>
+                  </td>
+                </tr>
+                <?php
+              }
+              $stmt->close();
+              ?>
             </tbody>
           </table>
+
+          <?php
+          // Count total records for Custom Outstanding Balance Services
+          $countCustomOutstandingQuery = "SELECT COUNT(*) as total FROM customsales_tb cs JOIN users AS u ON cs.customer_id = u.id WHERE cs.branch_id = ? AND cs.status = 'Completed' AND cs.payment_status = 'With Balance'";
+          $stmt = $conn->prepare($countCustomOutstandingQuery);
+          $stmt->bind_param("i", $branch);
+          $stmt->execute();
+          $countResult = $stmt->get_result();
+          $totalRecordsCustomOutstanding = $countResult->fetch_assoc()['total'];
+          $totalPagesCustomOutstanding = ceil($totalRecordsCustomOutstanding / $recordsPerPage);
+          $stmt->close();
+          ?>
+
           <div class="flex justify-between items-center p-4">
             <div>
-              <p class="text-sm text-gray-600">Showing 1 to 1 of 1 entries</p>
+              <p class="text-sm text-gray-600">
+                Showing <?php echo $offsetCustomOutstanding + 1; ?> to <?php echo min($offsetCustomOutstanding + $recordsPerPage, $totalRecordsCustomOutstanding); ?> of <?php echo $totalRecordsCustomOutstanding; ?> entries
+              </p>
             </div>
             <div class="flex space-x-2">
-              <span class="px-3 py-1 bg-sidebar-accent text-white rounded-md"> 극단
+              <?php if ($pageCustomOutstanding > 1): ?>
+                <a href="?page_custom_outstanding=<?php echo $pageCustomOutstanding - 1; ?>&page_ongoing=<?php echo $pageOngoing; ?>&page_fully_paid=<?php echo $pageFullyPaid; ?>&page_outstanding=<?php echo $pageOutstanding; ?>&page_custom_ongoing=<?php echo $pageCustomOngoing; ?>&page_custom_fully_paid=<?php echo $pageCustomFullyPaid; ?>" class="px-3 py-1 bg-sidebar-accent text-white rounded-md hover:bg-darkgold">Previous</a>
+              <?php endif; ?>
+              <?php for ($i = 1; $i <= $totalPagesCustomOutstanding; $i++): ?>
+                <a href="?page_custom_outstanding=<?php echo $i; ?>&page_ongoing=<?php echo $pageOngoing; ?>&page_fully_paid=<?php echo $pageFullyPaid; ?>&page_outstanding=<?php echo $pageOutstanding; ?>&page_custom_ongoing=<?php echo $pageCustomOngoing; ?>&page_custom_fully_paid=<?php echo $pageCustomFullyPaid; ?>" class="px-3 py-1 <?php echo $i == $pageCustomOutstanding ? 'bg-sidebar-accent text-white' : 'bg-gray-200 text-gray-700'; ?> rounded-md hover:bg-darkgold hover:text-white"><?php echo $i; ?></a>
+              <?php endfor; ?>
+              <?php if ($pageCustomOutstanding < $totalPagesCustomOutstanding): ?>
+                <a href="?page_custom_outstanding=<?php echo $pageCustomOutstanding + 1; ?>&page_ongoing=<?php echo $pageOngoing; ?>&page_fully_paid=<?php echo $pageFullyPaid; ?>&page_outstanding=<?php echo $pageOutstanding; ?>&page_custom_ongoing=<?php echo $pageCustomOngoing; ?>&page_custom_fully_paid=<?php echo $pageCustomFullyPaid; ?>" class="px-3 py-1 bg-sidebar-accent text-white rounded-md hover:bg-darkgold">Next</a>
+              <?php endif; ?>
             </div>
           </div>
         </div>
       </div>
-    </div>
 
               </div>
 
