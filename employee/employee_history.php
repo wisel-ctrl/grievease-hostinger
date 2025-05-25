@@ -65,11 +65,17 @@ $user_id = $_SESSION['user_id'];
 $pageOngoing = isset($_GET['page_ongoing']) ? (int)$_GET['page_ongoing'] : 1;
 $pageFullyPaid = isset($_GET['page_fully_paid']) ? (int)$_GET['page_fully_paid'] : 1;
 $pageOutstanding = isset($_GET['page_outstanding']) ? (int)$_GET['page_outstanding'] : 1;
+$pageCustomOngoing = isset($_GET['page_custom_ongoing']) ? (int)$_GET['page_custom_ongoing'] : 1;
+$pageCustomFullyPaid = isset($_GET['page_custom_fully_paid']) ? (int)$_GET['page_custom_fully_paid'] : 1;
+$pageCustomOutstanding = isset($_GET['page_custom_outstanding']) ? (int)$_GET['page_custom_outstanding'] : 1;
 
 // Calculate offsets
 $offsetOngoing = ($pageOngoing - 1) * $recordsPerPage;
 $offsetFullyPaid = ($pageFullyPaid - 1) * $recordsPerPage;
 $offsetOutstanding = ($pageOutstanding - 1) * $recordsPerPage;
+$offsetCustomOngoing = ($pageCustomOngoing - 1) * $recordsPerPage;
+$offsetCustomFullyPaid = ($pageCustomFullyPaid - 1) * $recordsPerPage;
+$offsetCustomOutstanding = ($pageCustomOutstanding - 1) * $recordsPerPage;
 
 $customer_query = "SELECT id, CONCAT(first_name, ' ', COALESCE(middle_name, ''), ' ', last_name, ' ',COALESCE(suffix, '')) AS full_name, first_name, middle_name, last_name, suffix, email, phone_number 
                   FROM users 
@@ -696,7 +702,7 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
                 </th>
                 <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortOutstandingTable(5)">
                   <div class="flex items-center gap-1.5">
-                    <i class="fas fa-toggle-on text-sidebar-accent"></嘴里
+                    <i class="fas fa-toggle-on text-sidebar-accent"></i> Status
                   </div>
                 </th>
                 <th class="px-4 py-3.5 text-left text-sm font-medium text-sidebar-text cursor-pointer whitespace-nowrap" onclick="sortOutstandingTable(6)">
@@ -892,13 +898,15 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
                 cs.discounted_price,
                 cs.date_of_burial,
                 cs.status,
-                cs.balance
+                cs.balance,
+                cs.customer_id,
+                (SELECT COUNT(*) FROM employee_service_payments esp WHERE esp.customsales_id = cs.customsales_id) AS staff_assigned
               FROM customsales_tb AS cs
               JOIN users AS u ON cs.customer_id = u.id
-              WHERE cs.branch_id = ?
+              WHERE cs.branch_id = ? AND cs.status = 'Pending'
                     LIMIT ?, ?";
               $stmt = $conn->prepare($customOngoingQuery);
-              $stmt->bind_param("iii", $branch, $offsetOngoing, $recordsPerPage);
+              $stmt->bind_param("iii", $branch, $offsetCustomOngoing, $recordsPerPage); 
               $stmt->execute();
               $customOngoingResult = $stmt->get_result();
               
@@ -923,13 +931,13 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
                 <td class="px-4 py-3.5 text-sm font-medium text-sidebar-text">₱<?php echo number_format($row['balance'], 2); ?></td>
                 <td class="px-4 py-3.5 text-sm">
                   <div class="flex space-x-2">
-                    <ipl button class="p-2 bg-yellow-100 text-yellow-600 rounded-lg hover:bg-yellow-200 transition-all tooltip" title="Edit Service" onclick="openEditServiceModal('1001')">
+                    <button class="p-2 bg-yellow-100 text-yellow-600 rounded-lg hover:bg-yellow-200 transition-all tooltip" title="Edit Service" onclick="openEditServiceModal('<?php echo $row['customsales_id']; ?>')">
                       <i class="fas fa-edit"></i>
                     </button>
-                    <button class="p-2 bg-purple-100 text-purple-600 rounded-lg hover:bg-purple-200 transition-all tooltip assign-staff-btn" title="Assign Staff" onclick="checkCustomerBeforeAssign('1001', true)">
+                    <button class="p-2 bg-purple-100 text-purple-600 rounded-lg hover:bg-purple-200 transition-all tooltip assign-staff-btn" title="Assign Staff" onclick="checkCustomerBeforeAssign('<?php echo $row['customsales_id']; ?>', <?php echo $row['customer_id']; ?>)">
                       <i class="fas fa-users"></i>
                     </button>
-                    <button class="p-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition-all tooltip complete-btn" title="Complete Service" onclick="checkCustomerBeforeComplete('1001', true)">
+                    <button class="p-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition-all tooltip complete-btn" title="Complete Service" onclick="checkCustomerBeforeComplete('<?php echo $row['customsales_id']; ?>', <?php echo $row['customer_id']; ?>)">
                       <i class="fas fa-check"></i>
                     </button>
                   </div>
@@ -953,12 +961,33 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
               ?>
             </tbody>
           </table>
+          <?php
+          // Count total records for Custom Ongoing Services
+          $countCustomOngoingQuery = "SELECT COUNT(*) as total FROM customsales_tb cs JOIN users AS u ON cs.customer_id = u.id WHERE cs.branch_id = ? AND cs.status = 'Pending'";
+          $stmt = $conn->prepare($countCustomOngoingQuery);
+          $stmt->bind_param("s", $branch);
+          $stmt->execute();
+          $countResult = $stmt->get_result();
+          $totalRecordsCustomOngoing = $countResult->fetch_assoc()['total'];
+          $totalPagesCustomOngoing = ceil($totalRecordsCustomOngoing / $recordsPerPage);
+          $stmt->close();
+          ?>
           <div class="flex justify-between items-center p-4">
             <div>
-              <p class="text-sm text-gray-600">Showing 1 to 1 of 1 entries</p>
+              <p class="text-sm text-gray-600">
+                Showing <?php echo $offsetCustomOngoing + 1; ?> to <?php echo min($offsetCustomOngoing + $recordsPerPage, $totalRecordsCustomOngoing); ?> of <?php echo $totalRecordsCustomOngoing; ?> entries
+              </p>
             </div>
             <div class="flex space-x-2">
-              <span class="px-3 py-1 bg-sidebar-accent text-white rounded-md">1</span>
+              <?php if ($pageCustomOngoing > 1): ?>
+                <a href="?page_custom_ongoing=<?php echo $pageCustomOngoing - 1; ?>&page_ongoing=<?php echo $pageOngoing; ?>&page_fully_paid=<?php echo $pageFullyPaid; ?>&page_outstanding=<?php echo $pageOutstanding; ?>&page_custom_fully_paid=<?php echo $pageCustomFullyPaid; ?>&page_custom_outstanding=<?php echo $pageCustomOutstanding; ?>" class="px-3 py-1 bg-sidebar-accent text-white rounded-md hover:bg-darkgold">Previous</a>
+              <?php endif; ?>
+              <?php for ($i = 1; $i <= $totalPagesCustomOngoing; $i++): ?>
+                <a href="?page_custom_ongoing=<?php echo $i; ?>&page_ongoing=<?php echo $pageOngoing; ?>&page_fully_paid=<?php echo $pageFullyPaid; ?>&page_outstanding=<?php echo $pageOutstanding; ?>&page_custom_fully_paid=<?php echo $pageCustomFullyPaid; ?>&page_custom_outstanding=<?php echo $pageCustomOutstanding; ?>" class="px-3 py-1 <?php echo $i == $pageCustomOngoing ? 'bg-sidebar-accent text-white' : 'bg-gray-200 text-gray-700'; ?> rounded-md hover:bg-darkgold hover:text-white"><?php echo $i; ?></a>
+              <?php endfor; ?>
+              <?php if ($pageCustomOngoing < $totalPagesCustomOngoing): ?>
+                <a href="?page_custom_ongoing=<?php echo $pageCustomOngoing + 1; ?>&page_ongoing=<?php echo $pageOngoing; ?>&page_fully_paid=<?php echo $pageFullyPaid; ?>&page_outstanding=<?php echo $pageOutstanding; ?>&page_custom_fully_paid=<?php echo $pageCustomFullyPaid; ?>&page_custom_outstanding=<?php echo $pageCustomOutstanding; ?>" class="px-3 py-1 bg-sidebar-accent text-white rounded-md hover:bg-darkgold">Next</a>
+              <?php endif; ?>
             </div>
           </div>
         </div>
