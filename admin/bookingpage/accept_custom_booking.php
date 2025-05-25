@@ -100,11 +100,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
     }
     
+    // Generate receipt number (same format as first code)
+    $receipt_number = 'RCPT-' . mt_rand(100000, 999999);
+    
     // Start transaction
     $conn->begin_transaction();
     
     try {
-        // Insert into customsales_tb
+        // Insert into customsales_tb (without receipt_number)
         $insertQuery = "INSERT INTO customsales_tb (
             customer_id, fname_deceased, mname_deceased, lname_deceased, suffix_deceased,
             date_of_bearth, date_of_death, date_of_burial, sold_by, branch_id,
@@ -129,10 +132,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $customSalesId = $stmt->insert_id;
         $stmt->close();
         
-        // Update the booking status to 'Accepted'
-        $updateBookingQuery = "UPDATE booking_tb SET status = 'Accepted', accepter_decliner = ?, amount_paid = ? WHERE booking_id = ?";
+        // Update the booking status to 'Accepted' with receipt_number (like in first code)
+        $updateBookingQuery = "UPDATE booking_tb SET 
+            status = 'Accepted', 
+            accepter_decliner = ?, 
+            amount_paid = ?,
+            receipt_number = ?,
+            accepted_date = CONVERT_TZ(NOW(), 'SYSTEM', '+08:00')
+            WHERE booking_id = ?";
         $stmt = $conn->prepare($updateBookingQuery);
-        $stmt->bind_param("idi", $soldBy, $amountPaid, $bookingId);
+        $stmt->bind_param("idsi", $soldBy, $amountPaid, $receipt_number, $bookingId);
         
         if (!$stmt->execute()) {
             throw new Exception("Failed to update booking status: " . $stmt->error);
@@ -148,7 +157,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->close();
         
         if ($customer && !empty($customer['phone_number'])) {
-            $message = "Your custom package has been accepted. Amount paid: ₱" . number_format($amountPaid, 2);
+            $message = "Receipt #: $receipt_number. Your custom package has been accepted. Amount paid: ₱" . number_format($amountPaid, 2);
             $smsResponse = sendSMS($customer['phone_number'], $message, 'Accepted');
             // You might want to log $smsResponse for debugging
         }
@@ -159,7 +168,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         echo json_encode([
             'success' => true,
             'message' => 'Custom booking accepted successfully',
-            'customsales_id' => $customSalesId
+            'customsales_id' => $customSalesId,
+            'receipt_number' => $receipt_number
         ]);
         
     } catch (Exception $e) {
@@ -179,4 +189,3 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'error' => 'Invalid request method'
     ]);
 }
-?>
