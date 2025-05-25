@@ -876,26 +876,26 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
               <?php
               // Query for Custom Ongoing Services
               $customOngoingQuery = "SELECT 
-  cs.customsales_id,
-  CONCAT_WS(' ', 
-    u.first_name, 
-    COALESCE(u.middle_name, ''), 
-    u.last_name, 
-    COALESCE(u.suffix, '')
-  ) AS client_name,
-  CONCAT_WS(' ', 
-    cs.fname_deceased, 
-    COALESCE(cs.mname_deceased, ''), 
-    cs.lname_deceased, 
-    COALESCE(cs.suffix_deceased, '')
-  ) AS deceased_name,
-  cs.discounted_price,
-  cs.date_of_burial,
-  cs.status,
-  cs.balance
-FROM customsales_tb AS cs
-JOIN users AS u ON cs.customer_id = u.id
-WHERE cs.branch_id = ?
+                cs.customsales_id,
+                CONCAT_WS(' ', 
+                  u.first_name, 
+                  COALESCE(u.middle_name, ''), 
+                  u.last_name, 
+                  COALESCE(u.suffix, '')
+                ) AS client_name,
+                CONCAT_WS(' ', 
+                  cs.fname_deceased, 
+                  COALESCE(cs.mname_deceased, ''), 
+                  cs.lname_deceased, 
+                  COALESCE(cs.suffix_deceased, '')
+                ) AS deceased_name,
+                cs.discounted_price,
+                cs.date_of_burial,
+                cs.status,
+                cs.balance
+              FROM customsales_tb AS cs
+              JOIN users AS u ON cs.customer_id = u.id
+              WHERE cs.branch_id = ?
                     LIMIT ?, ?";
               $stmt = $conn->prepare($customOngoingQuery);
               $stmt->bind_param("iii", $branch, $offsetOngoing, $recordsPerPage);
@@ -911,7 +911,7 @@ WHERE cs.branch_id = ?
                 <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo htmlspecialchars($row['deceased_name']); ?></td>
                 <td class="px-4 py-3.5 text-sm text-sidebar-text">
                   <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">
-                    <?php echo htmlspecialchars($row['service_type']); ?>
+                    <?php echo htmlspecialchars($row['discounted_price']); ?>
                   </span>
                 </td>
                 <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo htmlspecialchars($row['date_of_burial']); ?></td>
