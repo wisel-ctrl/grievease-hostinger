@@ -1873,6 +1873,10 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
     <!-- Modal Body -->
     <div class="p-6">
       <form id="recordPaymentForm" class="space-y-6">
+        <!-- Hidden inputs -->
+        <input type="hidden" id="customerID" name="customerID">
+        <input type="hidden" id="branchID" name="branchID">
+        
         <!-- Payment Information Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <!-- Service ID -->
@@ -2089,31 +2093,48 @@ function openRecordPaymentModal(serviceId, clientName, balance) {
   // Get the modal element
   const modal = document.getElementById('recordPaymentModal');
   
-  // Populate the readonly fields
-  document.getElementById('paymentServiceId').value = serviceId;
-  document.getElementById('paymentClientName').value = clientName;
-  document.getElementById('currentBalance').value = `${parseFloat(balance).toFixed(2)}`;
-  
-  // Update summary section
-  document.getElementById('summary-current-balance').textContent = `₱${parseFloat(balance).toFixed(2)}`;
-  document.getElementById('summary-payment-amount').textContent = '₱0.00';
-  document.getElementById('summary-new-balance').textContent = `₱${parseFloat(balance).toFixed(2)}`;
-  
-  // Set default payment amount to empty
-  document.getElementById('paymentAmount').value = '';
-  
-  // Set today's date as default payment date
-  const today = new Date().toISOString().split('T')[0];
-  document.getElementById('paymentDate').value = today;
-  
-  // Clear any previous input in notes
-  document.getElementById('paymentNotes').value = '';
-  
-  // Add event listener for real-time updates
-  document.getElementById('paymentAmount').addEventListener('input', updatePaymentSummary);
-  
-  // Display the modal
-  modal.classList.remove('hidden');
+  // Fetch customerID and branch_id
+  fetch(`historyAPI/get_payment_details.php?sales_id=${serviceId}`)
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        // Set the hidden input values
+        document.getElementById('customerID').value = data.customerID;
+        document.getElementById('branchID').value = data.branch_id;
+        
+        // Populate the readonly fields
+        document.getElementById('paymentServiceId').value = serviceId;
+        document.getElementById('paymentClientName').value = clientName;
+        document.getElementById('currentBalance').value = `${parseFloat(balance).toFixed(2)}`;
+        
+        // Update summary section
+        document.getElementById('summary-current-balance').textContent = `₱${parseFloat(balance).toFixed(2)}`;
+        document.getElementById('summary-payment-amount').textContent = '₱0.00';
+        document.getElementById('summary-new-balance').textContent = `₱${parseFloat(balance).toFixed(2)}`;
+        
+        // Set default payment amount to empty
+        document.getElementById('paymentAmount').value = '';
+        
+        // Set today's date as default payment date
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('paymentDate').value = today;
+        
+        // Clear any previous input in notes
+        document.getElementById('paymentNotes').value = '';
+        
+        // Add event listener for real-time updates
+        document.getElementById('paymentAmount').addEventListener('input', updatePaymentSummary);
+        
+        // Display the modal
+        modal.classList.remove('hidden');
+      } else {
+        alert('Failed to fetch payment details: ' + data.message);
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('An error occurred while fetching payment details');
+    });
 }
 
 // Function to update payment summary in real-time
