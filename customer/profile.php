@@ -1225,6 +1225,12 @@ document.addEventListener('DOMContentLoaded', function() {
                             <i class="fas fa-file-alt mr-1"></i> View Details
                         </button>
                         
+                        <?php if ($booking['status'] === 'Accepted' && empty($booking['deathcert_url'])): ?>
+                            <button class="upload-death-cert bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition text-sm mr-2" data-booking="<?php echo $booking['booking_id']; ?>">
+                                <i class="fas fa-upload mr-1"></i> Upload Death Cert
+                            </button>
+                        <?php endif; ?>
+                        
                         <?php if ($booking['status'] === 'Accepted'): ?>
                             <button class="view-receipt bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 transition text-sm mr-2" data-booking="<?php echo $booking['booking_id']; ?>">
                                 <i class="fas fa-receipt mr-1"></i> View Receipt
@@ -1737,6 +1743,54 @@ $lifeplanStmt->close();
       </div>
     </div>
   </div>
+</div>
+
+<!-- Upload Death Certificate Modal -->
+<div id="uploadDeathCertModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4 hidden">
+    <div class="w-full max-w-md bg-white rounded-2xl shadow-xl overflow-hidden max-h-[90vh]">
+        <div class="modal-scroll-container overflow-y-auto max-h-[90vh]">
+            <!-- Header with close button -->
+            <div class="bg-navy p-6 flex justify-between items-center">
+                <h2 class="text-2xl font-hedvig text-white">Upload Death Certificate</h2>
+                <button id="close-upload-death-cert-modal" class="text-white hover:text-yellow-300">
+                    <i class="fas fa-times text-2xl"></i>
+                </button>
+            </div>
+            
+            <!-- Modal Body -->
+            <div class="p-6 bg-cream">
+                <form id="deathCertForm" enctype="multipart/form-data">
+                    <input type="hidden" id="death-cert-booking-id" name="booking_id">
+                    
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-navy mb-2">Death Certificate Image</label>
+                        <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
+                            <input type="file" id="death-cert-file" name="death_cert" class="hidden" accept=".jpg,.jpeg,.png" required>
+                            <label for="death-cert-file" class="cursor-pointer">
+                                <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i>
+                                <p class="text-sm text-gray-600">Click to upload or drag and drop</p>
+                                <p class="text-xs text-gray-500 mt-1">PNG, JPG up to 5MB</p>
+                            </label>
+                        </div>
+                        <div id="death-cert-preview" class="mt-4 hidden">
+                            <h5 class="text-sm font-medium text-navy mb-2">Preview</h5>
+                            <img id="death-cert-preview-img" src="#" alt="Death Certificate Preview" class="max-w-full h-auto rounded border border-gray-200">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Modal Footer -->
+            <div class="modal-sticky-footer px-6 py-4 flex flex-col sm:flex-row sm:justify-end gap-3 border-t border-gray-200 bg-white">
+                <button id="cancel-upload-death-cert" class="w-full sm:w-auto px-6 py-3 bg-white border border-yellow-600 text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center justify-center">
+                    Cancel
+                </button>
+                <button id="submit-death-cert" class="w-full sm:w-auto px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-md transition-all duration-300 flex items-center justify-center">
+                    <i class="fas fa-upload mr-2"></i> Upload Certificate
+                </button>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -6041,6 +6095,90 @@ document.addEventListener('DOMContentLoaded', function() {
     const mobileMenu = document.getElementById('mobile-menu');
     mobileMenu.classList.toggle('hidden');
 }
+</script>
+
+<script>
+    
+    // Add this to your existing JavaScript
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle death certificate upload button clicks
+    document.querySelectorAll('.upload-death-cert').forEach(button => {
+        button.addEventListener('click', function() {
+            const bookingId = this.getAttribute('data-booking');
+            document.getElementById('death-cert-booking-id').value = bookingId;
+            document.getElementById('uploadDeathCertModal').classList.remove('hidden');
+        });
+    });
+
+    // Close death cert modal
+    document.getElementById('close-upload-death-cert-modal').addEventListener('click', function() {
+        document.getElementById('uploadDeathCertModal').classList.add('hidden');
+    });
+
+    document.getElementById('cancel-upload-death-cert').addEventListener('click', function() {
+        document.getElementById('uploadDeathCertModal').classList.add('hidden');
+    });
+
+    // Preview death certificate image
+    document.getElementById('death-cert-file').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                document.getElementById('death-cert-preview-img').src = event.target.result;
+                document.getElementById('death-cert-preview').classList.remove('hidden');
+            }
+            reader.readAsDataURL(file);
+        }
+    });
+
+    // Submit death certificate form
+    document.getElementById('submit-death-cert').addEventListener('click', function() {
+        const form = document.getElementById('deathCertForm');
+        const formData = new FormData(form);
+        
+        // Show loading state
+        this.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Uploading...';
+        this.disabled = true;
+
+        fetch('profile/upload_death_cert.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: 'Death certificate uploaded successfully!',
+                    confirmButtonColor: '#d4a933'
+                }).then(() => {
+                    location.reload();
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: data.message || 'Failed to upload death certificate',
+                    confirmButtonColor: '#d4a933'
+                });
+            }
+        })
+        .catch(error => {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'An error occurred while uploading',
+                confirmButtonColor: '#d4a933'
+            });
+        })
+        .finally(() => {
+            this.innerHTML = '<i class="fas fa-upload mr-2"></i> Upload Certificate';
+            this.disabled = false;
+        });
+    });
+});
 </script>
 
 </body> 
