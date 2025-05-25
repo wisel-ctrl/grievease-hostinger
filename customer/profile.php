@@ -1,4 +1,3 @@
-
 <?php
 session_start();
 
@@ -1368,11 +1367,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             <i class="fas fa-file-alt mr-1"></i> View Details
                         </button>
                         
-                        <?php if ($booking['booking_status'] === 'accepted'): ?>
-                            <button class="view-lifeplan-receipt bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 transition text-sm mr-2" data-booking="<?php echo $booking['lpbooking_id']; ?>">
-                                <i class="fas fa-receipt mr-1"></i> View Receipt
-                            </button>
-                        <?php endif; ?>
+                    
                         
                         <?php if ($booking['booking_status'] === 'pending' || $booking['booking_status'] === 'decline'): ?>
                             <button class="modify-lifeplan-booking bg-yellow-600 text-white px-3 py-1 rounded hover:bg-yellow-700 transition text-sm mr-2" data-booking="<?php echo $booking['lpbooking_id']; ?>">
@@ -4290,14 +4285,7 @@ document.getElementById('cancelBookingForm').addEventListener('submit', function
         });
     });
 
-    // Life Plan View Receipt
-    const viewLifeplanReceiptButtons = document.querySelectorAll('.view-lifeplan-receipt');
-    viewLifeplanReceiptButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const bookingId = this.getAttribute('data-booking');
-            showDocument('Life Plan Receipt', `uploads/lifeplan_receipts/${bookingId}.pdf`);
-        });
-    });
+    
 
     // Close life plan modals
     document.querySelectorAll('.close-lifeplan-modal').forEach(button => {
@@ -6180,6 +6168,5 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
-
 </body> 
 </html>
