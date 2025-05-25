@@ -2092,7 +2092,8 @@ function openRecordPaymentModal(serviceId, clientName, balance) {
   // Populate the readonly fields
   document.getElementById('paymentServiceId').value = serviceId;
   document.getElementById('paymentClientName').value = clientName;
-  document.getElementById('currentBalance').value = `$${parseFloat(balance).toFixed(2)}`;
+  document.getElementById('currentBalance').value = `${parseFloat(balance).toFixed(2)}`;
+  documnet.getElementById('summary-current-balance').value = `${parseFloat(balance).toFixed(2)}`;
   
   // Set default payment amount to the full balance
   document.getElementById('paymentAmount').value = '';
