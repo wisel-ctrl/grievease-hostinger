@@ -916,10 +916,10 @@ document.addEventListener('click', function(event) {
                         <?php echo htmlspecialchars($booking['service_name']); ?>
                     </h3>
                     
-                    <?php if ($booking['status'] === 'Declined' && !empty($booking['admin_message'])): ?>
+                    <?php if ($booking['status'] === 'Declined' && !empty($booking['reason_for_decline'])): ?>
                         <p class="text-gray-600 text-xs sm:text-sm mt-1">
                             <i class="fas fa-comment-alt mr-1 text-gold text-xs"></i> 
-                            Reason: <?php echo htmlspecialchars($booking['admin_message']); ?>
+                            Reason: <?php echo htmlspecialchars($booking['reason_for_decline']); ?>
                         </p>
                     <?php endif; ?>
                 </div>
@@ -1729,6 +1729,21 @@ function getStatusText(status) {
                             </div>
                         </div>
                     </div>
+                    ${data.status.toLowerCase() === 'declined' && data.reason_for_decline ? `
+                    <div class="mt-4 bg-red-50 border-l-4 border-red-500 p-4">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <i class="fas fa-exclamation-circle text-red-500"></i>
+                            </div>
+                            <div class="ml-3">
+                                <h4 class="text-sm font-medium text-red-800">Decline Reason</h4>
+                                <div class="mt-2 text-sm text-red-700">
+                                    <p>${data.reason_for_decline}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    ` : ''}
                 `;
                 
                 document.getElementById('bookingDetailsContent').innerHTML = htmlContent;
