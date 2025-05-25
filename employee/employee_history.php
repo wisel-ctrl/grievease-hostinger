@@ -2093,9 +2093,13 @@ function openRecordPaymentModal(serviceId, clientName, balance) {
   document.getElementById('paymentServiceId').value = serviceId;
   document.getElementById('paymentClientName').value = clientName;
   document.getElementById('currentBalance').value = `${parseFloat(balance).toFixed(2)}`;
-  document.getElementById('summary-current-balance').value = `${parseFloat(balance).toFixed(2)}`;
   
-  // Set default payment amount to the full balance
+  // Update summary section
+  document.getElementById('summary-current-balance').textContent = `₱${parseFloat(balance).toFixed(2)}`;
+  document.getElementById('summary-payment-amount').textContent = '₱0.00';
+  document.getElementById('summary-new-balance').textContent = `₱${parseFloat(balance).toFixed(2)}`;
+  
+  // Set default payment amount to empty
   document.getElementById('paymentAmount').value = '';
   
   // Set today's date as default payment date
@@ -2105,15 +2109,23 @@ function openRecordPaymentModal(serviceId, clientName, balance) {
   // Clear any previous input in notes
   document.getElementById('paymentNotes').value = '';
   
+  // Add event listener for real-time updates
+  document.getElementById('paymentAmount').addEventListener('input', updatePaymentSummary);
+  
   // Display the modal
   modal.classList.remove('hidden');
+}
+
+// Function to update payment summary in real-time
+function updatePaymentSummary() {
+  const currentBalance = parseFloat(document.getElementById('currentBalance').value) || 0;
+  const paymentAmount = parseFloat(document.getElementById('paymentAmount').value) || 0;
+  const newBalance = currentBalance - paymentAmount;
   
-  // Add event listener to close modal when clicking outside
-  modal.addEventListener('click', function(event) {
-    if (event.target === modal) {
-      closeRecordPaymentModal();
-    }
-  });
+  // Update summary section
+  document.getElementById('summary-current-balance').textContent = `₱${currentBalance.toFixed(2)}`;
+  document.getElementById('summary-payment-amount').textContent = `₱${paymentAmount.toFixed(2)}`;
+  document.getElementById('summary-new-balance').textContent = `₱${newBalance.toFixed(2)}`;
 }
 
 // Function to close the modal
