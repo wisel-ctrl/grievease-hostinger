@@ -4654,22 +4654,12 @@ function loadBookings(page) {
                 // Update pagination info
                 document.getElementById('paginationInfo').textContent = response.paginationInfo;
                 
-                // Update active page buttons
-                const pageButtons = document.querySelectorAll('#paginationContainer button');
-                pageButtons.forEach(button => {
-                    const pageNum = parseInt(button.textContent);
-                    if (!isNaN(pageNum) && pageNum === response.currentPage) {
-                        button.classList.add('bg-sidebar-accent', 'text-white');
-                        button.classList.remove('border', 'border-sidebar-border', 'hover:bg-sidebar-hover');
-                    } else if (!isNaN(pageNum)) {
-                        button.classList.remove('bg-sidebar-accent', 'text-white');
-                        button.classList.add('border', 'border-sidebar-border', 'hover:bg-sidebar-hover');
-                    }
-                });
-                
                 // Update booking counter
                 document.getElementById('totalBookings').textContent = response.totalBookings > 0 ? 
                     response.totalBookings : "No bookings";
+                
+                // Update pagination buttons
+                updatePaginationButtons(response.currentPage, response.totalPages);
                 
             } catch (e) {
                 console.error('Error parsing response:', e);
@@ -4691,6 +4681,109 @@ function loadBookings(page) {
     xhr.send(`page=${page}&search=${encodeURIComponent(searchQuery)}&sort=${sortBy}`);
 }
 
+function updatePaginationButtons(currentPage, totalPages) {
+    const paginationContainer = document.getElementById('paginationContainer');
+    if (!paginationContainer || totalPages <= 1) return;
+    
+    // Get all pagination buttons
+    const buttons = paginationContainer.querySelectorAll('button');
+    
+    // Update button states
+    buttons.forEach(button => {
+        const buttonText = button.textContent.trim();
+        const isNumberButton = !isNaN(parseInt(buttonText));
+        
+        // Reset all buttons
+        button.classList.remove('opacity-50', 'pointer-events-none');
+        button.classList.remove('bg-sidebar-accent', 'text-white');
+        button.classList.add('border', 'border-sidebar-border', 'hover:bg-sidebar-hover');
+        
+        // Handle number buttons
+        if (isNumberButton) {
+            const pageNum = parseInt(buttonText);
+            if (pageNum === currentPage) {
+                button.classList.add('bg-sidebar-accent', 'text-white');
+                button.classList.remove('border', 'border-sidebar-border', 'hover:bg-sidebar-hover');
+            }
+        }
+        
+        // Handle navigation buttons
+        if (buttonText === '«') { // First page button
+            if (currentPage === 1) {
+                button.classList.add('opacity-50', 'pointer-events-none');
+            }
+        } else if (buttonText === '‹') { // Previous page button
+            if (currentPage === 1) {
+                button.classList.add('opacity-50', 'pointer-events-none');
+            }
+        } else if (buttonText === '›') { // Next page button
+            if (currentPage === totalPages) {
+                button.classList.add('opacity-50', 'pointer-events-none');
+            }
+        } else if (buttonText === '»') { // Last page button
+            if (currentPage === totalPages) {
+                button.classList.add('opacity-50', 'pointer-events-none');
+            }
+        }
+    });
+    
+    // Update the displayed page numbers
+    updatePageNumberButtons(currentPage, totalPages);
+}
+
+function updatePageNumberButtons(currentPage, totalPages) {
+    const paginationContainer = document.getElementById('paginationContainer');
+    if (!paginationContainer) return;
+    
+    // Find the number buttons (between navigation buttons)
+    const buttons = Array.from(paginationContainer.querySelectorAll('button'));
+    const numberButtons = buttons.filter(button => !isNaN(parseInt(button.textContent.trim())));
+    
+    if (numberButtons.length === 0) return;
+    
+    // Determine which pages to show (always show 3 pages if possible)
+    let startPage, endPage;
+    
+    if (totalPages <= 3) {
+        // Show all pages if 3 or fewer
+        startPage = 1;
+        endPage = totalPages;
+    } else {
+        // Show current page in the middle when possible
+        if (currentPage <= 2) {
+            startPage = 1;
+            endPage = 3;
+        } else if (currentPage >= totalPages - 1) {
+            startPage = totalPages - 2;
+            endPage = totalPages;
+        } else {
+            startPage = currentPage - 1;
+            endPage = currentPage + 1;
+        }
+    }
+    
+    // Update the number buttons
+    let pageNum = startPage;
+    numberButtons.forEach(button => {
+        if (pageNum <= endPage) {
+            button.textContent = pageNum;
+            button.style.display = 'inline-block';
+            
+            // Update active state
+            button.classList.remove('bg-sidebar-accent', 'text-white');
+            button.classList.add('border', 'border-sidebar-border', 'hover:bg-sidebar-hover');
+            
+            if (pageNum === currentPage) {
+                button.classList.add('bg-sidebar-accent', 'text-white');
+                button.classList.remove('border', 'border-sidebar-border', 'hover:bg-sidebar-hover');
+            }
+            
+            pageNum++;
+        } else {
+            button.style.display = 'none';
+        }
+    });
+}
 // Add event listeners for filter options
 document.querySelectorAll('.filter-option, .filter-option-mobile').forEach(option => {
     option.addEventListener('click', function() {
@@ -4752,26 +4845,14 @@ function loadCustomBookings(page) {
                 // Update pagination info
                 document.getElementById('customPaginationInfo').textContent = response.paginationInfo;
                 
-                // Update active page buttons
-                const pageButtons = document.querySelectorAll('#customPaginationContainer button');
-                pageButtons.forEach(button => {
-                    const pageNum = parseInt(button.textContent);
-                    if (!isNaN(pageNum)) {
-                        if (pageNum === response.currentPage) {
-                            button.classList.add('bg-sidebar-accent', 'text-white');
-                            button.classList.remove('border', 'border-sidebar-border', 'hover:bg-sidebar-hover');
-                        } else {
-                            button.classList.remove('bg-sidebar-accent', 'text-white');
-                            button.classList.add('border', 'border-sidebar-border', 'hover:bg-sidebar-hover');
-                        }
-                    }
-                });
-                
                 // Update booking counter if needed
                 if (document.getElementById('totalCustomBookings')) {
                     document.getElementById('totalCustomBookings').textContent = response.totalBookings > 0 ? 
                         response.totalBookings : "No bookings";
                 }
+                
+                // Update pagination buttons
+                updateCustomPaginationButtons(response.currentPage, response.totalPages);
                 
             } catch (e) {
                 console.error('Error parsing response:', e);
@@ -4793,6 +4874,109 @@ function loadCustomBookings(page) {
     xhr.send(`page=${page}&search=${encodeURIComponent(searchQuery)}&sort=${sortBy}`);
 }
 
+function updateCustomPaginationButtons(currentPage, totalPages) {
+    const paginationContainer = document.getElementById('customPaginationContainer');
+    if (!paginationContainer || totalPages <= 1) return;
+    
+    // Get all pagination buttons
+    const buttons = paginationContainer.querySelectorAll('button');
+    
+    // Update button states
+    buttons.forEach(button => {
+        const buttonText = button.textContent.trim();
+        const isNumberButton = !isNaN(parseInt(buttonText));
+        
+        // Reset all buttons
+        button.classList.remove('opacity-50', 'pointer-events-none');
+        button.classList.remove('bg-sidebar-accent', 'text-white');
+        button.classList.add('border', 'border-sidebar-border', 'hover:bg-sidebar-hover');
+        
+        // Handle number buttons
+        if (isNumberButton) {
+            const pageNum = parseInt(buttonText);
+            if (pageNum === currentPage) {
+                button.classList.add('bg-sidebar-accent', 'text-white');
+                button.classList.remove('border', 'border-sidebar-border', 'hover:bg-sidebar-hover');
+            }
+        }
+        
+        // Handle navigation buttons
+        if (buttonText === '«') { // First page button
+            if (currentPage === 1) {
+                button.classList.add('opacity-50', 'pointer-events-none');
+            }
+        } else if (buttonText === '‹') { // Previous page button
+            if (currentPage === 1) {
+                button.classList.add('opacity-50', 'pointer-events-none');
+            }
+        } else if (buttonText === '›') { // Next page button
+            if (currentPage === totalPages) {
+                button.classList.add('opacity-50', 'pointer-events-none');
+            }
+        } else if (buttonText === '»') { // Last page button
+            if (currentPage === totalPages) {
+                button.classList.add('opacity-50', 'pointer-events-none');
+            }
+        }
+    });
+    
+    // Update the displayed page numbers
+    updateCustomPageNumberButtons(currentPage, totalPages);
+}
+
+function updateCustomPageNumberButtons(currentPage, totalPages) {
+    const paginationContainer = document.getElementById('customPaginationContainer');
+    if (!paginationContainer) return;
+    
+    // Find the number buttons (between navigation buttons)
+    const buttons = Array.from(paginationContainer.querySelectorAll('button'));
+    const numberButtons = buttons.filter(button => !isNaN(parseInt(button.textContent.trim())));
+    
+    if (numberButtons.length === 0) return;
+    
+    // Determine which pages to show (always show 3 pages if possible)
+    let startPage, endPage;
+    
+    if (totalPages <= 3) {
+        // Show all pages if 3 or fewer
+        startPage = 1;
+        endPage = totalPages;
+    } else {
+        // Show current page in the middle when possible
+        if (currentPage <= 2) {
+            startPage = 1;
+            endPage = 3;
+        } else if (currentPage >= totalPages - 1) {
+            startPage = totalPages - 2;
+            endPage = totalPages;
+        } else {
+            startPage = currentPage - 1;
+            endPage = currentPage + 1;
+        }
+    }
+    
+    // Update the number buttons
+    let pageNum = startPage;
+    numberButtons.forEach(button => {
+        if (pageNum <= endPage) {
+            button.textContent = pageNum;
+            button.style.display = 'inline-block';
+            
+            // Update active state
+            button.classList.remove('bg-sidebar-accent', 'text-white');
+            button.classList.add('border', 'border-sidebar-border', 'hover:bg-sidebar-hover');
+            
+            if (pageNum === currentPage) {
+                button.classList.add('bg-sidebar-accent', 'text-white');
+                button.classList.remove('border', 'border-sidebar-border', 'hover:bg-sidebar-hover');
+            }
+            
+            pageNum++;
+        } else {
+            button.style.display = 'none';
+        }
+    });
+}
 // Add event listeners for filter options if they exist
 document.querySelectorAll('.custom-filter-option, .custom-filter-option-mobile').forEach(option => {
     option.addEventListener('click', function() {
@@ -4859,22 +5043,14 @@ function loadLifeplanBookings(page) {
                 // Update pagination info
                 document.getElementById('lifeplanPaginationInfo').textContent = response.paginationInfo;
                 
-                // Update active page buttons
-                const pageButtons = document.querySelectorAll('#lifeplanPaginationContainer button');
-                pageButtons.forEach(button => {
-                    const pageNum = parseInt(button.textContent);
-                    if (!isNaN(pageNum) && pageNum === response.currentPage) {
-                        button.classList.add('bg-sidebar-accent', 'text-white');
-                        button.classList.remove('border', 'border-sidebar-border', 'hover:bg-sidebar-hover');
-                    } else if (!isNaN(pageNum)) {
-                        button.classList.remove('bg-sidebar-accent', 'text-white');
-                        button.classList.add('border', 'border-sidebar-border', 'hover:bg-sidebar-hover');
-                    }
-                });
-                
                 // Update booking counter
-                document.getElementById('totalLifeplanBookings').textContent = response.totalBookings > 0 ? 
-                    response.totalBookings : "No lifeplan bookings";
+                if (document.getElementById('totalLifeplanBookings')) {
+                    document.getElementById('totalLifeplanBookings').textContent = response.totalBookings > 0 ? 
+                        response.totalBookings : "No lifeplan bookings";
+                }
+                
+                // Update pagination buttons
+                updateLifeplanPaginationButtons(response.currentPage, response.totalPages);
                 
             } catch (e) {
                 console.error('Error parsing response:', e);
@@ -4896,6 +5072,109 @@ function loadLifeplanBookings(page) {
     xhr.send(`page=${page}&search=${encodeURIComponent(searchQuery)}&sort=${sortBy}`);
 }
 
+function updateLifeplanPaginationButtons(currentPage, totalPages) {
+    const paginationContainer = document.getElementById('lifeplanPaginationContainer');
+    if (!paginationContainer || totalPages <= 1) return;
+    
+    // Get all pagination buttons
+    const buttons = paginationContainer.querySelectorAll('button');
+    
+    // Update button states
+    buttons.forEach(button => {
+        const buttonText = button.textContent.trim();
+        const isNumberButton = !isNaN(parseInt(buttonText));
+        
+        // Reset all buttons
+        button.classList.remove('opacity-50', 'pointer-events-none');
+        button.classList.remove('bg-sidebar-accent', 'text-white');
+        button.classList.add('border', 'border-sidebar-border', 'hover:bg-sidebar-hover');
+        
+        // Handle number buttons
+        if (isNumberButton) {
+            const pageNum = parseInt(buttonText);
+            if (pageNum === currentPage) {
+                button.classList.add('bg-sidebar-accent', 'text-white');
+                button.classList.remove('border', 'border-sidebar-border', 'hover:bg-sidebar-hover');
+            }
+        }
+        
+        // Handle navigation buttons
+        if (buttonText === '«') { // First page button
+            if (currentPage === 1) {
+                button.classList.add('opacity-50', 'pointer-events-none');
+            }
+        } else if (buttonText === '‹') { // Previous page button
+            if (currentPage === 1) {
+                button.classList.add('opacity-50', 'pointer-events-none');
+            }
+        } else if (buttonText === '›') { // Next page button
+            if (currentPage === totalPages) {
+                button.classList.add('opacity-50', 'pointer-events-none');
+            }
+        } else if (buttonText === '»') { // Last page button
+            if (currentPage === totalPages) {
+                button.classList.add('opacity-50', 'pointer-events-none');
+            }
+        }
+    });
+    
+    // Update the displayed page numbers
+    updateLifeplanPageNumberButtons(currentPage, totalPages);
+}
+
+function updateLifeplanPageNumberButtons(currentPage, totalPages) {
+    const paginationContainer = document.getElementById('lifeplanPaginationContainer');
+    if (!paginationContainer) return;
+    
+    // Find the number buttons (between navigation buttons)
+    const buttons = Array.from(paginationContainer.querySelectorAll('button'));
+    const numberButtons = buttons.filter(button => !isNaN(parseInt(button.textContent.trim())));
+    
+    if (numberButtons.length === 0) return;
+    
+    // Determine which pages to show (always show 3 pages if possible)
+    let startPage, endPage;
+    
+    if (totalPages <= 3) {
+        // Show all pages if 3 or fewer
+        startPage = 1;
+        endPage = totalPages;
+    } else {
+        // Show current page in the middle when possible
+        if (currentPage <= 2) {
+            startPage = 1;
+            endPage = 3;
+        } else if (currentPage >= totalPages - 1) {
+            startPage = totalPages - 2;
+            endPage = totalPages;
+        } else {
+            startPage = currentPage - 1;
+            endPage = currentPage + 1;
+        }
+    }
+    
+    // Update the number buttons
+    let pageNum = startPage;
+    numberButtons.forEach(button => {
+        if (pageNum <= endPage) {
+            button.textContent = pageNum;
+            button.style.display = 'inline-block';
+            
+            // Update active state
+            button.classList.remove('bg-sidebar-accent', 'text-white');
+            button.classList.add('border', 'border-sidebar-border', 'hover:bg-sidebar-hover');
+            
+            if (pageNum === currentPage) {
+                button.classList.add('bg-sidebar-accent', 'text-white');
+                button.classList.remove('border', 'border-sidebar-border', 'hover:bg-sidebar-hover');
+            }
+            
+            pageNum++;
+        } else {
+            button.style.display = 'none';
+        }
+    });
+}
 // Add event listeners for filter options
 document.querySelectorAll('.lifeplan-filter-option, .lifeplan-filter-option-mobile').forEach(option => {
     option.addEventListener('click', function() {
