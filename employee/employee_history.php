@@ -2101,6 +2101,7 @@ function openRecordPaymentModal(serviceId, clientName, balance) {
         // Set the hidden input values
         document.getElementById('customerID').value = data.customerID;
         document.getElementById('branchID').value = data.branch_id;
+        console.log(data.customerID);console.log(data.branch_id);
         
         // Populate the readonly fields
         document.getElementById('paymentServiceId').value = serviceId;
