@@ -2265,15 +2265,15 @@ function savePayment() {
   });
 }
 
-function validatePaymentAmount(input) {
-  // Convert to a float and round to 2 decimal places
-  let value = parseFloat(input.value);
+// function validatePaymentAmount(input) {
+//   // Convert to a float and round to 2 decimal places
+//   let value = parseFloat(input.value);
 
-  if (!isNaN(value)) {
-    // Round to exactly 2 decimal places
-    input.value = value.toFixed(2);
-  }
-}
+//   if (!isNaN(value)) {
+//     // Round to exactly 2 decimal places
+//     input.value = value.toFixed(2);
+//   }
+// }
 
 // Function to update sales_tb balance
 function updateSalesBalance(salesId, newBalance) {
