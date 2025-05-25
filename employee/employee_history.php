@@ -873,18 +873,39 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
               </tr>
             </thead>
             <tbody id="customOngoingServiceTableBody">
+              <?php
+              // Query for Custom Ongoing Services
+              $customOngoingQuery = "SELECT c.customsales_id, c.customer_id, c.deceased_name, c.service_type, 
+                    c.date_of_burial, c.status, c.balance, c.payment_status,
+                    CONCAT(u.fname, ' ', COALESCE(u.mname, ''), ' ', u.lname, ' ', COALESCE(u.suffix, '')) as client_name
+                    FROM customsales_tb c
+                    JOIN users u ON c.customer_id = u.id
+                    WHERE c.status = 'Pending' AND c.branch_id = ?
+                    LIMIT ?, ?";
+              $stmt = $conn->prepare($customOngoingQuery);
+              $stmt->bind_param("iii", $branch, $offsetOngoing, $recordsPerPage);
+              $stmt->execute();
+              $customOngoingResult = $stmt->get_result();
+              
+              if ($customOngoingResult->num_rows > 0) {
+                while($row = $customOngoingResult->fetch_assoc()) {
+                  ?>
               <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
-                <td class="px-4 py-3.5 text-sm text-sidebar-text font-medium">#1001</td>
-                <td class="px-4 py-3.5 text-sm text-sidebar-text">Jane Smith</td>
-                <td class="px-4 py-3.5 text-sm text-sidebar-text">John Smith</td>
-                <td class="px-4 py-3.5 text-sm text-sidebar-text">₱50,000.00</td>
-                <td class="px-4 py-3.5 text-sm text-sidebar-text">2025-06-15</td>
-                <td class="px-4 py-3.5 text-sm">
-                  <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-500 border border-orange-200">
-                    <i class="fas fa-pause-circle mr-1"></i> Pending
+                <td class="px-4 py-3.5 text-sm text-sidebar-text font-medium">#<?php echo $row['customsales_id']; ?></td>
+                <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo htmlspecialchars($row['client_name']); ?></td>
+                <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo htmlspecialchars($row['deceased_name']); ?></td>
+                <td class="px-4 py-3.5 text-sm text-sidebar-text">
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">
+                    <?php echo htmlspecialchars($row['service_type']); ?>
                   </span>
                 </td>
-                <td class="px-4 py-3.5 text-sm font-medium text-sidebar-text">₱25,000.00</td>
+                <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo htmlspecialchars($row['date_of_burial']); ?></td>
+                <td class="px-4 py-3.5 text-sm">
+                  <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-500 border border-orange-200">
+                    <i class="fas fa-pause-circle mr-1"></i> <?php echo htmlspecialchars($row['status']); ?>
+                  </span>
+                </td>
+                <td class="px-4 py-3.5 text-sm font-medium text-sidebar-text">₱<?php echo number_format($row['balance'], 2); ?></td>
                 <td class="px-4 py-3.5 text-sm">
                   <div class="flex space-x-2">
                     <ipl button class="p-2 bg-yellow-100 text-yellow-600 rounded-lg hover:bg-yellow-200 transition-all tooltip" title="Edit Service" onclick="openEditServiceModal('1001')">
@@ -899,6 +920,22 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
                   </div>
                 </td>
               </tr>
+              <?php
+                }
+              } else {
+                ?>
+                <tr>
+                  <td colspan="8" class="p-6 text-sm text-center">
+                    <div class="flex flex-col items-center">
+                      <i class="fas fa-inbox text-gray-300 text-4xl mb-3"></i>
+                      <p class="text-gray-500">No custom ongoing services found</p>
+                    </div>
+                  </td>
+                </tr>
+                <?php
+              }
+              $stmt->close();
+              ?>
             </tbody>
           </table>
           <div class="flex justify-between items-center p-4">
