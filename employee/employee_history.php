@@ -899,8 +899,7 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
                 cs.date_of_burial,
                 cs.status,
                 cs.balance,
-                cs.customer_id,
-                (SELECT COUNT(*) FROM employee_service_payments esp WHERE esp.customsales_id = cs.customsales_id) AS staff_assigned
+                cs.customer_id
               FROM customsales_tb AS cs
               JOIN users AS u ON cs.customer_id = u.id
               WHERE cs.branch_id = ? AND cs.status = 'Pending'
