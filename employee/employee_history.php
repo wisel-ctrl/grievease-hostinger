@@ -965,7 +965,7 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
           // Count total records for Custom Ongoing Services
           $countCustomOngoingQuery = "SELECT COUNT(*) as total FROM customsales_tb cs JOIN users AS u ON cs.customer_id = u.id WHERE cs.branch_id = ? AND cs.status = 'Pending'";
           $stmt = $conn->prepare($countCustomOngoingQuery);
-          $stmt->bind_param("s", $branch);
+          $stmt->bind_param("i", $branch);
           $stmt->execute();
           $countResult = $stmt->get_result();
           $totalRecordsCustomOngoing = $countResult->fetch_assoc()['total'];
