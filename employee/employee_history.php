@@ -875,12 +875,27 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
             <tbody id="customOngoingServiceTableBody">
               <?php
               // Query for Custom Ongoing Services
-              $customOngoingQuery = "SELECT c.customsales_id, c.customer_id, c.deceased_name, c.service_type, 
-                    c.date_of_burial, c.status, c.balance, c.payment_status,
-                    CONCAT(u.fname, ' ', COALESCE(u.mname, ''), ' ', u.lname, ' ', COALESCE(u.suffix, '')) as client_name
-                    FROM customsales_tb c
-                    JOIN users u ON c.customer_id = u.id
-                    WHERE c.status = 'Pending' AND c.branch_id = ?
+              $customOngoingQuery = "SELECT 
+  cs.customsales_id,
+  CONCAT_WS(' ', 
+    u.first_name, 
+    COALESCE(u.middle_name, ''), 
+    u.last_name, 
+    COALESCE(u.suffix, '')
+  ) AS client_name,
+  CONCAT_WS(' ', 
+    cs.fname_deceased, 
+    COALESCE(cs.mname_deceased, ''), 
+    cs.lname_deceased, 
+    COALESCE(cs.suffix_deceased, '')
+  ) AS deceased_name,
+  cs.discounted_price,
+  cs.date_of_burial,
+  cs.status,
+  cs.balance
+FROM customsales_tb AS cs
+JOIN users AS u ON cs.customer_id = u.id
+WHERE cs.branch_id = ?
                     LIMIT ?, ?";
               $stmt = $conn->prepare($customOngoingQuery);
               $stmt->bind_param("iii", $branch, $offsetOngoing, $recordsPerPage);
