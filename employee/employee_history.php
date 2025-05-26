@@ -4149,13 +4149,18 @@ function openEditCustomServiceModal(serviceId) {
                       loadCustomBarangays(address.city);
                       setTimeout(() => {
                         document.getElementById('editCustomBarangay').value = address.barangay || '';
+                        document.getElementById('editCustomStreetAddress').value = address.street || '';
+                        updateCustomAddress(); // Update the address textarea after all fields are set
                       }, 500);
                     }
                   }, 500);
                 }
               }, 500);
             }
-            document.getElementById('editCustomStreetAddress').value = address.street || '';
+          } catch (error) {
+            console.error('Error parsing address:', error);
+            // If parsing fails, use the raw value
+            document.getElementById('editCustomDeceasedAddress').value = data.deceased_address;
           }
         }
         // Handle death certificate display
