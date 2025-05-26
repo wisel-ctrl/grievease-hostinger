@@ -3542,8 +3542,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 type="email" 
                 id="editCustomEmail" 
                 name="editCustomEmail"
-                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                class="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
                 placeholder="Enter Email"
+                readonly
               >
             </div>
             <div class="form-group">
@@ -3554,8 +3555,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 type="tel" 
                 id="editCustomPhone" 
                 name="editCustomPhone"
-                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                class="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
                 placeholder="Enter Phone Number"
+                readonly
               >
             </div>
           </div>
