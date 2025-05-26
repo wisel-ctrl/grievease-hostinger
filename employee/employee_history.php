@@ -4015,7 +4015,7 @@ function openEditCustomServiceModal(serviceId) {
           if (data.customerID) {
             const customer = customers.find(c => c.id == data.customerID);
             if (customer) {
-              customerSearch.value = customer.full_name;
+              customerSearch.value = `${customer.first_name} ${customer.middle_name} ${customer.last_name} ${customer.suffix}`.trim();
               selectedCustomerId.value = customer.id;
             }
           } else {
@@ -4353,6 +4353,65 @@ function removeDeathCertificate() {
   fileName.textContent = '';
   fileName.removeAttribute('data-temp-url');
   fileName.removeAttribute('data-is-new-upload');
+}
+
+// Add this after the existing customer search functions
+document.getElementById('editCustomCustomerSearch').addEventListener('input', function(e) {
+  const searchTerm = e.target.value.trim();
+  const resultsDiv = document.getElementById('editCustomCustomerResults');
+  
+  if (searchTerm.length < 2) {
+    resultsDiv.classList.add('hidden');
+    return;
+  }
+
+  // Filter customers based on search term
+  const filteredCustomers = customers.filter(customer => {
+    const fullName = `${customer.first_name} ${customer.middle_name} ${customer.last_name} ${customer.suffix}`.toLowerCase();
+    return fullName.includes(searchTerm.toLowerCase());
+  });
+
+  // Display results
+  if (filteredCustomers.length > 0) {
+    resultsDiv.innerHTML = filteredCustomers.map(customer => `
+      <div class="px-4 py-2 hover:bg-gray-100 cursor-pointer" 
+           onclick="selectEditCustomCustomer(${customer.id}, '${customer.first_name}', '${customer.middle_name}', '${customer.last_name}', '${customer.suffix}', '${customer.email}', '${customer.phone_number}')">
+        ${customer.first_name} ${customer.middle_name} ${customer.last_name} ${customer.suffix}
+      </div>
+    `).join('');
+    resultsDiv.classList.remove('hidden');
+  } else {
+    resultsDiv.innerHTML = '<div class="px-4 py-2 text-gray-500">No customers found</div>';
+    resultsDiv.classList.remove('hidden');
+  }
+});
+
+// Add click outside listener for the search results
+document.addEventListener('click', function(e) {
+  const searchInput = document.getElementById('editCustomCustomerSearch');
+  const resultsDiv = document.getElementById('editCustomCustomerResults');
+  
+  if (!searchInput.contains(e.target) && !resultsDiv.contains(e.target)) {
+    resultsDiv.classList.add('hidden');
+  }
+});
+
+// Function to select a customer in the edit custom service modal
+function selectEditCustomCustomer(customerId, firstName, middleName, lastName, suffix, email, phone) {
+  const searchInput = document.getElementById('editCustomCustomerSearch');
+  const selectedCustomerId = document.getElementById('editCustomSelectedCustomerId');
+  const resultsDiv = document.getElementById('editCustomCustomerResults');
+  
+  // Set the selected customer
+  selectedCustomerId.value = customerId;
+  searchInput.value = `${firstName} ${middleName} ${lastName} ${suffix}`.trim();
+  
+  // Set email and phone
+  document.getElementById('editCustomEmail').value = email || '';
+  document.getElementById('editCustomPhone').value = phone || '';
+  
+  // Hide results
+  resultsDiv.classList.add('hidden');
 }
 </script>
 
