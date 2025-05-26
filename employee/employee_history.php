@@ -4006,8 +4006,6 @@ document.addEventListener('DOMContentLoaded', function() {
 <script>
 // Function to open the Edit Custom Service Modal
 function openEditCustomServiceModal(serviceId) {
-  // Comment out fetching for now
-  /*
   // Fetch service details via AJAX
   fetch(`historyAPI/get_custom_service_details.php?customsales_id=${serviceId}`)
     .then(response => response.json())
@@ -4030,18 +4028,16 @@ function openEditCustomServiceModal(serviceId) {
           }
         }
 
-        document.getElementById('customSalesId').value = data.customsales_id;
+        document.getElementById('customSalesId').value = serviceId;
         
         // Customer Information
-        document.getElementById('editCustomFirstName').value = data.fname || '';
-        document.getElementById('editCustomMiddleName').value = data.mname || '';
-        document.getElementById('editCustomLastName').value = data.lname || '';
-        document.getElementById('editCustomNameSuffix').value = data.suffix || '';
         document.getElementById('editCustomEmail').value = data.email || '';
-        document.getElementById('editCustomPhone').value = data.phone || '';
+        document.getElementById('editCustomPhone').value = data.phone_number || '';
         
         // Service Information
         document.getElementById('editCustomServicePrice').value = data.discounted_price || '';
+        document.getElementById('editCustomFlowerArrangements').value = data.flower_design || '';
+        document.getElementById('editCustomAdditionalServices').value = data.inclusion || '';
         
         // Deceased Information
         document.getElementById('editCustomDeceasedFirstName').value = data.fname_deceased || '';
@@ -4052,6 +4048,16 @@ function openEditCustomServiceModal(serviceId) {
         document.getElementById('editCustomDeathDate').value = data.date_of_death || '';
         document.getElementById('editCustomBurialDate').value = data.date_of_burial || '';
         document.getElementById('editCustomDeceasedAddress').value = data.deceased_address || '';
+
+        // Handle death certificate display
+        const deathCertDisplay = document.getElementById('editCustomDeathCertDisplay');
+        if (data.death_cert_image) {
+          deathCertDisplay.classList.remove('hidden');
+          document.getElementById('editCustomDeathCertName').textContent = data.death_cert_image;
+        } else {
+          deathCertDisplay.classList.add('hidden');
+        }
+
       } else {
         alert('Failed to fetch service details: ' + data.message);
       }
@@ -4060,9 +4066,8 @@ function openEditCustomServiceModal(serviceId) {
       console.error('Error:', error);
       alert('An error occurred while fetching service details');
     });
-  */
 
-  // Just show the modal for now
+  // Show the modal
   document.getElementById('editCustomServiceModal').classList.remove('hidden');
   toggleBodyScroll(true);
 }
