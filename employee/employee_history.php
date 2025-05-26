@@ -1315,6 +1315,7 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
       </div>
 
               </div>
+            </div>
 
   <!-- Modal for Editing Service -->
 <div class="fixed inset-0 z-50 flex items-center justify-center hidden" id="editServiceModal">
