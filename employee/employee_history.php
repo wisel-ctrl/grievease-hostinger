@@ -3734,13 +3734,79 @@ document.addEventListener('DOMContentLoaded', function() {
             <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
               Deceased Address
             </label>
-            <textarea 
-              id="editCustomDeceasedAddress" 
-              name="editCustomDeceasedAddress"
-              class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
-              placeholder="Enter Deceased Address"
-              rows="3"
-            ></textarea>
+            <div class="space-y-3">
+              <!-- Region Dropdown -->
+              <div class="form-group">
+                <select 
+                  id="editCustomRegion" 
+                  name="editCustomRegion"
+                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                  onchange="loadCustomProvinces(this.value); updateCustomAddress()"
+                >
+                  <option value="">Select Region</option>
+                </select>
+              </div>
+
+              <!-- Province Dropdown -->
+              <div class="form-group">
+                <select 
+                  id="editCustomProvince" 
+                  name="editCustomProvince"
+                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                  onchange="loadCustomCities(this.value); updateCustomAddress()"
+                >
+                  <option value="">Select Province</option>
+                </select>
+              </div>
+
+              <!-- City Dropdown -->
+              <div class="form-group">
+                <select 
+                  id="editCustomCity" 
+                  name="editCustomCity"
+                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                  onchange="loadCustomBarangays(this.value); updateCustomAddress()"
+                >
+                  <option value="">Select City</option>
+                </select>
+              </div>
+
+              <!-- Barangay Dropdown -->
+              <div class="form-group">
+                <select 
+                  id="editCustomBarangay" 
+                  name="editCustomBarangay"
+                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                  onchange="updateCustomAddress()"
+                >
+                  <option value="">Select Barangay</option>
+                </select>
+              </div>
+
+              <!-- Street Address -->
+              <div class="form-group">
+                <input 
+                  type="text" 
+                  id="editCustomStreetAddress" 
+                  name="editCustomStreetAddress"
+                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                  placeholder="Enter Street Address"
+                  onchange="updateCustomAddress()"
+                >
+              </div>
+
+              <!-- Address Textarea -->
+              <div class="form-group">
+                <textarea 
+                  id="editCustomDeceasedAddress" 
+                  name="editCustomDeceasedAddress"
+                  class="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+                  placeholder="Selected Address"
+                  rows="3"
+                  readonly
+                ></textarea>
+              </div>
+            </div>
           </div>
 
           <!-- Death Certificate Section -->
@@ -4004,7 +4070,10 @@ document.addEventListener('DOMContentLoaded', function() {
 <script>
 // Function to open the Edit Custom Service Modal
 function openEditCustomServiceModal(serviceId) {
-  // Fetch service details via AJAX
+  // Load regions when opening the modal
+  loadCustomRegions();
+  
+  // Rest of your existing openEditCustomServiceModal code...
   fetch(`historyAPI/get_custom_service_details.php?customsales_id=${serviceId}`)
     .then(response => response.json())
     .then(data => {
@@ -4063,6 +4132,30 @@ function openEditCustomServiceModal(serviceId) {
         document.getElementById('editCustomDeathDate').value = data.date_of_death || '';
         document.getElementById('editCustomBurialDate').value = data.date_of_burial || '';
         document.getElementById('editCustomDeceasedAddress').value = data.deceased_address || '';
+
+        if (data.deceased_address) {
+          try {
+            const address = JSON.parse(data.deceased_address);
+            document.getElementById('editCustomRegion').value = address.region || '';
+            if (address.region) {
+              loadCustomProvinces(address.region);
+              setTimeout(() => {
+                document.getElementById('editCustomProvince').value = address.province || '';
+                if (address.province) {
+                  loadCustomCities(address.province);
+                  setTimeout(() => {
+                    document.getElementById('editCustomCity').value = address.city || '';
+                    if (address.city) {
+                      loadCustomBarangays(address.city);
+                      setTimeout(() => {
+                        document.getElementById('editCustomBarangay').value = address.barangay || '';
+                      }, 500);
+                    }
+                  }, 500);
+                }
+              }, 500);
+            }
+            document.getElementById('editCustomStreetAddress').value = address.street || '';
 
         // Handle death certificate display
         const deathCertDisplay = document.getElementById('editCustomDeathCertDisplay');
@@ -4428,6 +4521,101 @@ function selectEditCustomCustomer(customerId, firstName, middleName, lastName, s
   
   // Hide results
   resultsDiv.classList.add('hidden');
+}
+
+// Add these functions after the existing address-related functions
+function loadCustomRegions() {
+  const regionSelect = document.getElementById('editCustomRegion');
+  regionSelect.innerHTML = '<option value="">Select Region</option>';
+  
+  fetch('https://psgc.gitlab.io/api/regions/')
+    .then(response => response.json())
+    .then(regions => {
+      regions.forEach(region => {
+        const option = document.createElement('option');
+        option.value = region.code;
+        option.textContent = region.name;
+        regionSelect.appendChild(option);
+      });
+    })
+    .catch(error => console.error('Error loading regions:', error));
+}
+
+function loadCustomProvinces(regionCode) {
+  const provinceSelect = document.getElementById('editCustomProvince');
+  provinceSelect.innerHTML = '<option value="">Select Province</option>';
+  
+  if (!regionCode) return;
+  
+  fetch(`https://psgc.gitlab.io/api/regions/${regionCode}/provinces/`)
+    .then(response => response.json())
+    .then(provinces => {
+      provinces.forEach(province => {
+        const option = document.createElement('option');
+        option.value = province.code;
+        option.textContent = province.name;
+        provinceSelect.appendChild(option);
+      });
+    })
+    .catch(error => console.error('Error loading provinces:', error));
+}
+
+function loadCustomCities(provinceCode) {
+  const citySelect = document.getElementById('editCustomCity');
+  citySelect.innerHTML = '<option value="">Select City</option>';
+  
+  if (!provinceCode) return;
+  
+  fetch(`https://psgc.gitlab.io/api/provinces/${provinceCode}/cities/`)
+    .then(response => response.json())
+    .then(cities => {
+      cities.forEach(city => {
+        const option = document.createElement('option');
+        option.value = city.code;
+        option.textContent = city.name;
+        citySelect.appendChild(option);
+      });
+    })
+    .catch(error => console.error('Error loading cities:', error));
+}
+
+function loadCustomBarangays(cityCode) {
+  const barangaySelect = document.getElementById('editCustomBarangay');
+  barangaySelect.innerHTML = '<option value="">Select Barangay</option>';
+  
+  if (!cityCode) return;
+  
+  fetch(`https://psgc.gitlab.io/api/cities/${cityCode}/barangays/`)
+    .then(response => response.json())
+    .then(barangays => {
+      barangays.forEach(barangay => {
+        const option = document.createElement('option');
+        option.value = barangay.code;
+        option.textContent = barangay.name;
+        barangaySelect.appendChild(option);
+      });
+    })
+    .catch(error => console.error('Error loading barangays:', error));
+}
+
+// Add this function after the loadCustomBarangays function
+function updateCustomAddress() {
+  const region = document.getElementById('editCustomRegion');
+  const province = document.getElementById('editCustomProvince');
+  const city = document.getElementById('editCustomCity');
+  const barangay = document.getElementById('editCustomBarangay');
+  const street = document.getElementById('editCustomStreetAddress');
+  const addressTextarea = document.getElementById('editCustomDeceasedAddress');
+
+  let addressParts = [];
+  
+  if (street.value) addressParts.push(street.value);
+  if (barangay.value) addressParts.push(barangay.options[barangay.selectedIndex].text);
+  if (city.value) addressParts.push(city.options[city.selectedIndex].text);
+  if (province.value) addressParts.push(province.options[province.selectedIndex].text);
+  if (region.value) addressParts.push(region.options[region.selectedIndex].text);
+
+  addressTextarea.value = addressParts.join(', ');
 }
 </script>
 
