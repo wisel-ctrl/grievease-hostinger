@@ -4297,23 +4297,51 @@ function handleDeathCertUpload(input) {
     const displayArea = document.getElementById('editCustomDeathCertDisplay');
     const fileName = document.getElementById('editCustomDeathCertName');
     
+    // Create a temporary URL for the uploaded file
+    const fileUrl = URL.createObjectURL(file);
+    
+    // Store both the file name and the temporary URL
+    fileName.textContent = file.name;
+    fileName.setAttribute('data-temp-url', fileUrl);
+    fileName.setAttribute('data-is-new-upload', 'true');
+    
     // Show the display area
     displayArea.classList.remove('hidden');
-    fileName.textContent = file.name;
   }
 }
 
 function viewDeathCertificate() {
-  const fileName = document.getElementById('editCustomDeathCertName').textContent;
-  if (fileName) {
-    const fileUrl = `../customer/booking/${fileName}`;
-    window.open(fileUrl, '_blank');
+  const fileName = document.getElementById('editCustomDeathCertName');
+  const isNewUpload = fileName.getAttribute('data-is-new-upload') === 'true';
+  
+  if (fileName.textContent) {
+    let fileUrl;
+    if (isNewUpload) {
+      // Use the temporary URL for newly uploaded files
+      fileUrl = fileName.getAttribute('data-temp-url');
+    } else {
+      // Use the system path for existing files
+      fileUrl = `../customer/booking/${fileName.textContent}`;
+    }
+    
+    if (fileUrl) {
+      window.open(fileUrl, '_blank');
+    }
   }
 }
 
 function removeDeathCertificate() {
   const displayArea = document.getElementById('editCustomDeathCertDisplay');
   const fileInput = document.getElementById('editCustomDeathCert');
+  const fileName = document.getElementById('editCustomDeathCertName');
+  
+  // If it's a new upload, revoke the temporary URL
+  if (fileName.getAttribute('data-is-new-upload') === 'true') {
+    const tempUrl = fileName.getAttribute('data-temp-url');
+    if (tempUrl) {
+      URL.revokeObjectURL(tempUrl);
+    }
+  }
   
   // Hide the display area
   displayArea.classList.add('hidden');
@@ -4321,9 +4349,10 @@ function removeDeathCertificate() {
   // Clear the file input
   fileInput.value = '';
   
-  // Clear the file name
-  document.getElementById('editCustomDeathCertName').textContent = '';
-  document.getElementById('editCustomDeathCertName').removeAttribute('data-url');
+  // Clear the file name and attributes
+  fileName.textContent = '';
+  fileName.removeAttribute('data-temp-url');
+  fileName.removeAttribute('data-is-new-upload');
 }
 </script>
 
