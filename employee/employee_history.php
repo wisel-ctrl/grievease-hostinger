@@ -4531,74 +4531,63 @@ function selectEditCustomCustomer(customerId, firstName, middleName, lastName, s
 
 // Add these functions after the existing address-related functions
 function loadCustomRegions() {
-  const regionSelect = document.getElementById('editCustomRegion');
-  regionSelect.innerHTML = '<option value="">Select Region</option>';
-  
-  fetch('https://psgc.gitlab.io/api/regions/')
+  fetch('historyAPI/addressDB.php?action=getRegions')
     .then(response => response.json())
-    .then(regions => {
-      regions.forEach(region => {
-        const option = document.createElement('option');
-        option.value = region.code;
-        option.textContent = region.name;
-        regionSelect.appendChild(option);
+    .then(data => {
+      const regionSelect = document.getElementById('editCustomRegion');
+      regionSelect.innerHTML = '<option value="">Select Region</option>';
+      data.forEach(region => {
+        regionSelect.innerHTML += `<option value="${region.region_id}">${region.region_name}</option>`;
       });
     })
     .catch(error => console.error('Error loading regions:', error));
 }
 
 function loadCustomProvinces(regionCode) {
-  const provinceSelect = document.getElementById('editCustomProvince');
-  provinceSelect.innerHTML = '<option value="">Select Province</option>';
-  
   if (!regionCode) return;
   
-  fetch(`https://psgc.gitlab.io/api/regions/${regionCode}/provinces/`)
+  fetch(`historyAPI/addressDB.php?action=getProvinces&region_id=${regionCode}`)
     .then(response => response.json())
-    .then(provinces => {
-      provinces.forEach(province => {
-        const option = document.createElement('option');
-        option.value = province.code;
-        option.textContent = province.name;
-        provinceSelect.appendChild(option);
+    .then(data => {
+      const provinceSelect = document.getElementById('editCustomProvince');
+      provinceSelect.innerHTML = '<option value="">Select Province</option>';
+      data.forEach(province => {
+        provinceSelect.innerHTML += `<option value="${province.province_id}">${province.province_name}</option>`;
       });
+      // Clear dependent dropdowns
+      document.getElementById('editCustomCity').innerHTML = '<option value="">Select City</option>';
+      document.getElementById('editCustomBarangay').innerHTML = '<option value="">Select Barangay</option>';
     })
     .catch(error => console.error('Error loading provinces:', error));
 }
 
 function loadCustomCities(provinceCode) {
-  const citySelect = document.getElementById('editCustomCity');
-  citySelect.innerHTML = '<option value="">Select City</option>';
-  
   if (!provinceCode) return;
   
-  fetch(`https://psgc.gitlab.io/api/provinces/${provinceCode}/cities/`)
+  fetch(`historyAPI/addressDB.php?action=getMunicipalities&province_id=${provinceCode}`)
     .then(response => response.json())
-    .then(cities => {
-      cities.forEach(city => {
-        const option = document.createElement('option');
-        option.value = city.code;
-        option.textContent = city.name;
-        citySelect.appendChild(option);
+    .then(data => {
+      const citySelect = document.getElementById('editCustomCity');
+      citySelect.innerHTML = '<option value="">Select City</option>';
+      data.forEach(city => {
+        citySelect.innerHTML += `<option value="${city.municipality_id}">${city.municipality_name}</option>`;
       });
+      // Clear barangay dropdown
+      document.getElementById('editCustomBarangay').innerHTML = '<option value="">Select Barangay</option>';
     })
     .catch(error => console.error('Error loading cities:', error));
 }
 
 function loadCustomBarangays(cityCode) {
-  const barangaySelect = document.getElementById('editCustomBarangay');
-  barangaySelect.innerHTML = '<option value="">Select Barangay</option>';
-  
   if (!cityCode) return;
   
-  fetch(`https://psgc.gitlab.io/api/cities/${cityCode}/barangays/`)
+  fetch(`historyAPI/addressDB.php?action=getBarangays&municipality_id=${cityCode}`)
     .then(response => response.json())
-    .then(barangays => {
-      barangays.forEach(barangay => {
-        const option = document.createElement('option');
-        option.value = barangay.code;
-        option.textContent = barangay.name;
-        barangaySelect.appendChild(option);
+    .then(data => {
+      const barangaySelect = document.getElementById('editCustomBarangay');
+      barangaySelect.innerHTML = '<option value="">Select Barangay</option>';
+      data.forEach(barangay => {
+        barangaySelect.innerHTML += `<option value="${barangay.barangay_id}">${barangay.barangay_name}</option>`;
       });
     })
     .catch(error => console.error('Error loading barangays:', error));
