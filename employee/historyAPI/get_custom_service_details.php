@@ -37,9 +37,12 @@ try {
               LEFT JOIN `users` as c ON cs.customer_id = c.id
               WHERE cs.customsales_id = ?";
     
-    $stmt = $pdo->prepare($query);
-    $stmt->execute([$customsalesId]);
-    $service = $stmt->fetch(PDO::FETCH_ASSOC);
+    // Prepare and execute the query using mysqli
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("i", $customsalesId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $service = $result->fetch_assoc();
 
     if (!$service) {
         echo json_encode(['success' => false, 'message' => 'Service not found']);
@@ -53,12 +56,12 @@ try {
         'customerID' => $service['customer_id'],
         
         // Customer Information
-        'fname' => $service['fname'] ?? '',
-        'mname' => $service['mname'] ?? '',
-        'lname' => $service['lname'] ?? '',
+        'fname' => $service['first_name'] ?? '',
+        'mname' => $service['middle_name'] ?? '',
+        'lname' => $service['last_name'] ?? '',
         'suffix' => $service['suffix'] ?? '',
         'email' => $service['email'] ?? '',
-        'phone' => $service['phone'] ?? '',
+        'phone_number' => $service['phone_number'] ?? '',
         
         // Service Information
         'discounted_price' => $service['discounted_price'] ?? '',
@@ -80,7 +83,12 @@ try {
 
     echo json_encode($response);
     
-} catch (PDOException $e) {
+} catch (Exception $e) {
     echo json_encode(['success' => false, 'message' => 'Database error: ' . $e->getMessage()]);
+} finally {
+    // Close the statement if it exists
+    if (isset($stmt)) {
+        $stmt->close();
+    }
 }
 ?>
