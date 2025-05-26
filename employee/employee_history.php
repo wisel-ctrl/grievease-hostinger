@@ -4156,7 +4156,8 @@ function openEditCustomServiceModal(serviceId) {
               }, 500);
             }
             document.getElementById('editCustomStreetAddress').value = address.street || '';
-
+          }
+        }
         // Handle death certificate display
         const deathCertDisplay = document.getElementById('editCustomDeathCertDisplay');
         if (data.death_cert_image) {
