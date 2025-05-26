@@ -32,9 +32,11 @@ try {
                 c.suffix, 
                 c.email, 
                 c.phone_number,
-                cs.deceased_address
+                cs.deceased_address,
+                i.item_name
               FROM `customsales_tb` as cs
               LEFT JOIN `users` as c ON cs.customer_id = c.id
+              LEFT JOIN `inventory_tb` as i ON cs.casket_id = i.inventory_id
               WHERE cs.customsales_id = ?";
     
     // Prepare and execute the query using mysqli
@@ -68,6 +70,7 @@ try {
         'flower_design' => $service['flower_design'] ?? '',
         'inclusion' => $service['inclusion'] ?? '',
         'with_cremate' => $service['with_cremate'] ?? 0,
+        'casket_name' => $service['item_name'] ?? '',
         
         // Deceased Information
         'fname_deceased' => $service['fname_deceased'] ?? '',

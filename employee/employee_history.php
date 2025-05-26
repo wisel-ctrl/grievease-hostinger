@@ -3572,17 +3572,13 @@ document.addEventListener('DOMContentLoaded', function() {
             <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
               Casket
             </label>
-            <select 
+            <input 
+              type="text" 
               id="editCustomCasket" 
               name="editCustomCasket"
-              class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+              class="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+              readonly
             >
-              <option value="">Select Casket</option>
-              <option value="Standard">Standard</option>
-              <option value="Premium">Premium</option>
-              <option value="Luxury">Luxury</option>
-              <option value="Custom">Custom</option>
-            </select>
           </div>
 
           <!-- Flower Arrangements -->
@@ -4038,6 +4034,9 @@ function openEditCustomServiceModal(serviceId) {
         document.getElementById('editCustomServicePrice').value = data.discounted_price || '';
         document.getElementById('editCustomFlowerArrangements').value = data.flower_design || '';
         document.getElementById('editCustomAdditionalServices').value = data.inclusion || '';
+        
+        // Set the casket name
+        document.getElementById('editCustomCasket').value = data.casket_name || '';
         
         // Deceased Information
         document.getElementById('editCustomDeceasedFirstName').value = data.fname_deceased || '';
