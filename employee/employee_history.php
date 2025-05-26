@@ -4306,7 +4306,7 @@ function handleDeathCertUpload(input) {
 function viewDeathCertificate() {
   const fileName = document.getElementById('editCustomDeathCertName').textContent;
   if (fileName) {
-    const fileUrl = `../customer/bookings/${fileName}`;
+    const fileUrl = `../customer/booking/${fileName}`;
     window.open(fileUrl, '_blank');
   }
 }
