@@ -4035,7 +4035,21 @@ function openEditCustomServiceModal(serviceId) {
         // Service Information
         document.getElementById('editCustomServicePrice').value = data.discounted_price || '';
         document.getElementById('editCustomFlowerArrangements').value = data.flower_design || '';
-        document.getElementById('editCustomAdditionalServices').value = data.inclusion || '';
+        
+        // Format inclusion data
+        let inclusionText = '';
+        if (data.inclusion) {
+          try {
+            // Parse the JSON string if it's a string
+            const inclusions = typeof data.inclusion === 'string' ? JSON.parse(data.inclusion) : data.inclusion;
+            // Join the array elements with newlines
+            inclusionText = Array.isArray(inclusions) ? inclusions.join('\n') : inclusions;
+          } catch (e) {
+            // If parsing fails, use the raw value
+            inclusionText = data.inclusion;
+          }
+        }
+        document.getElementById('editCustomAdditionalServices').value = inclusionText;
         
         // Set the casket name
         document.getElementById('editCustomCasket').value = data.casket_name || '';
