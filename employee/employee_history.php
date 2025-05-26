@@ -3590,24 +3590,13 @@ document.addEventListener('DOMContentLoaded', function() {
             <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
               Flower Arrangements
             </label>
-            <div class="space-y-2">
-              <div class="flex items-center">
-                <input type="checkbox" id="editCustomFlowerCasket" name="editCustomFlowerCasket" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
-                <label for="editCustomFlowerCasket" class="text-gray-700">Casket Spray</label>
-              </div>
-              <div class="flex items-center">
-                <input type="checkbox" id="editCustomFlowerStand" name="editCustomFlowerStand" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
-                <label for="editCustomFlowerStand" class="text-gray-700">Standing Spray</label>
-              </div>
-              <div class="flex items-center">
-                <input type="checkbox" id="editCustomFlowerWreath" name="editCustomFlowerWreath" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
-                <label for="editCustomFlowerWreath" class="text-gray-700">Wreath</label>
-              </div>
-              <div class="flex items-center">
-                <input type="checkbox" id="editCustomFlowerBasket" name="editCustomFlowerBasket" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
-                <label for="editCustomFlowerBasket" class="text-gray-700">Basket</label>
-              </div>
-            </div>
+            <textarea 
+              id="editCustomFlowerArrangements" 
+              name="editCustomFlowerArrangements"
+              class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+              placeholder="Enter flower arrangements details"
+              rows="3"
+            ></textarea>
           </div>
 
           <!-- Additional Services -->
@@ -3615,24 +3604,13 @@ document.addEventListener('DOMContentLoaded', function() {
             <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
               Additional Services
             </label>
-            <div class="space-y-2">
-              <div class="flex items-center">
-                <input type="checkbox" id="editCustomServiceViewing" name="editCustomServiceViewing" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
-                <label for="editCustomServiceViewing" class="text-gray-700">Viewing Service</label>
-              </div>
-              <div class="flex items-center">
-                <input type="checkbox" id="editCustomServiceMemorial" name="editCustomServiceMemorial" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
-                <label for="editCustomServiceMemorial" class="text-gray-700">Memorial Service</label>
-              </div>
-              <div class="flex items-center">
-                <input type="checkbox" id="editCustomServiceCremation" name="editCustomServiceCremation" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
-                <label for="editCustomServiceCremation" class="text-gray-700">Cremation Service</label>
-              </div>
-              <div class="flex items-center">
-                <input type="checkbox" id="editCustomServiceTransport" name="editCustomServiceTransport" class="mr-2 text-sidebar-accent focus:ring-sidebar-accent">
-                <label for="editCustomServiceTransport" class="text-gray-700">Transportation Service</label>
-              </div>
-            </div>
+            <textarea 
+              id="editCustomAdditionalServices" 
+              name="editCustomAdditionalServices"
+              class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-sidebar-accent focus:border-sidebar-accent outline-none transition-all duration-200"
+              placeholder="Enter additional services details"
+              rows="3"
+            ></textarea>
           </div>
 
           <!-- Service Price -->
@@ -3765,6 +3743,67 @@ document.addEventListener('DOMContentLoaded', function() {
               placeholder="Enter Deceased Address"
               rows="3"
             ></textarea>
+          </div>
+
+          <!-- Death Certificate Section -->
+          <div class="form-group mb-4">
+            <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+              Death Certificate
+            </label>
+            
+            <!-- Display Area for Existing Death Certificate -->
+            <div id="editCustomDeathCertDisplay" class="mb-3 hidden">
+              <div class="relative border border-gray-300 rounded-lg p-4">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center">
+                    <i class="fas fa-file-pdf text-red-500 mr-2"></i>
+                    <span id="editCustomDeathCertName" class="text-sm text-gray-700"></span>
+                  </div>
+                  <div class="flex space-x-2">
+                    <button 
+                      type="button" 
+                      onclick="viewDeathCertificate()"
+                      class="text-sidebar-accent hover:text-darkgold"
+                    >
+                      <i class="fas fa-eye"></i>
+                    </button>
+                    <button 
+                      type="button" 
+                      onclick="removeDeathCertificate()"
+                      class="text-red-500 hover:text-red-700"
+                    >
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Upload Button -->
+            <div class="flex items-center space-x-3">
+              <label class="flex-1">
+                <input 
+                  type="file" 
+                  id="editCustomDeathCert" 
+                  name="editCustomDeathCert"
+                  accept=".pdf,.jpg,.jpeg,.png"
+                  class="hidden"
+                  onchange="handleDeathCertUpload(this)"
+                >
+                <div class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 text-center text-sm text-gray-700">
+                  <i class="fas fa-upload mr-2"></i>
+                  Upload Death Certificate
+                </div>
+              </label>
+              <button 
+                type="button"
+                onclick="document.getElementById('editCustomDeathCert').click()"
+                class="px-4 py-2 bg-sidebar-accent text-white rounded-lg hover:bg-darkgold focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sidebar-accent"
+              >
+                Browse
+              </button>
+            </div>
+            <p class="mt-1 text-xs text-gray-500">Accepted formats: PDF, JPG, JPEG, PNG</p>
           </div>
         </div>
 
@@ -4245,6 +4284,43 @@ document.getElementById('completeCustomServiceForm').addEventListener('submit', 
     alert('An error occurred while completing the service');
   });
 });
+
+
+// Add these JavaScript functions after the existing modal functions
+function handleDeathCertUpload(input) {
+  if (input.files && input.files[0]) {
+    const file = input.files[0];
+    const displayArea = document.getElementById('editCustomDeathCertDisplay');
+    const fileName = document.getElementById('editCustomDeathCertName');
+    
+    // Show the display area
+    displayArea.classList.remove('hidden');
+    fileName.textContent = file.name;
+  }
+}
+
+function viewDeathCertificate() {
+  // Implement view functionality
+  const fileUrl = document.getElementById('editCustomDeathCertName').getAttribute('data-url');
+  if (fileUrl) {
+    window.open(fileUrl, '_blank');
+  }
+}
+
+function removeDeathCertificate() {
+  const displayArea = document.getElementById('editCustomDeathCertDisplay');
+  const fileInput = document.getElementById('editCustomDeathCert');
+  
+  // Hide the display area
+  displayArea.classList.add('hidden');
+  
+  // Clear the file input
+  fileInput.value = '';
+  
+  // Clear the file name
+  document.getElementById('editCustomDeathCertName').textContent = '';
+  document.getElementById('editCustomDeathCertName').removeAttribute('data-url');
+}
 </script>
 
 </body> 
