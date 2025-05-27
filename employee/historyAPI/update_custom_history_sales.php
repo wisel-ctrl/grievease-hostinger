@@ -4,7 +4,7 @@ require_once '../../db_connect.php';
 
 // Function to handle file upload
 function handleFileUpload($file, $customsales_id, $conn) {
-    $uploadDir = '../customer/booking/uploads/';
+    $uploadDir = '../../customer/booking/uploads/';
     
     // Check if upload directory exists, create if not
     if (!file_exists($uploadDir)) {
