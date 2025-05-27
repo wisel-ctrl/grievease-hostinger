@@ -140,20 +140,9 @@ try {
     }
     
     // Address handling
-    if (isset($data['editCustomRegion']) || isset($data['editCustomProvince']) || 
-        isset($data['editCustomCity']) || isset($data['editCustomBarangay']) || 
-        isset($data['editCustomStreetAddress'])) {
-        
-        $address = [
-            'region' => $data['editCustomRegion'] ?? '',
-            'province' => $data['editCustomProvince'] ?? '',
-            'city' => $data['editCustomCity'] ?? '',
-            'barangay' => $data['editCustomBarangay'] ?? '',
-            'street' => $data['editCustomStreetAddress'] ?? ''
-        ];
-        
+    if (isset($data['editCustomDeceasedAddress'])) {
         $updateFields[] = "deceased_address = ?";
-        $params[] = json_encode($address);
+        $params[] = $data['editCustomDeceasedAddress'];
         $types .= "s";
     }
     
