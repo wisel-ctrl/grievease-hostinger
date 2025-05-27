@@ -25,7 +25,7 @@ function handleFileUpload($file, $customsales_id, $conn) {
         if ($fileError === 0) {
             if ($fileSize < 5000000) { // 5MB max
                 // Generate unique filename
-                $newFileName = 'uploads/death_cert_' . $customsales_id . '_' . uniqid() . '.' . $fileExt;
+                $newFileName = 'death_cert_' . $customsales_id . '_' . uniqid() . '.' . $fileExt;
                 $fileDest = $uploadDir . $newFileName;
                 
                 if (move_uploaded_file($fileTmp, $fileDest)) {
@@ -170,12 +170,13 @@ try {
         $newFileName = handleFileUpload($file, $customsales_id, $conn);
         
         if ($newFileName) {
-            // Update the death certificate filename in the database
+            // Update the death certificate filename in the database with the full path
+            $fullPath = 'uploads/' . $newFileName;
             $stmt = $conn->prepare("UPDATE customsales_tb SET death_cert_image = ? WHERE customsales_id = ?");
             if (!$stmt) {
                 throw new Exception("Prepare failed: " . $conn->error);
             }
-            $stmt->bind_param("si", $newFileName, $customsales_id);
+            $stmt->bind_param("si", $fullPath, $customsales_id);
             if (!$stmt->execute()) {
                 throw new Exception("Execute failed: " . $stmt->error);
             }
