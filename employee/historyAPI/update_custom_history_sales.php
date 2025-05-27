@@ -25,7 +25,7 @@ function handleFileUpload($file, $customsales_id, $conn) {
         if ($fileError === 0) {
             if ($fileSize < 5000000) { // 5MB max
                 // Generate unique filename
-                $newFileName = 'death_cert_' . $customsales_id . '_' . uniqid() . '.' . $fileExt;
+                $newFileName = 'uploads/death_cert_' . $customsales_id . '_' . uniqid() . '.' . $fileExt;
                 $fileDest = $uploadDir . $newFileName;
                 
                 if (move_uploaded_file($fileTmp, $fileDest)) {
