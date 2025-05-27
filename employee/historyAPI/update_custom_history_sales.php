@@ -38,14 +38,7 @@ function handleFileUpload($file, $customsales_id, $conn) {
 }
 
 // Get the raw POST data
-$json = file_get_contents('php://input');
-$data = json_decode($json, true);
-
-// Check if JSON decoding was successful
-if (json_last_error() !== JSON_ERROR_NONE) {
-    echo json_encode(['success' => false, 'message' => 'Invalid JSON data']);
-    exit;
-}
+$data = $_POST;
 
 // Validate required fields
 if (empty($data['customsales_id'])) {
@@ -172,7 +165,7 @@ try {
     }
     
     // Handle file upload if present
-    if (!empty($_FILES['editCustomDeathCert'])) {
+    if (isset($_FILES['editCustomDeathCert']) && $_FILES['editCustomDeathCert']['error'] === UPLOAD_ERR_OK) {
         $file = $_FILES['editCustomDeathCert'];
         $newFileName = handleFileUpload($file, $customsales_id, $conn);
         

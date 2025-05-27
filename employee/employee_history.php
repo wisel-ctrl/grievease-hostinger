@@ -4318,15 +4318,11 @@ document.getElementById('editCustomServiceForm').addEventListener('submit', func
   e.preventDefault();
   // Handle form submission
   const formData = new FormData(this);
-  const data = Object.fromEntries(formData.entries());
   
   // Send data to server
   fetch('historyAPI/update_custom_history_sales.php', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(data)
+    body: formData // Send FormData directly without JSON.stringify
   })
   .then(response => response.json())
   .then(data => {
