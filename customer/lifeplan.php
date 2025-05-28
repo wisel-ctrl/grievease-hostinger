@@ -1104,7 +1104,7 @@ require_once '../db_connect.php'; // Database connection
 <script>
 // Function to toggle submit button state
 function toggleSubmitButton() {
-    const checkbox = document.getElementById('privacyConsent');
+    const checkbox = document.getElementById('termsCheckbox');
     const submitBtn = document.getElementById('lifeplanSubmitBtn');
     
     if (checkbox.checked) {
@@ -1116,9 +1116,14 @@ function toggleSubmitButton() {
     }
 }
 
-// Initialize button state on page load
+// Add event listener to checkbox
 document.addEventListener('DOMContentLoaded', function() {
-    toggleSubmitButton();
+    const checkbox = document.getElementById('termsCheckbox');
+    if (checkbox) {
+        checkbox.addEventListener('change', toggleSubmitButton);
+        // Initialize button state
+        toggleSubmitButton();
+    }
 });
 </script>
 
