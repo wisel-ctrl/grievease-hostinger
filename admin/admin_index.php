@@ -516,11 +516,6 @@ foreach ($serviceData as $service => $branches) {
                     <span class="ml-2 bg-error text-white text-xs rounded-full h-5 w-5 flex items-center justify-center"><?php echo $totalPending; ?></span>
                     <?php endif; ?>
                 </div>
-                <div class="flex space-x-2">
-                    <button class="text-xs text-sidebar-accent hover:text-darkgold transition-colors font-medium flex items-center">
-                        <i class="fas fa-check-double mr-1"></i> Mark all as read
-                    </button>
-                </div>
             </div>
             
             <!-- Notifications List with improved styling -->

@@ -281,14 +281,7 @@ function time_elapsed_string($datetime, $full = false) {
         <div class="mb-6 bg-sidebar-bg rounded-lg shadow-card border border-sidebar-border p-4">
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div class="flex flex-wrap items-center gap-2">
-                    <button 
-                        onclick="markAllAsRead()" 
-                        class="ripple-effect flex items-center px-4 py-2 bg-success text-white rounded-lg hover:bg-green-600 transition-all duration-200 text-sm font-medium transform hover:scale-105 focus-visible:focus"
-                        title="Mark all notifications as read"
-                    >
-                        <i class="fas fa-check-double mr-2" aria-hidden="true"></i>
-                        Mark All Read
-                    </button>
+                    
                     <button 
                         onclick="refreshNotifications()" 
                         class="ripple-effect flex items-center px-4 py-2 bg-sidebar-hover text-sidebar-text rounded-lg hover:bg-border transition-all duration-200 text-sm font-medium transform hover:scale-105 focus-visible:focus"
@@ -644,7 +637,7 @@ function time_elapsed_string($datetime, $full = false) {
                     </div>
                     <div>
                         <h4 class="font-semibold text-sidebar-text mb-2">Quick Actions</h4>
-                        <p>Use keyboard shortcuts: <kbd class="bg-gray-100 px-2 py-1 rounded text-xs">Ctrl+A</kbd> to mark all as read, <kbd class="bg-gray-100 px-2 py-1 rounded text-xs">R</kbd> to refresh</p>
+                        <p>Use keyboard shortcuts:  <kbd class="bg-gray-100 px-2 py-1 rounded text-xs">Ctrl+R</kbd> to refresh</p>
                     </div>
                 </div>
             </div>
@@ -704,11 +697,7 @@ function time_elapsed_string($datetime, $full = false) {
             
                         // Set up keyboard shortcuts
             document.addEventListener('keydown', function(e) {
-                // Ctrl+A to mark all as read
-                if (e.ctrlKey && e.key === 'a') {
-                    e.preventDefault();
-                    markAllAsRead();
-                }
+                
                 // R to refresh
                 if (e.key === 'r' && !e.ctrlKey && !e.metaKey) {
                     e.preventDefault();
@@ -853,31 +842,7 @@ function time_elapsed_string($datetime, $full = false) {
             }
         }
 
-        // Mark all notifications as read
-        function markAllAsRead() {
-            showConfirmationModal(
-                'Are you sure you want to mark all notifications as read?',
-                function() {
-                    document.querySelectorAll('.notification-item').forEach(notification => {
-                        const dot = notification.querySelector('.bg-blue-600, .bg-purple-600, .bg-yellow-600');
-                        const statusText = notification.querySelector('.text-xs.text-gray-500');
-                        
-                        if (dot) {
-                            dot.remove();
-                            if (statusText) statusText.textContent = 'Read';
-                        }
-                    });
-                    
-                    // Show toast
-                    showToast('All notifications marked as read');
-                    
-                    // Update counts
-                    updateNotificationCounts();
-                    
-                    closeConfirmationModal();
-                }
-            );
-        }
+        
 
         // Refresh notifications
         function refreshNotifications() {
@@ -1019,5 +984,6 @@ function time_elapsed_string($datetime, $full = false) {
             });
         });
     </script>
+    
 </body>
 </html>
