@@ -20,7 +20,7 @@ if (isset($_GET['customsales_id'])) {
     
     // Get branch_id from the service
     $branchId = null;
-    $branchQuery = "SELECT branch_id FROM sales_tb WHERE sales_id = ?";
+    $branchQuery = "SELECT branch_id FROM customsales_tb WHERE customsales_id = ?";
     debug_log("Branch query", $branchQuery);
     
     $branchStmt = $conn->prepare($branchQuery);
