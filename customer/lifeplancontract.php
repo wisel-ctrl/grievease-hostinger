@@ -4,711 +4,534 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LifePlan Contract Details</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Alex+Brush&family=Inter:wght@300;400;500;600;700&family=Cinzel:wght@400;500;600&family=Hedvig+Letters+Serif:opsz,wght@12..24,400&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        'playfair': ['"Playfair Display"', 'serif'],
-                        'alexbrush': ['"Alex Brush"', 'cursive'],
-                        'inter': ['Inter', 'sans-serif'],
-                        'cinzel': ['Cinzel', 'serif'],
-                        'hedvig': ['Hedvig Letters Serif', 'serif']
-                    },
-                    colors: {
-                        'yellow': {
-                            600: '#CA8A04',
-                        },
-                        'navy': '#2D2B30',
-                        'cream': '#F9F6F0',
-                        'dark': '#1E1E1E',
-                        'gold': '#C9A773',
-                        'darkgold': '#B08D50',
-                        'primary': '#2D2B30',
-                        'primary-foreground': '#FFFFFF',
-                        'secondary': '#F1F5F9',
-                        'secondary-foreground': '#1E1E1E',
-                        'border': '#E4E9F0',
-                        'input-border': '#D3D8E1',
-                        'error': '#E53E3E',
-                        'success': '#38A169',
-                    },
-                    boxShadow: {
-                        'input': '0 1px 2px rgba(0, 0, 0, 0.05)',
-                        'card': '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
-                    }
-                }
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            animation: slideUp 0.8s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
             }
         }
-    </script>
-    <style>
-        .gradient-bg {
-            background: linear-gradient(135deg, #F9F6F0 0%, #F1F5F9 100%);
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
         }
-        .smooth-scroll {
-            scroll-behavior: smooth;
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: shimmer 3s infinite;
         }
-        .fade-in {
-            animation: fadeIn 0.6s ease-in-out;
+
+        @keyframes shimmer {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(180deg); }
         }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
         }
-        .hover-lift {
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .section {
+            margin-bottom: 35px;
+            padding: 25px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 5px solid #667eea;
             transition: all 0.3s ease;
         }
-        .hover-lift:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.15);
+
+        .section:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
-        .section-divider {
-            background: linear-gradient(90deg, transparent, #C9A773, transparent);
-            height: 1px;
+
+        .section h2 {
+            color: #2c3e50;
+            font-size: 1.4em;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .section h2::before {
+            content: '▶';
+            color: #667eea;
+            margin-right: 10px;
+            font-size: 0.8em;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .info-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            transition: all 0.3s ease;
+        }
+
+        .info-item:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+        }
+
+        .info-label {
+            font-weight: bold;
+            color: #667eea;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-value {
+            font-size: 1.1em;
+            margin-top: 5px;
+            color: #2c3e50;
+        }
+
+        .highlight {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .highlight::before {
+            content: '⚠';
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 2em;
+            opacity: 0.3;
+        }
+
+        .terms-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .terms-list li {
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+            position: relative;
+            padding-left: 30px;
+        }
+
+        .terms-list li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #27ae60;
+            font-weight: bold;
+        }
+
+        .terms-list li:last-child {
+            border-bottom: none;
+        }
+
+        .payment-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .payment-table th,
+        .payment-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .payment-table th {
+            background: #667eea;
+            color: white;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 0.9em;
+        }
+
+        .payment-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .status-active {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-important {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .footer {
+            background: #2c3e50;
+            color: white;
+            padding: 20px 40px;
+            text-align: center;
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 10px;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .header {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
-<body class="gradient-bg font-inter smooth-scroll">
-    <div class="min-h-screen py-8 px-4">
-        <div class="max-w-4xl mx-auto">
-            <!-- Header -->
-            <div class="text-center mb-12 fade-in">
-                <div class="inline-flex items-center justify-center mb-6">
-                    <div class="bg-navy p-4 rounded-full shadow-card">
-                        <i class="fas fa-dove text-3xl text-gold"></i>
-                    </div>
-                </div>
-                <h1 class="font-playfair text-4xl md:text-5xl font-bold text-navy mb-4">LifePlan Contract</h1>
-                <p class="text-lg text-navy/70 max-w-2xl mx-auto">Comprehensive funeral service management plan with flexible payment options and complete family protection</p>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>LifePlan Contract</h1>
+            <p>Funeral Service Management System</p>
+        </div>
+
+        <div class="content">
+</td>
+                            <td><span class="status-badge status-active">Paid</span></td>
+                        </tr>
+                        <tr>
+                            <td>Service Coverage</td>
+                            <td>₱350,000.00</td>
+                            <td>Upon need</td>
+                            <td><span class="status-badge status-active">Guaranteed</span></td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
 
-            <!-- Main Content Card -->
-            <div class="bg-white rounded-2xl shadow-card overflow-hidden fade-in">
-                <!-- Contract Header -->
-                <div class="bg-navy text-white p-8">
-                    <div class="flex flex-col md:flex-row md:items-center md:justify-between">
-                        <div>
-                            <h2 class="font-cinzel text-2xl font-semibold mb-2">Premium LifePlan Package</h2>
-                            <p class="text-gold font-medium">5-Year Payment Term | Comprehensive Coverage</p>
-                        </div>
-                        <div class="mt-4 md:mt-0 text-right">
-                            <div class="text-3xl font-bold text-gold">₱125,000</div>
-                            <div class="text-sm text-gray-300">Total Package Value</div>
-                        </div>
-                    </div>
+            <!-- Death Benefit & Payment Continuation -->
+            <div class="section">
+                <h2>Death Benefit & Payment Obligations</h2>
+                <div class="highlight">
+                    <strong>Critical Information:</strong> What happens when the subscriber passes away
                 </div>
+                
+                <h3 style="color: #2c3e50; margin: 20px 0 15px 0;">Scenario 1: Death During Payment Period</h3>
+                <ul class="terms-list">
+                    <li><strong>Immediate Benefit Activation:</strong> Full funeral service benefits become immediately available regardless of payment completion status</li>
+                    <li><strong>Outstanding Balance:</strong> Remaining monthly payments become the responsibility of the designated co-maker</li>
+                    <li><strong>Payment Schedule:</strong> Co-maker must continue monthly payments until the 60-month term is completed</li>
+                    <li><strong>No Penalty Fees:</strong> No additional charges or penalties are imposed upon death of subscriber</li>
+                    <li><strong>Grace Period:</strong> 30-day grace period for co-maker to arrange payment continuation</li>
+                </ul>
 
-                <!-- Navigation Tabs -->
-                <div class="bg-secondary border-b border-border">
-                    <div class="flex flex-wrap gap-1 p-2">
-                        <button onclick="showSection('overview')" class="tab-btn active px-6 py-3 rounded-lg font-medium transition-all duration-300" id="overview-tab">
-                            <i class="fas fa-eye mr-2"></i>Overview
-                        </button>
-                        <button onclick="showSection('payment')" class="tab-btn px-6 py-3 rounded-lg font-medium transition-all duration-300" id="payment-tab">
-                            <i class="fas fa-credit-card mr-2"></i>Payment Terms
-                        </button>
-                        <button onclick="showSection('death-benefits')" class="tab-btn px-6 py-3 rounded-lg font-medium transition-all duration-300" id="death-benefits-tab">
-                            <i class="fas fa-heart mr-2"></i>Death Benefits
-                        </button>
-                        <button onclick="showSection('comaker')" class="tab-btn px-6 py-3 rounded-lg font-medium transition-all duration-300" id="comaker-tab">
-                            <i class="fas fa-users mr-2"></i>Co-maker Details
-                        </button>
-                        <button onclick="showSection('legal')" class="tab-btn px-6 py-3 rounded-lg font-medium transition-all duration-300" id="legal-tab">
-                            <i class="fas fa-gavel mr-2"></i>Legal Terms
-                        </button>
-                    </div>
+                <h3 style="color: #2c3e50; margin: 20px 0 15px 0;">Scenario 2: Death After Full Payment</h3>
+                <ul class="terms-list">
+                    <li><strong>Full Benefits:</strong> Complete funeral service package available with no additional costs</li>
+                    <li><strong>No Further Obligations:</strong> No payment obligations for family members or estate</li>
+                    <li><strong>Transferable Rights:</strong> Benefits can be transferred to immediate family members if needed</li>
+                </ul>
+            </div>
+
+            <!-- Co-Maker Responsibilities -->
+            <div class="section">
+                <h2>Co-Maker Responsibilities & Rights</h2>
+                <div class="highlight">
+                    <strong>Co-Maker Legal Obligations</strong>
                 </div>
+                <ul class="terms-list">
+                    <li><strong>Payment Guarantee:</strong> Co-maker guarantees all payment obligations if subscriber becomes unable to pay</li>
+                    <li><strong>Death Notification:</strong> Must notify the company within 72 hours of subscriber's death</li>
+                    <li><strong>Documentation:</strong> Provide death certificate and legal documents for benefit processing</li>
+                    <li><strong>Payment Continuation:</strong> Assume monthly payment responsibilities immediately upon subscriber's death</li>
+                    <li><strong>Communication:</strong> Maintain updated contact information with the company</li>
+                    <li><strong>Legal Standing:</strong> Co-maker has legal standing to make decisions regarding funeral arrangements</li>
+                    <li><strong>Modification Rights:</strong> Can request payment plan modifications with company approval</li>
+                    <li><strong>Benefit Access:</strong> Can claim benefits on behalf of deceased subscriber's family</li>
+                </ul>
+            </div>
 
-                <!-- Content Sections -->
-                <div class="p-8">
-                    <!-- Overview Section -->
-                    <div id="overview-section" class="section">
-                        <div class="grid md:grid-cols-2 gap-8">
-                            <div class="space-y-6">
-                                <div class="bg-cream rounded-xl p-6 hover-lift">
-                                    <div class="flex items-center mb-4">
-                                        <div class="bg-gold/20 p-3 rounded-full mr-4">
-                                            <i class="fas fa-calendar-alt text-gold text-xl"></i>
-                                        </div>
-                                        <h3 class="font-playfair text-xl font-semibold text-navy">Contract Duration</h3>
-                                    </div>
-                                    <p class="text-navy/80">5 years payment period with lifetime coverage benefits upon completion</p>
-                                </div>
-
-                                <div class="bg-cream rounded-xl p-6 hover-lift">
-                                    <div class="flex items-center mb-4">
-                                        <div class="bg-gold/20 p-3 rounded-full mr-4">
-                                            <i class="fas fa-shield-alt text-gold text-xl"></i>
-                                        </div>
-                                        <h3 class="font-playfair text-xl font-semibold text-navy">Coverage</h3>
-                                    </div>
-                                    <ul class="text-navy/80 space-y-2">
-                                        <li class="flex items-center"><i class="fas fa-check text-success mr-2"></i>Complete funeral services</li>
-                                        <li class="flex items-center"><i class="fas fa-check text-success mr-2"></i>Premium casket selection</li>
-                                        <li class="flex items-center"><i class="fas fa-check text-success mr-2"></i>Embalming and preparation</li>
-                                        <li class="flex items-center"><i class="fas fa-check text-success mr-2"></li>Memorial services coordination</li>
-                                    </ul>
-                                </div>
-                            </div>
-
-                            <div class="space-y-6">
-                                <div class="bg-gold/10 rounded-xl p-6 border border-gold/30">
-                                    <h3 class="font-playfair text-xl font-semibold text-navy mb-4">Package Highlights</h3>
-                                    <div class="space-y-3">
-                                        <div class="flex justify-between items-center py-2 border-b border-gold/20">
-                                            <span class="text-navy/80">Monthly Payment</span>
-                                            <span class="font-semibold text-navy">₱2,083</span>
-                                        </div>
-                                        <div class="flex justify-between items-center py-2 border-b border-gold/20">
-                                            <span class="text-navy/80">Total Payments</span>
-                                            <span class="font-semibold text-navy">₱125,000</span>
-                                        </div>
-                                        <div class="flex justify-between items-center py-2 border-b border-gold/20">
-                                            <span class="text-navy/80">Service Value</span>
-                                            <span class="font-semibold text-success">₱175,000</span>
-                                        </div>
-                                        <div class="flex justify-between items-center py-2">
-                                            <span class="text-navy/80">Your Savings</span>
-                                            <span class="font-semibold text-success">₱50,000</span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="bg-secondary rounded-xl p-6">
-                                    <h4 class="font-semibold text-navy mb-3">Contract Status</h4>
-                                    <div class="flex items-center">
-                                        <div class="w-3 h-3 bg-success rounded-full mr-3"></div>
-                                        <span class="text-success font-medium">Active & Current</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+            <!-- Service Coverage -->
+            <div class="section">
+                <h2>Complete Service Coverage</h2>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-label">Funeral Services</div>
+                        <div class="info-value">Complete funeral arrangement & coordination</div>
                     </div>
-
-                    <!-- Payment Terms Section -->
-                    <div id="payment-section" class="section hidden">
-                        <div class="space-y-8">
-                            <div class="text-center">
-                                <h3 class="font-playfair text-2xl font-semibold text-navy mb-2">Payment Structure</h3>
-                                <p class="text-navy/70">Flexible payment options designed for your convenience</p>
-                            </div>
-
-                            <div class="grid md:grid-cols-3 gap-6">
-                                <div class="bg-cream rounded-xl p-6 text-center hover-lift">
-                                    <div class="bg-gold/20 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                                        <i class="fas fa-calendar text-gold text-2xl"></i>
-                                    </div>
-                                    <h4 class="font-semibold text-navy mb-2">Monthly Payment</h4>
-                                    <div class="text-2xl font-bold text-navy mb-1">₱2,083</div>
-                                    <p class="text-sm text-navy/70">For 60 months</p>
-                                </div>
-
-                                <div class="bg-cream rounded-xl p-6 text-center hover-lift">
-                                    <div class="bg-gold/20 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                                        <i class="fas fa-percentage text-gold text-2xl"></i>
-                                    </div>
-                                    <h4 class="font-semibold text-navy mb-2">Interest Rate</h4>
-                                    <div class="text-2xl font-bold text-navy mb-1">0%</div>
-                                    <p class="text-sm text-navy/70">No hidden charges</p>
-                                </div>
-
-                                <div class="bg-cream rounded-xl p-6 text-center hover-lift">
-                                    <div class="bg-gold/20 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                                        <i class="fas fa-clock text-gold text-2xl"></i>
-                                    </div>
-                                    <h4 class="font-semibold text-navy mb-2">Grace Period</h4>
-                                    <div class="text-2xl font-bold text-navy mb-1">30</div>
-                                    <p class="text-sm text-navy/70">Days after due date</p>
-                                </div>
-                            </div>
-
-                            <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-6">
-                                <h4 class="font-semibold text-navy mb-4 flex items-center">
-                                    <i class="fas fa-exclamation-triangle text-yellow-600 mr-2"></i>
-                                    Important Payment Information
-                                </h4>
-                                <div class="space-y-3 text-navy/80">
-                                    <p><strong>Payment Methods:</strong> Bank transfer, cash payment at office, online banking, or authorized collection agents</p>
-                                    <p><strong>Late Payment Fee:</strong> ₱200 per month after grace period expires</p>
-                                    <p><strong>Advance Payments:</strong> Accepted and will reduce remaining balance</p>
-                                    <p><strong>Payment Schedule:</strong> Due on the same date each month as contract signing date</p>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="info-item">
+                        <div class="info-label">Casket</div>
+                        <div class="info-value">Premium wooden casket with velvet interior</div>
                     </div>
-
-                    <!-- Death Benefits Section -->
-                    <div id="death-benefits-section" class="section hidden">
-                        <div class="space-y-8">
-                            <div class="text-center">
-                                <h3 class="font-playfair text-2xl font-semibold text-navy mb-2">What Happens Upon Death</h3>
-                                <p class="text-navy/70">Comprehensive coverage and protection for your family</p>
-                            </div>
-
-                            <div class="grid md:grid-cols-2 gap-8">
-                                <div class="space-y-6">
-                                    <div class="bg-success/10 border border-success/30 rounded-xl p-6">
-                                        <h4 class="font-semibold text-navy mb-4 flex items-center">
-                                            <i class="fas fa-check-circle text-success mr-2"></i>
-                                            If Payments are Complete (5 years paid)
-                                        </h4>
-                                        <ul class="space-y-2 text-navy/80">
-                                            <li class="flex items-start"><i class="fas fa-arrow-right text-success mt-1 mr-2 text-sm"></i>Full funeral service immediately available</li>
-                                            <li class="flex items-start"><i class="fas fa-arrow-right text-success mt-1 mr-2 text-sm"></i>No additional payments required</li>
-                                            <li class="flex items-start"><i class="fas fa-arrow-right text-success mt-1 mr-2 text-sm"></i>Premium package benefits activated</li>
-                                            <li class="flex items-start"><i class="fas fa-arrow-right text-success mt-1 mr-2 text-sm"></i>Family receives full service value (₱175,000)</li>
-                                        </ul>
-                                    </div>
-
-                                    <div class="bg-blue-50 border border-blue-200 rounded-xl p-6">
-                                        <h4 class="font-semibold text-navy mb-4 flex items-center">
-                                            <i class="fas fa-info-circle text-blue-600 mr-2"></i>
-                                            If Death Occurs During Payment Period
-                                        </h4>
-                                        <ul class="space-y-2 text-navy/80">
-                                            <li class="flex items-start"><i class="fas fa-arrow-right text-blue-600 mt-1 mr-2 text-sm"></i>Immediate service activation</li>
-                                            <li class="flex items-start"><i class="fas fa-arrow-right text-blue-600 mt-1 mr-2 text-sm"></i>No balance collection from family</li>
-                                            <li class="flex items-start"><i class="fas fa-arrow-right text-blue-600 mt-1 mr-2 text-sm"></i>Full package benefits provided</li>
-                                            <li class="flex items-start"><i class="fas fa-arrow-right text-blue-600 mt-1 mr-2 text-sm"></i>Outstanding balance automatically forgiven</li>
-                                        </ul>
-                                    </div>
-                                </div>
-
-                                <div class="space-y-6">
-                                    <div class="bg-cream rounded-xl p-6">
-                                        <h4 class="font-semibold text-navy mb-4">Service Activation Process</h4>
-                                        <div class="space-y-4">
-                                            <div class="flex items-center">
-                                                <div class="w-8 h-8 bg-gold rounded-full flex items-center justify-center text-white text-sm font-bold mr-3">1</div>
-                                                <span class="text-navy/80">Family contacts our 24/7 hotline</span>
-                                            </div>
-                                            <div class="flex items-center">
-                                                <div class="w-8 h-8 bg-gold rounded-full flex items-center justify-center text-white text-sm font-bold mr-3">2</div>
-                                                <span class="text-navy/80">Contract verification (2-4 hours)</span>
-                                            </div>
-                                            <div class="flex items-center">
-                                                <div class="w-8 h-8 bg-gold rounded-full flex items-center justify-center text-white text-sm font-bold mr-3">3</div>
-                                                <span class="text-navy/80">Services commence immediately</span>
-                                            </div>
-                                            <div class="flex items-center">
-                                                <div class="w-8 h-8 bg-gold rounded-full flex items-center justify-center text-white text-sm font-bold mr-3">4</div>
-                                                <span class="text-navy/80">Complete service delivery</span>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="bg-gold/10 rounded-xl p-6">
-                                        <h4 class="font-semibold text-navy mb-3">Emergency Contact</h4>
-                                        <div class="space-y-2">
-                                            <p class="flex items-center text-navy/80">
-                                                <i class="fas fa-phone text-gold mr-2"></i>
-                                                24/7 Hotline: (02) 8-FUNERAL
-                                            </p>
-                                            <p class="flex items-center text-navy/80">
-                                                <i class="fas fa-mobile-alt text-gold mr-2"></i>
-                                                Mobile: +63 917 123 4567
-                                            </p>
-                                            <p class="flex items-center text-navy/80">
-                                                <i class="fas fa-envelope text-gold mr-2"></i>
-                                                emergency@lifeplan.com.ph
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="info-item">
+                        <div class="info-label">Embalming</div>
+                        <div class="info-value">Professional embalming services</div>
                     </div>
-
-                    <!-- Co-maker Section -->
-                    <div id="comaker-section" class="section hidden">
-                        <div class="space-y-8">
-                            <div class="text-center">
-                                <h3 class="font-playfair text-2xl font-semibold text-navy mb-2">Co-maker Responsibilities</h3>
-                                <p class="text-navy/70">Understanding the role and obligations of the co-maker</p>
-                            </div>
-
-                            <div class="grid md:grid-cols-2 gap-8">
-                                <div class="space-y-6">
-                                    <div class="bg-cream rounded-xl p-6">
-                                        <h4 class="font-semibold text-navy mb-4 flex items-center">
-                                            <i class="fas fa-user-shield text-gold mr-2"></i>
-                                            Co-maker Role
-                                        </h4>
-                                        <ul class="space-y-2 text-navy/80">
-                                            <li class="flex items-start"><i class="fas fa-dot-circle text-gold mt-1 mr-2 text-xs"></i>Guarantees payment obligations</li>
-                                            <li class="flex items-start"><i class="fas fa-dot-circle text-gold mt-1 mr-2 text-xs"></i>Backup contact for contract matters</li>
-                                            <li class="flex items-start"><i class="fas fa-dot-circle text-gold mt-1 mr-2 text-xs"></i>Receives payment reminders if needed</li>
-                                            <li class="flex items-start"><i class="fas fa-dot-circle text-gold mt-1 mr-2 text-xs"></i>Can authorize service activation</li>
-                                        </ul>
-                                    </div>
-
-                                    <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-6">
-                                        <h4 class="font-semibold text-navy mb-4 flex items-center">
-                                            <i class="fas fa-exclamation-triangle text-yellow-600 mr-2"></i>
-                                            If Primary Subscriber Dies
-                                        </h4>
-                                        <ul class="space-y-2 text-navy/80">
-                                            <li class="flex items-start"><i class="fas fa-times text-error mt-1 mr-2 text-sm"></i>Co-maker is <strong>NOT</strong> liable for remaining payments</li>
-                                            <li class="flex items-start"><i class="fas fa-check text-success mt-1 mr-2 text-sm"></i>Full service benefits are provided</li>
-                                            <li class="flex items-start"><i class="fas fa-check text-success mt-1 mr-2 text-sm"></i>Outstanding balance is forgiven</li>
-                                            <li class="flex items-start"><i class="fas fa-check text-success mt-1 mr-2 text-sm"></i>Co-maker assists with service coordination</li>
-                                        </ul>
-                                    </div>
-                                </div>
-
-                                <div class="space-y-6">
-                                    <div class="bg-secondary rounded-xl p-6">
-                                        <h4 class="font-semibold text-navy mb-4">Co-maker Requirements</h4>
-                                        <ul class="space-y-3 text-navy/80">
-                                            <li class="flex items-center">
-                                                <i class="fas fa-check text-success mr-3"></i>
-                                                Must be 21-65 years old
-                                            </li>
-                                            <li class="flex items-center">
-                                                <i class="fas fa-check text-success mr-3"></i>
-                                                Filipino citizen or permanent resident
-                                            </li>
-                                            <li class="flex items-center">
-                                                <i class="fas fa-check text-success mr-3"></i>
-                                                Financially capable
-                                            </li>
-                                            <li class="flex items-center">
-                                                <i class="fas fa-check text-success mr-3"></i>
-                                                Not related by blood or marriage
-                                            </li>
-                                        </ul>
-                                    </div>
-
-                                    <div class="bg-blue-50 border border-blue-200 rounded-xl p-6">
-                                        <h4 class="font-semibold text-navy mb-4">Payment Default Scenarios</h4>
-                                        <div class="space-y-3 text-navy/80">
-                                            <div class="p-3 bg-white rounded-lg">
-                                                <p class="font-medium text-navy mb-1">If subscriber becomes unable to pay:</p>
-                                                <p class="text-sm">Co-maker may be contacted but is not legally obligated to continue payments</p>
-                                            </div>
-                                            <div class="p-3 bg-white rounded-lg">
-                                                <p class="font-medium text-navy mb-1">Contract remains valid:</p>
-                                                <p class="text-sm">Even with payment delays, death benefits are still honored</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="info-item">
+                        <div class="info-label">Chapel Services</div>
+                        <div class="info-value">3-day chapel rental with decorations</div>
                     </div>
-
-                    <!-- Legal Terms Section -->
-                    <div id="legal-section" class="section hidden">
-                        <div class="space-y-8">
-                            <div class="text-center">
-                                <h3 class="font-playfair text-2xl font-semibold text-navy mb-2">Legal Terms & Conditions</h3>
-                                <p class="text-navy/70">Complete terms governing this LifePlan contract</p>
-                            </div>
-
-                            <div class="space-y-6">
-                                <div class="bg-cream rounded-xl p-6">
-                                    <h4 class="font-semibold text-navy mb-4 flex items-center">
-                                        <i class="fas fa-scale-balanced text-gold mr-2"></i>
-                                        Contract Validity & Coverage
-                                    </h4>
-                                    <div class="space-y-3 text-navy/80">
-                                        <p><strong>Effective Date:</strong> Contract becomes effective immediately upon signing and first payment</p>
-                                        <p><strong>Coverage Period:</strong> Lifetime coverage after completion of 60 monthly payments</p>
-                                        <p><strong>Territorial Coverage:</strong> Services available nationwide in the Philippines</p>
-                                        <p><strong>Age Limits:</strong> Subscriber must be 18-75 years old at time of contract signing</p>
-                                    </div>
-                                </div>
-
-                                <div class="bg-secondary rounded-xl p-6">
-                                    <h4 class="font-semibold text-navy mb-4 flex items-center">
-                                        <i class="fas fa-times-circle text-error mr-2"></i>
-                                        Exclusions & Limitations
-                                    </h4>
-                                    <ul class="space-y-2 text-navy/80">
-                                        <li class="flex items-start"><i class="fas fa-minus text-error mt-1 mr-2 text-sm"></i>Death due to suicide within first 2 years of contract</li>
-                                        <li class="flex items-start"><i class="fas fa-minus text-error mt-1 mr-2 text-sm"></i>Death due to participation in illegal activities</li>
-                                        <li class="flex items-start"><i class="fas fa-minus text-error mt-1 mr-2 text-sm"></i>Death occurring during acts of war or terrorism</li>
-                                        <li class="flex items-start"><i class="fas fa-minus text-error mt-1 mr-2 text-sm"></i>Services outside the Philippines (additional charges apply)</li>
-                                    </ul>
-                                </div>
-
-                                <div class="bg-gold/10 border border-gold/30 rounded-xl p-6">
-                                    <h4 class="font-semibold text-navy mb-4 flex items-center">
-                                        <i class="fas fa-handshake text-gold mr-2"></i>
-                                        Rights & Obligations
-                                    </h4>
-                                    <div class="grid md:grid-cols-2 gap-6">
-                                        <div>
-                                            <h5 class="font-medium text-navy mb-3">Subscriber Rights:</h5>
-                                            <ul class="space-y-1 text-sm text-navy/80">
-                                                <li>• Modify beneficiary information</li>
-                                                <li>• Request contract suspension (max 6 months)</li>
-                                                <li>• Advance payment without penalty</li>
-                                                <li>• Transfer contract to family member</li>
-                                            </ul>
-                                        </div>
-                                        <div>
-                                            <h5 class="font-medium text-navy mb-3">Subscriber Obligations:</h5>
-                                            <ul class="space-y-1 text-sm text-navy/80">
-                                                <li>• Timely monthly payments</li>
-                                                <li>• Notify of address changes</li>
-                                                <li>• Provide accurate health information</li>
-                                                <li>• Maintain updated beneficiary details</li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="bg-blue-50 border border-blue-200 rounded-xl p-6">
-                                    <h4 class="font-semibold text-navy mb-4 flex items-center">
-                                        <i class="fas fa-file-contract text-blue-600 mr-2"></i>
-                                        Contract Modification & Cancellation
-                                    </h4>
-                                    <div class="space-y-3 text-navy/80">
-                                        <p><strong>Modification:</strong> Contract terms may be modified with mutual written consent of both parties</p>
-                                        <p><strong>Cancellation:</strong> Subscriber may cancel within 15 days of signing with full refund of payments made</p>
-                                        <p><strong>Voluntary Termination:</strong> After 15 days, cancellation results in forfeiture of payments made, but contract remains valid for death benefits</p>
-                                        <p><strong>Company Termination:</strong> Only possible for non-payment exceeding 90 days or material breach of contract terms</p>
-                                    </div>
-                                </div>
-
-                                <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-6">
-                                    <h4 class="font-semibold text-navy mb-4 flex items-center">
-                                        <i class="fas fa-gavel text-yellow-600 mr-2"></i>
-                                        Dispute Resolution
-                                    </h4>
-                                    <div class="space-y-3 text-navy/80">
-                                        <p><strong>Governing Law:</strong> This contract is governed by the laws of the Republic of the Philippines</p>
-                                        <p><strong>Jurisdiction:</strong> All disputes shall be resolved in the courts of Metro Manila</p>
-                                        <p><strong>Mediation:</strong> Parties agree to attempt mediation before pursuing legal action</p>
-                                        <p><strong>Arbitration:</strong> If mediation fails, binding arbitration may be pursued as agreed by both parties</p>
-                                    </div>
-                                </div>
-
-                                <div class="bg-green-50 border border-green-200 rounded-xl p-6">
-                                    <h4 class="font-semibold text-navy mb-4 flex items-center">
-                                        <i class="fas fa-shield-alt text-green-600 mr-2"></i>
-                                        Consumer Protection
-                                    </h4>
-                                    <div class="space-y-3 text-navy/80">
-                                        <p><strong>Regulatory Compliance:</strong> This contract complies with Insurance Commission regulations and DTI consumer protection guidelines</p>
-                                        <p><strong>Transparency:</strong> All fees, charges, and terms are disclosed upfront with no hidden costs</p>
-                                        <p><strong>Data Privacy:</strong> All personal information is protected under the Data Privacy Act of 2012</p>
-                                        <p><strong>Complaint Mechanism:</strong> Free complaint hotline and online dispute resolution available</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="info-item">
+                        <div class="info-label">Transportation</div>
+                        <div class="info-value">Hearse and family car services</div>
                     </div>
-                </div>
-
-                <!-- Footer -->
-                <div class="bg-navy text-white p-8">
-                    <div class="text-center">
-                        <div class="flex items-center justify-center mb-4">
-                            <i class="fas fa-certificate text-gold text-2xl mr-3"></i>
-                            <span class="font-cinzel text-xl">LifePlan Funeral Services</span>
-                        </div>
-                        <p class="text-gray-300 mb-4">Providing dignity, comfort, and peace of mind for Filipino families since 1995</p>
-                        <div class="section-divider mb-4"></div>
-                        <div class="grid md:grid-cols-3 gap-6 text-sm">
-                            <div>
-                                <h5 class="font-semibold mb-2 text-gold">Contact Information</h5>
-                                <p class="text-gray-300">123 Memorial Drive, Quezon City</p>
-                                <p class="text-gray-300">Phone: (02) 8-FUNERAL</p>
-                                <p class="text-gray-300">Email: info@lifeplan.com.ph</p>
-                            </div>
-                            <div>
-                                <h5 class="font-semibold mb-2 text-gold">Business Hours</h5>
-                                <p class="text-gray-300">Monday - Friday: 8:00 AM - 6:00 PM</p>
-                                <p class="text-gray-300">Saturday: 9:00 AM - 4:00 PM</p>
-                                <p class="text-gray-300">Emergency: 24/7 Available</p>
-                            </div>
-                            <div>
-                                <h5 class="font-semibold mb-2 text-gold">Legal Compliance</h5>
-                                <p class="text-gray-300">SEC Registration: CS200012345</p>
-                                <p class="text-gray-300">DTI Permit: 12345678</p>
-                                <p class="text-gray-300">Insurance Commission Licensed</p>
-                            </div>
-                        </div>
+                    <div class="info-item">
+                        <div class="info-label">Documentation</div>
+                        <div class="info-value">All legal documents and permits</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Burial/Cremation</div>
+                        <div class="info-value">Choice of burial or cremation services</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Memorial Items</div>
+                        <div class="info-value">Flowers, memorial cards, and keepsakes</div>
                     </div>
                 </div>
             </div>
 
-            <!-- Additional Information Cards -->
-            <div class="mt-12 grid md:grid-cols-2 gap-8 fade-in">
-                <div class="bg-white rounded-xl shadow-card p-6 hover-lift">
-                    <div class="flex items-center mb-4">
-                        <div class="bg-success/20 p-3 rounded-full mr-4">
-                            <i class="fas fa-headset text-success text-xl"></i>
-                        </div>
-                        <h3 class="font-playfair text-xl font-semibold text-navy">24/7 Support</h3>
-                    </div>
-                    <p class="text-navy/80 mb-4">Our dedicated support team is available round the clock to assist you with any questions or concerns about your LifePlan contract.</p>
-                    <div class="bg-cream rounded-lg p-4">
-                        <p class="font-medium text-navy mb-2">Emergency Hotline</p>
-                        <p class="text-2xl font-bold text-success">(02) 8-FUNERAL</p>
-                    </div>
+            <!-- Default & Remedies -->
+            <div class="section">
+                <h2>Default & Remedies</h2>
+                <div class="highlight">
+                    <span class="status-badge status-important">Important</span> Consequences of missed payments
                 </div>
+                <ul class="terms-list">
+                    <li><strong>Grace Period:</strong> 30 days grace period for all missed payments</li>
+                    <li><strong>Late Fees:</strong> ₱500 penalty fee after grace period expires</li>
+                    <li><strong>Contract Suspension:</strong> Benefits suspended after 60 days of non-payment</li>
+                    <li><strong>Reinstatement:</strong> Contract can be reinstated within 12 months with full payment of arrears</li>
+                    <li><strong>Co-Maker Liability:</strong> Co-maker becomes immediately liable for all missed payments</li>
+                    <li><strong>Legal Action:</strong> Company may pursue legal remedies after 90 days of default</li>
+                    <li><strong>Asset Protection:</strong> Payments made cannot be forfeited, partial benefits may apply</li>
+                </ul>
+            </div>
 
-                <div class="bg-white rounded-xl shadow-card p-6 hover-lift">
-                    <div class="flex items-center mb-4">
-                        <div class="bg-gold/20 p-3 rounded-full mr-4">
-                            <i class="fas fa-mobile-alt text-gold text-xl"></i>
-                        </div>
-                        <h3 class="font-playfair text-xl font-semibold text-navy">Mobile App</h3>
+            <!-- Terms & Conditions -->
+            <div class="section">
+                <h2>Important Terms & Conditions</h2>
+                <ul class="terms-list">
+                    <li><strong>Contract Validity:</strong> This contract is valid for the lifetime of the subscriber</li>
+                    <li><strong>Modification:</strong> Contract terms can only be modified with written agreement from both parties</li>
+                    <li><strong>Transfer:</strong> Contract is non-transferable except to immediate family members</li>
+                    <li><strong>Governing Law:</strong> This contract is governed by Philippine laws and regulations</li>
+                    <li><strong>Jurisdiction:</strong> Any disputes shall be resolved in the appropriate courts of the Philippines</li>
+                    <li><strong>Company Changes:</strong> Company reserves the right to update service providers while maintaining quality standards</li>
+                    <li><strong>Force Majeure:</strong> Company is not liable for delays due to circumstances beyond control</li>
+                    <li><strong>Privacy:</strong> All personal information is protected under data privacy laws</li>
+                    <li><strong>Contact Updates:</strong> Both parties must maintain updated contact information</li>
+                    <li><strong>Annual Review:</strong> Contract terms and coverage are reviewed annually</li>
+                </ul>
+            </div>
+
+            <!-- Emergency Contacts -->
+            <div class="section">
+                <h2>Emergency Contacts & Support</h2>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-label">24/7 Hotline</div>
+                        <div class="info-value">1-800-LIFEPLAN (543-3752)</div>
                     </div>
-                    <p class="text-navy/80 mb-4">Download our mobile app to track payments, update beneficiary information, and access emergency services with just a tap.</p>
-                    <div class="flex space-x-3">
-                        <div class="bg-navy text-white px-4 py-2 rounded-lg text-sm font-medium">
-                            <i class="fab fa-apple mr-2"></i>App Store
-                        </div>
-                        <div class="bg-navy text-white px-4 py-2 rounded-lg text-sm font-medium">
-                            <i class="fab fa-google-play mr-2"></i>Play Store
-                        </div>
+                    <div class="info-item">
+                        <div class="info-label">Customer Service</div>
+                        <div class="info-value">(02) 8XXX-XXXX</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Email Support</div>
+                        <div class="info-value">support@lifeplan.com.ph</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Online Portal</div>
+                        <div class="info-value">www.lifeplan.com.ph/account</div>
                     </div>
                 </div>
             </div>
         </div>
+
+        <div class="footer">
+            <p><strong>LIFEPLAN FUNERAL SERVICES</strong></p>
+            <p>This contract viewing is for informational purposes only. For official contract documents, please contact our customer service.</p>
+            <p>© 2025 LifePlan Funeral Services. All rights reserved.</p>
+        </div>
     </div>
 
     <script>
-        // Tab functionality
-        function showSection(sectionName) {
-            // Hide all sections
+        // Add smooth scrolling and interactive effects
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add hover effects to sections
             const sections = document.querySelectorAll('.section');
             sections.forEach(section => {
-                section.classList.add('hidden');
-            });
-
-            // Remove active class from all tabs
-            const tabs = document.querySelectorAll('.tab-btn');
-            tabs.forEach(tab => {
-                tab.classList.remove('active');
-            });
-
-            // Show selected section
-            document.getElementById(sectionName + '-section').classList.remove('hidden');
-            
-            // Add active class to clicked tab
-            document.getElementById(sectionName + '-tab').classList.add('active');
-        }
-
-        // Initialize page
-        document.addEventListener('DOMContentLoaded', function() {
-            // Set up tab styling
-            const style = document.createElement('style');
-            style.textContent = `
-                .tab-btn {
-                    color: #2D2B30;
-                    background-color: transparent;
-                }
-                .tab-btn:hover {
-                    background-color: #F9F6F0;
-                    color: #C9A773;
-                }
-                .tab-btn.active {
-                    background-color: #C9A773;
-                    color: white;
-                    font-weight: 600;
-                }
-            `;
-            document.head.appendChild(style);
-
-            // Add smooth animations
-            const observerOptions = {
-                threshold: 0.1,
-                rootMargin: '0px 0px -50px 0px'
-            };
-
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.style.opacity = '1';
-                        entry.target.style.transform = 'translateY(0)';
-                    }
+                section.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateX(10px)';
                 });
-            }, observerOptions);
-
-            // Observe all cards for animation
-            document.querySelectorAll('.hover-lift').forEach(card => {
-                card.style.opacity = '0';
-                card.style.transform = 'translateY(20px)';
-                card.style.transition = 'all 0.6s ease';
-                observer.observe(card);
+                
+                section.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateX(0)';
+                });
             });
 
-            // Add click animations
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    this.style.transform = 'scale(0.95)';
+            // Add click effect to info items
+            const infoItems = document.querySelectorAll('.info-item');
+            infoItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    this.style.transform = 'scale(1.02)';
+                    this.style.boxShadow = '0 8px 25px rgba(102, 126, 234, 0.3)';
+                    
                     setTimeout(() => {
                         this.style.transform = 'scale(1)';
-                    }, 100);
+                        this.style.boxShadow = '';
+                    }, 200);
                 });
             });
 
-            // Show payment schedule calculator on payment tab
-            const paymentTab = document.getElementById('payment-tab');
-            paymentTab.addEventListener('click', function() {
+            // Add typing effect to important notices
+            const highlights = document.querySelectorAll('.highlight');
+            highlights.forEach((highlight, index) => {
+                highlight.style.opacity = '0';
+                highlight.style.transform = 'translateY(20px)';
+                
                 setTimeout(() => {
-                    const paymentSection = document.getElementById('payment-section');
-                    if (paymentSection && !paymentSection.classList.contains('hidden')) {
-                        animateNumbers();
-                    }
-                }, 100);
+                    highlight.style.transition = 'all 0.6s ease';
+                    highlight.style.opacity = '1';
+                    highlight.style.transform = 'translateY(0)';
+                }, 200 * (index + 1));
             });
-        });
 
-        // Animate numbers when payment section is shown
-        function animateNumbers() {
-            const numbers = document.querySelectorAll('#payment-section .text-2xl');
-            numbers.forEach(num => {
-                const finalValue = num.textContent;
-                if (finalValue.includes('₱') || finalValue.includes('%')) {
-                    num.textContent = '0';
-                    let current = 0;
-                    const target = parseInt(finalValue.replace(/[₱,%]/g, ''));
-                    const increment = target / 50;
-                    const timer = setInterval(() => {
-                        current += increment;
-                        if (current >= target) {
-                            num.textContent = finalValue;
-                            clearInterval(timer);
-                        } else {
-                            if (finalValue.includes('₱')) {
-                                num.textContent = '₱' + Math.floor(current).toLocaleString();
-                            } else if (finalValue.includes('%')) {
-                                num.textContent = Math.floor(current) + '%';
-                            } else {
-                                num.textContent = Math.floor(current);
-                            }
-                        }
-                    }, 20);
+            // Add print functionality
+            document.addEventListener('keydown', function(e) {
+                if (e.ctrlKey && e.key === 'p') {
+                    window.print();
+                    e.preventDefault();
                 }
             });
-        }
 
-        // Add print functionality
-        function printContract() {
-            window.print();
-        }
+            // Add status badge animation
+            const statusBadges = document.querySelectorAll('.status-badge');
+            statusBadges.forEach(badge => {
+                badge.addEventListener('mouseenter', function() {
+                    this.style.transform = 'scale(1.1)';
+                    this.style.transition = 'transform 0.2s ease';
+                });
+                
+                badge.addEventListener('mouseleave', function() {
+                    this.style.transform = 'scale(1)';
+                });
+            });
 
-        // Add keyboard navigation
-        document.addEventListener('keydown', function(e) {
-            const tabs = ['overview', 'payment', 'death-benefits', 'comaker', 'legal'];
-            const currentTab = document.querySelector('.tab-btn.active').id.replace('-tab', '');
-            const currentIndex = tabs.indexOf(currentTab);
-
-            if (e.key === 'ArrowRight' && currentIndex < tabs.length - 1) {
-                showSection(tabs[currentIndex + 1]);
-            } else if (e.key === 'ArrowLeft' && currentIndex > 0) {
-                showSection(tabs[currentIndex - 1]);
-            }
+            // Simulate real-time updates for demonstration
+            setTimeout(() => {
+                const contractNumber = document.querySelector('.info-value');
+                if (contractNumber && contractNumber.textContent === 'LP-2025-001234') {
+                    contractNumber.style.color = '#27ae60';
+                    contractNumber.style.fontWeight = 'bold';
+                }
+            }, 2000);
         });
+
+        // Add contract status checker
+        function checkContractStatus() {
+            // Simulate contract status check
+            const statusElements = document.querySelectorAll('.status-active');
+            statusElements.forEach(status => {
+                status.style.animation = 'pulse 2s infinite';
+            });
+        }
+
+        // Add CSS for pulse animation
+        const pulseStyle = document.createElement('style');
+        pulseStyle.textContent = `
+            @keyframes pulse {
+                0%, 100% { opacity: 1; }
+                50% { opacity: 0.7; }
+            }
+        `;
+        document.head.appendChild(pulseStyle);
+
+        // Initialize status checker
+        setTimeout(checkContractStatus, 3000);
     </script>
 </body>
 </html>
