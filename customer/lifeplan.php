@@ -1083,7 +1083,7 @@ require_once '../db_connect.php'; // Database connection
                             <input type="checkbox" id="termsCheckbox" name="terms_accepted" required 
                                 class="h-5 w-5 text-yellow-600 rounded focus:ring-yellow-500 mt-1">
                             <label for="termsCheckbox" class="ml-3 text-sm">
-                                <span class="block text-navy mb-1">I have read and agree to the <a href="#" class="text-yellow-600 hover:underline" id="privacyPolicyModal">Privacy Policy</a> and <a href="#" class="text-yellow-600 hover:underline" id="termsOfServiceModal">Terms of Service</a>. <span class="text-red-500">*</span></span>
+                                <span class="block text-navy mb-1">I have read and agree to the <a href="#" class="text-yellow-600 hover:underline" id="viewPrivacyPolicy">Privacy Policy</a> and <a href="#" class="text-yellow-600 hover:underline" id="viewTermsOfService">Terms of Service</a>. <span class="text-red-500">*</span></span>
                                 <span class="block text-gray-500 text-xs">By checking this box, you consent to our data collection practices as described in our Privacy Policy.</span>
                             </label>
                         </div>
@@ -1200,6 +1200,60 @@ document.addEventListener('DOMContentLoaded', function() {
         // Initialize button state
         toggleSubmitButton();
     }
+
+    // Privacy Policy Modal Functionality
+    const privacyPolicyLink = document.getElementById('viewPrivacyPolicy');
+    const privacyPolicyModal = document.getElementById('privacyPolicyModal');
+    const closePrivacyModal = document.getElementById('closePrivacyModal');
+
+    if (privacyPolicyLink && privacyPolicyModal) {
+        privacyPolicyLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            privacyPolicyModal.classList.remove('hidden');
+        });
+    }
+
+    if (closePrivacyModal && privacyPolicyModal) {
+        closePrivacyModal.addEventListener('click', function() {
+            privacyPolicyModal.classList.add('hidden');
+        });
+    }
+
+    // Terms of Service Modal Functionality
+    const termsOfServiceLink = document.getElementById('viewTermsOfService');
+    const termsOfServiceModal = document.getElementById('termsOfServiceModal');
+    const closeTermsModal = document.getElementById('closeTermsModal');
+
+    if (termsOfServiceLink && termsOfServiceModal) {
+        termsOfServiceLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            termsOfServiceModal.classList.remove('hidden');
+        });
+    }
+
+    if (closeTermsModal && termsOfServiceModal) {
+        closeTermsModal.addEventListener('click', function() {
+            termsOfServiceModal.classList.add('hidden');
+        });
+    }
+
+    // Close modals when clicking outside
+    window.addEventListener('click', function(e) {
+        if (e.target === privacyPolicyModal) {
+            privacyPolicyModal.classList.add('hidden');
+        }
+        if (e.target === termsOfServiceModal) {
+            termsOfServiceModal.classList.add('hidden');
+        }
+    });
+
+    // Close modals with Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            if (privacyPolicyModal) privacyPolicyModal.classList.add('hidden');
+            if (termsOfServiceModal) termsOfServiceModal.classList.add('hidden');
+        }
+    });
 });
 </script>
 
