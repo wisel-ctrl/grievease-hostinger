@@ -34,7 +34,7 @@ try {
     $serviceResult = $stmt->get_result();
     
     if ($serviceResult->num_rows === 0) {
-        echo json_encode(['success' => false, 'message' => 'Service not found'. $salesId . 'wew']);
+        echo json_encode(['success' => false, 'message' => 'Service not founds'. $salesId . 'wew']);
         exit;
     }
     
