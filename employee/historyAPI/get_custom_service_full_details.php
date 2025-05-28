@@ -53,7 +53,7 @@ try {
     $initialQuery = "SELECT esp.*, e.fname, e.mname, e.lname, e.suffix, e.position
                     FROM employee_service_payments esp
                     JOIN employee_tb e ON esp.employeeID = e.EmployeeID
-                    WHERE esp.sales_id = ? AND esp.service_stage = 'initial'";
+                    WHERE esp.sales_id = ? AND esp.service_stage = 'initial' AND esp.sales_type = 'custom'";
     $stmt = $conn->prepare($initialQuery);
     $stmt->bind_param("i", $salesId);
     $stmt->execute();
@@ -92,7 +92,7 @@ try {
     $burialQuery = "SELECT esp.*, e.fname, e.mname, e.lname, e.suffix, e.position
                    FROM employee_service_payments esp
                    JOIN employee_tb e ON esp.employeeID = e.EmployeeID
-                   WHERE esp.sales_id = ? AND esp.service_stage = 'completion'";
+                   WHERE esp.sales_id = ? AND esp.service_stage = 'completion' AND esp.sales_type = 'custom'";
     $stmt = $conn->prepare($burialQuery);
     $stmt->bind_param("i", $salesId);
     $stmt->execute();

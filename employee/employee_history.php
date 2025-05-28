@@ -4925,7 +4925,7 @@ function closeViewCustomServiceModal() {
 function viewCustomServiceDetails(serviceId) {
   // Show loading state
   document.getElementById('customServiceId').textContent = 'Loading...';
-  
+
   // Fetch service details from server
   fetch(`historyAPI/get_custom_service_details.php?sales_id=${serviceId}`)
     .then(response => response.json())
