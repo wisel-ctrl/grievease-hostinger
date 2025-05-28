@@ -899,7 +899,8 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
                 cs.date_of_burial,
                 cs.status,
                 cs.balance,
-                cs.customer_id
+                cs.customer_id,
+                (SELECT COUNT(*) FROM employee_service_payments esp WHERE esp.sales_id = cs.customsales_id AND esp.sales_type = 'custom') AS staff_assigned
               FROM customsales_tb AS cs
               JOIN users AS u ON cs.customer_id = u.id
               WHERE cs.branch_id = ? AND cs.status = 'Pending'
@@ -933,16 +934,18 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
                     <button class="p-2 bg-yellow-100 text-yellow-600 rounded-lg hover:bg-yellow-200 transition-all tooltip" title="Edit Service" onclick="openEditCustomServiceModal('<?php echo $row['customsales_id']; ?>')">
                       <i class="fas fa-edit"></i>
                     </button>
-                    <button class="p-2 bg-purple-100 text-purple-600 rounded-lg hover:bg-purple-200 transition-all tooltip assign-staff-btn" 
-                    title="Assign Staff" 
-                    onclick="openAssignCustomStaffModal('<?php echo $row['customsales_id']; ?>')"
-                    data-has-customer="<?php echo $row['customsales_id'] ? 'true' : 'false'; ?>">
-                      <i class="fas fa-users"></i>
-                    </button>
+                    <?php if ($row['staff_assigned'] == 0): ?>
+                      <button class="p-2 bg-purple-100 text-purple-600 rounded-lg hover:bg-purple-200 transition-all tooltip assign-staff-btn" 
+                      title="Assign Staff" 
+                      onclick="openAssignCustomStaffModal('<?php echo $row['customsales_id']; ?>')"
+                      data-has-customer="<?php echo $row['customer_id'] ? 'true' : 'false'; ?>">
+                        <i class="fas fa-users"></i>
+                      </button>
+                    <?php endif; ?>
                     <button class="p-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition-all tooltip complete-btn" 
                     title="Complete Service" 
                     onclick="openCompleteCustomModal('<?php echo $row['customsales_id']; ?>')"
-                    data-has-customer="<?php echo $row['customsales_id'] ? 'true' : 'false'; ?>">
+                    data-has-customer="<?php echo $row['customer_id'] ? 'true' : 'false'; ?>">
                       <i class="fas fa-check"></i>
                     </button>
                   </div>
