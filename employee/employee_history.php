@@ -4251,7 +4251,7 @@ function populateCustomEmployeeSection(sectionId, position, employees) {
       const checkbox = document.createElement('input');
       checkbox.type = 'checkbox';
       checkbox.name = 'assigned_staff[]';
-      checkbox.value = employee.employee_id;
+      checkbox.value = employee.employeeID;
       checkbox.className = 'mr-2 text-sidebar-accent focus:ring-sidebar-accent';
       
       const label = document.createElement('label');
@@ -4337,7 +4337,7 @@ function populateCustomCompleteEmployeeSection(sectionId, position, employees) {
       const checkbox = document.createElement('input');
       checkbox.type = 'checkbox';
       checkbox.name = 'complete_assigned_staff[]';
-      checkbox.value = employee.employee_id;
+      checkbox.value = employee.employeeID;
       checkbox.className = 'text-sidebar-accent focus:ring-sidebar-accent';
       
       div.appendChild(nameSpan);
