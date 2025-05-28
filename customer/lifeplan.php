@@ -1099,32 +1099,54 @@ require_once '../db_connect.php'; // Database connection
                                 </button>
                             </div>
                             <div class="text-sm text-gray-700 space-y-4">
-                                <p>At GrievEase, we understand that privacy is of utmost importance, especially during times of grief and loss. Last Updated: March 22, 2025</p>
-                                
+                                <p>At GrievEase, we understand that privacy is of utmost importance, especially during times of grief and loss. This Privacy Policy outlines how we collect, use, protect, and share information gathered through our website and services. We are committed to ensuring the privacy and security of all personal information entrusted to us.</p>
+                                <p>Last Updated: March 22, 2025</p>
+
                                 <h4 class="font-medium text-navy">Information We Collect</h4>
+                                <p>We collect only what is necessary to provide our services with dignity and respect.</p>
+                                <h5 class="font-medium">Personal Information</h5>
+                                <p>We may collect the following personal information when you use our website, contact us, or arrange for our services:</p>
                                 <ul class="list-disc ml-5 space-y-1">
                                     <li>Full name and contact information (email, phone number, address)</li>
                                     <li>Information about the deceased required for documentation</li>
                                     <li>Payment information for service arrangements</li>
                                 </ul>
-                                
+
                                 <h4 class="font-medium text-navy">How We Use Your Information</h4>
+                                <p>We use the information we collect for the following purposes:</p>
                                 <ul class="list-disc ml-5 space-y-1">
-                                    <li>To arrange and conduct funeral services according to your wishes</li>
-                                    <li>To respond to your inquiries and provide support</li>
-                                    <li>To complete necessary documentation and legal obligations</li>
+                                    <li><strong>Providing Services:</strong> To arrange and conduct funeral services according to your wishes and requirements.</li>
+                                    <li><strong>Communication:</strong> To respond to your inquiries, provide information, and offer support throughout the process.</li>
+                                    <li><strong>Legal Requirements:</strong> To complete necessary documentation and comply with legal obligations related to funeral services.</li>
                                 </ul>
-                                
+
                                 <h4 class="font-medium text-navy">Information Sharing</h4>
-                                <p>We do not sell, rent, or trade your personal information. We may share with trusted partners when necessary to fulfill your service requests or when required by law.</p>
-                                
+                                <p>We treat your information with the same respect and dignity as we treat your loved ones.</p>
+                                <p>GrievEase is committed to maintaining your privacy. We do not sell, rent, or trade your personal information to third parties for marketing purposes. We may share information in the following limited circumstances:</p>
+                                <ul class="list-disc ml-5 space-y-1">
+                                    <li><strong>Service Partners:</strong> With trusted partners who assist us in providing funeral services when necessary to fulfill your service requests.</li>
+                                    <li><strong>Legal Requirements:</strong> When required by law, such as to comply with a subpoena, court order, or similar legal procedure.</li>
+                                    <li><strong>Protection:</strong> When we believe in good faith that disclosure is necessary to protect our rights, protect your safety or the safety of others, or investigate fraud.</li>
+                                </ul>
+
                                 <h4 class="font-medium text-navy">Security Measures</h4>
-                                <p>We implement comprehensive security measures including secure storage, encryption, access controls, and regular audits to protect your personal information.</p>
-                                
-                                <h4 class="font-medium text-navy">Your Rights</h4>
-                                <p>You have rights to access, rectify, erase, restrict processing, and data portability regarding your personal information.</p>
-                                
-                                <p class="text-xs text-gray-500 mt-4">For the complete Privacy Policy, please visit our full Privacy Policy page.</p>
+                                <p>We implement comprehensive security measures to protect your personal information:</p>
+                                <ul class="list-disc ml-5 space-y-1">
+                                    <li><strong>Secure Storage:</strong> Personal data is stored in secure, encrypted databases with restricted access.</li>
+                                    <li><strong>Encryption:</strong> We use SSL encryption for data transmission between your browser and our servers.</li>
+                                    <li><strong>Access Controls:</strong> Only authorized staff with specific job functions have access to personal information.</li>
+                                    <li><strong>Regular Audits:</strong> We conduct regular security assessments and staff training on privacy practices.</li>
+                                </ul>
+
+                                <h4 class="font-medium text-navy">Cookies and Tracking</h4>
+                                <p>Our website uses cookies and similar technologies to enhance your browsing experience and collect information about how you use our site.</p>
+                                <p><strong>Types of Cookies We Use:</strong></p>
+                                <ul class="list-disc ml-5 space-y-1">
+                                    <li>Essential Cookies: Required for the website to function properly</li>
+                                    <li>Analytical Cookies: Help us understand how visitors interact with our website</li>
+                                    <li>Functional Cookies: Remember your preferences and settings</li>
+                                </ul>
+                                <p>You can control cookie settings through your browser preferences. However, disabling certain cookies may affect the functionality of our website.</p>
                             </div>
                         </div>
                     </div>
@@ -1139,28 +1161,30 @@ require_once '../db_connect.php'; // Database connection
                                 </button>
                             </div>
                             <div class="text-sm text-gray-700 space-y-4">
-                                <p>By accessing and using the GrievEase website and services, you agree to be bound by these Terms of Service. Last Updated: March 2024</p>
-                                
+                                <p>By accessing and using the GrievEase website and services, you agree to be bound by these Terms of Service.</p>
+                                <p>Last Updated: March 2024</p>
+
                                 <h4 class="font-medium text-navy">1. Acceptance of Terms</h4>
-                                <p>If you do not agree with these terms, please do not use our services.</p>
-                                
+                                <p>By accessing and using the GrievEase website and services, you agree to be bound by these Terms of Service. If you do not agree with these terms, please do not use our services.</p>
+
                                 <h4 class="font-medium text-navy">2. Services</h4>
-                                <p>GrievEase provides funeral and memorial services with compassion and respect. We reserve the right to modify, suspend, or discontinue any aspect of our services.</p>
-                                
+                                <p>GrievEase provides funeral and memorial services with the utmost compassion and respect. We reserve the right to modify, suspend, or discontinue any aspect of our services at any time.</p>
+
                                 <h4 class="font-medium text-navy">3. User Responsibilities</h4>
                                 <ul class="list-disc ml-5 space-y-1">
                                     <li>Provide accurate and complete information during service arrangements</li>
                                     <li>Respect the guidelines and policies of our funeral home</li>
                                     <li>Treat our staff with dignity and respect</li>
                                 </ul>
-                                
-                                <h4 class="font-medium text-navy">4. Payment and Fees</h4>
+
+                                <h4 class="font-medium text-navy">4. Privacy</h4>
+                                <p>We are committed to protecting your privacy. Please review our Privacy Policy, which explains how we collect, use, and protect your personal information.</p>
+
+                                <h4 class="font-medium text-navy">5. Payment and Fees</h4>
                                 <p>All fees for services are due at the time of service unless otherwise arranged. We accept various payment methods and can discuss payment plans during consultation.</p>
-                                
-                                <h4 class="font-medium text-navy">5. Limitation of Liability</h4>
+
+                                <h4 class="font-medium text-navy">6. Limitation of Liability</h4>
                                 <p>GrievEase strives to provide compassionate and professional services. However, we are not liable for any indirect, incidental, or consequential damages arising from our services.</p>
-                                
-                                <p class="text-xs text-gray-500 mt-4">For the complete Terms of Service, please visit our full Terms of Service page.</p>
                             </div>
                         </div>
                     </div>
