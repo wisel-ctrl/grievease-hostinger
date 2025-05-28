@@ -4516,7 +4516,7 @@ document.getElementById('completeCustomServiceForm').addEventListener('submit', 
     .then(salaries => {
       // Prepare the data to send with salary information
       const completionData = {
-        sales_id: serviceId,
+        customsales_id: serviceId,
         staff_data: assignedStaff.map(employeeId => ({
           employee_id: employeeId,
           salary: salaries[employeeId] || 0 // Default to 0 if salary not found
