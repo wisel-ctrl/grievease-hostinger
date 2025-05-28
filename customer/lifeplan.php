@@ -1078,16 +1078,14 @@ require_once '../db_connect.php'; // Database connection
                     </div>
 
                     <!-- Privacy Policy and Terms Consent -->
-                    <div class="mb-4">
+                    <div class="mt-4 mb-4 border border-gray-200 rounded-lg p-4 bg-gray-50 terms-checkbox-container">
                         <div class="flex items-start">
-                            <div class="flex items-center h-5">
-                                <input id="privacyConsent" name="privacyConsent" type="checkbox" required 
-                                    class="h-4 w-4 text-yellow-600 focus:ring-yellow-500 border-gray-300 rounded cursor-pointer"
-                                    onchange="toggleSubmitButton()">
-                            </div>
-                            <label for="privacyConsent" class="ml-2 text-sm text-dark">
-                                I have read and agree to the <a href="../privacy_policy.php" target="_blank" class="text-yellow-600 hover:text-yellow-700 underline">Privacy Policy</a> and <a href="../termsofservice.php" target="_blank" class="text-yellow-600 hover:text-yellow-700 underline">Terms of Service</a>. <span class="text-red-500">*</span><br>
-                                <span class="text-xs text-gray-500">By checking this box, you consent to our data collection practices as described in our Privacy Policy.</span>
+                            <input type="checkbox" id="privacyConsent" name="privacyConsent" required 
+                                class="h-5 w-5 text-yellow-600 rounded focus:ring-yellow-500 mt-1"
+                                onchange="toggleSubmitButton()">
+                            <label for="privacyConsent" class="ml-3 text-sm">
+                                <span class="block text-navy mb-1">I have read and agree to the <a href="../privacy_policy.php" target="_blank" class="text-yellow-600 hover:underline">Privacy Policy</a> and <a href="../termsofservice.php" target="_blank" class="text-yellow-600 hover:underline">Terms of Service</a>. <span class="text-red-500">*</span></span>
+                                <span class="block text-gray-500 text-xs">By checking this box, you consent to our data collection practices as described in our Privacy Policy.</span>
                             </label>
                         </div>
                     </div>
