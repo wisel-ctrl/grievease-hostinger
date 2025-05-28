@@ -4378,32 +4378,98 @@ document.getElementById('editCustomServiceForm').addEventListener('submit', func
 
 document.getElementById('assignCustomStaffForm').addEventListener('submit', function(e) {
   e.preventDefault();
-  // Handle form submission
-  const formData = new FormData(this);
-  const data = Object.fromEntries(formData.entries());
   
-  // Send data to server
-  fetch('historyAPI/save_custom_staff_assignment.php', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(data)
-  })
-  .then(response => response.json())
-  .then(data => {
-    if (data.success) {
-      alert('Staff assigned successfully!');
-      closeAssignCustomStaffModal();
-      location.reload();
-    } else {
-      alert('Error: ' + data.message);
-    }
-  })
-  .catch(error => {
-    console.error('Error:', error);
-    alert('An error occurred while assigning staff');
+  // Get form values
+  const salesId = document.getElementById('assignCustomServiceId').value;
+  const notes = document.getElementById('customAssignmentNotes').value;
+  
+  // Get all checked checkboxes within the assignCustomStaffModal
+  const modal = document.getElementById('assignCustomStaffModal');
+  const checkboxes = modal.querySelectorAll('input[name="assigned_staff[]"]:checked');
+  
+  // Extract the employee IDs from the checkboxes
+  const assignedStaff = Array.from(checkboxes).map(checkbox => {
+      return checkbox.value;
+  }).filter(id => id); // Filter out any undefined/empty values
+
+  if (assignedStaff.length === 0) {
+      Swal.fire({
+          icon: 'warning',
+          title: 'No Staff Selected',
+          text: 'Please select at least one staff member to assign.',
+          confirmButtonColor: '#3085d6'
+      });
+      return;
+  }
+
+  // Show loading state
+  Swal.fire({
+      title: 'Saving Assignment',
+      text: 'Please wait...',
+      allowOutsideClick: false,
+      didOpen: () => {
+          Swal.showLoading();
+      }
   });
+
+  // Get base salaries for selected employees
+  fetch('historyAPI/get_employee_salaries.php?employee_ids=' + assignedStaff.join(','))
+      .then(response => response.json())
+      .then(salaries => {
+          // Prepare the data to send
+          const assignmentData = {
+              sales_id: salesId,
+              staff_data: assignedStaff.map(employeeId => ({
+                  employee_id: employeeId,
+                  salary: salaries[employeeId] || 0 // Default to 0 if salary not found
+              })),
+              notes: notes
+          };
+
+          console.log('Sending assignment data:', assignmentData);
+          
+          // Send data to server - changed to your new endpoint
+          return fetch('historyAPI/assign_custom_staff.php', {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(assignmentData)
+          });
+      })
+      .then(response => {
+          if (!response.ok) {
+              return response.text().then(text => {
+                  console.error('Server response:', text);
+                  throw new Error('Server error: ' + response.status);
+              });
+          }
+          return response.json();
+      })
+      .then(data => {
+          if (data.success) {
+              Swal.fire({
+                  icon: 'success',
+                  title: 'Success',
+                  text: data.message || 'Staff assigned successfully!',
+                  confirmButtonColor: '#3085d6'
+              }).then(() => {
+                  closeAssignCustomStaffModal();
+                  location.reload();
+              });
+          } else {
+              throw new Error(data.message || 'Failed to assign staff');
+          }
+      })
+      .catch(error => {
+          console.error('Error details:', error);
+          Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: error.message || 'An error occurred while saving the assignment. Please try again.',
+              confirmButtonColor: '#3085d6'
+          });
+      });
 });
 
 document.getElementById('completeCustomServiceForm').addEventListener('submit', function(e) {
