@@ -939,7 +939,10 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
                     data-has-customer="<?php echo $row['customsales_id'] ? 'true' : 'false'; ?>">
                       <i class="fas fa-users"></i>
                     </button>
-                    <button class="p-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition-all tooltip complete-btn" title="Complete Service" onclick="openCompleteCustomModal('<?php echo $row['customsales_id']; ?>')">
+                    <button class="p-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition-all tooltip complete-btn" 
+                    title="Complete Service" 
+                    onclick="openCompleteCustomModal('<?php echo $row['customsales_id']; ?>')"
+                    data-has-customer="<?php echo $row['customsales_id'] ? 'true' : 'false'; ?>">
                       <i class="fas fa-check"></i>
                     </button>
                   </div>
