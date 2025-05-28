@@ -1,4 +1,3 @@
-
 <?php
 session_start();
 
@@ -1075,6 +1074,19 @@ require_once '../db_connect.php'; // Database connection
                         <div class="flex justify-between font-bold mt-2 pt-2 border-t border-gray-300">
                             <span class="text-navy">Monthly Payment</span>
                             <span id="lifeplanMonthlyPayment" class="text-yellow-600">₱0</span>
+                        </div>
+                    </div>
+
+                    <!-- Privacy Policy and Terms Consent -->
+                    <div class="mb-4">
+                        <div class="flex items-start">
+                            <div class="flex items-center h-5">
+                                <input id="privacyConsent" name="privacyConsent" type="checkbox" required class="h-4 w-4 text-yellow-600 focus:ring-yellow-500 border-gray-300 rounded cursor-pointer">
+                            </div>
+                            <label for="privacyConsent" class="ml-2 text-sm text-dark">
+                                I have read and agree to the <a href="../privacy_policy.php" target="_blank" class="text-yellow-600 hover:text-yellow-700 underline">Privacy Policy</a> and <a href="../termsofservice.php" target="_blank" class="text-yellow-600 hover:text-yellow-700 underline">Terms of Service</a>. <span class="text-red-500">*</span><br>
+                                <span class="text-xs text-gray-500">By checking this box, you consent to our data collection practices as described in our Privacy Policy.</span>
+                            </label>
                         </div>
                     </div>
 
