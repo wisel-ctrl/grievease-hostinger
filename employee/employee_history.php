@@ -4230,6 +4230,21 @@ function populateCustomEmployeeSection(sectionId, position, employees) {
   
   if (employees && employees.length > 0) {
     employees.forEach((employee, index) => {
+      // Format each name part
+      const formatName = (name) => {
+        if (!name || name.toLowerCase() === 'null') return '';
+        return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+      };
+
+      const firstName = formatName(employee.fname);
+      const middleName = formatName(employee.mname);
+      const lastName = formatName(employee.lname);
+
+      // Combine names with proper spacing
+      const fullName = [firstName, middleName, lastName]
+        .filter(name => name && name.trim() !== '')
+        .join(' ');
+      
       const div = document.createElement('div');
       div.className = 'flex items-center';
       
@@ -4241,7 +4256,7 @@ function populateCustomEmployeeSection(sectionId, position, employees) {
       
       const label = document.createElement('label');
       label.className = 'text-gray-700';
-      label.textContent = `${employee.fname} ${employee.mname} ${employee.lname}`;
+      label.textContent = fullName;
       
       div.appendChild(checkbox);
       div.appendChild(label);
@@ -4297,12 +4312,27 @@ function populateCustomCompleteEmployeeSection(sectionId, position, employees) {
   
   if (employees && employees.length > 0) {
     employees.forEach((employee, index) => {
+      // Format each name part
+      const formatName = (name) => {
+        if (!name || name.toLowerCase() === 'null') return '';
+        return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+      };
+
+      const firstName = formatName(employee.fname);
+      const middleName = formatName(employee.mname);
+      const lastName = formatName(employee.lname);
+
+      // Combine names with proper spacing
+      const fullName = [firstName, middleName, lastName]
+        .filter(name => name && name.trim() !== '')
+        .join(' ');
+      
       const div = document.createElement('div');
       div.className = 'flex items-center justify-between p-2 bg-white rounded border border-gray-200 mb-2';
       
       const nameSpan = document.createElement('span');
       nameSpan.className = 'text-gray-700';
-      nameSpan.textContent = `${employee.fname} ${employee.mname} ${employee.lname}`;
+      nameSpan.textContent = fullName;
       
       const checkbox = document.createElement('input');
       checkbox.type = 'checkbox';
