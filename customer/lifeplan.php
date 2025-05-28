@@ -1081,7 +1081,9 @@ require_once '../db_connect.php'; // Database connection
                     <div class="mb-4">
                         <div class="flex items-start">
                             <div class="flex items-center h-5">
-                                <input id="privacyConsent" name="privacyConsent" type="checkbox" required class="h-4 w-4 text-yellow-600 focus:ring-yellow-500 border-gray-300 rounded cursor-pointer">
+                                <input id="privacyConsent" name="privacyConsent" type="checkbox" required 
+                                    class="h-4 w-4 text-yellow-600 focus:ring-yellow-500 border-gray-300 rounded cursor-pointer"
+                                    onchange="toggleSubmitButton()">
                             </div>
                             <label for="privacyConsent" class="ml-2 text-sm text-dark">
                                 I have read and agree to the <a href="../privacy_policy.php" target="_blank" class="text-yellow-600 hover:text-yellow-700 underline">Privacy Policy</a> and <a href="../termsofservice.php" target="_blank" class="text-yellow-600 hover:text-yellow-700 underline">Terms of Service</a>. <span class="text-red-500">*</span><br>
@@ -1090,14 +1092,38 @@ require_once '../db_connect.php'; // Database connection
                         </div>
                     </div>
 
-                    <button type="submit" class="w-full bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg shadow-md transition-all duration-300">
+                    <button type="submit" id="lifeplanSubmitBtn" 
+                        class="w-full bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg shadow-md transition-all duration-300 opacity-50 cursor-not-allowed" 
+                        disabled>
                         Confirm Lifeplan Booking
                     </button>
+
                 </form>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+// Function to toggle submit button state
+function toggleSubmitButton() {
+    const checkbox = document.getElementById('privacyConsent');
+    const submitBtn = document.getElementById('lifeplanSubmitBtn');
+    
+    if (checkbox.checked) {
+        submitBtn.disabled = false;
+        submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+    } else {
+        submitBtn.disabled = true;
+        submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
+    }
+}
+
+// Initialize button state on page load
+document.addEventListener('DOMContentLoaded', function() {
+    toggleSubmitButton();
+});
+</script>
 
 <script>
         // Address handling functions
