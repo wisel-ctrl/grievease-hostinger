@@ -1079,14 +1079,16 @@ require_once '../db_connect.php'; // Database connection
 
                     <!-- Privacy Policy and Terms Consent -->
                     <div class="mb-4">
-                        <div class="flex items-start space-x-2">
-                            <input id="privacyConsent" name="privacyConsent" type="checkbox" required 
-                                class="mt-1 h-4 w-4 text-yellow-600 focus:ring-yellow-500 border-gray-300 rounded cursor-pointer"
-                                onchange="toggleSubmitButton()">
-                            <span class="text-sm text-dark">
+                        <div class="flex items-start">
+                            <div class="flex items-center h-5">
+                                <input id="privacyConsent" name="privacyConsent" type="checkbox" required 
+                                    class="h-4 w-4 text-yellow-600 focus:ring-yellow-500 border-gray-300 rounded cursor-pointer"
+                                    onchange="toggleSubmitButton()">
+                            </div>
+                            <label for="privacyConsent" class="ml-2 text-sm text-dark">
                                 I have read and agree to the <a href="../privacy_policy.php" target="_blank" class="text-yellow-600 hover:text-yellow-700 underline">Privacy Policy</a> and <a href="../termsofservice.php" target="_blank" class="text-yellow-600 hover:text-yellow-700 underline">Terms of Service</a>. <span class="text-red-500">*</span><br>
                                 <span class="text-xs text-gray-500">By checking this box, you consent to our data collection practices as described in our Privacy Policy.</span>
-                            </span>
+                            </label>
                         </div>
                     </div>
 
