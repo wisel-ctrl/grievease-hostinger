@@ -658,6 +658,13 @@ $pending_payments = $pending_result->fetch_assoc()['pending'];
                         </div>
                     </div>
                 </div>
+                
+                <!-- View Archived Button -->
+                <button class="px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center gap-2 hover:bg-sidebar-hover whitespace-nowrap"
+                        onclick="openArchiveModal()">
+                    <i class="fas fa-archive mr-2"></i>
+                    <span>View Archived</span>
+                </button>
 
                 <!-- Add Expense Button -->
                 <button class="px-4 py-2 bg-sidebar-accent text-white rounded-lg text-sm flex items-center gap-2 hover:bg-darkgold transition-colors shadow-sm whitespace-nowrap" 
@@ -694,6 +701,15 @@ $pending_payments = $pending_result->fetch_assoc()['pending'];
                         </button>
                     </div>
                 </div>
+            </div>
+            
+            <!-- View Archived Button -->
+            <div class="w-full mb-4">
+                <button class="px-4 py-2.5 bg-gray-100 text-gray-800 rounded-lg text-sm flex items-center gap-2 hover:bg-gray-200 transition-colors shadow-sm whitespace-nowrap w-full justify-center" 
+                        onclick="openArchiveModal()">
+                    <i class="fas fa-archive mr-2"></i>
+                    <span>View Archived</span>
+                </button>
             </div>
 
             <!-- Second row: Add Expense Button - Full width -->
@@ -1186,54 +1202,55 @@ $pending_payments = $pending_result->fetch_assoc()['pending'];
     </div>
 
     <!-- Archive Modal -->
-    <div id="archiveModal" class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto">
-      <!-- Modal Backdrop -->
-      <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
-      
-      <!-- Modal Content -->
-      <div class="relative bg-white rounded-xl shadow-card w-full max-w-4xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] flex flex-col">
+<!-- Archive Modal -->
+<div id="archiveModal" class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto">
+    <!-- Modal Backdrop -->
+    <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+    
+    <!-- Modal Content -->
+    <div class="relative bg-white rounded-xl shadow-card w-full max-w-4xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] flex flex-col">
         <!-- Close Button -->
         <button type="button" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 transition-colors" onclick="closeArchiveModal()">
-          <i class="fas fa-times"></i>
+            <i class="fas fa-times"></i>
         </button>
         
         <!-- Modal Header -->
         <div class="px-4 sm:px-6 py-4 sm:py-5 border-b bg-gradient-to-r from-sidebar-accent to-darkgold border-gray-200">
-          <h3 class="text-lg sm:text-xl font-bold text-white flex items-center">
-            <i class="fas fa-archive mr-2"></i> Archived Expenses
-          </h3>
+            <h3 class="text-lg sm:text-xl font-bold text-white flex items-center">
+                <i class="fas fa-archive mr-2"></i> Archived Expenses
+            </h3>
         </div>
         
         <!-- Modal Body -->
         <div class="px-4 sm:px-6 py-4 sm:py-5 overflow-y-auto modal-scroll-container">
-          <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200">
-              <thead class="bg-gray-50">
-                <tr>
-                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Expense Name</th>
-                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
-                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
-                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                </tr>
-              </thead>
-              <tbody id="archivedExpensesTableBody" class="bg-white divide-y divide-gray-200">
-                <!-- Archived expenses will be loaded here -->
-              </tbody>
-            </table>
-          </div>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Expense Name</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="archivedExpensesTableBody" class="bg-white divide-y divide-gray-200">
+                        <!-- Archived expenses will be loaded here -->
+                    </tbody>
+                </table>
+            </div>
         </div>
         
         <!-- Modal Footer -->
         <div class="px-4 sm:px-6 py-3 sm:py-4 flex justify-end gap-4 border-t border-gray-200 sticky bottom-0 bg-white">
-          <button type="button" class="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors" onclick="closeArchiveModal()">
-            Close
-          </button>
+            <button type="button" class="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors" onclick="closeArchiveModal()">
+                Close
+            </button>
         </div>
-      </div>
     </div>
-
+</div>
     <!-- Archive Confirm Modal -->
     <div class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 hidden" id="archiveConfirmModal">
       <div class="bg-white rounded-xl w-full max-w-md mx-4 shadow-xl">
@@ -1244,7 +1261,7 @@ $pending_payments = $pending_result->fetch_assoc()['pending'];
             </div>
             <h3 class="text-lg font-medium text-gray-800">Archive Expense</h3>
           </div>
-          <p class="text-gray-600 mb-6">Are you sure you want to archive expense <span id="archiveExpenseId" class="font-semibold"></span>? This action cannot be undone.</p>
+          <p class="text-gray-600 mb-6">Are you sure you want to archive expense #<span id="archiveExpenseId" class="font-semibold"></span></p>
           <div class="flex justify-end gap-3">
             <button class="px-5 py-2 bg-white border border-gray-300 text-gray-800 rounded-lg font-medium hover:bg-gray-50 transition-colors" onclick="closeArchiveConfirmModal()">Cancel</button>
             <button class="px-5 py-2 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-colors" onclick="archiveExpense()">Archive</button>
@@ -1741,6 +1758,111 @@ function sortTable(column) {
               dateInput.removeAttribute('max');
           }
       }
+      
+      
+      // Function to open the Archive Modal and load archived expenses
+function openArchiveModal() {
+    document.getElementById('archiveModal').style.display = 'flex';
+    loadArchivedExpenses();
+}
+
+// Function to close the Archive Modal
+function closeArchiveModal() {
+    document.getElementById('archiveModal').style.display = 'none';
+    document.getElementById('archivedExpensesTableBody').innerHTML = '';
+}
+
+// Function to load archived expenses
+function loadArchivedExpenses() {
+    const tableBody = document.getElementById('archivedExpensesTableBody');
+    tableBody.innerHTML = '<tr><td colspan="7" class="px-4 py-6 text-sm text-center"><div class="flex flex-col items-center"><i class="fas fa-spinner fa-spin text-gray-300 text-4xl mb-3"></i><p class="text-gray-500">Loading archived expenses...</p></div></td></tr>';
+
+    fetch('expenses/fetch_archived_expenses.php')
+        .then(response => response.json())
+        .then(data => {
+            if (data.expenses && data.expenses.length > 0) {
+                let html = '';
+                data.expenses.forEach(expense => {
+                    const statusClass = expense.status === 'Paid' 
+                        ? "bg-green-100 text-green-600 border border-green-200" 
+                        : "bg-orange-100 text-orange-500 border border-orange-200";
+                    const statusIcon = expense.status === 'Paid' ? "fa-check-circle" : "fa-clock";
+                    
+                    html += `
+                        <tr class="border-b border-sidebar-border hover:bg-sidebar-hover transition-colors">
+                            <td class="px-6 py-3 text-sm text-sidebar-text font-medium">#${escapeHtml(expense.expense_ID)}</td>
+                            <td class="px-6 py-3 text-sm text-sidebar-text">${escapeHtml(expense.expense_name)}</td>
+                            <td class="px-6 py-3 text-sm text-sidebar-text">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">
+                                    ${escapeHtml(expense.category)}
+                                </span>
+                            </td>
+                            <td class="px-6 py-3 text-sm font-medium text-sidebar-text">₱${parseFloat(expense.price).toFixed(2)}</td>
+                            <td class="px-6 py-3 text-sm text-sidebar-text">${expense.date}</td>
+                            <td class="px-6 py-3 text-sm">
+                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${statusClass}">
+                                    <i class="fas ${statusIcon} mr-1"></i> ${escapeHtml(expense.status)}
+                                </span>
+                            </td>
+                            <td class="px-6 py-3 text-sm">
+                                <button class="p-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition-all tooltip" title="Unarchive Expense" 
+                                        onclick="unarchiveExpense('${escapeHtml(expense.expense_ID)}')">
+                                    <i class="fas fa-undo"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                tableBody.innerHTML = html;
+            } else {
+                tableBody.innerHTML = '<tr><td colspan="7" class="px-4 py-6 text-sm text-center"><div class="flex flex-col items-center"><i class="fas fa-inbox text-gray-300 text-4xl mb-3"></i><p class="text-gray-500">No archived expenses found</p></div></td></tr>';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            tableBody.innerHTML = '<tr><td colspan="7" class="px-4 py-6 text-sm text-center"><div class="flex flex-col items-center"><i class="fas fa-exclamation-triangle text-gray-300 text-4xl mb-3"></i><p class="text-gray-500">Error loading archived expenses. Please try again.</p></div></td></tr>';
+        });
+}
+
+// Function to unarchive an expense
+function unarchiveExpense(expenseId) {
+    Swal.fire({
+        title: 'Unarchive Expense',
+        text: `Are you sure you want to unarchive expense #${expenseId}?`,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#CA8A04',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Unarchive',
+        cancelButtonText: 'Cancel'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const formData = new FormData();
+            formData.append('expense_id', expenseId);
+
+            fetch('expenses/unarchive_expense_handler.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showNotification(data.message);
+                    loadArchivedExpenses(); // Reload archived expenses
+                    setTimeout(() => {
+                        window.location.reload(); // Reload main page to reflect changes
+                    }, 1500);
+                } else {
+                    showNotification(data.message, false);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showNotification('Error unarchiving expense. Please try again.', false);
+            });
+        }
+    });
+}
     </script>
     <script src="tailwind.js"></script>
     <script src="sidebar.js"></script>
