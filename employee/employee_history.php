@@ -432,7 +432,7 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
                       </span>
                     </td>
                     <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo htmlspecialchars($row['date_of_burial']); ?></td>
-                    <td class="px-4 Watch Grok 3: Next-Gen AI Assistant in Action!py-3.5 text-sm">
+                    <td class="px-4 py-3.5 text-sm">
                       <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-500 border border-orange-200">
                         <i class="fas fa-pause-circle mr-1"></i> <?php echo htmlspecialchars($row['status']); ?>
                       </span>
@@ -923,10 +923,10 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
                   </span>
                 </td>
                 <td class="px-4 py-3.5 text-sm text-sidebar-text"><?php echo htmlspecialchars($row['date_of_burial']); ?></td>
-                <td class="px-4 py-3.5 text-sm">
-                  <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-500 border border-orange-200">
-                    <i class="fas fa-pause-circle mr-1"></i> <?php echo htmlspecialchars($row['status']); ?>
-                  </span>
+                <td class="px-4 py-3.5 text-sm text-sidebar-text">
+                  <button onclick="viewCustomServiceDetails(<?php echo $row['customsales_id']; ?>)" class="text-sidebar-accent hover:text-darkgold transition-colors">
+                    <i class="fas fa-eye"></i> View Details
+                  </button>
                 </td>
                 <td class="px-4 py-3.5 text-sm font-medium text-sidebar-text">₱<?php echo number_format($row['balance'], 2); ?></td>
                 <td class="px-4 py-3.5 text-sm">
@@ -2994,7 +2994,7 @@ function viewServiceDetails(serviceId) {
   document.getElementById('serviceId').textContent = 'Loading...';
   
   // Fetch service details from server
-  fetch(`historyAPI/get_service_full_details.php?sales_id=${serviceId}`)
+  fetch(`historyAPI/get_custom_service_full_details.php?sales_id=${serviceId}`)
     .then(response => response.json())
     .then(data => {
       if (data.success) {
@@ -4763,6 +4763,228 @@ function updateCustomAddress() {
 
   addressTextarea.value = addressParts.join(', ');
 }
+</script>
+
+<!-- Custom Service Details Modal -->
+<div class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-y-auto" id="viewCustomServiceModal">
+  <!-- Modal Backdrop -->
+  <div class="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm"></div>
+  
+  <!-- Modal Content -->
+  <div class="relative bg-white rounded-xl shadow-xl w-full max-w-xl mx-4 sm:mx-auto z-10 transform transition-all duration-300 max-h-[90vh] flex flex-col">
+    <!-- Close Button -->
+    <button type="button" class="absolute top-4 right-4 text-white hover:text-sidebar-accent transition-colors" onclick="closeViewCustomServiceModal()">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+      </svg>
+    </button>
+    
+    <!-- Modal Header -->
+    <div class="px-5 sm:px-6 py-4 sm:py-5 border-b bg-gradient-to-r from-sidebar-accent to-white border-gray-200">
+      <h3 class="text-lg sm:text-xl font-bold text-white flex items-center">
+        Custom Service Details
+      </h3>
+    </div>
+    
+    <!-- Modal Body -->
+    <div class="px-5 sm:px-6 py-4 sm:py-5 overflow-y-auto modal-scroll-container">
+      <!-- Service Information -->
+      <div class="rounded-lg border border-gray-200 overflow-hidden mb-5">
+        <div class="bg-gray-50 px-4 py-2 border-b border-gray-200">
+          <h4 class="font-medium text-gray-700">Basic Information</h4>
+        </div>
+        <div class="p-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="space-y-1">
+              <label class="block text-xs font-medium text-gray-500">ID</label>
+              <div id="customServiceId" class="text-sm font-medium text-gray-800">-</div>
+            </div>
+            
+            <div class="space-y-1">
+              <label class="block text-xs font-medium text-gray-500">Client Name</label>
+              <div id="customServiceClientName" class="text-sm font-medium text-gray-800">-</div>
+            </div>
+            
+            <div class="space-y-1">
+              <label class="block text-xs font-medium text-gray-500">Service Price</label>
+              <div id="customServicePrice" class="text-sm font-medium text-gray-800">-</div>
+            </div>
+            
+            <div class="space-y-1">
+              <label class="block text-xs font-medium text-gray-500">Branch</label>
+              <div id="customBranchName" class="text-sm font-medium text-gray-800">-</div>
+            </div>
+            
+            <div class="space-y-1">
+              <label class="block text-xs font-medium text-gray-500">Date of Burial</label>
+              <div id="customServiceDate" class="text-sm font-medium text-gray-800">-</div>
+            </div>
+            
+            <div class="space-y-1">
+              <label class="block text-xs font-medium text-gray-500">Status</label>
+              <div id="customServiceStatus" class="text-sm font-medium text-gray-800">-</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Service Components -->
+      <div class="rounded-lg border border-gray-200 overflow-hidden mb-5">
+        <div class="bg-gray-50 px-4 py-2 border-b border-gray-200">
+          <h4 class="font-medium text-gray-700">Service Components</h4>
+        </div>
+        <div class="p-4">
+          <div class="space-y-4">
+            <div>
+              <label class="block text-xs font-medium text-gray-500 mb-1">Casket</label>
+              <div id="customServiceCasket" class="text-sm text-gray-800">-</div>
+            </div>
+            
+            <div>
+              <label class="block text-xs font-medium text-gray-500 mb-1">Flower Arrangement</label>
+              <div id="customServiceFlowers" class="text-sm text-gray-800">-</div>
+            </div>
+            
+            <div>
+              <label class="block text-xs font-medium text-gray-500 mb-1">Additional Services</label>
+              <div id="customServiceAdditional" class="text-sm text-gray-800">-</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Initial Staff Section -->
+      <div class="rounded-lg border border-gray-200 overflow-hidden mb-5">
+        <div class="bg-gray-50 px-4 py-2 border-b border-gray-200">
+          <h4 class="font-medium text-gray-700">Initial Staff</h4>
+        </div>
+        <div class="p-4">
+          <div class="space-y-3">
+            <div>
+              <label class="block text-xs font-medium text-gray-500">Date</label>
+              <div id="customInitialDate" class="text-sm text-gray-800">-</div>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-500">Embalmers</label>
+              <div id="customInitialEmbalmers" class="text-sm text-gray-800">-</div>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-500">Drivers</label>
+              <div id="customInitialDrivers" class="text-sm text-gray-800">-</div>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-500">Personnel</label>
+              <div id="customInitialPersonnel" class="text-sm text-gray-800">-</div>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-500">Notes</label>
+              <div id="customInitialNotes" class="text-sm text-gray-800">-</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Burial Staff Section -->
+      <div class="rounded-lg border border-gray-200 overflow-hidden">
+        <div class="bg-gray-50 px-4 py-2 border-b border-gray-200">
+          <h4 class="font-medium text-gray-700">Burial Staff</h4>
+        </div>
+        <div class="p-4">
+          <div class="space-y-3">
+            <div>
+              <label class="block text-xs font-medium text-gray-500">Date</label>
+              <div id="customBurialDate" class="text-sm text-gray-800">-</div>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-500">Drivers</label>
+              <div id="customBurialDrivers" class="text-sm text-gray-800">-</div>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-500">Personnel</label>
+              <div id="customBurialPersonnel" class="text-sm text-gray-800">-</div>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-500">Notes</label>
+              <div id="customBurialNotes" class="text-sm text-gray-800">-</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Function to close the custom service modal
+function closeViewCustomServiceModal() {
+  document.getElementById('viewCustomServiceModal').style.display = 'none';
+  toggleBodyScroll(false);
+}
+
+// Function to view custom service details
+function viewCustomServiceDetails(serviceId) {
+  // Show loading state
+  document.getElementById('customServiceId').textContent = 'Loading...';
+  
+  // Fetch service details from server
+  fetch(`historyAPI/get_custom_service_details.php?sales_id=${serviceId}`)
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        // Populate basic service info
+        document.getElementById('customServiceId').textContent = data.customsales_id;
+        document.getElementById('customServiceClientName').textContent = data.client_name;
+        document.getElementById('customServicePrice').textContent = 
+          data.discounted_price ? `₱${parseFloat(data.discounted_price).toFixed(2)}` : '₱0.00';
+        document.getElementById('customBranchName').textContent = data.branch_name || 'N/A';
+        document.getElementById('customServiceDate').textContent = data.get_timestamp ? formatDate(data.get_timestamp) : 'N/A';
+        document.getElementById('customServiceStatus').textContent = data.status || 'N/A';
+
+        // Populate service components
+        document.getElementById('customServiceCasket').textContent = data.casket || 'N/A';
+        document.getElementById('customServiceFlowers').textContent = data.flower_arrangement || 'N/A';
+        document.getElementById('customServiceAdditional').textContent = data.additional_services || 'N/A';
+
+        // Populate initial staff section
+        if (data.initial_staff) {
+          document.getElementById('customInitialDate').textContent = 
+            data.initial_staff.date ? formatDate(data.initial_staff.date) : 'N/A';
+          document.getElementById('customInitialEmbalmers').textContent = 
+            data.initial_staff.embalmers.length > 0 ? data.initial_staff.embalmers.join(', ') : 'None';
+          document.getElementById('customInitialDrivers').textContent = 
+            data.initial_staff.drivers.length > 0 ? data.initial_staff.drivers.join(', ') : 'None';
+          document.getElementById('customInitialPersonnel').textContent = 
+            data.initial_staff.personnel.length > 0 ? data.initial_staff.personnel.join(', ') : 'None';
+          document.getElementById('customInitialNotes').textContent = 
+            data.initial_staff.notes || 'None';
+        }
+
+        // Populate burial staff section
+        if (data.burial_staff) {
+          document.getElementById('customBurialDate').textContent = 
+            data.burial_staff.date ? formatDate(data.burial_staff.date) : 'N/A';
+          document.getElementById('customBurialDrivers').textContent = 
+            data.burial_staff.drivers.length > 0 ? data.burial_staff.drivers.join(', ') : 'None';
+          document.getElementById('customBurialPersonnel').textContent = 
+            data.burial_staff.personnel.length > 0 ? data.burial_staff.personnel.join(', ') : 'None';
+          document.getElementById('customBurialNotes').textContent = 
+            data.burial_staff.notes || 'None';
+        }
+
+        // Show the modal
+        document.getElementById('viewCustomServiceModal').style.display = 'flex';
+        toggleBodyScroll(true);
+      } else {
+        alert('Failed to fetch service details: ' + data.message);
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('An error occurred while fetching service details');
+    });
+}
+
+// ... existing code ...
 </script>
 
 </body> 
