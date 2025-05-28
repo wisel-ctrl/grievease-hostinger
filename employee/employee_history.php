@@ -4201,7 +4201,7 @@ function openAssignCustomStaffModal(serviceId) {
   document.getElementById('assignCustomStaffModal').classList.remove('hidden');
   
   // Fetch the branch_id and employees via AJAX
-  fetch('historyAPI/get_branch_and_employees.php?customsales_id=' + serviceId)
+  fetch('historyAPI/get_employees.php?customsales_id=' + serviceId)
     .then(response => response.json())
     .then(data => {
       // Populate the sections
