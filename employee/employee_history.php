@@ -930,12 +930,13 @@ while ($row = mysqli_fetch_assoc($customer_result)) {
                 <td class="px-4 py-3.5 text-sm font-medium text-sidebar-text">₱<?php echo number_format($row['balance'], 2); ?></td>
                 <td class="px-4 py-3.5 text-sm">
                   <div class="flex space-x-2">
-                    <button class="p-2 bg-yellow-100 text-yellow-600 rounded-lg hover:bg-yellow-200 transition-all tooltip" title="Edit Service" 
-                    onclick="openEditCustomServiceModal('<?php echo $row['customsales_id']; ?>')"
-                    data-has-customer="<?php echo $row['customsales_id'] ? 'true' : 'false'; ?>">>
+                    <button class="p-2 bg-yellow-100 text-yellow-600 rounded-lg hover:bg-yellow-200 transition-all tooltip" title="Edit Service" onclick="openEditCustomServiceModal('<?php echo $row['customsales_id']; ?>')">
                       <i class="fas fa-edit"></i>
                     </button>
-                    <button class="p-2 bg-purple-100 text-purple-600 rounded-lg hover:bg-purple-200 transition-all tooltip assign-staff-btn" title="Assign Staff" onclick="openAssignCustomStaffModal('<?php echo $row['customsales_id']; ?>')">
+                    <button class="p-2 bg-purple-100 text-purple-600 rounded-lg hover:bg-purple-200 transition-all tooltip assign-staff-btn" 
+                    title="Assign Staff" 
+                    onclick="openAssignCustomStaffModal('<?php echo $row['customsales_id']; ?>')"
+                    data-has-customer="<?php echo $row['customsales_id'] ? 'true' : 'false'; ?>">
                       <i class="fas fa-users"></i>
                     </button>
                     <button class="p-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition-all tooltip complete-btn" title="Complete Service" onclick="openCompleteCustomModal('<?php echo $row['customsales_id']; ?>')">
